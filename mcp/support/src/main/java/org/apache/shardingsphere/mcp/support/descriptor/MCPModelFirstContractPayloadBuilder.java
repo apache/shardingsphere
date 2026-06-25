@@ -98,14 +98,12 @@ final class MCPModelFirstContractPayloadBuilder {
     }
     
     Map<String, Object> createFieldNamingContract() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("official_discovery_methods", List.of("tools/list", "resources/list", "resources/templates/list", "prompts/list"));
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
         result.put("catalog_fields", List.of("supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability"));
         result.put("payload_fields", "ShardingSphere-owned structured payload fields use snake_case.");
         result.put("descriptor_fields", "Descriptor-derived MCP schema fields keep the protocol or JSON Schema field names required by MCP clients.");
-        result.put("alias_rule", "Do not assume camelCase and snake_case variants are aliases unless the same descriptor explicitly documents both.");
-        result.put("cleanup_rule", "Prefer one canonical ShardingSphere payload field over parallel compatibility aliases.");
         return result;
     }
     

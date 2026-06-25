@@ -31,17 +31,17 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Proxy preflight validation result.
+ * Runtime database validation result.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ProxyPreflightValidationResult implements MCPResponse {
+public final class RuntimeDatabaseValidationResult implements MCPResponse {
     
     private final String status;
     
     private final String database;
     
-    private final List<ProxyPreflightCheckResult> checks;
+    private final List<RuntimeDatabaseValidationCheckResult> checks;
     
     private final String category;
     
@@ -54,8 +54,8 @@ public final class ProxyPreflightValidationResult implements MCPResponse {
      * @param checks check results
      * @return validation result
      */
-    public static ProxyPreflightValidationResult ready(final String database, final List<ProxyPreflightCheckResult> checks) {
-        return new ProxyPreflightValidationResult("ready", Objects.toString(database, ""), checks, "ready", Map.of());
+    public static RuntimeDatabaseValidationResult ready(final String database, final List<RuntimeDatabaseValidationCheckResult> checks) {
+        return new RuntimeDatabaseValidationResult("ready", Objects.toString(database, ""), checks, "ready", Map.of());
     }
     
     /**
@@ -67,8 +67,8 @@ public final class ProxyPreflightValidationResult implements MCPResponse {
      * @param recovery recovery payload
      * @return validation result
      */
-    public static ProxyPreflightValidationResult failed(final String database, final List<ProxyPreflightCheckResult> checks, final String category, final Map<String, Object> recovery) {
-        return new ProxyPreflightValidationResult("failed", Objects.toString(database, ""), checks, category, null == recovery ? Map.of() : recovery);
+    public static RuntimeDatabaseValidationResult failed(final String database, final List<RuntimeDatabaseValidationCheckResult> checks, final String category, final Map<String, Object> recovery) {
+        return new RuntimeDatabaseValidationResult("failed", Objects.toString(database, ""), checks, category, null == recovery ? Map.of() : recovery);
     }
     
     @Override
@@ -85,7 +85,7 @@ public final class ProxyPreflightValidationResult implements MCPResponse {
     
     private List<Map<String, Object>> createChecksPayload() {
         List<Map<String, Object>> result = new LinkedList<>();
-        for (ProxyPreflightCheckResult each : checks) {
+        for (RuntimeDatabaseValidationCheckResult each : checks) {
             result.add(each.toPayload());
         }
         return result;

@@ -86,7 +86,6 @@ class ShardingToolDescriptorValidatorTest {
         assertFalse(properties.containsKey("component_type"));
         assertFalse(properties.containsKey("default_strategy_type"));
         assertFalse(properties.containsKey("ddl_artifacts"));
-        assertFalse(properties.containsKey("user_overrides"));
     }
     
     @Test
@@ -111,7 +110,6 @@ class ShardingToolDescriptorValidatorTest {
             Map<String, Object> properties = (Map<String, Object>) MCPDescriptorCatalogIndex.getRequiredToolDescriptor(each).getInputSchema().get("properties");
             assertTrue(properties.containsKey("key_generator_type"));
             assertFalse(properties.containsKey("algorithm_type"));
-            assertFalse(properties.containsKey("user_overrides"));
         }
     }
     

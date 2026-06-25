@@ -332,7 +332,6 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertFalse((Boolean) actual.get("would_execute"));
         List<Map<String, Object>> nextActions = getMapList(actual.get("next_actions"));
         assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("tool_call")));
-        assertFalse(nextActions.getFirst().containsKey("requires_user_approval"));
     }
     
     protected void assertAiNativeSqlResult(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {

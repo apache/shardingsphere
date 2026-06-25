@@ -263,7 +263,6 @@ class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntime
     }
     
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
-        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     

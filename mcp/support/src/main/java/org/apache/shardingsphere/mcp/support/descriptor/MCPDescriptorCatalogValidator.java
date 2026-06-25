@@ -40,13 +40,6 @@ import java.util.regex.Pattern;
 
 final class MCPDescriptorCatalogValidator {
     
-    private static final Collection<String> BANNED_PUBLIC_ALIAS_FIELDS = List.of(
-            "recommended_next_tool", "suggested_next_tool", "suggested_next_tools", "recommended_recovery", "suggested_next_action");
-    
-    private static final Collection<String> BANNED_PUBLIC_INPUT_FIELDS = List.of("user_overrides");
-    
-    private static final Collection<String> BANNED_NEXT_ACTION_FIELDS = List.of("action_kind", "target_tool", "target_resource", "required_arguments");
-    
     private static final Collection<String> MODEL_CRITICAL_HINT_FIELDS = List.of(
             MCPPayloadFieldNames.NEXT_ACTIONS, MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE,
             MCPPayloadFieldNames.NEXT_RESOURCES, "manual_artifact_summary", "manual_follow_up", "empty_state", "ambiguity_state", MCPPayloadFieldNames.RECOVERY, "recovery_guidance",
@@ -142,14 +135,6 @@ final class MCPDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Tool `%s` inputSchema must be an object.", descriptor.getName())));
         Object properties = inputSchema.get("properties");
         ShardingSpherePreconditions.checkState(properties instanceof Map, () -> new IllegalStateException(String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName())));
-        validateNoBannedPublicInputFields(descriptor, (Map<?, ?>) properties);
-    }
-    
-    private static void validateNoBannedPublicInputFields(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
-        for (String each : BANNED_PUBLIC_INPUT_FIELDS) {
-            ShardingSpherePreconditions.checkState(!properties.containsKey(each),
-                    () -> new IllegalStateException(String.format("Tool `%s` inputSchema must use canonical fields instead of banned `%s`.", descriptor.getName(), each)));
-        }
     }
     
     private static void validateToolOutputSchema(final MCPToolDescriptor descriptor, final Collection<MCPToolDescriptorValidator> descriptorValidators) {
@@ -159,7 +144,6 @@ final class MCPDescriptorCatalogValidator {
         Object properties = outputSchema.get("properties");
         ShardingSpherePreconditions.checkState(properties instanceof Map && !((Map<?, ?>) properties).isEmpty(),
                 () -> new IllegalStateException(String.format("Tool `%s` outputSchema must declare properties.", descriptor.getName())));
-        validateNoBannedPublicAliasFields(descriptor, outputSchema);
         validateOutputExamples(descriptor, outputSchema);
         validateOutputExampleContractValues(descriptor, outputSchema);
         validateModelCriticalOutputHints(descriptor, (Map<?, ?>) properties);
@@ -220,25 +204,6 @@ final class MCPDescriptorCatalogValidator {
         }
     }
     
-    private static void validateNoBannedPublicAliasFields(final MCPToolDescriptor descriptor, final Object value) {
-        if (value instanceof Map) {
-            validateNoBannedPublicAliasFieldMap(descriptor, (Map<?, ?>) value);
-        } else if (value instanceof Collection) {
-            for (Object each : (Collection<?>) value) {
-                validateNoBannedPublicAliasFields(descriptor, each);
-            }
-        }
-    }
-    
-    private static void validateNoBannedPublicAliasFieldMap(final MCPToolDescriptor descriptor, final Map<?, ?> value) {
-        for (Entry<?, ?> entry : value.entrySet()) {
-            String key = String.valueOf(entry.getKey());
-            ShardingSpherePreconditions.checkState(!BANNED_PUBLIC_ALIAS_FIELDS.contains(key),
-                    () -> new IllegalStateException(String.format("Tool `%s` outputSchema must use canonical fields instead of banned `%s`.", descriptor.getName(), key)));
-            validateNoBannedPublicAliasFields(descriptor, entry.getValue());
-        }
-    }
-    
     private static void validateModelCriticalOutputHints(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
         for (Entry<?, ?> entry : properties.entrySet()) {
             String fieldName = String.valueOf(entry.getKey());
@@ -280,10 +245,6 @@ final class MCPDescriptorCatalogValidator {
         Object properties = ((Map<?, ?>) items).get("properties");
         ShardingSpherePreconditions.checkState(properties instanceof Map,
                 () -> new IllegalStateException(String.format("Tool `%s` next_actions items must declare properties.", descriptor.getName())));
-        for (String each : BANNED_NEXT_ACTION_FIELDS) {
-            ShardingSpherePreconditions.checkState(!((Map<?, ?>) properties).containsKey(each),
-                    () -> new IllegalStateException(String.format("Tool `%s` next_actions item must not declare banned `%s`.", descriptor.getName(), each)));
-        }
         for (String each : List.of("order", "type", "title")) {
             ShardingSpherePreconditions.checkState(((Map<?, ?>) properties).containsKey(each),
                     () -> new IllegalStateException(String.format("Tool `%s` next_actions item must declare `%s`.", descriptor.getName(), each)));

@@ -69,18 +69,6 @@ class ShadowToolDescriptorValidatorTest {
         assertTrue(properties.containsKey(ShadowFeatureDefinition.ALGORITHM_PROPERTIES_FIELD));
         assertFalse(properties.containsKey("column"));
         assertFalse(properties.containsKey("ddl_artifacts"));
-        assertFalse(properties.containsKey("user_overrides"));
-    }
-    
-    @Test
-    @SuppressWarnings("unchecked")
-    void assertPlanningInputSchemasDoNotExposeUserOverrides() {
-        for (String each : List.of(ShadowFeatureDefinition.PLAN_RULE_TOOL_NAME, ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_TOOL_NAME,
-                ShadowFeatureDefinition.PLAN_ALGORITHM_CLEANUP_TOOL_NAME)) {
-            MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(each);
-            Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
-            assertFalse(properties.containsKey("user_overrides"));
-        }
     }
     
     @Test

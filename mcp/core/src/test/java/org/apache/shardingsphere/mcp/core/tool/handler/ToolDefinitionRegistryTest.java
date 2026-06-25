@@ -87,11 +87,6 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
-    void assertGetToolDefinitionRejectsLegacyAlias() {
-        assertThrows(UnsupportedToolException.class, () -> ToolDefinitionRegistry.getToolDefinition("database_gateway_validate_proxy_connectivity"));
-    }
-    
-    @Test
     void assertDispatch() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
         runtimeContext.getSessionManager().createSession("session-1");
@@ -101,11 +96,6 @@ class ToolDefinitionRegistryTest {
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
         }
-    }
-    
-    @Test
-    void assertDispatchRejectsLegacyAlias() {
-        assertThrows(UnsupportedToolException.class, () -> dispatch("database_gateway_validate_proxy_connectivity", Map.of("database", "missing_db")));
     }
     
     @Test

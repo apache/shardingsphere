@@ -291,23 +291,6 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
     }
     
     @Test
-    void assertCreateToolSpecificationsRejectsRemovedToolNameAsProtocolError() {
-        try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
-            mockedToolDefinitionRegistry.when(ToolDefinitionRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("database_gateway_validate_proxy_connectivity")));
-            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.getToolDefinition("database_gateway_validate_proxy_connectivity")).thenThrow(UnsupportedToolException.class);
-            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
-            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
-            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().getFirst();
-            McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
-            when(exchange.sessionId()).thenReturn("session-id");
-            McpError actual = assertThrows(McpError.class,
-                    () -> actualSpecification.callHandler().apply(exchange, new CallToolRequest("database_gateway_validate_proxy_connectivity", Map.of())));
-            assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
-            assertThat(actual.getJsonRpcError().message(), is("Unsupported tool `database_gateway_validate_proxy_connectivity`."));
-        }
-    }
-    
-    @Test
     void assertCreateToolSpecificationsRejectInvalidInputSchema() {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
         when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());

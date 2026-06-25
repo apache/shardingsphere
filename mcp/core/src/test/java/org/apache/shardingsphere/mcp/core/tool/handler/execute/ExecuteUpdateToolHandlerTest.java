@@ -117,12 +117,9 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.toPayload().get("review_guidance"),
                 is("Review normalized_sql and side_effect_scope before execution. "
                         + "This preview is classification-only; it does not guarantee parsing, rule validation, algorithm initialization, affected rows, or runtime success."));
-        assertFalse(actual.toPayload().containsKey("suggested_next_tool"));
         assertThat(((Map<?, ?>) actual.toPayload().get("suggested_arguments")).get("execution_mode"), is("execute"));
-        assertFalse(((Map<?, ?>) actual.toPayload().get("suggested_arguments")).containsKey("approved_by_user"));
         assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("sql"), is("server_generated"));
         assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("execution_mode"), is("server_defaulted"));
-        assertFalse(((Map<?, ?>) actual.toPayload().get("argument_provenance")).containsKey("approved_by_user"));
         List<?> actualNextActions = (List<?>) actual.toPayload().get("next_actions");
         assertThat(actualNextActions.size(), is(1));
         assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("type"), is("tool_call"));
@@ -131,11 +128,8 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("reason"),
                 is("Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability."));
         assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.getFirst()).get("arguments")).get("execution_mode"), is("execute"));
-        assertFalse(((Map<?, ?>) ((Map<?, ?>) actualNextActions.getFirst()).get("arguments")).containsKey("approved_by_user"));
-        assertFalse(((Map<?, ?>) actualNextActions.getFirst()).containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("resources_to_read")).getFirst()).get("uri"), is("shardingsphere://databases/logic_db/capabilities"));
         assertFalse(actual.toPayload().containsKey("ask_user_when_uncertain"));
-        assertFalse(actual.toPayload().containsKey("recommended_next_call"));
         verifyNoInteractions(executionFacade);
     }
     

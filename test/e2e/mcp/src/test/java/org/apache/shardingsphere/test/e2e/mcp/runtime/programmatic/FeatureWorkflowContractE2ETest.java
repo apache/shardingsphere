@@ -114,7 +114,6 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
     }
     
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
-        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     

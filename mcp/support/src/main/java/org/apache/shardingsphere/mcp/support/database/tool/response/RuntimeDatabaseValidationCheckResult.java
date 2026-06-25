@@ -25,11 +25,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Proxy preflight check result.
+ * Runtime database validation check result.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ProxyPreflightCheckResult {
+public final class RuntimeDatabaseValidationCheckResult {
     
     private static final String STATUS_PASSED = "passed";
     
@@ -52,8 +52,8 @@ public final class ProxyPreflightCheckResult {
      * @param message check message
      * @return check result
      */
-    public static ProxyPreflightCheckResult passed(final String name, final String message) {
-        return new ProxyPreflightCheckResult(name, STATUS_PASSED, "ready", message);
+    public static RuntimeDatabaseValidationCheckResult passed(final String name, final String message) {
+        return new RuntimeDatabaseValidationCheckResult(name, STATUS_PASSED, "ready", message);
     }
     
     /**
@@ -64,8 +64,8 @@ public final class ProxyPreflightCheckResult {
      * @param message check message
      * @return check result
      */
-    public static ProxyPreflightCheckResult failed(final String name, final String category, final String message) {
-        return new ProxyPreflightCheckResult(name, STATUS_FAILED, category, message);
+    public static RuntimeDatabaseValidationCheckResult failed(final String name, final String category, final String message) {
+        return new RuntimeDatabaseValidationCheckResult(name, STATUS_FAILED, category, message);
     }
     
     /**
@@ -75,8 +75,8 @@ public final class ProxyPreflightCheckResult {
      * @param message check message
      * @return check result
      */
-    public static ProxyPreflightCheckResult skipped(final String name, final String message) {
-        return new ProxyPreflightCheckResult(name, STATUS_SKIPPED, "skipped", message);
+    public static RuntimeDatabaseValidationCheckResult skipped(final String name, final String message) {
+        return new RuntimeDatabaseValidationCheckResult(name, STATUS_SKIPPED, "skipped", message);
     }
     
     /**

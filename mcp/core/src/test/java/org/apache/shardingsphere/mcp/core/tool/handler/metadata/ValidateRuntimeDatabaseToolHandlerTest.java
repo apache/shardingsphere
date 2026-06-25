@@ -21,10 +21,10 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.support.database.tool.request.ProxyPreflightValidationRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.ProxyPreflightCheckResult;
-import org.apache.shardingsphere.mcp.support.database.tool.response.ProxyPreflightValidationResult;
-import org.apache.shardingsphere.mcp.support.database.tool.service.ProxyPreflightValidationService;
+import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
+import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationCheckResult;
+import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationResult;
+import org.apache.shardingsphere.mcp.support.database.tool.service.RuntimeDatabaseValidationService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -40,27 +40,25 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ValidateProxyConnectivityToolHandlerTest {
+class ValidateRuntimeDatabaseToolHandlerTest {
     
     @Test
     void assertGetToolName() {
-        assertThat(new ValidateProxyConnectivityToolHandler().getToolName(), is("database_gateway_validate_runtime_database"));
+        assertThat(new ValidateRuntimeDatabaseToolHandler().getToolName(), is("database_gateway_validate_runtime_database"));
     }
     
     @Test
     @SuppressWarnings("unchecked")
     void assertHandle() {
-        ProxyPreflightValidationService validationService = mock(ProxyPreflightValidationService.class);
+        RuntimeDatabaseValidationService validationService = mock(RuntimeDatabaseValidationService.class);
         when(validationService.validate(any(), any(), any()))
-                .thenReturn(ProxyPreflightValidationResult.ready("logic_db", List.of(ProxyPreflightCheckResult.passed("configuration", "Validated the request."))));
+                .thenReturn(RuntimeDatabaseValidationResult.ready("logic_db", List.of(RuntimeDatabaseValidationCheckResult.passed("configuration", "Validated the request."))));
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         when(databaseContext.findRuntimeDatabaseConfiguration("logic_db")).thenReturn(Optional.of(runtimeDatabaseConfig));
-        MCPResponse actual = new ValidateProxyConnectivityToolHandler(validationService).handle(databaseContext, new MCPToolCall("session-1", Map.of(
-                "jdbcUrl", "jdbc:mysql://127.0.0.1:3307/logic_db",
-                "database", "logic_db")));
+        MCPResponse actual = new ValidateRuntimeDatabaseToolHandler(validationService).handle(databaseContext, new MCPToolCall("session-1", Map.of("database", "logic_db")));
         assertThat(actual.toPayload().get("response_mode"), is("validation"));
-        ArgumentCaptor<ProxyPreflightValidationRequest> requestCaptor = ArgumentCaptor.forClass(ProxyPreflightValidationRequest.class);
+        ArgumentCaptor<RuntimeDatabaseValidationRequest> requestCaptor = ArgumentCaptor.forClass(RuntimeDatabaseValidationRequest.class);
         ArgumentCaptor<Function<String, Optional<RuntimeDatabaseConfiguration>>> resolverCaptor = ArgumentCaptor.forClass(Function.class);
         verify(validationService).validate(requestCaptor.capture(), resolverCaptor.capture(), any());
         assertThat(requestCaptor.getValue().getDatabase(), is("logic_db"));

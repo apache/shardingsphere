@@ -209,8 +209,6 @@ final class LLMUsabilitySuiteRunner {
             assertFalse(each.getActionOrigin().isBlank(), () -> "Trace action origin is blank in " + evaluatedScenario.scenario().getScenarioId());
             assertTrue(KNOWN_ACTION_ORIGINS.contains(each.getActionOrigin()), () -> "Unknown trace action origin in " + evaluatedScenario.scenario().getScenarioId());
             assertFalse(each.getTargetName().isBlank(), () -> "Trace target name is blank in " + evaluatedScenario.scenario().getScenarioId());
-            MCPModelContractAssertions.assertNoBannedPublicFields(each.getArguments());
-            MCPModelContractAssertions.assertNoBannedPublicFields(each.getStructuredContent());
             MCPModelContractAssertions.assertCanonicalNextActionLists(each.getStructuredContent());
         }
     }

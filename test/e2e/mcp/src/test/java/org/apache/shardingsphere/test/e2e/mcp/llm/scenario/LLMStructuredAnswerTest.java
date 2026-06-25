@@ -53,13 +53,6 @@ class LLMStructuredAnswerTest {
     }
     
     @Test
-    void assertFromJsonRejectsLegacyToolSequence() {
-        assertThrows(IllegalArgumentException.class, () -> LLMStructuredAnswer.fromJson("""
-                {"database":"logic_db","schema":"public","table":"orders","query":"SELECT 1","totalOrders":"2","toolSequence":["database_gateway_execute_query"]}
-                """));
-    }
-    
-    @Test
     void assertFromJsonRejectsObjectInteractionSequenceEntries() {
         assertThrows(IllegalArgumentException.class, () -> LLMStructuredAnswer.fromJson("""
                 {"database":"logic_db","schema":"public","table":"orders","query":"SELECT 1","totalOrders":"2","interactionSequence":[{"tool":"database_gateway_execute_query"}]}

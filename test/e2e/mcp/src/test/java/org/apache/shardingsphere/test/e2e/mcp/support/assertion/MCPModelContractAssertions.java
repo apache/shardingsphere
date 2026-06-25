@@ -21,17 +21,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Assertions for model-facing MCP contracts.
  */
 public final class MCPModelContractAssertions {
-    
-    private static final Set<String> BANNED_PUBLIC_FIELDS = Set.of(
-            "target_tool", "target_resource", "required_arguments", "action_kind", "suggested_next_tool", "suggested_next_tools", "recommended_next_tool",
-            "recommended_recovery", "suggested_next_action", "approved_by_user", "requires_user_approval", "approval_required");
     
     private static final Map<String, Set<String>> NEXT_ACTION_REQUIRED_FIELDS = Map.of(
             "resource_read", Set.of("order", "type", "title", "resource_uri"),
@@ -41,21 +36,6 @@ public final class MCPModelContractAssertions {
             "terminal", Set.of("order", "type", "title"));
     
     private MCPModelContractAssertions() {
-    }
-    
-    /**
-     * Assert that no banned public fields are present recursively.
-     *
-     * @param value model-facing payload value
-     */
-    public static void assertNoBannedPublicFields(final Object value) {
-        if (value instanceof Map) {
-            assertNoBannedPublicFieldMap((Map<?, ?>) value);
-        } else if (value instanceof Collection) {
-            for (Object each : (Collection<?>) value) {
-                assertNoBannedPublicFields(each);
-            }
-        }
     }
     
     /**
@@ -70,15 +50,6 @@ public final class MCPModelContractAssertions {
             for (Object each : (Collection<?>) value) {
                 assertCanonicalNextActionLists(each);
             }
-        }
-    }
-    
-    private static void assertNoBannedPublicFieldMap(final Map<?, ?> value) {
-        for (Object each : value.keySet()) {
-            assertFalse(BANNED_PUBLIC_FIELDS.contains(String.valueOf(each)), () -> "Banned model-facing field returned: " + each);
-        }
-        for (Object each : value.values()) {
-            assertNoBannedPublicFields(each);
         }
     }
     

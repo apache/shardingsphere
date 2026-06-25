@@ -25,11 +25,11 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class ProxyPreflightValidationResultTest {
+class RuntimeDatabaseValidationResultTest {
     
     @Test
     void assertReady() {
-        ProxyPreflightValidationResult actual = ProxyPreflightValidationResult.ready("logic_db", List.of(ProxyPreflightCheckResult.passed("configuration", "Validated the request.")));
+        RuntimeDatabaseValidationResult actual = RuntimeDatabaseValidationResult.ready("logic_db", List.of(RuntimeDatabaseValidationCheckResult.passed("configuration", "Validated the request.")));
         assertThat(actual.getStatus(), is("ready"));
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getCategory(), is("ready"));
@@ -39,8 +39,8 @@ class ProxyPreflightValidationResultTest {
     @Test
     void assertFailed() {
         Map<String, Object> recovery = Map.of("category", "connection_failed");
-        ProxyPreflightValidationResult actual = ProxyPreflightValidationResult.failed("logic_db",
-                List.of(ProxyPreflightCheckResult.failed("jdbc_connectivity", "connection_failed", "Failed to open a JDBC connection.")), "connection_failed", recovery);
+        RuntimeDatabaseValidationResult actual = RuntimeDatabaseValidationResult.failed("logic_db",
+                List.of(RuntimeDatabaseValidationCheckResult.failed("jdbc_connectivity", "connection_failed", "Failed to open a JDBC connection.")), "connection_failed", recovery);
         assertThat(actual.getStatus(), is("failed"));
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getCategory(), is("connection_failed"));
@@ -49,8 +49,8 @@ class ProxyPreflightValidationResultTest {
     
     @Test
     void assertToPayload() {
-        Map<String, Object> actual = ProxyPreflightValidationResult.failed("logic_db",
-                List.of(ProxyPreflightCheckResult.failed("metadata_read", "connection_failed", "Failed to read metadata.")),
+        Map<String, Object> actual = RuntimeDatabaseValidationResult.failed("logic_db",
+                List.of(RuntimeDatabaseValidationCheckResult.failed("metadata_read", "connection_failed", "Failed to read metadata.")),
                 "connection_failed", Map.of("category", "connection_failed")).toPayload();
         assertThat(actual.get("response_mode"), is("validation"));
         assertThat(actual.get("status"), is("failed"));

@@ -24,19 +24,17 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class ProxyPreflightValidationRequestTest {
+class RuntimeDatabaseValidationRequestTest {
     
     @Test
     void assertFromPreservesDatabaseArgument() {
-        ProxyPreflightValidationRequest actual = ProxyPreflightValidationRequest.from(Map.of(
-                "jdbcUrl", " jdbc:mysql://127.0.0.1:3307/logic_db ",
-                "database", " logic_db "));
+        RuntimeDatabaseValidationRequest actual = RuntimeDatabaseValidationRequest.from(Map.of("database", " logic_db "));
         assertThat(actual.getDatabase(), is(" logic_db "));
     }
     
     @Test
     void assertFromDefaultsMissingDatabase() {
-        ProxyPreflightValidationRequest actual = ProxyPreflightValidationRequest.from(Map.of());
+        RuntimeDatabaseValidationRequest actual = RuntimeDatabaseValidationRequest.from(Map.of());
         assertThat(actual.getDatabase(), is(""));
     }
 }
