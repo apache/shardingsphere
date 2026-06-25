@@ -25,9 +25,11 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsColl
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -37,13 +39,14 @@ import java.util.Optional;
 public final class SQLRouteCountAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration config = new MetricConfiguration("routed_sql_total",
-            MetricCollectorType.COUNTER, "Total count of routed SQL", Collections.singletonList("type"), Collections.emptyMap());
+            MetricCollectorType.COUNTER, "Total count of routed SQL", Arrays.asList("database", "type"), Collections.emptyMap());
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
         QueryContext queryContext = (QueryContext) args[0];
+        ShardingSphereDatabase database = (ShardingSphereDatabase) args[2];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        getSQLType(sqlStatement).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc(optional));
+        getSQLType(sqlStatement).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc(database.getName(), optional));
     }
     
     private Optional<String> getSQLType(final SQLStatement sqlStatement) {
