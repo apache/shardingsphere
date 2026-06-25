@@ -122,8 +122,9 @@ After startup, you can find the plugin info in the log of ShardingSphere-Proxy, 
 |:-----------------------------|:----------|:------------------------------------------------------------------------------------------------------------------------------------------|
 | build_info                   | GAUGE     | Build information                                                                                                                         |
 | parsed_sql_total             | COUNTER   | Total count of parsed by type (INSERT, UPDATE, DELETE, SELECT, DDL, DCL, DAL, TCL, RQL, RDL, RAL, RUL)                                    |
-| routed_sql_total             | COUNTER   | Total count of routed by type (INSERT, UPDATE, DELETE, SELECT)                                                                            |
-| routed_result_total          | COUNTER   | Total count of routed result (data source routed, table routed)                                                                           |
+| routed_sql_total             | COUNTER   | Total count of routed by database and SQL type (INSERT, UPDATE, DELETE, SELECT)                                                           |
+| routed_storage_unit_total    | COUNTER   | Total count of routed by storage unit of database                                                                                         |
+| routed_table_total           | COUNTER   | Total count of routed by table of database                                                                                                |
 | proxy_state                  | GAUGE     | Status information of ShardingSphere-Proxy. 0 is OK; 1 is CIRCUIT BREAK; 2 is LOCK                                                        |
 | proxy_meta_data_info         | GAUGE     | Meta data information of ShardingSphere-Proxy. database_count is logic number of databases; storage_unit_count is number of storage units |
 | proxy_current_connections    | GAUGE     | Current connections of ShardingSphere-Proxy                                                                                               |
