@@ -48,4 +48,16 @@ public interface StorageContainerConnectOption {
      * @return URL
      */
     String getURL(String host, int port, String dataSourceName);
+    
+    /**
+     * Get proxy URL.
+     *
+     * @param host database host
+     * @param port database port
+     * @param dataSourceName data source name
+     * @return proxy URL
+     */
+    default String getProxyURL(final String host, final int port, final String dataSourceName) {
+        return getURL(host, port, dataSourceName);
+    }
 }
