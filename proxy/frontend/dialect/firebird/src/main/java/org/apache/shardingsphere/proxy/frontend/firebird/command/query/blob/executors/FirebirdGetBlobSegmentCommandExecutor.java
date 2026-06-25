@@ -34,22 +34,32 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdGetBlobSegmentCommandExecutor implements CommandExecutor {
-    
+
+    private static final int SEGMENT_STATE_COMPLETE = 0;
+
+    private static final int SEGMENT_STATE_PARTIAL = 1;
+
+    private static final int SEGMENT_STATE_EOF = 2;
+
     private final FirebirdGetBlobSegmentCommandPacket packet;
-    
+
     @Override
     public Collection<DatabasePacket> execute() {
         byte[] segment = FirebirdBlobRegistry.getSegment();
-        int segmentLength = segment == null ? 0 : Math.min(packet.getSegmentLength(), segment.length);
-        byte[] payloadSegment = segmentLength == 0 ? new byte[0] : Arrays.copyOf(segment, segmentLength);
-        if (segment != null && segmentLength > 0) {
-            if (segmentLength >= segment.length) {
-                FirebirdBlobRegistry.clearSegment();
-            } else {
-                FirebirdBlobRegistry.setSegment(Arrays.copyOfRange(segment, segmentLength, segment.length));
-            }
+        if (null == segment || 0 == segment.length) {
+            return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(SEGMENT_STATE_EOF));
+        }
+        int segmentLength = Math.min(packet.getSegmentLength(), segment.length);
+        byte[] payloadSegment = Arrays.copyOf(segment, segmentLength);
+        int segmentState;
+        if (segmentLength >= segment.length) {
+            FirebirdBlobRegistry.clearSegment();
+            segmentState = SEGMENT_STATE_COMPLETE;
+        } else {
+            FirebirdBlobRegistry.setSegment(Arrays.copyOfRange(segment, segmentLength, segment.length));
+            segmentState = SEGMENT_STATE_PARTIAL;
         }
         FirebirdGetBlobSegmentResponsePacket responsePacket = new FirebirdGetBlobSegmentResponsePacket(payloadSegment);
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(packet.getBlobHandle()).setData(responsePacket));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(segmentState).setData(responsePacket));
     }
 }

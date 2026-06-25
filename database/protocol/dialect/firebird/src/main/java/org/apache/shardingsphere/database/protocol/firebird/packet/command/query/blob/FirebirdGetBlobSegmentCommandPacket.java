@@ -54,9 +54,7 @@ public final class FirebirdGetBlobSegmentCommandPacket extends FirebirdCommandPa
      * @return length of packet
      */
     public static int getLength(final FirebirdPacketPayload payload) {
-        // reserved (4) + blob handle (4) + segment length (4)
         int length = 12;
-        // + segment buffer
         length += payload.getBufferLength(length);
         return length;
     }
