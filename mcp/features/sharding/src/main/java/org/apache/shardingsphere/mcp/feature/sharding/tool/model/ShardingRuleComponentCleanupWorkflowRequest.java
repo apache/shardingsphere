@@ -22,11 +22,6 @@ package org.apache.shardingsphere.mcp.feature.sharding.tool.model;
  */
 public final class ShardingRuleComponentCleanupWorkflowRequest extends AbstractShardingSpecificWorkflowRequest {
     
-    /**
-     * Create sharding rule component cleanup workflow request.
-     *
-     * @param workflowRequest generic sharding workflow request
-     */
     public ShardingRuleComponentCleanupWorkflowRequest(final ShardingWorkflowRequest workflowRequest) {
         super(workflowRequest);
     }

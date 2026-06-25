@@ -30,18 +30,10 @@ public final class ShardingTableReferenceRuleWorkflowPlanningService {
     
     private final Planner planner;
     
-    /**
-     * Create sharding table reference rule workflow planning service.
-     */
     public ShardingTableReferenceRuleWorkflowPlanningService() {
         this(new ShardingWorkflowPlanningKernel());
     }
     
-    /**
-     * Create sharding table reference rule workflow planning service with delegate.
-     *
-     * @param delegate sharding workflow planning service
-     */
     public ShardingTableReferenceRuleWorkflowPlanningService(final ShardingWorkflowPlanningService delegate) {
         this(delegate::planTableReferenceRule);
     }

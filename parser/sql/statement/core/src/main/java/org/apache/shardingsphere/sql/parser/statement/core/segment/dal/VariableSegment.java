@@ -50,14 +50,6 @@ public final class VariableSegment implements ExpressionSegment {
     
     private VariableType variableType = VariableType.SYSTEM;
     
-    /**
-     * Create variable segment with scope.
-     *
-     * @param startIndex start index
-     * @param stopIndex stop index
-     * @param variable variable
-     * @param scope scope
-     */
     public VariableSegment(final int startIndex, final int stopIndex, final String variable, final String scope) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;

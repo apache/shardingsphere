@@ -177,7 +177,7 @@ public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHan
     }
     
     private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        final String value = workflowPlanningArguments.getStringArgument(fieldName);
+        String value = workflowPlanningArguments.getStringArgument(fieldName);
         if (!value.isEmpty()) {
             consumer.accept(value);
         }

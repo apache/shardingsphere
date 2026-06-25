@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 /**
  * Handshake packet protocol for MySQL.
- * 
+ *
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_packets_protocol_handshake_v10.html">Handshake</a>
  */
 @Getter
@@ -70,15 +70,14 @@ public final class MySQLHandshakePacket extends MySQLPacket {
         Preconditions.checkArgument(protocolVersion == payload.readInt1());
         serverVersion = payload.readStringNul();
         connectionId = payload.readInt4();
-        final byte[] authPluginDataPart1 = payload.readStringNulByBytes();
-        capabilityFlagsLower = payload.readInt2();
-        characterSet = payload.readInt1();
-        statusFlag = MySQLStatusFlag.valueOf(payload.readInt2());
-        capabilityFlagsUpper = payload.readInt2();
-        payload.readInt1();
-        payload.skipReserved(10);
-        authPluginData = new MySQLAuthenticationPluginData(authPluginDataPart1, readAuthPluginDataPart2(payload));
-        authPluginName = readAuthPluginName(payload);
+        HandshakePayload handshakePayload = new HandshakePayload(
+                payload, payload.readStringNulByBytes(), payload.readInt2(), payload.readInt1(), MySQLStatusFlag.valueOf(payload.readInt2()), payload.readInt2());
+        capabilityFlagsLower = handshakePayload.capabilityFlagsLower;
+        characterSet = handshakePayload.characterSet;
+        statusFlag = handshakePayload.statusFlag;
+        capabilityFlagsUpper = handshakePayload.capabilityFlagsUpper;
+        authPluginData = handshakePayload.authPluginData;
+        authPluginName = handshakePayload.authPluginName;
     }
     
     /**
@@ -89,14 +88,15 @@ public final class MySQLHandshakePacket extends MySQLPacket {
      * From test, the 13th byte is nul byte and should be excluded from authPluginDataPart2.
      *
      * @param payload MySQL packet payload
+     * @param capabilityFlagsLower capability flags lower
      * @return auth plugin data part2
      */
-    private byte[] readAuthPluginDataPart2(final MySQLPacketPayload payload) {
-        return isClientSecureConnection() ? payload.readStringNulByBytes() : new byte[0];
+    private static byte[] readAuthPluginDataPart2(final MySQLPacketPayload payload, final int capabilityFlagsLower) {
+        return isClientSecureConnection(capabilityFlagsLower) ? payload.readStringNulByBytes() : new byte[0];
     }
     
-    private String readAuthPluginName(final MySQLPacketPayload payload) {
-        return isClientPluginAuth() ? payload.readStringNul() : null;
+    private static String readAuthPluginName(final MySQLPacketPayload payload, final int capabilityFlagsUpper) {
+        return isClientPluginAuth(capabilityFlagsUpper) ? payload.readStringNul() : null;
     }
     
     /**
@@ -138,10 +138,45 @@ public final class MySQLHandshakePacket extends MySQLPacket {
     }
     
     private boolean isClientSecureConnection() {
+        return isClientSecureConnection(capabilityFlagsLower);
+    }
+    
+    private static boolean isClientSecureConnection(final int capabilityFlagsLower) {
         return 0 != (capabilityFlagsLower & MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue() & 0x00000ffff);
     }
     
     private boolean isClientPluginAuth() {
+        return isClientPluginAuth(capabilityFlagsUpper);
+    }
+    
+    private static boolean isClientPluginAuth(final int capabilityFlagsUpper) {
         return 0 != (capabilityFlagsUpper & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16);
+    }
+    
+    private static final class HandshakePayload {
+        
+        private final int capabilityFlagsLower;
+        
+        private final int characterSet;
+        
+        private final MySQLStatusFlag statusFlag;
+        
+        private final int capabilityFlagsUpper;
+        
+        private final MySQLAuthenticationPluginData authPluginData;
+        
+        private final String authPluginName;
+        
+        private HandshakePayload(final MySQLPacketPayload payload, final byte[] authPluginDataPart1, final int capabilityFlagsLower, final int characterSet, final MySQLStatusFlag statusFlag,
+                                 final int capabilityFlagsUpper) {
+            payload.readInt1();
+            payload.skipReserved(10);
+            this.capabilityFlagsLower = capabilityFlagsLower;
+            this.characterSet = characterSet;
+            this.statusFlag = statusFlag;
+            this.capabilityFlagsUpper = capabilityFlagsUpper;
+            authPluginData = new MySQLAuthenticationPluginData(authPluginDataPart1, readAuthPluginDataPart2(payload, capabilityFlagsLower));
+            authPluginName = readAuthPluginName(payload, capabilityFlagsUpper);
+        }
     }
 }

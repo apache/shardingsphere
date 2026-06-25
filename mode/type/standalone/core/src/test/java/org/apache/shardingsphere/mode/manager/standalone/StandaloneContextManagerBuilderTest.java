@@ -56,7 +56,7 @@ class StandaloneContextManagerBuilderTest {
         assertThat(actual.getComputeNodeInstanceContext().getInstance().getMetaData(), is(instanceMetaData));
     }
     
-    private static ModeConfiguration createModeConfiguration() {
+    private ModeConfiguration createModeConfiguration() {
         return new ModeConfiguration("STANDALONE", new StandalonePersistRepositoryConfiguration("FIXTURE", new Properties()));
     }
 }

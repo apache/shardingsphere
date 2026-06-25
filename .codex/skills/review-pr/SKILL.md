@@ -86,6 +86,9 @@ Do not turn speculative risks, personal style preferences, or out-of-scope polis
 9. Breaking change and migration: default behavior, config keys, API/SPI contracts, protocols, metadata storage, SQL semantics, and released artifacts have clear compatibility, migration, upgrade, and rollback evidence when touched.
 10. Diagnostics: changed errors, logs, or diagnostic output remain accurate, actionable, and safe.
 11. Dependency and distribution: manifests, lockfiles, packaging, native-image metadata, LICENSE, NOTICE, and release artifacts are checked for security, license, compatibility, packaging, and release impact when touched.
+12. Local verification freshness: reviewer-run verification, when used to support mergeability, must exercise the latest PR head or a clearly identified current-head artifact.
+    Do not require Maven `-am` when IDE/MCP current-source runs, current-head installs, CI artifacts,
+    or an explicit `-pl` module set already prove freshness for the reviewed path.
 
 ## Not Mergeable Feedback Mode
 
@@ -130,6 +133,24 @@ Always reproduce GitHub PR "Files changed" with triple-dot semantics:
 4. Cross-check `git diff --name-status <MERGE_BASE>..<head-ref>` against GitHub `/pulls/{number}/files`.
 5. If the file count or path list differs, do not report unrelated changes or scope findings; refresh refs or use the GitHub file list until the mismatch is explained.
 
+## GitHub Access Strategy
+
+Use authenticated GitHub evidence before treating PR facts as unavailable:
+
+1. Prefer the GitHub connector or app tools when available.
+2. Otherwise use `gh` when it is installed and has either an existing login or an available environment token.
+3. If `gh` is unavailable, check whether a GitHub token environment variable exists without printing its value. When one exists, use authenticated REST requests with an `Authorization: Bearer <token>` header and `Accept: application/vnd.github+json`.
+4. Use anonymous GitHub API or HTML only after authenticated connector, `gh`, or token-backed REST access is unavailable or fails.
+
+Safety and completeness rules:
+
+- Never print token values, auth headers, credential files, raw environment dumps, verbose curl traces, or token-bearing commands.
+- Do not treat an anonymous `404` as proof that PR facts are unavailable until authenticated access has been tried or shown unavailable.
+- Fetch all pages for `/pulls/{number}/files`, commits, issue comments, review comments, reviews, and other paginated endpoints. With `gh`, use pagination support; with REST, follow the `Link` header.
+- Classify access by endpoint. For example, PR metadata and files may be available while checks or workflow logs return `403`.
+- A `403` or `404` on checks, workflow logs, or another secondary endpoint blocks mergeability only when that endpoint is required under `Evidence Sufficiency and CI Judgment`; otherwise record the inaccessible endpoint in `Review Details`.
+- Do not include authentication method, token variable names, temporary API files, raw response bodies, or private access diagnostics in GitHub-facing review output.
+
 ## Execution Boundary
 
 - Review output only; do not modify code.
@@ -157,6 +178,23 @@ For SQL parser reviews:
 Forbidden sources:
 
 - Unverifiable blogs, forum posts, or AI-reposted content.
+
+## Local Verification Freshness Strategy
+
+Before choosing a local verification command, decide which evidence is needed for the latest PR head:
+
+1. Prefer IDE/MCP runs for focused module tests, inspections, Proxy startup, or run configurations when available and appropriate,
+   because they compile and run current project sources without relying on stale local Maven artifacts.
+2. Prefer precise Maven module scopes over reactor expansion: identify changed modules, affected test modules, and runtime entry modules,
+   then use an explicit `-pl <moduleA>,<moduleB>` set when that covers the reviewed path.
+3. When reactor participation is still needed, keep it to one current-head freshness gate before final mergeability judgment,
+   except when the first run fails and the PR head changes after a fix.
+4. Use Maven `-am` only when explicit module selection cannot prove dependency freshness, a required upstream module is missing from local artifacts,
+   or CI-equivalent reactor behavior is itself the evidence.
+5. For multi-module verification, prefer a bottom-up order: validate changed lower-level modules first,
+   then higher-level adapter or runtime modules that consume them. Stop on the first relevant failure and update the review evidence before widening scope.
+6. Record the freshness reason in `Verification`, such as `IDE/MCP current project sources`, `explicit -pl module set covers changed and consuming modules`,
+   `current-head install already performed`, or `Maven -am used because dependency freshness was otherwise uncertain`.
 
 ## Inventory Script Usage
 
@@ -419,7 +457,7 @@ Each review must include a `Review Details` section with:
 
 - `Reviewed Scope`: files/modules actually reviewed this round, plus the latest PR head SHA, local merge-base SHA when local git is used, and whether the local file list matched GitHub `/pulls/{number}/files`.
 - `Not Reviewed Scope`: unreviewed or only superficially reviewed areas.
-- `Verification`: reviewer-run commands and exit codes, or a short reason why local verification was not run.
+- `Verification`: reviewer-run commands and exit codes, or a short reason why local verification was not run. Also state any relevant GitHub endpoint that was inaccessible and whether that gap affects mergeability.
 - `Release Note / User Docs`: required and verified, delegated to an umbrella PR with reason, missing, not required with reason, or not reviewed.
 - For SQL parser reviews, `Reviewed Scope` must explicitly name the target dialect, any related trunk / branch dialects checked, and the documentation pages / repo doc paths used to validate syntax behavior.
 
@@ -514,5 +552,6 @@ Optional `Not Mergeable` sections are `Positive Feedback`, `Unrelated Changes`, 
 - Do not output patch-level `Required Change` requests after selecting `Feedback Mode: Needs Discussion`.
 - Do not output `Review Result: Mergeable` when a required hard gate remains unresolved, including missing required test evidence, release notes, user docs, migration guidance, or diagnostic quality evidence.
 - Do not output `Review Result: Mergeable` for a shared-code change unless you have checked at least one non-target dialect or feature that also uses the changed path.
-- Do not output `Review Result: Mergeable` when local verification omitted `-am` on a module-scoped Maven run and dependency freshness matters.
+- Do not output `Review Result: Mergeable` when local verification used stale artifacts, freshness-unclear module-scoped Maven output,
+  or an incomplete explicit module set while dependency freshness matters.
 - Do not output `Review Result: Mergeable` when Proxy/JDBC DML/DQL high-frequency SQL paths directly call `ConcurrentHashMap#computeIfAbsent` without a preceding `get` miss check.

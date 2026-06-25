@@ -30,18 +30,10 @@ public final class ShardingRuleComponentCleanupWorkflowPlanningService {
     
     private final Planner planner;
     
-    /**
-     * Create sharding rule component cleanup workflow planning service.
-     */
     public ShardingRuleComponentCleanupWorkflowPlanningService() {
         this(new ShardingWorkflowPlanningKernel());
     }
     
-    /**
-     * Create sharding rule component cleanup workflow planning service with delegate.
-     *
-     * @param delegate sharding workflow planning service
-     */
     public ShardingRuleComponentCleanupWorkflowPlanningService(final ShardingWorkflowPlanningService delegate) {
         this(delegate::planComponentCleanup);
     }

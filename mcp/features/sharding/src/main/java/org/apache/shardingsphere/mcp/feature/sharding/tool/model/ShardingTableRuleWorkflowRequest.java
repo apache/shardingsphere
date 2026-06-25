@@ -22,11 +22,6 @@ package org.apache.shardingsphere.mcp.feature.sharding.tool.model;
  */
 public final class ShardingTableRuleWorkflowRequest extends AbstractShardingSpecificWorkflowRequest {
     
-    /**
-     * Create sharding table rule workflow request.
-     *
-     * @param workflowRequest generic sharding workflow request
-     */
     public ShardingTableRuleWorkflowRequest(final ShardingWorkflowRequest workflowRequest) {
         super(workflowRequest);
     }

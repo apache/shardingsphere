@@ -158,6 +158,18 @@ rules:
           cipher:
             name: remark_cipher
             encryptorName: rewrite_normal_fixture
+    StateRegion:
+      columns:
+        CountryRegionName:
+          cipher:
+            name: country_region_name_cipher
+            encryptorName: rewrite_normal_fixture
+    vStateProvinceCountryRegion:
+      columns:
+        CountryRegionName:
+          cipher:
+            name: country_region_name_cipher
+            encryptorName: rewrite_normal_fixture
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE

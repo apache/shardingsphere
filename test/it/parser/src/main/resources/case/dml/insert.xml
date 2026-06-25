@@ -5786,6 +5786,31 @@
         </values>
     </insert>
 
+    <insert sql-case-id="insert_returning_into_parameter_marker_oracle" parameters="1, 'foo_user', bnd1">
+        <table name="t_user" start-index="12" stop-index="17" />
+        <columns start-index="19" stop-index="38">
+            <column name="user_id" start-index="20" stop-index="26" />
+            <column name="user_name" start-index="29" stop-index="37" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="48" stop-index="48" />
+                    <literal-expression value="1" start-index="48" stop-index="48" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="51" stop-index="51" />
+                    <literal-expression value="foo_user" start-index="51" stop-index="60" />
+                </assignment-value>
+            </value>
+        </values>
+        <returning start-index="54" stop-index="77" literal-start-index="63" literal-stop-index="89">
+            <projections start-index="64" stop-index="70" literal-start-index="73" literal-stop-index="79">
+                <column-projection name="user_id" start-index="64" stop-index="70" literal-start-index="73" literal-stop-index="79" />
+            </projections>
+        </returning>
+    </insert>
+
     <insert sql-case-id="insert_on_conflit_do_update" parameters="1,'init',1">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="21" stop-index="32">

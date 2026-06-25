@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionAc
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
@@ -96,15 +95,14 @@ class LLMMCPConversationRunnerCoverageTest extends AbstractLLMMCPConversationRun
     void assertRunNamesRemainingToolsWhenCoverageIsMissing() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(2);
-        ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response-1"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("missing_required_tool_coverage"));
-        verify(getLLMChatClient(), times(2)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
-        List<LLMChatMessage> actualSecondTurnMessages = actualMessages.getAllValues().get(1);
+        List<List<LLMChatMessage>> actualMessages = captureRequiredChatMessages(2);
+        List<LLMChatMessage> actualSecondTurnMessages = actualMessages.get(1);
         assertThat(actualSecondTurnMessages.getLast().getContent(),
                 containsString("Remaining required MCP tools: database_gateway_execute_query"));
         assertThat(actualSecondTurnMessages.getLast().getContent(), containsString("actual MCP tool_call"));
@@ -117,15 +115,14 @@ class LLMMCPConversationRunnerCoverageTest extends AbstractLLMMCPConversationRun
     void assertRunNamesExactResourceUriWhenResourceCoverageIsMissing() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.READ_RESOURCE));
         LLMMCPConversationRunner actualRunner = createRunner(2);
-        ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response-1"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("missing_required_tool_coverage"));
-        verify(getLLMChatClient(), times(2)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
-        List<LLMChatMessage> actualSecondTurnMessages = actualMessages.getAllValues().get(1);
+        List<List<LLMChatMessage>> actualMessages = captureRequiredChatMessages(2);
+        List<LLMChatMessage> actualSecondTurnMessages = actualMessages.get(1);
         String actualRetryInstruction = actualSecondTurnMessages.getLast().getContent();
         assertThat(actualRetryInstruction, containsString("Remaining required MCP tools: mcp_read_resource"));
         assertThat(actualRetryInstruction, containsString("exact shardingsphere:// URI"));
@@ -136,15 +133,14 @@ class LLMMCPConversationRunnerCoverageTest extends AbstractLLMMCPConversationRun
     void assertRunNamesPreviewModeWhenUpdateCoverageIsMissing() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_update"));
         LLMMCPConversationRunner actualRunner = createRunner(2);
-        ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response-1"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("missing_required_tool_coverage"));
-        verify(getLLMChatClient(), times(2)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
-        List<LLMChatMessage> actualSecondTurnMessages = actualMessages.getAllValues().get(1);
+        List<List<LLMChatMessage>> actualMessages = captureRequiredChatMessages(2);
+        List<LLMChatMessage> actualSecondTurnMessages = actualMessages.get(1);
         String actualRetryInstruction = actualSecondTurnMessages.getLast().getContent();
         assertThat(actualRetryInstruction, containsString("Remaining required MCP tools: database_gateway_execute_update"));
         assertThat(actualRetryInstruction, containsString("database `logic_db`"));
@@ -157,15 +153,14 @@ class LLMMCPConversationRunnerCoverageTest extends AbstractLLMMCPConversationRun
     void assertRunNamesPlanIdRuleWhenPlanningCoverageIsMissing() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_plan_mask_rule"));
         LLMMCPConversationRunner actualRunner = createRunner(2);
-        ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response-1"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("missing_required_tool_coverage"));
-        verify(getLLMChatClient(), times(2)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
-        List<LLMChatMessage> actualSecondTurnMessages = actualMessages.getAllValues().get(1);
+        List<List<LLMChatMessage>> actualMessages = captureRequiredChatMessages(2);
+        List<LLMChatMessage> actualSecondTurnMessages = actualMessages.get(1);
         String actualRetryInstruction = actualSecondTurnMessages.getLast().getContent();
         assertThat(actualRetryInstruction, containsString("Remaining required MCP tools: database_gateway_plan_mask_rule"));
         assertThat(actualRetryInstruction, containsString("For a new database_gateway_plan_* call"));
@@ -240,7 +235,6 @@ class LLMMCPConversationRunnerCoverageTest extends AbstractLLMMCPConversationRun
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_plan_mask_rule", "database_gateway_apply_workflow"));
         LLMMCPConversationRunner actualRunner = createRunner(3);
         Map<String, Object> planArguments = Map.of("database", DATABASE_NAME, "schema", SCHEMA_NAME, "table", TABLE_NAME, "column", "status");
-        final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", "database_gateway_plan_mask_rule", planArguments, "plan-response"),
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response-1"));
@@ -249,8 +243,8 @@ class LLMMCPConversationRunnerCoverageTest extends AbstractLLMMCPConversationRun
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("missing_required_tool_coverage"));
-        verify(getLLMChatClient(), times(3)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
-        List<LLMChatMessage> actualThirdTurnMessages = actualMessages.getAllValues().get(2);
+        List<List<LLMChatMessage>> actualMessages = captureRequiredChatMessages(3);
+        List<LLMChatMessage> actualThirdTurnMessages = actualMessages.get(2);
         String actualRetryInstruction = actualThirdTurnMessages.getLast().getContent();
         assertThat(actualRetryInstruction, containsString("Remaining required MCP tools: database_gateway_apply_workflow"));
         assertThat(actualRetryInstruction, containsString("set plan_id `plan-1`"));

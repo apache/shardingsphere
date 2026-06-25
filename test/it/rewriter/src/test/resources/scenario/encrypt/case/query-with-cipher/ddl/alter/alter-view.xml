@@ -16,11 +16,9 @@
   ~ limitations under the License.
   -->
 
-<e2e-test-cases>
-    <test-case metric-name="routed_result_total" metric-type="counter">
-        <query-assertion metric="routed_result_total" query="routed_result_total{object='data_source', name='ds_0'}" />
-        <query-assertion metric="routed_result_total" query="routed_result_total{object='data_source', name='ds_1'}" />
-        <query-assertion metric="routed_result_total" query="routed_result_total{object='table', name='t_order_0'}" />
-        <query-assertion metric="routed_result_total" query="routed_result_total{object='table', name='t_order_1'}" />
-    </test-case>
-</e2e-test-cases>
+<rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
+    <rewrite-assertion id="alter_view_state_province_country_region_for_literals" db-types="SQLServer">
+        <input sql="ALTER VIEW dbo.vStateProvinceCountryRegion AS SELECT StateCode, CountryRegionName FROM dbo.StateRegion" />
+        <output sql="ALTER VIEW dbo.vStateProvinceCountryRegion AS SELECT StateCode, [country_region_name_cipher] FROM dbo.StateRegion" />
+    </rewrite-assertion>
+</rewrite-assertions>

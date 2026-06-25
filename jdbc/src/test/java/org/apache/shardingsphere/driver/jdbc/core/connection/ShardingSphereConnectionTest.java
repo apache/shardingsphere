@@ -122,7 +122,7 @@ class ShardingSphereConnectionTest {
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(Optional.of(DistributedTransactionOperationType.BEGIN));
         when(connectionTransaction.getTransactionType()).thenReturn(TransactionType.XA);
         try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager())) {
-            final DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, connectionTransaction);
+            DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, connectionTransaction);
             connection.setAutoCommit(false);
             assertFalse(connection.getAutoCommit());
             verify(databaseConnectionManager).begin();

@@ -66,7 +66,7 @@ class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     void assertNextWithoutOffsetWithRowCount() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         SelectStatement sqlStatement = SelectStatement.builder()
@@ -106,8 +106,8 @@ class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
-        final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         SelectStatement sqlStatement = SelectStatement.builder()
                 .databaseType(databaseType)
@@ -125,7 +125,7 @@ class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         SelectStatement sqlStatement = SelectStatement.builder()

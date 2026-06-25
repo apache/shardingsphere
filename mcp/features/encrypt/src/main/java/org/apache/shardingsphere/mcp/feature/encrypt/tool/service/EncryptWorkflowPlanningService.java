@@ -74,9 +74,6 @@ public final class EncryptWorkflowPlanningService {
     
     private final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService;
     
-    /**
-     * Create encrypt workflow planning service.
-     */
     public EncryptWorkflowPlanningService() {
         planningSupport = new WorkflowPlanningSupport();
         intentResolver = new EncryptWorkflowIntentResolver();
