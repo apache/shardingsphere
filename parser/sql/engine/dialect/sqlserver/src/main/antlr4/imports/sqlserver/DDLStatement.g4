@@ -640,6 +640,10 @@ declareVariable
     : DECLARE tableVariable
     ;
 
+declareLocalVariable
+    : DECLARE variable (COMMA_ variable)*
+    ;
+
 variable
     : variableName AS? dataType (EQ_ simpleExpr)?
     | variableName CURSOR
@@ -742,7 +746,7 @@ functionOption
 
 validStatement
     : (createTable | alterTable | dropTable | truncateTable | insert
-    | update | delete | select | setVariable | declareVariable) SEMI_?
+    | update | delete | select | setVariable | declareLocalVariable) SEMI_?
     ;
 
 procParameters
