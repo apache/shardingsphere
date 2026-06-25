@@ -640,6 +640,11 @@ declareVariable
     : DECLARE tableVariable
     ;
 
+variable
+    : variableName AS? dataType (EQ_ simpleExpr)?
+    | variableName CURSOR
+    ;
+
 tableVariable
     : variableName AS? variTableTypeDefinition
     ;
