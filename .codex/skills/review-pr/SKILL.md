@@ -86,6 +86,9 @@ Do not turn speculative risks, personal style preferences, or out-of-scope polis
 9. Breaking change and migration: default behavior, config keys, API/SPI contracts, protocols, metadata storage, SQL semantics, and released artifacts have clear compatibility, migration, upgrade, and rollback evidence when touched.
 10. Diagnostics: changed errors, logs, or diagnostic output remain accurate, actionable, and safe.
 11. Dependency and distribution: manifests, lockfiles, packaging, native-image metadata, LICENSE, NOTICE, and release artifacts are checked for security, license, compatibility, packaging, and release impact when touched.
+12. Local verification freshness: reviewer-run verification, when used to support mergeability, must exercise the latest PR head or a clearly identified current-head artifact.
+    Do not require Maven `-am` when IDE/MCP current-source runs, current-head installs, CI artifacts,
+    or an explicit `-pl` module set already prove freshness for the reviewed path.
 
 ## Not Mergeable Feedback Mode
 
@@ -175,6 +178,23 @@ For SQL parser reviews:
 Forbidden sources:
 
 - Unverifiable blogs, forum posts, or AI-reposted content.
+
+## Local Verification Freshness Strategy
+
+Before choosing a local verification command, decide which evidence is needed for the latest PR head:
+
+1. Prefer IDE/MCP runs for focused module tests, inspections, Proxy startup, or run configurations when available and appropriate,
+   because they compile and run current project sources without relying on stale local Maven artifacts.
+2. Prefer precise Maven module scopes over reactor expansion: identify changed modules, affected test modules, and runtime entry modules,
+   then use an explicit `-pl <moduleA>,<moduleB>` set when that covers the reviewed path.
+3. When reactor participation is still needed, keep it to one current-head freshness gate before final mergeability judgment,
+   except when the first run fails and the PR head changes after a fix.
+4. Use Maven `-am` only when explicit module selection cannot prove dependency freshness, a required upstream module is missing from local artifacts,
+   or CI-equivalent reactor behavior is itself the evidence.
+5. For multi-module verification, prefer a bottom-up order: validate changed lower-level modules first,
+   then higher-level adapter or runtime modules that consume them. Stop on the first relevant failure and update the review evidence before widening scope.
+6. Record the freshness reason in `Verification`, such as `IDE/MCP current project sources`, `explicit -pl module set covers changed and consuming modules`,
+   `current-head install already performed`, or `Maven -am used because dependency freshness was otherwise uncertain`.
 
 ## Inventory Script Usage
 
@@ -532,5 +552,6 @@ Optional `Not Mergeable` sections are `Positive Feedback`, `Unrelated Changes`, 
 - Do not output patch-level `Required Change` requests after selecting `Feedback Mode: Needs Discussion`.
 - Do not output `Review Result: Mergeable` when a required hard gate remains unresolved, including missing required test evidence, release notes, user docs, migration guidance, or diagnostic quality evidence.
 - Do not output `Review Result: Mergeable` for a shared-code change unless you have checked at least one non-target dialect or feature that also uses the changed path.
-- Do not output `Review Result: Mergeable` when local verification omitted `-am` on a module-scoped Maven run and dependency freshness matters.
+- Do not output `Review Result: Mergeable` when local verification used stale artifacts, freshness-unclear module-scoped Maven output,
+  or an incomplete explicit module set while dependency freshness matters.
 - Do not output `Review Result: Mergeable` when Proxy/JDBC DML/DQL high-frequency SQL paths directly call `ConcurrentHashMap#computeIfAbsent` without a preceding `get` miss check.
