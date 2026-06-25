@@ -19,8 +19,15 @@ package org.apache.shardingsphere.sqlfederation.compiler;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
+import org.apache.calcite.adapter.enumerable.EnumerableRel;
+import org.apache.calcite.adapter.enumerable.EnumerableRel.Prefer;
+import org.apache.calcite.jdbc.CalcitePrepare.SparkHandler;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.runtime.Bindable;
+
+import java.util.Map;
 
 /**
  * SQL federation execution plan.
@@ -32,4 +39,18 @@ public final class SQLFederationExecutionPlan {
     private final RelNode physicalPlan;
     
     private final RelDataType resultColumnType;
+    
+    /**
+     * Create bindable execution plan.
+     *
+     * @param physicalPlan physical plan
+     * @param internalParameters internal parameters
+     * @param spark spark handler
+     * @param prefer preferred Java row format
+     * @return bindable execution plan
+     */
+    @SuppressWarnings("unchecked")
+    public static synchronized Bindable<Object> toBindable(final RelNode physicalPlan, final Map<String, Object> internalParameters, final SparkHandler spark, final Prefer prefer) {
+        return EnumerableInterpretable.toBindable(internalParameters, spark, (EnumerableRel) physicalPlan, prefer);
+    }
 }
