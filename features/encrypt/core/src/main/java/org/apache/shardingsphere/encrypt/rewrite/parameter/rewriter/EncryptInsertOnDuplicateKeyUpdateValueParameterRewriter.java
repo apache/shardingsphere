@@ -58,7 +58,6 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
         StandardParameterBuilder standardParamBuilder = paramBuilder instanceof StandardParameterBuilder
                 ? (StandardParameterBuilder) paramBuilder
                 : ((GroupedParameterBuilder) paramBuilder).getAfterGenericParameterBuilder();
-        int parameterOffset = paramBuilder instanceof GroupedParameterBuilder ? ((GroupedParameterBuilder) paramBuilder).getAfterGenericParameterOffset() : 0;
         OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext = insertStatementContext.getOnDuplicateKeyUpdateValueContext();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
