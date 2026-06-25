@@ -349,8 +349,16 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - **Success recipe:** explain why the change exists, cite the affected data-flow step, keep public APIs backward compatible, and record defaults/knobs alongside code changes.
 
 ## Verification & Commands
-- Core commands: `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>[-am]` (scoped unit tests), `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=<TestClassName> test` (fast verification), `./mvnw -pl proxy -am -DskipTests package` (proxy packaging/perf smoke).
-- Coverage: when tests change or targets demand it, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check` or scoped `-pl <module> -am -Djacoco.skip=false test jacoco:report`; pair with the Coverage & Branch Checklist.
+- Core commands: `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>` (scoped unit tests),
+  `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=<TestClassName> test` (fast verification),
+  `./mvnw -pl <explicit-module-set> -DskipTests package` (scoped packaging or smoke preparation).
+- Reactor freshness strategy: prefer IDE/MCP current-source runs or precise `-pl <moduleA>,<moduleB>` Maven scopes.
+  Use `-am` only when dependency freshness, missing local reactor artifacts, or CI-equivalent behavior cannot be proven otherwise,
+  and normally run that freshness gate at most once per unchanged PR head before final handoff or mergeability judgment.
+- Module selection: derive the explicit module set from changed modules, affected tests, and runtime entry modules.
+  For multi-module checks, validate lower-level changed modules first and then higher-level adapter or runtime modules that consume them.
+- Coverage: when tests change or targets demand it, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check`
+  or scoped `-pl <explicit-module-set> -Djacoco.skip=false test jacoco:report`; pair with the Coverage & Branch Checklist.
 - Format: after code or documentation changes, run `./mvnw spotless:apply -Pcheck -T1C`; do not use any other formatting method.
   This must be repeated after the last file-changing action before handoff.
 - Style: after formatting, run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.
@@ -359,8 +367,11 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - API bans: if a user forbids a tool/assertion, add it to the plan, avoid it during implementation, and cite verification searches (e.g., `rg assertEquals`) in the final report.
 
 ## Run & Triage Quick Sheet
-- **Proxy quick start:** `./mvnw -pl proxy -am package` then `shardingsphere-proxy/bin/start.sh -c conf/server.yaml`; report command, exit code, config path, and protocol.
-- **JDBC smoke:** `./mvnw -pl jdbc -am test -Dtest=<TestClassName>` with datasource configs from `examples`; note test name, datasource setup, and failure logs.
+- **Proxy quick start:** prefer an IDE/MCP `Bootstrap` run configuration or `./mvnw -pl proxy,<required-upstream-modules> package`
+  when the module set is known; use `./mvnw -pl proxy -am package` only when dependency freshness cannot otherwise be proven.
+  Report command, exit code, config path, and protocol.
+- **JDBC smoke:** prefer IDE/MCP current-source test runs or `./mvnw -pl jdbc,<required-upstream-modules> test -Dtest=<TestClassName>`
+  when the module set is known; use `-am` only as the freshness fallback. Note test name, datasource setup, and failure logs.
 - **Config validation:** update standalone `server.yaml` and cluster `mode/` configs together; call out defaults and any edits that affect both.
 - **Failure triage:** collect `proxy/logs/` plus `target/surefire-reports`, quote the relevant log lines, map them to the data-flow step, and propose the next diagnostic.
 - **Routing mistakes:** check feature-rule configs, metadata freshness, and parser dialect; include SQL + config snippet plus impacted module (`features` or `kernel`), and add/plan targeted tests.

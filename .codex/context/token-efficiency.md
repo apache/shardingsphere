@@ -93,8 +93,12 @@ exit "$rc"
 Maven build, test, package, install, verification, and plugin goals are usually `Must Wrap`. Small and bounded version or help checks may run raw.
 
 - Run scoped commands when possible instead of defaulting to whole-repository builds.
+- Prefer an explicit `-pl <moduleA>,<moduleB>` set when changed modules, affected test modules, and runtime entry modules are known.
 - Add `-am` only when there is a clear reason, such as missing reactor dependencies, stale dependent module artifacts, CI-equivalent builds, or commands that require reactor participation.
-- When a Maven command uses `-am`, record why the smaller command was insufficient.
+- For PR-readiness or mergeability checks, treat `-am` as a current-head freshness gate that normally runs at most once per unchanged head.
+  Rerun it only after a relevant failure, a code change, or a widened verification scope.
+- When a Maven command uses `-am`, record why the explicit module set or smaller command was insufficient.
+- For multi-module checks, prefer bottom-up verification: run lower-level changed modules first, then higher-level adapter or runtime modules that consume them.
 - On Maven success, extract one summary line such as `BUILD SUCCESS`, `Tests run:`, or the runner summary from the log.
 - On Maven failure, inspect `tail -n 30 "$log_file"` first, then use an available filtering tool to find `ERROR`, `FAILURE`, `Caused by`, or the failed test name.
 
