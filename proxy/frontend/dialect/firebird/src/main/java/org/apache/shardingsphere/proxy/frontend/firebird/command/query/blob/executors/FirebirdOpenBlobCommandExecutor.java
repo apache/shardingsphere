@@ -25,7 +25,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobHandleGenerator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     public Collection<DatabasePacket> execute() {
         byte[] blobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(packet.getBlobId());
         FirebirdBlobRegistry.setSegment(blobContent == null ? new byte[0] : blobContent);
-        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId).setId(packet.getBlobId()));
+        int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(packet.getBlobId()));
     }
 }
