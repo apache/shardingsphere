@@ -20,6 +20,8 @@ package org.apache.shardingsphere.database.connector.core.type;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -43,6 +45,17 @@ public interface DatabaseType extends TypedSPI {
      */
     default Optional<DatabaseType> getTrunkDatabaseType() {
         return Optional.empty();
+    }
+    
+    /**
+     * Judge whether this branch database type is the actual database type of connection recognized as its trunk database type by JDBC URL.
+     *
+     * @param connection database connection
+     * @return this branch database type is the actual database type or not
+     * @throws SQLException SQL exception
+     */
+    default boolean isActualBranchDatabaseType(final Connection connection) throws SQLException {
+        return false;
     }
     
     @Override

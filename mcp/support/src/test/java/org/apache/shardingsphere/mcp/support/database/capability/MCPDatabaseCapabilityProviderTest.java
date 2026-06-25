@@ -25,10 +25,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -38,6 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -132,16 +134,50 @@ class MCPDatabaseCapabilityProviderTest {
         try {
             Connection connection = mock(Connection.class);
             DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+            Statement statement = mock(Statement.class);
+            ResultSet scalarResultSet = mock(ResultSet.class);
             when(result.getDatabaseType()).thenReturn(databaseType);
             when(result.openConnection(databaseName)).thenReturn(connection);
             when(connection.getMetaData()).thenReturn(databaseMetaData);
+            when(connection.createStatement()).thenReturn(statement);
+            when(statement.executeQuery(anyString())).thenReturn(scalarResultSet);
+            when(scalarResultSet.next()).thenReturn(false);
             when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseVersion);
-            when(databaseMetaData.getURL()).thenReturn(String.format("jdbc:%s:test", databaseType.toLowerCase(Locale.ENGLISH)));
+            when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseType));
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
         return result;
+    }
+    
+    private String getJdbcUrl(final String databaseType) {
+        switch (databaseType) {
+            case "MySQL":
+            case "Doris":
+            case "Apache Doris":
+                return "jdbc:mysql:test";
+            case "PostgreSQL":
+                return "jdbc:postgresql:test";
+            case "openGauss":
+                return "jdbc:opengauss:test";
+            case "SQLServer":
+                return "jdbc:sqlserver:test";
+            case "MariaDB":
+                return "jdbc:mariadb:test";
+            case "Oracle":
+                return "jdbc:oracle:test";
+            case "ClickHouse":
+                return "jdbc:clickhouse:test";
+            case "Hive":
+                return "jdbc:hive2:test";
+            case "Presto":
+                return "jdbc:presto:test";
+            case "Firebird":
+                return "jdbc:firebirdsql:test";
+            default:
+                throw new IllegalArgumentException(databaseType);
+        }
     }
     
     private static Stream<Arguments> provideCapabilityMatrixArguments() {

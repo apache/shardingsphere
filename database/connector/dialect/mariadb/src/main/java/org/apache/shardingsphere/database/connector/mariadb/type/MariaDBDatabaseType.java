@@ -20,14 +20,25 @@ package org.apache.shardingsphere.database.connector.mariadb.type;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
  * Database type of MariaDB.
  */
 public final class MariaDBDatabaseType implements DatabaseType {
+    
+    private static final String MARIADB = "MARIADB";
+    
+    private static final String VERSION_QUERY = "SELECT VERSION()";
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
@@ -37,6 +48,24 @@ public final class MariaDBDatabaseType implements DatabaseType {
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
         return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    }
+    
+    @Override
+    public boolean isActualBranchDatabaseType(final Connection connection) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        return containsMariaDB(metaData.getDatabaseProductName()) || containsMariaDB(metaData.getDatabaseProductVersion()) || containsMariaDB(queryVersion(connection));
+    }
+    
+    private boolean containsMariaDB(final String value) {
+        return Objects.toString(value, "").toUpperCase(Locale.ENGLISH).contains(MARIADB);
+    }
+    
+    private String queryVersion(final Connection connection) {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(VERSION_QUERY)) {
+            return resultSet.next() ? resultSet.getString(1) : "";
+        } catch (final SQLException ignored) {
+            return "";
+        }
     }
     
     @Override

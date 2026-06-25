@@ -50,6 +50,7 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceCo
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -118,7 +119,8 @@ public final class YamlDatabaseConfigurationImportExecutor {
         boolean isInstanceConnectionEnabled = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
         Map<String, StorageNode> toBeAddedStorageNode = StorageUnitNodeMapCreator.create(propsMap, isInstanceConnectionEnabled);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            storageUnits.put(entry.getKey(), new StorageUnit(toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), DataSourcePoolCreator.create(entry.getValue())));
+            DataSource dataSource = DataSourcePoolCreator.create(entry.getValue());
+            storageUnits.put(entry.getKey(), new StorageUnit(toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), dataSource, DatabaseTypeEngine.getStorageType(dataSource)));
         }
     }
     

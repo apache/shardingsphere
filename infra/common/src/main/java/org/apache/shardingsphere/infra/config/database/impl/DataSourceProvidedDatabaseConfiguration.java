@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.config.database.impl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -70,7 +71,7 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             DataSource dataSource = storageNodeDataSources.containsKey(storageNode) ? storageNodeDataSources.get(storageNode) : storageNodeDataSources.get(new StorageNode(storageUnitName));
-            StorageUnit storageUnit = new StorageUnit(storageNode, entry.getValue(), dataSource);
+            StorageUnit storageUnit = new StorageUnit(storageNode, entry.getValue(), dataSource, DatabaseTypeEngine.getStorageType(dataSource));
             result.put(storageUnitName, storageUnit);
         }
         return result;
