@@ -19,44 +19,38 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.engine.sqlserver.statement.DeclareVariableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.DeclareVariableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ColumnDefinitionAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLDeclareStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.variable.SQLServerDeclareTableVariableStatementTestCase;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
- * Declare variable statement assert for SQLServer.
+ * Declare table variable statement assert for SQLServer.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLServerDeclareVariableStatementAssert {
     
     /**
-     * Assert declare variable statement is correct with expected parser result.
+     * Assert declare table variable statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual declare variable statement
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DeclareVariableStatement actual,
-                                final PostgreSQLDeclareStatementTestCase expected) {
-        assertVariableName(assertContext, actual, expected);
-        assertThat(assertContext.getText("Table variable assertion error: "), actual.isTableVariable(), is(expected.isTableVariable()));
+                                final SQLServerDeclareTableVariableStatementTestCase expected) {
+        SQLSegmentAssert.assertIs(assertContext, actual.getVariableName(), expected.getVariableName());
+        assertThat(assertContext.getText("Variable name assertion error: "), actual.getVariableName().getVariable(), is(expected.getVariableName().getVariable()));
         assertColumnDefinitions(assertContext, actual, expected);
     }
     
-    private static void assertVariableName(final SQLCaseAssertContext assertContext, final DeclareVariableStatement actual,
-                                           final PostgreSQLDeclareStatementTestCase expected) {
-        SQLSegmentAssert.assertIs(assertContext, actual.getVariableName(), expected.getVariableName());
-        assertThat(assertContext.getText("Variable name assertion error: "), actual.getVariableName().getVariable(), is(expected.getVariableName().getVariable()));
-    }
-    
     private static void assertColumnDefinitions(final SQLCaseAssertContext assertContext, final DeclareVariableStatement actual,
-                                                final PostgreSQLDeclareStatementTestCase expected) {
+                                                final SQLServerDeclareTableVariableStatementTestCase expected) {
         assertThat(assertContext.getText("Column definitions size assertion error: "), actual.getColumnDefinitions().size(), is(expected.getColumnDefinitions().size()));
         int count = 0;
         for (ColumnDefinitionSegment each : actual.getColumnDefinitions()) {

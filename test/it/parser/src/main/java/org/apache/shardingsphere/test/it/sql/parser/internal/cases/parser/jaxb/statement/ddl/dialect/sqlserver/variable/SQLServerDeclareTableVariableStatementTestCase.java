@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.variable;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.cursor.ExpectedCursorName;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.SelectStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedColumnDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedVariableSegment;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Declare statement test case for PostgreSQL.
+ * Declare table variable statement test case for SQLServer.
  */
 @Getter
 @Setter
-public final class PostgreSQLDeclareStatementTestCase extends SQLParserTestCase {
+public final class SQLServerDeclareTableVariableStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "cursor-name")
-    private ExpectedCursorName cursorName;
+    @XmlElement(name = "variable-name")
+    private ExpectedVariableSegment variableName;
     
-    @XmlElement(name = "select")
-    private SelectStatementTestCase selectTestCase;
+    @XmlElement(name = "column-definition")
+    private final List<ExpectedColumnDefinition> columnDefinitions = new LinkedList<>();
 }

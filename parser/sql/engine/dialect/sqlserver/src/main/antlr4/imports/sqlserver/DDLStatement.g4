@@ -637,12 +637,7 @@ databaseLogOns
     ;
 
 declareVariable
-    : DECLARE (variable (COMMA_ variable)* | tableVariable)
-    ;
-
-variable
-    : variableName AS? dataType (EQ_ simpleExpr)?
-    | variableName CURSOR
+    : DECLARE tableVariable
     ;
 
 tableVariable

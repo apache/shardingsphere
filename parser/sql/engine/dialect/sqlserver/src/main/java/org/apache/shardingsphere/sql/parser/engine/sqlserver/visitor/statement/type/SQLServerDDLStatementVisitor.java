@@ -73,7 +73,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Tab
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableVariableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TruncateTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableTableColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableTableColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitor;
@@ -120,7 +119,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.engine.sqlserver.statement.DeclareVariableStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.DeclareVariableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
@@ -511,25 +510,14 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDeclareVariable(final DeclareVariableContext ctx) {
-        if (null != ctx.tableVariable()) {
-            return visitTableVariable(ctx.tableVariable());
-        }
-        VariableContext variableContext = ctx.variable(0);
-        VariableSegment variableName = (VariableSegment) visit(variableContext.variableName());
-        DataTypeSegment dataType = null == variableContext.dataType() ? null : (DataTypeSegment) visit(variableContext.dataType());
-        return new DeclareVariableStatement(getDatabaseType(), variableName, false, Collections.emptyList(), dataType);
-    }
-    
-    @Override
-    public ASTNode visitTableVariable(final TableVariableContext ctx) {
-        VariableSegment variableName = (VariableSegment) visit(ctx.variableName());
+        VariableSegment variableName = (VariableSegment) visit(ctx.tableVariable().variableName());
         Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
-        for (TableVariableClauseContext each : ctx.variTableTypeDefinition().tableVariableClause()) {
+        for (TableVariableClauseContext each : ctx.tableVariable().variTableTypeDefinition().tableVariableClause()) {
             if (null != each.variableTableColumnDefinition()) {
                 columnDefinitions.add((ColumnDefinitionSegment) visit(each.variableTableColumnDefinition()));
             }
         }
-        return new DeclareVariableStatement(getDatabaseType(), variableName, true, columnDefinitions);
+        return new DeclareVariableStatement(getDatabaseType(), variableName, columnDefinitions);
     }
     
     @Override

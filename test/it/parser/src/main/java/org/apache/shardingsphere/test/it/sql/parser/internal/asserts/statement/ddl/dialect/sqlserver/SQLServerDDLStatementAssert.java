@@ -20,14 +20,14 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.engine.sqlserver.statement.DeclareVariableStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.DeclareVariableStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.sqlserver.type.SQLServerDeclareVariableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.sqlserver.type.SQLServerUpdateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.statistics.SQLServerUpdateStatisticsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLDeclareStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.sqlserver.variable.SQLServerDeclareTableVariableStatementTestCase;
 
 /**
  * DDL statement assert for SQLServer.
@@ -47,7 +47,7 @@ public final class SQLServerDDLStatementAssert {
             SQLServerUpdateStatisticsStatementAssert.assertIs(assertContext, (SQLServerUpdateStatisticsStatement) actual, (SQLServerUpdateStatisticsStatementTestCase) expected);
         }
         if (actual instanceof DeclareVariableStatement) {
-            SQLServerDeclareVariableStatementAssert.assertIs(assertContext, (DeclareVariableStatement) actual, (PostgreSQLDeclareStatementTestCase) expected);
+            SQLServerDeclareVariableStatementAssert.assertIs(assertContext, (DeclareVariableStatement) actual, (SQLServerDeclareTableVariableStatementTestCase) expected);
         }
     }
 }

@@ -28,7 +28,8 @@
             </projections>
         </select>
     </declare>
-    <declare sql-case-id="declare_table_variable" table-variable="true">
+
+    <declare-table-variable sql-case-id="declare_table_variable">
         <variable-name variable="@MyTableVar" start-index="8" stop-index="18" />
         <column-definition type="INT" not-null="true" start-index="28" stop-index="45">
             <column name="EmpID" />
@@ -39,5 +40,5 @@
         <column-definition type="DATETIME" start-index="70" stop-index="90">
             <column name="ModifiedDate" />
         </column-definition>
-    </declare>
+    </declare-table-variable>
 </sql-parser-test-cases>

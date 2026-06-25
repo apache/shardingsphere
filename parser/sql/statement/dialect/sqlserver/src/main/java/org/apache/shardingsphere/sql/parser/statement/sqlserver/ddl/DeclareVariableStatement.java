@@ -15,42 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.sqlserver.statement;
+package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 import java.util.Collection;
 
 /**
- * Declare variable statement for SQLServer.
+ * Declare table variable statement for SQLServer.
  */
 @Getter
 public final class DeclareVariableStatement extends DDLStatement {
     
     private final VariableSegment variableName;
     
-    private final boolean tableVariable;
-    
     private final Collection<ColumnDefinitionSegment> columnDefinitions;
     
-    private final DataTypeSegment dataType;
-    
-    public DeclareVariableStatement(final DatabaseType databaseType, final VariableSegment variableName, final boolean tableVariable,
-                                    final Collection<ColumnDefinitionSegment> columnDefinitions) {
-        this(databaseType, variableName, tableVariable, columnDefinitions, null);
-    }
-    
-    public DeclareVariableStatement(final DatabaseType databaseType, final VariableSegment variableName, final boolean tableVariable,
-                                    final Collection<ColumnDefinitionSegment> columnDefinitions, final DataTypeSegment dataType) {
+    public DeclareVariableStatement(final DatabaseType databaseType, final VariableSegment variableName, final Collection<ColumnDefinitionSegment> columnDefinitions) {
         super(databaseType);
         this.variableName = variableName;
-        this.tableVariable = tableVariable;
         this.columnDefinitions = columnDefinitions;
-        this.dataType = dataType;
     }
 }
