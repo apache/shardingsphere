@@ -63,7 +63,7 @@
 1. Encrypt: Support SqlServer update statement for Specifying a table alias as the target object when use encrypt feature - [#38733](https://github.com/apache/shardingsphere/pull/38733)
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
 1. Proxy Native: Support building Proxy Native via GraalVM CE for JDK 25 - [#38682](https://github.com/apache/shardingsphere/pull/38682)
-1. SQL Parser: Support SQLServer table variable declaration parse - [#38904](https://github.com/apache/shardingsphere/pull/38904)
+1. SQL Parse: Support SQLServer table variable declaration parse - [#38904](https://github.com/apache/shardingsphere/pull/38904)
 
 ## Release 5.5.3
 
