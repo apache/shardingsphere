@@ -30,6 +30,7 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -54,13 +55,13 @@ public final class EncryptAssignmentTokenGenerator {
     
     private final EncryptRule rule;
     
-    private final String databaseName;
+    private final ShardingSphereDatabase database;
     
     private final DatabaseType databaseType;
     
-    public EncryptAssignmentTokenGenerator(final EncryptRule rule, final String databaseName, final DatabaseType databaseType) {
+    public EncryptAssignmentTokenGenerator(final EncryptRule rule, final ShardingSphereDatabase database, final DatabaseType databaseType) {
         this.rule = rule;
-        this.databaseName = databaseName;
+        this.database = database;
         this.databaseType = databaseType;
     }
     
@@ -74,7 +75,7 @@ public final class EncryptAssignmentTokenGenerator {
     public Collection<SQLToken> generateSQLTokens(final TablesContext tablesContext, final SetAssignmentSegment setAssignmentSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
-        String schemaName = tablesContext.getSchemaName().orElseGet(() -> databaseTypeRegistry.getDefaultSchemaName(databaseName));
+        String schemaName = tablesContext.getSchemaName().orElseGet(() -> databaseTypeRegistry.getDefaultSchemaName(database.getName()));
         QuoteCharacter quoteCharacter = databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter();
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
             ColumnSegment assignedColumn = getAssignedColumn(each);
@@ -117,23 +118,23 @@ public final class EncryptAssignmentTokenGenerator {
                                                            final QuoteCharacter quoteCharacter) {
         ColumnSegment leftColumn = getAssignedColumn(segment);
         EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(leftColumn.getStartIndex(), segment.getStopIndex(), quoteCharacter);
-        Object originalValue = ((LiteralExpressionSegment) segment.getValue()).getLiterals();
-        appendEncryptColumnTokens(leftColumn, encryptColumn, (targetName, suffix) -> addLiteralSQLToken(schemaName, tableName, encryptColumn, targetName, suffix, result, originalValue));
+        Object literalValue = ((LiteralExpressionSegment) segment.getValue()).getLiterals();
+        appendEncryptColumnTokens(leftColumn, encryptColumn, (targetName, suffix) -> addLiteralSQLToken(schemaName, tableName, encryptColumn, targetName, suffix, result, literalValue));
         return result;
     }
     
     private void addLiteralSQLToken(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final String targetColumnName, final EncryptDerivedColumnSuffix suffix,
-                                    final EncryptLiteralAssignmentToken result, final Object originalValue) {
+                                    final EncryptLiteralAssignmentToken result, final Object literalValue) {
         if (null == suffix) {
-            result.addAssignment(targetColumnName, originalValue);
+            result.addAssignment(targetColumnName, literalValue);
         } else {
-            Object encryptValue = encrypt(encryptColumn, suffix, databaseName, schemaName, tableName, encryptColumn.getName(), originalValue);
+            Object encryptValue = encrypt(encryptColumn, suffix, database.getName(), schemaName, tableName, encryptColumn.getName(), literalValue);
             result.addAssignment(targetColumnName, encryptValue);
         }
     }
     
-    private Object encrypt(final EncryptColumn encryptColumn, final EncryptDerivedColumnSuffix suffix, final String databaseName,
-                           final String schemaName, final String tableName, final String logicColumnName, final Object originalValue) {
+    private Object encrypt(final EncryptColumn encryptColumn, final EncryptDerivedColumnSuffix suffix, final String databaseName, final String schemaName,
+                           final String tableName, final String logicColumnName, final Object originalValue) {
         List<Object> originalValues = Collections.singletonList(originalValue);
         switch (suffix) {
             case CIPHER:

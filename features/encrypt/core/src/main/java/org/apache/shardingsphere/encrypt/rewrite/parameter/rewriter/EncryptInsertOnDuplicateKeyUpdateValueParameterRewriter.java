@@ -68,12 +68,12 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 continue;
             }
             ExpressionSegment valueExpression = onDuplicateKeyUpdateValueContext.getValueExpressions().get(index);
+            EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(logicColumnName);
             if (!(valueExpression instanceof ParameterMarkerExpressionSegment)) {
                 continue;
             }
             int parameterIndex = getParameterMarkerIndex(paramBuilder, (ParameterMarkerExpressionSegment) valueExpression, onDuplicateKeyParameterMarkerIndex++);
             Object plainValue = onDuplicateKeyUpdateValueContext.getValue(index);
-            EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(logicColumnName);
             Object cipherColumnValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue);
             standardParamBuilder.addReplacedParameters(parameterIndex, cipherColumnValue);
             Collection<Object> addedParams = buildAddedParams(schemaName, tableName, encryptColumn, logicColumnName, plainValue);
