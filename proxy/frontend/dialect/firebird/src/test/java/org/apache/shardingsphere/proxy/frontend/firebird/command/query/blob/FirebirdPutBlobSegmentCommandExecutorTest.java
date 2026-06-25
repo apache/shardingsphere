@@ -82,4 +82,19 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         assertThat(((FirebirdGenericResponsePacket) response).getId(), is(blobId));
         assertThat(FirebirdBlobUploadCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(segment.length));
     }
+    
+    @Test
+    void assertExecuteWithDeferredPlaceholderHandle() {
+        int blobHandle = 7;
+        long blobId = 21L;
+        byte[] segment = new byte[]{1, 2, 3};
+        FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        when(packet.getBlobHandle()).thenReturn(0xFFFF);
+        when(packet.getSegment()).thenReturn(segment);
+        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getId(), is(blobId));
+        assertThat(FirebirdBlobUploadCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(segment.length));
+    }
 }

@@ -66,6 +66,7 @@ public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket
         Preconditions.checkArgument(FirebirdCommandPacketType.CREATE_BLOB == commandType || FirebirdCommandPacketType.CREATE_BLOB2 == commandType, "Unsupported blob command type: %s", commandType);
         // reserved (4)
         int length = 4;
+
         if (FirebirdCommandPacketType.CREATE_BLOB2 == commandType) {
             // + blob parameter buffer
             length += payload.getBufferLength(length);

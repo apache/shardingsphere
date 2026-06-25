@@ -41,8 +41,9 @@ public final class FirebirdPutBlobSegmentCommandExecutor implements CommandExecu
     
     @Override
     public Collection<DatabasePacket> execute() {
-        FirebirdBlobUploadCache.getInstance().appendSegment(connectionSession.getConnectionId(), packet.getBlobHandle(), packet.getSegment());
-        OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), packet.getBlobHandle());
+        int blobHandle = FirebirdBlobUploadCache.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
+        FirebirdBlobUploadCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, packet.getSegment());
+        OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
         FirebirdGenericResponsePacket response = new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId);
         return Collections.singleton(response);

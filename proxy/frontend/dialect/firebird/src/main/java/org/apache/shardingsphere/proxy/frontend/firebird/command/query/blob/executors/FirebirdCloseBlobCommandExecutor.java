@@ -41,8 +41,9 @@ public final class FirebirdCloseBlobCommandExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), packet.getBlobHandle());
-        FirebirdBlobUploadCache.getInstance().closeUpload(connectionSession.getConnectionId(), packet.getBlobHandle());
+        int blobHandle = FirebirdBlobUploadCache.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
+        OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
+        FirebirdBlobUploadCache.getInstance().closeUpload(connectionSession.getConnectionId(), blobHandle);
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
         FirebirdGenericResponsePacket response = new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId);
         return Collections.singleton(response);

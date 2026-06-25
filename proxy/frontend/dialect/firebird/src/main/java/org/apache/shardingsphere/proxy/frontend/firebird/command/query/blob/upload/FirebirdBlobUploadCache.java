@@ -34,9 +34,13 @@ public final class FirebirdBlobUploadCache {
     
     private static final FirebirdBlobUploadCache INSTANCE = new FirebirdBlobUploadCache();
     
+    private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
+    
     private final Map<Integer, Map<Integer, FirebirdBlobUpload>> uploadsByHandle = new ConcurrentHashMap<>(16);
     
     private final Map<Integer, Map<Long, FirebirdBlobUpload>> uploadsById = new ConcurrentHashMap<>(16);
+    
+    private final Map<Integer, Integer> lastBlobHandle = new ConcurrentHashMap<>(16);
     
     public static FirebirdBlobUploadCache getInstance() {
         return INSTANCE;
@@ -60,6 +64,7 @@ public final class FirebirdBlobUploadCache {
     public void unregisterConnection(final int connectionId) {
         uploadsByHandle.remove(connectionId);
         uploadsById.remove(connectionId);
+        lastBlobHandle.remove(connectionId);
     }
     
     /**
@@ -73,6 +78,26 @@ public final class FirebirdBlobUploadCache {
         FirebirdBlobUpload upload = new FirebirdBlobUpload(blobHandle, blobId);
         getHandleMap(connectionId).put(blobHandle, upload);
         getIdMap(connectionId).put(blobId, upload);
+        lastBlobHandle.put(connectionId, blobHandle);
+    }
+    
+    /**
+     * Resolve a BLOB handle, mapping the deferred placeholder handle to the last created BLOB handle.
+     *
+     * <p>In the Firebird lazy (deferred) protocol a pipelined operation such as {@code op_put_segment} that is flushed
+     * together with its preceding {@code op_create_blob2} carries the placeholder handle {@code 0xFFFF} (INVALID_OBJECT),
+     * which the server resolves to the most recently created object. This mirrors that resolution for BLOB uploads.</p>
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle received from the client
+     * @return resolved blob handle
+     */
+    public int resolveBlobHandle(final int connectionId, final int blobHandle) {
+        if (INVALID_OBJECT_HANDLE != blobHandle) {
+            return blobHandle;
+        }
+        Integer resolved = lastBlobHandle.get(connectionId);
+        return null == resolved ? blobHandle : resolved;
     }
     
     /**
