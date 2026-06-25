@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.firebirdsql.gds.BlrConstants;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,6 +39,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -52,12 +54,19 @@ class FirebirdExecuteStatementPacketTest {
     @Mock
     private ByteBuf byteBuf;
     
+    @BeforeEach
+    void setUp() {
+        lenient().when(byteBuf.duplicate()).thenReturn(byteBuf);
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteStatementPacketArguments")
     void assertExecuteStatementPacket(final String name, final short blrType, final FirebirdBinaryColumnType expectedParameterType, final Object expectedParameterValue) {
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 123);
         when(payload.readInt1()).thenReturn(0);
-        if (FirebirdBinaryColumnType.BOOLEAN == expectedParameterType) {
+        if (FirebirdBinaryColumnType.BLOB == expectedParameterType) {
+            when(payload.readInt8()).thenReturn(123L);
+        } else if (FirebirdBinaryColumnType.BOOLEAN == expectedParameterType) {
             when(payload.readInt1Unsigned()).thenReturn(1);
         }
         when(payload.readBuffer()).thenReturn(byteBuf);
@@ -103,6 +112,7 @@ class FirebirdExecuteStatementPacketTest {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
         when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         when(returnBlr.isReadable()).thenReturn(true);
+        when(returnBlr.duplicate()).thenReturn(returnBlr);
         when(returnBlr.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
         when(returnBlr.skipBytes(anyInt())).thenReturn(returnBlr);
         when(payload.readInt4Unsigned()).thenReturn(30L, 1L, 1024L);
@@ -154,7 +164,7 @@ class FirebirdExecuteStatementPacketTest {
                 Arguments.of("skip_count_2", (short) BlrConstants.blr_text, FirebirdBinaryColumnType.LEGACY_TEXT, null),
                 Arguments.of("skip_count_1", (short) BlrConstants.blr_long, FirebirdBinaryColumnType.LONG, 123),
                 Arguments.of("skip_count_0", (short) BlrConstants.blr_bool, FirebirdBinaryColumnType.BOOLEAN, true),
-                Arguments.of("blob_parameter", (short) BlrConstants.blr_quad, FirebirdBinaryColumnType.BLOB, 0L));
+                Arguments.of("blob_parameter", (short) BlrConstants.blr_quad, FirebirdBinaryColumnType.BLOB, 123L));
     }
     
     private static Stream<Arguments> assertIsStoredProcedureArguments() {

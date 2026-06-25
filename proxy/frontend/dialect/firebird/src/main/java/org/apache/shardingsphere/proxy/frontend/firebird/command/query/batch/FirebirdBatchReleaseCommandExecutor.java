@@ -15,47 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Firebird free statement command executor.
+ * Batch release command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdFreeStatementCommandExecutor implements CommandExecutor {
+public final class FirebirdBatchReleaseCommandExecutor implements CommandExecutor {
     
-    private final FirebirdFreeStatementPacket packet;
+    private final FirebirdBatchReleaseCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        switch (packet.getOption()) {
-            case FirebirdFreeStatementPacket.DROP:
-            case FirebirdFreeStatementPacket.UNPREPARE:
-                connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
-                FirebirdBatchRegistry.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
-                FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), true);
-                break;
-            case FirebirdFreeStatementPacket.CLOSE:
-                FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), false);
-                break;
-            default:
-                throw new FirebirdProtocolException("Unknown DSQL option type %d", packet.getOption());
-        }
+        FirebirdBatchRegistry.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }

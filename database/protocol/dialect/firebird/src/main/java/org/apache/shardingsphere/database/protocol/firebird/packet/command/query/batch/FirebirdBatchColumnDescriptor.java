@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.constant;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
-import io.netty.util.AttributeKey;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 
 /**
- * Firebird constant.
+ * Firebird batch column descriptor.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FirebirdConstant {
+@RequiredArgsConstructor
+@Getter
+public final class FirebirdBatchColumnDescriptor {
     
-    public static final AttributeKey<FirebirdProtocolVersion> CONNECTION_PROTOCOL_VERSION = AttributeKey.valueOf("FIREBIRD_CONNECTION_PROTOCOL_VERSION");
+    private final FirebirdBinaryColumnType type;
     
-    public static final AttributeKey<Integer> CURRENT_CONNECTION = AttributeKey.valueOf("FIREBIRD_CURRENT_CONNECTION");
+    private final int length;
+    
+    private final int scale;
+    
+    private final int offset;
 }

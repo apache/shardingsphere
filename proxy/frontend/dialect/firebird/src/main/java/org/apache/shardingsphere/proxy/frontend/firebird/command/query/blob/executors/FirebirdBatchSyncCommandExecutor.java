@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.constant;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
 
-import io.netty.util.AttributeKey;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-/**
- * Firebird constant.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FirebirdConstant {
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+
+public class FirebirdBatchSyncCommandExecutor implements CommandExecutor {
     
-    public static final AttributeKey<FirebirdProtocolVersion> CONNECTION_PROTOCOL_VERSION = AttributeKey.valueOf("FIREBIRD_CONNECTION_PROTOCOL_VERSION");
-    
-    public static final AttributeKey<Integer> CURRENT_CONNECTION = AttributeKey.valueOf("FIREBIRD_CURRENT_CONNECTION");
+    @Override
+    public Collection<DatabasePacket> execute() throws SQLException {
+        return Collections.singleton(new FirebirdGenericResponsePacket());
+    }
 }

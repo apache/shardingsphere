@@ -15,50 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
-import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
-import java.util.List;
-
 /**
- * Firebird allocate statement packet.
+ * Firebird batch sync command packet.
  */
-@Getter
-public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
+public final class FirebirdBatchSyncCommandPacket extends FirebirdCommandPacket {
     
-    private final int statementId;
-    
-    private final List<FirebirdBinaryColumnType> parameterTypes;
-    
-    private final int message;
-    
-    private final int fetchSize;
-    
-    public FirebirdFetchStatementPacket(final FirebirdPacketPayload payload) {
+    public FirebirdBatchSyncCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        statementId = payload.readInt4();
-        parameterTypes = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer()).getColumnTypes();
-        message = payload.readInt4();
-        fetchSize = payload.readInt4();
+    }
+    
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
     }
     
     /**
      * Get length of packet.
      *
      * @param payload Firebird packet payload
-     * @return Length of packet
+     * @return length of packet
      */
     public static int getLength(final FirebirdPacketPayload payload) {
-        int length = 8;
-        length += payload.getBufferLength(length);
-        return length + 8;
-    }
-    
-    @Override
-    protected void write(final FirebirdPacketPayload payload) {
+        return 4;
     }
 }

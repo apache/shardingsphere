@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.constant;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
-import io.netty.util.AttributeKey;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.junit.jupiter.api.Test;
 
-/**
- * Firebird constant.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FirebirdConstant {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class FirebirdBatchColumnDescriptorTest {
     
-    public static final AttributeKey<FirebirdProtocolVersion> CONNECTION_PROTOCOL_VERSION = AttributeKey.valueOf("FIREBIRD_CONNECTION_PROTOCOL_VERSION");
-    
-    public static final AttributeKey<Integer> CURRENT_CONNECTION = AttributeKey.valueOf("FIREBIRD_CURRENT_CONNECTION");
+    @Test
+    void assertProperties() {
+        FirebirdBatchColumnDescriptor descriptor = new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.TEXT, 12, 4, 8);
+        assertThat(descriptor.getType(), is(FirebirdBinaryColumnType.TEXT));
+        assertThat(descriptor.getLength(), is(12));
+        assertThat(descriptor.getScale(), is(4));
+        assertThat(descriptor.getOffset(), is(8));
+    }
 }

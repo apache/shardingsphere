@@ -60,6 +60,8 @@
 1. Proxy: Support non column projection for MySQL prepared statement in Proxy - [#38507](https://github.com/apache/shardingsphere/pull/38507)
 1. Proxy: Support driverClassName config in proxy storage unit to solve mysql and mariadb jdbc url conflict - [#38582](https://github.com/apache/shardingsphere/pull/38582)
 1. Proxy: Support Firebird prepared statement cache reuse for held connections - [#38644](https://github.com/apache/shardingsphere/pull/38644)
+1. JDBC: Bump the ClickHouse JDBC Driver used by optional modules to version `0.9.8` - [#38878](https://github.com/apache/shardingsphere/pull/38878)
+1. Proxy: Support basic Firebird batch operations: create, send, execute, cancel, and release - [#38605](https://github.com/apache/shardingsphere/pull/38605)
 1. JDBC & Proxy: Add a check to verify database name naming conventions. - [#38883](https://github.com/apache/shardingsphere/pull/38883)
 1. Encrypt: Support SqlServer update statement for Specifying a table alias as the target object when use encrypt feature - [#38733](https://github.com/apache/shardingsphere/pull/38733)
 1. Encrypt: Support SqlServer update statement for Specifying a view as the target object when use encrypt feature - [#38896](https://github.com/apache/shardingsphere/pull/38896)

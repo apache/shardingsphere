@@ -68,6 +68,6 @@ class FirebirdStatementIdGeneratorTest {
         registeredConnectionIds.add(1);
         GENERATOR.unregisterConnection(1);
         registeredConnectionIds.remove(1);
-        assertThrows(NullPointerException.class, () -> GENERATOR.getStatementId(1));
+        assertThrows(IllegalStateException.class, () -> GENERATOR.getStatementId(1));
     }
 }
