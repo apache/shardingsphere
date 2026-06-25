@@ -15,32 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.mariadb.type;
+package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.branch;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Database type of MariaDB.
+ * Dialect branch option.
  */
-public final class MariaDBDatabaseType implements DatabaseType {
+@RequiredArgsConstructor
+@Getter
+public final class DialectBranchOption {
     
-    @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:mariadb:");
-    }
-    
-    @Override
-    public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-    }
-    
-    @Override
-    public String getType() {
-        return "MariaDB";
-    }
+    private final String branchTypeDetectionSQL;
 }

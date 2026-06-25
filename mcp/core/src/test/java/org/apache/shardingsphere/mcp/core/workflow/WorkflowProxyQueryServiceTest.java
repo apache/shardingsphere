@@ -41,6 +41,7 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,8 +68,8 @@ class WorkflowProxyQueryServiceTest {
         WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
         List<Map<String, Object>> actual = service.query("logic_db", "public", "SHOW MASK RULES");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).get("table"), is("orders"));
-        assertThat(actual.get(0).get("column"), is("status"));
+        assertThat(actual.getFirst().get("table"), is("orders"));
+        assertThat(actual.getFirst().get("column"), is("status"));
         verify(connection).setSchema("public");
     }
     
@@ -89,7 +90,7 @@ class WorkflowProxyQueryServiceTest {
         when(resultSet.getObject(1)).thenReturn("AES");
         WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
         List<Map<String, Object>> actual = service.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS");
-        assertThat(actual.get(0).get("type"), is("AES"));
+        assertThat(actual.getFirst().get("type"), is("AES"));
     }
     
     @Test
@@ -248,15 +249,26 @@ class WorkflowProxyQueryServiceTest {
             when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
             when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseType));
+            mockEmptyScalarQueries(connection);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
         return result;
     }
     
+    private void mockEmptyScalarQueries(final Connection connection) throws SQLException {
+        Statement statement = mock(Statement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(anyString())).thenReturn(resultSet);
+    }
+    
     private String getJdbcUrl(final String databaseType) {
         if ("PostgreSQL".equals(databaseType)) {
             return "jdbc:postgresql://workflow-proxy-query/test";
+        }
+        if ("openGauss".equals(databaseType)) {
+            return "jdbc:opengauss://workflow-proxy-query/test";
         }
         return "jdbc:mysql://workflow-proxy-query/test";
     }

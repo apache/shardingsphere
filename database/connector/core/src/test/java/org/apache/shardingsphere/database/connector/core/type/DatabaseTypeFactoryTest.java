@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.connector.core.type;
 
-import org.apache.shardingsphere.database.connector.core.exception.AmbiguousStorageTypeException;
 import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -87,19 +86,6 @@ class DatabaseTypeFactoryTest {
     }
     
     @Test
-    void assertGetWithMatchedBranchConnection() throws SQLException {
-        DatabaseType trunkDatabaseType = mockDatabaseType("jdbc:trunk:", null);
-        when(trunkDatabaseType.getType()).thenReturn("TRUNK");
-        DatabaseType branchTrunkDatabaseType = mock(DatabaseType.class);
-        when(branchTrunkDatabaseType.getType()).thenReturn("TRUNK");
-        DatabaseType branchDatabaseType = mockDatabaseType("jdbc:trunk:", branchTrunkDatabaseType);
-        Connection connection = createConnection("jdbc:trunk://localhost:3306/test");
-        when(branchDatabaseType.isActualBranchDatabaseType(connection)).thenReturn(true);
-        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, branchDatabaseType));
-        assertThat(DatabaseTypeFactory.get(connection), is(branchDatabaseType));
-    }
-    
-    @Test
     void assertGetWithUnmatchedBranchConnection() throws SQLException {
         DatabaseType trunkDatabaseType = mockDatabaseType("jdbc:trunk:", null);
         when(trunkDatabaseType.getType()).thenReturn("TRUNK");
@@ -122,21 +108,6 @@ class DatabaseTypeFactoryTest {
             assertThat(DatabaseTypeFactory.get(connection), is(hiveDatabaseType));
             verify(metaData, never()).getURL();
         }
-    }
-    
-    @Test
-    void assertGetWithAmbiguousBranchConnection() throws SQLException {
-        DatabaseType trunkDatabaseType = mockDatabaseType("jdbc:trunk:", null);
-        when(trunkDatabaseType.getType()).thenReturn("TRUNK");
-        DatabaseType firstBranchDatabaseType = mockDatabaseType("jdbc:trunk:", trunkDatabaseType);
-        DatabaseType secondBranchDatabaseType = mockDatabaseType("jdbc:trunk:", trunkDatabaseType);
-        Connection connection = createConnection("jdbc:trunk://localhost:3306/test");
-        when(firstBranchDatabaseType.isActualBranchDatabaseType(connection)).thenReturn(true);
-        when(secondBranchDatabaseType.isActualBranchDatabaseType(connection)).thenReturn(true);
-        when(firstBranchDatabaseType.getType()).thenReturn("BRANCH_1");
-        when(secondBranchDatabaseType.getType()).thenReturn("BRANCH_2");
-        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, firstBranchDatabaseType, secondBranchDatabaseType));
-        assertThrows(AmbiguousStorageTypeException.class, () -> DatabaseTypeFactory.get(connection));
     }
     
     private static Stream<Arguments> getDatabaseTypeWithRecognizedURLArguments() {

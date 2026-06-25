@@ -21,20 +21,12 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MariaDBDatabaseTypeTest {
     
@@ -50,50 +42,5 @@ class MariaDBDatabaseTypeTest {
         Optional<DatabaseType> actual = databaseType.getTrunkDatabaseType();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is("MySQL"));
-    }
-    
-    @Test
-    void assertActualBranchDatabaseTypeWithProductName() throws SQLException {
-        assertTrue(databaseType.isActualBranchDatabaseType(createConnection("MariaDB", "", "")));
-    }
-    
-    @Test
-    void assertActualBranchDatabaseTypeWithVersion() throws SQLException {
-        assertTrue(databaseType.isActualBranchDatabaseType(createConnection("MySQL", "8.0.36", "10.4.7-MariaDB")));
-    }
-    
-    @Test
-    void assertNotActualBranchDatabaseType() throws SQLException {
-        assertFalse(databaseType.isActualBranchDatabaseType(createConnection("MySQL", "8.0.36", "8.0.36")));
-    }
-    
-    @Test
-    void assertNotActualBranchDatabaseTypeWithVersionQueryFailure() throws SQLException {
-        assertFalse(databaseType.isActualBranchDatabaseType(createConnectionWithQueryFailure()));
-    }
-    
-    private Connection createConnection(final String productName, final String productVersion, final String version) throws SQLException {
-        Connection result = mock(Connection.class);
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(result.getMetaData()).thenReturn(metaData);
-        when(result.createStatement()).thenReturn(statement);
-        when(metaData.getDatabaseProductName()).thenReturn(productName);
-        when(metaData.getDatabaseProductVersion()).thenReturn(productVersion);
-        when(statement.executeQuery("SELECT VERSION()")).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true);
-        when(resultSet.getString(1)).thenReturn(version);
-        return result;
-    }
-    
-    private Connection createConnectionWithQueryFailure() throws SQLException {
-        Connection result = mock(Connection.class);
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(result.getMetaData()).thenReturn(metaData);
-        when(result.createStatement()).thenThrow(SQLException.class);
-        when(metaData.getDatabaseProductName()).thenReturn("MySQL");
-        when(metaData.getDatabaseProductVersion()).thenReturn("8.0.36");
-        return result;
     }
 }

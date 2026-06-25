@@ -20,25 +20,14 @@ package org.apache.shardingsphere.database.connector.doris.type;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
  * Database type of Doris.
  */
 public final class DorisDatabaseType implements DatabaseType {
-    
-    private static final String DORIS = "DORIS";
-    
-    private static final String VERSION_COMMENT_QUERY = "SELECT @@version_comment";
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
@@ -48,24 +37,6 @@ public final class DorisDatabaseType implements DatabaseType {
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
         return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-    }
-    
-    @Override
-    public boolean isActualBranchDatabaseType(final Connection connection) throws SQLException {
-        DatabaseMetaData metaData = connection.getMetaData();
-        return containsDoris(metaData.getDatabaseProductName()) || containsDoris(metaData.getDatabaseProductVersion()) || containsDoris(queryVersionComment(connection));
-    }
-    
-    private boolean containsDoris(final String value) {
-        return Objects.toString(value, "").toUpperCase(Locale.ENGLISH).contains(DORIS);
-    }
-    
-    private String queryVersionComment(final Connection connection) {
-        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(VERSION_COMMENT_QUERY)) {
-            return resultSet.next() ? resultSet.getString(1) : "";
-        } catch (final SQLException ignored) {
-            return "";
-        }
     }
     
     @Override

@@ -187,10 +187,18 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             when(databaseMetaData.getDatabaseProductName()).thenReturn("MySQL");
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
             when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/facade_concurrency");
+            mockEmptyScalarQueries(connection);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
         return result;
+    }
+    
+    private void mockEmptyScalarQueries(final Connection connection) throws SQLException {
+        Statement statement = mock(Statement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(anyString())).thenReturn(resultSet);
     }
     
     private SQLExecutionRequest createExecutionRequest(final String sessionId, final String sql) {
