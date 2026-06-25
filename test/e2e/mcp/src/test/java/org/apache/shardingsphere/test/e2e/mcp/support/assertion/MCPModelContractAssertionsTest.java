@@ -55,4 +55,18 @@ class MCPModelContractAssertionsTest {
         assertThrows(AssertionError.class, () -> MCPModelContractAssertions.assertCanonicalNextActionLists(
                 Map.of("next_actions", List.of(Map.of("order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_execute_update")))));
     }
+    
+    @Test
+    void assertCanonicalNextActionListsWithRemovedField() {
+        assertThrows(AssertionError.class, () -> MCPModelContractAssertions.assertCanonicalNextActionLists(
+                Map.of("next_actions", List.of(Map.of(
+                        "order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_execute_update", "arguments", Map.of(), "target_tool", "legacy")))));
+    }
+    
+    @Test
+    void assertCanonicalNextActionListsWithUnsupportedField() {
+        assertThrows(AssertionError.class, () -> MCPModelContractAssertions.assertCanonicalNextActionLists(
+                Map.of("next_actions", List.of(Map.of(
+                        "order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_execute_update", "arguments", Map.of(), "extra_context", "bad")))));
+    }
 }
