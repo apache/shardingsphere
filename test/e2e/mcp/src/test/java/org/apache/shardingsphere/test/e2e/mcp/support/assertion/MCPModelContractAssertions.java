@@ -29,9 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public final class MCPModelContractAssertions {
     
-    private static final Set<String> BANNED_PUBLIC_FIELDS = Set.of(
+    private static final Set<String> REMOVED_MODEL_FACING_FIELDS = Set.of(
             "target_tool", "target_resource", "required_arguments", "action_kind", "suggested_next_tool", "suggested_next_tools", "recommended_next_tool",
-            "recommended_recovery", "suggested_next_action", "approved_by_user", "requires_user_approval", "approval_required");
+            "recommended_recovery", "suggested_next_action", "approved_by_user", "requires_user_approval", "approval_required", "user_overrides");
     
     private static final Map<String, Set<String>> NEXT_ACTION_REQUIRED_FIELDS = Map.of(
             "resource_read", Set.of("order", "type", "title", "resource_uri"),
@@ -40,22 +40,14 @@ public final class MCPModelContractAssertions {
             "ask_user", Set.of("order", "type", "title", "question"),
             "terminal", Set.of("order", "type", "title"));
     
-    private MCPModelContractAssertions() {
-    }
+    private static final Map<String, Set<String>> NEXT_ACTION_ALLOWED_FIELDS = Map.of(
+            "resource_read", Set.of("order", "type", "title", "resource_uri", "reason", "depends_on"),
+            "tool_call", Set.of("order", "type", "title", "tool_name", "arguments", "reason", "depends_on"),
+            "completion", Set.of("order", "type", "title", "ref", "argument", "context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on"),
+            "ask_user", Set.of("order", "type", "title", "question", "required_inputs", "reason", "depends_on"),
+            "terminal", Set.of("order", "type", "title", "reason", "depends_on"));
     
-    /**
-     * Assert that no banned public fields are present recursively.
-     *
-     * @param value model-facing payload value
-     */
-    public static void assertNoBannedPublicFields(final Object value) {
-        if (value instanceof Map) {
-            assertNoBannedPublicFieldMap((Map<?, ?>) value);
-        } else if (value instanceof Collection) {
-            for (Object each : (Collection<?>) value) {
-                assertNoBannedPublicFields(each);
-            }
-        }
+    private MCPModelContractAssertions() {
     }
     
     /**
@@ -73,21 +65,19 @@ public final class MCPModelContractAssertions {
         }
     }
     
-    private static void assertNoBannedPublicFieldMap(final Map<?, ?> value) {
-        for (Object each : value.keySet()) {
-            assertFalse(BANNED_PUBLIC_FIELDS.contains(String.valueOf(each)), () -> "Banned model-facing field returned: " + each);
-        }
-        for (Object each : value.values()) {
-            assertNoBannedPublicFields(each);
-        }
-    }
-    
     private static void assertCanonicalNextActionListMap(final Map<?, ?> value) {
+        assertNoRemovedModelFacingFields(value);
         if (value.containsKey("next_actions") && !isNextActionsSchema(value.get("next_actions"))) {
             assertNextActions(value.get("next_actions"));
         }
         for (Object each : value.values()) {
             assertCanonicalNextActionLists(each);
+        }
+    }
+    
+    private static void assertNoRemovedModelFacingFields(final Map<?, ?> value) {
+        for (Object each : value.keySet()) {
+            assertFalse(REMOVED_MODEL_FACING_FIELDS.contains(String.valueOf(each)), () -> "Removed model-facing field returned: " + each);
         }
     }
     
@@ -108,6 +98,9 @@ public final class MCPModelContractAssertions {
         assertTrue(NEXT_ACTION_REQUIRED_FIELDS.containsKey(type), () -> "Unknown next_actions type: " + type);
         for (String each : NEXT_ACTION_REQUIRED_FIELDS.get(type)) {
             assertTrue(action.containsKey(each), () -> String.format("next_actions `%s` must contain `%s`.", type, each));
+        }
+        for (Object each : action.keySet()) {
+            assertTrue(NEXT_ACTION_ALLOWED_FIELDS.get(type).contains(String.valueOf(each)), () -> String.format("next_actions `%s` contains unsupported field `%s`.", type, each));
         }
     }
 }

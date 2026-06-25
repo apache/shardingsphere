@@ -37,8 +37,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("title"), is("Read resource"));
         assertThat(actual.get("resource_uri"), is("shardingsphere://capabilities"));
         assertThat(actual.get("reason"), is("Read capabilities."));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -49,8 +47,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("title"), is("Call database_gateway_search_metadata"));
         assertThat(actual.get("tool_name"), is("database_gateway_search_metadata"));
         assertThat(actual.get("arguments"), is(Map.of("query", "orders")));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -60,8 +56,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("title"), is("Retry database_gateway_execute_update"));
         assertThat(actual.get("tool_name"), is("database_gateway_execute_update"));
         assertThat(actual.get("arguments"), is(Map.of("execution_mode", "preview")));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -81,8 +75,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("missing_context_arguments"), is(List.of("table")));
         assertThat(actual.get("resume_ref"), is(Map.of("type", "tool", "name", "database_gateway_search_metadata")));
         assertThat(actual.get("resume_arguments"), is(Map.of("query", "orders")));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -101,7 +93,6 @@ class MCPNextActionUtilsTest {
         assertFalse(actual.containsKey("context"));
         assertFalse(actual.containsKey("resume_ref"));
         assertFalse(actual.containsKey("resume_arguments"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -111,8 +102,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("title"), is("Ask user"));
         assertThat(actual.get("question"), is("Choose execution mode."));
         assertThat(actual.get("required_inputs"), is(List.of("execution_mode")));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -121,8 +110,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("type"), is("terminal"));
         assertThat(actual.get("title"), is("Stop"));
         assertThat(actual.get("reason"), is("Done."));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -140,20 +127,5 @@ class MCPNextActionUtilsTest {
         Map<String, Object> actual = MCPNextActionUtils.dependsOn(action, 1);
         assertThat(actual.get("depends_on"), is(List.of(1)));
         assertFalse(action.containsKey("depends_on"));
-    }
-    
-    private void assertNoRemovedAliases(final Map<String, Object> action) {
-        assertFalse(action.containsKey("target_tool"));
-        assertFalse(action.containsKey("target_resource"));
-        assertFalse(action.containsKey("required_arguments"));
-        assertFalse(action.containsKey("action_kind"));
-        assertFalse(action.containsKey("reference_type"));
-        assertFalse(action.containsKey("reference"));
-        assertFalse(action.containsKey("argument_name"));
-        assertFalse(action.containsKey("argument_value"));
-        assertFalse(action.containsKey("argument_prefix"));
-        assertFalse(action.containsKey("context_arguments"));
-        assertFalse(action.containsKey("resume_target_type"));
-        assertFalse(action.containsKey("resume_target"));
     }
 }

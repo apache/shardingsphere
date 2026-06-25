@@ -51,7 +51,6 @@ public final class WorkflowRequestBinder {
         T result = requestSupplier.get();
         bindCommonPlanningFields(result, workflowPlanningArguments);
         applyObjectMap(arguments.get(WorkflowFieldNames.STRUCTURED_INTENT_EVIDENCE), WorkflowFieldNames.STRUCTURED_INTENT_EVIDENCE, actualValue -> structuredIntentBinder.accept(result, actualValue));
-        rejectUserOverrides(arguments);
         featureArgumentBinder.accept(result, workflowPlanningArguments);
         return result;
     }
@@ -86,12 +85,6 @@ public final class WorkflowRequestBinder {
         Map<String, Object> actualValue = getObjectMap(rawValue, name);
         if (!actualValue.isEmpty()) {
             consumer.accept(actualValue);
-        }
-    }
-    
-    private static void rejectUserOverrides(final Map<String, Object> arguments) {
-        if (arguments.containsKey(WorkflowFieldNames.USER_OVERRIDES)) {
-            throw new MCPInvalidRequestException("user_overrides is not supported. Use top-level workflow arguments instead.");
         }
     }
     

@@ -61,7 +61,6 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("status"), is("failed"));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
         assertThat(actualResult.get("recovery_guidance"), is("Continue the workflow from the same session that created the plan."));
-        assertFalse(actualResult.containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
     
@@ -230,11 +229,8 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("status"), is("validated"));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
         assertThat(actualResult.get("recovery_guidance"), is(""));
-        assertFalse(actualResult.containsKey("recommended_recovery"));
-        assertFalse(actualResult.containsKey("recommended_next_tool"));
         List<?> actualNextActions = (List<?>) actualResult.get("next_actions");
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("terminal"));
-        assertFalse(((Map<?, ?>) actualNextActions.get(0)).containsKey("requires_user_approval"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("validated"));
         assertThat(workflowSessionContext.getRequired("plan-1").getInteractionPlan().getCurrentStep(), is("validated"));
     }
@@ -269,7 +265,6 @@ class WorkflowValidationSupportTest {
         workflowSessionContext.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         List<?> actualNextActions = (List<?>) actualResult.get("next_actions");
-        assertFalse(actualResult.containsKey("recommended_next_tool"));
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("tool_name"), is("database_gateway_plan_encrypt_rule"));
     }
     
@@ -286,10 +281,8 @@ class WorkflowValidationSupportTest {
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0);
         assertThat(actualResult.get("recovery_guidance"), is("Manual-only artifacts are exported but not executed by MCP. Execute them manually, then run database_gateway_validate_workflow again."));
-        assertFalse(actualResult.containsKey("requires_user_approval"));
         assertThat(actualNextAction.get("type"), is("ask_user"));
         assertThat(actualNextAction.get("required_inputs"), is(List.of("manual_artifacts_executed")));
-        assertFalse(actualNextAction.containsKey("requires_user_approval"));
         assertFalse(actualNextAction.containsKey("tool_name"));
     }
     
@@ -302,7 +295,6 @@ class WorkflowValidationSupportTest {
         assertThat(actualMismatch.get("actual"), is("actual"));
         assertThat(actualMismatch.get("impact"), is("impact"));
         assertThat(actualMismatch.get("remediation"), is("fix it"));
-        assertFalse(actualMismatch.containsKey("suggested_next_action"));
     }
     
     private WorkflowContextSnapshot createSnapshot() {

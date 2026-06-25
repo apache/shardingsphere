@@ -74,11 +74,9 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("response_mode"), is("manual_only"));
         assertThat(actualResponse.get("plan_id"), is("plan-1"));
         assertThat(actualResponse.get("execution_mode"), is("manual-only"));
-        assertFalse(actualResponse.containsKey("recommended_next_tool"));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(actualNextActions.size(), is(1));
         assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("type"), is("ask_user"));
-        assertFalse(actualResponse.containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) actualResponse.get("manual_follow_up")).get("confirmation_field"), is("manual_artifacts_executed"));
         Map<?, ?> actualManualArtifactSummary = (Map<?, ?>) actualResponse.get("manual_artifact_summary");
         assertThat(actualManualArtifactSummary.get("ddl_artifact_count"), is(1));
@@ -244,7 +242,6 @@ class WorkflowExecutionServiceTest {
         assertThat(actualReviewFocus.get("artifact_categories"), is(List.of("add-column", "rule_distsql")));
         assertThat(actualReviewFocus.get("side_effect_scope"), is(List.of("physical-structure", "rule-metadata")));
         assertFalse((Boolean) actualReviewFocus.get("manual_only"));
-        assertFalse(actualReviewFocus.containsKey("requires_user_approval"));
         assertThat(actualReviewFocus.get("approval_field"), is("approved_steps"));
         assertThat(actualReviewFocus.get("approval_values"), is(List.of("ddl", "rule_distsql")));
         assertThat(actualResponse.get("review_summary"), is("Previewed 2 workflow artifacts with side-effect scope physical-structure, rule-metadata. Nothing has been applied."));
@@ -254,11 +251,8 @@ class WorkflowExecutionServiceTest {
         assertThat(actualNextAction.get("type"), is("ask_user"));
         assertThat(actualNextAction.get("required_inputs"), is(List.of("approved_steps")));
         assertFalse(actualNextAction.containsKey("depends_on"));
-        assertFalse(actualNextAction.containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) actualResponse.get("argument_provenance")).get("plan_id"), is("server_generated"));
         assertThat(((Map<?, ?>) actualResponse.get("argument_provenance")).get("execution_mode"), is("server_defaulted"));
-        assertFalse(((Map<?, ?>) actualResponse.get("argument_provenance")).containsKey("approved_by_user"));
-        assertFalse(actualResponse.containsKey("requires_user_approval"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("previewed"));
         verify(executionFacade, never()).execute(any());
         verify(workflowApplySynchronizationHandler, never()).synchronize(any(), any(), any(), any(), any());
@@ -353,13 +347,10 @@ class WorkflowExecutionServiceTest {
         WorkflowExecutionService executionService = new WorkflowExecutionService();
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
-        assertFalse(actualResponse.containsKey("requires_user_approval"));
-        assertFalse(((Map<?, ?>) actualResponse.get("review_focus")).containsKey("requires_user_approval"));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(actualNextActions.size(), is(1));
         Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.getFirst();
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("manual-only"));
-        assertFalse(actualNextAction.containsKey("requires_user_approval"));
     }
     
     @Test
@@ -378,7 +369,6 @@ class WorkflowExecutionServiceTest {
                 executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl", "index_ddl", "rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(actualResponse.get("response_mode"), is("executed"));
-        assertFalse(actualResponse.containsKey("recommended_next_tool"));
         assertThat(((List<?>) actualResponse.get("applied_artifacts")).size(), is(3));
         assertThat(((List<?>) actualResponse.get("executed_ddl")).size(), is(2));
         assertThat(((List<?>) actualResponse.get("executed_distsql")).size(), is(1));

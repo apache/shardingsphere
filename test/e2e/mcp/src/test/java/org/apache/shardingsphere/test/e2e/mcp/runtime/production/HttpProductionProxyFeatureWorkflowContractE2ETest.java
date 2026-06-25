@@ -149,7 +149,6 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     }
     
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
-        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     

@@ -95,12 +95,6 @@ class LLMMCPActionExecutorTest {
     }
     
     @Test
-    void assertExecuteSafelyRejectsLegacyCompletionArguments() {
-        assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(
-                MCPInteractionActionNames.COMPLETE, Map.of("reference_type", "resource", "resource_uri", "shardingsphere://databases", "argument_name", "uri")));
-    }
-    
-    @Test
     void assertExecuteSafelyRejectsUnsupportedCompletionReferenceType() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(
                 MCPInteractionActionNames.COMPLETE, Map.of("ref", Map.of("type", "REF/PROMPT", "name", "inspect_metadata"), "argument", Map.of("name", "schema"))));

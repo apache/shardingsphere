@@ -23,14 +23,14 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Proxy preflight validation request.
+ * Runtime database validation request.
  */
 @Getter
-public final class ProxyPreflightValidationRequest {
+public final class RuntimeDatabaseValidationRequest {
     
     private final String database;
     
-    public ProxyPreflightValidationRequest(final String database) {
+    public RuntimeDatabaseValidationRequest(final String database) {
         this.database = Objects.toString(database, "");
     }
     
@@ -40,8 +40,8 @@ public final class ProxyPreflightValidationRequest {
      * @param arguments tool arguments
      * @return request
      */
-    public static ProxyPreflightValidationRequest from(final Map<String, Object> arguments) {
-        return new ProxyPreflightValidationRequest(getRawString(arguments, "database"));
+    public static RuntimeDatabaseValidationRequest from(final Map<String, Object> arguments) {
+        return new RuntimeDatabaseValidationRequest(getRawString(arguments, "database"));
     }
     
     private static String getRawString(final Map<String, Object> arguments, final String fieldName) {

@@ -90,9 +90,6 @@ public final class LLMStructuredAnswer {
     
     private static List<String> createInteractionSequence(final Map<String, Object> payload) {
         List<String> result = new LinkedList<>();
-        if (payload.containsKey("toolSequence")) {
-            throw new IllegalArgumentException("toolSequence is not supported. Use interactionSequence.");
-        }
         Object rawInteractionSequence = payload.get("interactionSequence");
         if (null == rawInteractionSequence) {
             return result;

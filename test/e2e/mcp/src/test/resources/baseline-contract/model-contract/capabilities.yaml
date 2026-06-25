@@ -100,10 +100,6 @@ field_naming_contract:
   payload_fields: ShardingSphere-owned structured payload fields use snake_case.
   descriptor_fields: Descriptor-derived MCP schema fields keep the protocol or JSON
     Schema field names required by MCP clients.
-  alias_rule: Do not assume camelCase and snake_case variants are aliases unless the
-    same descriptor explicitly documents both.
-  cleanup_rule: Prefer one canonical ShardingSphere payload field over parallel compatibility
-    aliases.
 next_action_contract:
 - type: resource_read
   required_fields: [order, type, title, resource_uri]
