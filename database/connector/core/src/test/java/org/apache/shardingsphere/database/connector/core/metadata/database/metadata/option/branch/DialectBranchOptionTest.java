@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.branch;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * Dialect branch option.
- *
- * <p>The branch type detection SQL must return a string value in the first column.
- * The value is matched case-insensitively against the branch database type.</p>
- */
-@RequiredArgsConstructor
-@Getter
-public final class DialectBranchOption {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class DialectBranchOptionTest {
     
-    private final String branchTypeDetectionSQL;
+    @Test
+    void assertGetBranchTypeDetectionSQL() {
+        assertThat(new DialectBranchOption("SELECT VERSION()").getBranchTypeDetectionSQL(), is("SELECT VERSION()"));
+    }
 }

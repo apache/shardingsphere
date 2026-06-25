@@ -88,12 +88,9 @@ public final class DatabaseTypeFactory {
     }
     
     private static void checkUniqueActualBranchDatabaseType(final DatabaseMetaData metaData, final Collection<DatabaseType> actualBranchDatabaseTypes) throws SQLException {
-        if (actualBranchDatabaseTypes.size() <= 1) {
-            return;
+        if (actualBranchDatabaseTypes.size() > 1) {
+            throw new AmbiguousStorageTypeException(metaData.getURL(), actualBranchDatabaseTypes.stream().map(DatabaseType::getType).collect(Collectors.toList()));
         }
-        String url = metaData.getURL();
-        ShardingSpherePreconditions.checkState(false,
-                () -> new AmbiguousStorageTypeException(url, actualBranchDatabaseTypes.stream().map(DatabaseType::getType).collect(Collectors.toList())));
     }
     
     private static Collection<DatabaseType> findActualBranchDatabaseTypes(final Connection connection, final DatabaseType trunkDatabaseType) throws SQLException {

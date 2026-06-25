@@ -210,7 +210,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Get branch option.
-     * 
+     *
      * @return branch option
      */
     default Optional<DialectBranchOption> getBranchOption() {

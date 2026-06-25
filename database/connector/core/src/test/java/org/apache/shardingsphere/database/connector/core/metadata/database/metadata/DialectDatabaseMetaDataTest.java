@@ -130,4 +130,9 @@ class DialectDatabaseMetaDataTest {
     void assertGetProtocolVersionOption() {
         assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is(""));
     }
+    
+    @Test
+    void assertGetBranchOption() {
+        assertThat(dialectDatabaseMetaData.getBranchOption(), is(Optional.empty()));
+    }
 }

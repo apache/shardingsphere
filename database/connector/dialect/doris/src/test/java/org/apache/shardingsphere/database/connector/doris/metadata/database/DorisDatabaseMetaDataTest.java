@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.mariadb.metadata.database;
+package org.apache.shardingsphere.database.connector.doris.metadata.database;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
@@ -35,15 +35,15 @@ import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MariaDBDatabaseMetaDataTest {
+class DorisDatabaseMetaDataTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MariaDB");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Doris");
     
     private final DialectDatabaseMetaData metaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
     
@@ -90,8 +90,9 @@ class MariaDBDatabaseMetaDataTest {
         assertThat(actual.getDefaultIsolationLevel(), is(Connection.TRANSACTION_REPEATABLE_READ));
         assertFalse(actual.isReturnRollbackStatementWhenCommitFailed());
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
-        assertThat(actual.getXaDriverClassNames().size(), is(1));
-        assertTrue(actual.getXaDriverClassNames().contains("org.mariadb.jdbc.MariaDbDataSource"));
+        assertThat(actual.getXaDriverClassNames().size(), is(2));
+        assertTrue(actual.getXaDriverClassNames().contains("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"));
+        assertTrue(actual.getXaDriverClassNames().contains("com.mysql.cj.jdbc.MysqlXADataSource"));
     }
     
     @Test
@@ -117,6 +118,11 @@ class MariaDBDatabaseMetaDataTest {
     void assertGetBranchOption() {
         Optional<DialectBranchOption> actual = metaData.getBranchOption();
         assertTrue(actual.isPresent());
-        assertThat(actual.map(DialectBranchOption::getBranchTypeDetectionSQL).orElse(""), is("SELECT VERSION()"));
+        assertThat(actual.map(DialectBranchOption::getBranchTypeDetectionSQL).orElse(""), is("SELECT @@version_comment"));
+    }
+    
+    @Test
+    void assertGetDatabaseType() {
+        assertThat(metaData.getDatabaseType(), is("Doris"));
     }
 }
