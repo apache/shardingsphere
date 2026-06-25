@@ -116,14 +116,14 @@ public final class DatabaseTypeFactory {
     private static boolean isActualBranchDatabaseType(final DatabaseType databaseType, final Connection connection) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         return containsBranch(databaseType, metaData.getDatabaseProductName())
-                || containsBranch(databaseType, metaData.getDatabaseProductVersion()) || containsBranch(databaseType, queryDatabaseBranchType(databaseType, connection));
+                || containsBranch(databaseType, metaData.getDatabaseProductVersion()) || containsBranch(databaseType, queryBranchTypeDetectionValue(databaseType, connection));
     }
     
     private static boolean containsBranch(final DatabaseType databaseType, final String value) {
         return Objects.toString(value, "").toUpperCase(Locale.ENGLISH).contains(databaseType.getType().toUpperCase(Locale.ENGLISH));
     }
     
-    private static String queryDatabaseBranchType(final DatabaseType databaseType, final Connection connection) {
+    private static String queryBranchTypeDetectionValue(final DatabaseType databaseType, final Connection connection) {
         Optional<DialectBranchOption> branchOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getBranchOption();
         if (!branchOption.isPresent()) {
             return "";
