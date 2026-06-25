@@ -71,7 +71,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableVariableClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableTableColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableTableColumnDefinitionContext;
