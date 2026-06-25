@@ -179,7 +179,6 @@ sudo systemctl restart docker.service
 ```shell
 winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
-# 此时需要打开新的 Powershell 7 终端
 vfox add java
 vfox install java@21.0.7-ms
 vfox use --global java@21.0.7-ms
@@ -200,12 +199,12 @@ wsl --install
 
 ```shell
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
-# 打开新的 PowerShell 7 终端
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
   "min-api-version": "1.41",
+  "seccomp-profile": "/etc/rancher-desktop/seccomp.json",
   "features": {
     "containerd-snapshotter": true
   },

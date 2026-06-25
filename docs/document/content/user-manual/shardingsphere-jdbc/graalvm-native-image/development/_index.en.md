@@ -95,7 +95,6 @@ GraalVM CE can be installed using `version-fox/vfox` in Powershell 7 using the f
 ```shell
 winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
-# At this time, developer need to open a new Powershell 7 terminal
 vfox add java
 vfox install java@25.0.2-graalce
 vfox use --global java@25.0.2-graalce
@@ -126,12 +125,12 @@ and configure it to use the `dockerd(moby)` `Container Engine`.
 
 ```shell
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
-# Open a new PowerShell 7 terminal
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
   "min-api-version": "1.41",
+  "seccomp-profile": "/etc/rancher-desktop/seccomp.json",
   "features": {
     "containerd-snapshotter": true
   },
@@ -155,12 +154,12 @@ You can execute the following command in PowerShell 7:
 ```shell
 iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
-# Open a new PowerShell 7 terminal
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
   "min-api-version": "1.41",
+  "seccomp-profile": "/etc/rancher-desktop/seccomp.json",
   "features": {
     "containerd-snapshotter": true
   },
