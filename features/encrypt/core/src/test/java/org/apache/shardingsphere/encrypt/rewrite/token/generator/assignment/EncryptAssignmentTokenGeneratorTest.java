@@ -62,10 +62,6 @@ class EncryptAssignmentTokenGeneratorTest {
     
     private static MockedConstruction<DatabaseTypeRegistry> registryConstruction;
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
-    private ShardingSphereDatabase database;
-    
     private EncryptAssignmentTokenGenerator tokenGenerator;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -93,8 +89,6 @@ class EncryptAssignmentTokenGeneratorTest {
     
     @BeforeEach
     void setup() {
-        database = mock(ShardingSphereDatabase.class);
-        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), database, databaseType);
         when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("columns"));
         columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("table"),
@@ -113,26 +107,32 @@ class EncryptAssignmentTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokenWithUpdateParameterMarkerExpressionSegment() {
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), mock(ShardingSphereDatabase.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(assignmentSegment.getValue()).thenReturn(mock(ParameterMarkerExpressionSegment.class));
         assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).size(), is(1));
     }
     
     @Test
     void assertGenerateSQLTokenWithUpdateLiteralExpressionSegment() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), database, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
         assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).size(), is(1));
     }
     
     @Test
     void assertGenerateSQLTokenWithUpdateEmpty() {
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), mock(ShardingSphereDatabase.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(assignmentSegment.getValue()).thenReturn(null);
         assertTrue(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).isEmpty());
     }
     
     @Test
     void assertGenerateSQLTokenWithInsertLiteralExpressionSegment() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), database, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
         assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).size(), is(1));
     }
