@@ -36,7 +36,7 @@ public final class FirebirdGetBlobSegmentCommandPacket extends FirebirdCommandPa
     
     public FirebirdGetBlobSegmentCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        blobHandle = payload.readInt4();
+        blobHandle = payload.readObjectHandle();
         segmentLength = payload.readInt4();
         ByteBuf buffer = payload.readBuffer();
         segment = new byte[buffer.readableBytes()];

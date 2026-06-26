@@ -29,7 +29,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -47,7 +46,8 @@ class FirebirdPutBlobSegmentCommandPacketTest {
     
     @Test
     void assertPutBlobSegmentPacket() {
-        when(payload.readInt4()).thenReturn(15, 3);
+        when(payload.readObjectHandle()).thenReturn(15);
+        when(payload.readInt4()).thenReturn(3);
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{5, 6, 7}));
         FirebirdPutBlobSegmentCommandPacket packet = new FirebirdPutBlobSegmentCommandPacket(payload);
         assertThat(packet.getBlobHandle(), is(15));
@@ -55,7 +55,8 @@ class FirebirdPutBlobSegmentCommandPacketTest {
         assertThat(packet.getSegment(), is(new byte[]{5, 6, 7}));
         assertThat(FirebirdBlobRegistry.getSegment(), is(new byte[]{5, 6, 7}));
         verify(payload).skipReserved(4);
-        verify(payload, times(2)).readInt4();
+        verify(payload).readObjectHandle();
+        verify(payload).readInt4();
         verify(payload).readBuffer();
         packet.write(payload);
         verifyNoMoreInteractions(payload);
@@ -64,7 +65,8 @@ class FirebirdPutBlobSegmentCommandPacketTest {
     @Test
     void assertPutBlobSegmentPacketWithMismatchLength() {
         FirebirdBlobRegistry.setSegment(new byte[]{9, 9});
-        when(payload.readInt4()).thenReturn(15, 2);
+        when(payload.readObjectHandle()).thenReturn(15);
+        when(payload.readInt4()).thenReturn(2);
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{5, 6, 7}));
         assertThrows(IllegalArgumentException.class, () -> new FirebirdPutBlobSegmentCommandPacket(payload));
         assertNull(FirebirdBlobRegistry.getSegment());

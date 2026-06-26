@@ -31,6 +31,7 @@ import java.util.OptionalLong;
 
 /**
  * Cancel blob command executor for Firebird.
+ * Cancels and invalidates the blob handle. If this was a newly created blob, the blob is disposed.
  */
 @RequiredArgsConstructor
 public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor {
@@ -38,7 +39,7 @@ public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor 
     private final FirebirdCancelBlobCommandPacket packet;
     
     private final ConnectionSession connectionSession;
-    
+
     @Override
     public Collection<DatabasePacket> execute() {
         int blobHandle = FirebirdBlobUploadCache.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
