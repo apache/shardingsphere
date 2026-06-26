@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.config.database.impl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
@@ -61,7 +60,7 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             DataSource dataSource = storageNodeDataSources.get(storageNode);
-            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), dataSource, DatabaseTypeEngine.getStorageType(dataSource));
+            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), dataSource);
             storageUnits.put(storageUnitName, storageUnit);
         }
         dataSources = storageNodeDataSources;

@@ -123,24 +123,24 @@ class DatabaseTypeEngineTest {
         assertThat(actual, is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
     
-    private static Stream<Arguments> getProtocolTypeWithDatabaseConfigurationArguments() throws SQLException {
+    private static Stream<Arguments> getProtocolTypeWithDatabaseConfigurationArguments() {
         return Stream.of(
                 Arguments.of("configured_mysql", createDatabaseConfiguration(Collections.emptyMap()), createConfiguredProperties("MySQL"),
                         TypedSPILoader.getService(DatabaseType.class, "MySQL")),
                 Arguments.of("configured_h2_trunk_mysql", createDatabaseConfiguration(Collections.emptyMap()), createConfiguredProperties("H2"),
                         TypedSPILoader.getService(DatabaseType.class, "MySQL")),
                 Arguments.of("storage_unit_postgresql",
-                        createDatabaseConfiguration(Collections.singletonMap("foo_ds", createDataSource(createConnectionWithUrl("jdbc:postgresql://localhost:5432/test")))),
+                        createDatabaseConfiguration(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))),
                         new ConfigurationProperties(new Properties()),
                         TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")),
                 Arguments.of("empty_storage_units_default_mysql", createDatabaseConfiguration(Collections.emptyMap()), new ConfigurationProperties(new Properties()),
                         TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
     
-    private static Stream<Arguments> getProtocolTypeWithDatabaseConfigurationsArguments() throws SQLException {
+    private static Stream<Arguments> getProtocolTypeWithDatabaseConfigurationsArguments() {
         Map<String, DatabaseConfiguration> multipleDatabaseConfigs = new LinkedHashMap<>(2, 1F);
-        multipleDatabaseConfigs.put("foo_db", createDatabaseConfiguration(Collections.singletonMap("foo_ds", createDataSource(createConnectionWithUrl("jdbc:mysql://localhost:3306/test")))));
-        multipleDatabaseConfigs.put("bar_db", createDatabaseConfiguration(Collections.singletonMap("bar_ds", createDataSource(createConnectionWithUrl("jdbc:postgresql://localhost:5432/test")))));
+        multipleDatabaseConfigs.put("foo_db", createDatabaseConfiguration(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, "MySQL"))));
+        multipleDatabaseConfigs.put("bar_db", createDatabaseConfiguration(Collections.singletonMap("bar_ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))));
         return Stream.of(
                 Arguments.of("configured_mysql", Collections.singletonMap("foo_db", createDatabaseConfiguration(Collections.emptyMap())),
                         createConfiguredProperties("MySQL"), TypedSPILoader.getService(DatabaseType.class, "MySQL")),
@@ -148,7 +148,7 @@ class DatabaseTypeEngineTest {
                         createConfiguredProperties("H2"), TypedSPILoader.getService(DatabaseType.class, "MySQL")),
                 Arguments.of("storage_unit_postgresql",
                         Collections.singletonMap("foo_db", createDatabaseConfiguration(
-                                Collections.singletonMap("foo_ds", createDataSource(createConnectionWithUrl("jdbc:postgresql://localhost:5432/test"))))),
+                                Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")))),
                         new ConfigurationProperties(new Properties()), TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")),
                 Arguments.of("empty_storage_units_default_mysql", Collections.singletonMap("foo_db", createDatabaseConfiguration(Collections.emptyMap())),
                         new ConfigurationProperties(new Properties()), TypedSPILoader.getService(DatabaseType.class, "MySQL")),
@@ -187,12 +187,12 @@ class DatabaseTypeEngineTest {
                         createDataSource(createConnectionWithUnsupportedUrl(), fourthConnection), Collections.singleton(fetcher), SQLException.class));
     }
     
-    private static DatabaseConfiguration createDatabaseConfiguration(final Map<String, DataSource> dataSources) {
+    private static DatabaseConfiguration createDatabaseConfiguration(final Map<String, DatabaseType> storageTypes) {
         DatabaseConfiguration result = mock(DatabaseConfiguration.class);
-        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(dataSources.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(storageTypes.size(), 1F);
+        for (Entry<String, DatabaseType> entry : storageTypes.entrySet()) {
             StorageUnit storageUnit = mock(StorageUnit.class);
-            when(storageUnit.getDataSource()).thenReturn(entry.getValue());
+            when(storageUnit.getStorageType()).thenReturn(entry.getValue());
             storageUnits.put(entry.getKey(), storageUnit);
         }
         when(result.getStorageUnits()).thenReturn(storageUnits);

@@ -122,12 +122,10 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
                 MockedStatic<DatabaseTypeEngine> databaseTypeEngineMocked = mockStatic(DatabaseTypeEngine.class);
                 MockedConstruction<MetaDataPersistFacade> ignored = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS))) {
             databaseTypeEngineMocked.when(() -> DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(databaseType);
-            databaseTypeEngineMocked.when(() -> DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(databaseType);
             LocalConfigurationMetaDataContextsInitFactory factory = new LocalConfigurationMetaDataContextsInitFactory(repository, instanceContext);
             MetaDataContexts actual = factory.create(new ContextManagerBuilderParameter(null, Collections.emptyMap(), globalDataSources, Collections.emptyList(), new Properties(),
                     Collections.emptyList(), null));
             assertThat(actual.getMetaData().getGlobalResourceMetaData().getStorageUnits().get("foo_ds").getStorageType(), is(databaseType));
-            databaseTypeEngineMocked.verify(() -> DatabaseTypeEngine.getStorageType(dataSource));
         }
     }
     
