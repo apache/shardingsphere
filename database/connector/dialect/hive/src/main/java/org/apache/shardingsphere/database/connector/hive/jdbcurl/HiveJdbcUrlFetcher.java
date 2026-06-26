@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.database.connector.hive.jdbcurl;
 
-import org.apache.hive.jdbc.HiveConnection;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.DialectJdbcUrlFetcher;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -28,13 +29,32 @@ import java.sql.SQLException;
  */
 public final class HiveJdbcUrlFetcher implements DialectJdbcUrlFetcher {
     
+    private static final String HIVE_CONNECTION_CLASS_NAME = "org.apache.hive.jdbc.HiveConnection";
+    
     @Override
+    @SneakyThrows(ReflectiveOperationException.class)
     public String fetch(final Connection connection) throws SQLException {
-        return connection.unwrap(HiveConnection.class).getConnectedUrl();
+        Object hiveConnection = connection.unwrap(getConnectionClass());
+        try {
+            return (String) hiveConnection.getClass().getMethod("getConnectedUrl").invoke(hiveConnection);
+        } catch (final InvocationTargetException ex) {
+            return throwTargetException(ex);
+        }
     }
     
     @Override
+    @SneakyThrows(ClassNotFoundException.class)
     public Class<? extends Connection> getConnectionClass() {
-        return HiveConnection.class;
+        return getHiveConnectionClass();
+    }
+    
+    @SneakyThrows
+    private String throwTargetException(final InvocationTargetException ex) {
+        throw ex.getTargetException();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Class<? extends Connection> getHiveConnectionClass() throws ClassNotFoundException {
+        return (Class<? extends Connection>) Class.forName(HIVE_CONNECTION_CLASS_NAME);
     }
 }

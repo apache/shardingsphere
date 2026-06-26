@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
@@ -38,8 +37,6 @@ import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValueGroup;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -72,8 +69,6 @@ public final class DataSetEnvironmentManager {
     
     private static final Map<String, ResetPlan> RESET_PLAN_CACHE = new ConcurrentHashMap<>();
     
-    private static final Map<String, DatabaseType> DATA_SOURCE_DATABASE_TYPE_CACHE = new ConcurrentHashMap<>();
-    
     private static final Map<String, String> INSERT_SQL_CACHE = new ConcurrentHashMap<>();
     
     private static final Map<String, String> TRUNCATE_SQL_CACHE = new ConcurrentHashMap<>();
@@ -86,7 +81,7 @@ public final class DataSetEnvironmentManager {
     
     private final DatabaseType databaseType;
     
-    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws IOException, JAXBException {
+    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         this.dataSetFile = dataSetFile;
         dataSet = DataSetLoader.load(dataSetFile);
         this.dataSourceMap = dataSourceMap;
@@ -107,12 +102,11 @@ public final class DataSetEnvironmentManager {
         }
     }
     
-    private List<Callable<Void>> createFillDataTasks(final ResetPlan resetPlan) throws SQLException {
+    private List<Callable<Void>> createFillDataTasks(final ResetPlan resetPlan) {
         List<Callable<Void>> result = new LinkedList<>();
         for (Entry<DataNode, InsertDataNodePlan> entry : resetPlan.getInsertDataNodePlans().entrySet()) {
             DataNode dataNode = entry.getKey();
             DataSource dataSource = dataSourceMap.get(dataNode.getDataSourceName());
-            DatabaseType databaseType = getDatabaseType(dataNode.getDataSourceName(), dataSource);
             InsertDataNodePlan insertDataNodePlan = entry.getValue();
             result.add(new InsertTask(dataSource, getInsertSQL(dataNode.getTableName(), insertDataNodePlan.getColumnMetaData(), databaseType),
                     insertDataNodePlan.getSqlValueGroups(), databaseType));
@@ -190,10 +184,9 @@ public final class DataSetEnvironmentManager {
         }
     }
     
-    private List<Callable<Void>> createDeleteTasks(final ResetPlan resetPlan) throws SQLException {
+    private List<Callable<Void>> createDeleteTasks(final ResetPlan resetPlan) {
         List<Callable<Void>> result = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : resetPlan.getTableNamesByDataSourceName().entrySet()) {
-            DatabaseType databaseType = getDatabaseType(entry.getKey(), dataSourceMap.get(entry.getKey()));
             Collection<String> truncateSQLs = new LinkedList<>();
             for (String each : entry.getValue()) {
                 truncateSQLs.add(getTruncateSQL(each, databaseType));
@@ -290,23 +283,6 @@ public final class DataSetEnvironmentManager {
         result.add(tableName.replaceFirst("_[0-9]+$", "").toLowerCase(Locale.ENGLISH));
         result.add(tableName.replaceFirst("[0-9]+$", "").toLowerCase(Locale.ENGLISH));
         return result;
-    }
-    
-    private DatabaseType getDatabaseType(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        String cacheKey = getDataSourceDatabaseTypeCacheKey(dataSourceName, dataSource);
-        DatabaseType result = DATA_SOURCE_DATABASE_TYPE_CACHE.get(cacheKey);
-        if (null != result) {
-            return result;
-        }
-        try (Connection connection = dataSource.getConnection()) {
-            result = DatabaseTypeFactory.get(connection.getMetaData());
-            DATA_SOURCE_DATABASE_TYPE_CACHE.put(cacheKey, result);
-            return result;
-        }
-    }
-    
-    private String getDataSourceDatabaseTypeCacheKey(final String dataSourceName, final DataSource dataSource) {
-        return databaseType.getType() + ':' + dataSourceName + ':' + System.identityHashCode(dataSource);
     }
     
     @RequiredArgsConstructor

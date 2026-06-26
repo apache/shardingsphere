@@ -24,10 +24,10 @@ dataSources:
     username: sa
     password: ""
     connectionTimeoutMilliseconds: 250
-    idleTimeoutMilliseconds: 2
-    maxLifetimeMilliseconds: 3
-    maxPoolSize:  4
-    minPoolSize: 5
+    idleTimeoutMilliseconds: 30000
+    maxLifetimeMilliseconds: 600000
+    maxPoolSize:  5
+    minPoolSize: 4
     readOnly: true
 
 rules:
