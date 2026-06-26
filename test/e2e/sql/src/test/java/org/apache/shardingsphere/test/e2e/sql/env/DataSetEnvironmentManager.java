@@ -93,7 +93,7 @@ public final class DataSetEnvironmentManager {
      *
      * @param tableNames table names
      */
-    @SneakyThrows({SQLException.class, InterruptedException.class, ExecutionException.class})
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     public void fillData(final Collection<String> tableNames) {
         List<Callable<Void>> fillDataTasks = createFillDataTasks(getResetPlan(tableNames));
         List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
@@ -175,7 +175,7 @@ public final class DataSetEnvironmentManager {
      *
      * @param tableNames table names
      */
-    @SneakyThrows({SQLException.class, InterruptedException.class, ExecutionException.class})
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     public void cleanData(final Collection<String> tableNames) {
         List<Callable<Void>> deleteTasks = createDeleteTasks(getResetPlan(tableNames));
         List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
