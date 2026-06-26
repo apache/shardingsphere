@@ -135,11 +135,12 @@ class DatabaseTypeFactoryTest {
     void assertGetWithFailedBranchDetectionSQLConnection() throws SQLException {
         DatabaseType trunkDatabaseType = mockDatabaseType("TRUNK", "jdbc:trunk:", null);
         DatabaseType branchDatabaseType = mockDatabaseType("BRANCH", "jdbc:trunk:", trunkDatabaseType);
-        Connection connection = createConnectionWithBranchTypeDetectionFailure("jdbc:trunk://localhost:3306/test", "MySQL", "8.0.36");
+        SQLException expected = new SQLException("branch detection failed");
+        Connection connection = createConnectionWithBranchTypeDetectionFailure("jdbc:trunk://localhost:3306/test", "MySQL", "8.0.36", expected);
         DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData(branchDatabaseType, Optional.of(new DialectBranchOption("SELECT branch_type")));
         when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, branchDatabaseType));
         when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(dialectDatabaseMetaData));
-        assertThat(DatabaseTypeFactory.get(connection), is(trunkDatabaseType));
+        assertThat(assertThrows(SQLException.class, () -> DatabaseTypeFactory.get(connection)), is(expected));
     }
     
     @Test
@@ -186,10 +187,6 @@ class DatabaseTypeFactoryTest {
                 Arguments.of("non hive with branch only url", "MySQL", "jdbc:branch-only://localhost:3306/test", Collections.singletonList(branchOnlyDatabaseType), branchOnlyDatabaseType, false));
     }
     
-    private Connection createConnection(final String url) throws SQLException {
-        return createConnection(url, "", "");
-    }
-    
     private Connection createConnection(final String url, final String productName, final String productVersion) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
@@ -216,9 +213,9 @@ class DatabaseTypeFactoryTest {
         return result;
     }
     
-    private Connection createConnectionWithBranchTypeDetectionFailure(final String url, final String productName, final String productVersion) throws SQLException {
+    private Connection createConnectionWithBranchTypeDetectionFailure(final String url, final String productName, final String productVersion, final SQLException sqlException) throws SQLException {
         Connection result = createConnection(url, productName, productVersion);
-        when(result.createStatement()).thenThrow(SQLException.class);
+        when(result.createStatement()).thenThrow(sqlException);
         return result;
     }
     

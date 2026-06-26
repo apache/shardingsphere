@@ -120,7 +120,7 @@ public final class DatabaseTypeFactory {
         return Objects.toString(value, "").toUpperCase(Locale.ENGLISH).contains(databaseType.getType().toUpperCase(Locale.ENGLISH));
     }
     
-    private static String queryBranchTypeDetectionValue(final DatabaseType databaseType, final Connection connection) {
+    private static String queryBranchTypeDetectionValue(final DatabaseType databaseType, final Connection connection) throws SQLException {
         Optional<DialectBranchOption> branchOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getBranchOption();
         if (!branchOption.isPresent()) {
             return "";
@@ -129,8 +129,6 @@ public final class DatabaseTypeFactory {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(branchOption.get().getBranchTypeDetectionSQL())) {
             return resultSet.next() ? resultSet.getString(1) : "";
-        } catch (final SQLException ignored) {
-            return "";
         }
     }
     
