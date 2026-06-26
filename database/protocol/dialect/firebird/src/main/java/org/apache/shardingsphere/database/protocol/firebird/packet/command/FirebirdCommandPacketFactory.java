@@ -30,7 +30,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
@@ -86,8 +85,6 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdCancelBlobCommandPacket(payload);
             case CLOSE_BLOB:
                 return new FirebirdCloseBlobCommandPacket(payload);
-            case SEEK_BLOB:
-                return new FirebirdSeekBlobCommandPacket(payload);
             case ALLOCATE_STATEMENT:
                 return new FirebirdAllocateStatementPacket(payload);
             case PREPARE_STATEMENT:
@@ -158,8 +155,6 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdCancelBlobCommandPacket.getLength();
             case CLOSE_BLOB:
                 return FirebirdCloseBlobCommandPacket.getLength();
-            case SEEK_BLOB:
-                return FirebirdSeekBlobCommandPacket.getLength();
             case ALLOCATE_STATEMENT:
                 return FirebirdAllocateStatementPacket.getLength();
             case PREPARE_STATEMENT:
