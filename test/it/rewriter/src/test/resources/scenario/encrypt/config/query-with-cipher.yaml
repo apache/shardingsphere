@@ -170,6 +170,16 @@ rules:
           cipher:
             name: country_region_name_cipher
             encryptorName: rewrite_normal_fixture
+    SalesPerson:
+      columns:
+        Bonus:
+          cipher:
+            name: bonus_cipher
+            encryptorName: rewrite_normal_fixture
+        CommissionPct:
+          cipher:
+            name: commission_pct_cipher
+            encryptorName: rewrite_normal_fixture
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE

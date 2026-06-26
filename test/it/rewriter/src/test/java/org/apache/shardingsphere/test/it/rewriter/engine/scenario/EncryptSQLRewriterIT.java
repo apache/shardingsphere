@@ -89,7 +89,21 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
         tables.add(new ShardingSphereTable("vStateProvinceCountryRegion", Arrays.asList(
                 new ShardingSphereColumn("StateCode", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("CountryRegionName", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList(), TableType.VIEW));
-        return Collections.singleton(new ShardingSphereSchema(schemaName, mock(DatabaseType.class), tables, Collections.emptyList()));
+        Collection<ShardingSphereSchema> schemas = new LinkedList<>();
+        schemas.add(new ShardingSphereSchema(schemaName, mock(DatabaseType.class), tables, Collections.emptyList()));
+        Collection<ShardingSphereTable> salesTables = new LinkedList<>();
+        salesTables.add(new ShardingSphereTable("SalesPerson", Arrays.asList(
+                new ShardingSphereColumn("BusinessEntityID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("SalesYTD", Types.DECIMAL, false, false, false, true, false, false),
+                new ShardingSphereColumn("Bonus", Types.DECIMAL, false, false, false, true, false, false),
+                new ShardingSphereColumn("CommissionPct", Types.DECIMAL, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        salesTables.add(new ShardingSphereTable("SalesOrderHeader", Arrays.asList(
+                new ShardingSphereColumn("SalesOrderID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("SalesPersonID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("OrderDate", Types.DATE, false, false, false, true, false, false),
+                new ShardingSphereColumn("SubTotal", Types.DECIMAL, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        schemas.add(new ShardingSphereSchema("Sales", mock(DatabaseType.class), salesTables, Collections.emptyList()));
+        return schemas;
     }
     
     @Override
@@ -105,6 +119,8 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "WorkOrder");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "StateRegion");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "vStateProvinceCountryRegion");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", "Sales", "SalesPerson");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", "Sales", "SalesOrderHeader");
         }
     }
 }

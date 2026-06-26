@@ -1733,7 +1733,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return false;
         }
         String targetName = ((SimpleTableSegment) targetTable).getTableName().getIdentifier().getValue();
-        return isAliasInFromClause(targetName, fromTable);
+        return isAliasInFromClause(targetName, fromTable) || isTableNameWithAliasInFromClause(targetName, fromTable);
     }
     
     private boolean isAliasInFromClause(final String targetName, final TableSegment fromSegment) {
@@ -1742,6 +1742,19 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (fromSegment instanceof JoinTableSegment) {
             return isAliasInFromClause(targetName, ((JoinTableSegment) fromSegment).getLeft()) || isAliasInFromClause(targetName, ((JoinTableSegment) fromSegment).getRight());
+        }
+        return false;
+    }
+    
+    private boolean isTableNameWithAliasInFromClause(final String targetName, final TableSegment fromSegment) {
+        if (fromSegment instanceof SimpleTableSegment) {
+            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) fromSegment;
+            return simpleTableSegment.getAliasName().isPresent()
+                    && targetName.equalsIgnoreCase(simpleTableSegment.getTableName().getIdentifier().getValue());
+        }
+        if (fromSegment instanceof JoinTableSegment) {
+            return isTableNameWithAliasInFromClause(targetName, ((JoinTableSegment) fromSegment).getLeft())
+                    || isTableNameWithAliasInFromClause(targetName, ((JoinTableSegment) fromSegment).getRight());
         }
         return false;
     }

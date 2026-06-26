@@ -73,6 +73,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Simple table segment binder.
@@ -171,13 +172,20 @@ public final class SimpleTableSegmentBinder {
         if (segment.getAliasName().isPresent()) {
             return false;
         }
-        return tableBinderContexts.containsKey(CaseInsensitiveString.of(tableNameValue));
+        return tableBinderContexts.containsKey(CaseInsensitiveString.of(tableNameValue))
+                || tableBinderContexts.values().stream()
+                        .anyMatch(each -> each.getOriginalTableName().map(name -> name.getValue().equalsIgnoreCase(tableNameValue)).orElse(false));
     }
     
     private static SimpleTableSegment bindUpdateTargetTableAlias(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext,
                                                                  final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts, final IdentifierValue databaseName,
                                                                  final Optional<IdentifierValue> schemaName, final IdentifierValue tableName) {
         Collection<TableSegmentBinderContext> fromTableContexts = tableBinderContexts.get(CaseInsensitiveString.of(tableName.getValue()));
+        if (fromTableContexts.isEmpty()) {
+            fromTableContexts = tableBinderContexts.values().stream()
+                    .filter(each -> each.getOriginalTableName().map(name -> name.getValue().equalsIgnoreCase(tableName.getValue())).orElse(false))
+                    .collect(Collectors.toList());
+        }
         IdentifierValue originalTableName = fromTableContexts.stream()
                 .map(TableSegmentBinderContext::getOriginalTableName).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(tableName);
         Optional<OwnerSegment> fromTableOwner = fromTableContexts.stream()
