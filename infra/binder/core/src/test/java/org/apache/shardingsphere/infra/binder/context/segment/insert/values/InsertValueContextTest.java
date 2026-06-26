@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -66,8 +65,7 @@ class InsertValueContextTest {
         ParameterMarkerExpressionSegment businessCodeParameterMarker = new ParameterMarkerExpressionSegment(0, 10, 2);
         ParameterMarkerExpressionSegment telephoneParameterMarker = new ParameterMarkerExpressionSegment(0, 10, 3);
         Collection<ExpressionSegment> assignments = Arrays.asList(merchantIdParameterMarker, businessCodeParameterMarker, telephoneParameterMarker);
-        List<ParameterMarkerSegment> parameterMarkerSegments = Arrays.asList(merchantIdParameterMarker, businessCodeParameterMarker, telephoneParameterMarker);
-        InsertValueContext insertValueContext = new InsertValueContext(assignments, Arrays.asList("merchant_id", "business_code", "telephone"), 0, parameterMarkerSegments);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, Arrays.asList("merchant_id", "business_code", "telephone"), 0);
         Optional<Object> literalValue = insertValueContext.getLiteralValue(1);
         assertTrue(literalValue.isPresent());
         assertThat(literalValue.get(), is("business_code"));
