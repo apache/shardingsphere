@@ -124,14 +124,12 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             if (FILLED_SUITES.contains(cacheKey)) {
                 return;
             }
-            DataSetEnvironmentManager actualDataSetEnvironmentManager = new DataSetEnvironmentManager(
-                    new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
-            actualDataSetEnvironmentManager.cleanData(Collections.emptyList());
-            actualDataSetEnvironmentManager.fillData(Collections.emptyList());
-            DataSetEnvironmentManager expectedDataSetEnvironmentManager = new DataSetEnvironmentManager(
-                    new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(), getEnvironmentEngine().getExpectedDataSourceMap(), testParam.getDatabaseType());
-            expectedDataSetEnvironmentManager.cleanData(Collections.emptyList());
-            expectedDataSetEnvironmentManager.fillData(Collections.emptyList());
+            new DataSetEnvironmentManager(
+                    new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(),
+                    testParam.getDatabaseType()).fillData(Collections.emptyList());
+            new DataSetEnvironmentManager(
+                    new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(), getEnvironmentEngine().getExpectedDataSourceMap(),
+                    testParam.getDatabaseType()).fillData(Collections.emptyList());
             FILLED_SUITES.add(cacheKey);
         }
     }

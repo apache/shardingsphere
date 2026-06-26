@@ -38,6 +38,8 @@ import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValueGroup;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -68,10 +70,6 @@ public final class DataSetEnvironmentManager {
     
     private static final String DATA_COLUMN_DELIMITER = ", ";
     
-    private static final String MYSQL_DATABASE_TYPE = "MySQL";
-    
-    private static final String PRODUCT_EXTEND_TABLE_NAME = "t_product_extend";
-    
     private static final Map<String, ResetPlan> RESET_PLAN_CACHE = new ConcurrentHashMap<>();
     
     private static final Map<String, DatabaseType> DATA_SOURCE_DATABASE_TYPE_CACHE = new ConcurrentHashMap<>();
@@ -88,7 +86,7 @@ public final class DataSetEnvironmentManager {
     
     private final DatabaseType databaseType;
     
-    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
+    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws IOException, JAXBException {
         this.dataSetFile = dataSetFile;
         dataSet = DataSetLoader.load(dataSetFile);
         this.dataSourceMap = dataSourceMap;
@@ -137,8 +135,11 @@ public final class DataSetEnvironmentManager {
     private Map<DataNode, InsertDataNodePlan> createInsertDataNodePlans(final Collection<String> tableNames, final Map<DataNode, DataSetMetaData> metaDataMap) {
         Map<DataNode, InsertDataNodePlan> result = new LinkedHashMap<>(dataSet.getRows().size(), 1F);
         for (DataSetRow each : dataSet.getRows()) {
+            if (each.getDataNode().contains("t_product_extend") && !"MySQL".equals(databaseType.getType())) {
+                continue;
+            }
             DataNode dataNode = new DataNode(each.getDataNode());
-            if (!isSupportedDataNode(dataNode) || !isMatchedDataNode(dataNode, tableNames)) {
+            if (!isMatchedDataNode(dataNode, tableNames)) {
                 continue;
             }
             DataSetMetaData dataSetMetaData = metaDataMap.get(dataNode);
@@ -237,9 +238,6 @@ public final class DataSetEnvironmentManager {
             }
             for (String dataNodeText : InlineExpressionParserFactory.newInstance(each.getDataNodes()).splitAndEvaluate()) {
                 DataNode dataNode = new DataNode(dataNodeText);
-                if (!isSupportedDataNode(dataNode)) {
-                    continue;
-                }
                 result.put(dataNode, each);
                 addTableName(tableNamesByDataSourceName, dataNode);
             }
@@ -284,10 +282,6 @@ public final class DataSetEnvironmentManager {
     
     private boolean isMatchedDataNode(final DataNode dataNode, final Collection<String> tableNames) {
         return tableNames.isEmpty() || getPossibleTableNames(dataNode.getTableName()).stream().anyMatch(tableNames::contains);
-    }
-    
-    private boolean isSupportedDataNode(final DataNode dataNode) {
-        return !PRODUCT_EXTEND_TABLE_NAME.equalsIgnoreCase(dataNode.getTableName()) || MYSQL_DATABASE_TYPE.equals(databaseType.getType());
     }
     
     private Collection<String> getPossibleTableNames(final String tableName) {
