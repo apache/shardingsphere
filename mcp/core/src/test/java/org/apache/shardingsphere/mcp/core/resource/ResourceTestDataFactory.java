@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.core.resource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.fixture.DatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
@@ -98,7 +98,7 @@ public final class ResourceTestDataFactory {
         for (MCPDatabaseMetadata each : databaseMetadataList) {
             runtimeDatabases.put(each.getDatabase(), createRuntimeDatabaseConfiguration(each));
         }
-        return new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(runtimeDatabases), activeTransport);
+        return new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), DatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(runtimeDatabases), activeTransport);
     }
     
     /**
