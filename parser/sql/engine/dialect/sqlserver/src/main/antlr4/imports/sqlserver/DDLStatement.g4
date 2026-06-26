@@ -637,7 +637,11 @@ databaseLogOns
     ;
 
 declareVariable
-    : DECLARE (variable (COMMA_ variable)* | tableVariable)
+    : DECLARE tableVariable
+    ;
+
+declareLocalVariable
+    : DECLARE variable (COMMA_ variable)*
     ;
 
 variable
@@ -658,7 +662,7 @@ tableVariableClause
     ;
 
 variableTableColumnDefinition
-    : columnName (dataTypeName | AS expr) (COLLATE collationName)? ((DEFAULT expr)? | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?) ROWGUIDCOL? variableTableColumnConstraint
+    : columnName (dataType | AS expr) (COLLATE collationName)? ((DEFAULT expr)? | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?) ROWGUIDCOL? variableTableColumnConstraint
     ;
 
 variableTableColumnConstraint
@@ -742,7 +746,7 @@ functionOption
 
 validStatement
     : (createTable | alterTable | dropTable | truncateTable | insert
-    | update | delete | select | setVariable | declareVariable) SEMI_?
+    | update | delete | select | setVariable | declareLocalVariable | declareVariable) SEMI_?
     ;
 
 procParameters
@@ -804,7 +808,7 @@ commonTableExpr
 createTriggerClause
     : (WITH dmlTriggerOption COMMA_ dmlTriggerOption)? (FOR | AFTER | INSTEAD OF)
     INSERT? COMMA_? UPDATE? COMMA_? DELETE? COMMA_? (WITH APPEND)? (NOT FOR REPLICATION)?
-    AS (compoundStatement | EXTERNAL NAME methodSpecifier)
+    AS (BEGIN? compoundStatement END? | EXTERNAL NAME methodSpecifier)
     ;
 
 dmlTriggerOption

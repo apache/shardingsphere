@@ -855,6 +855,8 @@ public enum SQLVisitorRule {
     
     UPDATE_STATISTICS("UpdateStatistics", SQLStatementType.DDL),
     
+    DECLARE_VARIABLE("DeclareVariable", SQLStatementType.DDL),
+    
     SPOOL("Spool", SQLStatementType.DAL),
     
     START_REPLICA("StartReplica", SQLStatementType.DAL),
