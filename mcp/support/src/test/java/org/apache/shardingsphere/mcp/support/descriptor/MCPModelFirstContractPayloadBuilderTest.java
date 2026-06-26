@@ -69,12 +69,9 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertThat(actual.size(), is(5));
         Map<?, ?> actualToolCall = findByType(actual, "tool_call");
         assertTrue(((Collection<?>) actualToolCall.get("required_fields")).contains("tool_name"));
-        assertFalse(((Collection<?>) actualToolCall.get("required_fields")).contains("requires_user_approval"));
         Map<?, ?> actualCompletion = findByType(actual, "completion");
         assertTrue(((Collection<?>) actualCompletion.get("required_fields")).contains("ref"));
         assertTrue(((Collection<?>) actualCompletion.get("required_fields")).contains("argument"));
-        assertFalse(((Collection<?>) actualCompletion.get("required_fields")).contains("reference_type"));
-        assertFalse(((Collection<?>) actualCompletion.get("required_fields")).contains("argument_name"));
         assertTrue(((Collection<?>) actualCompletion.get("optional_fields")).contains("resume_ref"));
         assertTrue(((Collection<?>) actualCompletion.get("optional_fields")).contains("resume_arguments"));
     }

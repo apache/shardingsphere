@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
@@ -65,9 +64,9 @@ public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHan
     
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        rejectOperationTypeAlias(toolCall.getArguments());
         ReadwriteSplittingStatusWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ReadwriteSplittingStatusWorkflowRequest::new, toolCall.getArguments(),
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        request.setOperationType("");
         WorkflowContextSnapshot snapshot = planningService.plan(
                 workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
         return new MCPMapResponse(createPlanResponse(snapshot));
@@ -161,12 +160,6 @@ public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHan
         applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
         applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request::setStorageUnit);
         applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, request::setTargetStatus);
-    }
-    
-    private void rejectOperationTypeAlias(final Map<String, Object> arguments) {
-        if (arguments.containsKey(WorkflowFieldNames.OPERATION_TYPE)) {
-            throw new MCPInvalidRequestException("operation_type is not supported for readwrite-splitting status. Use target_status instead.");
-        }
     }
     
     private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatab
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.tool.request.ProxyPreflightValidationRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.ProxyPreflightValidationResult;
+import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
+import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -56,16 +56,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-class ProxyPreflightValidationServiceTest {
+class RuntimeDatabaseValidationServiceTest {
     
     @Test
     void assertValidateWithMissingDatabase() {
         MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
         MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
-        ProxyPreflightValidationResult actual = new ProxyPreflightValidationService(profileLoader, metadataLoader)
-                .validate(new ProxyPreflightValidationRequest(""),
+        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
+                .validate(new RuntimeDatabaseValidationRequest(""),
                         ignored -> Optional.empty(),
-                        ProxyPreflightValidationServiceTest::createRecoveryPayload);
+                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("failed"));
         assertThat(actualPayload.get("category"), is("invalid_configuration"));
@@ -79,10 +79,10 @@ class ProxyPreflightValidationServiceTest {
     void assertValidateWithUnknownDatabase() {
         MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
         MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
-        ProxyPreflightValidationResult actual = new ProxyPreflightValidationService(profileLoader, metadataLoader)
-                .validate(new ProxyPreflightValidationRequest("logic_db"),
+        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
+                .validate(new RuntimeDatabaseValidationRequest("logic_db"),
                         ignored -> Optional.empty(),
-                        ProxyPreflightValidationServiceTest::createRecoveryPayload);
+                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("failed"));
         assertThat(actualPayload.get("category"), is("invalid_configuration"));
@@ -97,10 +97,10 @@ class ProxyPreflightValidationServiceTest {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration();
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("logic_db"));
-        ProxyPreflightValidationService service = new ProxyPreflightValidationService(profileLoader, metadataLoader);
-        ProxyPreflightValidationResult actual = service.validate(new ProxyPreflightValidationRequest("logic_db"),
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService(profileLoader, metadataLoader);
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
                 ignored -> Optional.of(runtimeDatabaseConfig),
-                ProxyPreflightValidationServiceTest::createRecoveryPayload);
+                RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("ready"));
         ArgumentCaptor<RuntimeDatabaseConfiguration> configurationCaptor = ArgumentCaptor.forClass(RuntimeDatabaseConfiguration.class);
@@ -115,10 +115,10 @@ class ProxyPreflightValidationServiceTest {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration();
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("logic_db"));
-        ProxyPreflightValidationResult actual = new ProxyPreflightValidationService(profileLoader, metadataLoader)
-                .validate(new ProxyPreflightValidationRequest("logic_db"),
+        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
+                .validate(new RuntimeDatabaseValidationRequest("logic_db"),
                         ignored -> Optional.of(runtimeDatabaseConfig),
-                        ProxyPreflightValidationServiceTest::createRecoveryPayload);
+                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("ready"));
         assertThat(((Map<?, ?>) ((List<?>) actualPayload.get("checks")).get(4)).get("status"), is("passed"));
@@ -131,10 +131,10 @@ class ProxyPreflightValidationServiceTest {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("MySQL", InvisibleDatabaseDriver.JDBC_URL, "demo", "", InvisibleDatabaseDriver.class.getName());
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("public"));
-        ProxyPreflightValidationResult actual = new ProxyPreflightValidationService(profileLoader, metadataLoader)
-                .validate(new ProxyPreflightValidationRequest("logic_db"),
+        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
+                .validate(new RuntimeDatabaseValidationRequest("logic_db"),
                         ignored -> Optional.of(runtimeDatabaseConfig),
-                        ProxyPreflightValidationServiceTest::createRecoveryPayload);
+                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("failed"));
         assertThat(actualPayload.get("category"), is(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE));
@@ -150,10 +150,10 @@ class ProxyPreflightValidationServiceTest {
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class)))
                 .thenThrow(RuntimeDatabaseConnectionException.connectionFailed("logic_db", new SQLException("Broken connection")));
-        ProxyPreflightValidationResult actual = new ProxyPreflightValidationService(profileLoader, metadataLoader)
-                .validate(new ProxyPreflightValidationRequest("logic_db"),
+        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
+                .validate(new RuntimeDatabaseValidationRequest("logic_db"),
                         ignored -> Optional.of(runtimeDatabaseConfig),
-                        ProxyPreflightValidationServiceTest::createRecoveryPayload);
+                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("failed"));
         assertThat(actualPayload.get("category"), is(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED));
@@ -169,10 +169,10 @@ class ProxyPreflightValidationServiceTest {
         MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration();
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenThrow(cause);
-        ProxyPreflightValidationResult actual = new ProxyPreflightValidationService(profileLoader, metadataLoader)
-                .validate(new ProxyPreflightValidationRequest("logic_db"),
+        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
+                .validate(new RuntimeDatabaseValidationRequest("logic_db"),
                         ignored -> Optional.of(runtimeDatabaseConfig),
-                        ProxyPreflightValidationServiceTest::createRecoveryPayload);
+                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         List<?> checks = (List<?>) actualPayload.get("checks");
         assertThat(actualPayload.get("status"), is("failed"));
@@ -216,7 +216,7 @@ class ProxyPreflightValidationServiceTest {
     
     private static final class InvisibleDatabaseDriver implements Driver {
         
-        private static final String JDBC_URL = "jdbc:preflight:invisible";
+        private static final String JDBC_URL = "jdbc:runtime-validation:invisible";
         
         private static final InvisibleDatabaseDriver INSTANCE = new InvisibleDatabaseDriver();
         

@@ -80,15 +80,6 @@ class WorkflowRequestBinderTest {
     }
     
     @Test
-    void assertBindPlanningRequestRejectsUserOverrides() {
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> WorkflowRequestBinder.bindPlanningRequest(Map.of("user_overrides", Map.of("algorithm_type", "MD5")),
-                        (request, workflowPlanningArguments) -> request.setAlgorithmType(workflowPlanningArguments.getStringArgument("algorithm_type")),
-                        (request, structuredIntentEvidence) -> request.setFieldSemantics(String.valueOf(structuredIntentEvidence.get("field_semantics")))));
-        assertThat(actual.getMessage(), is("user_overrides is not supported. Use top-level workflow arguments instead."));
-    }
-    
-    @Test
     void assertBindPlanningRequestRejectsInvalidStructuredIntentEvidence() {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> WorkflowRequestBinder.bindPlanningRequest(Map.of(
                 "database", "logic_db",

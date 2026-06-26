@@ -17,34 +17,24 @@
 
 package org.apache.shardingsphere.mcp.support.database.tool.request;
 
-import lombok.Getter;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import java.util.Objects;
 
-/**
- * Proxy preflight validation request.
- */
-@Getter
-public final class ProxyPreflightValidationRequest {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class RuntimeDatabaseValidationRequestTest {
     
-    private final String database;
-    
-    public ProxyPreflightValidationRequest(final String database) {
-        this.database = Objects.toString(database, "");
+    @Test
+    void assertFromPreservesDatabaseArgument() {
+        RuntimeDatabaseValidationRequest actual = RuntimeDatabaseValidationRequest.from(Map.of("database", " logic_db "));
+        assertThat(actual.getDatabase(), is(" logic_db "));
     }
     
-    /**
-     * Create request from MCP tool arguments.
-     *
-     * @param arguments tool arguments
-     * @return request
-     */
-    public static ProxyPreflightValidationRequest from(final Map<String, Object> arguments) {
-        return new ProxyPreflightValidationRequest(getRawString(arguments, "database"));
-    }
-    
-    private static String getRawString(final Map<String, Object> arguments, final String fieldName) {
-        return Objects.toString(arguments.get(fieldName), "");
+    @Test
+    void assertFromDefaultsMissingDatabase() {
+        RuntimeDatabaseValidationRequest actual = RuntimeDatabaseValidationRequest.from(Map.of());
+        assertThat(actual.getDatabase(), is(""));
     }
 }

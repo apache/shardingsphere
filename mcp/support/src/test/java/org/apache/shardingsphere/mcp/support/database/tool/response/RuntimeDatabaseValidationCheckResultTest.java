@@ -24,11 +24,11 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class ProxyPreflightCheckResultTest {
+class RuntimeDatabaseValidationCheckResultTest {
     
     @Test
     void assertPassed() {
-        ProxyPreflightCheckResult actual = ProxyPreflightCheckResult.passed("jdbc_connectivity", "Opened a JDBC connection.");
+        RuntimeDatabaseValidationCheckResult actual = RuntimeDatabaseValidationCheckResult.passed("jdbc_connectivity", "Opened a JDBC connection.");
         assertThat(actual.getName(), is("jdbc_connectivity"));
         assertThat(actual.getStatus(), is("passed"));
         assertThat(actual.getCategory(), is("ready"));
@@ -37,7 +37,7 @@ class ProxyPreflightCheckResultTest {
     
     @Test
     void assertFailed() {
-        ProxyPreflightCheckResult actual = ProxyPreflightCheckResult.failed("jdbc_driver", "missing_jdbc_driver", "Failed to load the configured JDBC driver.");
+        RuntimeDatabaseValidationCheckResult actual = RuntimeDatabaseValidationCheckResult.failed("jdbc_driver", "missing_jdbc_driver", "Failed to load the configured JDBC driver.");
         assertThat(actual.getName(), is("jdbc_driver"));
         assertThat(actual.getStatus(), is("failed"));
         assertThat(actual.getCategory(), is("missing_jdbc_driver"));
@@ -46,7 +46,7 @@ class ProxyPreflightCheckResultTest {
     
     @Test
     void assertSkipped() {
-        ProxyPreflightCheckResult actual = ProxyPreflightCheckResult.skipped("database_visibility", "Skipped because no database was provided.");
+        RuntimeDatabaseValidationCheckResult actual = RuntimeDatabaseValidationCheckResult.skipped("database_visibility", "Skipped because no database was provided.");
         assertThat(actual.getName(), is("database_visibility"));
         assertThat(actual.getStatus(), is("skipped"));
         assertThat(actual.getCategory(), is("skipped"));
@@ -55,7 +55,7 @@ class ProxyPreflightCheckResultTest {
     
     @Test
     void assertToPayload() {
-        Map<String, Object> actual = ProxyPreflightCheckResult.failed("metadata_read", "connection_failed", "Failed to read metadata.").toPayload();
+        Map<String, Object> actual = RuntimeDatabaseValidationCheckResult.failed("metadata_read", "connection_failed", "Failed to read metadata.").toPayload();
         assertThat(actual, is(Map.of(
                 "name", "metadata_read",
                 "status", "failed",

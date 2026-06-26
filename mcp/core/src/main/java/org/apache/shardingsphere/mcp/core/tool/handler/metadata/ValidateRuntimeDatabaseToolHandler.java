@@ -24,8 +24,8 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
-import org.apache.shardingsphere.mcp.support.database.tool.request.ProxyPreflightValidationRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.service.ProxyPreflightValidationService;
+import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
+import org.apache.shardingsphere.mcp.support.database.tool.service.RuntimeDatabaseValidationService;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.Map;
@@ -34,14 +34,14 @@ import java.util.Map;
  * Handler for runtime database validation tool.
  */
 @RequiredArgsConstructor
-public final class ValidateProxyConnectivityToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
+public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
     
     public static final String TOOL_NAME = "database_gateway_validate_runtime_database";
     
-    private final ProxyPreflightValidationService validationService;
+    private final RuntimeDatabaseValidationService validationService;
     
-    public ValidateProxyConnectivityToolHandler() {
-        this(new ProxyPreflightValidationService());
+    public ValidateRuntimeDatabaseToolHandler() {
+        this(new RuntimeDatabaseValidationService());
     }
     
     @Override
@@ -56,7 +56,7 @@ public final class ValidateProxyConnectivityToolHandler implements MCPToolHandle
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
-        return validationService.validate(ProxyPreflightValidationRequest.from(toolCall.getArguments()), databaseContext::findRuntimeDatabaseConfiguration, this::createRecoveryPayload);
+        return validationService.validate(RuntimeDatabaseValidationRequest.from(toolCall.getArguments()), databaseContext::findRuntimeDatabaseConfiguration, this::createRecoveryPayload);
     }
     
     @SuppressWarnings("unchecked")

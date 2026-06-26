@@ -51,21 +51,47 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
-    void assertValidateRejectsPublicAliasOutputField() {
+    void assertValidateRejectsRemovedModelFacingOutputField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
                 createOutputSchema(Map.of("recommended_next_tool", Map.of("type", "string", "description", "Removed alias.")))))),
-                "Tool `database_gateway_test_tool` outputSchema must use canonical fields instead of banned `recommended_next_tool`.");
+                "Tool `database_gateway_test_tool` model-facing contract must use canonical fields instead of removed `recommended_next_tool`.");
     }
     
     @Test
-    void assertValidateRejectsPublicUserOverridesInputField() {
+    void assertValidateRejectsRemovedModelFacingInputField() {
         assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.",
                 createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query."),
                         "user_overrides", Map.of("type", "object", "description", "Removed duplicate input."))),
                 createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
-                "Tool `database_gateway_test_tool` inputSchema must use canonical fields instead of banned `user_overrides`.");
+                "Tool `database_gateway_test_tool` model-facing contract must use canonical fields instead of removed `user_overrides`.");
+    }
+    
+    @Test
+    void assertValidateRejectsRemovedModelFacingRequiredInputField() {
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.",
+                createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query.")), List.of("query", "required_arguments")),
+                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                "Tool `database_gateway_test_tool` model-facing contract must use canonical fields instead of removed `required_arguments`.");
+    }
+    
+    @Test
+    void assertValidateRejectsUnsupportedNextActionSchemaField() {
+        assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
+                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                createOutputSchema(Map.of("next_actions", createNextActionsSchema("extra_context")))))),
+                "Tool `database_gateway_test_tool` next_actions item contains unsupported field `extra_context`.");
+    }
+    
+    @Test
+    void assertValidateRejectsUnsupportedNextActionExampleField() {
+        assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
+                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                createOutputSchema(Map.of("next_actions", createNextActionsSchema()), List.of(Map.of("next_actions", List.of(
+                        Map.of("order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_test_tool", "arguments", Map.of(), "extra_context", "bad")))))))),
+                "Tool `database_gateway_test_tool` next_actions example `tool_call` contains unsupported field `extra_context`.");
     }
     
     @Test
@@ -172,7 +198,11 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     private Map<String, Object> createInputSchema(final Map<String, Object> properties) {
-        return Map.of("type", "object", "properties", properties, "required", List.of("query"), "additionalProperties", false);
+        return createInputSchema(properties, List.of("query"));
+    }
+    
+    private Map<String, Object> createInputSchema(final Map<String, Object> properties, final List<String> requiredFields) {
+        return Map.of("type", "object", "properties", properties, "required", requiredFields, "additionalProperties", false);
     }
     
     private Map<String, Object> createOutputSchema() {
@@ -181,5 +211,26 @@ class MCPDescriptorCatalogValidatorTest {
     
     private Map<String, Object> createOutputSchema(final Map<String, Object> properties) {
         return Map.of("type", "object", "properties", properties, "examples", List.of(Map.of("status", "ok")));
+    }
+    
+    private Map<String, Object> createOutputSchema(final Map<String, Object> properties, final List<Map<String, Object>> examples) {
+        return Map.of("type", "object", "properties", properties, "examples", examples);
+    }
+    
+    private Map<String, Object> createNextActionsSchema() {
+        return createNextActionsSchema("");
+    }
+    
+    private Map<String, Object> createNextActionsSchema(final String additionalFieldName) {
+        Map<String, Object> actionProperties = new LinkedHashMap<>();
+        actionProperties.put("order", Map.of("type", "integer", "description", "1-based action order."));
+        actionProperties.put("type", Map.of("type", "string", "description", "Canonical action type."));
+        actionProperties.put("title", Map.of("type", "string", "description", "Action title."));
+        actionProperties.put("tool_name", Map.of("type", "string", "description", "Canonical tool name."));
+        actionProperties.put("arguments", Map.of("type", "object", "description", "Canonical tool arguments."));
+        if (!additionalFieldName.isEmpty()) {
+            actionProperties.put(additionalFieldName, Map.of("type", "string", "description", "Unsupported field."));
+        }
+        return Map.of("type", "array", "description", "Structured follow-up actions.", "items", Map.of("type", "object", "properties", actionProperties));
     }
 }

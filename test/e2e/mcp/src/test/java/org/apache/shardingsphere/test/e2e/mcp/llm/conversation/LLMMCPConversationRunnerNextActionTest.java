@@ -98,22 +98,6 @@ class LLMMCPConversationRunnerNextActionTest extends AbstractLLMMCPConversationR
     }
     
     @Test
-    void assertRunRejectsLegacyCompletionArguments() throws IOException, InterruptedException {
-        LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.COMPLETE, "database_gateway_execute_query"));
-        LLMMCPConversationRunner actualRunner = createRunner(3);
-        Map<String, Object> completionReference = Map.of("type", "ref/prompt", "name", PROMPT_NAME);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", MCPInteractionActionNames.COMPLETE, Map.of("reference", completionReference, "argument_name", "schema"), "completion-response"));
-        
-        LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
-        
-        assertFalse(actual.getAssertionReport().isSuccess());
-        assertThat(actual.getAssertionReport().getFailureType(), is("invalid_tool_arguments"));
-        assertThat(actual.getInteractionTrace().size(), is(1));
-        verify(getMCPInteractionClient(), never()).complete(completionReference, "schema", "", Map.of());
-    }
-    
-    @Test
     void assertRunPromptsImmediateCompletionNextAction() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE, "database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(5);

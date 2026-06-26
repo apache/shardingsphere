@@ -51,7 +51,6 @@ class MCPDescriptorCatalogLoaderTest {
         assertPublicToolAnnotations(actual);
         assertPlanningToolAnnotations(actual);
         assertResourceDescriptor(actual);
-        assertNoBannedPublicAliasFields(actual);
         assertNoResponseFormatOptions(actual);
         assertNoToolExecutionPayload(actual);
     }
@@ -61,7 +60,6 @@ class MCPDescriptorCatalogLoaderTest {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
         MCPToolDescriptor actual = findTool(catalog, "database_gateway_apply_workflow");
         assertThat(findInputProperty(actual, "execution_mode").get("enum"), is(List.of("preview", "review-then-execute", "manual-only")));
-        assertFalse(hasInputProperty(actual, "approved_by_user"));
     }
     
     @Test
@@ -140,11 +138,6 @@ class MCPDescriptorCatalogLoaderTest {
         return (Map<?, ?>) ((Map<?, ?>) properties).get(fieldName);
     }
     
-    private boolean hasInputProperty(final MCPToolDescriptor toolDescriptor, final String fieldName) {
-        Object properties = toolDescriptor.getInputSchema().get("properties");
-        return ((Map<?, ?>) properties).containsKey(fieldName);
-    }
-    
     private void assertResourceDescriptor(final MCPDescriptorCatalog catalog) {
         ShardingSphereMCPResourceMetadata metadata = findShardingSphereResourceMetadata(catalog, "shardingsphere://workflows/{plan_id}");
         assertThat(metadata.getResourceKind(), is("detail"));
@@ -154,12 +147,6 @@ class MCPDescriptorCatalogLoaderTest {
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("detail"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.RELATED_TOOLS), is(List.of("database_gateway_validate_workflow", "database_gateway_apply_workflow")));
         assertThat(findShardingSphereResourceMetadata(catalog, "shardingsphere://workflow/test-resource").getResourceKind(), is("detail"));
-    }
-    
-    private void assertNoBannedPublicAliasFields(final MCPDescriptorCatalog catalog) {
-        for (MCPToolDescriptor each : catalog.getToolDescriptors()) {
-            assertFalse(containsBannedPublicAliasField(each.getOutputSchema()));
-        }
     }
     
     private void assertNoResponseFormatOptions(final MCPDescriptorCatalog catalog) {
@@ -174,33 +161,6 @@ class MCPDescriptorCatalogLoaderTest {
         for (Object each : (List<?>) payload.get("tools")) {
             assertFalse(((Map<?, ?>) each).containsKey("execution"));
         }
-    }
-    
-    private boolean containsBannedPublicAliasField(final Object value) {
-        if (value instanceof Map) {
-            return containsBannedPublicAliasFieldMap((Map<?, ?>) value);
-        }
-        if (value instanceof Iterable) {
-            for (Object each : (Iterable<?>) value) {
-                if (containsBannedPublicAliasField(each)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsBannedPublicAliasFieldMap(final Map<?, ?> value) {
-        if (value.containsKey("recommended_next_tool") || value.containsKey("suggested_next_tool") || value.containsKey("suggested_next_tools")
-                || value.containsKey("recommended_recovery") || value.containsKey("suggested_next_action")) {
-            return true;
-        }
-        for (Object each : value.values()) {
-            if (containsBannedPublicAliasField(each)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private boolean containsResponseFormatOption(final Object value) {

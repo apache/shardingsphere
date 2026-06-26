@@ -86,7 +86,6 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actualReviewFocus.get("artifact_categories"), is(List.of("algorithm_properties")));
         assertThat(actualReviewFocus.get("side_effect_scope"), is(List.of()));
         assertFalse((Boolean) actualReviewFocus.get("manual_only"));
-        assertFalse(actualReviewFocus.containsKey("requires_user_approval"));
         assertThat(actualReviewFocus.get("next_review_action"), is("answer_clarification_questions"));
         List<?> actualClarificationQuestions = (List<?>) actual.get("clarification_questions");
         assertThat(((Map<?, ?>) actualClarificationQuestions.getFirst()).get("input_type"), is("boolean"));
@@ -94,8 +93,6 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actualClarificationQuestions.getFirst()).get("display_message"), is("Do you need LIKE query?"));
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(1)).get("input_type"), is("secret"));
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(1)).get("secret"));
-        assertFalse(actual.containsKey("recommended_next_tool"));
-        assertFalse(actual.containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
         assertTrue(extractResourceUris((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("type"), is("ask_user"));
@@ -169,15 +166,11 @@ class WorkflowPlanPayloadBuilderTest {
         assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));
         assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
         assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
-        assertFalse(actual.containsKey("recommended_next_tool"));
-        assertFalse(actual.containsKey("requires_user_approval"));
         Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
-        assertFalse(actualReviewFocus.containsKey("requires_user_approval"));
         assertThat(actualReviewFocus.get("next_review_action"), is("call_database_gateway_apply_workflow_preview"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
-        assertFalse(actualNextAction.containsKey("requires_user_approval"));
     }
     
     @Test
@@ -325,12 +318,10 @@ class WorkflowPlanPayloadBuilderTest {
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
         assertTrue((Boolean) actualReviewFocus.get("manual_only"));
-        assertFalse(actualReviewFocus.containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) actual.get("argument_provenance")).get("execution_mode"), is("inferred_from_intent"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
-        assertFalse(actualNextAction.containsKey("requires_user_approval"));
     }
     
     @Test
@@ -346,7 +337,6 @@ class WorkflowPlanPayloadBuilderTest {
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
         assertThat(actual.get("response_mode"), is("terminal"));
-        assertFalse(actual.containsKey("recommended_next_tool"));
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_plan_encrypt_rule"));
     }

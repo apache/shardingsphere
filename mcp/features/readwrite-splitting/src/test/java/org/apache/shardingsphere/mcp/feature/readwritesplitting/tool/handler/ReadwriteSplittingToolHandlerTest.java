@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
@@ -47,7 +46,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -125,14 +123,6 @@ class ReadwriteSplittingToolHandlerTest {
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(requestCaptor.getValue().getStorageUnit(), is("read_ds_0"));
         assertThat(requestCaptor.getValue().getTargetStatus(), is("disable"));
-    }
-    
-    @Test
-    void assertHandlePlanStatusRejectsOperationTypeAlias() {
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> new PlanReadwriteSplittingStatusToolHandler(mock(ReadwriteSplittingStatusWorkflowPlanningService.class)).handle(
-                        createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of("operation_type", "disable"))));
-        assertThat(actual.getMessage(), is("operation_type is not supported for readwrite-splitting status. Use target_status instead."));
     }
     
     private WorkflowContextSnapshot createRuleSnapshot() {

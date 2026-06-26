@@ -101,8 +101,6 @@ class MaskToolHandlerTest {
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
-        assertFalse(actualNextAction.containsKey("requires_user_approval"));
-        assertFalse(actualNextAction.containsKey("required_arguments"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("plan_id"), is("plan-1"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
     }

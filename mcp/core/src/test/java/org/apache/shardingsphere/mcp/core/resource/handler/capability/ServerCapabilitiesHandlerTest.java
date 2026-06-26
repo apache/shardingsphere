@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
@@ -44,7 +43,6 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(
                 ((Collection<?>) actual.get("supportedTools")).containsAll(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
                         "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
-        assertFalse(((Collection<?>) actual.get("supportedTools")).contains("database_gateway_validate_proxy_connectivity"));
         assertFalse(((List<?>) actual.get("resources")).isEmpty());
         assertFalse(((List<?>) actual.get("resourceTemplates")).isEmpty());
         assertFalse(((List<?>) actual.get("tools")).isEmpty());
@@ -59,7 +57,6 @@ class ServerCapabilitiesHandlerTest {
         assertNextActionContract(actual);
         assertCommonFlows(actual);
         assertSecurityHints(actual);
-        assertRemovedPayloadFieldsAbsent(actual);
         assertResourcePayloadContracts(actual);
         assertCoreToolSchemas(actual);
     }
@@ -154,7 +151,6 @@ class ServerCapabilitiesHandlerTest {
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
         assertThat(actual.get("catalog_fields"), is(List.of("supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability")));
         assertThat(actual.get("payload_fields"), is("ShardingSphere-owned structured payload fields use snake_case."));
-        assertTrue(String.valueOf(actual.get("alias_rule")).contains("Do not assume"));
     }
     
     private void assertNextActionContract(final Map<String, Object> capabilities) {
@@ -212,13 +208,6 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("abuse_guard")).contains("counted before dispatch"));
     }
     
-    private void assertRemovedPayloadFieldsAbsent(final Map<String, Object> capabilities) {
-        String actual = JsonUtils.toJsonString(capabilities);
-        for (String each : List.of("pending_questions", "parent_uri", "next_resource_uris", "read_resources_first", "empty_reason", "not_found_reason")) {
-            assertFalse(actual.contains(each));
-        }
-    }
-    
     private void assertResourcePayloadContracts(final Map<String, Object> capabilities) {
         Map<?, ?> capabilityCatalog = findResource(capabilities, "shardingsphere://capabilities");
         assertThat(getResourceMeta(capabilityCatalog).get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("capability-catalog"));
@@ -274,28 +263,6 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> inspectMetadataPrompt = findPrompt(capabilities, "inspect_metadata");
         Map<?, ?> schemaArgument = findPromptArgument(inspectMetadataPrompt, "schema");
         assertThat(((Map<?, ?>) schemaArgument.get("completion")).get("required_context_arguments"), is(List.of("database")));
-        assertNoRemovedPublicAliasFields(capabilities);
-    }
-    
-    private void assertNoRemovedPublicAliasFields(final Object value) {
-        if (value instanceof Map) {
-            assertNoRemovedPublicAliasFieldMap((Map<?, ?>) value);
-        } else if (value instanceof Collection) {
-            for (Object each : (Collection<?>) value) {
-                assertNoRemovedPublicAliasFields(each);
-            }
-        }
-    }
-    
-    private void assertNoRemovedPublicAliasFieldMap(final Map<?, ?> value) {
-        assertFalse(value.containsKey("recommended_next_tool"));
-        assertFalse(value.containsKey("suggested_next_tool"));
-        assertFalse(value.containsKey("suggested_next_tools"));
-        assertFalse(value.containsKey("recommended_recovery"));
-        assertFalse(value.containsKey("suggested_next_action"));
-        for (Object each : value.values()) {
-            assertNoRemovedPublicAliasFields(each);
-        }
     }
     
     private Map<?, ?> findResource(final Map<String, Object> capabilities, final String uriTemplate) {

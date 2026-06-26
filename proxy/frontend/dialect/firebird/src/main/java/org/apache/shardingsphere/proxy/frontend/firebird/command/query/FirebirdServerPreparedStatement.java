@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
@@ -35,4 +36,7 @@ public final class FirebirdServerPreparedStatement implements ServerPreparedStat
     private final SQLStatementContext sqlStatementContext;
     
     private final HintValueContext hintValueContext;
+    
+    @Setter
+    private long affectedRows;
 }
