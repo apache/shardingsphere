@@ -746,7 +746,7 @@ functionOption
 
 validStatement
     : (createTable | alterTable | dropTable | truncateTable | insert
-    | update | delete | select | setVariable | declareLocalVariable) SEMI_?
+    | update | delete | select | setVariable | declareLocalVariable | declareVariable) SEMI_?
     ;
 
 procParameters
@@ -808,7 +808,7 @@ commonTableExpr
 createTriggerClause
     : (WITH dmlTriggerOption COMMA_ dmlTriggerOption)? (FOR | AFTER | INSTEAD OF)
     INSERT? COMMA_? UPDATE? COMMA_? DELETE? COMMA_? (WITH APPEND)? (NOT FOR REPLICATION)?
-    AS (compoundStatement | EXTERNAL NAME methodSpecifier)
+    AS (BEGIN? compoundStatement END? | EXTERNAL NAME methodSpecifier)
     ;
 
 dmlTriggerOption

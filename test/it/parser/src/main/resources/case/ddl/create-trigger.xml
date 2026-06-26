@@ -19,6 +19,11 @@
 <sql-parser-test-cases>
     <create-trigger sql-case-id="create_trigger" />
     <create-trigger sql-case-id="create_trigger_with_database_scoped" />
+    <create-trigger sql-case-id="create_trigger_with_declare" />
+    <create-trigger sql-case-id="create_trigger_with_declare_table_variable" />
+    <create-trigger sql-case-id="create_trigger_or_alter_with_declare" />
+    <create-trigger sql-case-id="create_trigger_with_declare_cursor" />
+    <create-trigger sql-case-id="create_trigger_with_declare_multiple_variables" />
 <!--    <create-trigger sql-case-id="create_trigger_of_balance" />-->
 <!--    <create-trigger sql-case-id="create_trigger_with_when" />-->
 <!--    <create-trigger sql-case-id="create_trigger_after_update" />-->
