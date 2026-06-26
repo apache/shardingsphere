@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.factory.init.type;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
@@ -33,32 +34,41 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
@@ -67,6 +77,8 @@ import static org.mockito.Mockito.withSettings;
 @StaticMockSettings({ShardingSphereDatabasesFactory.class, GlobalRulesBuilder.class, ShardingSphereStatisticsFactory.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class LocalConfigurationMetaDataContextsInitFactoryTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock
     private PersistRepository repository;
@@ -95,6 +107,27 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
             verify(persistFacade.getDatabaseMetaDataFacade().getSchema()).add("foo_db", "empty_schema");
             verify(persistFacade.getDatabaseMetaDataFacade().getTable()).persist(eq("foo_db"), eq("empty_schema"), anyCollection());
             verify(persistFacade.getStatisticsService()).persist(database, "empty_schema", statistics.getDatabaseStatistics("foo_db").getSchemaStatistics("empty_schema"));
+        }
+    }
+    
+    @Test
+    void assertCreateWithGlobalDataSources() throws SQLException {
+        MockedDataSource dataSource = new MockedDataSource();
+        Map<String, DataSource> globalDataSources = Collections.singletonMap("foo_ds", dataSource);
+        ComputeNodeInstanceContext instanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
+        when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), eq(instanceContext), eq(databaseType))).thenReturn(Collections.emptyList());
+        when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
+        when(ShardingSphereStatisticsFactory.create(any(), any())).thenReturn(new ShardingSphereStatistics());
+        try (
+                MockedStatic<DatabaseTypeEngine> databaseTypeEngineMocked = mockStatic(DatabaseTypeEngine.class);
+                MockedConstruction<MetaDataPersistFacade> ignored = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS))) {
+            databaseTypeEngineMocked.when(() -> DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(databaseType);
+            databaseTypeEngineMocked.when(() -> DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(databaseType);
+            LocalConfigurationMetaDataContextsInitFactory factory = new LocalConfigurationMetaDataContextsInitFactory(repository, instanceContext);
+            MetaDataContexts actual = factory.create(new ContextManagerBuilderParameter(null, Collections.emptyMap(), globalDataSources, Collections.emptyList(), new Properties(),
+                    Collections.emptyList(), null));
+            assertThat(actual.getMetaData().getGlobalResourceMetaData().getStorageUnits().get("foo_ds").getStorageType(), is(databaseType));
+            databaseTypeEngineMocked.verify(() -> DatabaseTypeEngine.getStorageType(dataSource));
         }
     }
     

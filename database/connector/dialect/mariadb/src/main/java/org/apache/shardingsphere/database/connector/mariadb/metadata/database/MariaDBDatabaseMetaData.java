@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.branch.DialectBranchOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
@@ -89,6 +90,11 @@ public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectProtocolVersionOption getProtocolVersionOption() {
         return delegate.getProtocolVersionOption();
+    }
+    
+    @Override
+    public Optional<DialectBranchOption> getBranchOption() {
+        return Optional.of(new DialectBranchOption("SELECT VERSION()"));
     }
     
     @Override

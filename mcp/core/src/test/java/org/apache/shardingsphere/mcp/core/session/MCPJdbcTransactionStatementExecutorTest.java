@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.session;
 
+import org.apache.shardingsphere.mcp.core.fixture.DatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
@@ -35,8 +36,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -46,6 +49,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -132,7 +136,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     }
     
     private MCPDatabaseCapabilityProvider createDatabaseCapabilityBuilder() {
-        return new MCPDatabaseCapabilityProvider(Map.of(
+        return DatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(Map.of(
                 "logic_db", createCapabilityRuntimeDatabaseConfiguration("logic_db", "MySQL"),
                 "warehouse", createCapabilityRuntimeDatabaseConfiguration("warehouse", "Hive")));
     }
@@ -152,10 +156,18 @@ class MCPJdbcTransactionStatementExecutorTest {
             when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
             when(databaseMetaData.getURL()).thenReturn(String.format("jdbc:%s://transaction-executor/test", databaseType.toLowerCase(java.util.Locale.ENGLISH)));
+            mockEmptyScalarQueries(connection);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
         return result;
+    }
+    
+    private void mockEmptyScalarQueries(final Connection connection) throws SQLException {
+        Statement statement = mock(Statement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(anyString())).thenReturn(resultSet);
     }
     
     private void prepareTransactionState(final String sql, final MCPSessionManager sessionManager, final Connection connection, final Savepoint savepoint) throws SQLException {

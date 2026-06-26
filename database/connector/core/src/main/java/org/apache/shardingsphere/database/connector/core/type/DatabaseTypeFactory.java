@@ -19,14 +19,23 @@ package org.apache.shardingsphere.database.connector.core.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.exception.AmbiguousStorageTypeException;
 import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.branch.DialectBranchOption;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +69,69 @@ public final class DatabaseTypeFactory {
      * @throws SQLException SQL exception
      */
     public static DatabaseType get(final DatabaseMetaData metaData) throws SQLException {
-        return metaData.getDatabaseProductName().contains("Hive") ? TypedSPILoader.getService(DatabaseType.class, "Hive") : get(metaData.getURL());
+        return Objects.toString(metaData.getDatabaseProductName(), "").contains("Hive") ? TypedSPILoader.getService(DatabaseType.class, "Hive") : get(metaData.getURL());
+    }
+    
+    /**
+     * Get database type.
+     *
+     * @param connection database connection
+     * @return database type
+     * @throws SQLException SQL exception
+     */
+    public static DatabaseType get(final Connection connection) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        DatabaseType result = get(metaData);
+        Collection<DatabaseType> actualBranchDatabaseTypes = findActualBranchDatabaseTypes(connection, result);
+        checkUniqueActualBranchDatabaseType(metaData, actualBranchDatabaseTypes);
+        return actualBranchDatabaseTypes.isEmpty() ? result : actualBranchDatabaseTypes.iterator().next();
+    }
+    
+    private static void checkUniqueActualBranchDatabaseType(final DatabaseMetaData metaData, final Collection<DatabaseType> actualBranchDatabaseTypes) throws SQLException {
+        if (actualBranchDatabaseTypes.size() > 1) {
+            throw new AmbiguousStorageTypeException(metaData.getURL(), actualBranchDatabaseTypes.stream().map(DatabaseType::getType).collect(Collectors.toList()));
+        }
+    }
+    
+    private static Collection<DatabaseType> findActualBranchDatabaseTypes(final Connection connection, final DatabaseType trunkDatabaseType) throws SQLException {
+        Collection<DatabaseType> result = new LinkedList<>();
+        for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
+            if (!isBranchDatabaseType(each, trunkDatabaseType)) {
+                continue;
+            }
+            if (isActualBranchDatabaseType(each, connection)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private static boolean isBranchDatabaseType(final DatabaseType databaseType, final DatabaseType trunkDatabaseType) {
+        return databaseType.getTrunkDatabaseType().map(optional -> Objects.equals(optional.getType(), trunkDatabaseType.getType())).orElse(false);
+    }
+    
+    private static boolean isActualBranchDatabaseType(final DatabaseType databaseType, final Connection connection) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        return containsBranch(databaseType, metaData.getDatabaseProductName())
+                || containsBranch(databaseType, metaData.getDatabaseProductVersion()) || containsBranch(databaseType, queryBranchTypeDetectionValue(databaseType, connection));
+    }
+    
+    private static boolean containsBranch(final DatabaseType databaseType, final String value) {
+        return Objects.toString(value, "").toUpperCase(Locale.ENGLISH).contains(databaseType.getType().toUpperCase(Locale.ENGLISH));
+    }
+    
+    private static String queryBranchTypeDetectionValue(final DatabaseType databaseType, final Connection connection) {
+        Optional<DialectBranchOption> branchOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getBranchOption();
+        if (!branchOption.isPresent()) {
+            return "";
+        }
+        try (
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(branchOption.get().getBranchTypeDetectionSQL())) {
+            return resultSet.next() ? resultSet.getString(1) : "";
+        } catch (final SQLException ignored) {
+            return "";
+        }
     }
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {

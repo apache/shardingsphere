@@ -47,17 +47,25 @@ public final class StorageUnit {
     private final ConnectionProperties connectionProperties;
     
     public StorageUnit(final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProps, final DataSource dataSource) {
+        this(storageNode, dataSourcePoolProps, dataSource, getStorageType(dataSourcePoolProps));
+    }
+    
+    public StorageUnit(final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProps, final DataSource dataSource, final DatabaseType storageType) {
         this.storageNode = storageNode;
         Map<String, Object> standardProps = dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
         Object originUsername = standardProps.get("username");
         String username = null == originUsername ? "" : originUsername.toString();
-        storageType = DatabaseTypeFactory.get(url);
+        this.storageType = storageType;
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
         String catalog = storageNode.isInstanceStorageNode() ? parser.parse(url, username, null).getCatalog() : null;
         this.dataSource = storageNode.isInstanceStorageNode() ? new CatalogSwitchableDataSource(dataSource, catalog, url) : dataSource;
         dataSourcePoolProperties = dataSourcePoolProps;
         connectionProperties = createConnectionProperties(parser, catalog, standardProps);
+    }
+    
+    private static DatabaseType getStorageType(final DataSourcePoolProperties dataSourcePoolProps) {
+        return DatabaseTypeFactory.get(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString());
     }
     
     private ConnectionProperties createConnectionProperties(final ConnectionPropertiesParser parser, final String catalog, final Map<String, Object> standardProps) {
