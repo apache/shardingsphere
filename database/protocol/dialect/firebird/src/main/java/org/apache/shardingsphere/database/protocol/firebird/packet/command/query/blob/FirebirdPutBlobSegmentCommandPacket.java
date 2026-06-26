@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
@@ -36,16 +35,12 @@ public final class FirebirdPutBlobSegmentCommandPacket extends FirebirdCommandPa
     private final int segmentLength;
     
     public FirebirdPutBlobSegmentCommandPacket(final FirebirdPacketPayload payload) {
-        FirebirdBlobRegistry.clearSegment();
         payload.skipReserved(4);
         blobHandle = payload.readInt4();
         segmentLength = payload.readInt4();
         ByteBuf buffer = payload.readBuffer();
         segment = new byte[buffer.readableBytes()];
         buffer.readBytes(segment);
-        Preconditions.checkArgument(segmentLength == segment.length,
-                "Segment length mismatch, expected: %s, actual: %s", segmentLength, segment.length);
-        FirebirdBlobRegistry.setSegment(segment);
     }
     
     @Override
@@ -59,9 +54,7 @@ public final class FirebirdPutBlobSegmentCommandPacket extends FirebirdCommandPa
      * @return length of packet
      */
     public static int getLength(final FirebirdPacketPayload payload) {
-        // reserved (4) + blob handle (4) + segment length (4)
         int length = 12;
-        // + segment data
         length += payload.getBufferLength(length);
         return length;
     }

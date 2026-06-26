@@ -27,7 +27,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -155,7 +155,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             int expectedLength = null == columnDescriptors
                     ? FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
                             context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get())
-                    : FirebirdBatchSendMessageCommandPacket.getLength(payload, columnDescriptors);
+                    : FirebirdBatchMessageCommandPacket.getLength(payload, columnDescriptors);
             if (expectedLength < 0) {
                 return -1;
             }

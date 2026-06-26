@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
@@ -34,15 +34,15 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdGetBlobSegmentCommandExecutor implements CommandExecutor {
-
+    
     private static final int SEGMENT_STATE_COMPLETE = 0;
-
+    
     private static final int SEGMENT_STATE_PARTIAL = 1;
-
+    
     private static final int SEGMENT_STATE_EOF = 2;
-
+    
     private final FirebirdGetBlobSegmentCommandPacket packet;
-
+    
     @Override
     public Collection<DatabasePacket> execute() {
         byte[] segment = FirebirdBlobRegistry.getSegment();

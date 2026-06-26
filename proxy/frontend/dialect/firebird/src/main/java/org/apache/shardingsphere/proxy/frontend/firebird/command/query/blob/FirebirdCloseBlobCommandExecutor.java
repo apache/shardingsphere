@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.OptionalLong;
 
 /**
- * Cancel blob command executor for Firebird.
+ * Close blob command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor {
+public final class FirebirdCloseBlobCommandExecutor implements CommandExecutor {
     
-    private final FirebirdCancelBlobCommandPacket packet;
+    private final FirebirdCloseBlobCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
@@ -44,10 +43,9 @@ public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor 
     public Collection<DatabasePacket> execute() {
         int blobHandle = FirebirdBlobUploadCache.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
         OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
-        if (blobId.isPresent()) {
-            FirebirdBlobUploadCache.getInstance().removeUpload(connectionSession.getConnectionId(), blobId.getAsLong());
-        }
-        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
+        FirebirdBlobUploadCache.getInstance().closeUpload(connectionSession.getConnectionId(), blobHandle);
+        long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
+        FirebirdGenericResponsePacket response = new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId);
+        return Collections.singleton(response);
     }
 }

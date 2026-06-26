@@ -29,15 +29,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class FirebirdBlobHandleGenerator {
-
+    
     private static final FirebirdBlobHandleGenerator INSTANCE = new FirebirdBlobHandleGenerator();
-
+    
     private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
-
+    
     public static FirebirdBlobHandleGenerator getInstance() {
         return INSTANCE;
     }
-
+    
     /**
      * Register connection.
      *
@@ -46,7 +46,7 @@ public final class FirebirdBlobHandleGenerator {
     public void registerConnection(final int connectionId) {
         connectionRegistry.put(connectionId, new AtomicInteger());
     }
-
+    
     /**
      * Generate next BLOB handle for connection.
      *
@@ -56,7 +56,7 @@ public final class FirebirdBlobHandleGenerator {
     public int nextBlobHandle(final int connectionId) {
         return connectionRegistry.get(connectionId).incrementAndGet();
     }
-
+    
     /**
      * Unregister connection.
      *

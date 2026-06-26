@@ -29,7 +29,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -231,7 +231,7 @@ class FirebirdPacketCodecEngineTest {
             List<Object> out = new LinkedList<>();
             codecEngine.decode(context, in, out);
             assertThat(out.size(), is(1));
-            FirebirdBatchSendMessageCommandPacket actualPacket = createBatchSendMessagePacket((ByteBuf) out.iterator().next());
+            FirebirdBatchMessageCommandPacket actualPacket = createBatchSendMessagePacket((ByteBuf) out.iterator().next());
             assertThat(actualPacket.getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
             assertThat(actualPacket.getMessageCount(), is(2L));
             assertNull(getPendingPacketType());
@@ -416,8 +416,8 @@ class FirebirdPacketCodecEngineTest {
         FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
     }
     
-    private FirebirdBatchSendMessageCommandPacket createBatchSendMessagePacket(final ByteBuf byteBuf) {
-        return new FirebirdBatchSendMessageCommandPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
+    private FirebirdBatchMessageCommandPacket createBatchSendMessagePacket(final ByteBuf byteBuf) {
+        return new FirebirdBatchMessageCommandPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
     }
     
     private ByteBuf buildBatchMessage(final int statementHandle, final int... values) {

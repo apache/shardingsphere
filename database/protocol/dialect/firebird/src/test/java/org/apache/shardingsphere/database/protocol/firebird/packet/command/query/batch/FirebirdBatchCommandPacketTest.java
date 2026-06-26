@@ -60,13 +60,13 @@ class FirebirdBatchCommandPacketTest {
     @Test
     void assertBatchSendMessageGetLengthWhenHeaderIncomplete() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer().writeZero(8), StandardCharsets.UTF_8);
-        assertThat(FirebirdBatchSendMessageCommandPacket.getLength(payload, 1), is(-1));
+        assertThat(FirebirdBatchMessageCommandPacket.getLength(payload, 1), is(-1));
     }
     
     @Test
     void assertBatchSendMessageGetLengthWithoutBatchStatement() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer().writeZero(4).writeInt(1).writeInt(1), StandardCharsets.UTF_8);
-        assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchSendMessageCommandPacket.getLength(payload, CONNECTION_ID));
+        assertThrows(FirebirdProtocolException.class, () -> FirebirdBatchMessageCommandPacket.getLength(payload, CONNECTION_ID));
     }
     
     @Test
@@ -75,7 +75,7 @@ class FirebirdBatchCommandPacketTest {
         FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(longDescriptor()), 8L);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
         try {
-            assertThat(FirebirdBatchSendMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID), is(20));
+            assertThat(FirebirdBatchMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID), is(20));
             assertTrue(batchStatement.getParameterValues().isEmpty());
         } finally {
             FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
@@ -89,7 +89,7 @@ class FirebirdBatchCommandPacketTest {
         batchStatement.addSize(1L);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
         try {
-            assertThat(FirebirdBatchSendMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID), is(20));
+            assertThat(FirebirdBatchMessageCommandPacket.getLength(createBatchMessagePayload(), CONNECTION_ID), is(20));
             assertTrue(batchStatement.getParameterValues().isEmpty());
         } finally {
             FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
@@ -140,8 +140,8 @@ class FirebirdBatchCommandPacketTest {
                 .writeInt(1), StandardCharsets.UTF_8);
     }
     
-    private FirebirdBatchSendMessageCommandPacket createBatchSendMessagePacket(final ByteBuf data) {
-        return new FirebirdBatchSendMessageCommandPacket(new FirebirdPacketPayload(Unpooled.buffer()
+    private FirebirdBatchMessageCommandPacket createBatchSendMessagePacket(final ByteBuf data) {
+        return new FirebirdBatchMessageCommandPacket(new FirebirdPacketPayload(Unpooled.buffer()
                 .writeZero(4).writeInt(STATEMENT_ID).writeInt(1).writeBytes(data), StandardCharsets.UTF_8));
     }
     

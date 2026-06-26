@@ -24,8 +24,8 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
@@ -108,7 +108,7 @@ public final class FirebirdCommandPacketFactory {
             case BATCH_CREATE:
                 return new FirebirdBatchCreateCommandPacket(payload);
             case BATCH_MSG:
-                return new FirebirdBatchSendMessageCommandPacket(payload);
+                return new FirebirdBatchMessageCommandPacket(payload);
             case BATCH_EXEC:
                 return new FirebirdBatchExecuteCommandPacket(payload);
             case BATCH_RLS:
@@ -178,7 +178,7 @@ public final class FirebirdCommandPacketFactory {
             case BATCH_CREATE:
                 return FirebirdBatchCreateCommandPacket.getLength(payload);
             case BATCH_MSG:
-                return FirebirdBatchSendMessageCommandPacket.getLength(payload, connectionId);
+                return FirebirdBatchMessageCommandPacket.getLength(payload, connectionId);
             case BATCH_EXEC:
                 return FirebirdBatchExecuteCommandPacket.getLength();
             case BATCH_RLS:
