@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -57,6 +58,19 @@ class InsertValueContextTest {
         Optional<Object> valueFromInsertValueContext = insertValueContext.getLiteralValue(0);
         assertTrue(valueFromInsertValueContext.isPresent());
         assertThat(valueFromInsertValueContext.get(), is(parameterValue));
+    }
+    
+    @Test
+    void assertGetLiteralValueWithGlobalParameterMarkerIndex() {
+        ParameterMarkerExpressionSegment merchantIdParameterMarker = new ParameterMarkerExpressionSegment(0, 10, 1);
+        ParameterMarkerExpressionSegment businessCodeParameterMarker = new ParameterMarkerExpressionSegment(0, 10, 2);
+        ParameterMarkerExpressionSegment telephoneParameterMarker = new ParameterMarkerExpressionSegment(0, 10, 3);
+        Collection<ExpressionSegment> assignments = Arrays.asList(merchantIdParameterMarker, businessCodeParameterMarker, telephoneParameterMarker);
+        List<ParameterMarkerSegment> parameterMarkerSegments = Arrays.asList(merchantIdParameterMarker, businessCodeParameterMarker, telephoneParameterMarker);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, Arrays.asList("merchant_id", "business_code", "telephone"), 0, parameterMarkerSegments);
+        Optional<Object> literalValue = insertValueContext.getLiteralValue(1);
+        assertTrue(literalValue.isPresent());
+        assertThat(literalValue.get(), is("business_code"));
     }
     
     @Test
