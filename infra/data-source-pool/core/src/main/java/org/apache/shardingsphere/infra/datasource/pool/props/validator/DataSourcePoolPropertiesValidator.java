@@ -77,11 +77,11 @@ public final class DataSourcePoolPropertiesValidator {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(props);
+            checkFailFast(dataSource);
             if (expectedPrivileges.isEmpty() || expectedPrivileges.contains(PrivilegeCheckType.NONE)) {
-                checkFailFast(dataSource);
                 return;
             }
-            checkPrivileges(dataSource, expectedPrivileges);
+            checkPrivileges(dataSource, props, expectedPrivileges);
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -101,11 +101,8 @@ public final class DataSourcePoolPropertiesValidator {
         }
     }
     
-    private static void checkPrivileges(final DataSource dataSource, final Collection<PrivilegeCheckType> expectedPrivileges) throws SQLException {
-        DatabaseType databaseType;
-        try (Connection connection = dataSource.getConnection()) {
-            databaseType = DatabaseTypeFactory.get(connection);
-        }
+    private static void checkPrivileges(final DataSource dataSource, final DataSourcePoolProperties props, final Collection<PrivilegeCheckType> expectedPrivileges) {
+        DatabaseType databaseType = DatabaseTypeFactory.get((String) props.getConnectionPropertySynonyms().getStandardProperties().get("url"));
         Optional<DialectDatabasePrivilegeChecker> checker = DatabaseTypedSPILoader.findService(DialectDatabasePrivilegeChecker.class, databaseType);
         if (checker.isPresent()) {
             for (PrivilegeCheckType each : expectedPrivileges) {

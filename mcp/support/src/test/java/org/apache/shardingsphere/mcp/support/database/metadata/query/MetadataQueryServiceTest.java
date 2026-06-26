@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.database.metadata.query;
 
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.support.fixture.DatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.support.database.metadata.context.RequestScopedMetadataContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
@@ -51,7 +50,7 @@ class MetadataQueryServiceTest {
     
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = DatabaseTestDataFactory.createRuntimeDatabases();
     
-    private final MCPDatabaseCapabilityProvider databaseCapabilityProvider = DatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(runtimeDatabases);
+    private final MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(runtimeDatabases);
     
     private final RequestScopedMetadataContext metadataContext = new RequestScopedMetadataContext(runtimeDatabases, databaseCapabilityProvider);
     

@@ -101,7 +101,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getStorageType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeFactory.get(connection);
+            return DatabaseTypeFactory.get(connection.getMetaData().getURL());
         } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
             return findStorageType(dataSource).orElseThrow(() -> new SQLWrapperException(sqlFeatureNotSupportedException));
         } catch (final SQLException ex) {

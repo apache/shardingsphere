@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.infra.config.database.impl;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -37,24 +33,16 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mockStatic;
 
 class DataSourceProvidedDatabaseConfigurationTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
     @Test
     void assertNewWithDataSources() {
-        MockedDataSource dataSource = new MockedDataSource();
-        try (MockedStatic<DatabaseTypeEngine> mocked = mockStatic(DatabaseTypeEngine.class)) {
-            mocked.when(() -> DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(databaseType);
-            DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
-                    Collections.singletonMap("foo_ds", dataSource), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
-            assertRuleConfigurations(actual);
-            assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
-            assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
-            mocked.verify(() -> DatabaseTypeEngine.getStorageType(dataSource));
-        }
+        DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
+                Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
+        assertRuleConfigurations(actual);
+        assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
+        assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
     }
     
     private void assertRuleConfigurations(final DataSourceProvidedDatabaseConfiguration actual) {
@@ -65,16 +53,11 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertNewWithStorageNodeDataSources() {
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = Collections.singletonMap("foo_ds", new DataSourcePoolProperties("foo_ds", createConnectionProps()));
-        MockedDataSource dataSource = new MockedDataSource();
-        try (MockedStatic<DatabaseTypeEngine> mocked = mockStatic(DatabaseTypeEngine.class)) {
-            mocked.when(() -> DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(databaseType);
-            DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
-                    Collections.singletonMap(new StorageNode("foo_ds"), dataSource), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap, false);
-            assertRuleConfigurations(actual);
-            assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
-            assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
-            mocked.verify(() -> DatabaseTypeEngine.getStorageType(dataSource));
-        }
+        DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
+                Collections.singletonMap(new StorageNode("foo_ds"), new MockedDataSource()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap, false);
+        assertRuleConfigurations(actual);
+        assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
+        assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
     }
     
     private Map<String, Object> createConnectionProps() {
@@ -88,7 +71,6 @@ class DataSourceProvidedDatabaseConfigurationTest {
     private void assertStorageUnits(final StorageUnit actual) {
         DataSource dataSource = actual.getDataSource();
         assertThat(dataSource, isA(MockedDataSource.class));
-        assertThat(actual.getStorageType(), is(databaseType));
         assertPoolProperties(actual.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties());
         assertConnectionProperties(actual.getDataSourcePoolProperties().getConnectionPropertySynonyms().getStandardProperties());
     }

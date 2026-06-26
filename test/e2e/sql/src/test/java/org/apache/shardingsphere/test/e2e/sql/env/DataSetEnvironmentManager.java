@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
@@ -69,6 +70,8 @@ public final class DataSetEnvironmentManager {
     
     private static final Map<String, ResetPlan> RESET_PLAN_CACHE = new ConcurrentHashMap<>();
     
+    private static final Map<String, DatabaseType> DATA_SOURCE_DATABASE_TYPE_CACHE = new ConcurrentHashMap<>();
+    
     private static final Map<String, String> INSERT_SQL_CACHE = new ConcurrentHashMap<>();
     
     private static final Map<String, String> TRUNCATE_SQL_CACHE = new ConcurrentHashMap<>();
@@ -93,7 +96,7 @@ public final class DataSetEnvironmentManager {
      *
      * @param tableNames table names
      */
-    @SneakyThrows({InterruptedException.class, ExecutionException.class})
+    @SneakyThrows({SQLException.class, InterruptedException.class, ExecutionException.class})
     public void fillData(final Collection<String> tableNames) {
         List<Callable<Void>> fillDataTasks = createFillDataTasks(getResetPlan(tableNames));
         List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
@@ -102,11 +105,12 @@ public final class DataSetEnvironmentManager {
         }
     }
     
-    private List<Callable<Void>> createFillDataTasks(final ResetPlan resetPlan) {
+    private List<Callable<Void>> createFillDataTasks(final ResetPlan resetPlan) throws SQLException {
         List<Callable<Void>> result = new LinkedList<>();
         for (Entry<DataNode, InsertDataNodePlan> entry : resetPlan.getInsertDataNodePlans().entrySet()) {
             DataNode dataNode = entry.getKey();
             DataSource dataSource = dataSourceMap.get(dataNode.getDataSourceName());
+            DatabaseType databaseType = getDatabaseType(dataNode.getDataSourceName(), dataSource);
             InsertDataNodePlan insertDataNodePlan = entry.getValue();
             result.add(new InsertTask(dataSource, getInsertSQL(dataNode.getTableName(), insertDataNodePlan.getColumnMetaData(), databaseType),
                     insertDataNodePlan.getSqlValueGroups(), databaseType));
@@ -175,7 +179,7 @@ public final class DataSetEnvironmentManager {
      *
      * @param tableNames table names
      */
-    @SneakyThrows({InterruptedException.class, ExecutionException.class})
+    @SneakyThrows({SQLException.class, InterruptedException.class, ExecutionException.class})
     public void cleanData(final Collection<String> tableNames) {
         List<Callable<Void>> deleteTasks = createDeleteTasks(getResetPlan(tableNames));
         List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
@@ -184,9 +188,10 @@ public final class DataSetEnvironmentManager {
         }
     }
     
-    private List<Callable<Void>> createDeleteTasks(final ResetPlan resetPlan) {
+    private List<Callable<Void>> createDeleteTasks(final ResetPlan resetPlan) throws SQLException {
         List<Callable<Void>> result = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : resetPlan.getTableNamesByDataSourceName().entrySet()) {
+            DatabaseType databaseType = getDatabaseType(entry.getKey(), dataSourceMap.get(entry.getKey()));
             Collection<String> truncateSQLs = new LinkedList<>();
             for (String each : entry.getValue()) {
                 truncateSQLs.add(getTruncateSQL(each, databaseType));
@@ -283,6 +288,23 @@ public final class DataSetEnvironmentManager {
         result.add(tableName.replaceFirst("_[0-9]+$", "").toLowerCase(Locale.ENGLISH));
         result.add(tableName.replaceFirst("[0-9]+$", "").toLowerCase(Locale.ENGLISH));
         return result;
+    }
+    
+    private DatabaseType getDatabaseType(final String dataSourceName, final DataSource dataSource) throws SQLException {
+        String cacheKey = getDataSourceDatabaseTypeCacheKey(dataSourceName, dataSource);
+        DatabaseType result = DATA_SOURCE_DATABASE_TYPE_CACHE.get(cacheKey);
+        if (null != result) {
+            return result;
+        }
+        try (Connection connection = dataSource.getConnection()) {
+            result = DatabaseTypeFactory.get(connection.getMetaData());
+            DATA_SOURCE_DATABASE_TYPE_CACHE.put(cacheKey, result);
+            return result;
+        }
+    }
+    
+    private String getDataSourceDatabaseTypeCacheKey(final String dataSourceName, final DataSource dataSource) {
+        return databaseType.getType() + ':' + dataSourceName + ':' + System.identityHashCode(dataSource);
     }
     
     @RequiredArgsConstructor

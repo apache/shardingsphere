@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.mode.metadata.factory.init;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -57,14 +55,9 @@ public abstract class MetaDataContextsInitFactory {
     protected final MetaDataContexts create(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, DataSource> globalDataSources,
                                             final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props, final MetaDataPersistFacade persistFacade) {
         Collection<ShardingSphereRule> globalRules = GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, createGlobalResourceMetaData(globalDataSources), new RuleMetaData(globalRules), props,
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, new ResourceMetaData(globalDataSources), new RuleMetaData(globalRules), props,
                 databases.isEmpty() ? DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), props) : databases.iterator().next().getProtocolType());
         ShardingSphereStatistics statistics = ShardingSphereStatisticsFactory.create(metaData, persistFacade.getStatisticsService().load(metaData));
         return new MetaDataContexts(metaData, statistics);
-    }
-    
-    private ResourceMetaData createGlobalResourceMetaData(final Map<String, DataSource> globalDataSources) {
-        DatabaseConfiguration globalDatabaseConfig = new DataSourceProvidedDatabaseConfiguration(globalDataSources, Collections.emptyList());
-        return new ResourceMetaData(globalDatabaseConfig.getDataSources(), globalDatabaseConfig.getStorageUnits());
     }
 }

@@ -37,10 +37,8 @@ import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -222,19 +220,12 @@ class DatabaseTypeEngineTest {
     
     private static Connection createConnectionWithUrl(final String url) throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(result.getMetaData().getDatabaseProductName()).thenReturn("");
         when(result.getMetaData().getURL()).thenReturn(url);
-        when(result.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT @@version_comment")).thenReturn(resultSet);
-        when(statement.executeQuery("SELECT VERSION()")).thenReturn(resultSet);
         return result;
     }
     
     private static Connection createConnectionWithUnsupportedUrl() throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getDatabaseProductName()).thenReturn("");
         when(result.getMetaData().getURL()).thenThrow(SQLFeatureNotSupportedException.class);
         return result;
     }

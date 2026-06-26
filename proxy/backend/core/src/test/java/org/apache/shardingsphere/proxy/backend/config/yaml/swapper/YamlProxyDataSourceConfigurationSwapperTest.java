@@ -56,10 +56,10 @@ class YamlProxyDataSourceConfigurationSwapperTest {
         PoolConfiguration actualPool = actualDataSourceConfig.getPool();
         assertNotNull(actualPool);
         assertThat(actualPool.getConnectionTimeoutMilliseconds(), is(250L));
-        assertThat(actualPool.getIdleTimeoutMilliseconds(), is(30000L));
-        assertThat(actualPool.getMaxLifetimeMilliseconds(), is(600000L));
-        assertThat(actualPool.getMaxPoolSize(), is(5));
-        assertThat(actualPool.getMinPoolSize(), is(4));
+        assertThat(actualPool.getIdleTimeoutMilliseconds(), is(2L));
+        assertThat(actualPool.getMaxLifetimeMilliseconds(), is(3L));
+        assertThat(actualPool.getMaxPoolSize(), is(4));
+        assertThat(actualPool.getMinPoolSize(), is(5));
         assertTrue(actualPool.getReadOnly());
     }
 }

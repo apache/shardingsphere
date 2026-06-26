@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.core.fixture.DatabaseTypeFactoryMocker;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
@@ -173,7 +173,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     }
     
     private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager) {
-        return new MCPSQLExecutionFacade(DatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(Map.of("logic_db", createCapabilityRuntimeDatabaseConfiguration())), sessionManager);
+        return new MCPSQLExecutionFacade(new MCPDatabaseCapabilityProvider(Map.of("logic_db", createCapabilityRuntimeDatabaseConfiguration())), sessionManager);
     }
     
     private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration() {
@@ -187,18 +187,10 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             when(databaseMetaData.getDatabaseProductName()).thenReturn("MySQL");
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
             when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/facade_concurrency");
-            mockEmptyScalarQueries(connection);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
         return result;
-    }
-    
-    private void mockEmptyScalarQueries(final Connection connection) throws SQLException {
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(anyString())).thenReturn(resultSet);
     }
     
     private SQLExecutionRequest createExecutionRequest(final String sessionId, final String sql) {
