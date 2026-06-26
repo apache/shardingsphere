@@ -60,6 +60,18 @@ class InsertValueContextTest {
     }
     
     @Test
+    void assertGetLiteralValueWithGlobalParameterMarkerIndex() {
+        ParameterMarkerExpressionSegment merchantIdParameterMarker = new ParameterMarkerExpressionSegment(0, 10, 1);
+        ParameterMarkerExpressionSegment businessCodeParameterMarker = new ParameterMarkerExpressionSegment(0, 10, 2);
+        ParameterMarkerExpressionSegment telephoneParameterMarker = new ParameterMarkerExpressionSegment(0, 10, 3);
+        Collection<ExpressionSegment> assignments = Arrays.asList(merchantIdParameterMarker, businessCodeParameterMarker, telephoneParameterMarker);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, Arrays.asList("merchant_id", "business_code", "telephone"), 0);
+        Optional<Object> literalValue = insertValueContext.getLiteralValue(1);
+        assertTrue(literalValue.isPresent());
+        assertThat(literalValue.get(), is("business_code"));
+    }
+    
+    @Test
     void assertGetLiteralValueWhenParameterIsNull() {
         Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
         int parametersOffset = 0;
