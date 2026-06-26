@@ -111,12 +111,12 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="update_sales_person_from_join_for_literals" db-types="SQLServer">
-        <input sql="UPDATE Sales.SalesPerson SET SalesYTD = SalesYTD + SubTotal, Bonus = 3000.00 FROM Sales.SalesPerson AS sp JOIN Sales.SalesOrderHeader AS so ON sp.BusinessEntityID = so.SalesPersonID AND so.OrderDate = (SELECT MAX(OrderDate) FROM Sales.SalesOrderHeader WHERE SalesPersonID = sp.BusinessEntityID)" />
-        <output sql="UPDATE Sales.SalesPerson SET SalesYTD = SalesYTD + SubTotal, [bonus_cipher] = 'encrypt_3000.00' FROM Sales.SalesPerson AS sp JOIN Sales.SalesOrderHeader AS so ON sp.BusinessEntityID = so.SalesPersonID AND so.OrderDate = (SELECT MAX(OrderDate) FROM Sales.SalesOrderHeader WHERE SalesPersonID = sp.BusinessEntityID)" />
+        <input sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + SubTotal, Bonus = 3000.00 FROM dbo.SalesPerson AS sp JOIN dbo.SalesOrderHeader AS so ON sp.BusinessEntityID = so.SalesPersonID AND so.OrderDate = (SELECT MAX(OrderDate) FROM dbo.SalesOrderHeader WHERE SalesPersonID = sp.BusinessEntityID)" />
+        <output sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + SubTotal, [bonus_cipher] = 'encrypt_3000.00' FROM dbo.SalesPerson AS sp JOIN dbo.SalesOrderHeader AS so ON sp.BusinessEntityID = so.SalesPersonID AND so.OrderDate = (SELECT MAX(OrderDate) FROM dbo.SalesOrderHeader WHERE SalesPersonID = sp.BusinessEntityID)" />
     </rewrite-assertion>
 
     <rewrite-assertion id="update_sales_person_with_subquery_for_literals" db-types="SQLServer">
-        <input sql="UPDATE Sales.SalesPerson SET SalesYTD = SalesYTD + (SELECT SUM(so.SubTotal) FROM Sales.SalesOrderHeader AS so WHERE so.OrderDate = (SELECT MAX(OrderDate) FROM Sales.SalesOrderHeader AS so2 WHERE so2.SalesPersonID = so.SalesPersonID) AND Sales.SalesPerson.BusinessEntityID = so.SalesPersonID GROUP BY so.SalesPersonID), Bonus = 3000.00" />
-        <output sql="UPDATE Sales.SalesPerson SET SalesYTD = SalesYTD + (SELECT SUM(so.SubTotal) FROM Sales.SalesOrderHeader AS so WHERE so.OrderDate = (SELECT MAX(OrderDate) FROM Sales.SalesOrderHeader AS so2 WHERE so2.SalesPersonID = so.SalesPersonID) AND Sales.SalesPerson.BusinessEntityID = so.SalesPersonID GROUP BY so.SalesPersonID), [bonus_cipher] = 'encrypt_3000.00'" />
+        <input sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + (SELECT SUM(so.SubTotal) FROM dbo.SalesOrderHeader AS so WHERE so.OrderDate = (SELECT MAX(OrderDate) FROM dbo.SalesOrderHeader AS so2 WHERE so2.SalesPersonID = so.SalesPersonID) AND dbo.SalesPerson.BusinessEntityID = so.SalesPersonID GROUP BY so.SalesPersonID), Bonus = 3000.00" />
+        <output sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + (SELECT SUM(so.SubTotal) FROM dbo.SalesOrderHeader AS so WHERE so.OrderDate = (SELECT MAX(OrderDate) FROM dbo.SalesOrderHeader AS so2 WHERE so2.SalesPersonID = so.SalesPersonID) AND dbo.SalesPerson.BusinessEntityID = so.SalesPersonID GROUP BY so.SalesPersonID), [bonus_cipher] = 'encrypt_3000.00'" />
     </rewrite-assertion>
 </rewrite-assertions>
