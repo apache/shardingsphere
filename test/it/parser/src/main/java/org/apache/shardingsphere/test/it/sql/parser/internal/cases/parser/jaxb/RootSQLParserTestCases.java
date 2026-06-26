@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCleanTrashStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCleanAllProfileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisPlanReplayerPlayStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisRecoverStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCopyTabletStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaVersionStatementTestCase;
@@ -801,6 +802,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "admin-clean-trash")
     private final List<DorisAdminCleanTrashStatementTestCase> adminCleanTrashTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-recover")
+    private final List<DorisRecoverStatementTestCase> dorisRecoverTestCases = new LinkedList<>();
     
     @XmlElement(name = "clean-all-profile")
     private final List<DorisCleanAllProfileStatementTestCase> cleanAllProfileTestCases = new LinkedList<>();
