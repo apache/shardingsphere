@@ -183,7 +183,6 @@ OpenJDK 21 can be installed using `version-fox/vfox` in Powershell 7 using the f
 ```shell
 winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
-# At this time, you need to open a new Powershell 7 terminal
 vfox add java
 vfox install java@21.0.7-ms
 vfox use --global java@21.0.7-ms
@@ -204,12 +203,12 @@ and configure `dockerd(moby)` to use the `Container Engine`.
 
 ```shell
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
-# Open a new PowerShell 7 terminal
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
   "min-api-version": "1.41",
+  "seccomp-profile": "/etc/rancher-desktop/seccomp.json",
   "features": {
     "containerd-snapshotter": true
   },
