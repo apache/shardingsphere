@@ -111,23 +111,23 @@ public final class DatabaseTypeFactory {
     }
     
     private static boolean isActualBranchDatabaseType(final DatabaseType databaseType, final Connection connection) throws SQLException {
+        Optional<DialectBranchOption> branchOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getBranchOption();
+        if (!branchOption.isPresent()) {
+            return false;
+        }
         DatabaseMetaData metaData = connection.getMetaData();
         return containsBranch(databaseType, metaData.getDatabaseProductName())
-                || containsBranch(databaseType, metaData.getDatabaseProductVersion()) || containsBranch(databaseType, queryBranchTypeDetectionValue(databaseType, connection));
+                || containsBranch(databaseType, metaData.getDatabaseProductVersion()) || containsBranch(databaseType, queryBranchTypeDetectionValue(branchOption.get(), connection));
     }
     
     private static boolean containsBranch(final DatabaseType databaseType, final String value) {
         return Objects.toString(value, "").toUpperCase(Locale.ENGLISH).contains(databaseType.getType().toUpperCase(Locale.ENGLISH));
     }
     
-    private static String queryBranchTypeDetectionValue(final DatabaseType databaseType, final Connection connection) throws SQLException {
-        Optional<DialectBranchOption> branchOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getBranchOption();
-        if (!branchOption.isPresent()) {
-            return "";
-        }
+    private static String queryBranchTypeDetectionValue(final DialectBranchOption branchOption, final Connection connection) throws SQLException {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(branchOption.get().getBranchTypeDetectionSQL())) {
+                ResultSet resultSet = statement.executeQuery(branchOption.getBranchTypeDetectionSQL())) {
             return resultSet.next() ? resultSet.getString(1) : "";
         }
     }
