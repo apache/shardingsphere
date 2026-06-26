@@ -182,6 +182,12 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
+        if (null != tableIndex.remove(tableName)) {
+            if (null != logicalTableIndex) {
+                logicalTableIndex.remove(tableName);
+            }
+            return;
+        }
         Optional<ShardingSphereTable> table = findTable(new IdentifierValue(tableName, QuoteCharacter.NONE));
         if (table.isPresent()) {
             tableIndex.remove(table.get().getName());
@@ -265,6 +271,9 @@ public final class ShardingSphereSchema {
      * @param viewName view name
      */
     public void removeView(final String viewName) {
+        if (null != viewIndex.remove(viewName)) {
+            return;
+        }
         ShardingSphereView view = getView(viewName);
         if (null == view) {
             return;

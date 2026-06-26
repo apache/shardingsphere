@@ -146,6 +146,15 @@ class ShardingSphereSchemaIdentifierTest {
     }
     
     @Test
+    void assertRemoveTableByActualName() {
+        ShardingSphereTable table = new ShardingSphereTable("Foo_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
+        schema.removeTable("Foo_Tbl");
+        assertTrue(schema.getAllTables().isEmpty());
+    }
+    
+    @Test
     void assertRemoveTablePrioritizesPhysicalTableIndexWhenBothIndexesCanMatch() {
         ShardingSphereTable lowerCaseTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereTable upperCaseTable = new ShardingSphereTable("FOO_TBL", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
@@ -156,5 +165,14 @@ class ShardingSphereSchemaIdentifierTest {
         schema.refreshIdentifierContext(context);
         schema.removeTable("FOO_TBL");
         assertThat(schema.getTable("FOO_TBL"), is(lowerCaseTable));
+    }
+    
+    @Test
+    void assertRemoveViewByActualName() {
+        ShardingSphereView view = new ShardingSphereView("Foo_View", "SELECT 1");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.singleton(view));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
+        schema.removeView("Foo_View");
+        assertTrue(schema.getAllViews().isEmpty());
     }
 }
