@@ -1732,18 +1732,53 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null == fromTable || !(targetTable instanceof SimpleTableSegment)) {
             return false;
         }
-        String targetName = ((SimpleTableSegment) targetTable).getTableName().getIdentifier().getValue();
-        return isAliasInFromClause(targetName, fromTable);
+        SimpleTableSegment targetSimpleTable = (SimpleTableSegment) targetTable;
+        String targetName = targetSimpleTable.getTableName().getIdentifier().getValue();
+        return isAliasInFromClause(targetSimpleTable, targetName, fromTable) || isTableNameWithAliasInFromClause(targetSimpleTable, fromTable);
     }
     
-    private boolean isAliasInFromClause(final String targetName, final TableSegment fromSegment) {
+    private boolean isAliasInFromClause(final SimpleTableSegment targetTable, final String targetName, final TableSegment fromSegment) {
+        if (targetTable.getOwner().isPresent()) {
+            return false;
+        }
         if (fromSegment instanceof SimpleTableSegment) {
             return targetName.equalsIgnoreCase(((SimpleTableSegment) fromSegment).getAliasName().orElse(null));
         }
         if (fromSegment instanceof JoinTableSegment) {
-            return isAliasInFromClause(targetName, ((JoinTableSegment) fromSegment).getLeft()) || isAliasInFromClause(targetName, ((JoinTableSegment) fromSegment).getRight());
+            return isAliasInFromClause(targetTable, targetName, ((JoinTableSegment) fromSegment).getLeft())
+                    || isAliasInFromClause(targetTable, targetName, ((JoinTableSegment) fromSegment).getRight());
         }
         return false;
+    }
+    
+    private boolean isTableNameWithAliasInFromClause(final SimpleTableSegment targetTable, final TableSegment fromSegment) {
+        if (fromSegment instanceof SimpleTableSegment) {
+            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) fromSegment;
+            return simpleTableSegment.getAliasName().isPresent()
+                    && targetTable.getTableName().getIdentifier().getValue().equalsIgnoreCase(simpleTableSegment.getTableName().getIdentifier().getValue())
+                    && isSameOwner(targetTable, simpleTableSegment);
+        }
+        if (fromSegment instanceof JoinTableSegment) {
+            return isTableNameWithAliasInFromClause(targetTable, ((JoinTableSegment) fromSegment).getLeft())
+                    || isTableNameWithAliasInFromClause(targetTable, ((JoinTableSegment) fromSegment).getRight());
+        }
+        return false;
+    }
+    
+    private boolean isSameOwner(final SimpleTableSegment targetTable, final SimpleTableSegment fromTable) {
+        if (!targetTable.getOwner().isPresent() && !fromTable.getOwner().isPresent()) {
+            return true;
+        }
+        if (!targetTable.getOwner().isPresent() || !fromTable.getOwner().isPresent()) {
+            return false;
+        }
+        return isSameOwner(targetTable.getOwner().get(), fromTable.getOwner().get());
+    }
+    
+    private boolean isSameOwner(final OwnerSegment targetOwner, final OwnerSegment fromOwner) {
+        return targetOwner.getIdentifier().getValue().equalsIgnoreCase(fromOwner.getIdentifier().getValue())
+                && targetOwner.getOwner().isPresent() == fromOwner.getOwner().isPresent()
+                && (!targetOwner.getOwner().isPresent() || isSameOwner(targetOwner.getOwner().get(), fromOwner.getOwner().get()));
     }
     
     @Override
