@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.connector.core.type;
 
-import org.apache.shardingsphere.database.connector.core.exception.AmbiguousStorageTypeException;
 import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.branch.DialectBranchOption;
@@ -148,16 +147,25 @@ class DatabaseTypeFactoryTest {
     }
     
     @Test
-    void assertGetWithAmbiguousBranchConnection() throws SQLException {
+    void assertGetWithFirstMatchedBranchConnection() throws SQLException {
         DatabaseType trunkDatabaseType = mockDatabaseType("TRUNK", "jdbc:trunk:", null);
         DatabaseType firstBranchDatabaseType = mockDatabaseType("BRANCH_1", "jdbc:trunk:", trunkDatabaseType);
-        DatabaseType secondBranchDatabaseType = mockDatabaseType("BRANCH_2", "jdbc:trunk:", trunkDatabaseType);
-        Connection connection = createConnection("jdbc:trunk://localhost:3306/test", "MySQL", "BRANCH_1 BRANCH_2");
+        DatabaseType secondBranchDatabaseType = mock(DatabaseType.class, invocation -> {
+            String methodName = invocation.getMethod().getName();
+            if ("getJdbcUrlPrefixes".equals(methodName)) {
+                return Collections.singleton("jdbc:trunk:");
+            }
+            if ("toString".equals(methodName)) {
+                return "unexpectedBranchDatabaseType";
+            }
+            throw new AssertionError("Unexpected branch database type should not be inspected.");
+        });
+        Connection connection = createConnection("jdbc:trunk://localhost:3306/test", "Apache BRANCH_1", null);
         DialectDatabaseMetaData firstDialectDatabaseMetaData = createDialectDatabaseMetaData(firstBranchDatabaseType, Optional.of(new DialectBranchOption("SELECT branch_type")));
-        DialectDatabaseMetaData secondDialectDatabaseMetaData = createDialectDatabaseMetaData(secondBranchDatabaseType, Optional.of(new DialectBranchOption("SELECT branch_type")));
         when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, firstBranchDatabaseType, secondBranchDatabaseType));
-        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Arrays.asList(firstDialectDatabaseMetaData, secondDialectDatabaseMetaData));
-        assertThrows(AmbiguousStorageTypeException.class, () -> DatabaseTypeFactory.get(connection));
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(firstDialectDatabaseMetaData));
+        assertThat(DatabaseTypeFactory.get(connection), is(firstBranchDatabaseType));
+        verify(connection, never()).createStatement();
     }
     
     @Test
