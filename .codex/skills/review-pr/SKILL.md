@@ -10,6 +10,7 @@ description: >-
   change-request validity, or root-cause evidence is being judged.
   If review cannot be completed from available public evidence, produce a Review Incomplete result without patch-level advice.
   Supports targeted comparison across GitHub-visible review rounds when prior PR comments or review threads exist.
+  Supports full-coverage ledger review for large, high-risk, or explicitly anti-drip review requests.
   Before final output, internally self-iterate the review until no new actionable findings are discovered.
 ---
 
@@ -184,7 +185,12 @@ Safety and completeness rules:
 
 ## Execution Boundary
 
-- Review output only; do not modify code.
+- Review output only; do not modify PR code.
+- Internal review state may be written only to the system temporary directory when `Full Coverage Ledger Mode` is active.
+- Do not place review ledgers, scratch files, or validator artifacts in the repository worktree unless the user explicitly asks for a persisted artifact.
+- Remove temporary review ledger directories before the final response whenever the review reaches a normal completion path.
+- If cleanup fails or the session is interrupted, do not expose the temporary path in GitHub-facing text. On the next review for the same PR, clean stale ledger directories before creating a new one.
+- If the user asks for console-only review output, do not post through GitHub tools. Return the copy-ready review or reply in Codex chat only.
 
 ## Evidence Source Strategy
 
@@ -251,11 +257,40 @@ Rules:
 - Treat dirty-worktree warnings as contamination warnings. Review PR refs, not unrelated local modifications.
 - Keep script output out of GitHub-facing review bodies unless it has been converted into public, verified, repo-relative evidence.
 
+## Full Coverage Ledger Mode
+
+Use this mode when the user asks to find all issues, prevent drip-feed review, review from beginning to end, avoid piecemeal findings,
+or otherwise requests full coverage. Also use it by default for high-risk reviews that touch parser grammar, SQL visitors, proxy protocol,
+authentication, transaction/session/blob/handle lifecycle, shared APIs, cache or registry state, dependency or distribution files,
+or more than 20 changed files.
+
+When this mode is active:
+
+1. Initialize a ledger in the system temporary directory with `scripts/review_ledger.py init` after confirming the latest PR head and GitHub file list.
+2. Clean stale ledgers for the same repository and PR before creating the current ledger.
+3. Track every authoritative changed file with one final state: `reviewed`, `churn-only`, `test-only-reviewed`, `not-applicable`, or `blocked`.
+   Do not leave `pending` files before final output.
+4. Record candidate findings in the ledger and classify each as `confirmed`, `withdrawn`, `review-incomplete-gap`, `non-blocking`, or `out-of-scope`
+   before final output.
+5. Record each adversarial pass with its focus and new independent finding count. The final pass must have `new_findings` equal to `0`.
+6. Run `scripts/review_ledger.py validate` before drafting the final review or discussion reply.
+7. If ledger validation fails because coverage or evidence is incomplete, continue reviewing or output `Review Incomplete` in `Formal Review Mode`;
+   do not emit a complete review with hidden gaps.
+8. Do not use the fast-triage shortcut, early blocker exit, or "confirmed high-risk blockers only" behavior while this mode is active.
+9. In Codex chat, report only concise progress and the final review or reply.
+   Do not paste the ledger contents unless the user explicitly asks for the internal audit trail.
+10. Clean the temporary ledger directory with `scripts/review_ledger.py cleanup` after the final response has been prepared and before ending the task.
+
+The ledger is an internal audit aid, not public evidence. GitHub-facing text must cite public files, public docs, public CI/logs,
+or sanitized verification summaries, never the temporary ledger path.
+
 ## Review Efficiency Rules
 
 - In the current reply, prioritize `Summary`, blocking issues, and minimum next actions.
 - If the PR is obviously too large (too many files or too much churn), suggest splitting first.
 - If full review cannot be completed immediately, provide only confirmed high-risk blockers; use `Review Incomplete` when required public facts are still missing.
+- These efficiency rules do not override `Full Coverage Ledger Mode`.
+  In that mode, a confirmed blocker is recorded in the ledger and final output waits until ledger validation passes or the result becomes `Review Incomplete`.
 
 ## Quick Triage
 
@@ -277,6 +312,7 @@ Triage policy:
 - Any substantive off-topic/unrelated changes or substantive scope expansion: set `Review Result: Not Mergeable` and require rollback or scope narrowing.
   Ignore non-behavioral import-only, whitespace-only, and formatter-only churn for mergeability unless it meets the Non-Behavioral Churn Rule escalation conditions.
 - Change set too large: request split first, and provide only blocker-level feedback for current version.
+- If `Full Coverage Ledger Mode` is active, triage decisions select review depth and ledger setup only. They do not authorize early final output.
 
 ## Minimum Required Information
 
@@ -342,6 +378,8 @@ CI/check-run review is not a substitute for code review. Query and report CI onl
    - Build an internal inventory before producing final review output.
    - Cover authoritative changed files, changed entry points, new public production types, public/shared APIs, stateful registries/caches/session fields,
      lifecycle cleanup paths, supported-vs-rejected feature boundaries, tests, release notes, docs, and verification.
+   - When `Full Coverage Ledger Mode` is active, materialize this inventory with `scripts/review_ledger.py`, validate it before output,
+     and clean it before ending the task.
    - For progress updates while reviewing, describe areas being inspected rather than releasing candidate blockers before the findings are frozen,
      unless the user explicitly asks for status or high-risk early blockers.
 10. Version baseline control:
@@ -359,6 +397,8 @@ CI/check-run review is not a substitute for code review. Query and report CI onl
 
 Before producing the final review, build and freeze an internal review inventory for the latest PR head.
 Do not expose intermediate findings, draft issue lists, or candidate blockers unless the user explicitly asks for status or early high-risk blockers.
+When `Full Coverage Ledger Mode` is active, the inventory must be represented by a system-temporary ledger and pass `scripts/review_ledger.py validate`
+before final output.
 
 The inventory must cover:
 
