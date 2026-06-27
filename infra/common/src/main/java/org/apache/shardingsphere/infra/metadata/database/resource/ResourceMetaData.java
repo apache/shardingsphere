@@ -19,8 +19,10 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.judger.DatabaseInstanceJudgeEngine;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -52,8 +54,24 @@ public final class ResourceMetaData {
                 .collect(Collectors.toMap(each -> each, StorageNode::new, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = dataSources.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        storageUnits = storageUnitNodeMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new StorageUnit(
-                entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName())), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
+        storageUnits = createStorageUnits(storageUnitNodeMap, dataSourcePoolPropsMap, dataSources);
+    }
+    
+    private Map<String, StorageUnit> createStorageUnits(final Map<String, StorageNode> storageUnitNodeMap,
+                                                        final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap, final Map<String, DataSource> dataSources) {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(storageUnitNodeMap.size(), 1F);
+        Map<StorageNode, DatabaseType> storageTypes = new LinkedHashMap<>(storageUnitNodeMap.size(), 1F);
+        for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
+            DataSourcePoolProperties dataSourcePoolProps = dataSourcePoolPropsMap.get(entry.getKey());
+            DataSource dataSource = dataSources.get(entry.getValue().getName());
+            DatabaseType storageType = storageTypes.computeIfAbsent(entry.getValue(), key -> DatabaseTypeEngine.getStorageType(getURL(dataSourcePoolProps), dataSource));
+            result.put(entry.getKey(), new StorageUnit(entry.getValue(), dataSourcePoolProps, dataSource, storageType));
+        }
+        return result;
+    }
+    
+    private String getURL(final DataSourcePoolProperties dataSourcePoolProps) {
+        return dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
     }
     
     /**

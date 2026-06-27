@@ -24,7 +24,8 @@ import lombok.RequiredArgsConstructor;
  * Dialect branch option.
  *
  * <p>The branch type detection SQL must return a string value in the first column.
- * The value is matched case-insensitively against the branch database type.</p>
+ * The value is matched case-insensitively against the branch database type.
+ * A SQL exception during branch type detection means that the branch database type is not matched.</p>
  */
 @RequiredArgsConstructor
 @Getter

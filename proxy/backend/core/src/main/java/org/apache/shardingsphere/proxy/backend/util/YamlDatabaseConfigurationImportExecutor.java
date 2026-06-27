@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.util.close.DataSourcesCloser;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -118,10 +119,27 @@ public final class YamlDatabaseConfigurationImportExecutor {
         Map<String, StorageUnit> storageUnits = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
         boolean isInstanceConnectionEnabled = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
         Map<String, StorageNode> toBeAddedStorageNode = StorageUnitNodeMapCreator.create(propsMap, isInstanceConnectionEnabled);
+        Collection<DataSource> createdDataSources = new LinkedList<>();
+        Collection<String> importedStorageUnitNames = new LinkedList<>();
+        try {
+            importDataSources(propsMap, storageUnits, toBeAddedStorageNode, createdDataSources, importedStorageUnitNames);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            importedStorageUnitNames.forEach(storageUnits::remove);
+            DataSourcesCloser.close(createdDataSources);
+            throw ex;
+        }
+    }
+    
+    private void importDataSources(final Map<String, DataSourcePoolProperties> propsMap, final Map<String, StorageUnit> storageUnits,
+                                   final Map<String, StorageNode> toBeAddedStorageNode, final Collection<DataSource> createdDataSources, final Collection<String> importedStorageUnitNames) {
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             DataSource dataSource = DataSourcePoolCreator.create(entry.getValue());
+            createdDataSources.add(dataSource);
             DatabaseType storageType = DatabaseTypeEngine.getStorageType(getURL(entry.getValue()), dataSource);
             storageUnits.put(entry.getKey(), new StorageUnit(toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), dataSource, storageType));
+            importedStorageUnitNames.add(entry.getKey());
         }
     }
     

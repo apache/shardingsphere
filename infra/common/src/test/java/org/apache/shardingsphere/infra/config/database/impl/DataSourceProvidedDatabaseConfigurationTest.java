@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -37,8 +39,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 class DataSourceProvidedDatabaseConfigurationTest {
     
@@ -52,6 +57,17 @@ class DataSourceProvidedDatabaseConfigurationTest {
         assertRuleConfigurations(actual);
         assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
         assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
+    }
+    
+    @Test
+    void assertNewWithDetectedStorageType() {
+        MockedDataSource dataSource = new MockedDataSource();
+        try (MockedStatic<DatabaseTypeEngine> mocked = mockStatic(DatabaseTypeEngine.class)) {
+            mocked.when(() -> DatabaseTypeEngine.getStorageType(eq("jdbc:mock://127.0.0.1/foo_ds"), any(DataSource.class))).thenReturn(databaseType);
+            DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
+                    Collections.singletonMap("foo_ds", dataSource), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
+            assertThat(actual.getStorageUnits().get("foo_ds").getStorageType(), is(databaseType));
+        }
     }
     
     private void assertRuleConfigurations(final DataSourceProvidedDatabaseConfiguration actual) {

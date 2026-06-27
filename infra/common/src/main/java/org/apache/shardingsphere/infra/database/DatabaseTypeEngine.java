@@ -74,7 +74,7 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final DatabaseType storageType) {
-        return DatabaseTypeFactory.isBranchTypeDetectionEnabled(storageType) ? storageType.getTrunkDatabaseType().orElse(storageType) : storageType;
+        return storageType.getTrunkDatabaseType().orElse(storageType);
     }
     
     private static DatabaseType getDatabaseTypeFromDatabaseConfigurations(final Map<String, DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
@@ -128,7 +128,14 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getStorageType(final String url, final DataSource dataSource) {
         DatabaseType result = DatabaseTypeFactory.get(url);
-        return DatabaseTypeFactory.containsBranchTypeDetectionOption(result) ? getStorageType(dataSource) : result;
+        if (!DatabaseTypeFactory.containsDetectableBranchDatabaseTypes(result)) {
+            return result;
+        }
+        try (Connection connection = dataSource.getConnection()) {
+            return DatabaseTypeFactory.getActualDatabaseType(result, connection);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        }
     }
     
     private static Optional<DatabaseType> findStorageType(final DataSource dataSource) {

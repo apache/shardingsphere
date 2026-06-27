@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -53,7 +54,8 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         Map<String, StorageNode> storageUnitNodeMap = dataSources.keySet().stream()
                 .collect(Collectors.toMap(each -> each, StorageNode::new, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<StorageNode, DataSource> storageNodeDataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
-        storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, createDataSourcePoolPropertiesMap(dataSources), Collections.emptyMap());
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = createDataSourcePoolPropertiesMap(dataSources);
+        storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, dataSourcePoolPropsMap, Collections.emptyMap());
         this.dataSources = storageNodeDataSources;
     }
     
@@ -75,20 +77,30 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
                                                      final Map<StorageNode, DataSource> storageNodeDataSources, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap,
                                                      final Map<String, DatabaseType> storageTypes) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(dataSourcePoolPropsMap.size(), 1F);
+        Map<StorageNode, DatabaseType> detectedStorageTypes = new LinkedHashMap<>(storageNodeDataSources.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropsMap.entrySet()) {
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             DataSource dataSource = storageNodeDataSources.containsKey(storageNode) ? storageNodeDataSources.get(storageNode) : storageNodeDataSources.get(new StorageNode(storageUnitName));
-            StorageUnit storageUnit = storageTypes.containsKey(storageUnitName)
-                    ? new StorageUnit(storageNode, entry.getValue(), dataSource, storageTypes.get(storageUnitName))
-                    : new StorageUnit(storageNode, entry.getValue(), dataSource);
-            result.put(storageUnitName, storageUnit);
+            result.put(storageUnitName,
+                    new StorageUnit(storageNode, entry.getValue(), dataSource, getStorageType(storageUnitName, storageNode, entry.getValue(), dataSource, storageTypes, detectedStorageTypes)));
         }
         return result;
+    }
+    
+    private DatabaseType getStorageType(final String storageUnitName, final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProps, final DataSource dataSource,
+                                        final Map<String, DatabaseType> storageTypes, final Map<StorageNode, DatabaseType> detectedStorageTypes) {
+        return storageTypes.containsKey(storageUnitName)
+                ? storageTypes.get(storageUnitName)
+                : detectedStorageTypes.computeIfAbsent(storageNode, key -> DatabaseTypeEngine.getStorageType(getURL(dataSourcePoolProps), dataSource));
     }
     
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Map<String, DataSource> dataSources) {
         return dataSources.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    private String getURL(final DataSourcePoolProperties dataSourcePoolProps) {
+        return dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
     }
 }

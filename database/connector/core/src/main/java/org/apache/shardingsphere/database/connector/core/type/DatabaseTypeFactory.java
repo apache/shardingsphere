@@ -79,40 +79,43 @@ public final class DatabaseTypeFactory {
      */
     public static DatabaseType get(final Connection connection) throws SQLException {
         DatabaseType result = get(connection.getMetaData());
-        return findActualBranchDatabaseType(connection, result).orElse(result);
+        return getActualDatabaseType(result, connection);
     }
     
     /**
-     * Judge whether branch database type detection option exists.
+     * Get actual database type.
      *
      * @param databaseType database type
-     * @return whether branch database type detection option exists
+     * @param connection connection
+     * @return actual database type
+     * @throws SQLException SQL exception
      */
-    public static boolean containsBranchTypeDetectionOption(final DatabaseType databaseType) {
-        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream()
-                .anyMatch(each -> isBranchDatabaseType(each, databaseType) && isBranchTypeDetectionEnabled(each));
+    public static DatabaseType getActualDatabaseType(final DatabaseType databaseType, final Connection connection) throws SQLException {
+        return findActualBranchDatabaseType(connection, databaseType).orElse(databaseType);
     }
     
     /**
-     * Judge whether branch database type detection is enabled.
+     * Judge whether detectable branch database types exist.
      *
      * @param databaseType database type
-     * @return whether branch database type detection is enabled
+     * @return whether detectable branch database types exist
      */
-    public static boolean isBranchTypeDetectionEnabled(final DatabaseType databaseType) {
-        return databaseType.getTrunkDatabaseType().isPresent() && containsBranchTypeDetectionOptionInMetaData(databaseType);
+    public static boolean containsDetectableBranchDatabaseTypes(final DatabaseType databaseType) {
+        return !getDetectableBranchDatabaseTypes(databaseType).isEmpty();
     }
     
     private static Optional<DatabaseType> findActualBranchDatabaseType(final Connection connection, final DatabaseType trunkDatabaseType) throws SQLException {
-        for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
-            if (!isBranchDatabaseType(each, trunkDatabaseType)) {
-                continue;
-            }
+        for (DatabaseType each : getDetectableBranchDatabaseTypes(trunkDatabaseType)) {
             if (isActualBranchDatabaseType(each, connection)) {
                 return Optional.of(each);
             }
         }
         return Optional.empty();
+    }
+    
+    private static Collection<DatabaseType> getDetectableBranchDatabaseTypes(final DatabaseType trunkDatabaseType) {
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream()
+                .filter(each -> isBranchDatabaseType(each, trunkDatabaseType) && containsBranchOption(each)).collect(Collectors.toList());
     }
     
     private static boolean isBranchDatabaseType(final DatabaseType databaseType, final DatabaseType trunkDatabaseType) {
@@ -129,7 +132,7 @@ public final class DatabaseTypeFactory {
                 || containsBranch(databaseType, metaData.getDatabaseProductVersion()) || containsBranch(databaseType, queryBranchTypeDetectionValue(branchOption.get(), connection));
     }
     
-    private static boolean containsBranchTypeDetectionOptionInMetaData(final DatabaseType databaseType) {
+    private static boolean containsBranchOption(final DatabaseType databaseType) {
         return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getBranchOption().isPresent();
     }
     
@@ -137,11 +140,13 @@ public final class DatabaseTypeFactory {
         return Objects.toString(value, "").toUpperCase(Locale.ENGLISH).contains(databaseType.getType().toUpperCase(Locale.ENGLISH));
     }
     
-    private static String queryBranchTypeDetectionValue(final DialectBranchOption branchOption, final Connection connection) throws SQLException {
+    private static String queryBranchTypeDetectionValue(final DialectBranchOption branchOption, final Connection connection) {
         try (
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(branchOption.getBranchTypeDetectionSQL())) {
             return resultSet.next() ? resultSet.getString(1) : "";
+        } catch (final SQLException ignored) {
+            return "";
         }
     }
     

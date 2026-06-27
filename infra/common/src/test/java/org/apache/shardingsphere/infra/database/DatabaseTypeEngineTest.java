@@ -85,19 +85,14 @@ class DatabaseTypeEngineTest {
         DatabaseType trunkDatabaseType = mock(DatabaseType.class);
         DatabaseType branchDatabaseType = mock(DatabaseType.class);
         when(branchDatabaseType.getTrunkDatabaseType()).thenReturn(Optional.of(trunkDatabaseType));
-        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
-            mocked.when(() -> DatabaseTypeFactory.isBranchTypeDetectionEnabled(branchDatabaseType)).thenReturn(true);
-            assertThat(DatabaseTypeEngine.getProtocolType(branchDatabaseType), is(trunkDatabaseType));
-        }
+        assertThat(DatabaseTypeEngine.getProtocolType(branchDatabaseType), is(trunkDatabaseType));
     }
     
     @Test
     void assertGetProtocolTypeWithStorageTypeWithoutBranchDetection() {
         DatabaseType databaseType = mock(DatabaseType.class);
-        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
-            mocked.when(() -> DatabaseTypeFactory.isBranchTypeDetectionEnabled(databaseType)).thenReturn(false);
-            assertThat(DatabaseTypeEngine.getProtocolType(databaseType), is(databaseType));
-        }
+        when(databaseType.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        assertThat(DatabaseTypeEngine.getProtocolType(databaseType), is(databaseType));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -118,8 +113,8 @@ class DatabaseTypeEngineTest {
         DatabaseType actualDatabaseType = mock(DatabaseType.class);
         try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
             mocked.when(() -> DatabaseTypeFactory.get(url)).thenReturn(urlDatabaseType);
-            mocked.when(() -> DatabaseTypeFactory.containsBranchTypeDetectionOption(urlDatabaseType)).thenReturn(true);
-            mocked.when(() -> DatabaseTypeFactory.get(connection)).thenReturn(actualDatabaseType);
+            mocked.when(() -> DatabaseTypeFactory.containsDetectableBranchDatabaseTypes(urlDatabaseType)).thenReturn(true);
+            mocked.when(() -> DatabaseTypeFactory.getActualDatabaseType(urlDatabaseType, connection)).thenReturn(actualDatabaseType);
             assertThat(DatabaseTypeEngine.getStorageType(url, dataSource), is(actualDatabaseType));
         }
     }
@@ -131,10 +126,22 @@ class DatabaseTypeEngineTest {
         DatabaseType urlDatabaseType = mock(DatabaseType.class);
         try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
             mocked.when(() -> DatabaseTypeFactory.get(url)).thenReturn(urlDatabaseType);
-            mocked.when(() -> DatabaseTypeFactory.containsBranchTypeDetectionOption(urlDatabaseType)).thenReturn(false);
+            mocked.when(() -> DatabaseTypeFactory.containsDetectableBranchDatabaseTypes(urlDatabaseType)).thenReturn(false);
             assertThat(DatabaseTypeEngine.getStorageType(url, dataSource), is(urlDatabaseType));
         }
         verify(dataSource, never()).getConnection();
+    }
+    
+    @Test
+    void assertGetStorageTypeWithURLAndConnectionFailure() throws SQLException {
+        String url = "jdbc:trunk://localhost:3306/test";
+        DataSource dataSource = createDataSourceWithConnectionException();
+        DatabaseType urlDatabaseType = mock(DatabaseType.class);
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
+            mocked.when(() -> DatabaseTypeFactory.get(url)).thenReturn(urlDatabaseType);
+            mocked.when(() -> DatabaseTypeFactory.containsDetectableBranchDatabaseTypes(urlDatabaseType)).thenReturn(true);
+            assertThat(assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(url, dataSource)).getCause(), isA(SQLException.class));
+        }
     }
     
     @ParameterizedTest(name = "{0}")

@@ -246,7 +246,7 @@ public final class MetaDataContextsFactory {
     }
     
     private Map<StorageNode, DataSource> getMergedStorageNodeDataSources(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {
-        Map<StorageNode, DataSource> result = currentResourceMetaData.getDataSources();
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(currentResourceMetaData.getDataSources());
         if (null != switchingResource && !switchingResource.getNewDataSources().isEmpty()) {
             result.putAll(switchingResource.getNewDataSources());
         }
