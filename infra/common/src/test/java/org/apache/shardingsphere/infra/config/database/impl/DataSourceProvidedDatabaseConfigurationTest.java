@@ -80,7 +80,8 @@ class DataSourceProvidedDatabaseConfigurationTest {
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = Collections.singletonMap("foo_ds", new DataSourcePoolProperties("foo_ds", createConnectionProps()));
         MockedDataSource dataSource = new MockedDataSource();
         DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
-                Collections.singletonMap(new StorageNode("foo_ds"), dataSource), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap, false);
+                Collections.singletonMap(new StorageNode("foo_ds"), dataSource), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap, false,
+                Collections.emptyMap());
         assertRuleConfigurations(actual);
         assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
         assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
@@ -91,7 +92,8 @@ class DataSourceProvidedDatabaseConfigurationTest {
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = Collections.singletonMap("foo_ds", new DataSourcePoolProperties("foo_ds", createConnectionProps()));
         DataSource dataSource = mock(DataSource.class);
         DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
-                Collections.singletonMap(new StorageNode("foo_ds"), dataSource), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap, false);
+                Collections.singletonMap(new StorageNode("foo_ds"), dataSource), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap, false,
+                Collections.emptyMap());
         assertThat(actual.getStorageUnits().get("foo_ds").getStorageType(), is(databaseType));
         verify(dataSource, never()).getConnection();
     }

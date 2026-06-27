@@ -60,11 +60,6 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
     }
     
     public DataSourceProvidedDatabaseConfiguration(final Map<StorageNode, DataSource> storageNodeDataSources, final Collection<RuleConfiguration> ruleConfigs,
-                                                   final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap, final boolean isInstanceConnectionEnabled) {
-        this(storageNodeDataSources, ruleConfigs, dataSourcePoolPropsMap, isInstanceConnectionEnabled, Collections.emptyMap());
-    }
-    
-    public DataSourceProvidedDatabaseConfiguration(final Map<StorageNode, DataSource> storageNodeDataSources, final Collection<RuleConfiguration> ruleConfigs,
                                                    final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap, final boolean isInstanceConnectionEnabled,
                                                    final Map<String, DatabaseType> storageTypes) {
         ruleConfigurations = ruleConfigs;
