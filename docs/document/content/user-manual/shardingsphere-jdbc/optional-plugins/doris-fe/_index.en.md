@@ -36,7 +36,7 @@ Write a Docker Compose file to start Doris FE and Doris BE.
 ```yaml
 services:
   doris:
-    image: dyrnq/doris:4.0.0
+    image: dyrnq/doris:4.1.2
     environment:
       RUN_MODE: standalone
       SKIP_CHECK_ULIMIT: true

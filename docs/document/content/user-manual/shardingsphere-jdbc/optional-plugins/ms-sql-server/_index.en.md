@@ -37,7 +37,7 @@ Write a Docker Compose file to start MS SQL Server.
 ```yaml
 services:
   ms-sql-server:
-    image: mcr.microsoft.com/mssql/server:2025-RTM-ubuntu-22.04
+    image: mcr.microsoft.com/mssql/server:2025-CU6-ubuntu-24.04
     environment:
       ACCEPT_EULA: Y
       MSSQL_SA_PASSWORD: A_Str0ng_Required_Password
