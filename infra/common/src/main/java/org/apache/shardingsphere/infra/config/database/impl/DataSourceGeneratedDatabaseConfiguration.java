@@ -58,16 +58,31 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropertiesMap, isInstanceConnectionEnabled);
-        Map<StorageNode, DataSource> storageNodeDataSources = getStorageNodeDataSourceMap(dataSourcePoolPropertiesMap, storageUnitNodeMap);
-        Map<String, StorageUnit> createdStorageUnits;
+        Map<StorageNode, DataSource> storageNodeDataSources = createStorageNodeDataSourceMap(dataSourcePoolPropertiesMap, storageUnitNodeMap);
+        Map<String, StorageUnit> storageUnits;
         try {
-            createdStorageUnits = createStorageUnits(dataSourcePoolPropertiesMap, storageUnitNodeMap, storageNodeDataSources);
+            storageUnits = createStorageUnits(dataSourcePoolPropertiesMap, storageUnitNodeMap, storageNodeDataSources);
         } catch (final ShardingSphereSQLException ex) {
             closeDataSources(storageNodeDataSources.values(), ex);
             throw ex;
         }
-        storageUnits = createdStorageUnits;
+        this.storageUnits = storageUnits;
         dataSources = storageNodeDataSources;
+    }
+    
+    private Map<StorageNode, DataSource> createStorageNodeDataSourceMap(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageUnitNodeMap.size(), 1F);
+        try {
+            for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
+                result.computeIfAbsent(entry.getValue(), key -> DataSourcePoolCreator.create(entry.getKey(), dataSourcePoolPropertiesMap.get(entry.getKey()), true, result.values()));
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            DataSourcesCloser.close(result.values());
+            throw ex;
+        }
+        return result;
     }
     
     private Map<String, StorageUnit> createStorageUnits(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap,
@@ -80,23 +95,7 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
             DataSource dataSource = storageNodeDataSources.get(storageNode);
             DataSourcePoolProperties dataSourcePoolProps = entry.getValue();
             DatabaseType storageType = storageTypes.computeIfAbsent(storageNode, key -> getStorageType(dataSourcePoolProps, dataSource));
-            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolProps, dataSource, storageType);
-            result.put(storageUnitName, storageUnit);
-        }
-        return result;
-    }
-    
-    private Map<StorageNode, DataSource> getStorageNodeDataSourceMap(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageUnitNodeMap.size(), 1F);
-        try {
-            for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
-                result.computeIfAbsent(entry.getValue(), key -> DataSourcePoolCreator.create(entry.getKey(), dataSourcePoolPropertiesMap.get(entry.getKey()), true, result.values()));
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            DataSourcesCloser.close(result.values());
-            throw ex;
+            result.put(storageUnitName, new StorageUnit(storageNode, dataSourcePoolProps, dataSource, storageType));
         }
         return result;
     }
