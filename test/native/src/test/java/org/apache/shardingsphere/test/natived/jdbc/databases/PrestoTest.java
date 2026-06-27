@@ -86,7 +86,7 @@ class PrestoTest {
         baseJdbcUrl = "jdbc:presto://localhost:" + container.getMappedPort(8080) + "/iceberg";
         logicDataSource = createDataSource();
         TestShardingService testShardingService = new TestShardingService(logicDataSource);
-        testShardingService.processSuccessWithoutTransactions();
+        testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
     }
     
