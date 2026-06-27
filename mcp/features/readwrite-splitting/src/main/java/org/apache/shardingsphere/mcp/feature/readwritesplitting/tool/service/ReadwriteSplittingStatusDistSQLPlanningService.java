@@ -42,8 +42,8 @@ public final class ReadwriteSplittingStatusDistSQLPlanningService {
             throw new MCPInvalidRequestException("target_status is required for readwrite-splitting status.");
         }
         return new RuleArtifact(operation.toLowerCase(Locale.ENGLISH), String.format("ALTER READWRITE_SPLITTING RULE %s %s %s FROM %s",
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getRuleName()), operation,
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getStorageUnit()), WorkflowSQLUtils.formatDistSQLIdentifier(request.getDatabase())));
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getRuleName()), operation,
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getStorageUnit()), WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getDatabase())));
     }
     
     /**

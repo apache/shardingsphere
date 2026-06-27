@@ -226,6 +226,6 @@ public final class ShardingDistSQLPlanningService {
     }
     
     private String format(final String value) {
-        return WorkflowSQLUtils.formatDistSQLIdentifier(value);
+        return WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(value);
     }
 }

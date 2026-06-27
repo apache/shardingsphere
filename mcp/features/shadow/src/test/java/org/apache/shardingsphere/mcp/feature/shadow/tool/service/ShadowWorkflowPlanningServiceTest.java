@@ -48,7 +48,7 @@ class ShadowWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("VALUE_MATCH"));
         assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("operation"));
-        assertTrue(actual.getRuleArtifacts().getFirst().getSql().startsWith("CREATE SHADOW RULE shadow_rule"));
+        assertTrue(actual.getRuleArtifacts().getFirst().getSql().startsWith("CREATE SHADOW RULE `shadow_rule`"));
     }
     
     @Test
@@ -101,7 +101,7 @@ class ShadowWorkflowPlanningServiceTest {
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of());
         WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService(inspectionService, new ShadowDistSQLPlanningService())
                 .planAlgorithmCleanup(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
-        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP SHADOW ALGORITHM unused_algorithm"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP SHADOW ALGORITHM `unused_algorithm`"));
     }
     
     @Test

@@ -138,6 +138,18 @@ public final class WorkflowSQLUtils {
     }
     
     /**
+     * Format an identifier rendered by generated rule DistSQL artifacts.
+     *
+     * @param identifier identifier to format
+     * @return formatted DistSQL identifier
+     */
+    public static String formatGeneratedRuleDistSQLIdentifier(final String identifier) {
+        String actualIdentifier = normalizeIdentifier(trimToEmpty(identifier));
+        checkSupportedIdentifier("identifier", actualIdentifier);
+        return actualIdentifier.isEmpty() ? actualIdentifier : IdentifierQuoteStyle.BACK_QUOTE.wrap(actualIdentifier);
+    }
+    
+    /**
      * Format a database SQL identifier.
      *
      * @param databaseType database type

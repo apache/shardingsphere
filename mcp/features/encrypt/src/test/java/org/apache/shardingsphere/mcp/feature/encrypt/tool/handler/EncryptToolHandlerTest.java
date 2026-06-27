@@ -179,7 +179,7 @@ class EncryptToolHandlerTest {
         WorkflowContextSnapshot result = createSnapshot("plan-1", "planned");
         result.setRequest(request);
         result.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", ""));
-        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
+        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE `orders` (PROPERTIES('aes-key-value'='123456'))"));
         result.setInteractionPlan(createInteractionPlan());
         return result;
     }

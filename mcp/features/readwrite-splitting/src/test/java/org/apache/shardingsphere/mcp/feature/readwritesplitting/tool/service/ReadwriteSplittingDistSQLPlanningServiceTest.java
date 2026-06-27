@@ -34,7 +34,7 @@ class ReadwriteSplittingDistSQLPlanningServiceTest {
     void assertPlanCreateRule() {
         ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest();
         assertThat(new ReadwriteSplittingRuleDistSQLPlanningService().planCreateRule(request).getSql(),
-                is("CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=write_ds, READ_STORAGE_UNITS(read_ds_0, read_ds_1), "
+                is("CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`, `read_ds_1`), "
                         + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC', TYPE(NAME='weight', PROPERTIES('read_ds_0'='2')))"));
     }
     
@@ -58,7 +58,7 @@ class ReadwriteSplittingDistSQLPlanningServiceTest {
     
     @Test
     void assertPlanDropRule() {
-        assertThat(new ReadwriteSplittingRuleDistSQLPlanningService().planDropRule("readwrite_ds").getSql(), is("DROP READWRITE_SPLITTING RULE readwrite_ds"));
+        assertThat(new ReadwriteSplittingRuleDistSQLPlanningService().planDropRule("readwrite_ds").getSql(), is("DROP READWRITE_SPLITTING RULE `readwrite_ds`"));
     }
     
     @Test
@@ -69,7 +69,7 @@ class ReadwriteSplittingDistSQLPlanningServiceTest {
         request.setStorageUnit("read_ds_0");
         request.setTargetStatus("enable");
         assertThat(new ReadwriteSplittingStatusDistSQLPlanningService().planStatus(request).getSql(),
-                is("ALTER READWRITE_SPLITTING RULE readwrite_ds ENABLE read_ds_0 FROM logic_db"));
+                is("ALTER READWRITE_SPLITTING RULE `readwrite_ds` ENABLE `read_ds_0` FROM `logic_db`"));
     }
     
     @Test

@@ -510,7 +510,7 @@ tools:
           distsql_artifacts:
             - operation_type: create
               artifact_type: rule_distsql
-              sql: CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=ds_write, READ_STORAGE_UNITS(ds_read_0), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')
+              sql: CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`ds_write`, READ_STORAGE_UNITS(`ds_read_0`), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')
           next_actions:
             - order: 1
               type: tool_call
@@ -624,7 +624,7 @@ tools:
           distsql_artifacts:
             - target_status: enable
               artifact_type: rule_distsql
-              sql: ALTER READWRITE_SPLITTING RULE readwrite_ds ENABLE ds_read_0 FROM logic_db
+              sql: ALTER READWRITE_SPLITTING RULE `readwrite_ds` ENABLE `ds_read_0` FROM `logic_db`
           next_actions:
             - order: 1
               type: tool_call

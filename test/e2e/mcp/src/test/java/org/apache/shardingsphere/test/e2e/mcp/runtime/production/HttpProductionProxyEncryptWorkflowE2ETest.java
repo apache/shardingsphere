@@ -93,7 +93,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             List<Map<String, Object>> distSqlArtifacts = getMapList(plannedResponse.get("distsql_artifacts"));
             assertThat(distSqlArtifacts.size(), is(1));
             assertThat(String.valueOf(distSqlArtifacts.getFirst().get("sql")), containsString("'aes-key-value'='******'"));
-            assertThat(String.valueOf(distSqlArtifacts.getFirst().get("sql")), containsString("CIPHER=status_cipher"));
+            assertThat(String.valueOf(distSqlArtifacts.getFirst().get("sql")), containsString("CIPHER=`status_cipher`"));
             assertSecretRedacted(interactionClient.readResource(String.format(WORKFLOW_RESOURCE_URI, planId)), TEMPLATE_SECRET_VALUE);
             Map<String, Object> applyResponse = applyReviewedWorkflow(interactionClient, planId, TEMPLATE_SECRET_VALUE);
             assertApplyCompleted(applyResponse);
@@ -146,7 +146,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertFalse(actualPlannedResponse.containsKey("index_plan"));
             List<Map<String, Object>> actualDistSqlArtifacts = getMapList(actualPlannedResponse.get("distsql_artifacts"));
             assertThat(actualDistSqlArtifacts.size(), is(1));
-            assertThat(String.valueOf(actualDistSqlArtifacts.getFirst().get("sql")), containsString("ASSISTED_QUERY_COLUMN=status_assisted_query"));
+            assertThat(String.valueOf(actualDistSqlArtifacts.getFirst().get("sql")), containsString("ASSISTED_QUERY_COLUMN=`status_assisted_query`"));
             Map<String, Object> actualApplyResponse = applyReviewedWorkflow(interactionClient, planId);
             assertApplyCompleted(actualApplyResponse);
             assertThat(getMapList(actualApplyResponse.get("step_results")).size(), is(1));
@@ -290,7 +290,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(getIssueCodes(actualDropPlanResponse), hasItem(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED));
             assertFalse(getIssueCodes(actualDropPlanResponse).contains(WorkflowIssueCode.PHYSICAL_CLEANUP_REQUIRED));
             assertFalse(actualDropPlanResponse.containsKey("ddl_artifacts"));
-            assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).getFirst().get("sql")), is("DROP ENCRYPT RULE orders"));
+            assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).getFirst().get("sql")), is("DROP ENCRYPT RULE `orders`"));
             String planId = String.valueOf(actualDropPlanResponse.get("plan_id"));
             Map<String, Object> actualApplyResponse = applyReviewedWorkflow(interactionClient, planId);
             assertApplyCompleted(actualApplyResponse);

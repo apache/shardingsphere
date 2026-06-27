@@ -777,7 +777,7 @@ tools:
         key_generator: {type: string, description: "Existing or target key generator name."}
         key_generator_type: {type: string, description: "Key generator algorithm type."}
         key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
-        auditors: {type: string, description: "Comma-separated auditor names."}
+        auditors: {type: string, description: "Comma-separated auditor algorithm types for AUDIT_STRATEGY TYPE(NAME='...') entries."}
         allow_hint_disable: {type: string, description: "Whether audit strategy allows hint disable."}
         natural_language_intent: {type: string, description: "Original user request."}
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
