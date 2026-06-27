@@ -66,8 +66,8 @@ class MetadataQueryServiceTest {
     void assertQueryDatabases() {
         List<MCPDatabaseMetadata> actual = metadataQueryService.queryDatabases();
         assertThat(actual.size(), is(3));
-        assertThat(actual.getFirst().getDatabase(), is("logic_db"));
-        assertTrue(actual.getFirst().getSchemas().isEmpty());
+        assertThat(actual.get(0).getDatabase(), is("logic_db"));
+        assertTrue(actual.get(0).getSchemas().isEmpty());
         assertThat(actual.get(1).getDatabase(), is("runtime_db"));
         assertThat(actual.get(2).getDatabase(), is("warehouse"));
     }
@@ -77,15 +77,15 @@ class MetadataQueryServiceTest {
         Optional<MCPDatabaseMetadata> actual = metadataQueryService.queryDatabase("logic_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabase(), is("logic_db"));
-        assertThat(actual.get().getSchemas().getFirst().getSchema(), is("public"));
+        assertThat(actual.get().getSchemas().get(0).getSchema(), is("public"));
     }
     
     @Test
     void assertQuerySchemas() {
         List<MCPSchemaMetadata> actual = metadataQueryService.querySchemas("logic_db");
         assertThat(actual.size(), is(1));
-        assertThat(actual.getFirst().getSchema(), is("public"));
-        assertTrue(actual.getFirst().getTables().isEmpty());
+        assertThat(actual.get(0).getSchema(), is("public"));
+        assertTrue(actual.get(0).getTables().isEmpty());
     }
     
     @Test
@@ -111,7 +111,7 @@ class MetadataQueryServiceTest {
     void assertQueryTablesBySchema() {
         List<MCPTableMetadata> actual = metadataQueryService.queryTables("logic_db", "public");
         assertThat(actual.size(), is(2));
-        assertThat(actual.getFirst().getTable(), is("order_items"));
+        assertThat(actual.get(0).getTable(), is("order_items"));
         assertThat(actual.get(1).getTable(), is("orders"));
         assertTrue(actual.get(1).getColumns().isEmpty());
     }
@@ -139,7 +139,7 @@ class MetadataQueryServiceTest {
     void assertQueryTableColumns() {
         List<MCPColumnMetadata> actual = metadataQueryService.queryTableColumns("logic_db", "public", "orders");
         assertThat(actual.size(), is(1));
-        assertThat(actual.getFirst().getColumn(), is("order_id"));
+        assertThat(actual.get(0).getColumn(), is("order_id"));
     }
     
     @Test
@@ -164,8 +164,8 @@ class MetadataQueryServiceTest {
     void assertQueryViews() {
         List<MCPViewMetadata> actual = metadataQueryService.queryViews("logic_db", "public");
         assertThat(actual.size(), is(1));
-        assertThat(actual.getFirst().getView(), is("orders_view"));
-        assertTrue(actual.getFirst().getColumns().isEmpty());
+        assertThat(actual.get(0).getView(), is("orders_view"));
+        assertTrue(actual.get(0).getColumns().isEmpty());
     }
     
     @Test
@@ -190,8 +190,8 @@ class MetadataQueryServiceTest {
     void assertQueryViewColumns() {
         List<MCPColumnMetadata> actual = metadataQueryService.queryViewColumns("logic_db", "public", "orders_view");
         assertThat(actual.size(), is(1));
-        assertThat(actual.getFirst().getColumn(), is("order_id"));
-        assertThat(actual.getFirst().getView(), is("orders_view"));
+        assertThat(actual.get(0).getColumn(), is("order_id"));
+        assertThat(actual.get(0).getView(), is("orders_view"));
     }
     
     @Test
@@ -216,7 +216,7 @@ class MetadataQueryServiceTest {
     void assertQueryIndexes() {
         List<MCPIndexMetadata> actual = metadataQueryService.queryIndexes("logic_db", "public", "orders");
         assertThat(actual.size(), is(1));
-        assertThat(actual.getFirst().getIndex(), is("order_idx"));
+        assertThat(actual.get(0).getIndex(), is("order_idx"));
     }
     
     @Test
@@ -242,7 +242,7 @@ class MetadataQueryServiceTest {
     void assertQuerySequences() {
         List<MCPSequenceMetadata> actual = metadataQueryService.querySequences("runtime_db", "public");
         assertThat(actual.size(), is(1));
-        assertThat(actual.getFirst().getSequence(), is("order_seq"));
+        assertThat(actual.get(0).getSequence(), is("order_seq"));
     }
     
     @Test

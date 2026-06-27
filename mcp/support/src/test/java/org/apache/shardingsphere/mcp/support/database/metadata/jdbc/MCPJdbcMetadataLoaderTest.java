@@ -102,7 +102,7 @@ class MCPJdbcMetadataLoaderTest {
             LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", MockDriver.class.getName())));
             MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
             assertThat(databaseMetadata.getSchemas().size(), is(1));
-            assertThat(databaseMetadata.getSchemas().getFirst().getSchema(), is("logic_db"));
+            assertThat(databaseMetadata.getSchemas().get(0).getSchema(), is("logic_db"));
             assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.TABLE, "orders"));
             assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.COLUMN, "order_id"));
             assertThat(databaseMetadata.getDatabaseVersion(), is(""));
@@ -138,7 +138,7 @@ class MCPJdbcMetadataLoaderTest {
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "GLOBAL_STATUS"));
-        assertThat(actual.getSchemas().getFirst().getSchema(), is("logic_db"));
+        assertThat(actual.getSchemas().get(0).getSchema(), is("logic_db"));
     }
     
     @Test
@@ -162,7 +162,7 @@ class MCPJdbcMetadataLoaderTest {
         when(databaseMetaData.getIndexInfo(eq("orders"), isNull(), eq("orders"), eq(false), eq(false))).thenReturn(orderIndexes);
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("MySQL", connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
-        assertThat(actual.getSchemas().getFirst().getSchema(), is("logic_db"));
+        assertThat(actual.getSchemas().get(0).getSchema(), is("logic_db"));
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"));
     }

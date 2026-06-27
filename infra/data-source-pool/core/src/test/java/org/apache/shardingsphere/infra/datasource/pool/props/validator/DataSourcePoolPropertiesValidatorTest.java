@@ -36,7 +36,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -158,7 +157,7 @@ class DataSourcePoolPropertiesValidatorTest {
         try (
                 MockedStatic<DatabaseTypeFactory> databaseTypeFactory = mockStatic(DatabaseTypeFactory.class);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            databaseTypeFactory.when(() -> DatabaseTypeFactory.get(any(Connection.class))).thenReturn(databaseType);
+            databaseTypeFactory.when(() -> DatabaseTypeFactory.get(MOCKED_URL)).thenReturn(databaseType);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabasePrivilegeChecker.class, databaseType)).thenReturn(Optional.of(checker));
             Map<String, Object> props = createMockedDataSourceProperties();
             assertTrue(DataSourcePoolPropertiesValidator.validate(Collections.singletonMap("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), props)),

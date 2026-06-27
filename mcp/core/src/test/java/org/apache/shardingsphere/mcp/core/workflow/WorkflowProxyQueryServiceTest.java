@@ -68,8 +68,8 @@ class WorkflowProxyQueryServiceTest {
         WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
         List<Map<String, Object>> actual = service.query("logic_db", "public", "SHOW MASK RULES");
         assertThat(actual.size(), is(1));
-        assertThat(actual.getFirst().get("table"), is("orders"));
-        assertThat(actual.getFirst().get("column"), is("status"));
+        assertThat(actual.get(0).get("table"), is("orders"));
+        assertThat(actual.get(0).get("column"), is("status"));
         verify(connection).setSchema("public");
     }
     
@@ -90,7 +90,7 @@ class WorkflowProxyQueryServiceTest {
         when(resultSet.getObject(1)).thenReturn("AES");
         WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
         List<Map<String, Object>> actual = service.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS");
-        assertThat(actual.getFirst().get("type"), is("AES"));
+        assertThat(actual.get(0).get("type"), is("AES"));
     }
     
     @Test
