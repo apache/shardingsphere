@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -57,30 +59,27 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropertiesMap, isInstanceConnectionEnabled);
         Map<StorageNode, DataSource> storageNodeDataSources = getStorageNodeDataSourceMap(dataSourcePoolPropertiesMap, storageUnitNodeMap);
-        storageUnits = new LinkedHashMap<>(dataSourceConfigs.size(), 1F);
-        try {
-            createStorageUnits(dataSourceConfigs, dataSourcePoolPropertiesMap, storageUnitNodeMap, storageNodeDataSources);
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            DataSourcesCloser.close(storageNodeDataSources.values());
-            throw ex;
+        try (DataSourcesCloseGuard closeGuard = new DataSourcesCloseGuard(storageNodeDataSources.values())) {
+            storageUnits = createStorageUnits(dataSourcePoolPropertiesMap, storageUnitNodeMap, storageNodeDataSources);
+            dataSources = storageNodeDataSources;
+            closeGuard.release();
         }
-        dataSources = storageNodeDataSources;
     }
     
-    private void createStorageUnits(final Map<String, DataSourceConfiguration> dataSourceConfigs, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap,
-                                    final Map<String, StorageNode> storageUnitNodeMap, final Map<StorageNode, DataSource> storageNodeDataSources) {
+    private Map<String, StorageUnit> createStorageUnits(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap,
+                                                        final Map<StorageNode, DataSource> storageNodeDataSources) {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
         Map<StorageNode, DatabaseType> storageTypes = new LinkedHashMap<>(storageNodeDataSources.size(), 1F);
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             DataSource dataSource = storageNodeDataSources.get(storageNode);
-            DataSourcePoolProperties dataSourcePoolProps = dataSourcePoolPropertiesMap.get(storageUnitName);
+            DataSourcePoolProperties dataSourcePoolProps = entry.getValue();
             DatabaseType storageType = storageTypes.computeIfAbsent(storageNode, key -> getStorageType(dataSourcePoolProps, dataSource));
             StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolProps, dataSource, storageType);
-            storageUnits.put(storageUnitName, storageUnit);
+            result.put(storageUnitName, storageUnit);
         }
+        return result;
     }
     
     private Map<StorageNode, DataSource> getStorageNodeDataSourceMap(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {
@@ -104,5 +103,24 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     private String getURL(final DataSourcePoolProperties dataSourcePoolProps) {
         return dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
+    }
+    
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private static final class DataSourcesCloseGuard implements AutoCloseable {
+        
+        private final Collection<DataSource> dataSources;
+        
+        private boolean released;
+        
+        private void release() {
+            released = true;
+        }
+        
+        @Override
+        public void close() {
+            if (!released) {
+                DataSourcesCloser.close(dataSources);
+            }
+        }
     }
 }

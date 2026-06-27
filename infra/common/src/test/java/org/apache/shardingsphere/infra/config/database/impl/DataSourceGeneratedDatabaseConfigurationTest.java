@@ -36,12 +36,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
@@ -65,6 +67,20 @@ class DataSourceGeneratedDatabaseConfigurationTest {
             DataSourceGeneratedDatabaseConfiguration actual = createDatabaseConfiguration(MockedDataSource.class.getName());
             assertThat(actual.getStorageUnits().get("foo_db").getStorageType(), is(databaseType));
         }
+    }
+    
+    @Test
+    void assertNewClosesDataSourcesWhenStorageUnitCreationFailed() {
+        AtomicReference<MockedDataSource> createdDataSource = new AtomicReference<>();
+        try (MockedStatic<DatabaseTypeEngine> mocked = mockStatic(DatabaseTypeEngine.class)) {
+            mocked.when(() -> DatabaseTypeEngine.getStorageType(eq("jdbc:mock://127.0.0.1/foo_db"), any(DataSource.class))).thenAnswer(invocation -> {
+                createdDataSource.set(invocation.getArgument(1));
+                throw new IllegalStateException("boom");
+            });
+            assertThrows(IllegalStateException.class, () -> createDatabaseConfiguration(MockedDataSource.class.getName()));
+        }
+        assertThat(createdDataSource.get(), isA(MockedDataSource.class));
+        assertTrue(createdDataSource.get().isClosed());
     }
     
     private void assertRuleConfigurations(final Collection<RuleConfiguration> actual) {
