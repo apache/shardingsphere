@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.core.fixture.CoreDatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -41,6 +41,7 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -234,7 +235,7 @@ class WorkflowProxyQueryServiceTest {
         if (!runtimeDatabases.isEmpty()) {
             capabilityRuntimeDatabases.put("logic_db", createCapabilityRuntimeDatabaseConfiguration(databaseType));
         }
-        return new WorkflowProxyQueryService(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(capabilityRuntimeDatabases));
+        return new WorkflowProxyQueryService(new MCPSessionManager(runtimeDatabases), CoreDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(capabilityRuntimeDatabases));
     }
     
     private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration(final String databaseType) {
@@ -248,15 +249,26 @@ class WorkflowProxyQueryServiceTest {
             when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
             when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseType));
+            mockEmptyScalarQueries(connection);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
         return result;
     }
     
+    private void mockEmptyScalarQueries(final Connection connection) throws SQLException {
+        Statement statement = mock(Statement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(anyString())).thenReturn(resultSet);
+    }
+    
     private String getJdbcUrl(final String databaseType) {
         if ("PostgreSQL".equals(databaseType)) {
             return "jdbc:postgresql://workflow-proxy-query/test";
+        }
+        if ("openGauss".equals(databaseType)) {
+            return "jdbc:opengauss://workflow-proxy-query/test";
         }
         return "jdbc:mysql://workflow-proxy-query/test";
     }

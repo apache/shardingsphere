@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.mariadb.metadata.database;
+package org.apache.shardingsphere.database.connector.doris.metadata.database;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
@@ -25,20 +25,19 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.MySQLDatabaseMetaData;
 
-import java.sql.Connection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Database meta data of MariaDB.
+ * Database meta data of Doris.
  */
-public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
+public final class DorisDatabaseMetaData implements DialectDatabaseMetaData {
     
     private final DialectDatabaseMetaData delegate = new MySQLDatabaseMetaData();
     
@@ -74,7 +73,7 @@ public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_REPEATABLE_READ, false, false, Collections.singleton("org.mariadb.jdbc.MariaDbDataSource"));
+        return delegate.getTransactionOption();
     }
     
     @Override
@@ -93,12 +92,17 @@ public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
+    public DialectFunctionOption getFunctionOption() {
+        return delegate.getFunctionOption();
+    }
+    
+    @Override
     public Optional<DialectBranchOption> getBranchOption() {
-        return Optional.of(new DialectBranchOption("SELECT VERSION()"));
+        return Optional.of(new DialectBranchOption("SELECT @@version_comment"));
     }
     
     @Override
     public String getDatabaseType() {
-        return "MariaDB";
+        return "Doris";
     }
 }
