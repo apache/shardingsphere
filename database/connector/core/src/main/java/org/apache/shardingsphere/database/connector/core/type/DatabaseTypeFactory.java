@@ -62,24 +62,16 @@ public final class DatabaseTypeFactory {
     /**
      * Get database type.
      *
-     * @param metaData database meta data
-     * @return database type
-     * @throws SQLException SQL exception
-     */
-    public static DatabaseType get(final DatabaseMetaData metaData) throws SQLException {
-        return Objects.toString(metaData.getDatabaseProductName(), "").contains("Hive") ? TypedSPILoader.getService(DatabaseType.class, "Hive") : get(metaData.getURL());
-    }
-    
-    /**
-     * Get database type.
-     *
      * @param connection database connection
      * @return database type
      * @throws SQLException SQL exception
      */
     public static DatabaseType get(final Connection connection) throws SQLException {
-        DatabaseType result = get(connection.getMetaData());
-        return getActualDatabaseType(result, connection);
+        return getActualDatabaseType(get(connection.getMetaData()), connection);
+    }
+    
+    private static DatabaseType get(final DatabaseMetaData metaData) throws SQLException {
+        return Objects.toString(metaData.getDatabaseProductName(), "").contains("Hive") ? TypedSPILoader.getService(DatabaseType.class, "Hive") : get(metaData.getURL());
     }
     
     /**

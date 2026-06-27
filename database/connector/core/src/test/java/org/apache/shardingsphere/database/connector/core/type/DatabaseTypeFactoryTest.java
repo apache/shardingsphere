@@ -74,22 +74,25 @@ class DatabaseTypeFactoryTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getDatabaseTypeWithDatabaseMetaDataArguments")
-    void assertGetWithDatabaseMetaData(final String name, final String productName, final String url, final Collection<DatabaseType> databaseTypes,
-                                       final DatabaseType expectedDatabaseType, final boolean isHive) throws SQLException {
+    @MethodSource("getDatabaseTypeWithConnectionArguments")
+    void assertGetWithConnection(final String name, final String productName, final String url, final Collection<DatabaseType> databaseTypes,
+                                 final DatabaseType expectedDatabaseType, final boolean isHive) throws SQLException {
+        Connection connection = mock(Connection.class);
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getDatabaseProductName()).thenReturn(productName);
         if (isHive) {
             DatabaseType hiveDatabaseType = mock(DatabaseType.class);
+            when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Collections.emptyList());
             try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
                 typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, "Hive")).thenReturn(hiveDatabaseType);
-                assertThat(DatabaseTypeFactory.get(metaData), is(hiveDatabaseType));
+                assertThat(DatabaseTypeFactory.get(connection), is(hiveDatabaseType));
             }
             return;
         }
         when(metaData.getURL()).thenReturn(url);
         when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(databaseTypes);
-        assertThat(DatabaseTypeFactory.get(metaData), is(expectedDatabaseType));
+        assertThat(DatabaseTypeFactory.get(connection), is(expectedDatabaseType));
     }
     
     @Test
@@ -217,9 +220,9 @@ class DatabaseTypeFactoryTest {
                 Arguments.of("branch only url", "jdbc:branch-only://localhost:3306/test", Collections.singletonList(branchOnlyDatabaseType), branchOnlyDatabaseType));
     }
     
-    private static Stream<Arguments> getDatabaseTypeWithDatabaseMetaDataArguments() {
+    private static Stream<Arguments> getDatabaseTypeWithConnectionArguments() {
         DatabaseType trunkDatabaseType = mockDatabaseType("jdbc:trunk:", null);
-        DatabaseType branchOnlyDatabaseType = mockDatabaseType("jdbc:branch-only:", mock(DatabaseType.class));
+        DatabaseType branchOnlyDatabaseType = mockDatabaseType("BRANCH_ONLY", "jdbc:branch-only:", mockTrunkDatabaseType("TRUNK"));
         return Stream.of(
                 Arguments.of("hive database product", "Apache Hive", "jdbc:hive://localhost:3306/test", Collections.emptyList(), null, true),
                 Arguments.of("non hive with trunk url", "MySQL", "jdbc:trunk://localhost:3306/test", Collections.singletonList(trunkDatabaseType), trunkDatabaseType, false),

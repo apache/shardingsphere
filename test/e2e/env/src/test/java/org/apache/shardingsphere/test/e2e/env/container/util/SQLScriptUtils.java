@@ -77,7 +77,7 @@ public final class SQLScriptUtils {
     }
     
     private static void execute(final Connection connection, final Collection<String> sqls) throws SQLException {
-        DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData());
+        DatabaseType databaseType = DatabaseTypeFactory.get(connection);
         DialectSQLBatchOption sqlBatchOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSQLBatchOption();
         if (sqlBatchOption.isSupportSQLBatch()) {
             executeBatch(connection, sqls);
