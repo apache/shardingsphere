@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
-import org.apache.shardingsphere.mcp.support.fixture.DatabaseTypeFactoryMocker;
+import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -111,7 +111,7 @@ class MCPDatabaseCapabilityProviderTest {
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider() {
-        return DatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive")));
+        return SupportDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive")));
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType) {
@@ -119,7 +119,7 @@ class MCPDatabaseCapabilityProviderTest {
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType, final String databaseVersion) {
-        return DatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", databaseType, databaseVersion)));
+        return SupportDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", databaseType, databaseVersion)));
     }
     
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final Map<String, String> databaseTypes) {

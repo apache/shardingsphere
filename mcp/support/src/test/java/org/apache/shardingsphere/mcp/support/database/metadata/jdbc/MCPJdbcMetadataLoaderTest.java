@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMe
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.support.fixture.DatabaseTypeFactoryMocker;
+import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -365,7 +365,7 @@ class MCPJdbcMetadataLoaderTest {
     }
     
     private LoadedMetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        try (MockedStatic<DatabaseTypeFactory> ignored = DatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
+        try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
             MCPJdbcDatabaseProfileLoader databaseProfileLoader = new MCPJdbcDatabaseProfileLoader();
             MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
             Map<String, RuntimeDatabaseProfile> databaseProfiles = databaseProfileLoader.load(runtimeDatabases);

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.core.fixture.DatabaseTypeFactoryMocker;
+import org.apache.shardingsphere.mcp.core.fixture.CoreDatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -235,7 +235,7 @@ class WorkflowProxyQueryServiceTest {
         if (!runtimeDatabases.isEmpty()) {
             capabilityRuntimeDatabases.put("logic_db", createCapabilityRuntimeDatabaseConfiguration(databaseType));
         }
-        return new WorkflowProxyQueryService(new MCPSessionManager(runtimeDatabases), DatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(capabilityRuntimeDatabases));
+        return new WorkflowProxyQueryService(new MCPSessionManager(runtimeDatabases), CoreDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(capabilityRuntimeDatabases));
     }
     
     private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration(final String databaseType) {

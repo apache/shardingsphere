@@ -87,12 +87,6 @@ public final class DatabaseTypeFactory {
         return actualBranchDatabaseTypes.isEmpty() ? result : actualBranchDatabaseTypes.iterator().next();
     }
     
-    private static void checkUniqueActualBranchDatabaseType(final DatabaseMetaData metaData, final Collection<DatabaseType> actualBranchDatabaseTypes) throws SQLException {
-        if (actualBranchDatabaseTypes.size() > 1) {
-            throw new AmbiguousStorageTypeException(metaData.getURL(), actualBranchDatabaseTypes.stream().map(DatabaseType::getType).collect(Collectors.toList()));
-        }
-    }
-    
     private static Collection<DatabaseType> findActualBranchDatabaseTypes(final Connection connection, final DatabaseType trunkDatabaseType) throws SQLException {
         Collection<DatabaseType> result = new LinkedList<>();
         for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
@@ -129,6 +123,12 @@ public final class DatabaseTypeFactory {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(branchOption.getBranchTypeDetectionSQL())) {
             return resultSet.next() ? resultSet.getString(1) : "";
+        }
+    }
+    
+    private static void checkUniqueActualBranchDatabaseType(final DatabaseMetaData metaData, final Collection<DatabaseType> actualBranchDatabaseTypes) throws SQLException {
+        if (actualBranchDatabaseTypes.size() > 1) {
+            throw new AmbiguousStorageTypeException(metaData.getURL(), actualBranchDatabaseTypes.stream().map(DatabaseType::getType).collect(Collectors.toList()));
         }
     }
     

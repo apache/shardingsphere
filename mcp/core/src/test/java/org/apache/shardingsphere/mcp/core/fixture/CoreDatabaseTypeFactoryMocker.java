@@ -38,10 +38,10 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 /**
- * Database type factory mocker for MCP tests.
+ * Database type factory mocker for MCP core tests.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseTypeFactoryMocker {
+public final class CoreDatabaseTypeFactoryMocker {
     
     /**
      * Mock database type factory by JDBC connection metadata.

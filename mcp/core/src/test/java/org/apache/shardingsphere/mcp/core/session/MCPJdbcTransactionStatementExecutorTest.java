@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.session;
 
-import org.apache.shardingsphere.mcp.core.fixture.DatabaseTypeFactoryMocker;
+import org.apache.shardingsphere.mcp.core.fixture.CoreDatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
@@ -136,7 +136,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     }
     
     private MCPDatabaseCapabilityProvider createDatabaseCapabilityBuilder() {
-        return DatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(Map.of(
+        return CoreDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(Map.of(
                 "logic_db", createCapabilityRuntimeDatabaseConfiguration("logic_db", "MySQL"),
                 "warehouse", createCapabilityRuntimeDatabaseConfiguration("warehouse", "Hive")));
     }
