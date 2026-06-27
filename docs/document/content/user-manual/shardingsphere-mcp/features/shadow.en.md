@@ -22,7 +22,10 @@ It generates shadow rule DistSQL only. It does not create shadow databases or ph
 
 - Confirm that rule plans use shadow DistSQL and reference existing storage units.
 - Confirm that default algorithm plans update only the default shadow algorithm.
+- Review `algorithm_recommendations` before selecting a shadow algorithm. `SQL_HINT` has no required properties.
+- `VALUE_MATCH` requires `operation`, `column`, and `value`; `REGEX_MATCH` requires `operation`, `column`, and `regex`.
 - Confirm cleanup plans include evidence that the target algorithm is unused.
+- Confirm the returned `plan_id`, `resources_to_read`, `next_actions`, and `distsql_artifacts` before applying the workflow.
 
 For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).
 

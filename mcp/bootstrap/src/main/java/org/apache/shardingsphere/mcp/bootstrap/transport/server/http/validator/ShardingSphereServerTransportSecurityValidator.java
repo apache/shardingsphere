@@ -69,16 +69,18 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
         }
         Optional<MCPSessionAttribution> boundSessionAttribution = sessionManager.findSessionAttribution(sessionId);
         if (boundSessionAttribution.isEmpty()) {
-            throw new ServerTransportSecurityException(400, String.format("Session attribution is not bound for session `%s`.", sessionId));
+            throw new MCPTransportSecurityException(400, "Session attribution is not bound for this MCP session.",
+                    MCPTransportSecurityException.CATEGORY_SESSION_ATTRIBUTION_MISMATCH);
         }
         if (!boundSessionAttribution.get().equals(sessionAttribution.get())) {
-            throw new ServerTransportSecurityException(400, String.format("Session attribution does not match existing binding for session `%s`.", sessionId));
+            throw new MCPTransportSecurityException(400, "Session attribution does not match this MCP session.",
+                    MCPTransportSecurityException.CATEGORY_SESSION_ATTRIBUTION_MISMATCH);
         }
     }
     
     private String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
         return headers.entrySet().stream()
-                .filter(entry -> headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst().map(optional -> Objects.toString(optional.getValue().get(0), "").trim())
+                .filter(entry -> headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst().map(optional -> Objects.toString(optional.getValue().getFirst(), "").trim())
                 .orElse("");
     }
 }

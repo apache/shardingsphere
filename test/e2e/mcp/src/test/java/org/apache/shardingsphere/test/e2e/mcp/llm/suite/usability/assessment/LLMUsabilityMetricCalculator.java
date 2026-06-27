@@ -66,7 +66,7 @@ public final class LLMUsabilityMetricCalculator {
         List<MCPInteractionTraceRecord> interactionTrace = artifactBundle.getInteractionTrace();
         boolean firstCorrectAction = interactionTrace.isEmpty() || scenario.getExpectedFirstActionNames().isEmpty()
                 ? !interactionTrace.isEmpty()
-                : scenario.getExpectedFirstActionNames().contains(interactionTrace.get(0).getTargetName());
+                : scenario.getExpectedFirstActionNames().contains(interactionTrace.getFirst().getTargetName());
         int invalidCallCount = getInvalidCallCount(interactionTrace, scenario.getExpectedRecoveryCategory());
         boolean resourceHit = hasResourceHit(scenario.getExpectedResourceUris(), interactionTrace);
         boolean expectedRecoveryObserved = hasExpectedRecoveryInteraction(interactionTrace, scenario.getExpectedRecoveryCategory());
@@ -292,9 +292,7 @@ public final class LLMUsabilityMetricCalculator {
     }
     
     private boolean isNativeToolOrigin(final String actionOrigin) {
-        return MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN.equals(actionOrigin)
-                || MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN.equals(actionOrigin)
-                || MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN.equals(actionOrigin);
+        return MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN.equals(actionOrigin) || MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN.equals(actionOrigin);
     }
     
     private boolean hasHarnessRecovery(final List<MCPInteractionTraceRecord> interactionTrace) {

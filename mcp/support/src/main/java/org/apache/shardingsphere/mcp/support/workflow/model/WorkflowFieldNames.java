@@ -68,8 +68,6 @@ public final class WorkflowFieldNames {
     
     public static final String TABLE = "table";
     
-    public static final String USER_OVERRIDES = "user_overrides";
-    
     private WorkflowFieldNames() {
     }
 }

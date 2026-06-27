@@ -49,8 +49,6 @@ public final class MySQLRuntimeTestSupport {
     
     private static final Duration DEFAULT_JDBC_READY_TIMEOUT = Duration.ofSeconds(90);
     
-    private static final String MYSQL_READY_LOG_PATTERN = ".*ready for connections.*port: 3306.*\\n";
-    
     private static final long JDBC_READY_INITIAL_INTERVAL_MILLIS = 250L;
     
     private static final long JDBC_READY_MAX_INTERVAL_MILLIS = 1000L;
@@ -83,7 +81,7 @@ public final class MySQLRuntimeTestSupport {
                 .withEnv("MYSQL_USER", USERNAME)
                 .withEnv("MYSQL_PASSWORD", PASSWORD)
                 .withExposedPorts(3306)
-                .waitingFor(Wait.forLogMessage(MYSQL_READY_LOG_PATTERN, 1))
+                .waitingFor(Wait.forListeningPort())
                 .withStartupTimeout(Duration.ofMinutes(2));
     }
     

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,9 +36,7 @@ import java.util.Properties;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ShardingSphereDatabasesFactoryTest {
     
@@ -47,9 +44,9 @@ class ShardingSphereDatabasesFactoryTest {
     void assertCreateDatabasesWithSchemas() throws SQLException {
         Map<String, DatabaseConfiguration> databaseConfigs = new LinkedHashMap<>(2, 1F);
         databaseConfigs.put("empty_db", new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList()));
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1/foo_ds");
-        databaseConfigs.put("foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource(connection)), Collections.emptyList()));
+        MockedDataSource fooDataSource = new MockedDataSource();
+        fooDataSource.setUrl("jdbc:mysql://127.0.0.1/foo_ds");
+        databaseConfigs.put("foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", fooDataSource), Collections.emptyList()));
         Map<String, Collection<ShardingSphereSchema>> schemas = new LinkedHashMap<>(2, 1F);
         schemas.put("empty_db", Collections.singleton(new ShardingSphereSchema("empty_schema", mock(DatabaseType.class))));
         schemas.put("foo_db", Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
@@ -64,9 +61,8 @@ class ShardingSphereDatabasesFactoryTest {
     @Test
     void assertCreateDatabasesWithoutSchemas() throws SQLException {
         Map<String, DatabaseConfiguration> databaseConfigs = new LinkedHashMap<>(3, 1F);
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1/foo_ds");
-        MockedDataSource mockedDataSource = new MockedDataSource(connection);
+        MockedDataSource mockedDataSource = new MockedDataSource();
+        mockedDataSource.setUrl("jdbc:mysql://127.0.0.1/foo_ds");
         databaseConfigs.put("foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList()));
         databaseConfigs.put("bar_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", mockedDataSource), Collections.emptyList()));
         databaseConfigs.put("sys", new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList()));

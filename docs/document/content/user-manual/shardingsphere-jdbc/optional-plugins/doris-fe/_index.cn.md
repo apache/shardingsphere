@@ -37,7 +37,7 @@ ShardingSphere 对 Doris FE 的支持位于可选模块中。
 ```yaml
 services:
   doris:
-    image: dyrnq/doris:4.0.0
+    image: dyrnq/doris:4.1.2
     environment:
       RUN_MODE: standalone
       SKIP_CHECK_ULIMIT: true

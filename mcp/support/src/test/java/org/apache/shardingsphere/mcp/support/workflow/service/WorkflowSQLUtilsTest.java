@@ -136,6 +136,24 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierQuotesSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("orders_01");
+        assertThat(actualValue, is("`orders_01`"));
+    }
+    
+    @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierQuotesDelimitedSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("`orders`");
+        assertThat(actualValue, is("`orders`"));
+    }
+    
+    @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierReturnsEmptyForBlankIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("");
+        assertThat(actualValue, is(""));
+    }
+    
+    @Test
     void assertFormatSQLIdentifierUsesMysqlQuoteStyle() {
         String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "order detail");
         assertThat(actualValue, is("`order detail`"));
@@ -269,6 +287,12 @@ class WorkflowSQLUtilsTest {
                 Arguments.of("quote exists keyword", "exists", "`exists`"),
                 Arguments.of("quote true keyword", "true", "`true`"),
                 Arguments.of("quote false keyword", "false", "`false`"),
+                Arguments.of("quote name keyword", "name", "`name`"),
+                Arguments.of("quote cipher keyword", "cipher", "`cipher`"),
+                Arguments.of("quote order keyword", "order", "`order`"),
+                Arguments.of("quote type keyword", "type", "`type`"),
+                Arguments.of("quote table keyword", "table", "`table`"),
+                Arguments.of("quote from keyword", "from", "`from`"),
                 Arguments.of("quote properties keyword", "properties", "`properties`"),
                 Arguments.of("quote encrypt algorithm keyword", "encrypt_algorithm", "`encrypt_algorithm`"),
                 Arguments.of("quote assisted query column keyword", "assisted_query_column", "`assisted_query_column`"),

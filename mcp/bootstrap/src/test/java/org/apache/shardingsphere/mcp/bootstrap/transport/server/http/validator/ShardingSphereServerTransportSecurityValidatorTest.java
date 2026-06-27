@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 
-import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.spec.HttpHeaders;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
@@ -54,9 +53,11 @@ class ShardingSphereServerTransportSecurityValidatorTest {
         sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("subject", "gateway", Map.of()));
         ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(),
                 new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
-        ServerTransportSecurityException exception = assertThrows(ServerTransportSecurityException.class, () -> actual.validateHeaders(
+        MCPTransportSecurityException exception = assertThrows(MCPTransportSecurityException.class, () -> actual.validateHeaders(
                 Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("other"), "X-Test-Source", List.of("gateway"))));
-        assertThat(exception.getMessage(), is("Session attribution does not match existing binding for session `session-1`."));
+        assertThat(exception.getStatusCode(), is(400));
+        assertThat(exception.getMessage(), is("Session attribution does not match this MCP session."));
+        assertThat(exception.getCategory(), is("session_attribution_mismatch"));
     }
     
     @Test
@@ -65,10 +66,11 @@ class ShardingSphereServerTransportSecurityValidatorTest {
         sessionManager.createSession("session-1");
         ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(),
                 new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
-        ServerTransportSecurityException exception = assertThrows(ServerTransportSecurityException.class, () -> actual.validateHeaders(
+        MCPTransportSecurityException exception = assertThrows(MCPTransportSecurityException.class, () -> actual.validateHeaders(
                 Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"))));
         assertThat(exception.getStatusCode(), is(400));
-        assertThat(exception.getMessage(), is("Session attribution is not bound for session `session-1`."));
+        assertThat(exception.getMessage(), is("Session attribution is not bound for this MCP session."));
+        assertThat(exception.getCategory(), is("session_attribution_mismatch"));
         assertThat(sessionManager.findSessionAttribution("session-1"), is(Optional.empty()));
     }
 }

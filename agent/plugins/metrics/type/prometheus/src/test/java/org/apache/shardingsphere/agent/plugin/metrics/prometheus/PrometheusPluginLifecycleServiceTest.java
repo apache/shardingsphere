@@ -68,7 +68,7 @@ class PrometheusPluginLifecycleServiceTest {
     
     @Test
     void assertStart() throws IOException {
-        final ContextManager contextManager = mockContextManager();
+        ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("jvm-information-collector-enabled", Boolean.TRUE.toString()))), true);
         try (Socket socket = new Socket()) {

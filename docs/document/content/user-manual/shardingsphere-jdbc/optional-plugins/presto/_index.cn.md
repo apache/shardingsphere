@@ -38,7 +38,7 @@ ShardingSphere 对 Presto JDBC Driver 的支持位于可选模块中。
 ```yaml
 services:
   presto:
-    image: prestodb/presto:0.296
+    image: prestodb/presto:0.298.1
     ports:
       - "8080:8080"
     volumes:

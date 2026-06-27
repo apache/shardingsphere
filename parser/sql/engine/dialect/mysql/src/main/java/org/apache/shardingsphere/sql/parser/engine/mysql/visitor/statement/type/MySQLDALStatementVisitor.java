@@ -135,6 +135,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilte
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment.VariableType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -822,13 +823,15 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
             return getVariableAssignSegment(ctx.optionValueNoOptionType());
         }
         VariableSegment variable = new VariableSegment(
-                ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText(), ctx.optionType().getText());
+                ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText(), ctx.optionType().getText())
+                .withVariableType(VariableType.INTERNAL);
         return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
     }
     
     private VariableAssignSegment getVariableAssignSegment(final OptionValueListContext ctx) {
         VariableSegment variable = new VariableSegment(
-                ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText(), ctx.optionType().getText());
+                ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText(), ctx.optionType().getText())
+                .withVariableType(VariableType.INTERNAL);
         return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.setExprOrDefault().stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
     }
     
@@ -838,10 +841,11 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     private VariableSegment getVariableSegment(final OptionValueNoOptionTypeContext ctx) {
         if (null != ctx.internalVariableName()) {
-            return new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
+            return new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText())
+                    .withVariableType(VariableType.INTERNAL);
         }
         if (null != ctx.userVariable()) {
-            return new VariableSegment(ctx.userVariable().start.getStartIndex(), ctx.userVariable().stop.getStopIndex(), ctx.userVariable().getText());
+            return new VariableSegment(ctx.userVariable().start.getStartIndex(), ctx.userVariable().stop.getStopIndex(), ctx.userVariable().getText()).withVariableType(VariableType.USER);
         }
         if (null != ctx.setSystemVariable()) {
             VariableSegment result = new VariableSegment(

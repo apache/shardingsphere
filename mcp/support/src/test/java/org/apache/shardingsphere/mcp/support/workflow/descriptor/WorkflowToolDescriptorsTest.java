@@ -39,7 +39,7 @@ class WorkflowToolDescriptorsTest {
         assertThat(getInputFieldNames(actual), is(List.of(
                 "plan_id", "database", "schema", "table", "column", "operation_type",
                 "natural_language_intent", "structured_intent_evidence", "delivery_mode",
-                "execution_mode", "algorithm_type", "user_overrides")));
+                "execution_mode", "algorithm_type")));
         assertThat(findInputProperty(actual, "operation_type").get("enum"), is(List.of("create", "alter", "drop")));
         assertThat(findInputProperty(actual, "delivery_mode").get("enum"), is(List.of("all-at-once", "step-by-step")));
         assertThat(findInputProperty(actual, "execution_mode").get("enum"), is(List.of("review-then-execute", "manual-only")));
@@ -54,6 +54,8 @@ class WorkflowToolDescriptorsTest {
         assertThat(getInputFieldNames(actual), is(List.of("plan_id", "execution_mode", "approved_steps")));
         assertTrue(getRequiredInputNames(actual).contains("execution_mode"));
         assertThat(findInputProperty(actual, "execution_mode").get("enum"), is(List.of("preview", "review-then-execute", "manual-only")));
+        assertThat(findOutputProperty(actual, "response_mode").get("enum"), is(List.of("preview", "executed", "manual_only", "recovery", "terminal")));
+        assertTrue(findOutputProperty(actual, "category").get("enum").toString().contains("secret_reference_manual_execution_required"));
         assertThat(findInputProperty(actual, "approved_steps"), is(Map.of(
                 "type", "array",
                 "description", "Required when execution_mode=review-then-execute. Pass only user-reviewed preview_artifacts.approval_step values; an empty or omitted list does not approve artifacts.",
@@ -94,6 +96,10 @@ class WorkflowToolDescriptorsTest {
     
     private Map<?, ?> findInputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
         return (Map<?, ?>) getInputProperties(descriptor).get(fieldName);
+    }
+    
+    private Map<?, ?> findOutputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
+        return (Map<?, ?>) ((Map<?, ?>) descriptor.getOutputSchema().get("properties")).get(fieldName);
     }
     
     private Map<?, ?> getInputProperties(final MCPToolDescriptor descriptor) {

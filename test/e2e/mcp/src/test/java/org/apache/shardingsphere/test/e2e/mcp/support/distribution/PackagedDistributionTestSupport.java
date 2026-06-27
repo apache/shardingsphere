@@ -90,6 +90,23 @@ public final class PackagedDistributionTestSupport {
     }
     
     /**
+     * Prepare a reusable packaged MCP distribution home with supplied runtime databases.
+     *
+     * @param workingHome reusable working home
+     * @param transport runtime transport
+     * @param runtimeDatabases runtime databases
+     * @return prepared packaged distribution
+     * @throws IOException I/O exception
+     */
+    public static PreparedPackagedDistribution prepareReusable(final Path workingHome, final RuntimeTransport transport,
+                                                               final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
+        Path actualWorkingHome = prepareReusableWorkingHome(workingHome);
+        int httpPort = resolveHttpPort(transport);
+        Path configFile = rewriteConfiguration(actualWorkingHome, transport, httpPort, runtimeDatabases);
+        return new PreparedPackagedDistribution(actualWorkingHome, configFile, transport, httpPort);
+    }
+    
+    /**
      * Create a mounted configuration file for a Dockerized MCP distribution.
      *
      * @param targetFile target config file
@@ -125,6 +142,15 @@ public final class PackagedDistributionTestSupport {
     private static Path prepareWorkingHome(final Path tempDir) throws IOException {
         Path sourceDistributionHome = findRequiredDistributionHome();
         Path workingHome = copyDistributionHome(sourceDistributionHome, tempDir.resolve("distribution-home"));
+        resetRuntimeDirectories(workingHome);
+        makeStartScriptExecutable(workingHome);
+        return workingHome;
+    }
+    
+    private static Path prepareReusableWorkingHome(final Path workingHome) throws IOException {
+        if (!Files.exists(workingHome)) {
+            copyDistributionHome(findRequiredDistributionHome(), workingHome);
+        }
         resetRuntimeDirectories(workingHome);
         makeStartScriptExecutable(workingHome);
         return workingHome;

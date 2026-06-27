@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -111,6 +113,12 @@ class GenericSchemaManagerTest {
     }
     
     @Test
+    void assertGetToBeDroppedTablesWithActualName() {
+        assertTrue(GenericSchemaManager.getToBeDroppedTables(
+                createLowerCaseSchema("foo_schema", createTable("Foo_Tbl", TableType.TABLE)), createLowerCaseSchema("foo_schema", createTable("Foo_Tbl", TableType.TABLE))).isEmpty());
+    }
+    
+    @Test
     void assertGetToBeDroppedSchemaNames() {
         ShardingSphereDatabase currentDatabase = mock(ShardingSphereDatabase.class);
         when(currentDatabase.getAllSchemas()).thenReturn(Stream.of(createSchema("foo_schema"), createSchema("bar_schema")).collect(Collectors.toList()));
@@ -126,11 +134,20 @@ class GenericSchemaManagerTest {
                 Arguments.of("same table definition already exists",
                         createSchema("foo_schema", createTable("foo_tbl", TableType.TABLE)), createSchema("foo_schema", createTable("foo_tbl", TableType.TABLE)), Collections.emptySet()),
                 Arguments.of("same table name but different definition",
-                        createSchema("foo_schema", createTable("foo_tbl", TableType.TABLE)), createSchema("foo_schema", createTable("foo_tbl", TableType.VIEW)), Collections.singleton("foo_tbl")));
+                        createSchema("foo_schema", createTable("foo_tbl", TableType.TABLE)), createSchema("foo_schema", createTable("foo_tbl", TableType.VIEW)), Collections.singleton("foo_tbl")),
+                Arguments.of("same actual table name already exists",
+                        createLowerCaseSchema("foo_schema", createTable("Foo_Tbl", TableType.TABLE)),
+                        createLowerCaseSchema("foo_schema", createTable("Foo_Tbl", TableType.TABLE)), Collections.emptySet()));
     }
     
     private static ShardingSphereSchema createSchema(final String name, final ShardingSphereTable... tables) {
         return new ShardingSphereSchema(name, mock(DatabaseType.class), Stream.of(tables).collect(Collectors.toList()), Collections.emptyList());
+    }
+    
+    private static ShardingSphereSchema createLowerCaseSchema(final String name, final ShardingSphereTable... tables) {
+        ShardingSphereSchema result = createSchema(name, tables);
+        result.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
+        return result;
     }
     
     private static ShardingSphereTable createTable(final String name, final TableType type) {

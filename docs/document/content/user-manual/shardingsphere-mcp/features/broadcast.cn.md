@@ -22,6 +22,8 @@ weight = 4
 
 - 确认计划语句是 `CREATE BROADCAST TABLE RULE` 或 `DROP BROADCAST TABLE RULE`。
 - 确认所有表名都是逻辑表名。
+- 执行 workflow 前，确认返回的 `plan_id`、`resources_to_read`、`next_actions` 和 `distsql_artifacts`。
+- 广播表规划不需要算法推荐或算法属性要求。
 - 执行前先预览 workflow，执行后校验 Proxy 可见规则状态。
 
 规则变更的通用审查流程见[规则变更流程](../plugin-workflow/)。

@@ -22,6 +22,40 @@
     <create-function sql-case-id="create_function_with_multiple_output_parameters" />
     <create-function sql-case-id="create_function_return_table" />
     <create-function sql-case-id="create_function_with_execute" />
+    <create-function sql-case-id="create_function_with_declare">
+        <function-name name="ufnGetName" />
+        <sql-statements>
+            <sql-statement start-index="141" stop-index="160" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="174" stop-index="186" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </create-function>
+    <create-function sql-case-id="create_function_with_declare_table_variable">
+        <function-name name="ufnTableVar" />
+        <sql-statements>
+            <sql-statement start-index="130" stop-index="152" statement-class-simple-name="UpdateStatement" />
+        </sql-statements>
+    </create-function>
+    <create-function sql-case-id="create_function_or_alter_with_declare">
+        <function-name name="ufnRefresh" />
+        <sql-statements>
+            <sql-statement start-index="133" stop-index="147" statement-class-simple-name="SetStatement" />
+        </sql-statements>
+    </create-function>
+    <create-function sql-case-id="create_function_with_declare_cursor">
+        <function-name name="ufnCursor" />
+    </create-function>
+    <create-function sql-case-id="create_function_with_declare_multiple_variables">
+        <function-name name="ufnMulti" />
+        <sql-statements>
+            <sql-statement start-index="121" stop-index="132" statement-class-simple-name="SetStatement" />
+        </sql-statements>
+    </create-function>
+    <create-function sql-case-id="create_function_with_schemabinding_and_declare">
+        <function-name name="ufnSchema" />
+    </create-function>
+    <create-function sql-case-id="create_function_with_returns_null_on_null_input_and_declare">
+        <function-name name="ufnNullOnNull" />
+    </create-function>
     <create-function sql-case-id="create_function_inline_table" />
     <create-function sql-case-id="create_function_declare_without_at" />
     <create-function sql-case-id="create_function_call_spec_java" />

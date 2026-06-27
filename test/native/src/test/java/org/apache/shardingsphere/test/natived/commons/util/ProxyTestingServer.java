@@ -19,13 +19,21 @@ package org.apache.shardingsphere.test.natived.commons.util;
 
 import lombok.Getter;
 import org.apache.curator.test.InstanceSpec;
-import org.apache.shardingsphere.proxy.Bootstrap;
-import org.awaitility.Awaitility;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
+import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.frontend.CDCServer;
+import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
+import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
+import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.sql.SQLException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This class is designed to start ShardingSphere Proxy directly in the current process,
@@ -39,30 +47,48 @@ public final class ProxyTestingServer {
     @Getter
     private final int proxyPort;
     
-    private final CompletableFuture<Void> completableFuture;
+    private final ShardingSphereProxy proxy;
     
     /**
-     * Call this method to start the Server side of ShardingSphere Proxy in a separate thread.
+     * Call this method to start the Server side of ShardingSphere Proxy.
      *
      * @param configAbsolutePath The absolute path to the directory where {@code global.yaml} is located.
+     * @see org.apache.shardingsphere.proxy.Bootstrap
      */
     public ProxyTestingServer(final String configAbsolutePath) {
         proxyPort = InstanceSpec.getRandomPort();
-        completableFuture = CompletableFuture.runAsync(() -> {
-            try {
-                Bootstrap.main(new String[]{String.valueOf(proxyPort), configAbsolutePath, "0.0.0.0"});
-            } catch (final IOException | SQLException ex) {
-                throw new RuntimeException(ex);
+        String[] args = new String[]{String.valueOf(proxyPort), configAbsolutePath, "0.0.0.0"};
+        try {
+            BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
+            YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
+            int port = bootstrapArgs.getPort().orElseThrow(() -> new IllegalStateException("Check `org.apache.curator.test.InstanceSpec#getRandomPort`."));
+            List<String> addresses = bootstrapArgs.getAddresses();
+            checkPort(addresses, port);
+            new BootstrapInitializer().init(yamlConfig, port);
+            Optional.ofNullable((Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
+                    .ifPresent(optional -> new Thread(new CDCServer(addresses, optional)).start());
+            ProxySSLContext.init();
+            proxy = new ShardingSphereProxy();
+            bootstrapArgs.getSocketPath().ifPresent(proxy::start);
+            proxy.startInternal(port, addresses);
+        } catch (final SQLException | IOException | InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    private void checkPort(final List<String> addresses, final int port) throws IOException {
+        for (String each : addresses) {
+            try (ServerSocket socket = new ServerSocket()) {
+                socket.bind(new InetSocketAddress(each, port));
             }
-        });
+        }
     }
     
     /**
-     * Force close ShardingSphere Proxy.
+     * Close ShardingSphere Proxy.
      *
      */
     public void close() {
-        completableFuture.cancel(false);
-        Awaitility.await().atMost(1L, TimeUnit.MINUTES).until(completableFuture::isDone);
+        proxy.close();
     }
 }

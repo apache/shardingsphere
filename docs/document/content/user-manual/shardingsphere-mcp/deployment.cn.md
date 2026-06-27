@@ -203,7 +203,7 @@ location /mcp {
 3. 运行时数据库已就绪
 
    - 读取 `shardingsphere://runtime`，确认 transport、runtime 数据库摘要和运行状态可见。
-   - 调用 `database_gateway_validate_proxy_connectivity`，或在 AI 应用中执行“查看 `<logic-database>` 中有哪些表”这类最小任务，确认当前 `runtimeDatabases` 对应的逻辑库可用。
+   - 调用 `database_gateway_validate_runtime_database`，或在 AI 应用中执行“查看 `<logic-database>` 中有哪些表”这类最小任务，确认当前 `runtimeDatabases` 对应的逻辑库可用。
    - 仅有 MCP Server 进程启动并不表示目标运行时数据库已经可用；连接失败、权限不足或逻辑库不可见仍会阻断后续任务。
 
 ## 基础可观测入口

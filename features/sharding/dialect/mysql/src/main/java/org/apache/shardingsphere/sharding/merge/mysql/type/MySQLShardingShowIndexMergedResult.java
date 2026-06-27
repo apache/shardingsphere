@@ -27,9 +27,11 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Sharding merged result for show index for MySQL.
@@ -51,8 +53,13 @@ public final class MySQLShardingShowIndexMergedResult extends MemoryMergedResult
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 String actualIndexName = memoryResultSetRow.getCell(3).toString();
                 Optional<ShardingTable> shardingTable = shardingRule.findShardingTableByActualTable(actualTableName);
-                shardingTable.ifPresent(optional -> memoryResultSetRow.setCell(1, optional.getLogicTable()));
-                memoryResultSetRow.setCell(3, IndexMetaDataUtils.getLogicIndexName(actualIndexName, actualTableName));
+                Collection<String> candidateLogicIndexNames = new LinkedList<>();
+                if (shardingTable.isPresent()) {
+                    String logicTableName = shardingTable.get().getLogicTable();
+                    memoryResultSetRow.setCell(1, logicTableName);
+                    candidateLogicIndexNames = schema.getTable(logicTableName).getAllIndexes().stream().map(eachIndex -> eachIndex.getName()).collect(Collectors.toList());
+                }
+                memoryResultSetRow.setCell(3, IndexMetaDataUtils.findGeneratedLogicIndexName(actualIndexName, actualTableName, candidateLogicIndexNames).orElse(actualIndexName));
                 result.add(memoryResultSetRow);
             }
         }

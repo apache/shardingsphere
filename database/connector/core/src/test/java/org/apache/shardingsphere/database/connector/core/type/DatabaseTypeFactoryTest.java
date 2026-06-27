@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.database.connector.core.type;
 
 import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.branch.DialectBranchOption;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -29,8 +31,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,8 +45,11 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -82,6 +90,99 @@ class DatabaseTypeFactoryTest {
         assertThat(DatabaseTypeFactory.get(metaData), is(expectedDatabaseType));
     }
     
+    @Test
+    void assertGetWithUnmatchedBranchConnection() throws SQLException {
+        DatabaseType trunkDatabaseType = mockDatabaseType("TRUNK", "jdbc:trunk:", null);
+        DatabaseType branchDatabaseType = mockDatabaseType("jdbc:trunk:", trunkDatabaseType);
+        Connection connection = createConnection("jdbc:trunk://localhost:3306/test", "MySQL", null);
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData(branchDatabaseType, Optional.empty());
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, branchDatabaseType));
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(dialectDatabaseMetaData));
+        assertThat(DatabaseTypeFactory.get(connection), is(trunkDatabaseType));
+    }
+    
+    @Test
+    void assertGetWithBranchProductNameConnection() throws SQLException {
+        DatabaseType trunkDatabaseType = mockDatabaseType("TRUNK", "jdbc:trunk:", null);
+        DatabaseType branchDatabaseType = mockDatabaseType("BRANCH", "jdbc:trunk:", trunkDatabaseType);
+        Connection connection = createConnection("jdbc:trunk://localhost:3306/test", "Apache BRANCH", null);
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData(branchDatabaseType, Optional.of(new DialectBranchOption("SELECT branch_type")));
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, branchDatabaseType));
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(dialectDatabaseMetaData));
+        assertThat(DatabaseTypeFactory.get(connection), is(branchDatabaseType));
+    }
+    
+    @Test
+    void assertGetWithBranchProductVersionConnection() throws SQLException {
+        DatabaseType trunkDatabaseType = mockDatabaseType("TRUNK", "jdbc:trunk:", null);
+        DatabaseType branchDatabaseType = mockDatabaseType("BRANCH", "jdbc:trunk:", trunkDatabaseType);
+        Connection connection = createConnection("jdbc:trunk://localhost:3306/test", "MySQL", "8.0.36-BRANCH");
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData(branchDatabaseType, Optional.of(new DialectBranchOption("SELECT branch_type")));
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, branchDatabaseType));
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(dialectDatabaseMetaData));
+        assertThat(DatabaseTypeFactory.get(connection), is(branchDatabaseType));
+    }
+    
+    @Test
+    void assertGetWithBranchDetectionSQLConnection() throws SQLException {
+        DatabaseType trunkDatabaseType = mockDatabaseType("TRUNK", "jdbc:trunk:", null);
+        DatabaseType branchDatabaseType = mockDatabaseType("BRANCH", "jdbc:trunk:", trunkDatabaseType);
+        Connection connection = createConnection("jdbc:trunk://localhost:3306/test", "MySQL", "8.0.36", "SELECT branch_type", "BRANCH server");
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData(branchDatabaseType, Optional.of(new DialectBranchOption("SELECT branch_type")));
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, branchDatabaseType));
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(dialectDatabaseMetaData));
+        assertThat(DatabaseTypeFactory.get(connection), is(branchDatabaseType));
+    }
+    
+    @Test
+    void assertGetWithFailedBranchDetectionSQLConnection() throws SQLException {
+        DatabaseType trunkDatabaseType = mockDatabaseType("TRUNK", "jdbc:trunk:", null);
+        DatabaseType branchDatabaseType = mockDatabaseType("BRANCH", "jdbc:trunk:", trunkDatabaseType);
+        SQLException expected = new SQLException("branch detection failed");
+        Connection connection = createConnectionWithBranchTypeDetectionFailure("jdbc:trunk://localhost:3306/test", "MySQL", "8.0.36", expected);
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData(branchDatabaseType, Optional.of(new DialectBranchOption("SELECT branch_type")));
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, branchDatabaseType));
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(dialectDatabaseMetaData));
+        assertThat(assertThrows(SQLException.class, () -> DatabaseTypeFactory.get(connection)), is(expected));
+    }
+    
+    @Test
+    void assertGetWithFirstMatchedBranchConnection() throws SQLException {
+        DatabaseType trunkDatabaseType = mockDatabaseType("TRUNK", "jdbc:trunk:", null);
+        DatabaseType firstBranchDatabaseType = mockDatabaseType("BRANCH_1", "jdbc:trunk:", trunkDatabaseType);
+        DatabaseType secondBranchDatabaseType = mock(DatabaseType.class, invocation -> {
+            String methodName = invocation.getMethod().getName();
+            if ("getJdbcUrlPrefixes".equals(methodName)) {
+                return Collections.singleton("jdbc:trunk:");
+            }
+            if ("toString".equals(methodName)) {
+                return "unexpectedBranchDatabaseType";
+            }
+            throw new AssertionError("Unexpected branch database type should not be inspected.");
+        });
+        Connection connection = createConnection("jdbc:trunk://localhost:3306/test", "Apache BRANCH_1", null);
+        DialectDatabaseMetaData firstDialectDatabaseMetaData = createDialectDatabaseMetaData(firstBranchDatabaseType, Optional.of(new DialectBranchOption("SELECT branch_type")));
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, firstBranchDatabaseType, secondBranchDatabaseType));
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(firstDialectDatabaseMetaData));
+        assertThat(DatabaseTypeFactory.get(connection), is(firstBranchDatabaseType));
+        verify(connection, never()).createStatement();
+    }
+    
+    @Test
+    void assertGetWithConnectionWithoutUrlWhenNoBranchDatabaseType() throws SQLException {
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        DatabaseType hiveDatabaseType = mock(DatabaseType.class);
+        when(connection.getMetaData()).thenReturn(metaData);
+        when(metaData.getDatabaseProductName()).thenReturn("Apache Hive");
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Collections.emptyList());
+        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+            typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, "Hive")).thenReturn(hiveDatabaseType);
+            assertThat(DatabaseTypeFactory.get(connection), is(hiveDatabaseType));
+            verify(metaData, never()).getURL();
+        }
+    }
+    
     private static Stream<Arguments> getDatabaseTypeWithRecognizedURLArguments() {
         DatabaseType trunkDatabaseType = mockDatabaseType("jdbc:trunk:", null);
         DatabaseType branchDatabaseType = mockDatabaseType("jdbc:trunk:branch:", trunkDatabaseType);
@@ -101,10 +202,56 @@ class DatabaseTypeFactoryTest {
                 Arguments.of("non hive with branch only url", "MySQL", "jdbc:branch-only://localhost:3306/test", Collections.singletonList(branchOnlyDatabaseType), branchOnlyDatabaseType, false));
     }
     
+    private Connection createConnection(final String url, final String productName, final String productVersion) throws SQLException {
+        Connection result = mock(Connection.class);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        when(result.getMetaData()).thenReturn(metaData);
+        if (null != productName) {
+            when(metaData.getDatabaseProductName()).thenReturn(productName);
+        }
+        if (null != productVersion) {
+            when(metaData.getDatabaseProductVersion()).thenReturn(productVersion);
+        }
+        when(metaData.getURL()).thenReturn(url);
+        return result;
+    }
+    
+    private Connection createConnection(final String url, final String productName, final String productVersion, final String branchTypeDetectionSQL,
+                                        final String branchTypeDetectionValue) throws SQLException {
+        Connection result = createConnection(url, productName, productVersion);
+        Statement statement = mock(Statement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(result.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(branchTypeDetectionSQL)).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(1)).thenReturn(branchTypeDetectionValue);
+        return result;
+    }
+    
+    private Connection createConnectionWithBranchTypeDetectionFailure(final String url, final String productName, final String productVersion, final SQLException sqlException) throws SQLException {
+        Connection result = createConnection(url, productName, productVersion);
+        when(result.createStatement()).thenThrow(sqlException);
+        return result;
+    }
+    
     private static DatabaseType mockDatabaseType(final String jdbcUrlPrefix, final DatabaseType trunkDatabaseType) {
+        return mockDatabaseType(null, jdbcUrlPrefix, trunkDatabaseType);
+    }
+    
+    private static DatabaseType mockDatabaseType(final String databaseType, final String jdbcUrlPrefix, final DatabaseType trunkDatabaseType) {
         DatabaseType result = mock(DatabaseType.class);
+        if (null != databaseType) {
+            when(result.getType()).thenReturn(databaseType);
+        }
         when(result.getJdbcUrlPrefixes()).thenReturn(Collections.singleton(jdbcUrlPrefix));
         when(result.getTrunkDatabaseType()).thenReturn(Optional.ofNullable(trunkDatabaseType));
+        return result;
+    }
+    
+    private DialectDatabaseMetaData createDialectDatabaseMetaData(final DatabaseType databaseType, final Optional<DialectBranchOption> branchOption) {
+        DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
+        doReturn(databaseType).when(result).getType();
+        when(result.getBranchOption()).thenReturn(branchOption);
         return result;
     }
 }

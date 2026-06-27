@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow;
 
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
+
 import java.util.Map;
 
 /**
@@ -31,4 +33,23 @@ public interface WorkflowPropertySource {
      * @return algorithm properties
      */
     Map<String, String> getAlgorithmProperties(String algorithmRole);
+    
+    /**
+     * Get secret references grouped by algorithm role.
+     *
+     * @return secret references
+     */
+    default Map<String, Map<String, SecretReferenceValue>> getSecretReferences() {
+        return Map.of();
+    }
+    
+    /**
+     * Get secret references by role.
+     *
+     * @param algorithmRole algorithm role
+     * @return secret references
+     */
+    default Map<String, SecretReferenceValue> getSecretReferences(final String algorithmRole) {
+        return getSecretReferences().getOrDefault(algorithmRole, Map.of());
+    }
 }

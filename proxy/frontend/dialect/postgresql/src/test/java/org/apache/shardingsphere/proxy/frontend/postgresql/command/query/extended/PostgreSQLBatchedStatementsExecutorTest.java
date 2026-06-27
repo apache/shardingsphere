@@ -144,11 +144,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
                 .thenReturn(preparedStatement);
         ContextManager contextManager = mockContextManager(databaseType);
         initBackendExecutorContext(contextManager);
-        final ExecutorEngine previousExecutorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
-        BackendExecutorContext.getInstance().shutdown();
-        assertThrows(IllegalStateException.class, () -> BackendExecutorContext.getInstance().getExecutorEngine());
-        BackendExecutorContext.getInstance().init();
-        assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(not(previousExecutorEngine)));
+        assertBackendExecutorContextReinitialized(BackendExecutorContext.getInstance().getExecutorEngine());
         PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", mockInsertStatementContext(),
                 new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
@@ -156,6 +152,13 @@ class PostgreSQLBatchedStatementsExecutorTest {
         PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(mockConnectionSession(), postgresqlPreparedStatement, parameterSets);
         prepareExecutionUnitParameters(actual, parameterSets);
         assertThat(actual.executeBatch(), is(3));
+    }
+    
+    private void assertBackendExecutorContextReinitialized(final ExecutorEngine previousExecutorEngine) {
+        BackendExecutorContext.getInstance().shutdown();
+        assertThrows(IllegalStateException.class, () -> BackendExecutorContext.getInstance().getExecutorEngine());
+        BackendExecutorContext.getInstance().init();
+        assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(not(previousExecutorEngine)));
     }
     
     @Test

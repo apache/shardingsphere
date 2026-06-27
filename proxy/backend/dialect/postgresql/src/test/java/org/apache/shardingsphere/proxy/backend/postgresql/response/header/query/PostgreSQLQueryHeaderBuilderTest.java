@@ -33,7 +33,7 @@ class PostgreSQLQueryHeaderBuilderTest {
     
     @Test
     void assertBuildPostgreSQLQueryHeader() throws SQLException {
-        final int columnIndex = 1;
+        int columnIndex = 1;
         ShardingSphereResultSetMetaData resultSetMetaData = mock(ShardingSphereResultSetMetaData.class);
         when(resultSetMetaData.getColumnLabel(columnIndex)).thenReturn("label");
         when(resultSetMetaData.getColumnType(columnIndex)).thenReturn(Types.INTEGER);

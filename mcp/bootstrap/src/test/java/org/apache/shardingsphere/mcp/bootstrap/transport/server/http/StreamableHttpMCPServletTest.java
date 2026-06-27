@@ -241,7 +241,7 @@ class StreamableHttpMCPServletTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
         when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
-        when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("X-Test-Subject", "X-Test-Source", "X-Test-ATTR-Region")));
+        when(request.getHeaderNames()).thenAnswer(ignored -> Collections.enumeration(List.of("X-Test-Subject", "X-Test-Source", "X-Test-ATTR-Region")));
         when(request.getHeader("X-Test-Subject")).thenReturn("subject");
         when(request.getHeader("X-Test-Source")).thenReturn("gateway");
         when(request.getHeader("X-Test-ATTR-Region")).thenReturn("ap-south");

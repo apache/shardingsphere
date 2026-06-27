@@ -95,7 +95,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
             // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
-            final Consumer<DataSource> incrementalTaskFn = dataSource -> {
+            Consumer<DataSource> incrementalTaskFn = dataSource -> {
                 if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
                     doCreateUpdateDelete(containerComposer, "a1");
                 }
@@ -243,7 +243,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         addMigrationTargetResource(containerComposer);
         containerComposer.proxyExecuteWithLog(String.format(ORDER_TABLE_SHARDING_RULE_FORMAT, shardingColumn), 2);
         startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
-        String jobId = distSQLFacade.listJobIds().get(0);
+        String jobId = distSQLFacade.listJobIds().getFirst();
         distSQLFacade.waitJobPreparingStageFinished(jobId);
         DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
         incrementalTaskFn.accept(jdbcDataSource);

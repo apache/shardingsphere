@@ -198,14 +198,12 @@
         "typeReached": "org.firebirdsql.gds.MessageLoader"
       },
       "glob": "org/firebirdsql/jaybird_error_*.properties"
-    }
-  ],
-  "bundles": [
+    },
     {
       "condition": {
         "typeReached": "org.firebirdsql.jaybird.Version"
       },
-      "name": "org.firebirdsql.jaybird.version"
+      "bundle": "org.firebirdsql.jaybird.version"
     }
   ]
 }

@@ -313,7 +313,10 @@ public final class TableExtractor {
      * @param updateStatement update statement.
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
-        extractTablesFromTableSegment(updateStatement.getTable());
+        if (!updateStatement.isTargetTableIsFromAlias()) {
+            extractTablesFromTableSegment(updateStatement.getTable());
+        }
+        updateStatement.getFrom().ifPresent(this::extractTablesFromTableSegment);
         updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumns().get(0)));
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());

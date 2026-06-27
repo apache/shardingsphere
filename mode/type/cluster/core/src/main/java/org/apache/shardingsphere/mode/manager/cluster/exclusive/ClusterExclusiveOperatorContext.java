@@ -44,11 +44,11 @@ public final class ClusterExclusiveOperatorContext implements ExclusiveOperatorC
     
     @Override
     public Optional<ExclusiveLockHandle> start(final String operationKey, final long timeoutMillis) {
-        final long startTimeMillis = System.currentTimeMillis();
+        long startTimeMillis = System.currentTimeMillis();
         if (!new RetryExecutor(timeoutMillis, RETRY_INTERVAL_MILLIS).execute(arg -> exclusiveOperationKeys.add(operationKey), null)) {
             return Optional.empty();
         }
-        final DistributedLock distributedLock = DistributedLockHolder.getDistributedLock(operationKey, repository);
+        DistributedLock distributedLock = DistributedLockHolder.getDistributedLock(operationKey, repository);
         if (!distributedLock.tryLock(getRemainingTimeoutMillis(startTimeMillis, timeoutMillis))) {
             exclusiveOperationKeys.remove(operationKey);
             return Optional.empty();

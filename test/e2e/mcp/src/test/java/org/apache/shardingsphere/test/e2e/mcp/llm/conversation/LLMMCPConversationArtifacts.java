@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTr
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMMCPConversationArtifacts {
@@ -41,8 +40,6 @@ final class LLMMCPConversationArtifacts {
     
     private final List<String> mcpRuntimeLogLines = new LinkedList<>();
     
-    private Map<String, Object> capabilityFingerprints = Map.of();
-    
     private String finalAnswerJson = "";
     
     void addRawModelOutput(final String rawModelOutput) {
@@ -55,10 +52,6 @@ final class LLMMCPConversationArtifacts {
     
     void addRuntimeLogLine(final String runtimeLogLine) {
         mcpRuntimeLogLines.add(runtimeLogLine);
-    }
-    
-    void setCapabilityFingerprints(final Map<String, Object> capabilityFingerprints) {
-        this.capabilityFingerprints = null == capabilityFingerprints ? Map.of() : capabilityFingerprints;
     }
     
     List<MCPInteractionTraceRecord> getInteractionTrace() {
@@ -79,6 +72,6 @@ final class LLMMCPConversationArtifacts {
     
     LLME2EArtifactBundle createArtifactBundle(final LLME2EScenario scenario, final LLME2EAssertionReport assertionReport) {
         return new LLME2EArtifactBundle(scenario.getScenarioId(), scenario.getSystemPrompt(), scenario.getUserPrompt(), modelProvider, modelName,
-                capabilityFingerprints, finalAnswerJson, rawModelOutputs, interactionTrace, mcpRuntimeLogLines, assertionReport);
+                finalAnswerJson, rawModelOutputs, interactionTrace, mcpRuntimeLogLines, assertionReport);
     }
 }

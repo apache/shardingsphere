@@ -47,7 +47,7 @@ public final class MaskRuleDistSQLPlanningService {
      */
     public RuleArtifact planMaskDropRule(final WorkflowRequest request) {
         validateMaskIdentifiers(request);
-        return new RuleArtifact("drop", String.format("DROP MASK RULE %s", WorkflowSQLUtils.formatDistSQLIdentifier(request.getTable())));
+        return new RuleArtifact("drop", String.format("DROP MASK RULE %s", WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getTable())));
     }
     
     private void validateMaskIdentifiers(final WorkflowRequest request) {
@@ -56,13 +56,13 @@ public final class MaskRuleDistSQLPlanningService {
     }
     
     private String createTargetMaskColumnSegment(final WorkflowRequest request) {
-        return String.format("(NAME=%s, %s)", WorkflowSQLUtils.formatDistSQLIdentifier(request.getColumn()),
+        return String.format("(NAME=%s, %s)", WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getColumn()),
                 WorkflowSQLUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties()));
     }
     
     private String createMaskRuleSql(final String prefix, final String tableName, final List<String> columnSegments) {
         WorkflowSQLUtils.checkSupportedIdentifier("table", tableName);
-        return String.format("%s %s (%sCOLUMNS(%s%s%s))", prefix, WorkflowSQLUtils.formatDistSQLIdentifier(tableName), System.lineSeparator(), System.lineSeparator(),
+        return String.format("%s %s (%sCOLUMNS(%s%s%s))", prefix, WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(tableName), System.lineSeparator(), System.lineSeparator(),
                 String.join(", " + System.lineSeparator(), columnSegments), System.lineSeparator());
     }
 }

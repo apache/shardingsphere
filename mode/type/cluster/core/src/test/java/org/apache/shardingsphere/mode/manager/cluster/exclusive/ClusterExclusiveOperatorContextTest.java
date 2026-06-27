@@ -51,17 +51,17 @@ class ClusterExclusiveOperatorContextTest {
     
     @Test
     void assertStart() {
-        final SharedState sharedState = new SharedState();
-        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true));
+        SharedState sharedState = new SharedState();
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true));
         assertTrue(context.start("op", 50L).isPresent());
         assertThat(sharedState.tryLockCallCount.get(), is(1));
     }
     
     @Test
     void assertStartWhenOperationKeyExists() {
-        final SharedState sharedState = new SharedState();
-        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true));
-        final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        SharedState sharedState = new SharedState();
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true));
+        ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
         try {
             assertFalse(context.start("op", 1L).isPresent());
             assertThat(sharedState.tryLockCallCount.get(), is(1));
@@ -72,17 +72,17 @@ class ClusterExclusiveOperatorContextTest {
     
     @Test
     void assertStartWaitsUntilOperationKeyReleased() throws InterruptedException, ExecutionException, TimeoutException {
-        final SharedState sharedState = new SharedState();
-        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true, true));
-        final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
-        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        SharedState sharedState = new SharedState();
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true, true));
+        ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
         try {
-            final Future<Optional<ExclusiveLockHandle>> future = executorService.submit(() -> context.start("op", 500L));
+            Future<Optional<ExclusiveLockHandle>> future = executorService.submit(() -> context.start("op", 500L));
             TimeUnit.MILLISECONDS.sleep(100L);
             assertFalse(future.isDone());
             assertThat(sharedState.tryLockCallCount.get(), is(1));
             lockHandle.close();
-            final Optional<ExclusiveLockHandle> actual = future.get(1L, TimeUnit.SECONDS);
+            Optional<ExclusiveLockHandle> actual = future.get(1L, TimeUnit.SECONDS);
             assertTrue(actual.isPresent());
             assertThat(sharedState.tryLockCallCount.get(), is(2));
             actual.orElseThrow(AssertionError::new).close();
@@ -93,16 +93,16 @@ class ClusterExclusiveOperatorContextTest {
     
     @Test
     void assertClose() {
-        final SharedState sharedState = new SharedState();
+        SharedState sharedState = new SharedState();
         new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true)).start("op", 50L).orElseThrow(AssertionError::new).close();
         assertThat(sharedState.unlockCallCount.get(), is(1));
     }
     
     @Test
     void assertCloseOnlyUnlockOnce() {
-        final SharedState sharedState = new SharedState();
-        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true));
-        final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        SharedState sharedState = new SharedState();
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true));
+        ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
         lockHandle.close();
         lockHandle.close();
         assertThat(sharedState.unlockCallCount.get(), is(1));
@@ -110,19 +110,19 @@ class ClusterExclusiveOperatorContextTest {
     
     @Test
     void assertStartAfterClose() {
-        final SharedState sharedState = new SharedState();
-        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true, true));
-        final ExclusiveLockHandle firstHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        SharedState sharedState = new SharedState();
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true, true));
+        ExclusiveLockHandle firstHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
         firstHandle.close();
-        final Optional<ExclusiveLockHandle> actual = context.start("op", 50L);
+        Optional<ExclusiveLockHandle> actual = context.start("op", 50L);
         assertTrue(actual.isPresent());
         assertThat(actual.orElseThrow(AssertionError::new), not(firstHandle));
     }
     
     @Test
     void assertStartAfterTryLockFailure() {
-        final SharedState sharedState = new SharedState();
-        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, false, true));
+        SharedState sharedState = new SharedState();
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, false, true));
         assertFalse(context.start("op", 50L).isPresent());
         assertTrue(context.start("op", 50L).isPresent());
         assertThat(sharedState.tryLockCallCount.get(), is(2));
@@ -130,16 +130,16 @@ class ClusterExclusiveOperatorContextTest {
     
     @Test
     void assertStartThrowsExceptionWhenTryLockFailsWithRepositoryException() {
-        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new ExceptionLockClusterPersistRepository());
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new ExceptionLockClusterPersistRepository());
         assertThrows(ClusterRepositoryPersistException.class, () -> context.start("op", 50L));
     }
     
     @Test
     void assertStartWithFreshLockInstances() {
-        final SharedState sharedState = new SharedState();
-        final FreshLockClusterPersistRepository repository = new FreshLockClusterPersistRepository(sharedState, true, true);
-        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(repository);
-        final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        SharedState sharedState = new SharedState();
+        FreshLockClusterPersistRepository repository = new FreshLockClusterPersistRepository(sharedState, true, true);
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(repository);
+        ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
         try {
             assertFalse(context.start("op", 1L).isPresent());
             assertThat(repository.getDistributedLockCallCount.get(), is(1));
@@ -152,9 +152,9 @@ class ClusterExclusiveOperatorContextTest {
     
     @Test
     void assertStartWithDefaultDistributedLockFallback() {
-        final DefaultLockClusterPersistRepository repository = new DefaultLockClusterPersistRepository();
-        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(repository);
-        final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        DefaultLockClusterPersistRepository repository = new DefaultLockClusterPersistRepository();
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(repository);
+        ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
         try {
             assertFalse(context.start("op", 1L).isPresent());
             assertThat(repository.persistExclusiveEphemeralCallCount.get(), is(1));

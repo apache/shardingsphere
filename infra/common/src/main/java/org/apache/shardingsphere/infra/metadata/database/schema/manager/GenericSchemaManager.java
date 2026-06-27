@@ -24,7 +24,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -60,8 +62,13 @@ public final class GenericSchemaManager {
      * @return to be added tables
      */
     public static Collection<ShardingSphereTable> getToBeAddedTables(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return reloadSchema.getAllTables().stream().filter(each -> !currentSchema.containsTable(each.getName())
-                || !each.toString().equals(currentSchema.getTable(each.getName()).toString())).collect(Collectors.toList());
+        Map<String, ShardingSphereTable> currentTables = createTableMap(currentSchema.getAllTables());
+        return reloadSchema.getAllTables().stream().filter(each -> isNotExistingOrChanged(each, currentTables)).collect(Collectors.toList());
+    }
+    
+    private static boolean isNotExistingOrChanged(final ShardingSphereTable reloadTable, final Map<String, ShardingSphereTable> currentTables) {
+        ShardingSphereTable currentTable = currentTables.get(reloadTable.getName());
+        return null == currentTable || !reloadTable.toString().equals(currentTable.toString());
     }
     
     /**
@@ -90,7 +97,12 @@ public final class GenericSchemaManager {
      * @return to be dropped table
      */
     public static Collection<ShardingSphereTable> getToBeDroppedTables(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return currentSchema.getAllTables().stream().filter(each -> !reloadSchema.containsTable(each.getName())).collect(Collectors.toList());
+        Map<String, ShardingSphereTable> reloadTables = createTableMap(reloadSchema.getAllTables());
+        return currentSchema.getAllTables().stream().filter(each -> !reloadTables.containsKey(each.getName())).collect(Collectors.toList());
+    }
+    
+    private static Map<String, ShardingSphereTable> createTableMap(final Collection<ShardingSphereTable> tables) {
+        return tables.stream().collect(Collectors.toMap(ShardingSphereTable::getName, each -> each, (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(tables.size(), 1F)));
     }
     
     /**

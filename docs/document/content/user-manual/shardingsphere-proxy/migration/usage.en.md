@@ -7,7 +7,7 @@ weight = 2
 
 ### Environment
 
-Supported MySQL versions: 5.1.15 to 8.0.x.
+Supported MySQL versions: 5.1.15 to 8.4.x.
 
 ### Authority required
 

@@ -44,6 +44,12 @@ class InUsedSingleStorageUnitRetrieverTest {
         assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singleton("foo_table")));
     }
     
+    @Test
+    void assertGetInUsedResourcesWithDifferentCaseStorageUnit() {
+        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("FOO_DS", null);
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.emptySet()));
+    }
+    
     private SingleRule mockRule() {
         SingleRule result = mock(SingleRule.class);
         SingleDataNodeRuleAttribute attribute = mock(SingleDataNodeRuleAttribute.class);

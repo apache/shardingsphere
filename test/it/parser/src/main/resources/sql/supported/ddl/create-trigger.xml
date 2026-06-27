@@ -19,6 +19,11 @@
 <sql-cases>
     <sql-case id="create_trigger" value="CREATE TRIGGER reminder1 ON Sales.Customer AFTER INSERT, UPDATE AS INSERT INTO SalesPersonQuotaHistory VALUES(t1, 100)" db-types="SQLServer" />
     <sql-case id="create_trigger_with_database_scoped" value="CREATE TRIGGER ddl_trig_database ON ALL SERVER AFTER INSERT AS SELECT EVENTDATA()" db-types="SQLServer" />
+    <sql-case id="create_trigger_with_declare" value="CREATE TRIGGER dbo.trgCustomer ON Sales.Customer AFTER INSERT AS BEGIN DECLARE @Count INT = 0; SET @Count = 1; SELECT @Count; END" db-types="SQLServer" />
+    <sql-case id="create_trigger_with_declare_table_variable" value="CREATE TRIGGER dbo.trgTableVar ON dbo.Orders AFTER UPDATE AS BEGIN DECLARE @T TABLE (Id INT); UPDATE @T SET Id = 1; END" db-types="SQLServer" />
+    <sql-case id="create_trigger_or_alter_with_declare" value="CREATE OR ALTER TRIGGER dbo.trgRefresh ON dbo.Orders AFTER INSERT AS BEGIN DECLARE @Name NVARCHAR(50); SET @Name = N'test'; END" db-types="SQLServer" />
+    <sql-case id="create_trigger_with_declare_cursor" value="CREATE TRIGGER dbo.trgCursor ON dbo.Orders AFTER DELETE AS BEGIN DECLARE @cur CURSOR; END" db-types="SQLServer" />
+    <sql-case id="create_trigger_with_declare_multiple_variables" value="CREATE TRIGGER dbo.trgMulti ON dbo.Orders AFTER INSERT AS BEGIN DECLARE @A INT, @B INT = 1; SET @A = @B; END" db-types="SQLServer" />
     <sql-case id="create_trigger_with_create_view" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create view v1 as select 1; END" db-types="MySQL,Doris" />
     <sql-case id="create_trigger_with_dml_event_clause" value="CREATE TRIGGER scott.emp_permit_changes BEFORE DELETE OR INSERT OR UPDATE ON scott.emp BEGIN IF (IS_SERVERERROR (1017)) THEN NULL; ELSE NULL; END IF; END;" db-types="Oracle" />
     <sql-case id="create_trigger_with_body" value="CREATE TRIGGER log_errors AFTER SERVERERROR ON DATABASE BEGIN IF (IS_SERVERERROR (1017)) THEN NULL; ELSE NULL; END IF; END;" db-types="Oracle" />

@@ -20,6 +20,10 @@ package org.apache.shardingsphere.mcp.feature.sharding;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingAlgorithmResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingGovernanceResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingStrategyResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingTableResourceHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +43,10 @@ class ShardingMCPHandlerProviderTest {
         assertThat(actual.size(), is(22));
         assertTrue(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList().contains(ShardingFeatureDefinition.TABLE_RULES_RESOURCE_URI));
         assertTrue(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList().contains(ShardingFeatureDefinition.UNUSED_AUDITORS_RESOURCE_URI));
+        assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingAlgorithmResourceHandler));
+        assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingTableResourceHandler));
+        assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingStrategyResourceHandler));
+        assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingGovernanceResourceHandler));
     }
     
     @Test

@@ -35,14 +35,20 @@ class BroadcastRuleDistSQLPlanningServiceTest {
     void assertPlanCreateRule() {
         RuleArtifact actual = service.planCreateRule(List.of("t_order", "order"));
         assertThat(actual.getOperationType(), is("create"));
-        assertThat(actual.getSql(), is("CREATE BROADCAST TABLE RULE t_order, `order`"));
+        assertThat(actual.getSql(), is("CREATE BROADCAST TABLE RULE `t_order`, `order`"));
+    }
+    
+    @Test
+    void assertPlanCreateRuleFormatsReservedIdentifiers() {
+        RuleArtifact actual = service.planCreateRule(List.of("from", "table", "name"));
+        assertThat(actual.getSql(), is("CREATE BROADCAST TABLE RULE `from`, `table`, `name`"));
     }
     
     @Test
     void assertPlanDropRule() {
         RuleArtifact actual = service.planDropRule(List.of("t_order"));
         assertThat(actual.getOperationType(), is("drop"));
-        assertThat(actual.getSql(), is("DROP BROADCAST TABLE RULE t_order"));
+        assertThat(actual.getSql(), is("DROP BROADCAST TABLE RULE `t_order`"));
     }
     
     @Test

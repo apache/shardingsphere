@@ -284,13 +284,17 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     @Override
     public void commit(final String jobId) {
         log.info("Commit job {}", jobId);
-        final long startTimeMillis = System.currentTimeMillis();
+        long startTimeMillis = System.currentTimeMillis();
+        commitJob(jobId);
+        log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
+    }
+    
+    private void commitJob(final String jobId) {
         jobManager.stop(jobId);
         dropCheckJobs(jobId);
         MigrationJobConfiguration jobConfig = jobConfigManager.getJobConfiguration(jobId);
         refreshTableMetadata(jobId, jobConfig.getTargetDatabaseName());
         jobManager.drop(jobId);
-        log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     private void refreshTableMetadata(final String jobId, final String databaseName) {
@@ -302,11 +306,15 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     
     @Override
     public void rollback(final String jobId) throws SQLException {
-        final long startTimeMillis = System.currentTimeMillis();
+        long startTimeMillis = System.currentTimeMillis();
+        rollbackJob(jobId);
+        log.info("Rollback job {} cost {} ms", jobId, System.currentTimeMillis() - startTimeMillis);
+    }
+    
+    private void rollbackJob(final String jobId) throws SQLException {
         dropCheckJobs(jobId);
         cleanTempTableOnRollback(jobId);
         jobManager.drop(jobId);
-        log.info("Rollback job {} cost {} ms", jobId, System.currentTimeMillis() - startTimeMillis);
     }
     
     private void dropCheckJobs(final String jobId) {

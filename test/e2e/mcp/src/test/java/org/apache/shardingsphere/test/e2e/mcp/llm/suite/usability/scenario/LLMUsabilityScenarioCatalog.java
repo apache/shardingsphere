@@ -125,7 +125,7 @@ public final class LLMUsabilityScenarioCatalog {
                 new LLME2EScenario("extended-prompt-completion-inspect-" + runtimeKind, SYSTEM_PROMPT,
                         "Use the MCP prompt list, the `inspect_metadata` prompt with database `" + databaseName + "`, schema `" + schemaName
                                 + "`, and query `" + tableName + "`, and MCP completion support with reference `{\"type\":\"ref/prompt\",\"name\":\"inspect_metadata\"}`, "
-                                + "argument_name `schema`, argument_value `pub`, and context_arguments `{\"database\":\"" + databaseName + "\"}`. Then verify `" + query + "`."
+                                + "argument `{\"name\":\"schema\",\"value\":\"pub\"}`, and context `{\"arguments\":{\"database\":\"" + databaseName + "\"}}`. Then verify `" + query + "`."
                                 + toolContext,
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders), promptCompletionActions, promptCompletionActions),
                 List.of(MCPInteractionActionNames.LIST_PROMPTS, MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE), List.of(), false, false));

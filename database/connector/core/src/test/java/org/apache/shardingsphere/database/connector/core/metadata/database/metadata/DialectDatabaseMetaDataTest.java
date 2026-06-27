@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
@@ -69,7 +70,9 @@ class DialectDatabaseMetaDataTest {
     
     @Test
     void assertGetIndexOption() {
-        assertFalse(dialectDatabaseMetaData.getIndexOption().isSchemaUniquenessLevel());
+        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
+        assertFalse(actual.isSchemaUniquenessLevel());
+        assertThat(actual.getIndexNameMaxLength(), is(Integer.MAX_VALUE));
     }
     
     @Test
@@ -126,5 +129,10 @@ class DialectDatabaseMetaDataTest {
     @Test
     void assertGetProtocolVersionOption() {
         assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is(""));
+    }
+    
+    @Test
+    void assertGetBranchOption() {
+        assertThat(dialectDatabaseMetaData.getBranchOption(), is(Optional.empty()));
     }
 }

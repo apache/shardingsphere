@@ -9,7 +9,7 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 - Use this page when a backend service, agent platform, or custom application needs to call ShardingSphere-MCP through the OpenAI API.
 - Use this integration when the model should import ShardingSphere-MCP tools on demand and constrain them with `allowed_tools`, `require_approval`, or OAuth parameters.
-- After integration, the model can inspect logic databases, inspect table structures, run controlled read-only queries, or call `database_gateway_validate_proxy_connectivity` for preflight validation against configured runtime databases.
+- After integration, the model can inspect logic databases, inspect table structures, run controlled read-only queries, or call `database_gateway_validate_runtime_database` for preflight validation against configured runtime databases.
 
 ## Prerequisites
 
@@ -42,7 +42,7 @@ response = client.responses.create(
             "server_url": "https://example.com/mcp",
             "allowed_tools": [
                 "database_gateway_search_metadata",
-                "database_gateway_validate_proxy_connectivity",
+                "database_gateway_validate_runtime_database",
             ],
         }
     ],
@@ -71,7 +71,7 @@ Invocation succeeds when:
 - Start with a minimal validation request such as:
   - Show the tables in `<logic-database>`.
   - Show columns and indexes for the `orders` table.
-  - Call `database_gateway_validate_proxy_connectivity` for a configured runtime database.
+  - Call `database_gateway_validate_runtime_database` for a configured runtime database.
 - When `mcp_list_tools`, approval flow events, or final query results appear as expected, the integration is working.
 
 If the integration fails, check these items first:

@@ -65,21 +65,10 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
     
     private final MCPFeatureQueryFacade queryFacade;
     
-    /**
-     * Create MCP request scope.
-     *
-     * @param runtimeContext runtime context
-     */
     public MCPRequestScope(final MCPRuntimeContext runtimeContext) {
         this(runtimeContext, "");
     }
     
-    /**
-     * Create MCP request scope.
-     *
-     * @param runtimeContext runtime context
-     * @param sessionId session id
-     */
     public MCPRequestScope(final MCPRuntimeContext runtimeContext, final String sessionId) {
         MCPSessionManager sessionManager = runtimeContext.getSessionManager();
         activeTransport = runtimeContext.getActiveTransport();

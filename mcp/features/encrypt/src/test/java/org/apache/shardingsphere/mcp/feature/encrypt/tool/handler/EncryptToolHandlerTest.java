@@ -69,8 +69,8 @@ class EncryptToolHandlerTest {
                 "table", "orders",
                 "column", "phone",
                 "algorithm_type", "AES",
-                "structured_intent_evidence", Map.of("field_semantics", "phone", "requires_decrypt", true),
-                "user_overrides", Map.of("cipher_column_name", "phone_cipher"))));
+                "cipher_column_name", "phone_cipher",
+                "structured_intent_evidence", Map.of("field_semantics", "phone", "requires_decrypt", true))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
@@ -106,6 +106,30 @@ class EncryptToolHandlerTest {
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("plan_id"), is("plan-1"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
+    }
+    
+    @Test
+    void assertHandlePlanEncryptRuleWithSecretReferences() throws ReflectiveOperationException {
+        PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
+        EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
+        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+        setField(handler, "planningService", planningService);
+        setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
+        WorkflowContextFixture fixture = createWorkflowContextFixture();
+        handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                "database", "logic_db",
+                "primary_algorithm_properties", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1")),
+                "assisted_query_algorithm_properties", Map.of("salt", Map.of("secret_ref", "placeholder://secret-value-2")),
+                "like_query_algorithm_properties", Map.of("token", Map.of("secret_ref", "placeholder://secret-value-3")))));
+        ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
+        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+        EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
+        assertThat(actualRequest.getPrimaryAlgorithmProperties().get("aes-key-value"), is("secret_reference:primary.aes-key-value"));
+        assertFalse(actualRequest.getSecretReferences("primary").get("aes-key-value").isMalformed());
+        assertThat(actualRequest.getOptions().getAssistedQueryAlgorithmProperties().get("salt"), is("secret_reference:assisted_query.salt"));
+        assertFalse(actualRequest.getSecretReferences("assisted_query").get("salt").isMalformed());
+        assertThat(actualRequest.getOptions().getLikeQueryAlgorithmProperties().get("token"), is("secret_reference:like_query.token"));
+        assertFalse(actualRequest.getSecretReferences("like_query").get("token").isMalformed());
     }
     
     @Test
@@ -155,7 +179,7 @@ class EncryptToolHandlerTest {
         WorkflowContextSnapshot result = createSnapshot("plan-1", "planned");
         result.setRequest(request);
         result.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", ""));
-        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
+        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE `orders` (PROPERTIES('aes-key-value'='123456'))"));
         result.setInteractionPlan(createInteractionPlan());
         return result;
     }

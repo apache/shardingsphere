@@ -48,8 +48,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -82,6 +82,7 @@ public final class SelectStatementAssert {
         assertModelClause(assertContext, actual, expected);
         assertIntoClause(assertContext, actual, expected);
         assertOutfileClause(assertContext, actual, expected);
+        assertSubqueryType(assertContext, actual, expected);
     }
     
     private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
@@ -229,5 +230,13 @@ public final class SelectStatementAssert {
             assertTrue(outfileSegment.isPresent(), assertContext.getText("Actual outfile segment should exist."));
             OutfileClauseAssert.assertIs(assertContext, outfileSegment.get(), expected.getOutfileClause());
         }
+    }
+    
+    private static void assertSubqueryType(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (null == expected.getSubqueryType()) {
+            return;
+        }
+        assertTrue(actual.getSubqueryType().isPresent(), assertContext.getText("Actual subquery type should exist."));
+        assertThat(assertContext.getText("Subquery type assertion error: "), actual.getSubqueryType().get().name(), is(expected.getSubqueryType()));
     }
 }

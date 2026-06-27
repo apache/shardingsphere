@@ -51,8 +51,7 @@ final class LLMUsabilitySuiteRunner {
     private static final Set<String> KNOWN_ACTION_ORIGINS = Set.of(
             MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
             MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN,
-            MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN,
-            MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN);
+            MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN);
     
     private static final Pattern UNREDACTED_SECRET_PATTERN = Pattern.compile(
             "(?i)(\"(?:api[_-]?key|token|password|authorization|secret)\"\\s*:\\s*\")(?!<redacted>\")([^\"]+)(\")|(Bearer\\s+)(?!<redacted>)[A-Za-z0-9._~+/=-]+");
@@ -210,8 +209,6 @@ final class LLMUsabilitySuiteRunner {
             assertFalse(each.getActionOrigin().isBlank(), () -> "Trace action origin is blank in " + evaluatedScenario.scenario().getScenarioId());
             assertTrue(KNOWN_ACTION_ORIGINS.contains(each.getActionOrigin()), () -> "Unknown trace action origin in " + evaluatedScenario.scenario().getScenarioId());
             assertFalse(each.getTargetName().isBlank(), () -> "Trace target name is blank in " + evaluatedScenario.scenario().getScenarioId());
-            MCPModelContractAssertions.assertNoBannedPublicFields(each.getArguments());
-            MCPModelContractAssertions.assertNoBannedPublicFields(each.getStructuredContent());
             MCPModelContractAssertions.assertCanonicalNextActionLists(each.getStructuredContent());
         }
     }

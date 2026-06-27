@@ -55,6 +55,8 @@ public class WorkflowRequest implements WorkflowPropertySource {
     
     private final Map<String, String> primaryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
     
+    private final Map<String, SecretReferenceValue> primaryAlgorithmSecretReferences = new LinkedHashMap<>(8, 1F);
+    
     private final List<String> approvedSteps = new LinkedList<>();
     
     /**
@@ -143,6 +145,21 @@ public class WorkflowRequest implements WorkflowPropertySource {
         return "primary".equals(algorithmRole) ? primaryAlgorithmProperties : Map.of();
     }
     
+    @Override
+    public Map<String, Map<String, SecretReferenceValue>> getSecretReferences() {
+        if (primaryAlgorithmSecretReferences.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, Map<String, SecretReferenceValue>> result = new LinkedHashMap<>(1, 1F);
+        result.put("primary", primaryAlgorithmSecretReferences);
+        return result;
+    }
+    
+    @Override
+    public Map<String, SecretReferenceValue> getSecretReferences(final String algorithmRole) {
+        return "primary".equals(algorithmRole) ? primaryAlgorithmSecretReferences : Map.of();
+    }
+    
     /**
      * Copy current request values to the target request.
      *
@@ -163,6 +180,7 @@ public class WorkflowRequest implements WorkflowPropertySource {
         target.setExecutionMode(executionMode);
         target.setAlgorithmType(algorithmType);
         target.getPrimaryAlgorithmProperties().putAll(primaryAlgorithmProperties);
+        target.getPrimaryAlgorithmSecretReferences().putAll(primaryAlgorithmSecretReferences);
         target.getApprovedSteps().addAll(approvedSteps);
         return target;
     }
@@ -187,6 +205,7 @@ public class WorkflowRequest implements WorkflowPropertySource {
         target.setExecutionMode(resolveValue(target.getExecutionMode(), executionMode));
         target.setAlgorithmType(resolveValue(target.getAlgorithmType(), algorithmType));
         target.getPrimaryAlgorithmProperties().putAll(primaryAlgorithmProperties);
+        target.getPrimaryAlgorithmSecretReferences().putAll(primaryAlgorithmSecretReferences);
         if (!approvedSteps.isEmpty()) {
             target.getApprovedSteps().clear();
             target.getApprovedSteps().addAll(approvedSteps);

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -164,10 +165,20 @@ public final class WorkflowGuidancePayloadBuilder {
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
             nextActions.add(createUserAction("Confirm the manual artifacts were executed outside MCP before validation.", List.of("manual_artifacts_executed")));
         }
-        if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
+        if (WorkflowLifecycle.STATUS_FAILED.equals(status) && isSecretReferenceRecovery(payload)) {
+            nextActions.add(createUserAction("Review the manual artifacts, replace neutral secret placeholders outside MCP, and execute them through the normal operational channel.",
+                    List.of("manual_artifacts")));
+        } else if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
             nextActions.add(createUserAction("Inspect issues and retry database_gateway_apply_workflow only after the failed artifact is corrected.", List.of("issues")));
         }
         payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, addSequencing(nextActions));
+    }
+    
+    private static boolean isSecretReferenceRecovery(final Map<String, Object> payload) {
+        Object category = payload.get("category");
+        return MCPDiagnosticCategory.SECRET_REFERENCE_MALFORMED.equals(category)
+                || MCPDiagnosticCategory.SECRET_REFERENCE_MISSING.equals(category)
+                || MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED.equals(category);
     }
     
     /**
@@ -206,7 +217,7 @@ public final class WorkflowGuidancePayloadBuilder {
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
-        for (final String each : clarifiedIntent.getUnresolvedFields()) {
+        for (String each : clarifiedIntent.getUnresolvedFields()) {
             String missingInput = normalizeMissingInput(snapshot, each);
             if (!result.contains(missingInput)) {
                 result.add(missingInput);
@@ -339,6 +350,7 @@ public final class WorkflowGuidancePayloadBuilder {
         WorkflowRequest request = snapshot.getRequest();
         if (!request.getDatabase().isEmpty()) {
             addRuleResources(result, snapshot, request);
+            addGovernanceMetadataResources(result, snapshot, request);
             if (WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot) && !request.getTable().isEmpty()) {
                 addFeatureTableRuleResources(result, snapshot, request);
             } else if (!request.getSchema().isEmpty() && !request.getTable().isEmpty()) {
@@ -363,6 +375,26 @@ public final class WorkflowGuidancePayloadBuilder {
             case SHARDING_KEY_GENERATOR_WORKFLOW_KIND, SHARDING_KEY_GENERATE_STRATEGY_WORKFLOW_KIND -> addResourceHint(resourcesToRead,
                     "shardingsphere://features/sharding/key-generate-algorithm-plugins", "algorithm", "read_first",
                     "Read key-generate algorithm plugin metadata before choosing generator arguments.");
+            default -> {
+            }
+        }
+    }
+    
+    private static void addGovernanceMetadataResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+        String workflowKind = resolveWorkflowKind(snapshot);
+        switch (workflowKind) {
+            case READWRITE_RULE_WORKFLOW_KIND, READWRITE_STATUS_WORKFLOW_KIND, SHADOW_RULE_WORKFLOW_KIND, SHARDING_TABLE_RULE_WORKFLOW_KIND -> addStorageUnitsResourceHint(resourcesToRead,
+                    request);
+            default -> {
+            }
+        }
+        switch (workflowKind) {
+            case SHADOW_RULE_WORKFLOW_KIND, SHARDING_TABLE_RULE_WORKFLOW_KIND -> {
+                addSingleTablesResourceHint(resourcesToRead, request);
+                if (!request.getTable().isEmpty()) {
+                    addSingleTableResourceHint(resourcesToRead, request);
+                }
+            }
             default -> {
             }
         }
@@ -426,6 +458,22 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static void addDatabaseResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request, final String uriTemplate, final String reason) {
         addResourceHint(resourcesToRead, String.format(uriTemplate, MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail", reason);
+    }
+    
+    private static void addStorageUnitsResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
+        addResourceHint(resourcesToRead, String.format("shardingsphere://databases/%s/storage-units", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())),
+                "storage-unit", "validate_scope", "Read storage units before planning DistSQL that references storage units.");
+    }
+    
+    private static void addSingleTablesResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
+        addResourceHint(resourcesToRead, String.format("shardingsphere://databases/%s/single-tables", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())),
+                "single-table", "validate_scope", "Read single table mappings before planning table-level DistSQL.");
+    }
+    
+    private static void addSingleTableResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
+        addResourceHint(resourcesToRead, String.format("shardingsphere://databases/%s/single-tables/%s", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
+                MCPUriPathSegmentUtils.encodePathSegment(request.getTable())), "single-table", "validate_scope",
+                "Read the target single table mapping before planning table-level DistSQL.");
     }
     
     private static void addTableResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request, final String uriTemplate, final String reason) {

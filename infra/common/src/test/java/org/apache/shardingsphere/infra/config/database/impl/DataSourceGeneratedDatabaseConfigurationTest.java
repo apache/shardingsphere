@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.database.impl;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +43,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertNewSuccess() {
         DataSourceGeneratedDatabaseConfiguration actual = createDatabaseConfiguration(MockedDataSource.class.getName());
@@ -57,6 +61,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     private void assertStorageUnits(final StorageUnit actual) {
         DataSource dataSource = actual.getDataSource();
         assertThat(dataSource, isA(MockedDataSource.class));
+        assertThat(actual.getStorageType(), is(databaseType));
         assertPoolProperties(actual.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties());
         assertConnectionProperties(actual.getDataSourcePoolProperties().getConnectionPropertySynonyms().getStandardProperties());
     }

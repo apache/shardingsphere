@@ -24,7 +24,10 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidat
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Encrypt tool descriptor validator.
@@ -35,7 +38,7 @@ public final class EncryptToolDescriptorValidator implements MCPToolDescriptorVa
             "response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs", "clarification_questions",
             "elicitation_support", "fallback_reason", "issues", "global_steps", "current_step", "algorithm_recommendations", "property_requirements",
             "validation_strategy", "delivery_mode", "execution_mode", "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint",
-            "distsql_artifacts", "masked_property_preview", MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS);
+            "distsql_artifacts", "masked_property_preview", MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS, "secret_reference_summary");
     
     @Override
     public boolean supports(final MCPToolDescriptor toolDescriptor) {
@@ -45,5 +48,50 @@ public final class EncryptToolDescriptorValidator implements MCPToolDescriptorVa
     @Override
     public void validate(final MCPToolDescriptor toolDescriptor) {
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor, REQUIRED_OUTPUT_FIELDS);
+        validateExecutableDistSQLArtifacts(toolDescriptor);
+    }
+    
+    private void validateExecutableDistSQLArtifacts(final MCPToolDescriptor toolDescriptor) {
+        Object examples = toolDescriptor.getOutputSchema().get("examples");
+        if (examples instanceof Collection) {
+            for (Object each : (Collection<?>) examples) {
+                validateExecutableDistSQLArtifact(toolDescriptor, each);
+            }
+        }
+    }
+    
+    private void validateExecutableDistSQLArtifact(final MCPToolDescriptor toolDescriptor, final Object value) {
+        if (value instanceof Map) {
+            validateExecutableDistSQLArtifactMap(toolDescriptor, (Map<?, ?>) value);
+        } else if (value instanceof Collection) {
+            for (Object each : (Collection<?>) value) {
+                validateExecutableDistSQLArtifact(toolDescriptor, each);
+            }
+        }
+    }
+    
+    private void validateExecutableDistSQLArtifactMap(final MCPToolDescriptor toolDescriptor, final Map<?, ?> value) {
+        Object sql = value.get("sql");
+        if (null != sql && isEncryptRuleDistSQL(sql.toString())) {
+            validateEncryptRuleDistSQL(toolDescriptor, sql.toString());
+        }
+        for (Object each : value.values()) {
+            validateExecutableDistSQLArtifact(toolDescriptor, each);
+        }
+    }
+    
+    private boolean isEncryptRuleDistSQL(final String sql) {
+        String actualSQL = sql.toUpperCase(Locale.ENGLISH);
+        return actualSQL.contains("CREATE ENCRYPT RULE") || actualSQL.contains("ALTER ENCRYPT RULE");
+    }
+    
+    private void validateEncryptRuleDistSQL(final MCPToolDescriptor toolDescriptor, final String sql) {
+        String actualSQL = sql.toLowerCase(Locale.ENGLISH);
+        if (actualSQL.contains("type(name=aes")) {
+            throw new IllegalStateException(String.format("Tool `%s` output example executable encrypt DistSQL must quote algorithm type as a string literal.", toolDescriptor.getName()));
+        }
+        if (actualSQL.contains("'aes-key-value'") && !actualSQL.contains("'digest-algorithm-name'")) {
+            throw new IllegalStateException(String.format("Tool `%s` output example executable AES DistSQL must include `digest-algorithm-name`.", toolDescriptor.getName()));
+        }
     }
 }

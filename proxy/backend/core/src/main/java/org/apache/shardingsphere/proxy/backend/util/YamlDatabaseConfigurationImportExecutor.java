@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLE
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.DatabaseNameValidator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -78,6 +79,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     public void importDatabaseConfiguration(final YamlProxyDatabaseConfiguration yamlConfig) {
         String databaseName = yamlConfig.getDatabaseName();
         checkDatabase(databaseName);
+        DatabaseNameValidator.validate(databaseName);
         checkDataSources(databaseName, yamlConfig.getDataSources());
         addDatabase(databaseName);
         try {

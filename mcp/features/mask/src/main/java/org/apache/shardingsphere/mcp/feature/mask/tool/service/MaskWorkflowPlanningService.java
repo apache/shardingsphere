@@ -68,9 +68,6 @@ public final class MaskWorkflowPlanningService {
     
     private final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService;
     
-    /**
-     * Create mask workflow planning service.
-     */
     public MaskWorkflowPlanningService() {
         planningSupport = new WorkflowPlanningSupport();
         intentResolver = new MaskWorkflowIntentResolver();

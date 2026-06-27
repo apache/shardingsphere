@@ -162,7 +162,7 @@ class LLMChatModelClientTest {
     
     private LLME2EConfiguration createConfiguration(final String baseUrl, final int readyTimeoutSeconds) {
         return new LLME2EConfiguration(baseUrl, "openai-compatible", REQUIRED_MODEL, "mcp-llm-score", readyTimeoutSeconds, 30, 10,
-                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER, "llama.cpp", "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server-b9191",
+                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server-b9191",
                 "test-base-server-image-digest", MODEL_METADATA);
     }
     

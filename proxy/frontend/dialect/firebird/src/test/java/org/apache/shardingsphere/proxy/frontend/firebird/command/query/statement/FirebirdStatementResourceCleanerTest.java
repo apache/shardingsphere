@@ -141,7 +141,7 @@ class FirebirdStatementResourceCleanerTest {
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, actualProxyBackendHandler);
         actualConnectionManager.add(actualProxyBackendHandler);
         actualConnectionManager.markResourceInUse(actualProxyBackendHandler);
-        final AtomicBoolean closed = new AtomicBoolean(false);
+        AtomicBoolean closed = new AtomicBoolean(false);
         org.mockito.Mockito.doAnswer(invocation -> {
             if (closed.getAndSet(true)) {
                 throw new SQLException("close twice");

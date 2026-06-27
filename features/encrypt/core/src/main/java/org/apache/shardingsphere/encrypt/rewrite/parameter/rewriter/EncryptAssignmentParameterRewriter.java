@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardPa
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -70,12 +71,16 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         for (ColumnAssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             String columnName = each.getColumns().get(0).getIdentifier().getValue();
             String tableName = each.getColumns().get(0).getColumnBoundInfo().getOriginalTable().getValue();
-            if (each.getValue() instanceof ParameterMarkerExpressionSegment && rule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(columnName)).orElse(false)) {
-                EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(columnName);
-                StandardParameterBuilder standardParamBuilder = paramBuilder instanceof StandardParameterBuilder
-                        ? (StandardParameterBuilder) paramBuilder
-                        : ((GroupedParameterBuilder) paramBuilder).getParameterBuilders().get(0);
-                encryptParameters(standardParamBuilder, schemaName, tableName, encryptColumn, ((ParameterMarkerExpressionSegment) each.getValue()).getParameterMarkerIndex(), params);
+            if (!rule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(columnName)).orElse(false)) {
+                continue;
+            }
+            EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(columnName);
+            StandardParameterBuilder standardParamBuilder = paramBuilder instanceof StandardParameterBuilder
+                    ? (StandardParameterBuilder) paramBuilder
+                    : ((GroupedParameterBuilder) paramBuilder).getParameterBuilders().get(0);
+            ExpressionSegment valueExpression = each.getValue();
+            if (valueExpression instanceof ParameterMarkerExpressionSegment) {
+                encryptParameters(standardParamBuilder, schemaName, tableName, encryptColumn, ((ParameterMarkerExpressionSegment) valueExpression).getParameterMarkerIndex(), params);
             }
         }
     }
