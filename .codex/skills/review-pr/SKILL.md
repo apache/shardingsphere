@@ -351,8 +351,9 @@ CI/check-run review is not a substitute for code review. Query and report CI onl
    - When new commits arrive after previous feedback, review the latest delta to classify newly introduced risk.
    - Re-run full-path review on the latest PR head; do not conclude mergeability only because earlier comments were fixed.
 12. Pre-publication finding audit: verify every blocker against the evidence threshold before output.
-13. Review result: output exactly one `Review Result`.
-14. Generate feedback: follow the output template below.
+13. In `Formal Review Mode`, output exactly one `Review Result`.
+14. In `PR Discussion Reply Mode`, generate a copy-ready reply draft under `PR Discussion Reply Mode`.
+15. Generate feedback: follow the output template below.
 
 ## Pre-Publication Finding Audit
 
