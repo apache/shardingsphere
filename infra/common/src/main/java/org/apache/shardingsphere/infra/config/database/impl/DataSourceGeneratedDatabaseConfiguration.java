@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -28,6 +26,8 @@ import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfigur
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
@@ -59,11 +59,15 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropertiesMap, isInstanceConnectionEnabled);
         Map<StorageNode, DataSource> storageNodeDataSources = getStorageNodeDataSourceMap(dataSourcePoolPropertiesMap, storageUnitNodeMap);
-        try (DataSourcesCloseGuard closeGuard = new DataSourcesCloseGuard(storageNodeDataSources.values())) {
-            storageUnits = createStorageUnits(dataSourcePoolPropertiesMap, storageUnitNodeMap, storageNodeDataSources);
-            dataSources = storageNodeDataSources;
-            closeGuard.release();
+        Map<String, StorageUnit> createdStorageUnits;
+        try {
+            createdStorageUnits = createStorageUnits(dataSourcePoolPropertiesMap, storageUnitNodeMap, storageNodeDataSources);
+        } catch (final ShardingSphereSQLException ex) {
+            closeDataSources(storageNodeDataSources.values(), ex);
+            throw ex;
         }
+        storageUnits = createdStorageUnits;
+        dataSources = storageNodeDataSources;
     }
     
     private Map<String, StorageUnit> createStorageUnits(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap,
@@ -105,22 +109,11 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         return dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
     }
     
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private static final class DataSourcesCloseGuard implements AutoCloseable {
-        
-        private final Collection<DataSource> dataSources;
-        
-        private boolean released;
-        
-        private void release() {
-            released = true;
-        }
-        
-        @Override
-        public void close() {
-            if (!released) {
-                DataSourcesCloser.close(dataSources);
-            }
+    private static void closeDataSources(final Collection<DataSource> dataSources, final ShardingSphereSQLException cause) {
+        try {
+            DataSourcesCloser.close(dataSources);
+        } catch (final SQLWrapperException ex) {
+            cause.addSuppressed(ex);
         }
     }
 }

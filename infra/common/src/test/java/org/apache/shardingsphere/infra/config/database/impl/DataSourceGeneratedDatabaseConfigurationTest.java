@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -75,9 +77,9 @@ class DataSourceGeneratedDatabaseConfigurationTest {
         try (MockedStatic<DatabaseTypeEngine> mocked = mockStatic(DatabaseTypeEngine.class)) {
             mocked.when(() -> DatabaseTypeEngine.getStorageType(eq("jdbc:mock://127.0.0.1/foo_db"), any(DataSource.class))).thenAnswer(invocation -> {
                 createdDataSource.set(invocation.getArgument(1));
-                throw new IllegalStateException("boom");
+                throw new SQLWrapperException(new SQLException("boom"));
             });
-            assertThrows(IllegalStateException.class, () -> createDatabaseConfiguration(MockedDataSource.class.getName()));
+            assertThrows(SQLWrapperException.class, () -> createDatabaseConfiguration(MockedDataSource.class.getName()));
         }
         assertThat(createdDataSource.get(), isA(MockedDataSource.class));
         assertTrue(createdDataSource.get().isClosed());
