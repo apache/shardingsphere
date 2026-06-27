@@ -39,7 +39,7 @@ In addition, this Iceberg Connector will start a Hive Metastore Server using a l
 ```yaml
 services:
   presto:
-    image: prestodb/presto:0.296
+    image: prestodb/presto:0.298.1
     ports:
       - "8080:8080"
     volumes:
