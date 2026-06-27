@@ -129,7 +129,9 @@ public final class ProxyBackendHandlerFactory {
             // The branch previously returned immediately after the transaction check,
             // allowing any authenticated user to execute every administrative DistSQL
             // operation regardless of admin flag or privilege provider configuration.
-            // See AuthorityDistSQLExecutionChecker for the full rationale.
+            // See AuthorityDistSQLExecutionChecker for the full rationale, including how
+            // it resolves the actual execution-target database for database-scoped reads
+            // rather than trusting the session's current database alone.
             checkDistSQLAuthority(sqlStatement, connectionSession, queryContext.getMetaData());
             return DistSQLProxyBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, queryContext, connectionSession);
         }

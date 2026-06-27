@@ -19,6 +19,7 @@ package org.apache.shardingsphere.authority.checker;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
+import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.type.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.statement.type.rul.RULStatement;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 import java.util.Optional;
 
@@ -43,20 +45,30 @@ import java.util.Optional;
  * {@code ProxyBackendHandlerFactory.newInstance()} to close that gap.</p>
  *
  * <h2>Authorization model</h2>
- * <p>DistSQL statements fall into two categories by their impact on the proxy:</p>
+ * <p>DistSQL statements fall into three categories by their impact on the proxy:</p>
  *
  * <ul>
  *   <li><b>Write DistSQL</b> (RDL and updatable RAL) — mutates global proxy
  *       configuration: registers/unregisters storage units, creates/drops sharding
- *       rules, exports cluster config, etc. These operations have no meaningful
- *       per-database scope. Only {@code admin: true} users may execute them.</li>
+ *       rules, etc. These operations have no meaningful per-database scope.
+ *       Only {@code admin: true} users may execute them.</li>
  *
- *   <li><b>Read DistSQL</b> (RQL, queryable RAL, RUL) — reads proxy metadata.
- *       These statements still expose sensitive infrastructure details (backend
- *       hostnames, ports, connection credentials) and must therefore also be
- *       gated. They are permitted when the grantee is an admin, <em>or</em>
- *       when the grantee holds explicit {@code DATABASE_PERMITTED} access to
- *       the database currently in scope for the connection.</li>
+ *   <li><b>Database-scoped read DistSQL</b> (RQL, queryable RAL, RUL that carry a
+ *       {@link FromDatabaseSQLStatementAttribute}) — reads proxy metadata for a
+ *       specific database. The target database is resolved exactly as the DistSQL
+ *       execute engines resolve it: via {@link DatabaseNameUtils#getDatabaseName},
+ *       which honors an explicit {@code FROM <database>} clause on the statement
+ *       over the session's current database. Authorization is evaluated against
+ *       that resolved target, not against the session's current database, so a
+ *       user permitted on one database cannot read another database's data by
+ *       switching the {@code FROM} target while staying {@code USE}'d into a
+ *       database they are permitted on.</li>
+ *
+ *   <li><b>Global read DistSQL</b> (RQL, queryable RAL, RUL that carry <em>no</em>
+ *       {@link FromDatabaseSQLStatementAttribute}, e.g. {@code ExportMetaDataStatement})
+ *       — has no per-database scope at all; it reads or exports cluster-wide state.
+ *       These statements have no database to authorize against, so they require
+ *       {@code admin: true} unconditionally, the same as write DistSQL.</li>
  * </ul>
  *
  * <h2>Null-grantee / no-AuthorityRule semantics</h2>
@@ -92,17 +104,22 @@ public final class AuthorityDistSQLExecutionChecker {
         if (checker.isAdmin()) {
             return;
         }
-        // Read-only DistSQL: allow when the grantee has DATABASE_PERMITTED access to the
-        // current database. This mirrors how checkSQLExecution() handles regular reads.
-        // If no database is in scope there is no meaningful privilege to evaluate, so the
-        // check falls through to the deny below — the output may still expose credentials
-        // belonging to storage units outside the user's permitted scope.
-        if (isReadOnlyDistSQL(sqlStatement) && null != usedDatabaseName) {
-            if (checker.isAuthorized(usedDatabaseName)) {
+        if (isReadOnlyDistSQL(sqlStatement) && isDatabaseScoped(sqlStatement)) {
+            // Database-scoped read DistSQL: resolve the actual execution-target database
+            // the same way the DistSQL execute engines resolve it. DatabaseNameUtils honors
+            // an explicit FROM <database> clause on the statement over the session's current
+            // database, falling back to the session's current database only when the
+            // statement carries no explicit FROM target. Authorizing against this resolved
+            // value - rather than blindly against usedDatabaseName - prevents a user permitted
+            // on app_db from reading other_db via e.g. `SHOW STORAGE UNITS FROM other_db`
+            // while staying USE'd into app_db.
+            String targetDatabaseName = DatabaseNameUtils.getDatabaseName(sqlStatement, usedDatabaseName);
+            if (null != targetDatabaseName && checker.isAuthorized(targetDatabaseName)) {
                 return;
             }
         }
-        // Write DistSQL without admin, or read DistSQL without admin or database privilege: deny.
+        // Write DistSQL without admin, global read DistSQL without admin, or database-scoped
+        // read DistSQL without admin or privilege on the resolved target database: deny.
         ShardingSpherePreconditions.checkState(false,
                 () -> new AccessDeniedException(grantee.getUsername(), grantee.getHostname(), true));
     }
@@ -120,5 +137,21 @@ public final class AuthorityDistSQLExecutionChecker {
         return sqlStatement instanceof RQLStatement
                 || sqlStatement instanceof QueryableRALStatement
                 || sqlStatement instanceof RULStatement;
+    }
+    
+    /**
+     * Returns {@code true} when the statement carries a {@link FromDatabaseSQLStatementAttribute},
+     * meaning it has a per-database execution scope that {@link DatabaseNameUtils} can resolve.
+     *
+     * <p>Statements without this attribute (e.g. {@code ExportMetaDataStatement}, which exports
+     * cluster-wide metadata) have no database to authorize against and must not be granted on
+     * the strength of any single database privilege - see {@link #check} for the global-statement
+     * handling that falls through to the admin-only deny path in that case.</p>
+     *
+     * @param sqlStatement DistSQL statement to inspect
+     * @return whether the statement has a resolvable per-database scope
+     */
+    private boolean isDatabaseScoped(final SQLStatement sqlStatement) {
+        return sqlStatement.getAttributes().findAttribute(FromDatabaseSQLStatementAttribute.class).isPresent();
     }
 }
