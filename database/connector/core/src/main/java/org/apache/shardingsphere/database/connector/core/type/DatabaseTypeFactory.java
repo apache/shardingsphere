@@ -83,7 +83,12 @@ public final class DatabaseTypeFactory {
      * @throws SQLException SQL exception
      */
     public static DatabaseType getActualDatabaseType(final DatabaseType databaseType, final Connection connection) throws SQLException {
-        return findActualBranchDatabaseType(connection, databaseType).orElse(databaseType);
+        for (DatabaseType each : getDetectableBranchDatabaseTypes(databaseType)) {
+            if (isActualBranchDatabaseType(each, connection)) {
+                return each;
+            }
+        }
+        return databaseType;
     }
     
     /**
@@ -94,15 +99,6 @@ public final class DatabaseTypeFactory {
      */
     public static boolean containsDetectableBranchDatabaseTypes(final DatabaseType databaseType) {
         return !getDetectableBranchDatabaseTypes(databaseType).isEmpty();
-    }
-    
-    private static Optional<DatabaseType> findActualBranchDatabaseType(final Connection connection, final DatabaseType trunkDatabaseType) throws SQLException {
-        for (DatabaseType each : getDetectableBranchDatabaseTypes(trunkDatabaseType)) {
-            if (isActualBranchDatabaseType(each, connection)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
     }
     
     private static Collection<DatabaseType> getDetectableBranchDatabaseTypes(final DatabaseType trunkDatabaseType) {
