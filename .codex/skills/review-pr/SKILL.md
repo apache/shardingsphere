@@ -5,6 +5,9 @@ description: >-
   assess side effects and regression risks, and determine whether it can be safely merged.
   If not mergeable, produce committer-tone change requests, or needs-discussion feedback when
   the PR direction, root-cause model, or problem framing should be reopened before implementation continues.
+  Also use when asked to assess GitHub-visible PR discussion, review comments, author or maintainer pushback,
+  challenged findings, or to draft copy-ready committer replies where review correctness, mergeability,
+  change-request validity, or root-cause evidence is being judged.
   If review cannot be completed from available public evidence, produce a Review Incomplete result without patch-level advice.
   Supports targeted comparison across GitHub-visible review rounds when prior PR comments or review threads exist.
   Before final output, internally self-iterate the review until no new actionable findings are discovered.
@@ -14,8 +17,12 @@ description: >-
 
 ## Objective
 
-- Review ShardingSphere PRs with a root-cause-first, evidence-first approach.
-- Output exactly one `Review Result`:
+- Review ShardingSphere PRs and review-related PR discussions with a root-cause-first, evidence-first approach.
+- Select the output mode from the user request:
+  - `Formal Review Mode`: use when the user asks for a PR review, mergeability decision, or formal GitHub review body. Output exactly one `Review Result`.
+  - `PR Discussion Reply Mode`: use when the user asks how to reply to PR comments, review threads, author or maintainer pushback, or challenged findings.
+    Output a copy-ready committer reply draft by default, and do not force a formal `Review Result` unless the user asks for one.
+- In `Formal Review Mode`, output exactly one `Review Result`:
   - `Mergeable`: public code, tests, documentation, and relevant verification support merge readiness.
   - `Not Mergeable`: public evidence confirms a blocker in the current PR scope.
   - `Review Incomplete`: the reviewer cannot make a reliable mergeability judgment because required public facts are unavailable, inaccessible, or not attributable.
@@ -30,6 +37,7 @@ description: >-
 - The user asks whether a PR "can be merged" or "fixes the root cause."
 - The user asks you to generate committer-tone change request comments.
 - The user asks whether a PR direction should be reconsidered or discussed before more patch work.
+- The user asks how to reply to a PR comment, review thread, author or maintainer objection, or challenged review finding.
 
 ## Mandatory Constraints
 
@@ -43,9 +51,11 @@ Before applying the numbered review gates, enforce the public evidence boundary:
   and verify it against public artifacts before output.
 
 1. Verify root-cause repair first; fallback logic, defaults, null checks, try-catch blocks, or swallowed errors cannot substitute for root-cause repair.
-2. Output exactly one `Review Result`. Choose one `Feedback Mode` only when the result is `Not Mergeable`.
-3. Do not convert reviewer uncertainty, tool failure, inaccessible GitHub data, or missing local verification into a PR blocker. Use `Review Incomplete` when required public facts cannot be checked or attributed.
-4. If public evidence confirms a wrong root-cause model, problem framing, expected behavior, ownership boundary, or solution direction, use `Review Result: Not Mergeable` with `Feedback Mode: Needs Discussion`.
+2. In `Formal Review Mode`, output exactly one `Review Result`. Choose one `Feedback Mode` only when the result is `Not Mergeable`.
+3. Do not convert reviewer uncertainty, tool failure, inaccessible GitHub data, or missing local verification into a PR blocker.
+   Use `Review Incomplete` in `Formal Review Mode`, or a clarification-style reply in `PR Discussion Reply Mode`, when required public facts cannot be checked or attributed.
+4. In `Formal Review Mode`, if public evidence confirms a wrong root-cause model, problem framing, expected behavior, ownership boundary, or solution direction,
+   use `Review Result: Not Mergeable` with `Feedback Mode: Needs Discussion`.
 5. Review only the latest PR code version, and use GitHub PR metadata plus `/pulls/{number}/files` as the authoritative scope boundary.
 6. Use repository-declared formatting/style gates as the formatting authority.
 7. Treat substantive unrelated changes or substantive scope expansion as blockers; ignore non-behavioral import-only, whitespace-only, formatter-only, or IDE cleanup churn unless it hides behavior,
@@ -68,6 +78,27 @@ Before applying the numbered review gates, enforce the public evidence boundary:
 - Relevant CI failure means the PR cannot be `Mergeable`. If the failure is attributable to the PR, use `Not Mergeable`; if attribution is unclear, use `Review Incomplete`.
 - Inspect CI, check-runs, or workflow logs when the PR goal, linked issue, author/user statement, generated artifact, native image, E2E, test-infra, or a candidate blocker depends on runtime verification.
 - Do not wait for or query CI when code, docs, or static evidence is sufficient for the current review result. State the reason in `Verification` when CI was not reviewed.
+
+## Third-Party Tool Behavior Evidence Gate
+
+Apply this gate when a candidate blocker, correction, or copy-ready reply depends on external runtime, shell, package manager, driver, container, CI image,
+native utility, or third-party CLI behavior.
+
+- Separate the evidence layers before judging: platform/runtime behavior, package-manager behavior, target tool CLI behavior, shell hook/profile behavior,
+  project command flow, and CI/user environment.
+- Do not prove a target-tool workflow failure only from adjacent platform documentation.
+  Platform docs may support the analysis, but the blocker must also be checked against target-tool public evidence.
+- Prefer target-tool official docs, release notes, source code, linked PRs/issues, CI logs, or a public reproduction for the exact command path.
+- Align the evidence to the actual version, tag, release, installation source, or CI image used by the PR.
+  Do not rely only on the target tool's latest `main` branch unless the PR actually uses that version or the behavior is proven unchanged.
+- When the author or maintainer cites a target-tool version, linked PR, implementation detail, or reproduction that contradicts the finding,
+  suspend the blocker and inspect that counter-evidence before responding.
+- Search the target tool for platform-specific fallbacks around the candidate path, such as command handlers, shell hook detection, environment variables,
+  global/session/project scope, registry or PATH updates, subprocess spawning, shell re-entry, and unsupported-shell behavior.
+- If target-tool evidence is unavailable and mergeability or reply correctness depends on it, use `Review Result: Review Incomplete` in `Formal Review Mode`,
+  or draft a clarification-style reply in `PR Discussion Reply Mode`; do not emit or preserve a blocker.
+- Emit `Not Mergeable`, or a firm copy-ready assertion that asks the author to change the PR, only when target-tool public evidence or a public reproduction
+  proves the changed command flow is unreliable in the PR's documented environment.
 
 ## Mergeable Hard Gates
 
@@ -320,8 +351,9 @@ CI/check-run review is not a substitute for code review. Query and report CI onl
    - When new commits arrive after previous feedback, review the latest delta to classify newly introduced risk.
    - Re-run full-path review on the latest PR head; do not conclude mergeability only because earlier comments were fixed.
 12. Pre-publication finding audit: verify every blocker against the evidence threshold before output.
-13. Review result: output exactly one `Review Result`.
-14. Generate feedback: follow the output template below.
+13. In `Formal Review Mode`, output exactly one `Review Result`.
+14. In `PR Discussion Reply Mode`, generate a copy-ready reply draft under `PR Discussion Reply Mode`.
+15. Generate feedback: follow the output template below.
 
 ## Pre-Publication Finding Audit
 
@@ -347,6 +379,7 @@ Before any candidate enters `### Issues`, verify:
 
 - The evidence type matches the claimed root cause and linked issue.
 - No public counter-evidence invalidates the claim.
+- If the claim depends on third-party tool behavior, the `Third-Party Tool Behavior Evidence Gate` has been satisfied.
 - Reviewer uncertainty, skipped local verification, unavailable tools, or inaccessible GitHub data are not being converted into a PR blocker.
 - The requested action is necessary in the current PR scope.
 - The blocker satisfies `Evidence Sufficiency and CI Judgment`.
@@ -497,15 +530,43 @@ When GitHub-visible previous-round feedback exists, perform incremental comparis
    summarize only the public evidence that makes the current direction need discussion.
 8. Do not include private reviewer accountability, local chat context, raw inventory, or internal origin notes in GitHub-facing review.
 
+## Challenged Finding Correction Rules
+
+Apply this section whenever an author, maintainer, or user challenges, contradicts, or disproves a prior finding or review result.
+
+1. Treat the prior finding as a hypothesis to disprove, not as a conclusion to defend.
+2. Rebuild the evidence chain from public facts and identify every assumption required for the finding to remain true.
+3. Inspect challenger-provided public evidence first, including linked source PRs, version-specific behavior, reproduction notes, CI logs, and implementation details.
+4. Use private or off-platform discussion only as an orientation signal. Convert it into public-evidence questions or verify it against public artifacts before GitHub-facing output.
+5. If any required assumption is disproved or lacks evidence, withdraw the blocker or change it to `Review Incomplete`; do not narrow the wording while preserving the same unsupported request.
+6. If the prior finding remains valid, restate the target-tool, code, log, or reproduction evidence that directly proves it, and address the counter-evidence explicitly.
+7. Use the `Correction` output structure for formal GitHub review follow-up. Set `Current Status` to `Withdrawn`, `Retained`, or `Changed to Review Incomplete`.
+8. Do not publish another `Not Mergeable` result after a challenged finding until the `Pre-Publication Finding Audit` and all triggered evidence gates have been rerun.
+
+## PR Discussion Reply Mode
+
+Use this mode when the user asks for a committer reply to a PR comment, review thread, author or maintainer objection, or challenged review finding.
+
+- Apply the same evidence gates used by formal reviews before making any firm public assertion.
+- Default to a copy-ready GitHub reply draft, not a formal `Review Result`.
+- In Codex chat, explain the reasoning in the user's language, but draft GitHub-facing replies in English unless the user requests another language.
+- Keep private chats, private reproduction details, prompt process, and local-only analysis out of the copy-ready reply.
+  Use them only to guide public re-verification or to ask for public evidence.
+- If the evidence gate is closed, provide a concise reply that states whether to retain, withdraw, or revise the finding.
+- If evidence is incomplete or conflicting, draft a clarification-style reply instead of an assertive change request.
+- Do not ask the author for evidence the reviewer can obtain from public PR, issue, code, CI, workflow data, target-tool source, or official docs.
+- Protect committer credibility: do not provide a strong public claim, blame, or merge-blocking request unless the evidence chain is closed.
+
 ## Output Structure
 
-GitHub-facing review bodies must be GitHub Markdown, use the user's language unless requested otherwise, and contain exactly one bold `Review Result: ...` line under `### Summary`.
+In `Formal Review Mode`, GitHub-facing review bodies must be GitHub Markdown, use the user's language unless requested otherwise,
+and contain exactly one bold `Review Result: ...` line under `### Summary`.
 Do not wrap GitHub-facing text in a code fence, blockquote, XML/HTML container, or transcript.
 Use stable English labels: `Review Result`, `Feedback Mode`, `Reason`, `Reviewed Scope`, `Not Reviewed Scope`, `Verification`, and `Release Note / User Docs`.
 Use repo-relative file references with line numbers, public anchors for non-file evidence, and sanitized verification summaries.
 Do not include internal drafts, self-review notes, private context, local absolute paths, temp paths, tokens, or raw long logs.
 
-When returning a review in Codex chat for the user to copy, wrap only the GitHub-facing body in a fenced `markdown` block.
+When returning a formal review in Codex chat for the user to copy, wrap only the GitHub-facing body in a fenced `markdown` block.
 When posting directly through a tool, submit only the inner GitHub-facing body.
 
 Use these required structures:
