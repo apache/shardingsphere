@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
@@ -56,11 +58,14 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropertiesMap, isInstanceConnectionEnabled);
         Map<StorageNode, DataSource> storageNodeDataSources = getStorageNodeDataSourceMap(dataSourcePoolPropertiesMap, storageUnitNodeMap);
         storageUnits = new LinkedHashMap<>(dataSourceConfigs.size(), 1F);
+        Map<StorageNode, DatabaseType> storageTypes = new LinkedHashMap<>(storageNodeDataSources.size(), 1F);
         for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             DataSource dataSource = storageNodeDataSources.get(storageNode);
-            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), dataSource);
+            DataSourcePoolProperties dataSourcePoolProps = dataSourcePoolPropertiesMap.get(storageUnitName);
+            DatabaseType storageType = storageTypes.computeIfAbsent(storageNode, key -> getStorageType(dataSourcePoolProps, dataSource));
+            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolProps, dataSource, storageType);
             storageUnits.put(storageUnitName, storageUnit);
         }
         dataSources = storageNodeDataSources;
@@ -79,5 +84,13 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
             throw ex;
         }
         return result;
+    }
+    
+    private DatabaseType getStorageType(final DataSourcePoolProperties dataSourcePoolProps, final DataSource dataSource) {
+        return DatabaseTypeEngine.getStorageType(getURL(dataSourcePoolProps), dataSource);
+    }
+    
+    private String getURL(final DataSourcePoolProperties dataSourcePoolProps) {
+        return dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
     }
 }

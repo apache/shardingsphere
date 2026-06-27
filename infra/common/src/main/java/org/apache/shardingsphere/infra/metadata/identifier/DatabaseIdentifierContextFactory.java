@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 
@@ -168,6 +169,10 @@ public final class DatabaseIdentifierContextFactory {
     
     private static boolean isHeterogeneous(final DatabaseType protocolType, final Collection<DatabaseType> storageDatabaseTypes) {
         return null != protocolType && null != protocolType.getType() && storageDatabaseTypes.stream()
-                .anyMatch(each -> null != each && null != each.getType() && !protocolType.getType().equalsIgnoreCase(each.getType()));
+                .anyMatch(each -> null != each && null != each.getType() && !isSameProtocolType(protocolType, each));
+    }
+    
+    private static boolean isSameProtocolType(final DatabaseType protocolType, final DatabaseType storageType) {
+        return protocolType.getType().equalsIgnoreCase(DatabaseTypeEngine.getProtocolType(storageType).getType());
     }
 }

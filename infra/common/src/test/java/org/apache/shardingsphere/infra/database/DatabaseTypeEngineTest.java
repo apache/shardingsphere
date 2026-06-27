@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database;
 import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.DialectJdbcUrlFetcher;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -47,6 +48,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -58,6 +60,8 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DatabaseTypeEngineTest {
@@ -76,6 +80,26 @@ class DatabaseTypeEngineTest {
         assertThat(DatabaseTypeEngine.getProtocolType(databaseConfigs, props), is(expectedDatabaseType));
     }
     
+    @Test
+    void assertGetProtocolTypeWithDetectedBranchStorageType() {
+        DatabaseType trunkDatabaseType = mock(DatabaseType.class);
+        DatabaseType branchDatabaseType = mock(DatabaseType.class);
+        when(branchDatabaseType.getTrunkDatabaseType()).thenReturn(Optional.of(trunkDatabaseType));
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
+            mocked.when(() -> DatabaseTypeFactory.isBranchTypeDetectionEnabled(branchDatabaseType)).thenReturn(true);
+            assertThat(DatabaseTypeEngine.getProtocolType(branchDatabaseType), is(trunkDatabaseType));
+        }
+    }
+    
+    @Test
+    void assertGetProtocolTypeWithStorageTypeWithoutBranchDetection() {
+        DatabaseType databaseType = mock(DatabaseType.class);
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
+            mocked.when(() -> DatabaseTypeFactory.isBranchTypeDetectionEnabled(databaseType)).thenReturn(false);
+            assertThat(DatabaseTypeEngine.getProtocolType(databaseType), is(databaseType));
+        }
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getStorageTypeArguments")
     void assertGetStorageType(final String name, final DataSource dataSource, final Collection<DialectJdbcUrlFetcher> fetchers, final DatabaseType expectedDatabaseType) {
@@ -83,6 +107,34 @@ class DatabaseTypeEngineTest {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)).thenReturn(fetchers);
             assertThat(DatabaseTypeEngine.getStorageType(dataSource), is(expectedDatabaseType));
         }
+    }
+    
+    @Test
+    void assertGetStorageTypeWithURLAndBranchDetectionOption() throws SQLException {
+        String url = "jdbc:trunk://localhost:3306/test";
+        Connection connection = mock(Connection.class);
+        DataSource dataSource = createDataSource(connection);
+        DatabaseType urlDatabaseType = mock(DatabaseType.class);
+        DatabaseType actualDatabaseType = mock(DatabaseType.class);
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
+            mocked.when(() -> DatabaseTypeFactory.get(url)).thenReturn(urlDatabaseType);
+            mocked.when(() -> DatabaseTypeFactory.containsBranchTypeDetectionOption(urlDatabaseType)).thenReturn(true);
+            mocked.when(() -> DatabaseTypeFactory.get(connection)).thenReturn(actualDatabaseType);
+            assertThat(DatabaseTypeEngine.getStorageType(url, dataSource), is(actualDatabaseType));
+        }
+    }
+    
+    @Test
+    void assertGetStorageTypeWithURLAndNoBranchDetectionOption() throws SQLException {
+        String url = "jdbc:trunk://localhost:3306/test";
+        DataSource dataSource = mock(DataSource.class);
+        DatabaseType urlDatabaseType = mock(DatabaseType.class);
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
+            mocked.when(() -> DatabaseTypeFactory.get(url)).thenReturn(urlDatabaseType);
+            mocked.when(() -> DatabaseTypeFactory.containsBranchTypeDetectionOption(urlDatabaseType)).thenReturn(false);
+            assertThat(DatabaseTypeEngine.getStorageType(url, dataSource), is(urlDatabaseType));
+        }
+        verify(dataSource, never()).getConnection();
     }
     
     @ParameterizedTest(name = "{0}")

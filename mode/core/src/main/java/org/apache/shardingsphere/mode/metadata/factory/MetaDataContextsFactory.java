@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseF
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
@@ -53,6 +54,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -200,7 +202,47 @@ public final class MetaDataContextsFactory {
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
                 : switchingResource.getMergedDataSourcePoolPropertiesMap();
         boolean isInstanceConnectionEnabled = metaDataContexts.getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
-        return new DataSourceProvidedDatabaseConfiguration(getMergedStorageNodeDataSources(currentResourceMetaData, switchingResource), toBeCreatedRuleConfigs, propsMap, isInstanceConnectionEnabled);
+        Map<StorageNode, DataSource> storageNodeDataSources = getMergedStorageNodeDataSources(currentResourceMetaData, switchingResource);
+        Map<String, DatabaseType> storageTypes = getStorageTypes(currentResourceMetaData, switchingResource, propsMap, storageNodeDataSources, isInstanceConnectionEnabled);
+        return new DataSourceProvidedDatabaseConfiguration(storageNodeDataSources, toBeCreatedRuleConfigs, propsMap, isInstanceConnectionEnabled, storageTypes);
+    }
+    
+    private Map<String, DatabaseType> getStorageTypes(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource,
+                                                      final Map<String, DataSourcePoolProperties> propsMap, final Map<StorageNode, DataSource> storageNodeDataSources,
+                                                      final boolean isInstanceConnectionEnabled) {
+        Map<String, DatabaseType> result = currentResourceMetaData.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageType(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        if (null == switchingResource) {
+            return result;
+        }
+        Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(propsMap, isInstanceConnectionEnabled);
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
+            String storageUnitName = entry.getKey();
+            if (result.containsKey(storageUnitName)) {
+                continue;
+            }
+            StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
+            Optional<DatabaseType> storageType = findStorageType(currentResourceMetaData, storageNode);
+            if (storageType.isPresent()) {
+                result.put(storageUnitName, storageType.get());
+                continue;
+            }
+            DataSource dataSource = getDataSource(storageNodeDataSources, storageNode, storageUnitName);
+            result.put(storageUnitName, DatabaseTypeEngine.getStorageType(getURL(entry.getValue()), dataSource));
+        }
+        return result;
+    }
+    
+    private Optional<DatabaseType> findStorageType(final ResourceMetaData currentResourceMetaData, final StorageNode storageNode) {
+        return currentResourceMetaData.getStorageUnits().values().stream().filter(each -> storageNode.equals(each.getStorageNode())).map(StorageUnit::getStorageType).findFirst();
+    }
+    
+    private DataSource getDataSource(final Map<StorageNode, DataSource> storageNodeDataSources, final StorageNode storageNode, final String storageUnitName) {
+        return storageNodeDataSources.containsKey(storageNode) ? storageNodeDataSources.get(storageNode) : storageNodeDataSources.get(new StorageNode(storageUnitName));
+    }
+    
+    private String getURL(final DataSourcePoolProperties dataSourcePoolProps) {
+        return dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
     }
     
     private Map<StorageNode, DataSource> getMergedStorageNodeDataSources(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {

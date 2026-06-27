@@ -67,6 +67,16 @@ public final class DatabaseTypeEngine {
         return getDatabaseTypeFromDatabaseConfigurations(databaseConfigs, props);
     }
     
+    /**
+     * Get protocol type from storage type.
+     *
+     * @param storageType storage type
+     * @return protocol type
+     */
+    public static DatabaseType getProtocolType(final DatabaseType storageType) {
+        return DatabaseTypeFactory.isBranchTypeDetectionEnabled(storageType) ? storageType.getTrunkDatabaseType().orElse(storageType) : storageType;
+    }
+    
     private static DatabaseType getDatabaseTypeFromDatabaseConfigurations(final Map<String, DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
         if (configuredDatabaseType.isPresent()) {
@@ -81,7 +91,7 @@ public final class DatabaseTypeEngine {
     }
     
     private static DatabaseType getDatabaseType(final Map<String, StorageUnit> storageUnits, final ConfigurationProperties props) {
-        return findConfiguredDatabaseType(props).orElseGet(() -> storageUnits.isEmpty() ? getDefaultStorageType() : storageUnits.values().iterator().next().getStorageType());
+        return findConfiguredDatabaseType(props).orElseGet(() -> storageUnits.isEmpty() ? getDefaultStorageType() : getProtocolType(storageUnits.values().iterator().next().getStorageType()));
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
@@ -105,6 +115,20 @@ public final class DatabaseTypeEngine {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
+    }
+    
+    /**
+     * Get storage type.
+     *
+     * @param url storage unit URL
+     * @param dataSource data source
+     * @return storage type
+     * @throws SQLWrapperException SQL wrapper exception
+     * @throws RuntimeException Runtime exception
+     */
+    public static DatabaseType getStorageType(final String url, final DataSource dataSource) {
+        DatabaseType result = DatabaseTypeFactory.get(url);
+        return DatabaseTypeFactory.containsBranchTypeDetectionOption(result) ? getStorageType(dataSource) : result;
     }
     
     private static Optional<DatabaseType> findStorageType(final DataSource dataSource) {

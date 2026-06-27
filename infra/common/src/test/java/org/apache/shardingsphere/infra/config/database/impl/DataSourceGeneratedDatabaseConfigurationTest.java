@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.database.impl;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -40,6 +42,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
     
@@ -51,6 +56,15 @@ class DataSourceGeneratedDatabaseConfigurationTest {
         assertRuleConfigurations(actual.getRuleConfigurations());
         assertStorageUnits(actual.getStorageUnits().get("foo_db"));
         assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_db")));
+    }
+    
+    @Test
+    void assertNewWithDetectedStorageType() {
+        try (MockedStatic<DatabaseTypeEngine> mocked = mockStatic(DatabaseTypeEngine.class)) {
+            mocked.when(() -> DatabaseTypeEngine.getStorageType(eq("jdbc:mock://127.0.0.1/foo_db"), any(DataSource.class))).thenReturn(databaseType);
+            DataSourceGeneratedDatabaseConfiguration actual = createDatabaseConfiguration(MockedDataSource.class.getName());
+            assertThat(actual.getStorageUnits().get("foo_db").getStorageType(), is(databaseType));
+        }
     }
     
     private void assertRuleConfigurations(final Collection<RuleConfiguration> actual) {

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Sch
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
@@ -92,7 +93,7 @@ public final class GenericSchemaBuilder {
     }
     
     private static boolean isSameProtocolAndStorageTypes(final DatabaseType protocolType, final Map<String, StorageUnit> storageUnits) {
-        return storageUnits.values().stream().map(StorageUnit::getStorageType).allMatch(protocolType::equals);
+        return storageUnits.values().stream().map(StorageUnit::getStorageType).map(DatabaseTypeEngine::getProtocolType).allMatch(protocolType::equals);
     }
     
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final DatabaseType protocolType, final GenericSchemaBuilderMaterial material) {

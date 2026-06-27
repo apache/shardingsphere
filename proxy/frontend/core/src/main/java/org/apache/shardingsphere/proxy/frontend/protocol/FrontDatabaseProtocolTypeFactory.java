@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -61,7 +62,12 @@ public final class FrontDatabaseProtocolTypeFactory {
             return defaultDatabaseType;
         }
         Optional<ShardingSphereDatabase> database = metaDataContexts.getMetaData().getAllDatabases().stream().filter(ShardingSphereDatabase::containsDataSource).findFirst();
-        return database.isPresent() ? database.get().getResourceMetaData().getStorageUnits().values().iterator().next().getStorageType() : defaultDatabaseType;
+        return database.isPresent() ? getProtocolType(database.get()) : defaultDatabaseType;
+    }
+    
+    private static DatabaseType getProtocolType(final ShardingSphereDatabase database) {
+        DatabaseType storageType = database.getResourceMetaData().getStorageUnits().values().iterator().next().getStorageType();
+        return DatabaseTypeEngine.getProtocolType(storageType);
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType() {

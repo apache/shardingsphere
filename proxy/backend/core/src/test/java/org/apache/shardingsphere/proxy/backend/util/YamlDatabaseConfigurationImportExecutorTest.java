@@ -127,10 +127,8 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(metaDataManagerService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
         when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
-        DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
+        mockImportedDataSource(dataSourceConfig);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
-        when(DataSourcePoolCreator.create(poolProperties)).thenReturn(mock(DataSource.class));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         try (MockedConstruction<StorageUnit> mockedConstruction = mockConstruction(StorageUnit.class, (mock, context) -> {
         })) {
@@ -152,10 +150,8 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService()).thenReturn(databaseRulePersistService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
         when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
-        DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
+        mockImportedDataSource(dataSourceConfig);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
-        when(DataSourcePoolCreator.create(poolProperties)).thenReturn(mock(DataSource.class));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         try (MockedConstruction<StorageUnit> ignored = mockConstruction(StorageUnit.class)) {
             executor.importDatabaseConfiguration(createYamlConfiguration());
@@ -176,10 +172,8 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService()).thenReturn(databaseRulePersistService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
         when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
-        DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
+        mockImportedDataSource(dataSourceConfig);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
-        when(DataSourcePoolCreator.create(poolProperties)).thenReturn(mock(DataSource.class));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         YamlRuleConfiguration yamlRuleConfig = mock(YamlRuleConfiguration.class);
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
@@ -221,10 +215,8 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService()).thenReturn(databaseRulePersistService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
         when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
-        DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
+        mockImportedDataSource(dataSourceConfig);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
-        when(DataSourcePoolCreator.create(poolProperties)).thenReturn(mock(DataSource.class));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
         ruleConfig.setDefaultDataSource("foo_ds");
@@ -268,10 +260,8 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService()).thenReturn(databaseRulePersistService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
         when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
-        DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
+        mockImportedDataSource(dataSourceConfig);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
-        when(DataSourcePoolCreator.create(poolProperties)).thenReturn(mock(DataSource.class));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
         ruleConfig.setDefaultDataSource("foo_ds");
@@ -321,6 +311,15 @@ class YamlDatabaseConfigurationImportExecutorTest {
         dataSourceConfig.setUrl("jdbc:mock://localhost/" + "foo_db");
         result.setDataSources(Collections.singletonMap("foo_ds", dataSourceConfig));
         return result;
+    }
+    
+    private void mockImportedDataSource(final DataSourceConfiguration dataSourceConfig) {
+        DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(poolProperties.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://localhost/foo_db"));
+        when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
+        DataSource dataSource = mock(DataSource.class);
+        when(DataSourcePoolCreator.create(poolProperties)).thenReturn(dataSource);
+        when(DatabaseTypeEngine.getStorageType("jdbc:mock://localhost/foo_db", dataSource)).thenReturn(mock(DatabaseType.class));
     }
     
     private ShardingSphereDatabase mockDatabase(final Map<String, StorageUnit> storageUnits, final List<ShardingSphereRule> rules) {

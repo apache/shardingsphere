@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,26 +53,35 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         Map<String, StorageNode> storageUnitNodeMap = dataSources.keySet().stream()
                 .collect(Collectors.toMap(each -> each, StorageNode::new, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<StorageNode, DataSource> storageNodeDataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
-        storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, createDataSourcePoolPropertiesMap(dataSources));
+        storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, createDataSourcePoolPropertiesMap(dataSources), Collections.emptyMap());
         this.dataSources = storageNodeDataSources;
     }
     
     public DataSourceProvidedDatabaseConfiguration(final Map<StorageNode, DataSource> storageNodeDataSources, final Collection<RuleConfiguration> ruleConfigs,
                                                    final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap, final boolean isInstanceConnectionEnabled) {
+        this(storageNodeDataSources, ruleConfigs, dataSourcePoolPropsMap, isInstanceConnectionEnabled, Collections.emptyMap());
+    }
+    
+    public DataSourceProvidedDatabaseConfiguration(final Map<StorageNode, DataSource> storageNodeDataSources, final Collection<RuleConfiguration> ruleConfigs,
+                                                   final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap, final boolean isInstanceConnectionEnabled,
+                                                   final Map<String, DatabaseType> storageTypes) {
         ruleConfigurations = ruleConfigs;
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropsMap, isInstanceConnectionEnabled);
-        storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, dataSourcePoolPropsMap);
+        storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, dataSourcePoolPropsMap, storageTypes);
         dataSources = storageNodeDataSources;
     }
     
     private Map<String, StorageUnit> getStorageUnits(final Map<String, StorageNode> storageUnitNodeMap,
-                                                     final Map<StorageNode, DataSource> storageNodeDataSources, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
+                                                     final Map<StorageNode, DataSource> storageNodeDataSources, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap,
+                                                     final Map<String, DatabaseType> storageTypes) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(dataSourcePoolPropsMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropsMap.entrySet()) {
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             DataSource dataSource = storageNodeDataSources.containsKey(storageNode) ? storageNodeDataSources.get(storageNode) : storageNodeDataSources.get(new StorageNode(storageUnitName));
-            StorageUnit storageUnit = new StorageUnit(storageNode, entry.getValue(), dataSource);
+            StorageUnit storageUnit = storageTypes.containsKey(storageUnitName)
+                    ? new StorageUnit(storageNode, entry.getValue(), dataSource, storageTypes.get(storageUnitName))
+                    : new StorageUnit(storageNode, entry.getValue(), dataSource);
             result.put(storageUnitName, storageUnit);
         }
         return result;

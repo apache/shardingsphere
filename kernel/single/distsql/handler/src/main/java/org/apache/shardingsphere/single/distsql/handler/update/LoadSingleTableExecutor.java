@@ -149,7 +149,7 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     }
     
     private boolean isSameDatabaseType(final DatabaseType protocolType, final DatabaseType storageUnitDatabaseType) {
-        return protocolType.getType().equalsIgnoreCase(storageUnitDatabaseType.getType());
+        return protocolType.getType().equalsIgnoreCase(DatabaseTypeEngine.getProtocolType(storageUnitDatabaseType).getType());
     }
     
     @Override

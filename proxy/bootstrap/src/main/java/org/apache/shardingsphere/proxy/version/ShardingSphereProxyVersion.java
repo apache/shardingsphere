@@ -23,8 +23,10 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo;
-import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
@@ -74,9 +76,13 @@ public final class ShardingSphereProxyVersion {
     
     private static Optional<DataSource> findDataSourceByProtocolType(final ShardingSphereDatabase database) {
         Optional<String> dataSourceName = database.getResourceMetaData().getStorageUnits().entrySet()
-                .stream().filter(entry -> entry.getValue().getStorageType().equals(database.getProtocolType())).map(Entry::getKey).findFirst();
+                .stream().filter(entry -> isSameProtocolType(entry.getValue().getStorageType(), database.getProtocolType())).map(Entry::getKey).findFirst();
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         return dataSourceName.flatMap(optional -> Optional.ofNullable(dataSources.get(optional)));
+    }
+    
+    private static boolean isSameProtocolType(final DatabaseType storageType, final DatabaseType protocolType) {
+        return DatabaseTypeEngine.getProtocolType(storageType).equals(protocolType);
     }
 }

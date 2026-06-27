@@ -44,7 +44,9 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -183,6 +185,44 @@ class DatabaseTypeFactoryTest {
         }
     }
     
+    @Test
+    void assertContainsBranchTypeDetectionOption() {
+        DatabaseType trunkDatabaseType = mockTrunkDatabaseType("TRUNK");
+        DatabaseType branchDatabaseType = mockBranchDatabaseType(trunkDatabaseType);
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData(branchDatabaseType, Optional.of(new DialectBranchOption("SELECT branch_type")));
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, branchDatabaseType));
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(dialectDatabaseMetaData));
+        assertTrue(DatabaseTypeFactory.containsBranchTypeDetectionOption(trunkDatabaseType));
+    }
+    
+    @Test
+    void assertContainsBranchTypeDetectionOptionWithNoBranchOption() {
+        DatabaseType trunkDatabaseType = mockTrunkDatabaseType("TRUNK");
+        DatabaseType branchDatabaseType = mockBranchDatabaseType(trunkDatabaseType);
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData(branchDatabaseType, Optional.empty());
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(trunkDatabaseType, branchDatabaseType));
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(dialectDatabaseMetaData));
+        assertFalse(DatabaseTypeFactory.containsBranchTypeDetectionOption(trunkDatabaseType));
+    }
+    
+    @Test
+    void assertIsBranchTypeDetectionEnabled() {
+        DatabaseType trunkDatabaseType = mock(DatabaseType.class);
+        DatabaseType branchDatabaseType = mockBranchDatabaseType(trunkDatabaseType);
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData(branchDatabaseType, Optional.of(new DialectBranchOption("SELECT branch_type")));
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(dialectDatabaseMetaData));
+        assertTrue(DatabaseTypeFactory.isBranchTypeDetectionEnabled(branchDatabaseType));
+    }
+    
+    @Test
+    void assertIsBranchTypeDetectionEnabledWithNoBranchOption() {
+        DatabaseType trunkDatabaseType = mock(DatabaseType.class);
+        DatabaseType branchDatabaseType = mockBranchDatabaseType(trunkDatabaseType);
+        DialectDatabaseMetaData dialectDatabaseMetaData = createDialectDatabaseMetaData(branchDatabaseType, Optional.empty());
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectDatabaseMetaData.class)).thenReturn(Collections.singletonList(dialectDatabaseMetaData));
+        assertFalse(DatabaseTypeFactory.isBranchTypeDetectionEnabled(branchDatabaseType));
+    }
+    
     private static Stream<Arguments> getDatabaseTypeWithRecognizedURLArguments() {
         DatabaseType trunkDatabaseType = mockDatabaseType("jdbc:trunk:", null);
         DatabaseType branchDatabaseType = mockDatabaseType("jdbc:trunk:branch:", trunkDatabaseType);
@@ -245,6 +285,19 @@ class DatabaseTypeFactoryTest {
         }
         when(result.getJdbcUrlPrefixes()).thenReturn(Collections.singleton(jdbcUrlPrefix));
         when(result.getTrunkDatabaseType()).thenReturn(Optional.ofNullable(trunkDatabaseType));
+        return result;
+    }
+    
+    private static DatabaseType mockTrunkDatabaseType(final String databaseType) {
+        DatabaseType result = mock(DatabaseType.class);
+        when(result.getType()).thenReturn(databaseType);
+        when(result.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        return result;
+    }
+    
+    private static DatabaseType mockBranchDatabaseType(final DatabaseType trunkDatabaseType) {
+        DatabaseType result = mock(DatabaseType.class);
+        when(result.getTrunkDatabaseType()).thenReturn(Optional.of(trunkDatabaseType));
         return result;
     }
     

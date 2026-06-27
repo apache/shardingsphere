@@ -80,6 +80,17 @@ class DataSourceProvidedDatabaseConfigurationTest {
         verify(dataSource, never()).getConnection();
     }
     
+    @Test
+    void assertNewWithStorageTypesDoesNotConnect() throws SQLException {
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = Collections.singletonMap("foo_ds", new DataSourcePoolProperties("foo_ds", createConnectionProps()));
+        DataSource dataSource = mock(DataSource.class);
+        DataSourceProvidedDatabaseConfiguration actual = new DataSourceProvidedDatabaseConfiguration(
+                Collections.singletonMap(new StorageNode("foo_ds"), dataSource), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), dataSourcePoolPropsMap, false,
+                Collections.singletonMap("foo_ds", databaseType));
+        assertThat(actual.getStorageUnits().get("foo_ds").getStorageType(), is(databaseType));
+        verify(dataSource, never()).getConnection();
+    }
+    
     private Map<String, Object> createConnectionProps() {
         Map<String, Object> result = new HashMap<>(3, 1F);
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");

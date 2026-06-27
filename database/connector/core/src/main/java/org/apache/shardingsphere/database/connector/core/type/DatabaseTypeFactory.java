@@ -82,6 +82,27 @@ public final class DatabaseTypeFactory {
         return findActualBranchDatabaseType(connection, result).orElse(result);
     }
     
+    /**
+     * Judge whether branch database type detection option exists.
+     *
+     * @param databaseType database type
+     * @return whether branch database type detection option exists
+     */
+    public static boolean containsBranchTypeDetectionOption(final DatabaseType databaseType) {
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream()
+                .anyMatch(each -> isBranchDatabaseType(each, databaseType) && isBranchTypeDetectionEnabled(each));
+    }
+    
+    /**
+     * Judge whether branch database type detection is enabled.
+     *
+     * @param databaseType database type
+     * @return whether branch database type detection is enabled
+     */
+    public static boolean isBranchTypeDetectionEnabled(final DatabaseType databaseType) {
+        return databaseType.getTrunkDatabaseType().isPresent() && containsBranchTypeDetectionOptionInMetaData(databaseType);
+    }
+    
     private static Optional<DatabaseType> findActualBranchDatabaseType(final Connection connection, final DatabaseType trunkDatabaseType) throws SQLException {
         for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
             if (!isBranchDatabaseType(each, trunkDatabaseType)) {
@@ -106,6 +127,10 @@ public final class DatabaseTypeFactory {
         DatabaseMetaData metaData = connection.getMetaData();
         return containsBranch(databaseType, metaData.getDatabaseProductName())
                 || containsBranch(databaseType, metaData.getDatabaseProductVersion()) || containsBranch(databaseType, queryBranchTypeDetectionValue(branchOption.get(), connection));
+    }
+    
+    private static boolean containsBranchTypeDetectionOptionInMetaData(final DatabaseType databaseType) {
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getBranchOption().isPresent();
     }
     
     private static boolean containsBranch(final DatabaseType databaseType, final String value) {
