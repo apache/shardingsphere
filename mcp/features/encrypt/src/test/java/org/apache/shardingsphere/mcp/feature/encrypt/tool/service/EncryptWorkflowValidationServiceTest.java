@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
@@ -33,9 +35,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.Field;
@@ -49,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -108,6 +113,27 @@ class EncryptWorkflowValidationServiceTest {
         List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(new WorkflowContextSnapshot(),
                 List.of(createRuleDistSQLArtifact(sql, sql.replace("123456", "******"))));
         assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsRejectsUnavailableEncryptAlgorithm() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.setAlgorithmType("AES");
+        request.getPrimaryAlgorithmProperties().put("aes-key-value", "raw-secret");
+        request.getPrimaryAlgorithmProperties().put("digest-algorithm-name", "SHA-1");
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setRequest(request);
+        String sql = "CREATE ENCRYPT RULE `t_user` (COLUMNS((NAME=`phone`, CIPHER=`phone_cipher`, "
+                + "ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='******', 'digest-algorithm-name'='SHA-1'))))))";
+        try (MockedStatic<TypedSPILoader> ignored = mockStatic(TypedSPILoader.class)) {
+            ignored.when(() -> TypedSPILoader.checkService(EncryptAlgorithm.class, "AES", WorkflowSQLUtils.createProperties(request.getPrimaryAlgorithmProperties())))
+                    .thenThrow(new IllegalArgumentException("raw-secret"));
+            List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact(sql, sql)));
+            assertThat(actual.size(), is(1));
+            assertThat(actual.getFirst().get("message"), is("Generated encrypt DistSQL references encrypt algorithm `AES`, "
+                    + "but it cannot be loaded or initialized by EncryptAlgorithm SPI."));
+            assertFalse(String.valueOf(actual).contains("raw-secret"));
+        }
     }
     
     @Test

@@ -27,22 +27,30 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  * Shadow workflow validation service.
  */
-public final class ShadowWorkflowValidationService implements MCPWorkflowRuntimeHandler {
+public final class ShadowWorkflowValidationService implements MCPWorkflowRuntimeHandler, MCPWorkflowApplyArtifactValidator {
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
@@ -53,11 +61,6 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     public ShadowWorkflowValidationService() {
         inspectionService = new ShadowInspectionService();
         workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
-    }
-    
-    ShadowWorkflowValidationService(final ShadowInspectionService inspectionService, final WorkflowSynchronizationSupport workflowSynchronizationSupport) {
-        this.inspectionService = inspectionService;
-        this.workflowSynchronizationSupport = workflowSynchronizationSupport;
     }
     
     @Override
@@ -74,9 +77,55 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     }
     
     @Override
+    public List<Map<String, Object>> validate(final WorkflowContextSnapshot snapshot, final Collection<ExecutableWorkflowArtifact> artifacts) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (ExecutableWorkflowArtifact each : artifacts) {
+            if (each.ruleDistSql()) {
+                addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
+            }
+        }
+        return result;
+    }
+    
+    @Override
     public void synchronize(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
                             final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
         workflowSynchronizationSupport.synchronize(() -> createValidationReport(snapshot, queryFacade));
+    }
+    
+    private void addRuleDistSQLIssues(final List<Map<String, Object>> issues, final WorkflowContextSnapshot snapshot, final String sql, final String displaySql) {
+        if (!isCreateOrAlterShadowDistSQL(sql)) {
+            return;
+        }
+        if (snapshot.getRequest() instanceof ShadowRuleWorkflowRequest) {
+            ShadowRuleWorkflowRequest request = (ShadowRuleWorkflowRequest) snapshot.getRequest();
+            addShadowAlgorithmIssue(issues, request.getAlgorithmType(), request.getAlgorithmProperties(), displaySql);
+        }
+        if (snapshot.getRequest() instanceof ShadowDefaultAlgorithmWorkflowRequest) {
+            ShadowDefaultAlgorithmWorkflowRequest request = (ShadowDefaultAlgorithmWorkflowRequest) snapshot.getRequest();
+            addShadowAlgorithmIssue(issues, request.getAlgorithmType(), request.getAlgorithmProperties(), displaySql);
+        }
+    }
+    
+    private boolean isCreateOrAlterShadowDistSQL(final String sql) {
+        String actualSQL = sql.trim().toUpperCase(Locale.ENGLISH);
+        return actualSQL.startsWith("CREATE SHADOW RULE") || actualSQL.startsWith("ALTER SHADOW RULE")
+                || actualSQL.startsWith("CREATE DEFAULT SHADOW ALGORITHM") || actualSQL.startsWith("ALTER DEFAULT SHADOW ALGORITHM");
+    }
+    
+    private void addShadowAlgorithmIssue(final List<Map<String, Object>> issues, final String algorithmType, final Map<String, String> properties, final String displaySql) {
+        if (algorithmType.isEmpty()) {
+            return;
+        }
+        if (!WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(ShadowAlgorithm.class, algorithmType, properties)) {
+            issues.add(createValidationIssue(String.format("Generated shadow DistSQL references algorithm `%s`, but it cannot be loaded or initialized by ShadowAlgorithm SPI.",
+                    algorithmType), displaySql));
+        }
+    }
+    
+    private Map<String, Object> createValidationIssue(final String message, final String sql) {
+        return new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", WorkflowLifecycle.STEP_REVIEW,
+                message, "Regenerate the workflow artifact through the feature planner before approval.", true, Map.of("sql", sql)).toMap();
     }
     
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
@@ -93,7 +142,7 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
             return validateRule(snapshot, queryFacade, validationReport, databaseType);
         }
         if (snapshot.getRequest() instanceof ShadowDefaultAlgorithmWorkflowRequest) {
-            return validateDefaultAlgorithm(snapshot, queryFacade, validationReport, databaseType);
+            return validateDefaultAlgorithm(snapshot, queryFacade, validationReport);
         }
         return validateAlgorithmCleanup(snapshot, queryFacade, validationReport, databaseType);
     }
@@ -115,7 +164,7 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     }
     
     private ValidationSection validateDefaultAlgorithm(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade,
-                                                       final ValidationReport validationReport, final String databaseType) {
+                                                       final ValidationReport validationReport) {
         ShadowDefaultAlgorithmWorkflowRequest request = (ShadowDefaultAlgorithmWorkflowRequest) snapshot.getRequest();
         List<Map<String, Object>> defaultAlgorithm = inspectionService.queryDefaultAlgorithm(queryFacade, request.getDatabase());
         boolean exists = !defaultAlgorithm.isEmpty();

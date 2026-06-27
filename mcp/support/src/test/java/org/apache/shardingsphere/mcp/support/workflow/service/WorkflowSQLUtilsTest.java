@@ -136,6 +136,24 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierQuotesSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("orders_01");
+        assertThat(actualValue, is("`orders_01`"));
+    }
+    
+    @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierQuotesDelimitedSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("`orders`");
+        assertThat(actualValue, is("`orders`"));
+    }
+    
+    @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierReturnsEmptyForBlankIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("");
+        assertThat(actualValue, is(""));
+    }
+    
+    @Test
     void assertFormatSQLIdentifierUsesMysqlQuoteStyle() {
         String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "order detail");
         assertThat(actualValue, is("`order detail`"));

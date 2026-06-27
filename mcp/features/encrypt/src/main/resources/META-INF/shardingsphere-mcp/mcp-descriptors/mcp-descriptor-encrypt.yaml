@@ -451,7 +451,7 @@ tools:
             - artifact_id: create-encrypt-rule
               artifact_type: rule_dist_sql
               sql: >-
-                CREATE ENCRYPT RULE orders (COLUMNS((NAME=status, CIPHER=status_cipher,
+                CREATE ENCRYPT RULE `orders` (COLUMNS((NAME=`status`, CIPHER=`status_cipher`,
                 ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='******', 'digest-algorithm-name'='SHA-1'))))))
           masked_property_preview:
             primary:

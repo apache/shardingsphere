@@ -334,7 +334,7 @@ tools:
           distsql_artifacts:
             - operation_type: create
               artifact_type: rule_distsql
-              sql: CREATE BROADCAST TABLE RULE t_order
+              sql: CREATE BROADCAST TABLE RULE `t_order`
           next_actions:
             - order: 1
               type: tool_call

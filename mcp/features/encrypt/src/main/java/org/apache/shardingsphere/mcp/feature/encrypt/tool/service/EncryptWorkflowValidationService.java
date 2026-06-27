@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
@@ -84,7 +86,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         List<Map<String, Object>> result = new LinkedList<>();
         for (ExecutableWorkflowArtifact each : artifacts) {
             if (each.ruleDistSql()) {
-                addRuleDistSQLIssues(result, each.sql(), each.displaySql());
+                addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
             }
         }
         return result;
@@ -96,7 +98,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         workflowSynchronizationSupport.synchronize(() -> createValidationReport(snapshot, queryFacade));
     }
     
-    private void addRuleDistSQLIssues(final List<Map<String, Object>> issues, final String sql, final String displaySql) {
+    private void addRuleDistSQLIssues(final List<Map<String, Object>> issues, final WorkflowContextSnapshot snapshot, final String sql, final String displaySql) {
         if (!isEncryptRuleDistSQL(sql)) {
             return;
         }
@@ -109,6 +111,27 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         String actualSQL = sql.toLowerCase(Locale.ENGLISH);
         if (actualSQL.contains("encrypt_algorithm") && actualSQL.contains("'aes-key-value'") && !actualSQL.contains("'digest-algorithm-name'")) {
             issues.add(createValidationIssue("Generated AES encrypt DistSQL is missing `digest-algorithm-name`.", displaySql));
+        }
+        addAlgorithmIssues(issues, getWorkflowRequest(snapshot), displaySql);
+    }
+    
+    private void addAlgorithmIssues(final List<Map<String, Object>> issues, final EncryptWorkflowRequest request, final String displaySql) {
+        addEncryptAlgorithmIssue(issues, "encrypt", request.getAlgorithmType(), request.getPrimaryAlgorithmProperties(), displaySql);
+        if (Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter())) {
+            addEncryptAlgorithmIssue(issues, "assisted query", request.getOptions().getAssistedQueryAlgorithmType(), request.getOptions().getAssistedQueryAlgorithmProperties(), displaySql);
+        }
+        if (Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery())) {
+            addEncryptAlgorithmIssue(issues, "like query", request.getOptions().getLikeQueryAlgorithmType(), request.getOptions().getLikeQueryAlgorithmProperties(), displaySql);
+        }
+    }
+    
+    private void addEncryptAlgorithmIssue(final List<Map<String, Object>> issues, final String role, final String algorithmType, final Map<String, String> properties, final String displaySql) {
+        if (algorithmType.isEmpty()) {
+            return;
+        }
+        if (!WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(EncryptAlgorithm.class, algorithmType, properties)) {
+            issues.add(createValidationIssue(String.format("Generated encrypt DistSQL references %s algorithm `%s`, but it cannot be loaded or initialized by EncryptAlgorithm SPI.",
+                    role, algorithmType), displaySql));
         }
     }
     
