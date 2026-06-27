@@ -52,16 +52,12 @@ public final class StorageUnit {
         String url = standardProps.get("url").toString();
         Object originUsername = standardProps.get("username");
         String username = null == originUsername ? "" : originUsername.toString();
-        this.storageType = getStorageType(dataSourcePoolProps);
+        storageType = DatabaseTypeFactory.get(url);
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
         String catalog = storageNode.isInstanceStorageNode() ? parser.parse(url, username, null).getCatalog() : null;
         this.dataSource = storageNode.isInstanceStorageNode() ? new CatalogSwitchableDataSource(dataSource, catalog, url) : dataSource;
         dataSourcePoolProperties = dataSourcePoolProps;
         connectionProperties = createConnectionProperties(parser, catalog, standardProps);
-    }
-    
-    private static DatabaseType getStorageType(final DataSourcePoolProperties dataSourcePoolProps) {
-        return DatabaseTypeFactory.get(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString());
     }
     
     private ConnectionProperties createConnectionProperties(final ConnectionPropertiesParser parser, final String catalog, final Map<String, Object> standardProps) {
