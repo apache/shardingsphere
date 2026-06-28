@@ -53,6 +53,9 @@ public final class RetryExecutor {
     
     @SneakyThrows(InterruptedException.class)
     private boolean isTimeout() {
+        if (timeoutMillis >= 0L && elapsedMillis >= timeoutMillis) {
+            return true;
+        }
         Thread.sleep(intervalMillis);
         if (timeoutMillis < 0L) {
             return false;
