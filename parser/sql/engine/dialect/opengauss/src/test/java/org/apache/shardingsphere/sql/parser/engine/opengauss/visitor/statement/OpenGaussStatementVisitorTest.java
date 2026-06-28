@@ -15,45 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement;
+package org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement;
 
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PostgreSQLStatementVisitorTest {
-    
-    @Test
-    void assertVisitUnaryNotWithScalarSubquery() {
-        String sql = "select 1 from t17 as ref_0 where not ((ref_0.c59) < (select ref_1.c36 as c_0 from t23 as ref_1 join t22 as ref_2 "
-                + "on(ref_1.colocated_key = ref_2.colocated_key)))";
-        ParseASTNode parseASTNode = new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false);
-        SelectStatement statement = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(parseASTNode);
-        assertTrue(statement.getWhere().isPresent());
-        assertThat(statement.getWhere().get().getExpr(), isA(NotExpression.class));
-        TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromSelect(statement);
-        Collection<String> rewriteTableNames = tableExtractor.getRewriteTables().stream()
-                .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-        assertThat(rewriteTableNames, hasItems("t17", "t23", "t22"));
-    }
+class OpenGaussStatementVisitorTest {
     
     @Test
     void assertVisitWindowAggregationProjection() {
@@ -70,7 +49,7 @@ class PostgreSQLStatementVisitorTest {
     }
     
     private SelectStatement parseSelectStatement(final String sql) {
-        ParseASTNode parseASTNode = new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false);
-        return (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(parseASTNode);
+        ParseASTNode parseASTNode = new SQLParserEngine("openGauss", new CacheOption(128, 1024L)).parse(sql, false);
+        return (SelectStatement) new SQLStatementVisitorEngine("openGauss").visit(parseASTNode);
     }
 }
