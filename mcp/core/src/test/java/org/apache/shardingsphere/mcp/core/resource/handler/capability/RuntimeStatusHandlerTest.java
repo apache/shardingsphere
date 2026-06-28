@@ -98,8 +98,10 @@ class RuntimeStatusHandlerTest {
         assertTrue(actualSafeCategories.contains("database_not_visible"));
         List<?> actualOperatorNextActions = (List<?>) actualDiagnostics.get("operator_next_actions");
         assertThat(actualOperatorNextActions.size(), is(8));
-        assertThat(((Map<?, ?>) actualOperatorNextActions.get(4)).get("category"), is("invalid_configuration"));
-        assertTrue((Boolean) ((Map<?, ?>) actualOperatorNextActions.get(4)).get("secret_safe"));
+        Map<?, ?> actualInvalidConfigurationAction = (Map<?, ?>) actualOperatorNextActions.get(4);
+        assertThat(actualInvalidConfigurationAction.get("category"), is("invalid_configuration"));
+        assertThat(actualInvalidConfigurationAction.get("operator_action"), is("Fix runtimeDatabases JDBC URL, driver, or binding configuration."));
+        assertTrue((Boolean) actualInvalidConfigurationAction.get("secret_safe"));
         assertThat(((Map<?, ?>) actualOperatorNextActions.get(7)).get("category"), is("database_not_visible"));
     }
     

@@ -64,24 +64,23 @@ Enable this only when clients cannot forge these headers directly.
 
 `runtimeDatabases` defines the databases that the MCP Server can connect to and expose to users.
 Each entry key is the database name that users reference in natural-language tasks. It usually maps to a logical database exposed by ShardingSphere-Proxy.
+The MCP Server resolves the database type from `jdbcUrl`; use a JDBC driver class that matches the configured URL.
 
 ```yaml
 runtimeDatabases:
   "<logic-database>":
-    databaseType: MySQL
     jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
     username: "<proxy-username>"
     password: "<proxy-password>"
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-| *Name*                | *Description*                                                                                                                                                                                                                                                  |
-|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `databaseType` (+)    | Database protocol or dialect type of the connection endpoint, such as `MySQL` or `PostgreSQL`. It affects metadata recognition and SQL capability judgment; it does not mean the endpoint is necessarily a direct database connection or ShardingSphere-Proxy. |
-| `jdbcUrl` (+)         | JDBC URL used by the MCP Server to connect to the runtime database. Point it to a Proxy logical database when using ShardingSphere rule capabilities.                                                                                                          |
-| `username` (+)        | Username for the runtime database, usually the ShardingSphere-Proxy logical database username.                                                                                                                                                                 |
-| `password` (?)        | Password for the runtime database.                                                                                                                                                                                                                             |
-| `driverClassName` (+) | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver.                                                                                                                                                                               |
+| *Name*                | *Description*                                                                                                                                                         |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `jdbcUrl` (+)         | JDBC URL used by the MCP Server to connect to the runtime database and resolve the database type. Use a Proxy logical database for ShardingSphere rule capabilities. |
+| `username` (+)        | Username for the runtime database, usually the ShardingSphere-Proxy logical database username.                                                                        |
+| `password` (?)        | Password for the runtime database.                                                                                                                                    |
+| `driverClassName` (+) | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver.                                                                                      |
 
 Legend:
 

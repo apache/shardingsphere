@@ -966,7 +966,7 @@ tools:
   - name: database_gateway_validate_runtime_database
     title: Validate Runtime Database
     description: >-
-      Validate one configured ShardingSphere-MCP runtime database before formal onboarding. Use this to preflight the configured database type,
+      Validate one configured ShardingSphere-MCP runtime database before formal onboarding. Use this to preflight JDBC URL database type resolution,
       JDBC driver, JDBC connectivity, metadata readability, and database visibility without executing SQL tools.
     inputSchema:
       type: object
@@ -1039,7 +1039,7 @@ tools:
             - name: jdbc_connectivity
               status: passed
               category: ready
-              message: Opened a JDBC connection and validated the configured database type.
+              message: Opened a JDBC connection and resolved the database type from the JDBC URL.
             - name: metadata_read
               status: passed
               category: ready
