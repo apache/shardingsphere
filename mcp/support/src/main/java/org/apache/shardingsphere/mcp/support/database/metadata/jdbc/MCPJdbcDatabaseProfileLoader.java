@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 
 import java.sql.Connection;
@@ -61,6 +62,7 @@ public final class MCPJdbcDatabaseProfileLoader {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             DatabaseType databaseType = loadDatabaseType(databaseName, connection);
+            validateConfiguredDatabaseType(databaseName, runtimeDatabaseConfig.getDatabaseType(), databaseType.getType());
             String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
             return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion);
         } catch (final SQLException ex) {
@@ -74,5 +76,15 @@ public final class MCPJdbcDatabaseProfileLoader {
         } catch (final ShardingSphereExternalException ex) {
             throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName, ex);
         }
+    }
+    
+    private void validateConfiguredDatabaseType(final String databaseName, final String configuredDatabaseType, final String actualDatabaseType) {
+        String expectedDatabaseType = Objects.toString(configuredDatabaseType, "").trim();
+        if (expectedDatabaseType.isEmpty()) {
+            return;
+        }
+        ShardingSpherePreconditions.checkState(expectedDatabaseType.equalsIgnoreCase(actualDatabaseType),
+                () -> RuntimeDatabaseConnectionException.invalidConfiguration(databaseName, new IllegalStateException(String.format(
+                        "Configured databaseType `%s` does not match actual database type `%s` for database `%s`.", expectedDatabaseType, actualDatabaseType, databaseName))));
     }
 }

@@ -37,6 +37,16 @@ import static org.mockito.Mockito.mock;
 class RuntimeDatabaseConfigurationTest {
     
     @Test
+    void assertNewRuntimeDatabaseConfiguration() {
+        RuntimeDatabaseConfiguration actual = new RuntimeDatabaseConfiguration("MySQL", RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName());
+        assertThat(actual.getDatabaseType(), is("MySQL"));
+        assertThat(actual.getJdbcUrl(), is(RecordingDriver.JDBC_URL));
+        assertThat(actual.getUsername(), is("sa"));
+        assertThat(actual.getPassword(), is("pwd"));
+        assertThat(actual.getDriverClassName(), is(RecordingDriver.class.getName()));
+    }
+    
+    @Test
     void assertOpenConnectionWithoutCredentials() throws SQLException {
         RecordingDriver.reset();
         try (Connection actual = new RuntimeDatabaseConfiguration(RecordingDriver.JDBC_URL, "", "", RecordingDriver.class.getName()).openConnection("logic_db")) {
