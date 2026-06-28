@@ -114,7 +114,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED, "Check runtime database credentials outside MCP."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED, "Check metadata and SQL privileges for the configured runtime database account."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT, "Check database reachability and timeout settings."),
-                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION, "Fix runtimeDatabases databaseType, driver, or binding configuration."),
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION, "Fix runtimeDatabases JDBC URL, driver, or binding configuration."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE, "Check database service availability and network access."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED, "Inspect runtime database connection settings outside MCP."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE, "Check the configured logical database name and account visibility outside MCP."));

@@ -49,4 +49,11 @@ public final class SwitchingResource {
     public void closeStaleDataSources() {
         staleDataSources.values().stream().filter(Objects::nonNull).forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
     }
+    
+    /**
+     * Close new data sources.
+     */
+    public void closeNewDataSources() {
+        newDataSources.values().stream().filter(Objects::nonNull).forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
+    }
 }

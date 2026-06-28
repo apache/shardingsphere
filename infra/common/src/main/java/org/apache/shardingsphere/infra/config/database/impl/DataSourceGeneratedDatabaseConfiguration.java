@@ -54,19 +54,12 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropertiesMap, isInstanceConnectionEnabled);
-        Map<StorageNode, DataSource> storageNodeDataSources = getStorageNodeDataSourceMap(dataSourcePoolPropertiesMap, storageUnitNodeMap);
-        storageUnits = new LinkedHashMap<>(dataSourceConfigs.size(), 1F);
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
-            String storageUnitName = entry.getKey();
-            StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
-            DataSource dataSource = storageNodeDataSources.get(storageNode);
-            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), dataSource);
-            storageUnits.put(storageUnitName, storageUnit);
-        }
+        Map<StorageNode, DataSource> storageNodeDataSources = createStorageNodeDataSourceMap(dataSourcePoolPropertiesMap, storageUnitNodeMap);
+        storageUnits = createStorageUnits(dataSourcePoolPropertiesMap, storageUnitNodeMap, storageNodeDataSources);
         dataSources = storageNodeDataSources;
     }
     
-    private Map<StorageNode, DataSource> getStorageNodeDataSourceMap(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {
+    private Map<StorageNode, DataSource> createStorageNodeDataSourceMap(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {
         Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageUnitNodeMap.size(), 1F);
         try {
             for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
@@ -76,6 +69,24 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             DataSourcesCloser.close(result.values());
+            throw ex;
+        }
+        return result;
+    }
+    
+    private Map<String, StorageUnit> createStorageUnits(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap,
+                                                        final Map<StorageNode, DataSource> storageNodeDataSources) {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
+        try {
+            for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
+                String storageUnitName = entry.getKey();
+                StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
+                result.put(storageUnitName, new StorageUnit(storageNode, entry.getValue(), storageNodeDataSources.get(storageNode)));
+            }
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            DataSourcesCloser.close(storageNodeDataSources.values());
             throw ex;
         }
         return result;

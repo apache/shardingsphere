@@ -31,9 +31,6 @@ import javax.validation.constraints.NotBlank;
 public final class YamlRuntimeDatabaseConfiguration implements YamlConfiguration {
     
     @NotBlank(message = "is required")
-    private String databaseType;
-    
-    @NotBlank(message = "is required")
     private String jdbcUrl;
     
     @NotBlank(message = "is required")

@@ -21,7 +21,6 @@ runtimeDatabases:
   # Replace the placeholders with your ShardingSphere-Proxy logical database.
   # Omit password or set it to an empty string when the Proxy account has no password.
   "<logic-database>":
-    databaseType: MySQL
     jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
     username: "<proxy-username>"
     password: "<proxy-password>"

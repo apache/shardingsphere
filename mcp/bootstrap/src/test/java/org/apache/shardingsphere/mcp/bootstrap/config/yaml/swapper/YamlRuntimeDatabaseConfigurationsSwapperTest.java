@@ -35,20 +35,17 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
     @Test
     void assertSwapToObject() {
         Map<String, RuntimeDatabaseConfiguration> actual = swapper.swapToObject(Map.of("logic_db", Map.of(
-                "databaseType", "MySQL",
                 "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
                 "username", "demo",
                 "password", "",
                 "driverClassName", "com.mysql.cj.jdbc.Driver")));
         
-        assertThat(actual.get("logic_db").getDatabaseType(), is("MySQL"));
         assertThat(actual.get("logic_db").getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
     }
     
     @Test
     void assertSwapToObjectWithPasswordMissing() {
         Map<String, RuntimeDatabaseConfiguration> actual = swapper.swapToObject(Map.of("logic_db", Map.of(
-                "databaseType", "MySQL",
                 "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
                 "username", "demo",
                 "driverClassName", "com.mysql.cj.jdbc.Driver")));
@@ -76,7 +73,6 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
     @Test
     void assertSwapToObjectWithUnsupportedRuntimeDatabaseProperty() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(Map.of("logic_db", Map.of(
-                "databaseType", "MySQL",
                 "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
                 "username", "demo",
                 "password", "",
@@ -89,9 +85,8 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         Map<String, Map<String, Object>> actual = swapper.swapToYamlConfiguration(Map.of(
-                "logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver")));
+                "logic_db", new RuntimeDatabaseConfiguration("jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver")));
         
-        assertThat(String.valueOf(actual.get("logic_db").get("databaseType")), is("MySQL"));
         assertThat(String.valueOf(actual.get("logic_db").get("driverClassName")), is("com.mysql.cj.jdbc.Driver"));
     }
     

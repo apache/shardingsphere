@@ -25,13 +25,11 @@ import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapa
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.mockito.MockedStatic;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -50,7 +48,7 @@ public final class CoreDatabaseTypeFactoryMocker {
      */
     public static MockedStatic<DatabaseTypeFactory> mockByConnectionMetadata() {
         MockedStatic<DatabaseTypeFactory> result = mockStatic(DatabaseTypeFactory.class, CALLS_REAL_METHODS);
-        result.when(() -> DatabaseTypeFactory.get(any(Connection.class))).thenAnswer(invocation -> createDatabaseType(invocation.getArgument(0, Connection.class)));
+        result.when(() -> DatabaseTypeFactory.get(anyString())).thenAnswer(invocation -> createDatabaseType(invocation.getArgument(0, String.class)));
         return result;
     }
     
@@ -66,26 +64,8 @@ public final class CoreDatabaseTypeFactoryMocker {
         }
     }
     
-    private static DatabaseType createDatabaseType(final Connection connection) throws SQLException {
-        String productName = Objects.toString(connection.getMetaData().getDatabaseProductName(), "").trim();
-        if (!productName.isEmpty()) {
-            return mockDatabaseType(normalizeProductName(productName));
-        }
-        return mockDatabaseType(resolveTypeByURL(connection.getMetaData().getURL()));
-    }
-    
-    private static String normalizeProductName(final String productName) {
-        String upperProductName = productName.toUpperCase(Locale.ENGLISH);
-        if (upperProductName.contains("DORIS")) {
-            return "Doris";
-        }
-        if (upperProductName.contains("MARIADB")) {
-            return "MariaDB";
-        }
-        if (upperProductName.contains("SQL SERVER")) {
-            return "SQLServer";
-        }
-        return productName;
+    private static DatabaseType createDatabaseType(final String url) {
+        return mockDatabaseType(resolveTypeByURL(url));
     }
     
     private static String resolveTypeByURL(final String url) {

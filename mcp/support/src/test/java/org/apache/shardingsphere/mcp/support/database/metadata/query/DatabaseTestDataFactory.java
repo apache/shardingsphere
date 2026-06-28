@@ -78,7 +78,6 @@ final class DatabaseTestDataFactory {
     private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final MCPDatabaseMetadata databaseMetadata) {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         try {
-            when(result.getDatabaseType()).thenReturn(databaseMetadata.getDatabaseType());
             when(result.openConnection(databaseMetadata.getDatabase())).thenAnswer(invocation -> createConnection(databaseMetadata));
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
@@ -92,7 +91,6 @@ final class DatabaseTestDataFactory {
         Statement statement = mock(Statement.class);
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseMetadata.getDatabaseType());
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseMetadata.getDatabaseVersion());
         when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseMetadata));
         when(databaseMetaData.getTables(nullable(String.class), nullable(String.class), eq("%"), any(String[].class))).thenAnswer(invocation -> {

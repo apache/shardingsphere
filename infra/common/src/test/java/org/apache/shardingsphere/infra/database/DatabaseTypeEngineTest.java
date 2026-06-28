@@ -37,10 +37,8 @@ import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -123,24 +121,24 @@ class DatabaseTypeEngineTest {
         assertThat(actual, is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
     
-    private static Stream<Arguments> getProtocolTypeWithDatabaseConfigurationArguments() {
+    private static Stream<Arguments> getProtocolTypeWithDatabaseConfigurationArguments() throws SQLException {
         return Stream.of(
                 Arguments.of("configured_mysql", createDatabaseConfiguration(Collections.emptyMap()), createConfiguredProperties("MySQL"),
                         TypedSPILoader.getService(DatabaseType.class, "MySQL")),
                 Arguments.of("configured_h2_trunk_mysql", createDatabaseConfiguration(Collections.emptyMap()), createConfiguredProperties("H2"),
                         TypedSPILoader.getService(DatabaseType.class, "MySQL")),
                 Arguments.of("storage_unit_postgresql",
-                        createDatabaseConfiguration(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))),
+                        createDatabaseConfiguration(Collections.singletonMap("foo_ds", createDataSource(createConnectionWithUrl("jdbc:postgresql://localhost:5432/test")))),
                         new ConfigurationProperties(new Properties()),
                         TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")),
                 Arguments.of("empty_storage_units_default_mysql", createDatabaseConfiguration(Collections.emptyMap()), new ConfigurationProperties(new Properties()),
                         TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
     
-    private static Stream<Arguments> getProtocolTypeWithDatabaseConfigurationsArguments() {
+    private static Stream<Arguments> getProtocolTypeWithDatabaseConfigurationsArguments() throws SQLException {
         Map<String, DatabaseConfiguration> multipleDatabaseConfigs = new LinkedHashMap<>(2, 1F);
-        multipleDatabaseConfigs.put("foo_db", createDatabaseConfiguration(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, "MySQL"))));
-        multipleDatabaseConfigs.put("bar_db", createDatabaseConfiguration(Collections.singletonMap("bar_ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))));
+        multipleDatabaseConfigs.put("foo_db", createDatabaseConfiguration(Collections.singletonMap("foo_ds", createDataSource(createConnectionWithUrl("jdbc:mysql://localhost:3306/test")))));
+        multipleDatabaseConfigs.put("bar_db", createDatabaseConfiguration(Collections.singletonMap("bar_ds", createDataSource(createConnectionWithUrl("jdbc:postgresql://localhost:5432/test")))));
         return Stream.of(
                 Arguments.of("configured_mysql", Collections.singletonMap("foo_db", createDatabaseConfiguration(Collections.emptyMap())),
                         createConfiguredProperties("MySQL"), TypedSPILoader.getService(DatabaseType.class, "MySQL")),
@@ -148,7 +146,7 @@ class DatabaseTypeEngineTest {
                         createConfiguredProperties("H2"), TypedSPILoader.getService(DatabaseType.class, "MySQL")),
                 Arguments.of("storage_unit_postgresql",
                         Collections.singletonMap("foo_db", createDatabaseConfiguration(
-                                Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")))),
+                                Collections.singletonMap("foo_ds", createDataSource(createConnectionWithUrl("jdbc:postgresql://localhost:5432/test"))))),
                         new ConfigurationProperties(new Properties()), TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")),
                 Arguments.of("empty_storage_units_default_mysql", Collections.singletonMap("foo_db", createDatabaseConfiguration(Collections.emptyMap())),
                         new ConfigurationProperties(new Properties()), TypedSPILoader.getService(DatabaseType.class, "MySQL")),
@@ -187,12 +185,12 @@ class DatabaseTypeEngineTest {
                         createDataSource(createConnectionWithUnsupportedUrl(), fourthConnection), Collections.singleton(fetcher), SQLException.class));
     }
     
-    private static DatabaseConfiguration createDatabaseConfiguration(final Map<String, DatabaseType> storageTypes) {
+    private static DatabaseConfiguration createDatabaseConfiguration(final Map<String, DataSource> dataSources) {
         DatabaseConfiguration result = mock(DatabaseConfiguration.class);
-        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(storageTypes.size(), 1F);
-        for (Entry<String, DatabaseType> entry : storageTypes.entrySet()) {
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(dataSources.size(), 1F);
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             StorageUnit storageUnit = mock(StorageUnit.class);
-            when(storageUnit.getStorageType()).thenReturn(entry.getValue());
+            when(storageUnit.getDataSource()).thenReturn(entry.getValue());
             storageUnits.put(entry.getKey(), storageUnit);
         }
         when(result.getStorageUnits()).thenReturn(storageUnits);
@@ -222,19 +220,12 @@ class DatabaseTypeEngineTest {
     
     private static Connection createConnectionWithUrl(final String url) throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(result.getMetaData().getDatabaseProductName()).thenReturn("");
         when(result.getMetaData().getURL()).thenReturn(url);
-        when(result.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT @@version_comment")).thenReturn(resultSet);
-        when(statement.executeQuery("SELECT VERSION()")).thenReturn(resultSet);
         return result;
     }
     
     private static Connection createConnectionWithUnsupportedUrl() throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getDatabaseProductName()).thenReturn("");
         when(result.getMetaData().getURL()).thenThrow(SQLFeatureNotSupportedException.class);
         return result;
     }

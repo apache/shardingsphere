@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -62,7 +60,7 @@ public final class MCPJdbcDatabaseProfileLoader {
     public RuntimeDatabaseProfile load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            DatabaseType databaseType = resolveActualDatabaseType(databaseName, runtimeDatabaseConfig.getDatabaseType(), connection);
+            DatabaseType databaseType = loadDatabaseType(databaseName, databaseMetaData.getURL());
             String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
             return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion);
         } catch (final SQLException ex) {
@@ -70,29 +68,11 @@ public final class MCPJdbcDatabaseProfileLoader {
         }
     }
     
-    private DatabaseType resolveActualDatabaseType(final String databaseName, final String configuredDatabaseType, final Connection connection) throws SQLException {
-        DatabaseType result = getActualDatabaseType(databaseName, connection);
-        String configuredType = Objects.toString(configuredDatabaseType, "").trim();
-        if (configuredType.isEmpty()) {
-            return result;
-        }
-        String expectedDatabaseType = normalizeDatabaseType(configuredType);
-        if (!expectedDatabaseType.equalsIgnoreCase(result.getType())) {
-            throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName, new IllegalStateException(String.format(
-                    "Configured databaseType `%s` does not match actual database type `%s` for database `%s`.", configuredType, result.getType(), databaseName)));
-        }
-        return result;
-    }
-    
-    private DatabaseType getActualDatabaseType(final String databaseName, final Connection connection) throws SQLException {
+    private DatabaseType loadDatabaseType(final String databaseName, final String jdbcUrl) {
         try {
-            return DatabaseTypeFactory.get(connection);
+            return DatabaseTypeFactory.get(jdbcUrl);
         } catch (final ShardingSphereExternalException ex) {
             throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName, ex);
         }
-    }
-    
-    private String normalizeDatabaseType(final String databaseType) {
-        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType).map(MCPDatabaseCapabilityOption::getType).orElse(databaseType);
     }
 }

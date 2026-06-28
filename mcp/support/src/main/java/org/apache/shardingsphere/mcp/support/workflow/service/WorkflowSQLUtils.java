@@ -314,7 +314,7 @@ public final class WorkflowSQLUtils {
     
     private static boolean isCaseInsensitiveIdentifierDatabase(final String databaseType) {
         String actualDatabaseType = trimToEmpty(databaseType).toLowerCase(Locale.ENGLISH);
-        return "mysql".equals(actualDatabaseType) || "mariadb".equals(actualDatabaseType) || "doris".equals(actualDatabaseType);
+        return "mysql".equals(actualDatabaseType) || "mariadb".equals(actualDatabaseType);
     }
     
     private static boolean isLowerCaseFoldedIdentifierDatabase(final String databaseType) {
@@ -324,7 +324,7 @@ public final class WorkflowSQLUtils {
     
     private static IdentifierQuoteStyle getSQLIdentifierQuoteStyle(final String databaseType) {
         String actualDatabaseType = trimToEmpty(databaseType).toLowerCase(Locale.ENGLISH);
-        if (actualDatabaseType.isEmpty() || "mysql".equals(actualDatabaseType) || "mariadb".equals(actualDatabaseType) || "doris".equals(actualDatabaseType) || "hive".equals(actualDatabaseType)) {
+        if (actualDatabaseType.isEmpty() || "mysql".equals(actualDatabaseType) || "mariadb".equals(actualDatabaseType) || "hive".equals(actualDatabaseType)) {
             return IdentifierQuoteStyle.BACK_QUOTE;
         }
         return "sqlserver".equals(actualDatabaseType) ? IdentifierQuoteStyle.BRACKETS : IdentifierQuoteStyle.DOUBLE_QUOTE;

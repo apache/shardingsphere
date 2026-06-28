@@ -45,6 +45,7 @@ import org.mockito.quality.Strictness;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
@@ -87,7 +88,10 @@ class FrontDatabaseProtocolTypeFactoryTest {
     
     @Test
     void assertGetDatabaseTypeWhenDatabaseHasStorageType() {
-        ContextManager contextManager = mockContextManager(Collections.singleton(mockDatabaseWithStorageType()), new Properties());
+        DatabaseType storageType = mock(DatabaseType.class);
+        when(storageType.getType()).thenReturn("STORAGE");
+        when(storageType.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        ContextManager contextManager = mockContextManager(Collections.singleton(mockDatabaseWithStorageType(storageType)), new Properties());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(DatabaseProtocolFrontendEngine.class)).thenReturn(Arrays.asList(mock(), mock()));
@@ -116,13 +120,13 @@ class FrontDatabaseProtocolTypeFactoryTest {
         assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getType(), is("FIXTURE"));
     }
     
-    private ShardingSphereDatabase mockDatabaseWithStorageType() {
+    private ShardingSphereDatabase mockDatabaseWithStorageType(final DatabaseType storageType) {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_db");
         when(result.getProtocolType()).thenReturn(databaseType);
         when(result.containsDataSource()).thenReturn(true);
-        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getStorageType().getType()).thenReturn("STORAGE");
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(storageType);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         return result;
     }

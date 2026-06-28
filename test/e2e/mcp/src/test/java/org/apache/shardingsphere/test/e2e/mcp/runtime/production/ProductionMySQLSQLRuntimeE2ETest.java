@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
@@ -35,11 +34,9 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
@@ -352,22 +349,5 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
                     Map.of("database", "analytics_db", "schema", "analytics_db", "sql", "SELECT metric_name FROM metrics ORDER BY metric_id"));
             assertRecoveryResponse(actual, "Cross-database transaction switching is not supported.");
         }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("dualTransports")
-    void assertRejectMismatchedDatabaseTypeWithActualMySQLBackend(final String name, final RuntimeTransport transport) {
-        useTransport(transport);
-        if (RuntimeTransport.HTTP == transport) {
-            RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                    () -> openAndCloseInteractionClient(createMismatchedRuntimeDatabases()));
-            assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: invalid_configuration."));
-            assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
-            assertThat(actual.getCause().getMessage(), is("Configured databaseType `PostgreSQL` does not match actual database type `MySQL` for database `logic_db`."));
-            return;
-        }
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> openAndCloseInteractionClient(createMismatchedRuntimeDatabases()));
-        assertThat(actual.getMessage(), containsString("Runtime database `logic_db` connection failed: invalid_configuration."));
-        assertThat(actual.getMessage(), containsString("Configured databaseType `PostgreSQL` does not match actual database type `MySQL` for database `logic_db`."));
     }
 }

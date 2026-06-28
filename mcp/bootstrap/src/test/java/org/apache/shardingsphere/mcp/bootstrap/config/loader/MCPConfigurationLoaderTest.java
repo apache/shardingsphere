@@ -47,7 +47,6 @@ class MCPConfigurationLoaderTest {
                 endpointPath: /gateway
             runtimeDatabases:
               logic_db:
-                databaseType: MySQL
                 jdbcUrl: jdbc:mysql://localhost:3306/logic_db
                 username: demo
                 password: ''
@@ -59,7 +58,6 @@ class MCPConfigurationLoaderTest {
               type: STDIO
             runtimeDatabases:
               logic_db:
-                databaseType: MySQL
                 jdbcUrl: jdbc:mysql://localhost:3306/logic_db
                 username: demo
                 password: ''
@@ -75,7 +73,6 @@ class MCPConfigurationLoaderTest {
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         assertThat(actual.getTransportType(), is(MCPTransportType.STDIO));
         assertThat(actual.getDatabases().size(), is(1));
-        assertThat(actual.getDatabases().get("logic_db").getDatabaseType(), is("MySQL"));
         assertThat(actual.getDatabases().get("logic_db").getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
     }
     

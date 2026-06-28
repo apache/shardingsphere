@@ -50,7 +50,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    endpointPath: /gateway\n"
                 + "runtimeDatabases:\n"
                 + "  logic_db:\n"
-                + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    password: secret\n"
@@ -60,7 +59,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
         assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
         assertThat(actual.getHttpTransport().getPort(), is(9090));
         assertThat(actual.getHttpTransport().getEndpointPath(), is("/gateway"));
-        assertThat(actual.getDatabases().get("logic_db").getDatabaseType(), is("MySQL"));
         assertThat(actual.getDatabases().get("logic_db").getUsername(), is("demo"));
     }
     
@@ -70,7 +68,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  type: STDIO\n"
                 + "runtimeDatabases:\n"
                 + "  logic_db:\n"
-                + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
@@ -84,7 +81,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  type: STDIO\n"
                 + "runtimeDatabases:\n"
                 + "  logic_db:\n"
-                + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    driverClassName: ''\n";
@@ -108,7 +104,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
     void assertSwapToObjectWithMissingTransportSection() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("runtimeDatabases:\n"
                 + "  logic_db:\n"
-                + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    password: ''\n"
@@ -167,13 +162,12 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  type: STDIO\n"
                 + "runtimeDatabases:\n"
                 + "  1:\n"
-                + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    password: ''\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
-        assertThat(actual.getDatabases().get("1").getDatabaseType(), is("MySQL"));
+        assertThat(actual.getDatabases().get("1").getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
     }
     
     @Test
@@ -182,7 +176,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  type: STDIO\n"
                 + "runtimeDatabases:\n"
                 + "  '':\n"
-                + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    password: ''\n"
@@ -197,7 +190,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  type: STDIO\n"
                 + "runtimeDatabases:\n"
                 + "  null:\n"
-                + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    password: ''\n"
@@ -222,7 +214,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  type: STDIO\n"
                 + "runtimeDatabases:\n"
                 + "  logic_db:\n"
-                + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    password: ''\n"
@@ -235,10 +226,9 @@ class YamlMCPLaunchConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfigurationWithRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
-        databases.put("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver"));
+        databases.put("logic_db", new RuntimeDatabaseConfiguration("jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver"));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(MCPTransportType.STREAMABLE_HTTP, new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"), databases);
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
-        assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("databaseType")), is("MySQL"));
         assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("username")), is("demo"));
         assertThat(actual.getTransport().getType(), is(MCPTransportType.STREAMABLE_HTTP));
         assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
@@ -255,7 +245,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
     private String createRuntimeDatabasesYaml() {
         return "runtimeDatabases:\n"
                 + "  logic_db:\n"
-                + "    databaseType: MySQL\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    password: ''\n"

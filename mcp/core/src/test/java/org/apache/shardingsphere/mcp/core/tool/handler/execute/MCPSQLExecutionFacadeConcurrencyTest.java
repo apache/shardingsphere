@@ -181,10 +181,8 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         try {
-            when(result.getDatabaseType()).thenReturn("MySQL");
             when(result.openConnection("logic_db")).thenReturn(connection);
             when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(databaseMetaData.getDatabaseProductName()).thenReturn("MySQL");
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
             when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/facade_concurrency");
             mockEmptyScalarQueries(connection);

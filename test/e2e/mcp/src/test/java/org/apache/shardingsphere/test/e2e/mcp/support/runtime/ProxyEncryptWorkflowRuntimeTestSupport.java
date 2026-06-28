@@ -101,7 +101,7 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
     private static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final int proxyPort) {
         String jdbcUrl = String.format("jdbc:mysql://127.0.0.1:%d/%s?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8",
                 proxyPort, LOGICAL_DATABASE_NAME);
-        return Map.of(LOGICAL_DATABASE_NAME, new RuntimeDatabaseConfiguration("MySQL", jdbcUrl, PROXY_USER, PROXY_PASSWORD, "com.mysql.cj.jdbc.Driver"));
+        return Map.of(LOGICAL_DATABASE_NAME, new RuntimeDatabaseConfiguration(jdbcUrl, PROXY_USER, PROXY_PASSWORD, "com.mysql.cj.jdbc.Driver"));
     }
     
     /**

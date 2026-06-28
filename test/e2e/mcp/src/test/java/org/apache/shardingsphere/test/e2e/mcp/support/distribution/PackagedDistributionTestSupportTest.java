@@ -49,7 +49,6 @@ class PackagedDistributionTestSupportTest {
               type: STREAMABLE_HTTP
             runtimeDatabases:
               orders:
-                databaseType: MySQL
                 jdbcUrl: "jdbc:mysql://127.0.0.1:3306/orders"
                 username: mcp
                 password: mcp
@@ -61,7 +60,6 @@ class PackagedDistributionTestSupportTest {
               type: STDIO
             runtimeDatabases:
               orders:
-                databaseType: MySQL
                 jdbcUrl: "jdbc:mysql://127.0.0.1:3306/orders"
                 username: mcp
                 password: mcp

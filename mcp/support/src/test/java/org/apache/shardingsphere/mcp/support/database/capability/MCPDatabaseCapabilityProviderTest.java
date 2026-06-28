@@ -101,15 +101,6 @@ class MCPDatabaseCapabilityProviderTest {
         assertTrue(actual.get().isSupportsExplainAnalyze());
     }
     
-    @Test
-    void assertProvideWithTypeAlias() {
-        Optional<MCPDatabaseCapability> actual = createCapabilityProvider("Apache Doris").provide("logic_db");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getDatabaseType(), is("Doris"));
-        assertThat(actual.get().getTransactionCapability(), is(TransactionCapability.LOCAL));
-        assertFalse(actual.get().isSupportsSavepoint());
-    }
-    
     private MCPDatabaseCapabilityProvider createCapabilityProvider() {
         return SupportDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive")));
     }
@@ -137,13 +128,11 @@ class MCPDatabaseCapabilityProviderTest {
             DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
             Statement statement = mock(Statement.class);
             ResultSet scalarResultSet = mock(ResultSet.class);
-            when(result.getDatabaseType()).thenReturn(databaseType);
             when(result.openConnection(databaseName)).thenReturn(connection);
             when(connection.getMetaData()).thenReturn(databaseMetaData);
             when(connection.createStatement()).thenReturn(statement);
             when(statement.executeQuery(anyString())).thenReturn(scalarResultSet);
             when(scalarResultSet.next()).thenReturn(false);
-            when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseVersion);
             when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseType));
         } catch (final SQLException ex) {
@@ -155,8 +144,6 @@ class MCPDatabaseCapabilityProviderTest {
     private String getJdbcUrl(final String databaseType) {
         switch (databaseType) {
             case "MySQL":
-            case "Doris":
-            case "Apache Doris":
                 return "jdbc:mysql:test";
             case "PostgreSQL":
                 return "jdbc:postgresql:test";
@@ -190,7 +177,6 @@ class MCPDatabaseCapabilityProviderTest {
                 Arguments.of("mariadb", "MariaDB", true, true, true, true, SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Arguments.of("oracle", "Oracle", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT),
                 Arguments.of("clickhouse", "ClickHouse", false, false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
-                Arguments.of("doris", "Doris", true, false, true, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Arguments.of("hive", "Hive", false, false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Arguments.of("presto", "Presto", true, false, false, false, SchemaExecutionSemantics.BEST_EFFORT),
                 Arguments.of("firebird", "Firebird", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT));

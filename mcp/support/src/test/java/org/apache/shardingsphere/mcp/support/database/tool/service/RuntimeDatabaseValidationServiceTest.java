@@ -128,7 +128,7 @@ class RuntimeDatabaseValidationServiceTest {
     void assertValidateWithInvisibleDatabase() {
         MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
         MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("MySQL", InvisibleDatabaseDriver.JDBC_URL, "demo", "", InvisibleDatabaseDriver.class.getName());
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration(InvisibleDatabaseDriver.JDBC_URL, "demo", "", InvisibleDatabaseDriver.class.getName());
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("public"));
         RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
@@ -203,7 +203,7 @@ class RuntimeDatabaseValidationServiceTest {
     }
     
     private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration() {
-        return new RuntimeDatabaseConfiguration("MySQL", "jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
+        return new RuntimeDatabaseConfiguration("jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
     }
     
     private static MCPDatabaseMetadata createMetadata(final String schemaName) {

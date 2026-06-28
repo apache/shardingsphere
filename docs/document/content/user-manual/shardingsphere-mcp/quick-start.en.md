@@ -37,7 +37,6 @@ Edit `conf/mcp-http.yaml` and point `runtimeDatabases` to an existing ShardingSp
 ```yaml
 runtimeDatabases:
   "<logic-database>":
-    databaseType: MySQL
     jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
     username: "<proxy-username>"
     password: "<proxy-password>"
@@ -45,6 +44,7 @@ runtimeDatabases:
 ```
 
 Replace `<logic-database>`, `<proxy-host>`, `<proxy-port>`, `<proxy-username>`, and `<proxy-password>` with the actual ShardingSphere-Proxy connection information.
+The MCP Server resolves the database type from `jdbcUrl`.
 If the target database driver is not provided with the distribution, put the corresponding JDBC driver jar under `plugins/` before startup.
 
 ## Start the HTTP MCP Server
