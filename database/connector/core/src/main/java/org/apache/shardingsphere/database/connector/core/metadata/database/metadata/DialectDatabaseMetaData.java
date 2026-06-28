@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.branch.DialectBranchOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
@@ -208,12 +207,4 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
         return new DefaultFunctionOption();
     }
     
-    /**
-     * Get branch option.
-     *
-     * @return branch option
-     */
-    default Optional<DialectBranchOption> getBranchOption() {
-        return Optional.empty();
-    }
 }

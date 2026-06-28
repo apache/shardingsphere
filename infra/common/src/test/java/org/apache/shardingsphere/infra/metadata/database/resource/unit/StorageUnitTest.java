@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSour
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -80,25 +79,6 @@ class StorageUnitTest {
             assertThat(actual.getConnectionProperties().getPort(), is(3307));
             assertThat(actual.getConnectionProperties().getCatalog(), is(expectedCatalog));
             assertThat(actual.getConnectionProperties().getSchema(), is("foo_schema"));
-        }
-    }
-    
-    @Test
-    void assertNewWithStorageType() {
-        String url = "jdbc:mock://127.0.0.1/foo_ds";
-        DataSource dataSource = mock(DataSource.class);
-        ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
-        StorageNode storageNode = mock(StorageNode.class);
-        DataSourcePoolProperties dataSourcePoolProps = createDataSourcePoolProperties("sa");
-        when(storageNode.isInstanceStorageNode()).thenReturn(false);
-        when(parser.parse(url, "sa", null)).thenReturn(new ConnectionProperties("127.0.0.1", 3307, null, "foo_schema", new Properties()));
-        try (
-                MockedStatic<DatabaseTypeFactory> mockedDatabaseTypeFactory = mockStatic(DatabaseTypeFactory.class);
-                MockedStatic<DatabaseTypedSPILoader> mockedLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(parser);
-            StorageUnit actual = new StorageUnit(storageNode, dataSourcePoolProps, dataSource, databaseType);
-            assertThat(actual.getStorageType(), is(databaseType));
-            mockedDatabaseTypeFactory.verifyNoInteractions();
         }
     }
     

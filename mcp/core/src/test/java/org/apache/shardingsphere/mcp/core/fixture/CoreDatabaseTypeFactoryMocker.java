@@ -67,25 +67,7 @@ public final class CoreDatabaseTypeFactoryMocker {
     }
     
     private static DatabaseType createDatabaseType(final Connection connection) throws SQLException {
-        String productName = Objects.toString(connection.getMetaData().getDatabaseProductName(), "").trim();
-        if (!productName.isEmpty()) {
-            return mockDatabaseType(normalizeProductName(productName));
-        }
         return mockDatabaseType(resolveTypeByURL(connection.getMetaData().getURL()));
-    }
-    
-    private static String normalizeProductName(final String productName) {
-        String upperProductName = productName.toUpperCase(Locale.ENGLISH);
-        if (upperProductName.contains("DORIS")) {
-            return "Doris";
-        }
-        if (upperProductName.contains("MARIADB")) {
-            return "MariaDB";
-        }
-        if (upperProductName.contains("SQL SERVER")) {
-            return "SQLServer";
-        }
-        return productName;
     }
     
     private static String resolveTypeByURL(final String url) {

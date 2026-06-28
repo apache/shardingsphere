@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.branch.DialectBranchOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
@@ -118,13 +117,6 @@ class DorisDatabaseMetaDataTest {
     @Test
     void assertGetFunctionOption() {
         assertThat(metaData.getFunctionOption(), isA(MySQLFunctionOption.class));
-    }
-    
-    @Test
-    void assertGetBranchOption() {
-        Optional<DialectBranchOption> actual = metaData.getBranchOption();
-        assertTrue(actual.isPresent());
-        assertThat(actual.map(DialectBranchOption::getBranchTypeDetectionSQL).orElse(""), is("SELECT @@version_comment"));
     }
     
     @Test

@@ -18,16 +18,12 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
@@ -59,14 +55,7 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropertiesMap, isInstanceConnectionEnabled);
         Map<StorageNode, DataSource> storageNodeDataSources = createStorageNodeDataSourceMap(dataSourcePoolPropertiesMap, storageUnitNodeMap);
-        Map<String, StorageUnit> storageUnits;
-        try {
-            storageUnits = createStorageUnits(dataSourcePoolPropertiesMap, storageUnitNodeMap, storageNodeDataSources);
-        } catch (final ShardingSphereSQLException ex) {
-            closeDataSources(storageNodeDataSources.values(), ex);
-            throw ex;
-        }
-        this.storageUnits = storageUnits;
+        storageUnits = createStorageUnits(dataSourcePoolPropertiesMap, storageUnitNodeMap, storageNodeDataSources);
         dataSources = storageNodeDataSources;
     }
     
@@ -88,23 +77,18 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     private Map<String, StorageUnit> createStorageUnits(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap,
                                                         final Map<StorageNode, DataSource> storageNodeDataSources) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
-        Map<StorageNode, DatabaseType> storageTypes = new LinkedHashMap<>(storageNodeDataSources.size(), 1F);
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
-            String storageUnitName = entry.getKey();
-            StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
-            DataSource dataSource = storageNodeDataSources.get(storageNode);
-            DataSourcePoolProperties dataSourcePoolProps = entry.getValue();
-            DatabaseType storageType = storageTypes.computeIfAbsent(storageNode, key -> DatabaseTypeEngine.getStorageType(dataSourcePoolProps));
-            result.put(storageUnitName, new StorageUnit(storageNode, dataSourcePoolProps, dataSource, storageType));
+        try {
+            for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
+                String storageUnitName = entry.getKey();
+                StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
+                result.put(storageUnitName, new StorageUnit(storageNode, entry.getValue(), storageNodeDataSources.get(storageNode)));
+            }
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            DataSourcesCloser.close(storageNodeDataSources.values());
+            throw ex;
         }
         return result;
-    }
-    
-    private static void closeDataSources(final Collection<DataSource> dataSources, final ShardingSphereSQLException cause) {
-        try {
-            DataSourcesCloser.close(dataSources);
-        } catch (final SQLWrapperException ex) {
-            cause.addSuppressed(ex);
-        }
     }
 }

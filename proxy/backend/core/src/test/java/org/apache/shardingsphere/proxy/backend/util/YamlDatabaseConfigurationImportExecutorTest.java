@@ -50,7 +50,6 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConf
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,11 +62,9 @@ import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +74,6 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyCollection;
@@ -93,7 +89,6 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({
@@ -309,37 +304,6 @@ class YamlDatabaseConfigurationImportExecutorTest {
         verify(metaDataManagerService).dropDatabase(database);
     }
     
-    @Test
-    void assertImportDatabaseConfigurationRemovesImportedStorageUnitsWhenStorageTypeDetectionFailed() throws Exception {
-        Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
-        mockMetaDataContexts(mockDatabase(storageUnits, Collections.emptyList()), new ConfigurationProperties(new Properties()));
-        when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(mock(MetaDataManagerPersistService.class));
-        DataSourceConfiguration fooDataSourceConfig = mock(DataSourceConfiguration.class);
-        DataSourceConfiguration barDataSourceConfig = mock(DataSourceConfiguration.class);
-        when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(fooDataSourceConfig, barDataSourceConfig);
-        DataSourcePoolProperties fooPoolProps = createDataSourcePoolProperties("jdbc:mock://localhost/foo_db");
-        DataSourcePoolProperties barPoolProps = createDataSourcePoolProperties("jdbc:mock://localhost/bar_db");
-        when(DataSourcePoolPropertiesCreator.create(fooDataSourceConfig)).thenReturn(fooPoolProps);
-        when(DataSourcePoolPropertiesCreator.create(barDataSourceConfig)).thenReturn(barPoolProps);
-        DataSource fooDataSource = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
-        MockedDataSource barDataSource = new MockedDataSource();
-        when(DataSourcePoolCreator.create(fooPoolProps)).thenReturn(fooDataSource);
-        when(DataSourcePoolCreator.create(barPoolProps)).thenReturn(barDataSource);
-        when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(createStorageUnitNodeMap());
-        when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
-        when(DatabaseTypeEngine.getStorageType("jdbc:mock://localhost/foo_db", fooDataSource)).thenReturn(mock(DatabaseType.class));
-        when(DatabaseTypeEngine.getStorageType("jdbc:mock://localhost/bar_db", barDataSource)).thenThrow(new IllegalStateException("boom"));
-        doThrow(new SQLException("close failed")).when((AutoCloseable) fooDataSource).close();
-        IllegalStateException actual;
-        try (MockedConstruction<StorageUnit> ignored = mockConstruction(StorageUnit.class)) {
-            actual = assertThrows(IllegalStateException.class, () -> executor.importDatabaseConfiguration(createYamlConfigurationWithTwoDataSources()));
-        }
-        assertTrue(storageUnits.isEmpty());
-        assertThat(actual.getSuppressed().length, is(1));
-        verify((AutoCloseable) fooDataSource).close();
-        assertTrue(barDataSource.isClosed());
-    }
-    
     private YamlProxyDatabaseConfiguration createYamlConfiguration() {
         YamlProxyDatabaseConfiguration result = new YamlProxyDatabaseConfiguration();
         result.setDatabaseName("foo_db");
@@ -349,42 +313,12 @@ class YamlDatabaseConfigurationImportExecutorTest {
         return result;
     }
     
-    private YamlProxyDatabaseConfiguration createYamlConfigurationWithTwoDataSources() {
-        YamlProxyDatabaseConfiguration result = new YamlProxyDatabaseConfiguration();
-        result.setDatabaseName("foo_db");
-        Map<String, YamlProxyDataSourceConfiguration> dataSources = new LinkedHashMap<>(2, 1F);
-        dataSources.put("foo_ds", createYamlDataSourceConfiguration("jdbc:mock://localhost/foo_db"));
-        dataSources.put("bar_ds", createYamlDataSourceConfiguration("jdbc:mock://localhost/bar_db"));
-        result.setDataSources(dataSources);
-        return result;
-    }
-    
-    private YamlProxyDataSourceConfiguration createYamlDataSourceConfiguration(final String url) {
-        YamlProxyDataSourceConfiguration result = new YamlProxyDataSourceConfiguration();
-        result.setUrl(url);
-        return result;
-    }
-    
-    private Map<String, StorageNode> createStorageUnitNodeMap() {
-        Map<String, StorageNode> result = new LinkedHashMap<>(2, 1F);
-        result.put("foo_ds", mock(StorageNode.class));
-        result.put("bar_ds", mock(StorageNode.class));
-        return result;
-    }
-    
-    private DataSourcePoolProperties createDataSourcePoolProperties(final String url) {
-        DataSourcePoolProperties result = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(result.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", url));
-        return result;
-    }
-    
     private void mockImportedDataSource(final DataSourceConfiguration dataSourceConfig) {
         DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(poolProperties.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://localhost/foo_db"));
         when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
         DataSource dataSource = mock(DataSource.class);
         when(DataSourcePoolCreator.create(poolProperties)).thenReturn(dataSource);
-        when(DatabaseTypeEngine.getStorageType("jdbc:mock://localhost/foo_db", dataSource)).thenReturn(mock(DatabaseType.class));
     }
     
     private ShardingSphereDatabase mockDatabase(final Map<String, StorageUnit> storageUnits, final List<ShardingSphereRule> rules) {

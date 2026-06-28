@@ -53,7 +53,7 @@ class MCPRequestScopeTest {
     
     @Test
     void assertFindRuntimeDatabaseConfiguration() {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("MySQL", "jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig)),
                 new MCPDatabaseCapabilityProvider(Map.of()), "http");
         try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {

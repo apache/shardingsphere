@@ -18,24 +18,21 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -46,10 +43,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
     
@@ -64,27 +60,17 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     }
     
     @Test
-    void assertNewWithDetectedStorageType() {
-        try (MockedStatic<DatabaseTypeEngine> mocked = mockStatic(DatabaseTypeEngine.class)) {
-            mocked.when(() -> DatabaseTypeEngine.getStorageType(any(DataSourcePoolProperties.class))).thenReturn(databaseType);
-            DataSourceGeneratedDatabaseConfiguration actual = createDatabaseConfiguration(MockedDataSource.class.getName());
-            assertThat(actual.getStorageUnits().get("foo_db").getStorageType(), is(databaseType));
-        }
-    }
-    
-    @Test
-    void assertNewClosesDataSourcesWhenStorageUnitCreationFailed() {
-        MockedDataSource createdDataSource = new MockedDataSource();
+    void assertNewClosesCreatedDataSourcesWhenStorageUnitCreationFailed() {
+        RuntimeException expected = new IllegalStateException("storage unit failed");
         try (
-                MockedStatic<DataSourcePoolCreator> dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class);
-                MockedStatic<DatabaseTypeEngine> databaseTypeEngine = mockStatic(DatabaseTypeEngine.class)) {
-            dataSourcePoolCreator.when(() -> DataSourcePoolCreator.create(eq("foo_db"), any(DataSourcePoolProperties.class), eq(true), any(Collection.class)))
-                    .thenReturn(createdDataSource);
-            databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(any(DataSourcePoolProperties.class)))
-                    .thenThrow(new SQLWrapperException(new SQLException("boom")));
-            assertThrows(SQLWrapperException.class, () -> createDatabaseConfiguration(MockedDataSource.class.getName()));
+                MockedConstruction<MockedDataSource> mockedDataSources = mockConstruction(MockedDataSource.class);
+                MockedStatic<DatabaseTypeFactory> mockedDatabaseTypeFactory = mockStatic(DatabaseTypeFactory.class)) {
+            mockedDatabaseTypeFactory.when(() -> DatabaseTypeFactory.get("jdbc:mock://127.0.0.1/foo_db")).thenReturn(databaseType, databaseType).thenThrow(expected);
+            RuntimeException actual = assertThrows(IllegalStateException.class, () -> createDatabaseConfiguration(MockedDataSource.class.getName()));
+            assertThat(actual, is(expected));
+            assertThat(mockedDataSources.constructed().size(), is(1));
+            verify(mockedDataSources.constructed().get(0)).close();
         }
-        assertTrue(createdDataSource.isClosed());
     }
     
     private void assertRuleConfigurations(final Collection<RuleConfiguration> actual) {

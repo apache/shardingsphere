@@ -33,8 +33,6 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public final class RuntimeDatabaseConfiguration {
     
-    private final String databaseType;
-    
     private final String jdbcUrl;
     
     private final String username;

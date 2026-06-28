@@ -84,7 +84,7 @@ public final class RuntimeDatabaseValidationService {
         try {
             databaseProfile = profileLoader.load(database, runtimeDatabaseConfig.get());
             checks.add(RuntimeDatabaseValidationCheckResult.passed("jdbc_driver", "Loaded the configured JDBC driver."));
-            checks.add(RuntimeDatabaseValidationCheckResult.passed("jdbc_connectivity", "Opened a JDBC connection and validated the configured database type."));
+            checks.add(RuntimeDatabaseValidationCheckResult.passed("jdbc_connectivity", "Opened a JDBC connection and resolved the database type from the JDBC URL."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             appendProfileFailureChecks(checks, ex);
             appendSkippedChecks(checks, "metadata_read", "driver or connectivity validation failed");
@@ -127,7 +127,7 @@ public final class RuntimeDatabaseValidationService {
             return;
         }
         checks.add(RuntimeDatabaseValidationCheckResult.passed("jdbc_driver", "Loaded the configured JDBC driver."));
-        checks.add(RuntimeDatabaseValidationCheckResult.failed("jdbc_connectivity", ex.getCategory(), "Failed to open a JDBC connection or validate the configured database type."));
+        checks.add(RuntimeDatabaseValidationCheckResult.failed("jdbc_connectivity", ex.getCategory(), "Failed to open a JDBC connection or resolve the database type from the JDBC URL."));
     }
     
     private void appendSkippedChecks(final List<RuntimeDatabaseValidationCheckResult> checks, final String name, final String reason) {

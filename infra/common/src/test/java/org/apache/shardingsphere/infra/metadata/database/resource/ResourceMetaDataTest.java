@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -32,9 +30,6 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
 
 class ResourceMetaDataTest {
     
@@ -60,11 +55,8 @@ class ResourceMetaDataTest {
     }
     
     @Test
-    void assertNewWithDetectedStorageType() {
-        try (MockedStatic<DatabaseTypeEngine> mocked = mockStatic(DatabaseTypeEngine.class)) {
-            mocked.when(() -> DatabaseTypeEngine.getStorageType(eq("jdbc:mock://127.0.0.1/foo_ds"), any(DataSource.class))).thenReturn(databaseType);
-            ResourceMetaData actual = new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource()));
-            assertThat(actual.getStorageUnits().get("foo_ds").getStorageType(), is(databaseType));
-        }
+    void assertNewWithStorageTypeFromURL() {
+        ResourceMetaData actual = new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        assertThat(actual.getStorageUnits().get("foo_ds").getStorageType(), is(databaseType));
     }
 }

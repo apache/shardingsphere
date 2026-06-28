@@ -47,25 +47,18 @@ public final class StorageUnit {
     private final ConnectionProperties connectionProperties;
     
     public StorageUnit(final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProps, final DataSource dataSource) {
-        this(storageNode, dataSourcePoolProps, dataSource, DatabaseTypeFactory.get(getURL(dataSourcePoolProps)));
-    }
-    
-    public StorageUnit(final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProps, final DataSource dataSource, final DatabaseType storageType) {
         this.storageNode = storageNode;
         Map<String, Object> standardProps = dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties();
         String url = getURL(standardProps);
         Object originUsername = standardProps.get("username");
         String username = null == originUsername ? "" : originUsername.toString();
-        this.storageType = storageType;
-        ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
+        DatabaseType databaseType = DatabaseTypeFactory.get(url);
+        storageType = databaseType;
+        ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType);
         String catalog = storageNode.isInstanceStorageNode() ? parser.parse(url, username, null).getCatalog() : null;
         this.dataSource = storageNode.isInstanceStorageNode() ? new CatalogSwitchableDataSource(dataSource, catalog, url) : dataSource;
         dataSourcePoolProperties = dataSourcePoolProps;
         connectionProperties = createConnectionProperties(parser, catalog, standardProps);
-    }
-    
-    private static String getURL(final DataSourcePoolProperties dataSourcePoolProps) {
-        return getURL(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties());
     }
     
     private static String getURL(final Map<String, Object> standardProps) {

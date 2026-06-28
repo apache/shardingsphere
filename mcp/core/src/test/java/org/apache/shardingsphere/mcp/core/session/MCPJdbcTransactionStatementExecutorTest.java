@@ -150,10 +150,8 @@ class MCPJdbcTransactionStatementExecutorTest {
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         try {
-            when(result.getDatabaseType()).thenReturn(databaseType);
             when(result.openConnection(databaseName)).thenReturn(connection);
             when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
             when(databaseMetaData.getURL()).thenReturn(String.format("jdbc:%s://transaction-executor/test", databaseType.toLowerCase(java.util.Locale.ENGLISH)));
             mockEmptyScalarQueries(connection);

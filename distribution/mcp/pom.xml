@@ -274,12 +274,6 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-database-connector-doris</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-database-connector-hive</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -459,22 +453,6 @@
                     <groupId>com.clickhouse</groupId>
                     <artifactId>clickhouse-jdbc</artifactId>
                     <classifier>all</classifier>
-                    <scope>runtime</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>db-doris</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-database-connector-doris</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-j</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>

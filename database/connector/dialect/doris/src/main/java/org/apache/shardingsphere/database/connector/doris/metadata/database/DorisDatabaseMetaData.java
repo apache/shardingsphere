@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.branch.DialectBranchOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
@@ -94,11 +93,6 @@ public final class DorisDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectFunctionOption getFunctionOption() {
         return delegate.getFunctionOption();
-    }
-    
-    @Override
-    public Optional<DialectBranchOption> getBranchOption() {
-        return Optional.of(new DialectBranchOption("SELECT @@version_comment"));
     }
     
     @Override

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourceP
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -43,7 +42,6 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.util.close.DataSourcesCloser;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -120,31 +118,14 @@ public final class YamlDatabaseConfigurationImportExecutor {
         Map<String, StorageUnit> storageUnits = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
         boolean isInstanceConnectionEnabled = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
         Map<String, StorageNode> toBeAddedStorageNode = StorageUnitNodeMapCreator.create(propsMap, isInstanceConnectionEnabled);
-        Collection<DataSource> createdDataSources = new LinkedList<>();
-        Collection<String> importedStorageUnitNames = new LinkedList<>();
-        try {
-            importDataSources(propsMap, storageUnits, toBeAddedStorageNode, createdDataSources, importedStorageUnitNames);
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            importedStorageUnitNames.forEach(storageUnits::remove);
-            try {
-                DataSourcesCloser.close(createdDataSources);
-            } catch (final SQLWrapperException closeException) {
-                ex.addSuppressed(closeException);
-            }
-            throw ex;
-        }
+        importDataSources(propsMap, storageUnits, toBeAddedStorageNode);
     }
     
     private void importDataSources(final Map<String, DataSourcePoolProperties> propsMap, final Map<String, StorageUnit> storageUnits,
-                                   final Map<String, StorageNode> toBeAddedStorageNode, final Collection<DataSource> createdDataSources, final Collection<String> importedStorageUnitNames) {
+                                   final Map<String, StorageNode> toBeAddedStorageNode) {
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             DataSource dataSource = DataSourcePoolCreator.create(entry.getValue());
-            createdDataSources.add(dataSource);
-            DatabaseType storageType = DatabaseTypeEngine.getStorageType(entry.getValue().getConnectionPropertySynonyms().getStandardProperties().get("url").toString(), dataSource);
-            storageUnits.put(entry.getKey(), new StorageUnit(toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), dataSource, storageType));
-            importedStorageUnitNames.add(entry.getKey());
+            storageUnits.put(entry.getKey(), new StorageUnit(toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), dataSource));
         }
     }
     

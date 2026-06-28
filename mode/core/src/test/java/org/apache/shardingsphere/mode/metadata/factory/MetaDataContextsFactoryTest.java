@@ -115,8 +115,6 @@ class MetaDataContextsFactoryTest {
                 .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(5)));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
         when(DatabaseTypeEngine.getProtocolType(any(DatabaseConfiguration.class), any(ConfigurationProperties.class))).thenReturn(databaseType);
-        when(DatabaseTypeEngine.getProtocolType(any(DatabaseType.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(DatabaseTypeEngine.getStorageType(anyString(), any(DataSource.class))).thenReturn(databaseType);
         when(DatabaseTypeFactory.get(anyString())).thenReturn(databaseType);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenAnswer(invocation -> createStorageUnitNodeMap(invocation.getArgument(0)));
         when(metaDataPersistFacade.getRepository()).thenReturn(repository);
