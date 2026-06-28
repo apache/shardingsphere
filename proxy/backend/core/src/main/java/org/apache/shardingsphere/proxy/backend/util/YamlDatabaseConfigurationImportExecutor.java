@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourceP
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -127,7 +128,11 @@ public final class YamlDatabaseConfigurationImportExecutor {
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             importedStorageUnitNames.forEach(storageUnits::remove);
-            DataSourcesCloser.close(createdDataSources);
+            try {
+                DataSourcesCloser.close(createdDataSources);
+            } catch (final SQLWrapperException closeException) {
+                ex.addSuppressed(closeException);
+            }
             throw ex;
         }
     }
@@ -137,14 +142,10 @@ public final class YamlDatabaseConfigurationImportExecutor {
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             DataSource dataSource = DataSourcePoolCreator.create(entry.getValue());
             createdDataSources.add(dataSource);
-            DatabaseType storageType = DatabaseTypeEngine.getStorageType(getURL(entry.getValue()), dataSource);
+            DatabaseType storageType = DatabaseTypeEngine.getStorageType(entry.getValue().getConnectionPropertySynonyms().getStandardProperties().get("url").toString(), dataSource);
             storageUnits.put(entry.getKey(), new StorageUnit(toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), dataSource, storageType));
             importedStorageUnitNames.add(entry.getKey());
         }
-    }
-    
-    private String getURL(final DataSourcePoolProperties dataSourcePoolProps) {
-        return dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
     }
     
     private void importRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {

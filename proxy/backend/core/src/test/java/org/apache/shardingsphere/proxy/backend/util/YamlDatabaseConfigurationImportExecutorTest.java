@@ -63,6 +63,7 @@ import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -92,6 +93,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({
@@ -308,7 +310,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
     }
     
     @Test
-    void assertImportDatabaseConfigurationRemovesImportedStorageUnitsWhenStorageTypeDetectionFailed() {
+    void assertImportDatabaseConfigurationRemovesImportedStorageUnitsWhenStorageTypeDetectionFailed() throws Exception {
         Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
         mockMetaDataContexts(mockDatabase(storageUnits, Collections.emptyList()), new ConfigurationProperties(new Properties()));
         when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(mock(MetaDataManagerPersistService.class));
@@ -319,7 +321,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         DataSourcePoolProperties barPoolProps = createDataSourcePoolProperties("jdbc:mock://localhost/bar_db");
         when(DataSourcePoolPropertiesCreator.create(fooDataSourceConfig)).thenReturn(fooPoolProps);
         when(DataSourcePoolPropertiesCreator.create(barDataSourceConfig)).thenReturn(barPoolProps);
-        MockedDataSource fooDataSource = new MockedDataSource();
+        DataSource fooDataSource = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
         MockedDataSource barDataSource = new MockedDataSource();
         when(DataSourcePoolCreator.create(fooPoolProps)).thenReturn(fooDataSource);
         when(DataSourcePoolCreator.create(barPoolProps)).thenReturn(barDataSource);
@@ -327,11 +329,14 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         when(DatabaseTypeEngine.getStorageType("jdbc:mock://localhost/foo_db", fooDataSource)).thenReturn(mock(DatabaseType.class));
         when(DatabaseTypeEngine.getStorageType("jdbc:mock://localhost/bar_db", barDataSource)).thenThrow(new IllegalStateException("boom"));
+        doThrow(new SQLException("close failed")).when((AutoCloseable) fooDataSource).close();
+        IllegalStateException actual;
         try (MockedConstruction<StorageUnit> ignored = mockConstruction(StorageUnit.class)) {
-            assertThrows(IllegalStateException.class, () -> executor.importDatabaseConfiguration(createYamlConfigurationWithTwoDataSources()));
+            actual = assertThrows(IllegalStateException.class, () -> executor.importDatabaseConfiguration(createYamlConfigurationWithTwoDataSources()));
         }
         assertTrue(storageUnits.isEmpty());
-        assertTrue(fooDataSource.isClosed());
+        assertThat(actual.getSuppressed().length, is(1));
+        verify((AutoCloseable) fooDataSource).close();
         assertTrue(barDataSource.isClosed());
     }
     
