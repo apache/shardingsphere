@@ -38,6 +38,7 @@ FILE_STATUSES = frozenset({"pending", "reviewed", "churn-only", "test-only-revie
 FINAL_FILE_STATUSES = FILE_STATUSES - {"pending"}
 FINDING_STATUSES = frozenset({"candidate", "confirmed", "withdrawn", "review-incomplete-gap", "non-blocking", "out-of-scope"})
 SEVERITIES = frozenset({"P0", "P1", "P2"})
+PROOF_GATE_RESULTS = frozenset({"pending", "passed", "failed", "not-applicable"})
 LEDGER_FILE_NAME = "ledger.json"
 
 
@@ -261,6 +262,11 @@ def cmd_add_finding(args: argparse.Namespace) -> int:
         "origin": args.origin,
         "fix_boundary": args.fix_boundary,
         "evidence": args.evidence or [],
+        "proof_gate": args.proof_gate,
+        "counter_evidence": args.counter_evidence or [],
+        "necessity": args.necessity or "",
+        "scope_proof": args.scope_proof or "",
+        "full_path_checked": args.full_path_checked,
         "files": args.file or [],
         "notes": args.notes or "",
     }
@@ -321,6 +327,14 @@ def validate_ledger(ledger: dict[str, Any]) -> list[str]:
                 result.append(f"{each['id']} confirmed finding is missing evidence")
             if not each["fix_boundary"]:
                 result.append(f"{each['id']} confirmed finding is missing fix boundary")
+            if "passed" != each.get("proof_gate"):
+                result.append(f"{each['id']} confirmed finding did not pass Blocker Proof Gate")
+            if not each.get("counter_evidence"):
+                result.append(f"{each['id']} confirmed finding is missing counter-evidence review")
+            if not each.get("necessity"):
+                result.append(f"{each['id']} confirmed finding is missing merge-safety necessity")
+            if not each.get("scope_proof"):
+                result.append(f"{each['id']} confirmed finding is missing PR scope proof")
     if not any(0 == each.get("new_findings") for each in ledger["passes"]):
         result.append("No final adversarial pass with new_findings=0")
     return result
@@ -386,6 +400,11 @@ def build_parser() -> argparse.ArgumentParser:
     finding.add_argument("--origin", default="", help="Finding origin classification")
     finding.add_argument("--fix-boundary", default="", help="Minimum independent fix boundary")
     finding.add_argument("--evidence", action="append", help="Public evidence anchor")
+    finding.add_argument("--proof-gate", choices=sorted(PROOF_GATE_RESULTS), default="pending", help="Blocker Proof Gate result")
+    finding.add_argument("--counter-evidence", action="append", help="Public counter-evidence checked, or reason none exists")
+    finding.add_argument("--necessity", default="", help="Why the finding is required for merge safety")
+    finding.add_argument("--scope-proof", default="", help="Why this PR owns the finding")
+    finding.add_argument("--full-path-checked", action="store_true", help="Full production or test path checked where applicable")
     finding.add_argument("--file", action="append", help="Repo-relative file path associated with this finding")
     finding.add_argument("--notes", help="Short internal note")
     finding.set_defaults(func=cmd_add_finding)
