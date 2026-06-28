@@ -70,7 +70,7 @@ public final class MCPJdbcDatabaseProfileLoader {
     
     private DatabaseType loadDatabaseType(final String databaseName, final Connection connection) throws SQLException {
         try {
-            return DatabaseTypeFactory.get(connection);
+            return DatabaseTypeFactory.get(connection.getMetaData().getURL());
         } catch (final ShardingSphereExternalException ex) {
             throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName, ex);
         }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.connector.core.type;
 
 import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -26,8 +27,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -40,8 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -64,27 +64,22 @@ class DatabaseTypeFactoryTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getDatabaseTypeWithConnectionArguments")
-    void assertGetWithConnection(final String name, final String url, final Collection<DatabaseType> databaseTypes, final DatabaseType expectedDatabaseType) throws SQLException {
-        Connection connection = mock(Connection.class);
+    @MethodSource("getDatabaseTypeWithDatabaseMetaDataArguments")
+    void assertGetWithDatabaseMetaData(final String name, final String productName, final String url, final Collection<DatabaseType> databaseTypes,
+                                       final DatabaseType expectedDatabaseType, final boolean isHive) throws SQLException {
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(connection.getMetaData()).thenReturn(metaData);
+        when(metaData.getDatabaseProductName()).thenReturn(productName);
+        if (isHive) {
+            DatabaseType hiveDatabaseType = mock(DatabaseType.class);
+            try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+                typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, "Hive")).thenReturn(hiveDatabaseType);
+                assertThat(DatabaseTypeFactory.get(metaData), is(hiveDatabaseType));
+            }
+            return;
+        }
         when(metaData.getURL()).thenReturn(url);
         when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(databaseTypes);
-        assertThat(DatabaseTypeFactory.get(connection), is(expectedDatabaseType));
-    }
-    
-    @Test
-    void assertGetWithConnectionReturnsTrunkTypeForSharedBranchURL() throws SQLException {
-        DatabaseType trunkDatabaseType = mockDatabaseType("jdbc:trunk:", null);
-        DatabaseType branchDatabaseType = mockDatabaseType("jdbc:trunk:", trunkDatabaseType);
-        Connection connection = createConnection("jdbc:trunk://localhost:3306/test");
-        DatabaseMetaData metaData = connection.getMetaData();
-        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Arrays.asList(branchDatabaseType, trunkDatabaseType));
-        assertThat(DatabaseTypeFactory.get(connection), is(trunkDatabaseType));
-        verify(metaData, never()).getDatabaseProductName();
-        verify(metaData, never()).getDatabaseProductVersion();
-        verify(connection, never()).createStatement();
+        assertThat(DatabaseTypeFactory.get(metaData), is(expectedDatabaseType));
     }
     
     private static Stream<Arguments> getDatabaseTypeWithRecognizedURLArguments() {
@@ -97,41 +92,19 @@ class DatabaseTypeFactoryTest {
                 Arguments.of("branch only url", "jdbc:branch-only://localhost:3306/test", Collections.singletonList(branchOnlyDatabaseType), branchOnlyDatabaseType));
     }
     
-    private static Stream<Arguments> getDatabaseTypeWithConnectionArguments() {
+    private static Stream<Arguments> getDatabaseTypeWithDatabaseMetaDataArguments() {
         DatabaseType trunkDatabaseType = mockDatabaseType("jdbc:trunk:", null);
-        DatabaseType branchOnlyDatabaseType = mockDatabaseType("BRANCH_ONLY", "jdbc:branch-only:", mockTrunkDatabaseType("TRUNK"));
+        DatabaseType branchOnlyDatabaseType = mockDatabaseType("jdbc:branch-only:", mock(DatabaseType.class));
         return Stream.of(
-                Arguments.of("trunk url", "jdbc:trunk://localhost:3306/test", Collections.singletonList(trunkDatabaseType), trunkDatabaseType),
-                Arguments.of("branch only url", "jdbc:branch-only://localhost:3306/test", Collections.singletonList(branchOnlyDatabaseType), branchOnlyDatabaseType));
-    }
-    
-    private Connection createConnection(final String url) throws SQLException {
-        Connection result = mock(Connection.class);
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(result.getMetaData()).thenReturn(metaData);
-        when(metaData.getURL()).thenReturn(url);
-        return result;
+                Arguments.of("hive database product", "Apache Hive", "jdbc:hive://localhost:3306/test", Collections.emptyList(), null, true),
+                Arguments.of("non hive with trunk url", "MySQL", "jdbc:trunk://localhost:3306/test", Collections.singletonList(trunkDatabaseType), trunkDatabaseType, false),
+                Arguments.of("non hive with branch only url", "MySQL", "jdbc:branch-only://localhost:3306/test", Collections.singletonList(branchOnlyDatabaseType), branchOnlyDatabaseType, false));
     }
     
     private static DatabaseType mockDatabaseType(final String jdbcUrlPrefix, final DatabaseType trunkDatabaseType) {
-        return mockDatabaseType(null, jdbcUrlPrefix, trunkDatabaseType);
-    }
-    
-    private static DatabaseType mockDatabaseType(final String databaseType, final String jdbcUrlPrefix, final DatabaseType trunkDatabaseType) {
         DatabaseType result = mock(DatabaseType.class);
-        if (null != databaseType) {
-            when(result.getType()).thenReturn(databaseType);
-        }
         when(result.getJdbcUrlPrefixes()).thenReturn(Collections.singleton(jdbcUrlPrefix));
         when(result.getTrunkDatabaseType()).thenReturn(Optional.ofNullable(trunkDatabaseType));
         return result;
     }
-    
-    private static DatabaseType mockTrunkDatabaseType(final String databaseType) {
-        DatabaseType result = mock(DatabaseType.class);
-        when(result.getType()).thenReturn(databaseType);
-        when(result.getTrunkDatabaseType()).thenReturn(Optional.empty());
-        return result;
-    }
-    
 }

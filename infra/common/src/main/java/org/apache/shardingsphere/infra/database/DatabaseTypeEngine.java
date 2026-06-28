@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -34,8 +33,11 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Database type engine.
@@ -53,7 +55,7 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
-        return getDatabaseType(databaseConfig.getStorageUnits(), props);
+        return getDatabaseType(getDataSources(databaseConfig), props);
     }
     
     /**
@@ -64,29 +66,29 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final Map<String, DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
-        return getDatabaseTypeFromDatabaseConfigurations(databaseConfigs, props);
+        return getDatabaseType(getDataSources(databaseConfigs), props);
     }
     
-    private static DatabaseType getDatabaseTypeFromDatabaseConfigurations(final Map<String, DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
-        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        for (DatabaseConfiguration each : databaseConfigs.values()) {
-            if (!each.getStorageUnits().isEmpty()) {
-                return getDatabaseType(each.getStorageUnits(), props);
-            }
-        }
-        return getDefaultStorageType();
-    }
-    
-    private static DatabaseType getDatabaseType(final Map<String, StorageUnit> storageUnits, final ConfigurationProperties props) {
-        return findConfiguredDatabaseType(props).orElseGet(() -> storageUnits.isEmpty() ? getDefaultStorageType() : storageUnits.values().iterator().next().getStorageType());
+    private static DatabaseType getDatabaseType(final Map<String, DataSource> dataSources, final ConfigurationProperties props) {
+        return findConfiguredDatabaseType(props).orElseGet(() -> dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.values().iterator().next()));
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
         DatabaseType configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
+    }
+    
+    private static Map<String, DataSource> getDataSources(final Map<String, DatabaseConfiguration> databaseConfigs) {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (Entry<String, DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
+            result.putAll(getDataSources(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private static Map<String, DataSource> getDataSources(final DatabaseConfiguration databaseConfig) {
+        return databaseConfig.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -99,7 +101,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getStorageType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeFactory.get(connection);
+            return DatabaseTypeFactory.get(connection.getMetaData().getURL());
         } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
             return findStorageType(dataSource).orElseThrow(() -> new SQLWrapperException(sqlFeatureNotSupportedException));
         } catch (final SQLException ex) {

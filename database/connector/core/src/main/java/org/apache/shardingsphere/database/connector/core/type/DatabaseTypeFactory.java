@@ -22,8 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -54,12 +55,12 @@ public final class DatabaseTypeFactory {
     /**
      * Get database type.
      *
-     * @param connection database connection
+     * @param metaData database meta data
      * @return database type
      * @throws SQLException SQL exception
      */
-    public static DatabaseType get(final Connection connection) throws SQLException {
-        return get(connection.getMetaData().getURL());
+    public static DatabaseType get(final DatabaseMetaData metaData) throws SQLException {
+        return metaData.getDatabaseProductName().contains("Hive") ? TypedSPILoader.getService(DatabaseType.class, "Hive") : get(metaData.getURL());
     }
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {

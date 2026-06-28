@@ -111,5 +111,4 @@ class MariaDBDatabaseMetaDataTest {
     void assertGetProtocolVersionOption() {
         assertThat(metaData.getProtocolVersionOption().getDefaultVersion(), is("5.7.22"));
     }
-    
 }

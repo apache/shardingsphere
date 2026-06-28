@@ -25,8 +25,8 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DefaultFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DefaultFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
@@ -206,5 +206,4 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     default DialectFunctionOption getFunctionOption() {
         return new DefaultFunctionOption();
     }
-    
 }
