@@ -39,7 +39,8 @@ public final class ShardingToolDescriptorValidator implements MCPToolDescriptorV
             "distsql_artifacts", MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS);
     
     private static final List<String> REQUIRED_META_FIELDS = List.of(
-            "org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
+            "org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/artifact-categories", "org.apache.shardingsphere/side-effect-scope",
+            "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
     
     @Override
     public boolean supports(final MCPToolDescriptor toolDescriptor) {

@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
+import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPBaselineContractAssertions;
 import org.junit.jupiter.api.Test;
@@ -33,8 +36,8 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 
-@EnabledIf("isEnabled")
 class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final String BASELINE_RESOURCE_PATH = "baseline-contract/model-contract/";
@@ -44,6 +47,7 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
     }
     
     @Test
+    @EnabledIf("isEnabled")
     void assertCapabilitiesBaselineContract() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -51,6 +55,12 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://capabilities");
         assertThat(actual.statusCode(), is(200));
         MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "capabilities.yaml", createCapabilitiesContract(getFirstResourcePayload(actual.body())));
+    }
+    
+    @Test
+    void assertCapabilitiesBaselineContractProjection() {
+        Map<String, Object> actual = new ServerCapabilitiesHandler().handle(mock(MCPServiceHandlerContext.class), new MCPUriVariables(Map.of())).toPayload();
+        MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "capabilities.yaml", createCapabilitiesContract(actual));
     }
     
     private Map<String, Object> createCapabilitiesContract(final Map<String, Object> payload) {

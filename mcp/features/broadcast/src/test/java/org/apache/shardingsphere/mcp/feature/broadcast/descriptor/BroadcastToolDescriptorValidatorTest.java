@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.broadcast.descriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateLoader;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
@@ -92,6 +93,15 @@ class BroadcastToolDescriptorValidatorTest {
         assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/workflow-kind"));
         assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/related-resource-uris"));
         assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/follow-up-tools"));
+        assertTrue(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(BroadcastFeatureDefinition.PLAN_TOOL_NAME)
+                .filter(optional -> "plan".equals(optional.getWorkflowRole())).isPresent());
+    }
+    
+    @Test
+    void assertExposeCompletionTargets() {
+        MCPCompletionTargetDescriptor actual = findCompletionTarget("prompt", BroadcastFeatureDefinition.PLAN_PROMPT_NAME);
+        assertThat(actual.getArguments(), is(List.of("database")));
+        assertThat(actual.getMaxValues(), is(50));
     }
     
     @Test
@@ -146,11 +156,18 @@ class BroadcastToolDescriptorValidatorTest {
     }
     
     private static Stream<String> requiredMetadataFields() {
-        return Stream.of("org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
+        return Stream.of("org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/artifact-categories", "org.apache.shardingsphere/side-effect-scope",
+                "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
     }
     
     private MCPPromptDescriptor findPrompt(final String promptName) {
         return MCPDescriptorCatalogIndex.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference()))
+                .findFirst().orElseThrow();
     }
     
     private String readResource(final String resourceName) throws IOException {

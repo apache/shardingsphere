@@ -220,7 +220,13 @@ completionTargets:
   - referenceType: prompt
     reference: plan_readwrite_splitting_rule
     arguments:
+      - database
       - load_balancer_type
+    maxValues: 50
+  - referenceType: prompt
+    reference: plan_readwrite_splitting_status
+    arguments:
+      - database
     maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/readwrite-splitting/databases/{database}/rules
@@ -526,6 +532,8 @@ tools:
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false
+    runtime:
+      workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: readwrite.rule
       org.apache.shardingsphere/artifact-categories:
@@ -640,6 +648,8 @@ tools:
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false
+    runtime:
+      workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: readwrite.status
       org.apache.shardingsphere/artifact-categories:

@@ -114,6 +114,13 @@ prompts:
         - "Ask when database or logical broadcast table names are unclear."
         - "Ask before applying generated broadcast rule DistSQL that changes runtime state."
 
+completionTargets:
+  - referenceType: prompt
+    reference: plan_broadcast_rule
+    arguments:
+      - database
+    maxValues: 50
+
 resourceNavigation:
   - from: shardingsphere://features/broadcast/databases/{database}/rules
     to: database_gateway_plan_broadcast_rule
@@ -350,6 +357,8 @@ tools:
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false
+    runtime:
+      workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: broadcast.rule
       org.apache.shardingsphere/artifact-categories:

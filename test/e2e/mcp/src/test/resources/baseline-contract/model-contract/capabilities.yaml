@@ -72,8 +72,8 @@ model_contract:
     side effect is still intended.
   next_action_rule: 'Use canonical next_actions fields: type, tool_name, resource_uri,
     and arguments.'
-  detail_resource_rule: Read each resource payload_contract before assuming detail
-    fields.
+  detail_resource_rule: Use resource descriptors, outputSchema, and returned payload
+    keys before assuming detail fields.
   recovery_rule: When a call fails with recovery.next_actions, follow those structured
     actions before inventing a new call.
 surface_summary:
@@ -896,6 +896,10 @@ prompts:
   - {name: schema, required: false}
   - {name: sql_intent, required: true}
 completionTargets:
+- referenceType: prompt
+  reference: plan_broadcast_rule
+  arguments: [database]
+  maxValues: 50
 - referenceType: resource
   reference: shardingsphere://databases/{database}
   arguments: [database]
@@ -974,31 +978,47 @@ completionTargets:
   maxValues: 50
 - referenceType: prompt
   reference: plan_readwrite_splitting_rule
-  arguments: [load_balancer_type]
+  arguments: [database, load_balancer_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_readwrite_splitting_status
+  arguments: [database]
   maxValues: 50
 - referenceType: prompt
   reference: plan_shadow_rule
-  arguments: [algorithm_type]
+  arguments: [database, algorithm_type]
   maxValues: 50
 - referenceType: prompt
   reference: plan_default_shadow_algorithm
-  arguments: [algorithm_type]
+  arguments: [database, algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_shadow_algorithm_cleanup
+  arguments: [database]
   maxValues: 50
 - referenceType: prompt
   reference: plan_sharding_table_rule
-  arguments: [algorithm_type]
+  arguments: [database, algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_table_reference_rule
+  arguments: [database]
   maxValues: 50
 - referenceType: prompt
   reference: plan_sharding_default_strategy
-  arguments: [algorithm_type]
+  arguments: [database, algorithm_type]
   maxValues: 50
 - referenceType: prompt
   reference: plan_sharding_key_generator
-  arguments: [key_generator_type]
+  arguments: [database, key_generator_type]
   maxValues: 50
 - referenceType: prompt
   reference: plan_sharding_key_generate_strategy
-  arguments: [key_generator_type]
+  arguments: [database, key_generator_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_rule_component_cleanup
+  arguments: [database]
   maxValues: 50
 - referenceType: prompt
   reference: inspect_metadata

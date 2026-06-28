@@ -55,6 +55,9 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyIfPresent(response, result, "count");
         copyIfPresent(response, result, "has_more");
         copyIfPresent(response, result, "total_match_count");
+        copyIfPresent(response, result, "returned_count");
+        copyIfPresent(response, result, "truncated");
+        copyIfPresent(response, result, "large_result_guidance");
         copyIfPresent(response, result, "search_context");
         copyIfPresent(response, result, "ambiguity_state");
         List<Map<String, Object>> resources = LLMMCPJsonValues.castToList(response.get("resources"));

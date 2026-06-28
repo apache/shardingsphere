@@ -246,11 +246,15 @@ class WorkflowExecutionServiceTest {
         assertThat(actualReviewFocus.get("approval_values"), is(List.of("ddl", "rule_distsql")));
         assertThat(actualResponse.get("review_summary"), is("Previewed 2 workflow artifacts with side-effect scope physical-structure, rule-metadata. Nothing has been applied."));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
-        assertThat(actualNextActions.size(), is(1));
+        assertThat(actualNextActions.size(), is(2));
         Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.getFirst();
         assertThat(actualNextAction.get("type"), is("ask_user"));
         assertThat(actualNextAction.get("required_inputs"), is(List.of("approved_steps")));
-        assertFalse(actualNextAction.containsKey("depends_on"));
+        Map<?, ?> actualToolCallAction = (Map<?, ?>) actualNextActions.get(1);
+        assertThat(actualToolCallAction.get("type"), is("tool_call"));
+        assertThat(actualToolCallAction.get("tool_name"), is("database_gateway_apply_workflow"));
+        assertThat(actualToolCallAction.get("depends_on"), is(List.of(1)));
+        assertThat(actualToolCallAction.get("reason"), is("Apply reviewed workflow artifacts after merging approved_steps from action 1 into the arguments."));
         assertThat(((Map<?, ?>) actualResponse.get("argument_provenance")).get("plan_id"), is("server_generated"));
         assertThat(((Map<?, ?>) actualResponse.get("argument_provenance")).get("execution_mode"), is("server_defaulted"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("previewed"));

@@ -76,7 +76,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
         result.put("side_effect_rule", "Preview before side effects and continue only when the requested side effect is still intended.");
         result.put("next_action_rule", "Use canonical next_actions fields: type, tool_name, resource_uri, and arguments.");
-        result.put("detail_resource_rule", "Read each resource payload_contract before assuming detail fields.");
+        result.put("detail_resource_rule", "Use resource descriptors, outputSchema, and returned payload keys before assuming detail fields.");
         result.put("recovery_rule", "When a call fails with recovery.next_actions, follow those structured actions before inventing a new call.");
         return result;
     }
