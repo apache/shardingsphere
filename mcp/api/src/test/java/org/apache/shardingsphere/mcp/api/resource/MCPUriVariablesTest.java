@@ -36,7 +36,7 @@ class MCPUriVariablesTest {
     }
     
     @Test
-    void assertDoesNotContainsVariable() {
+    void assertDoesNotContainVariable() {
         assertFalse(new MCPUriVariables(Map.of("foo_variable", "foo_value")).containsVariable("bar_variable"));
     }
     
@@ -46,13 +46,13 @@ class MCPUriVariablesTest {
     }
     
     @Test
-    void assertGetValueFalidWithMissedVariable() {
+    void assertGetValueFailedWithMissedVariable() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new MCPUriVariables(Collections.emptyMap()).getValue("foo_variable"));
         assertThat(ex.getMessage(), is("Missing URI variable `foo_variable`."));
     }
     
     @Test
-    void assertGetValueFalidWithEmptyVariable() {
+    void assertGetValueFailedWithEmptyVariable() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new MCPUriVariables(Collections.singletonMap("foo_variable", "")).getValue("foo_variable"));
         assertThat(ex.getMessage(), is("Missing URI variable `foo_variable`."));
     }

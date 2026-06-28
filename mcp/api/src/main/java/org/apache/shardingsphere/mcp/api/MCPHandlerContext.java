@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
 import java.util.Optional;
 
 /**
- * Marker interface for MCP handler execution context.
+ * Base interface for MCP handler execution context.
  */
 public interface MCPHandlerContext {
     
