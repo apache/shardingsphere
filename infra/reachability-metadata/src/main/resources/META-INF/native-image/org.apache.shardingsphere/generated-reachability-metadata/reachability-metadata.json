@@ -626,7 +626,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.DatabaseTypeEngine"
+        "typeReached": "org.apache.shardingsphere.database.connector.mysql.metadata.identifier.MySQLIdentifierCaseRuleProvider"
       },
       "type": "java.sql.Statement[]"
     },
@@ -1462,12 +1462,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.DatabaseTypeEngine"
-      },
-      "type": "org.apache.shardingsphere.database.connector.hive.jdbcurl.HiveJdbcUrlFetcher"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
       },
       "type": "org.apache.shardingsphere.database.connector.hive.metadata.data.loader.HiveMetaDataLoader"
@@ -1730,7 +1724,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.DatabaseTypeEngine"
+        "typeReached": "org.apache.shardingsphere.database.connector.mysql.metadata.identifier.MySQLIdentifierCaseRuleProvider"
       },
       "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
     },
@@ -5519,6 +5513,20 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.type.PrestoDMLStatementVisitor",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
+      },
       "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.parser.SQLServerLexer",
       "methods": [
         {
@@ -6270,12 +6278,6 @@
         "typeReached": "org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.checker.DialectDatabasePrivilegeChecker"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.DatabaseTypeEngine"
-      },
-      "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.jdbcurl.DialectJdbcUrlFetcher"
     },
     {
       "condition": {

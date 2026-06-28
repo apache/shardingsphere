@@ -57,6 +57,7 @@
 1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute SQL - [#38337](https://github.com/apache/shardingsphere/pull/38337)
 1. JDBC: Support safe close statement manager - [#38473](https://github.com/apache/shardingsphere/pull/38473)
 1. JDBC: Bump the ClickHouse JDBC Driver used by optional modules to version `0.9.8` - [#38878](https://github.com/apache/shardingsphere/pull/38878)
+1. JDBC: Supports the use of local transactions for Presto in ShardingSphere JDBC- [#38941](https://github.com/apache/shardingsphere/pull/38941)
 1. Proxy: Support non column projection for MySQL prepared statement in Proxy - [#38507](https://github.com/apache/shardingsphere/pull/38507)
 1. Proxy: Support driverClassName config in proxy storage unit to solve mysql and mariadb jdbc url conflict - [#38582](https://github.com/apache/shardingsphere/pull/38582)
 1. Proxy: Support Firebird prepared statement cache reuse for held connections - [#38644](https://github.com/apache/shardingsphere/pull/38644)

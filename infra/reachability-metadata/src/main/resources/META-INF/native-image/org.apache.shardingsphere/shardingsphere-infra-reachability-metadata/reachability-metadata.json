@@ -684,13 +684,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.engine.core.database.visitor.SQLStatementVisitorFactory"
-      },
-      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.type.PrestoDMLStatementVisitor",
-      "allPublicConstructors": true
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.engine.core.SQLParserFactory"
       },
       "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.parser.ClickHouseLexer",
