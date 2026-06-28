@@ -70,7 +70,14 @@ public final class DatabaseTypeFactory {
         return getActualDatabaseType(get(connection.getMetaData()), connection);
     }
     
-    private static DatabaseType get(final DatabaseMetaData metaData) throws SQLException {
+    /**
+     * Get database type.
+     *
+     * @param metaData database meta data
+     * @return database type
+     * @throws SQLException SQL exception
+     */
+    public static DatabaseType get(final DatabaseMetaData metaData) throws SQLException {
         return Objects.toString(metaData.getDatabaseProductName(), "").contains("Hive") ? TypedSPILoader.getService(DatabaseType.class, "Hive") : get(metaData.getURL());
     }
     

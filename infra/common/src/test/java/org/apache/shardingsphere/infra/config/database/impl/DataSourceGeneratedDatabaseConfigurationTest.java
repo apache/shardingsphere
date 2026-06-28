@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -38,7 +40,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -65,7 +66,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     @Test
     void assertNewWithDetectedStorageType() {
         try (MockedStatic<DatabaseTypeEngine> mocked = mockStatic(DatabaseTypeEngine.class)) {
-            mocked.when(() -> DatabaseTypeEngine.getStorageType(eq("jdbc:mock://127.0.0.1/foo_db"), any(DataSource.class))).thenReturn(databaseType);
+            mocked.when(() -> DatabaseTypeEngine.getStorageType(any(DataSourcePoolProperties.class))).thenReturn(databaseType);
             DataSourceGeneratedDatabaseConfiguration actual = createDatabaseConfiguration(MockedDataSource.class.getName());
             assertThat(actual.getStorageUnits().get("foo_db").getStorageType(), is(databaseType));
         }
@@ -73,16 +74,17 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     
     @Test
     void assertNewClosesDataSourcesWhenStorageUnitCreationFailed() {
-        AtomicReference<MockedDataSource> createdDataSource = new AtomicReference<>();
-        try (MockedStatic<DatabaseTypeEngine> mocked = mockStatic(DatabaseTypeEngine.class)) {
-            mocked.when(() -> DatabaseTypeEngine.getStorageType(eq("jdbc:mock://127.0.0.1/foo_db"), any(DataSource.class))).thenAnswer(invocation -> {
-                createdDataSource.set(invocation.getArgument(1));
-                throw new SQLWrapperException(new SQLException("boom"));
-            });
+        MockedDataSource createdDataSource = new MockedDataSource();
+        try (
+                MockedStatic<DataSourcePoolCreator> dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class);
+                MockedStatic<DatabaseTypeEngine> databaseTypeEngine = mockStatic(DatabaseTypeEngine.class)) {
+            dataSourcePoolCreator.when(() -> DataSourcePoolCreator.create(eq("foo_db"), any(DataSourcePoolProperties.class), eq(true), any(Collection.class)))
+                    .thenReturn(createdDataSource);
+            databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(any(DataSourcePoolProperties.class)))
+                    .thenThrow(new SQLWrapperException(new SQLException("boom")));
             assertThrows(SQLWrapperException.class, () -> createDatabaseConfiguration(MockedDataSource.class.getName()));
         }
-        assertThat(createdDataSource.get(), isA(MockedDataSource.class));
-        assertTrue(createdDataSource.get().isClosed());
+        assertTrue(createdDataSource.isClosed());
     }
     
     private void assertRuleConfigurations(final Collection<RuleConfiguration> actual) {

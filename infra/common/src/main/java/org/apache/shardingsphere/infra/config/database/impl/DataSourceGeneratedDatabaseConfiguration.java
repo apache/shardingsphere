@@ -94,18 +94,10 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             DataSource dataSource = storageNodeDataSources.get(storageNode);
             DataSourcePoolProperties dataSourcePoolProps = entry.getValue();
-            DatabaseType storageType = storageTypes.computeIfAbsent(storageNode, key -> getStorageType(dataSourcePoolProps, dataSource));
+            DatabaseType storageType = storageTypes.computeIfAbsent(storageNode, key -> DatabaseTypeEngine.getStorageType(dataSourcePoolProps));
             result.put(storageUnitName, new StorageUnit(storageNode, dataSourcePoolProps, dataSource, storageType));
         }
         return result;
-    }
-    
-    private DatabaseType getStorageType(final DataSourcePoolProperties dataSourcePoolProps, final DataSource dataSource) {
-        return DatabaseTypeEngine.getStorageType(getURL(dataSourcePoolProps), dataSource);
-    }
-    
-    private String getURL(final DataSourcePoolProperties dataSourcePoolProps) {
-        return dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
     }
     
     private static void closeDataSources(final Collection<DataSource> dataSources, final ShardingSphereSQLException cause) {

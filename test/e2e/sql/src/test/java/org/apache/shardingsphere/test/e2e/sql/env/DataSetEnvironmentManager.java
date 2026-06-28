@@ -38,8 +38,6 @@ import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValueGroup;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -86,7 +84,7 @@ public final class DataSetEnvironmentManager {
     
     private final DatabaseType databaseType;
     
-    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws IOException, JAXBException {
+    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         this.dataSetFile = dataSetFile;
         dataSet = DataSetLoader.load(dataSetFile);
         this.dataSourceMap = dataSourceMap;
@@ -299,7 +297,7 @@ public final class DataSetEnvironmentManager {
             return result;
         }
         try (Connection connection = dataSource.getConnection()) {
-            result = DatabaseTypeFactory.get(connection);
+            result = DatabaseTypeFactory.get(connection.getMetaData());
             DATA_SOURCE_DATABASE_TYPE_CACHE.put(cacheKey, result);
             return result;
         }
