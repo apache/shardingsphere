@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -31,6 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPJdbcDatabaseProfileLoaderTest {
@@ -38,7 +40,7 @@ class MCPJdbcDatabaseProfileLoaderTest {
     @Test
     void assertLoad() throws SQLException {
         try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
-            RuntimeDatabaseProfile actual = new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration("", "jdbc:mysql:test", "8.0.32"));
+            RuntimeDatabaseProfile actual = new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration("jdbc:mysql:test", "8.0.32"));
             assertThat(actual.getDatabase(), is("logic_db"));
             assertThat(actual.getDatabaseType(), is("MySQL"));
             assertThat(actual.getDatabaseVersion(), is("8.0.32"));
@@ -46,21 +48,22 @@ class MCPJdbcDatabaseProfileLoaderTest {
     }
     
     @Test
-    void assertLoadWithMismatchedDatabaseType() {
-        try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
+    void assertLoadWithInvalidJdbcUrl() {
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
+            ShardingSphereExternalException expectedCause = mock(ShardingSphereExternalException.class);
+            mocked.when(() -> DatabaseTypeFactory.get("jdbc:unknown:test")).thenThrow(expectedCause);
             RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                    () -> new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration("PostgreSQL", "jdbc:mysql:test", "8.0.32")));
+                    () -> new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration("jdbc:unknown:test", "8.0.32")));
             assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
-            assertThat(actual.getCause().getMessage(), is("Configured databaseType `PostgreSQL` does not match actual database type `MySQL` for database `logic_db`."));
+            assertThat(actual.getCause(), is(expectedCause));
         }
     }
     
-    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl, final String databaseVersion) throws SQLException {
+    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl, final String databaseVersion) throws SQLException {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(result.openConnection(anyString())).thenReturn(connection);
-        when(result.getDatabaseType()).thenReturn(databaseType);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getURL()).thenReturn(jdbcUrl);
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseVersion);

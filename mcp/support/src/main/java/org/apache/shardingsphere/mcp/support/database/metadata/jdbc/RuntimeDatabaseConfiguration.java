@@ -31,8 +31,6 @@ import java.util.Properties;
 @Getter
 public final class RuntimeDatabaseConfiguration {
     
-    private final String databaseType;
-    
     private final String jdbcUrl;
     
     private final String username;
@@ -42,20 +40,6 @@ public final class RuntimeDatabaseConfiguration {
     private final String driverClassName;
     
     public RuntimeDatabaseConfiguration(final String jdbcUrl, final String username, final String password, final String driverClassName) {
-        this("", jdbcUrl, username, password, driverClassName);
-    }
-    
-    /**
-     * Create runtime database configuration with an expected database type for programmatic callers.
-     *
-     * @param databaseType expected database type
-     * @param jdbcUrl JDBC URL
-     * @param username username
-     * @param password password
-     * @param driverClassName driver class name
-     */
-    public RuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl, final String username, final String password, final String driverClassName) {
-        this.databaseType = Objects.toString(databaseType, "");
         this.jdbcUrl = jdbcUrl;
         this.username = username;
         this.password = password;

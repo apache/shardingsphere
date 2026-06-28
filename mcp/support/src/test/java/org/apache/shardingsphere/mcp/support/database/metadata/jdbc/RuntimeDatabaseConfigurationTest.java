@@ -38,8 +38,7 @@ class RuntimeDatabaseConfigurationTest {
     
     @Test
     void assertNewRuntimeDatabaseConfiguration() {
-        RuntimeDatabaseConfiguration actual = new RuntimeDatabaseConfiguration("MySQL", RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName());
-        assertThat(actual.getDatabaseType(), is("MySQL"));
+        RuntimeDatabaseConfiguration actual = new RuntimeDatabaseConfiguration(RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName());
         assertThat(actual.getJdbcUrl(), is(RecordingDriver.JDBC_URL));
         assertThat(actual.getUsername(), is("sa"));
         assertThat(actual.getPassword(), is("pwd"));

@@ -230,21 +230,6 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         }
     }
     
-    protected Map<String, RuntimeDatabaseConfiguration> createMismatchedRuntimeDatabases() throws IOException {
-        prepareRuntime();
-        RuntimeDatabaseConfiguration runtimeDatabase = MySQLRuntimeTestSupport.createRuntimeDatabases(container, LOGICAL_DATABASE_NAME).get(LOGICAL_DATABASE_NAME);
-        return Map.of(LOGICAL_DATABASE_NAME, new RuntimeDatabaseConfiguration("PostgreSQL", runtimeDatabase.getJdbcUrl(), runtimeDatabase.getUsername(),
-                runtimeDatabase.getPassword(), runtimeDatabase.getDriverClassName()));
-    }
-    
-    protected void openAndCloseInteractionClient(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient(runtimeDatabases)) {
-            interactionClient.listResources();
-        } catch (final IOException | InterruptedException ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-    
     protected List<String> readTableNames(final MCPInteractionClient interactionClient, final String databaseName) throws IOException, InterruptedException {
         return getPayloadItems(interactionClient.readResource(String.format("shardingsphere://databases/%s/schemas/%s/tables", databaseName, databaseName)))
                 .stream().map(each -> String.valueOf(each.get("table"))).toList();
