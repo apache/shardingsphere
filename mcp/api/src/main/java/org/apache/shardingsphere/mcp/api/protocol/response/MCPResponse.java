@@ -22,6 +22,7 @@ import java.util.Map;
 /**
  * MCP response.
  */
+@FunctionalInterface
 public interface MCPResponse {
     
     /**
