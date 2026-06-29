@@ -6,22 +6,20 @@ weight = 7
 ### Description
 
 The `SET DIST VARIABLE` syntax is used to set system variables.
+
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
 SetDistVariable ::=
-  'SET' 'DIST' 'VARIABLE' (proxyPropertyName '=' proxyPropertyValue | 'agent_plugins_enabled' '=' agentPluginsEnabled)
+  'SET' 'DIST' 'VARIABLE' variableName '=' variableValue
 
-proxyPropertyName ::= 
+variableName ::=
   identifier
 
-proxyPropertyValue ::=
+variableValue ::=
   literal
-
-agentPluginsEnabled ::=
-  boolean
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -31,9 +29,9 @@ agentPluginsEnabled ::=
 
 ### Supplement
 
-- `proxy_property_name` is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of `PROXY`, name is split by underscore
+- `variableName` is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of `PROXY`. Use underscores instead of hyphens in DistSQL variable names.
 
-- `agent_plugins_enabled` is use to set the `agent` plugins enable status, the default value is `FALSE`
+- `agent_plugins_enabled` is used to set the `agent` plugin status. Its default value is `TRUE`.
 
 ### Example
 

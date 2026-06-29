@@ -101,5 +101,5 @@ public final class EncryptDatabasesConfiguration {
 
 ## 相关参考
 
-- [数据加密的核心特性](/cn/features/sharding/ )
+- [数据加密的核心特性](/cn/features/encrypt/)
 - [数据加密的开发者指南](/cn/dev-manual/encrypt/)

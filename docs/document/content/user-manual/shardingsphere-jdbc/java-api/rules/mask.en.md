@@ -96,5 +96,5 @@ public final class MaskDatabasesConfiguration {
 
 ## Related References
 
-- [The feature description of Data Masking](/en/features/mask/ )
+- [The feature description of Data Masking](/en/features/mask/)
 - [Dev Guide of Data Masking](/en/dev-manual/mask/)

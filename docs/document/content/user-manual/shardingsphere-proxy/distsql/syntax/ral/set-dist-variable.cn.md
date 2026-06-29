@@ -13,16 +13,13 @@ weight = 7
 {{% tab name="语法" %}}
 ```sql
 SetDistVariable ::=
-  'SET' 'DIST' 'VARIABLE' (proxyPropertyName '=' proxyPropertyValue | 'agent_plugins_enabled' '=' agentPluginsEnabled)
+  'SET' 'DIST' 'VARIABLE' variableName '=' variableValue
 
-proxyPropertyName ::= 
+variableName ::=
   identifier
 
-proxyPropertyValue ::=
+variableValue ::=
   literal
-
-agentPluginsEnabled ::=
-  boolean
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -32,9 +29,9 @@ agentPluginsEnabled ::=
 
 ### 补充说明
 
-- `proxy_property_name` 为 `PROXY` 的[属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)，需使用下划线命名
+- `variableName` 为 `PROXY` 的[属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)，DistSQL 变量名使用下划线而非连字符
 
-- `agent_plugins_enabled` 为 `agent` 插件的启用状态，默认值 `FALSE`
+- `agent_plugins_enabled` 用于设置 `agent` 插件的启用状态，默认值为 `TRUE`
 
 ### 示例
 

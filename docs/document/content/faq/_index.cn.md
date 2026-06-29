@@ -108,7 +108,7 @@ DROP DATABASE sharding_db;
 
 ## 分片
 
-### Cloud not resolve placeholder ... in string value ... 异常的解决方法?
+### Could not resolve placeholder ... in string value ... 异常的解决方法?
 
 回答：
 
