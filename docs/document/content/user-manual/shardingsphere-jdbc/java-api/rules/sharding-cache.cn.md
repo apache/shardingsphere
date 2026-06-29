@@ -44,7 +44,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration())), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -54,7 +54,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
         result.getKeyGenerateStrategies().put("t_order_order_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "order_id"));
         result.getKeyGenerateStrategies().put("t_order_item_order_item_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order_item", "order_item_id"));
         // ...
-        result.setShardingCache(new ShardingCacheConfiguration(512, new ShardingCacheConfiguration.RouteCacheConfiguration(65536, 262144, true)));
+        result.setShardingCache(new ShardingCacheConfiguration(512, new ShardingCacheOptionsConfiguration(true, 65536, 262144)));
         return result;
     }
     

@@ -24,8 +24,8 @@ Attributes：
 
 | *name*                                  | *DataType* | *Description*                                    | *Default Value* |
 |-----------------------|------------------------------------------------------|----------------|-------|
-| allowedMaxSqlLength            | int                                                  | 允许缓存的 SQL 长度限制 | -     |
-| routeCache | org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration | 路由缓存           | -     |
+| allowedMaxSqlLength | int | Maximum SQL length allowed for route cache | - |
+| routeCache | org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration | Route cache options | - |
 
 Class：org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration
 
@@ -33,9 +33,9 @@ Attributes：
 
 | *name*                                  | *DataType* | *Description*                                    | *Default Value* |
 |-----------------------|------------------------------------------------------|----------------|-------|
-| softValues            | boolean                                                  | 是否软引用缓存值 | -     |
-| initialCapacity | int | 缓存初始容量           | -     |
-| maximumSize | int | 缓存最大容量           | -     |
+| softValues | boolean | Whether to use soft references for cached values | - |
+| initialCapacity | int | Initial cache capacity | - |
+| maximumSize | int | Maximum cache size | - |
 
 ## Sample
 
@@ -44,7 +44,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration())), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -54,7 +54,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
         result.getKeyGenerateStrategies().put("t_order_order_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "order_id"));
         result.getKeyGenerateStrategies().put("t_order_item_order_item_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order_item", "order_item_id"));
         // ...
-        result.setShardingCache(new ShardingCacheConfiguration(512, new ShardingCacheConfiguration.RouteCacheConfiguration(65536, 262144, true)));
+        result.setShardingCache(new ShardingCacheConfiguration(512, new ShardingCacheOptionsConfiguration(true, 65536, 262144)));
         return result;
     }
     

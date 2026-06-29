@@ -94,7 +94,7 @@ helm uninstall shardingsphere-proxy
 | `compute.replicas`                  | Number of cluster replicas                                   | `3`                           |
 | `compute.service.type`              | ShardingSphere-Proxy network mode                            | `ClusterIP`                   |
 | `compute.service.port`              | ShardingSphere-Proxy expose port                             | `3307`                        |
-| `compute.mysqlConnector.version`    | MySQL connector version                                      | `5.1.49`                      |
+| `compute.mysqlConnector.version`    | MySQL connector version                                      | `8.4.0`                       |
 | `compute.startPort`                 | ShardingSphere-Proxy start port                              | `3307`                        |
 | `compute.serverConfig`              | Server Configuration file for ShardingSphere-Proxy           | `""`                          |
 
@@ -207,7 +207,7 @@ compute:
   ## @param compute.mysqlConnector.version MySQL connector version
   ##
   mysqlConnector:
-    version: "5.1.49"
+    version: "8.4.0"
   ## @param compute.startPort ShardingSphere-Proxy start port
   ## ShardingSphere-Proxy start port
   ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/startup/docker/

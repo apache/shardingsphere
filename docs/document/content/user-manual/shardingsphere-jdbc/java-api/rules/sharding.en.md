@@ -32,7 +32,7 @@ Attributes:
 
 ### Sharding Table Configuration
 
-Class name: org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration
 
 Attributes:
 
@@ -46,7 +46,7 @@ Attributes:
 
 ### Sharding Auto Table Configuration
 
-Class name: org.apache.shardingsphere.sharding.api.config.ShardingAutoTableRuleConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration
 
 Attributes:
 
@@ -164,7 +164,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration())), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

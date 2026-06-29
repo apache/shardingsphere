@@ -92,7 +92,7 @@ helm uninstall shardingsphere-proxy
 | `compute.replicas`                  | ShardingSphere-Proxy 节点个数         | `3`                           |
 | `compute.service.type`              | ShardingSphere-Proxy 网络模式         | `ClusterIP`                   |
 | `compute.service.port`              | ShardingSphere-Proxy 暴露端口         | `3307`                        |
-| `compute.mysqlConnector.version`    | MySQL 驱动版本                        | `5.1.49`                      |
+| `compute.mysqlConnector.version`    | MySQL 驱动版本                        | `8.4.0`                       |
 | `compute.startPort`                 | ShardingSphere-Proxy 启动端口         | `3307`                        |
 | `compute.serverConfig`              | ShardingSphere-Proxy 模式配置文件       | `""`                          |
 
@@ -203,7 +203,7 @@ compute:
   ## @param compute.mysqlConnector.version MySQL connector version
   ##
   mysqlConnector:
-    version: "5.1.49"
+    version: "8.4.0"
   ## @param compute.startPort ShardingSphere-Proxy start port
   ## ShardingSphere-Proxy start port
   ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/startup/docker/

@@ -37,9 +37,9 @@ ShardingSphere-Proxy supports multiple logical data sources. Each YAML configura
 
 4. Introduce database driver (Optional)
 
-If the backend is connected to a PostgreSQL or openGauss database, no additional dependencies need to be introduced.
+If the backend is connected to a PostgreSQL, openGauss or Firebird database, no additional dependencies need to be introduced.
 
-If the backend is connected to a MySQL database, please download [mysql-connector-java-5.1.49.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar) or [mysql-connector-java-8.0.11.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.11/mysql-connector-java-8.0.11.jar), and put it into the `ext-lib` directory.
+If the backend is connected to a MySQL database, please download [mysql-connector-j-8.4.0.jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.4.0/mysql-connector-j-8.4.0.jar), and put it into the `ext-lib` directory.
 
 5. Introduce dependencies required by the cluster mode (Optional)
 

@@ -15,7 +15,7 @@ The optional values of `provider` are H2, MySQL and HSQLDB.
 Since third-party Vulnerability Reports often misreport H2 Database, avoiding the use of H2 Database in ShardingSphere Standalone Mode may be an option.
 Discuss the case where `provider` is not the default value `H2`.
 
-1. If `provider` is set to `MySQL`, a ready MySQL Server is required. The classpath should contain the Maven dependency of `com.mysql:mysql-connector-j:9.0.0`.
+1. If `provider` is set to `MySQL`, a ready MySQL Server is required. The classpath should contain the Maven dependency of `com.mysql:mysql-connector-j:8.4.0`.
 
 2. If `provider` is set to `HSQLDB`, a ready HyperSQL using Server Modes is required, or a database is created as an in-process database.
    The classpath should contain the Maven dependency of `org.hsqldb:hsqldb:2.7.3` with `classifier` as `jdk8`.

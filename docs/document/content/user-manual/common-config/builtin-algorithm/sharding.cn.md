@@ -139,7 +139,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 通过配置分片策略类型和算法类名，实现自定义扩展。
 `CLASS_BASED` 允许向算法类内传入额外的自定义属性，传入的属性可以通过属性名为 `props` 的 `java.util.Properties` 类实例取出。 
-参考 Git 的 `org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.fixture.ClassBasedStandardShardingAlgorithmFixture` 。
+用户可实现对应的分片算法接口，并通过 `algorithmClassName` 配置算法类的全限定类名。
 
 类型：CLASS_BASED
 

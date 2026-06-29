@@ -17,13 +17,23 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10000       | 42S02     | Database is required.                                                               |
 | 10001       | 42S02     | Schema '%s' does not exist.                                                         |
 | 10002       | 42S02     | Table or view '%s' does not exist.                                                  |
+| 10002       | 42S02     | Table or view '%s' does not exist in storage unit '%s'.                             |
 | 10003       | 42S02     | Unknown column '%s' in '%s'.                                                        |
 | 10004       | 42S02     | Index '%s' does not exist.                                                          |
+| 10004       | 42S02     | Index '%s' does not exist from schema '%s'.                                         |
 | 10005       | 42S01     | Index '%s' already exists.                                                          |
+| 10005       | 08000     | Check database environment failed                                                   |
+| 10006       | 01007     | Missing required privilege(s) `%s`                                                  |
+| 10007       | 42S02     | User '%s' does exist                                                                |
+| 10008       | HY000     | Unexpected variable value of '%s', required '%s', now is '%s'.                      |
+| 10010       | HY000     | Cluster repository persist error.                                                   |
 | 10010       | HY000     | Rule and storage meta data mismatched, reason is: %s.                               |
+| 10012       | HY000     | Load table meta data failed for database '%s'.                                      |
 | 10012       | HY000     | Load table meta data failed for database '%s' and tables '%s'.                      |
+| 10023       | HY000     | Identifier '%s' is ambiguous, matched actual identifiers: %s.                       |
 | 10024       | HY000     | Can not resolve prepared statement metadata because %s.                             |
 | 10100       | HY000     | Can not %s storage units '%s'.                                                      |
+| 10101       | 42S02     | There is no storage unit in any database.                                           |
 | 10101       | 42S02     | There is no storage unit in database '%s'.                                          |
 | 10102       | 44000     | Storage units '%s' do not exist in database '%s'.                                   |
 | 10103       | 44000     | Storage unit '%s' still used by '%s'.                                               |
@@ -31,19 +41,31 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10110       | 08000     | Storage units can not connect, error messages are: %s.                              |
 | 10111       | 0A000     | Can not alter connection info in storage units: '%s'.                               |
 | 10120       | 44000     | Invalid storage unit status, error message is: %s.                                  |
-| 10200       | 44000     | Invalid '%s' rule '%s', error message is: %s                                        |
+| 10200       | 44000     | Invalid '%s' rules '%s', error messages are: %s                                     |
+| 10200       | 44000     | Invalid '%s' rule, error message is: %s                                             |
 | 10201       | 42S02     | There is no rule in database '%s'.                                                  |
+| 10202       | 42S02     | %s rule does not exist.                                                             |
+| 10202       | 42S02     | %s rule does not exist in database '%s'.                                            |
+| 10202       | 42S02     | %s rules '%s' do not exist.                                                         |
+| 10202       | 42S02     | %s rule '%s' do not exist in database '%s'.                                         |
 | 10202       | 42S02     | %s rules '%s' do not exist in database '%s'.                                        |
 | 10203       | 44000     | %s rules '%s' in database '%s' are still in used.                                   |
+| 10203       | 44000     | %s rules '%s' in database '%s' are still in used by %s.                             |
 | 10204       | 42S01     | Duplicate %s rule names '%s' in database '%s'.                                      |
+| 10204       | 42S01     | Duplicate %s rule names '%s'.                                                       |
+| 10204       | 42S01     | Duplicate '%s' in database '%s'.                                                    |
 | 10210       | 42S02     | %s strategies '%s' do not exist.                                                    |
 | 10300       | HY000     | Invalid format for actual data node '%s'.                                           |
+| 10300       | HY000     | Invalid format for data node '%s', reason is: %s.                                   |
 | 10301       | 0A000     | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
 | 10400       | 44000     | Algorithm '%s' initialization failed, reason is: %s.                                |
 | 10401       | 42S02     | '%s' algorithm on %s is required.                                                   |
 | 10402       | 42S02     | '%s' algorithm '%s' on %s is unregistered.                                          |
+| 10402       | 42S02     | '%s' algorithm '%s' on %s are unregistered.                                         |
 | 10403       | 44000     | %s algorithms '%s' in database '%s' are still in used.                              |
 | 10404       | 44000     | Invalid %s algorithm configuration '%s'.                                            |
+| 10404       | 44000     | Invalid %s algorithm configuration.                                                 |
+| 10404       | 44000     | Invalid %s algorithm configuration '%s'. %s.                                        |
 | 10410       | 0A000     | Unsupported %s.%s with database type '%s'.                                          |
 | 10440       | HY000     | Algorithm '%s' execute failed, reason is: %s.                                       |
 | 10500       | 44000     | Invalid single rule configuration, reason is: %s.                                   |
@@ -100,7 +122,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 14004       | 25000     | Close transaction manager failed.                                                         |
 | 14200       | 25000     | Failed to create '%s' XA data source.                                                     |
 | 14201       | 25000     | Can not start new XA transaction in a active transaction.                                 |
-| 14202       | 25000     | Check XA transaction privileges failed on data source, please grant '%s' to current user. |
 | 14400       | 44000     | No application id within 'seata.conf' file.                                               |
 | 14401       | 25000     | Seata-AT transaction has been disabled.                                                   |
 
@@ -117,7 +138,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-------------|-----------|---------------------------------------------------------------|
 | 17000       | 44000     | Mode must be 'cluster'.                                       |
 | 17001       | HY000     | Worker ID assigned failed, which should be in [0, %s).        |
-| 17010       | HY000     | Cluster persist repository error, reason is: %s               |
 | 17011       | HY000     | Failed to reload meta data context.                           |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
 | 17100       | 42S02     | Cluster persist repository configuration is required.         |
@@ -152,6 +172,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | Vendor Code | SQL State | Reason                                                                                                                              |
 |-------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------|
+| 20000       | 42S02     | %s configuration does not exist.                                                                                                    |
 | 20000       | 42S02     | %s configuration does not exist in database '%s'.                                                                                   |
 | 20001       | 42S02     | Can not find table rule with logic tables '%s'.                                                                                     |
 | 20002       | 42S02     | Can not find data source in sharding rule, invalid actual data node '%s'.                                                           |
@@ -174,6 +195,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 20033       | 44000     | PREPARE statement can not support sharding tables route to same data sources.                                                       |
 | 20034       | 44000     | The table inserted and the table selected must be the same or bind tables.                                                          |
 | 20035       | 0A000     | Can not support DML operation with multiple tables '%s'.                                                                            |
+| 20036       | 42000     | SELECT ... %s can not support route to multiple data sources.                                                                       |
 | 20036       | 42000     | %s ... LIMIT can not support route to multiple data nodes.                                                                          |
 | 20037       | 44000     | Can not find actual data source intersection for logic tables '%s'.                                                                 |
 | 20038       | 42000     | INSERT INTO ... SELECT can not support applying key generator with absent generate key column.                                      |
@@ -199,6 +221,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 20100       | 42000     | Unsupported SQL node conversion for SQL statement '%s'. |
 | 20101       | 42000     | SQL federation does not support SQL '%s'.               |
 | 20102       | 42S02     | SQL federation schema '%s' not found in SQL '%s'.       |
+| 20108       | HY000     | Invalid execution plan cache config: `%s`=`%s`, the value must be positive. |
 
 ### Readwrite-splitting
 
@@ -216,12 +239,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | Vendor Code | SQL State | Reason                                            |
 |-------------|-----------|---------------------------------------------------|
 | 20400       | 0A000     | Can not support database '%s' in SQL translation. |
-
-### Traffic Management
-
-| Vendor Code | SQL State | Reason                              |
-|-------------|-----------|-------------------------------------|
-| 20500       | 42S02     | Can not get traffic execution unit. |
 
 ### Data Encrypt
 

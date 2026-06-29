@@ -118,7 +118,7 @@ Attributes:
 
 Please refer to [Inline Expression](/en/features/sharding/concept/#row-value-expressions) for more details.
 
-Type: COMPLEX_INLINE
+Type: HINT_INLINE
 
 | *Name*                                     | *DataType* | *Description*                                                                                            | *Default Value* |
 |--------------------------------------------|------------|----------------------------------------------------------------------------------------------------------|-----------------|
@@ -143,7 +143,7 @@ Type: COMPLEX_INLINE
 
 Realize custom extension by configuring the sharding strategy type and algorithm class name.
 `CLASS_BASED` allows additional custom properties to be passed into the algorithm class. The passed properties can be retrieved through the `java.util.Properties` class instance with the property name `props`. 
-Refer to Git's `org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.fixture.ClassBasedStandardShardingAlgorithmFixture`.
+Users can implement the corresponding sharding algorithm interface and configure the fully-qualified class name with `algorithmClassName`.
 
 Type：CLASS_BASED
 
