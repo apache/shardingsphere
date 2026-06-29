@@ -442,7 +442,8 @@ class MCPErrorConverterTest {
                 Arguments.of("unavailable exception", new MCPUnavailableException("Unavailable."), "Unavailable."),
                 Arguments.of("unsupported operation exception", new UnsupportedOperationException("Unsupported operation."), "Unsupported operation."),
                 Arguments.of("illegal argument exception", new IllegalArgumentException("Illegal argument."), "Illegal argument."),
-                Arguments.of("illegal state exception", new IllegalStateException(" Transaction already active. "), "Transaction already active."),
+                Arguments.of("illegal state exception", new IllegalStateException(), "MCP operation failed."),
+                Arguments.of("illegal state exception message", new IllegalStateException(" Operation state mismatch. "), "Operation state mismatch."),
                 Arguments.of("unknown exception", new RuntimeException(), "Service is temporarily unavailable."));
     }
     

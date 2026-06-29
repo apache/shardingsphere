@@ -103,7 +103,7 @@ public final class MCPErrorConverter {
             return createError(cause, "Invalid request.");
         }
         if (cause instanceof IllegalStateException) {
-            return createError(cause, "MCP transaction operation failed.");
+            return createError(cause, "MCP operation failed.");
         }
         return createError(cause, "Service is temporarily unavailable.");
     }
