@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.api;
 
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 
 import java.util.Optional;
 
@@ -27,11 +27,11 @@ import java.util.Optional;
 public interface MCPHandlerContext {
     
     /**
-     * Find session attribution.
+     * Find session identity.
      *
-     * @return session attribution
+     * @return session identity
      */
-    default Optional<MCPSessionAttribution> findSessionAttribution() {
+    default Optional<MCPSessionIdentity> findSessionIdentity() {
         return Optional.empty();
     }
 }

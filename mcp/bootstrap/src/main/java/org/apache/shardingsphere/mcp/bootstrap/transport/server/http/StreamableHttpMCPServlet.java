@@ -157,7 +157,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
         SessionAwareHttpServletResponse actualResponse = withInitializeProtocolHeader(response);
         serviceRequest(request, actualResponse);
-        bindSessionAttribution(request, actualResponse);
+        bindSessionIdentity(request, actualResponse);
     }
     
     private boolean isJsonContentType(final HttpServletRequest request) {
@@ -234,12 +234,12 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
     }
     
-    private void bindSessionAttribution(final HttpServletRequest request, final SessionAwareHttpServletResponse response) {
+    private void bindSessionIdentity(final HttpServletRequest request, final SessionAwareHttpServletResponse response) {
         String sessionId = response.getSessionId();
         if (sessionId.isEmpty()) {
             return;
         }
-        sessionAttributionResolver.resolve(request).ifPresent(sessionAttribution -> sessionManager.bindSessionAttribution(sessionId, sessionAttribution));
+        sessionAttributionResolver.resolve(request).ifPresent(sessionIdentity -> sessionManager.bindSessionIdentity(sessionId, sessionIdentity));
     }
     
     private SessionAwareHttpServletResponse withInitializeProtocolHeader(final HttpServletResponse response) {
