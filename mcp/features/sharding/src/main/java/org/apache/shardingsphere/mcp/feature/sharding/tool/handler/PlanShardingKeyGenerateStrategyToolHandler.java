@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingKeyGenerateStrategyWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingKeyGenerateStrategyWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
@@ -39,8 +38,8 @@ public final class PlanShardingKeyGenerateStrategyToolHandler extends AbstractSh
         planningService = new ShardingKeyGenerateStrategyWorkflowPlanningService();
     }
     
-    PlanShardingKeyGenerateStrategyToolHandler(final ShardingWorkflowPlanningService planningService) {
-        this.planningService = new ShardingKeyGenerateStrategyWorkflowPlanningService(planningService);
+    PlanShardingKeyGenerateStrategyToolHandler(final ShardingKeyGenerateStrategyWorkflowPlanningService planningService) {
+        this.planningService = planningService;
     }
     
     @Override

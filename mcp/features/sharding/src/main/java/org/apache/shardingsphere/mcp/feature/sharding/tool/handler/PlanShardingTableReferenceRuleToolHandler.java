@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingTableReferenceRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingTableReferenceRuleWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
@@ -39,8 +38,8 @@ public final class PlanShardingTableReferenceRuleToolHandler extends AbstractSha
         planningService = new ShardingTableReferenceRuleWorkflowPlanningService();
     }
     
-    PlanShardingTableReferenceRuleToolHandler(final ShardingWorkflowPlanningService planningService) {
-        this.planningService = new ShardingTableReferenceRuleWorkflowPlanningService(planningService);
+    PlanShardingTableReferenceRuleToolHandler(final ShardingTableReferenceRuleWorkflowPlanningService planningService) {
+        this.planningService = planningService;
     }
     
     @Override

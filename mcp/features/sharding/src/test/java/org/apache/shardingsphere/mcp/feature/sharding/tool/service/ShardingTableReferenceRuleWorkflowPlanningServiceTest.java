@@ -39,18 +39,18 @@ class ShardingTableReferenceRuleWorkflowPlanningServiceTest {
     
     @Test
     void assertPlan() {
-        ShardingWorkflowPlanningService delegate = mock(ShardingWorkflowPlanningService.class);
+        ShardingWorkflowPlanningKernel kernel = mock(ShardingWorkflowPlanningKernel.class);
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         WorkflowContextSnapshot expected = new WorkflowContextSnapshot();
-        when(delegate.planTableReferenceRule(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), any())).thenReturn(expected);
+        when(kernel.planTableReferenceRule(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), any())).thenReturn(expected);
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setRuleName("ref_rule");
         request.getReferenceTables().addAll(List.of("t_order", "t_order_item"));
-        WorkflowContextSnapshot actual = new ShardingTableReferenceRuleWorkflowPlanningService(delegate)
+        WorkflowContextSnapshot actual = new ShardingTableReferenceRuleWorkflowPlanningService(kernel)
                 .plan(workflowSessionContext, queryFacade, "session-1", new ShardingTableReferenceRuleWorkflowRequest(request));
         ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
-        verify(delegate).planTableReferenceRule(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), requestCaptor.capture());
+        verify(kernel).planTableReferenceRule(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(actual, is(expected));
         assertThat(requestCaptor.getValue().getReferenceTables(), is(List.of("t_order", "t_order_item")));
     }

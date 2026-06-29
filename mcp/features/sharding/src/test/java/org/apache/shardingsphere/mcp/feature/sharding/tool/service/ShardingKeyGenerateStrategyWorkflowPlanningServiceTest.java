@@ -37,17 +37,17 @@ class ShardingKeyGenerateStrategyWorkflowPlanningServiceTest {
     
     @Test
     void assertPlan() {
-        ShardingWorkflowPlanningService delegate = mock(ShardingWorkflowPlanningService.class);
+        ShardingWorkflowPlanningKernel kernel = mock(ShardingWorkflowPlanningKernel.class);
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         WorkflowContextSnapshot expected = new WorkflowContextSnapshot();
-        when(delegate.planKeyGenerateStrategy(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), any())).thenReturn(expected);
+        when(kernel.planKeyGenerateStrategy(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), any())).thenReturn(expected);
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setKeyGenerateStrategyName("order_key_strategy");
-        WorkflowContextSnapshot actual = new ShardingKeyGenerateStrategyWorkflowPlanningService(delegate)
+        WorkflowContextSnapshot actual = new ShardingKeyGenerateStrategyWorkflowPlanningService(kernel)
                 .plan(workflowSessionContext, queryFacade, "session-1", new ShardingKeyGenerateStrategyWorkflowRequest(request));
         ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
-        verify(delegate).planKeyGenerateStrategy(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), requestCaptor.capture());
+        verify(kernel).planKeyGenerateStrategy(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(actual, is(expected));
         assertThat(requestCaptor.getValue().getKeyGenerateStrategyName(), is("order_key_strategy"));
     }
