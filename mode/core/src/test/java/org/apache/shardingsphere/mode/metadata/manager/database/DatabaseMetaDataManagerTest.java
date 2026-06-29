@@ -42,6 +42,7 @@ import org.mockito.Mock;
 
 import java.sql.Types;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -146,12 +147,11 @@ class DatabaseMetaDataManagerTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType);
         ShardingSphereDatabase realDatabase = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class),
-                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema), new ConfigurationProperties(new java.util.Properties()));
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema), new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(realDatabase);
-        // Should not throw NPE; the schema tables should be checked BEFORE dropSchema, not after
         assertDoesNotThrow(() -> databaseMetaDataManager.dropSchema("foo_db", "foo_schema"));
     }
-    
+
     @Test
     void assertDropSchemaWithSingleTableRefreshRules() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
