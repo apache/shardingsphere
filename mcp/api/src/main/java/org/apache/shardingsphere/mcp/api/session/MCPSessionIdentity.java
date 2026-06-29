@@ -24,12 +24,12 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 /**
- * MCP session attribution.
+ * MCP session identity.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class MCPSessionAttribution {
+public final class MCPSessionIdentity {
     
     private final String subject;
     
