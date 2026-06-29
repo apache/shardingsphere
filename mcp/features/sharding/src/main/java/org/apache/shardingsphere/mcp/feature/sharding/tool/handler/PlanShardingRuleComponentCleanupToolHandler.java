@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingRuleComponentCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingRuleComponentCleanupWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
@@ -39,8 +38,8 @@ public final class PlanShardingRuleComponentCleanupToolHandler extends AbstractS
         planningService = new ShardingRuleComponentCleanupWorkflowPlanningService();
     }
     
-    PlanShardingRuleComponentCleanupToolHandler(final ShardingWorkflowPlanningService planningService) {
-        this.planningService = new ShardingRuleComponentCleanupWorkflowPlanningService(planningService);
+    PlanShardingRuleComponentCleanupToolHandler(final ShardingRuleComponentCleanupWorkflowPlanningService planningService) {
+        this.planningService = planningService;
     }
     
     @Override

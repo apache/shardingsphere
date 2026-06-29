@@ -37,17 +37,17 @@ class ShardingKeyGeneratorWorkflowPlanningServiceTest {
     
     @Test
     void assertPlan() {
-        ShardingWorkflowPlanningService delegate = mock(ShardingWorkflowPlanningService.class);
+        ShardingWorkflowPlanningKernel kernel = mock(ShardingWorkflowPlanningKernel.class);
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         WorkflowContextSnapshot expected = new WorkflowContextSnapshot();
-        when(delegate.planKeyGenerator(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), any())).thenReturn(expected);
+        when(kernel.planKeyGenerator(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), any())).thenReturn(expected);
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setKeyGeneratorName("snowflake_generator");
-        WorkflowContextSnapshot actual = new ShardingKeyGeneratorWorkflowPlanningService(delegate)
+        WorkflowContextSnapshot actual = new ShardingKeyGeneratorWorkflowPlanningService(kernel)
                 .plan(workflowSessionContext, queryFacade, "session-1", new ShardingKeyGeneratorWorkflowRequest(request));
         ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
-        verify(delegate).planKeyGenerator(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), requestCaptor.capture());
+        verify(kernel).planKeyGenerator(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(actual, is(expected));
         assertThat(requestCaptor.getValue().getKeyGeneratorName(), is("snowflake_generator"));
     }
