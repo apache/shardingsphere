@@ -31,13 +31,16 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
     - Do not introduce package-private top-level helper types by default.
       Keep very small, single-owner state or continuation helpers as private nested types, but avoid accumulating multiple nested collaborators inside one class.
       When a helper has cohesive behavior, multiple callers, direct test value, or enough logic to distract from the owner class, split it into a public top-level type with a clear contract and direct tests.
-      If neither private nor public fits, pause before coding and explain why.
+      If neither private nor public fits, do not add a helper; keep the implementation in the approved owner or simplify the design within the declared boundary.
     - Every new public production type must have direct, focused tests.
       Broad workflow tests do not replace public contract tests unless they explicitly exercise that public type's behavior.
-    - Do not add constructors, overloads, or wider constructor visibility to production code solely for tests.
-      Production constructors must represent production-supported construction paths.
-      Prefer testing through existing public constructors, factories, builders, SPI loaders, or production APIs; use mocks or fixtures when construction is incidental to the behavior under test.
-      If a test-only construction path seems necessary, pause before coding and explain why the production design should change.
+    - Do not change production code solely for test convenience.
+      Test-only reuse, easier mocking, coverage convenience, fixture sharing, or test-only construction must not justify adding production types,
+      widening visibility, changing constructors, adding overloads, altering signatures, moving test helpers into production, or introducing abstractions.
+      Production changes must have an independent production reason, such as fixing behavior, clarifying a real contract, reducing production duplication,
+      or exposing a construction path that production code legitimately supports.
+      Prefer test-local fixtures, mocks, existing public constructors, factories, builders, SPI loaders, or production APIs when construction is incidental to the behavior under test.
+      If a change is only needed by tests, do not make the production change.
     - New internal abstractions must reduce cognitive complexity instead of merely wrapping branches in more types.
       For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.
       Add them only when they define a stable boundary, keep owner classes readable, or remove meaningful duplicated logic.
@@ -158,6 +161,9 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Precise modification**: change only the files and code paths required by the task; avoid drive-by refactors and unrelated cleanup.
 - **Path portability**: when writing code, tests, scripts, or skills, do not hard-code local machine paths or workspace-specific absolute paths.
   Use repository-relative paths, configurable parameters, temporary directories, or documented environment variables instead.
+- **Execution mode discipline**: in confirmation-only tasks, surface unclear boundaries, design conflicts, and rule conflicts as questions or recommendations before editing.
+  In authorized implementation tasks, produce a compliant result directly when the issue can be resolved within the declared boundary; do not stop merely to ask permission or explain alternatives.
+  Stop only for missing scope, required scope expansion, dangerous operations, external approvals, or true impasses that cannot be resolved from local evidence.
 - **Scope declaration gate**: before planning or editing, determine and declare the requested change boundary.
   If the boundary is clear from the user request, state the inferred scope explicitly before making changes.
   If the boundary is missing or ambiguous, pause and ask the developer to confirm it before making changes.
