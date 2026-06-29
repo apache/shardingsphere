@@ -32,7 +32,7 @@ weight = 1
 
 ### 分片表配置
 
-类名称：org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration
 
 可配置属性：
 
@@ -46,7 +46,7 @@ weight = 1
 
 ### 自动分片表配置
 
-类名称：org.apache.shardingsphere.sharding.api.config.ShardingAutoTableRuleConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration
 
 可配置属性：
 
@@ -165,7 +165,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration())), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

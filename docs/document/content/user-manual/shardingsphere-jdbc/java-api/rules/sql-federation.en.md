@@ -18,11 +18,11 @@ Attributes:
 |--------------------------|------------------------------------------------------|--------------------------------------------|-----------------|
 | sqlFederationEnabled     | boolean                                              | SQL federation enabled configuration       | -               |
 | allQueryUseSQLFederation | boolean                                              | all query use SQL federation configuration | -               |
-| executionPlanCache       | org.apache.shardingsphere.sql.parser.api.CacheOption | execution plan cache configuration         | -               |
+| executionPlanCache       | org.apache.shardingsphere.sql.parser.engine.api.CacheOption | execution plan cache configuration         | -               |
 
 ## Cache option Configuration
 
-Class: org.apache.shardingsphere.sql.parser.api.CacheOption
+Class: org.apache.shardingsphere.sql.parser.engine.api.CacheOption
 
 Attributes: 
 

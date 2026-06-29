@@ -36,7 +36,7 @@ variableName ::=
 
 ### 补充说明
 
-- 未指定 `vairableName` 时，默认查询所有 `PROXY` 系统变量配置
+- 未指定 `variableName` 时，默认查询所有 `PROXY` 系统变量配置
 
 ### 示例
 

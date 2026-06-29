@@ -326,8 +326,8 @@ while ShardingSphere itself only provides the corresponding GraalVM Reachability
 GraalVM Reachability Metadata of other database drivers such as `com.mysql:mysql-connector-j` should be defined by themselves,
 or the corresponding JSON should be submitted to https://github.com/oracle/graalvm-reachability-metadata .
 
-For example, the `com.mysql.cj.jdbc.MysqlXADataSource` class in `com.mysql:mysql-connector-j:9.0.0` implements the `javax.sql.XADataSource` class of the MySQL JDBC Driver.
-Users need to define the following JSON in the `reachability-metadata.json` file in the `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` folder of their project's buildpath.
+For example, the `com.mysql.cj.jdbc.MysqlXADataSource` class in `com.mysql:mysql-connector-j:8.4.0` implements the `javax.sql.XADataSource` class of the MySQL JDBC Driver.
+Users need to define the following JSON in the `reachability-metadata.json` file in the `/META-INF/native-image/com.mysql/mysql-connector-j/8.4.0/` folder of their project's buildpath.
 
 ```json
 {

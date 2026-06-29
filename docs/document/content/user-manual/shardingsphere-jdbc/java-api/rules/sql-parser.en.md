@@ -22,7 +22,7 @@ Attributes:
 
 ## Cache option Configuration
 
-Class：org.apache.shardingsphere.sql.parser.api.CacheOption
+Class: org.apache.shardingsphere.sql.parser.engine.api.CacheOption
 
 Attributes:
 
