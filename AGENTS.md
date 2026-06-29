@@ -42,10 +42,25 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.
       Add them only when they define a stable boundary, keep owner classes readable, or remove meaningful duplicated logic.
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
+    - Do not add guard clauses, parameter checks, or exception throws only to make code appear safer.
+      Add a runtime guard only when it protects a real contract boundary, such as external input, public API usage, persisted or parsed configuration,
+      SPI or reflection input, invalid shared/asynchronous state, or an immediately diagnosable failure mode.
+      Treat the `CODE_OF_CONDUCT.md` rule that method parameters and return values are not allowed to be `null` as a design contract,
+      not as permission to scatter redundant `null` checks through private/internal call paths whose callers already own the invariant.
+      If an upstream parser, validator, factory, SPI loader, type contract, or public constructor already guarantees an invariant,
+      do not duplicate the check unless it improves a user-facing diagnostic or protects a later boundary; record that reason in the plan or final response.
     - For production guard failures such as invalid state, invalid arguments, missing resources, or unsupported operations, prefer `ShardingSpherePreconditions` with lazy exception suppliers
       over manual `if (...) { throw ...; }` guards.
       Use manual throws only when the target module cannot depend on `infra/exception`, the check lives inside `ShardingSpherePreconditions` itself,
       the surrounding API requires a different control flow, or the precondition form would obscure the semantics; record the reason in the plan or final response.
+    - Do not add or keep unnecessary `throws` declarations in method signatures.
+      Declare checked exceptions only when the exception is part of the caller-facing contract, required by an overridden or implemented method,
+      required by an external API or framework boundary, or intentionally preserved for public/source compatibility.
+      Do not widen signatures to generic `Exception` or `Throwable` when a narrower exception, local handling, or ShardingSphere exception conversion is the real contract.
+      Before adding or keeping a checked `throws`, verify the ownership chain: where the exception originates, who can act on it,
+      whether an existing boundary should catch and wrap it, and whether callers/tests actually depend on the declaration.
+      When changing code removes the last checked-exception source, remove stale `throws` from private and internal methods by default;
+      for public APIs, first apply the public contract propagation gate and document any compatibility reason for keeping the declaration.
     - Do not add or keep Javadocs on methods that only override or implement a documented parent method.
       Keep the public contract on the declaring API, SPI, or interface.
       An overriding method should add Javadocs only when it documents implementation-specific behavior, stricter preconditions, side effects, exceptions, compatibility notes,
@@ -223,6 +238,16 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use without marking local variables `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
   Before handoff, inspect the Java diff for newly added `final` declarations and remove any new meaningless local-variable `final`.
   Verify code and skills do not contain local machine paths before handoff.
+- **Final semantic fix gate:** after finishing code, test, documentation, configuration, or generated-artifact changes and before considering the task complete,
+  inspect the final diff and surrounding changed context against every `AGENTS.md` and `CODE_OF_CONDUCT.md` rule that applies to the requested scope,
+  touched files, and changed behavior.
+  Do not rely on scripts, search output, Checkstyle, Spotless, tests, or compilation alone as proof that the change satisfies semantic rules.
+  Use tools such as `git diff`, `rg`, tests, Checkstyle, and Spotless to collect evidence and candidate violations,
+  then make an explicit semantic judgment from the code, contracts, existing patterns, and user request.
+  Verify that every actual change is simple, necessary, and directly tied to the user request or an explicitly applicable rule requirement.
+  Keep necessary formatting changes inside touched hunks, but remove unrelated file or hunk changes introduced by the current task.
+  If an applicable rule is violated, or if a change is meaningless, speculative, cosmetic, convenience-only, or unnecessary, fix or remove the current-task edit before completion.
+  Do not treat reporting a violation, waiver, or residual risk as a substitute for fixing an in-scope issue that can be fixed safely.
 - **CI impact gate:** before handoff, determine affected GitHub Actions from changed files.
   Use `rg` or small `sed` ranges to inspect only matching workflow `paths`, job names, and execution commands instead of reading every workflow file.
   For production code, tests, E2E, build configuration, or project-rule changes, run the local equivalent of the affected workflow command when practical.
@@ -250,7 +275,9 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - Use `doubt-driven-development` when available, or equivalent adversarial self-review, to keep raising and resolving valuable in-scope questions until the stop condition is met.
   Stop when no actionable findings remain, the same findings repeat, 3 doubt cycles complete, or the user explicitly overrides.
 - Before finishing any implementation task, compare the final diff against the declared or confirmed change boundary.
-  If any edit is outside that boundary, revert only the out-of-scope edits made in the current task, then rework the solution within the allowed scope.
+  Use `git diff` to verify the final changed file set and changed hunks against the declared or confirmed boundary.
+  If any edit is outside that boundary and has no documented reason required by the task or an applicable rule,
+  revert only the out-of-scope edits made in the current task, then rework the solution within the allowed scope.
   Do not keep out-of-scope changes for convenience, and do not use destructive git commands or revert unrelated user changes.
   If the task cannot be completed after removing the out-of-scope edits, stop and ask the developer to confirm the required scope expansion.
 - If any answer reveals an in-scope, behavior-preserving, low-risk required fix, make the fix and rerun relevant checks.
