@@ -28,9 +28,7 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValid
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,12 +38,12 @@ public final class MaskMCPHandlerProvider implements MCPHandlerProvider, MCPWork
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
-        return Arrays.asList(new MaskAlgorithmsHandler(), new MaskRulesHandler(), new MaskRuleHandler());
+        return List.of(new MaskAlgorithmsHandler(), new MaskRulesHandler(), new MaskRuleHandler());
     }
     
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
-        return Collections.singleton(new PlanMaskRuleToolHandler());
+        return List.of(new PlanMaskRuleToolHandler());
     }
     
     @Override

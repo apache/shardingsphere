@@ -131,7 +131,7 @@ final class ShardingWorkflowPlanningKernel {
                 "create", "Default sharding strategy workflow plan.", actual -> containsDefaultStrategy(inspectionService.queryDefaultStrategy(queryFacade, actual.getDatabase()),
                         queryFacade.getDatabaseType(actual.getDatabase()), actual.getDefaultStrategyType()),
                 this::hasRequiredDefaultStrategyInputs,
-                (actual, snapshot) -> planAlgorithms(queryFacade, actual, shouldPlanDefaultStrategyAlgorithm(actual), false, snapshot),
+                (actual, snapshot) -> planAlgorithms(queryFacade, actual, shouldPlanShardingAlgorithm(actual), false, snapshot),
                 actual -> distSQLPlanningService.planDefaultStrategy(actual, actual.getOperationType()));
     }
     
@@ -426,19 +426,15 @@ final class ShardingWorkflowPlanningKernel {
     private List<AlgorithmPropertyRequirement> findPropertyRequirements(final ShardingWorkflowRequest request, final boolean includeShardingAlgorithm,
                                                                         final boolean includeKeyGenerator) {
         if (includeShardingAlgorithm && includeKeyGenerator) {
-            return algorithmPropertyTemplateService.findRequirements(request.getAlgorithmType(), resolveKeyGeneratorType(request));
+            return algorithmPropertyTemplateService.findRequirements(request.getAlgorithmType(), request.getKeyGeneratorType());
         }
         return includeShardingAlgorithm
                 ? algorithmPropertyTemplateService.findAlgorithmRequirements(request.getAlgorithmType())
-                : algorithmPropertyTemplateService.findKeyGeneratorRequirements(resolveKeyGeneratorType(request));
+                : algorithmPropertyTemplateService.findKeyGeneratorRequirements(request.getKeyGeneratorType());
     }
     
     private boolean shouldPlanShardingAlgorithm(final ShardingWorkflowRequest request) {
         return !WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType()) && !"none".equalsIgnoreCase(normalizeStrategyType(request));
-    }
-    
-    private boolean shouldPlanDefaultStrategyAlgorithm(final ShardingWorkflowRequest request) {
-        return shouldPlanShardingAlgorithm(request);
     }
     
     private boolean shouldPlanTableRuleKeyGenerator(final ShardingWorkflowRequest request) {
@@ -448,10 +444,6 @@ final class ShardingWorkflowPlanningKernel {
     
     private boolean shouldPlanKeyGenerateStrategyGenerator(final ShardingWorkflowRequest request) {
         return !WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType()) && request.getKeyGeneratorName().isEmpty();
-    }
-    
-    private String resolveKeyGeneratorType(final ShardingWorkflowRequest request) {
-        return request.getKeyGeneratorType();
     }
     
     private boolean isUnusedComponent(final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {

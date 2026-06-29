@@ -164,9 +164,9 @@ final class SQLStatementScanner {
                 currentIndex = stopIndex + 1;
                 continue;
             }
-            if (isWordCharacter(currentChar)) {
+            if (isIdentifierCharacter(currentChar)) {
                 int stopIndex = currentIndex;
-                while (stopIndex < sql.length() && isWordCharacter(sql.charAt(stopIndex))) {
+                while (stopIndex < sql.length() && isIdentifierCharacter(sql.charAt(stopIndex))) {
                     stopIndex++;
                 }
                 result.add(new SQLStatementToken(sql.substring(currentIndex, stopIndex), false));
@@ -323,10 +323,6 @@ final class SQLStatementScanner {
     
     private boolean isIdentifierCharacter(final char value) {
         return Character.isLetterOrDigit(value) || '_' == value || '$' == value;
-    }
-    
-    private boolean isWordCharacter(final char value) {
-        return isIdentifierCharacter(value);
     }
     
     private boolean isQuotedIdentifierStart(final char value) {
