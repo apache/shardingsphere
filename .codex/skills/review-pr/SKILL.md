@@ -2,16 +2,12 @@
 name: review-pr
 description: >-
   Used to review whether an Apache ShardingSphere PR truly fixes the root cause,
-  assess side effects and regression risks, and determine whether it can be safely merged.
-  If not mergeable, produce committer-tone change requests, or needs-discussion feedback when
-  the PR direction, root-cause model, or problem framing should be reopened before implementation continues.
-  Also use when asked to assess GitHub-visible PR discussion, review comments, author or maintainer pushback,
-  challenged findings, or to draft copy-ready committer replies where review correctness, mergeability,
-  change-request validity, or root-cause evidence is being judged.
-  If review cannot be completed from available public evidence, produce a Review Incomplete result without patch-level advice.
-  Supports targeted comparison across GitHub-visible review rounds when prior PR comments or review threads exist.
-  Supports full-coverage ledger review for large, high-risk, or explicitly anti-drip review requests.
-  Before final output, internally self-iterate the review until no new actionable findings are discovered.
+  assess side effects and regression risks, and judge code correctness or mergeability from public evidence.
+  If not mergeable, produce committer-tone change requests or needs-discussion feedback when the PR direction,
+  root-cause model, or problem framing should be reopened. Also use for GitHub-visible PR discussion, review
+  comments, challenged findings, and copy-ready committer replies where review correctness, mergeability,
+  change-request validity, or root-cause evidence is being judged. Supports full-coverage ledger review for
+  high-risk or explicitly anti-drip requests, and self-iterates before final output.
 ---
 
 # Review PR
@@ -24,6 +20,20 @@ description: >-
   - `PR Discussion Reply Mode`: use when the user asks how to reply to PR comments, review threads, author or maintainer pushback, or challenged findings.
     Output a copy-ready committer reply draft by default, and do not force a formal `Review Result` unless the user asks for one.
 - In `Formal Review Mode`, choose the result and feedback mode from the `Verdict Matrix`.
+
+## Review Focus Selection
+
+Classify the review focus before applying CI, mergeability, or GitHub Actions gates. This focus is independent from `Formal Review Mode` versus `PR Discussion Reply Mode`.
+
+- `Code Correctness Review`: default for `$review-pr <PR>` and for requests that ask whether the code, implementation, tests, behavior, or scope is correct,
+  including requests that exclude CI or GitHub Actions review.
+  Review the latest PR code, tests, behavior, scope, regression risk, and local or static evidence. Do not query, wait for, or block on GitHub Actions, check-runs, workflow runs, or Actions logs.
+  In this focus, `Review Result: Mergeable` means no code-level blocker was found in the reviewed scope; it is not a final CI or repository merge-gate decision.
+- `Mergeability Review`: use only when the user asks whether the PR can be merged, approved, or is ready to land. Apply code review plus relevant CI and check-run gates.
+  Relevant failed CI means the PR is not mergeable; required pending CI means mergeability is incomplete until it finishes.
+- `CI Review`: use when the user asks to inspect CI, checks, Actions, logs, or failures. Treat CI evidence as the primary target.
+
+Explicit user scope wins. If the newest user message excludes CI or GitHub Actions, keep the result inside `Code Correctness Review` and state `CI not reviewed by request` in `Review Details`.
 
 ## Trigger Scenarios
 Use when the user asks to review a PR, decide mergeability or root-cause repair, write committer feedback,
@@ -41,20 +51,23 @@ reconsider PR direction, or reply to PR comments, review threads, author pushbac
    use `Review Result: Not Mergeable` with `Feedback Mode: Needs Discussion`.
 6. Review only the latest PR code version, and use GitHub PR metadata plus `/pulls/{number}/files` as the authoritative scope boundary.
 7. Apply the `Style and Non-Behavioral Churn Authority` before reporting formatting, whitespace, import-only, or formatter-only findings.
-8. Before considering `Mergeable`, apply all triggered hard gates and specialized review gates, including semantic compatibility, counterexamples, blast-radius/shared-layer ownership,
-   linked-issue completeness, implicit-state review, high-frequency `computeIfAbsent` review, CI evidence judgment when relevant, and local verification freshness.
+8. Before considering `Mergeable`, apply all hard gates and specialized review gates triggered by the selected review focus, including semantic compatibility, counterexamples,
+   blast-radius/shared-layer ownership, linked-issue completeness, implicit-state review, high-frequency `computeIfAbsent` review,
+   focus-required CI evidence judgment, and local verification freshness.
+   In `Code Correctness Review`, do not treat CI or check-run state as a triggered gate unless the user requested CI or mergeability review.
 9. Before final output, complete the `Pre-Publication Finding Audit`; do not expose intermediate findings, and output one consolidated review.
 
 ## Verdict Matrix
 
-The goal is the correct mergeability judgment, not conservative avoidance or aggressive blocking.
+The goal is the correct judgment for the selected review focus, not conservative avoidance or aggressive blocking.
 
-- Use `Mergeable` when the reviewed latest scope, all triggered gates, and public evidence support merge readiness.
+- Use `Mergeable` when the reviewed latest scope, all triggered gates, and public evidence support readiness for the selected review focus.
+  In `Code Correctness Review`, this means code-scope readiness only, not final CI or repository merge-gate readiness.
 - Use `Not Mergeable` only for confirmed, necessary, in-scope blockers.
   - Use `Feedback Mode: Change Request` when the PR direction is valid, but the patch needs implementation, test, scope, compatibility, or evidence changes.
   - Use `Feedback Mode: Needs Discussion` when public evidence shows the PR direction, root-cause model, problem framing, expected behavior, ownership boundary, protocol or SQL semantics,
     compatibility assumption, or solution direction must be reopened before implementation continues.
-- Use `Review Incomplete` only when a required public fact is unavailable, inaccessible, stale, or unattributable and that gap affects mergeability.
+- Use `Review Incomplete` only when a required public fact is unavailable, inaccessible, stale, or unattributable and that gap affects the selected review focus.
   Do not include patch-level code requests; state what was verified, what required public fact is missing, and what must be checked next.
 - If a concern is real but not required for merge safety, classify it as non-blocking, ask a scoped question, or omit it from GitHub-facing output.
 
@@ -65,7 +78,8 @@ A candidate finding can enter `### Issues` or drive `Review Result: Not Mergeabl
 1. Direct evidence: cite code, diff, contract, test, CI/log, public reproduction, official documentation, or generated artifact evidence that proves the claim.
 2. Full path: for missing-behavior, missing-test, integration, metadata, SPI, or runtime claims, trace the production or test entry path end to end.
    Do not infer a missing branch from one helper method when setup, wrappers, prior calls, generated resources, or CI may already cover it.
-3. Counter-evidence: inspect the strongest public evidence that could disprove the finding, especially author/maintainer replies, linked docs, source code, and CI.
+3. Counter-evidence: inspect the strongest public evidence that could disprove the finding, especially author/maintainer replies, linked docs, source code,
+   and CI when required by the selected review focus.
 4. Necessity: prove the requested change is needed for merge safety, not merely cleaner, more precise, easier to read, or a release-note preference.
 5. Scope: prove the problem is caused by this PR, exposed by this PR in a way this PR owns, or required by the linked issue scope.
 
@@ -74,10 +88,13 @@ If any check fails, downgrade the candidate to `Review Incomplete`, a non-blocki
 ## Evidence Sufficiency and CI Judgment
 
 - CI success never replaces code review, root-cause review, scope review, or test adequacy review.
-- Relevant CI failure means the PR cannot be `Mergeable`.
+- In `Code Correctness Review`, do not query or wait for CI, check-runs, workflow runs, or Actions logs, and do not turn pending, skipped,
+  unavailable, inaccessible, or uninspected CI into `Review Incomplete` or `Not Mergeable`.
+  State `CI not reviewed by request` in `Review Details`.
+- In `Mergeability Review` or `CI Review`, relevant CI failure means the PR cannot be `Mergeable`.
   If the failure is attributable to the PR, use `Not Mergeable`; if attribution is unclear, use `Review Incomplete`.
 - Inspect CI, check-runs, or workflow logs when the PR goal, linked issue, author/user statement, generated artifact, native image, E2E,
-  test-infra, or a candidate blocker depends on runtime verification.
+  test-infra, or a candidate blocker depends on runtime verification and the selected review focus requires CI evidence.
 - If required CI or Actions logs are unavailable after the authenticated access ladder in `GitHub and Evidence Access`, classify the effect through the `Verdict Matrix`.
 - Do not wait for or query CI when code, docs, or static evidence is sufficient for the current review result.
   State the reason in `Verification` when CI was not reviewed.
@@ -89,10 +106,10 @@ Apply these only when the candidate finding depends on the named area.
 - Test coverage claims:
   - Trace the full test entry, fixture setup, helper calls, expected assertions, and earlier invocations before saying a branch is uncovered.
   - Distinguish production-path validation from fixture-injected or mocked-path validation.
-  - Consider existing tests, CI jobs, native/client smoke coverage, and E2E ownership before requiring a new test in the current PR.
+  - Consider existing tests, focus-required or already-reviewed CI jobs, native/client smoke coverage, and E2E ownership before requiring a new test in the current PR.
 - Generated metadata and native-image claims:
   - Classify the metadata first: reflection, `ServiceLoader`, resource include, proxy, JNI, serialization, tracing-agent noise, or packaging artifact.
-  - Check the production access path, generator/source of truth, automatic native-image features, disabled flags, and current-head native/GraalVM CI when relevant.
+  - Check the production access path, generator/source of truth, automatic native-image features, disabled flags, and current-head native/GraalVM CI when the selected review focus requires it.
   - Block only when a concrete reachable path is not otherwise covered and the current PR owns that metadata.
 - Docs and release-note necessity:
   - Classify the finding as blocker, change request, non-blocking suggestion, delegated umbrella work, or omitted.
@@ -115,7 +132,7 @@ native utility, or third-party CLI behavior.
   suspend the blocker and inspect that counter-evidence before responding.
 - Search the target tool for platform-specific fallbacks around the candidate path, such as command handlers, shell hook detection, environment variables,
   global/session/project scope, registry or PATH updates, subprocess spawning, shell re-entry, and unsupported-shell behavior.
-- If target-tool evidence is unavailable and mergeability or reply correctness depends on it, use `Review Result: Review Incomplete` in `Formal Review Mode`,
+- If target-tool evidence is unavailable and the selected review result or reply correctness depends on it, use `Review Result: Review Incomplete` in `Formal Review Mode`,
   or draft a clarification-style reply in `PR Discussion Reply Mode`; do not emit or preserve a blocker.
 - Emit `Not Mergeable`, or a firm copy-ready assertion that asks the author to change the PR, only when target-tool public evidence or a public reproduction
   proves the changed command flow is unreliable in the PR's documented environment.
@@ -125,6 +142,8 @@ native utility, or third-party CLI behavior.
 Apply these gates before considering `Review Result: Mergeable`.
 If a gate is not applicable to the PR, state the reason briefly in the review evidence or details.
 Do not turn speculative risks, personal style preferences, or out-of-scope polish into merge blockers.
+For `Code Correctness Review`, apply these gates only to code, tests, behavior, scope, compatibility, docs or release necessity, and local or static evidence inside the requested boundary.
+CI and check-run completion are not hard gates in this focus.
 
 1. Root cause: the PR repairs the true trigger point or required propagation path, not only the final error point.
    Fallbacks, null checks, defaults, try-catch blocks, or swallowed errors do not substitute for root-cause repair.
@@ -144,7 +163,7 @@ Do not turn speculative risks, personal style preferences, or out-of-scope polis
 10. Diagnostics: changed errors, logs, or diagnostic output remain accurate, actionable, and safe.
 11. Dependency and distribution: manifests, lockfiles, packaging, native-image metadata, LICENSE, NOTICE, and release artifacts are checked
     for security, license, compatibility, packaging, and release impact when touched.
-12. Local verification freshness: reviewer-run verification, when used to support mergeability, must exercise the latest PR head or a clearly identified current-head artifact.
+12. Local verification freshness: reviewer-run verification, when used to support the selected review result, must exercise the latest PR head or a clearly identified current-head artifact.
     Do not require Maven `-am` when IDE/MCP current-source runs, current-head installs, CI artifacts,
     or an explicit `-pl` module set already prove freshness for the reviewed path.
 
@@ -187,7 +206,7 @@ Choose the feedback mode from the `Verdict Matrix` before writing the GitHub-fac
   Never print token values, write them to the skill, ledger, temporary logs, review output, shell history, debug traces, or command summaries.
 - Fetch all pages for PR files, commits, comments, reviews, and required check data.
 - Do not treat anonymous `404` or secondary-endpoint `403` as unavailable evidence until authenticated access has been tried or shown unavailable.
-- Classify access by endpoint; inaccessible checks/logs block mergeability only when required under `Evidence Sufficiency and CI Judgment`.
+- Classify access by endpoint; inaccessible checks/logs block the selected review result only when required under `Evidence Sufficiency and CI Judgment`.
 - When GitHub Actions logs are required evidence, do not stop after `gh run view --log` or anonymous API/HTML failure.
   Try authenticated `gh` first, then token-backed REST for workflow or job logs, and record authenticated access as unavailable only after the configured token sources are missing,
   expired, unauthorized, or still cannot access the endpoint.
@@ -278,7 +297,7 @@ Triage policy:
 - Required public facts unavailable, inaccessible, stale, or unattributable: set `Review Result: Review Incomplete` and request only the facts needed to complete the review.
 - Wrong problem model, root-cause model, or direction: set `Review Result: Not Mergeable`, use `Feedback Mode: Needs Discussion`, and recommend `type: discussion`.
 - Any substantive off-topic/unrelated changes or substantive scope expansion: set `Review Result: Not Mergeable` and require rollback or scope narrowing.
-  Ignore non-behavioral import-only, whitespace-only, and formatter-only churn for mergeability unless it meets the `Style and Non-Behavioral Churn Authority`.
+  Ignore non-behavioral import-only, whitespace-only, and formatter-only churn for the selected review result unless it meets the `Style and Non-Behavioral Churn Authority`.
 - Change set too large: request split first, and provide only blocker-level feedback for current version.
 - If `Full Coverage Ledger Mode` is active, triage decisions select review depth and ledger setup only. They do not authorize early final output.
 
@@ -291,22 +310,23 @@ Triage policy:
 
 ## Review Workflow
 
-CI/check-run review is not a substitute for code review. Query and report CI only when it is relevant under `Evidence Sufficiency and CI Judgment`.
+CI/check-run review is not a substitute for code review. Query and report CI only when the selected review focus requires it under `Evidence Sufficiency and CI Judgment`.
 
-1. Define target and boundary: latest PR head, base/merge-base, GitHub file list, linked issue scope, modules, and runtime topology.
-2. Model the root cause: reconstruct "trigger condition -> failing path -> observed result -> expected behavior" from public issue, PR, code, and docs.
-3. Map the fix: connect each required issue behavior to the changed code and validation point; choose `Needs Discussion` only when the direction itself is contradicted.
-4. Build the risk inventory: scope, shared ownership, implicit state, compatibility, performance, diagnostics, docs, release notes, dependencies, and distribution.
+1. Select the review focus. In `Code Correctness Review`, fetch PR metadata, files, comments, and reviews needed for code scope, but do not fetch check-runs, workflow runs, or Actions logs.
+2. Define target and boundary: latest PR head, base/merge-base, GitHub file list, linked issue scope, modules, and runtime topology.
+3. Model the root cause: reconstruct "trigger condition -> failing path -> observed result -> expected behavior" from public issue, PR, code, and docs.
+4. Map the fix: connect each required issue behavior to the changed code and validation point; choose `Needs Discussion` only when the direction itself is contradicted.
+5. Build the risk inventory: scope, shared ownership, implicit state, compatibility, performance, diagnostics, docs, release notes, dependencies, and distribution.
    For parser, binder, routing, and default-schema changes, compare official dialect semantics and use `references/sql-parser-review.md` when SQL parser code changes.
-5. Verify validation: trace tests through real entry paths where applicable, map tests to fix points,
+6. Verify validation: trace tests through real entry paths where applicable, map tests to fix points,
    and apply the `Specialized Proof Mini-Gates` for test, metadata, native, and docs claims.
-6. Screen unrelated change: require rollback or scope narrowing only for substantive unrelated code, config, behavior, or broad cleanup.
+7. Screen unrelated change: require rollback or scope narrowing only for substantive unrelated code, config, behavior, or broad cleanup.
    Ignore non-behavioral churn unless it meets the `Style and Non-Behavioral Churn Authority`.
-7. Materialize the anti-drip inventory when `Full Coverage Ledger Mode` is active;
+8. Materialize the anti-drip inventory when `Full Coverage Ledger Mode` is active;
    otherwise keep an internal inventory with the same evidence categories.
-8. Apply the `Blocker Proof Gate` to every candidate finding before it can become a public blocker.
-9. Re-review latest deltas when new commits arrive; never conclude mergeability only because earlier comments were fixed.
-10. Run the `Pre-Publication Finding Audit`, then output exactly one formal result or one copy-ready PR discussion reply.
+9. Apply the `Blocker Proof Gate` to every candidate finding before it can become a public blocker.
+10. Re-review latest deltas when new commits arrive; never conclude mergeability only because earlier comments were fixed.
+11. Run the `Pre-Publication Finding Audit`, then output exactly one formal result or one copy-ready PR discussion reply.
 
 ## Pre-Publication Finding Audit
 
@@ -339,7 +359,7 @@ Run an adversarial pass on the latest head that looks for missed root-cause gaps
 adjacent-feature regressions, ownership issues, release/doc impacts, and required verification gaps.
 If the pass finds any new actionable finding with an independent fix boundary, add it to the inventory, deduplicate and classify it, update the review result if needed, and repeat the pass.
 Stop only after one full adversarial pass finds no new actionable finding.
-If the inventory cannot be completed because required public evidence is unavailable or unattributable, output `Review Result: Review Incomplete`.
+If the inventory cannot be completed because public evidence required by the selected review focus is unavailable or unattributable, output `Review Result: Review Incomplete`.
 Produce one consolidated review with exactly one `Review Result`.
 
 ## Root-Cause and Issue Gates
@@ -391,11 +411,13 @@ Apply this gate when shared modules, session/executor/connector state, cache con
 
 Each review must include a `Review Details` section with:
 
+- `Review Focus`: `Code Correctness Review`, `Mergeability Review`, or `CI Review`.
+  In `Code Correctness Review`, include the exact statement `CI not reviewed by request`; this is not an incomplete-evidence gap.
 - `Reviewed Scope`: files/modules reviewed this round, latest PR head SHA, local merge-base SHA when local git is used,
   and whether the local file list matched GitHub `/pulls/{number}/files`.
 - `Not Reviewed Scope`: unreviewed or only superficially reviewed areas.
 - `Verification`: reviewer-run commands and exit codes, or a short reason why local verification was not run.
-  Also state any relevant GitHub endpoint that was inaccessible and whether that gap affects mergeability.
+  Also state any relevant GitHub endpoint that was inaccessible and whether that gap affects the selected review result.
 - `Release Note / User Docs`: required and verified, delegated to an umbrella PR with reason, missing, not required with reason, or not reviewed.
 - For SQL parser reviews, `Reviewed Scope` must name the target dialect, related trunk / branch dialects checked,
   and the documentation pages / repo doc paths used to validate syntax behavior.
@@ -462,6 +484,7 @@ When returning copy-ready text in Codex chat, wrap only the GitHub-facing body i
 Use these required structures:
 
 - `Mergeable`: `### Summary` with `Review Result` and `Reason`; `### Evidence`; `### Review Details`.
+  In `Code Correctness Review`, the `Reason` must say the result is code-scope only and CI was not reviewed by request.
 - `Not Mergeable`: `### Summary` with `Review Result`, exactly one `Feedback Mode`, and `Reason`; `### Issues`; `### Review Details`.
 - `Review Incomplete`: `### Summary` with `Review Result` and `Reason`; `### Incomplete Reason`; `### Verified Facts`;
   `### Required Evidence`; `### Review Details`.
@@ -484,12 +507,14 @@ Optional `Not Mergeable` sections are `Positive Feedback`, `Unrelated Changes`, 
 
 ## Prohibited Items
 
-- Do not output `Mergeable` when evidence is insufficient, triggered gates remain unresolved, relevant CI is failing, or latest-head freshness is unclear.
+- Do not output `Mergeable` when evidence required by the selected review focus is insufficient, triggered gates for that focus remain unresolved,
+  or latest-head freshness for the reviewed code is unclear.
+  In `Mergeability Review` or `CI Review`, relevant CI failure or required pending CI prevents `Mergeable`; in `Code Correctness Review`, unreviewed CI does not.
 - Do not output `Not Mergeable` unless the candidate passed the `Blocker Proof Gate`.
 - Do not turn uncertainty, inaccessible facts, unavailable tools, skipped verification, or uninspected counter-evidence into a blocker.
 - Do not use fallback logic, fixture-injected tests, mocked paths, or CI success as substitutes for root-cause and production-path evidence.
 - Do not reuse old conclusions after new commits or previous-round fixes; always run a fresh latest-head semantic and regression scan.
-- Do not ignore substantive unrelated changes, shared-code blast radius, required docs/migration/diagnostics, or relevant CI/check-run evidence.
+- Do not ignore substantive unrelated changes, shared-code blast radius, required docs/migration/diagnostics, or CI/check-run evidence required by the selected review focus.
 - Do not include private identifiers, private chats, prompt process, local absolute paths, temp paths, credentials, or emojis in GitHub-facing output.
 - Do not output patch-level `Required Change` requests after selecting `Feedback Mode: Needs Discussion`.
 - Do not require low-value release-note or doc details that fail the necessity check.
