@@ -72,6 +72,7 @@ class MCPPromptSpecificationFactoryTest {
                 "- database: logic_db",
                 "- sql_intent: count orders",
                 "2. Use database_gateway_execute_query only for one classifier-approved SELECT or EXPLAIN ANALYZE statement.",
+                "   Treat preview as classification-only, not as a database dry run.",
                 "5. Never split or batch multiple SQL statements into one MCP call."));
     }
     

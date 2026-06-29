@@ -77,12 +77,14 @@ Configure `runtimeDatabases` according to the target capability boundary:
 
 ## Secure deployment
 
-The built-in HTTP Server does not provide authentication or authorization.
+The built-in HTTP Server does not provide authentication, authorization, rate limiting, or audit logging.
+Exposing the built-in HTTP Server directly to the public Internet is not a supported production boundary.
 For remote access, place it in a trusted network or behind a reverse proxy or gateway that handles:
 
 - TLS termination.
 - Authentication.
 - Authorization policy.
+- Rate limiting.
 - Network access control.
 - Audit logs.
 
@@ -90,7 +92,7 @@ HTTP binding recommendations:
 
 - Use `127.0.0.1` for local debugging.
 - Use a controlled network interface for container or intranet deployments.
-- Avoid exposing the MCP Server directly to remote clients.
+- Avoid exposing the MCP Server directly to remote clients. Route remote access through a trusted gateway.
 - When sessions must be associated with external users or request sources, let a trusted gateway inject session attribution headers. Do not allow clients to forge these headers directly.
 
 ### Trusted gateway and TLS termination example

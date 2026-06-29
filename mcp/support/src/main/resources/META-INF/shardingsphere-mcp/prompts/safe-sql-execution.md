@@ -26,6 +26,7 @@ Model path:
 1. Read shardingsphere://databases/{{database}}/capabilities before execution when statement support is uncertain.
 2. Use database_gateway_execute_query only for one classifier-approved SELECT or EXPLAIN ANALYZE statement.
 3. Use database_gateway_execute_update with execution_mode=preview for DML, DDL, DCL, transaction control, savepoint, or side-effecting EXPLAIN ANALYZE statements before execution.
+   Treat preview as classification-only, not as a database dry run.
 4. After reviewing the preview, call database_gateway_execute_update with execution_mode=execute and the reviewed SQL only when execution is still intended.
 5. Never split or batch multiple SQL statements into one MCP call.
 6. Before choosing uncertain database, schema, table, or column names, use completion/complete or read the nearest MCP resource; do not guess identifiers.
