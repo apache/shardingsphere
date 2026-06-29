@@ -23,74 +23,16 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import subprocess
 import sys
 from collections import defaultdict
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
+
+from review_common import ChangedFile, categorize, compare_github_files, final_paths, get_repo_root, parse_name_status, run_git
 
 
 MAX_ITEMS = 30
 MAX_TEST_REFERENCES = 3
-
-
-@dataclass(frozen=True)
-class ChangedFile:
-    status: str
-    path: str
-    old_path: str | None = None
-
-
-def run_git(args: list[str], repo_root: Path, allow_empty: bool = False) -> str:
-    process = subprocess.run(["git", *args], cwd=repo_root, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
-    if 0 == process.returncode or allow_empty and 1 == process.returncode:
-        return process.stdout
-    command = "git " + " ".join(args)
-    raise RuntimeError(f"{command} failed with exit {process.returncode}: {process.stderr.strip()}")
-
-
-def get_repo_root() -> Path:
-    process = subprocess.run(["git", "rev-parse", "--show-toplevel"], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
-    if 0 != process.returncode:
-        raise RuntimeError("Current directory is not inside a git repository")
-    return Path(process.stdout.strip())
-
-
-def parse_name_status(output: str) -> list[ChangedFile]:
-    result: list[ChangedFile] = []
-    for line in output.splitlines():
-        if not line.strip():
-            continue
-        parts = line.split("\t")
-        status = parts[0]
-        if status.startswith("R") or status.startswith("C"):
-            result.append(ChangedFile(status=status, path=parts[-1], old_path=parts[1]))
-        else:
-            result.append(ChangedFile(status=status, path=parts[-1]))
-    return result
-
-
-def final_paths(changed_files: Iterable[ChangedFile]) -> list[str]:
-    return [each.path for each in changed_files]
-
-
-def categorize(path: str) -> str:
-    if path == "RELEASE-NOTES.md":
-        return "release-notes"
-    if "/src/main/java/" in path:
-        return "production-java"
-    if "/src/test/" in path:
-        return "tests"
-    if path.startswith("docs/") or path.endswith((".md", ".adoc")):
-        return "docs"
-    if path.startswith(".github/") or path.endswith((".xml", ".properties", ".yml", ".yaml", ".toml", ".gradle")):
-        return "build-config"
-    if "distribution" in path:
-        return "distribution"
-    if "target/" in path or "/generated/" in path:
-        return "generated"
-    return "other"
 
 
 def read_file_at_ref(repo_root: Path, ref: str, path: str) -> str:
@@ -155,21 +97,6 @@ def scan_diff_clues(repo_root: Path, base_ref: str, head_ref: str, paths: list[s
     return {key: limited(values)[0] for key, values in result.items() if values}
 
 
-def compare_github_files(local_paths: list[str], github_files_path: str | None) -> dict[str, object]:
-    if not github_files_path:
-        return {"provided": False}
-    github_paths = sorted(line.strip() for line in Path(github_files_path).read_text(encoding="utf-8").splitlines() if line.strip())
-    local_sorted = sorted(local_paths)
-    return {
-        "provided": True,
-        "matched": github_paths == local_sorted,
-        "github_count": len(github_paths),
-        "local_count": len(local_sorted),
-        "only_in_github": sorted(set(github_paths) - set(local_sorted))[:MAX_ITEMS],
-        "only_in_local": sorted(set(local_sorted) - set(github_paths))[:MAX_ITEMS],
-    }
-
-
 def group_by_category(changed_files: list[ChangedFile]) -> dict[str, list[str]]:
     result: dict[str, list[str]] = defaultdict(list)
     for changed_file in changed_files:
@@ -196,7 +123,7 @@ def build_inventory(args: argparse.Namespace) -> dict[str, object]:
             "head_sha": head_sha,
             "merge_base": merge_base,
             "changed_file_count": len(changed_files),
-            "github_files": compare_github_files(paths, args.github_files),
+            "github_files": compare_github_files(paths, args.github_files, MAX_ITEMS),
         },
         "dirty_worktree": run_git(["status", "--short"], repo_root, allow_empty=True).splitlines(),
         "changed_files_by_category": group_by_category(changed_files),
@@ -211,11 +138,7 @@ def build_inventory(args: argparse.Namespace) -> dict[str, object]:
         "manual_checklist": [
             "Confirm GitHub file list matches local triple-dot scope before reporting scope findings.",
             "Classify each blocker origin: PR-caused, base-existing, exposed-by-PR, latest-introduced, older-PR-revision, or out-of-scope.",
-            "Classify each Not Mergeable result as Change Request or Needs Discussion before drafting feedback.",
             "Deduplicate candidate issues by independent fix boundary before output.",
-            "Review lifecycle paths for every new registry/cache/session/handle state.",
-            "Review supported-vs-rejected feature matrix and flag unsupported-but-accepted inputs.",
-            "Map every new public production type to direct focused tests or record missing evidence.",
             "Run one final adversarial pass after findings are frozen; output only after no new independent fix boundary appears.",
         ],
     }
