@@ -31,6 +31,7 @@
 1. Sharding: Fix generated actual index names exceeding database identifier length limits while preserving legacy generated index name compatibility - [#38449](https://github.com/apache/shardingsphere/pull/38449)
 1. Sharding: Fix AUTO_INTERVAL sharding failure under JVM default locales that use comma decimal separators - [#38806](https://github.com/apache/shardingsphere/pull/38806)
 1. DistSQL: Fix case-sensitive storage unit matching in `SHOW RULES USED STORAGE UNIT` - [#38848](https://github.com/apache/shardingsphere/pull/38848)
+1. Sharding: Compute the Snowflake key generator epoch in UTC instead of the JVM default timezone - [#38932](https://github.com/apache/shardingsphere/pull/38932)
 
 ### Enhancements
 
