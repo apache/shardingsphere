@@ -259,6 +259,12 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(executeUpdateOutputProperties.containsKey("preview_semantics"));
         assertTrue(executeUpdateOutputProperties.containsKey("review_summary"));
         assertFalse(executeUpdateOutputProperties.containsKey("approval_summary"));
+        assertTrue(((String) executeUpdateTool.get("description")).contains("Preview is classification-only, not a database dry run."));
+        assertThat(findInputSchema(executeUpdateTool, "execution_mode").get("description"),
+                is("Required safety gate. Use preview to classify side effects without execution; preview is not a database dry run. Use execute only after reviewing the preview."));
+        assertThat(((Map<?, ?>) executeUpdateOutputProperties.get("preview_semantics")).get("description"), is(
+                "Preview meaning. classification_only means the server classified SQL and side-effect scope without parsing, rule validation, "
+                        + "algorithm initialization, affected-row estimation, runtime execution, or database dry-run guarantees."));
         assertThat(getInputFieldNames(executeUpdateTool), is(List.of("database", "schema", "sql", "execution_mode", "max_rows", "timeout_ms")));
         Map<?, ?> applyWorkflowTool = findTool(capabilities, "database_gateway_apply_workflow");
         assertThat(getInputFieldNames(applyWorkflowTool), is(List.of("plan_id", "execution_mode", "approved_steps")));

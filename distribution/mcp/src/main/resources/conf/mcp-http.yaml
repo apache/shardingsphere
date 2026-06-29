@@ -15,6 +15,11 @@
 
 transport:
   type: STREAMABLE_HTTP
+  http:
+    # Use 127.0.0.1 for local debugging. Bind to a controlled intranet or container interface only behind a trusted gateway.
+    bindHost: 127.0.0.1
+    port: 18088
+    endpointPath: /mcp
 
 runtimeDatabases:
   # Configure this entry before startup.

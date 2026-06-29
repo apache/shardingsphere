@@ -60,7 +60,7 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 `database_gateway_execute_update`
 
 - Previews or executes one supported side-effecting SQL statement.
-- `execution_mode=preview` only classifies the SQL and previews the side-effect scope.
+- `execution_mode=preview` only classifies the SQL and previews the side-effect scope; it is not a database dry run.
 - `execution_mode=execute` executes the SQL after review.
 - Multiple statements and banned commands are rejected.
 
