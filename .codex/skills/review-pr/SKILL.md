@@ -23,14 +23,7 @@ description: >-
   - `Formal Review Mode`: use when the user asks for a PR review, mergeability decision, or formal GitHub review body. Output exactly one `Review Result`.
   - `PR Discussion Reply Mode`: use when the user asks how to reply to PR comments, review threads, author or maintainer pushback, or challenged findings.
     Output a copy-ready committer reply draft by default, and do not force a formal `Review Result` unless the user asks for one.
-- In `Formal Review Mode`, output exactly one `Review Result`:
-  - `Mergeable`: the reviewed scope, triggered gates, and public evidence support merge readiness.
-  - `Not Mergeable`: public evidence confirms a necessary, in-scope blocker that passed the `Blocker Proof Gate`.
-  - `Review Incomplete`: the reviewer cannot make a reliable mergeability judgment because required public facts are unavailable, inaccessible, or not attributable.
-- For `Not Mergeable`, choose exactly one feedback mode:
-  - `Change Request`: the direction is valid, but the patch needs implementation, test, scope, compatibility, or evidence changes.
-  - `Needs Discussion`: public evidence shows the PR direction, root-cause model, or problem framing must be reopened before implementation continues.
-- For `Review Incomplete`, do not output patch-level change requests. State what was verified, what required public fact is missing, and what must be checked next.
+- In `Formal Review Mode`, choose the result and feedback mode from the `Verdict Matrix`.
 
 ## Trigger Scenarios
 Use when the user asks to review a PR, decide mergeability or root-cause repair, write committer feedback,
@@ -38,41 +31,31 @@ reconsider PR direction, or reply to PR comments, review threads, author pushbac
 
 ## Mandatory Constraints
 
-Before applying the numbered review gates, enforce the public evidence boundary:
-
-- Treat every GitHub-facing review body as community-visible output that may be copied directly to a public Apache PR or issue.
-- Base community-visible output only on public PR / issue facts, public commits, public diff, public review threads, public documentation, repository code, and sanitized local verification summaries.
-- Do not include non-public downstream project names, private or internal repository names, customer-specific or vendor-specific context, private chats,
-  intermediate discussion results, prompt process, internal self-review notes, local-only archive details, or private migration background in community-visible output.
-- Do not use non-public context as review evidence. If such context helps orient the reviewer privately, convert it into a public-evidence question
-  and verify it against public artifacts before output.
-
 1. Verify root-cause repair first; fallback logic, defaults, null checks, try-catch blocks, or swallowed errors cannot substitute for root-cause repair.
-2. In `Formal Review Mode`, output exactly one `Review Result`. Choose one `Feedback Mode` only when the result is `Not Mergeable`.
-3. Treat every issue as a candidate until it passes the `Blocker Proof Gate`.
+2. In `Formal Review Mode`, output exactly one `Review Result` from the `Verdict Matrix`.
+3. Enforce the `GitHub and Evidence Access` boundary before using or reporting evidence.
+4. Treat every issue as a candidate until it passes the `Blocker Proof Gate`.
    Do not convert reviewer uncertainty, tool failure, inaccessible GitHub data, or missing local verification into a PR blocker.
    Use `Review Incomplete` in `Formal Review Mode`, or a clarification-style reply in `PR Discussion Reply Mode`, when required public facts cannot be checked or attributed.
-4. In `Formal Review Mode`, if public evidence confirms a wrong root-cause model, problem framing, expected behavior, ownership boundary, or solution direction,
+5. In `Formal Review Mode`, if public evidence confirms a wrong root-cause model, problem framing, expected behavior, ownership boundary, or solution direction,
    use `Review Result: Not Mergeable` with `Feedback Mode: Needs Discussion`.
-5. Review only the latest PR code version, and use GitHub PR metadata plus `/pulls/{number}/files` as the authoritative scope boundary.
-6. Use repository-declared formatting/style gates as the formatting authority.
-   For ShardingSphere, Spotless and Checkstyle are authoritative.
-   Do not run `git diff --check`, editor whitespace lint, or other generic whitespace diagnostics as routine review verification.
-   Use them only when repository workflows explicitly require them, the user asks for whitespace review, the review target is formatting rules, or whitespace has direct semantic impact.
-   Do not report Spotless-stable whitespace, including formatter-preserved blank-line indentation, as a blocker.
-7. Treat substantive unrelated changes or substantive scope expansion as blockers; ignore non-behavioral import-only, whitespace-only, formatter-only, or IDE cleanup churn unless it hides behavior,
-   fails declared gates, touches broad unrelated areas, or violates explicit scope rules.
+6. Review only the latest PR code version, and use GitHub PR metadata plus `/pulls/{number}/files` as the authoritative scope boundary.
+7. Apply the `Style and Non-Behavioral Churn Authority` before reporting formatting, whitespace, import-only, or formatter-only findings.
 8. Before considering `Mergeable`, apply all triggered hard gates and specialized review gates, including semantic compatibility, counterexamples, blast-radius/shared-layer ownership,
    linked-issue completeness, implicit-state review, high-frequency `computeIfAbsent` review, CI evidence judgment when relevant, and local verification freshness.
 9. Before final output, complete the `Pre-Publication Finding Audit`; do not expose intermediate findings, and output one consolidated review.
 
-## Core Verdict Principle
+## Verdict Matrix
 
 The goal is the correct mergeability judgment, not conservative avoidance or aggressive blocking.
 
 - Use `Mergeable` when the reviewed latest scope, all triggered gates, and public evidence support merge readiness.
 - Use `Not Mergeable` only for confirmed, necessary, in-scope blockers.
+  - Use `Feedback Mode: Change Request` when the PR direction is valid, but the patch needs implementation, test, scope, compatibility, or evidence changes.
+  - Use `Feedback Mode: Needs Discussion` when public evidence shows the PR direction, root-cause model, problem framing, expected behavior, ownership boundary, protocol or SQL semantics,
+    compatibility assumption, or solution direction must be reopened before implementation continues.
 - Use `Review Incomplete` only when a required public fact is unavailable, inaccessible, stale, or unattributable and that gap affects mergeability.
+  Do not include patch-level code requests; state what was verified, what required public fact is missing, and what must be checked next.
 - If a concern is real but not required for merge safety, classify it as non-blocking, ask a scoped question, or omit it from GitHub-facing output.
 
 ## Blocker Proof Gate
@@ -90,14 +73,12 @@ If any check fails, downgrade the candidate to `Review Incomplete`, a non-blocki
 
 ## Evidence Sufficiency and CI Judgment
 
-- `Not Mergeable` requires a candidate to pass the `Blocker Proof Gate`; otherwise it remains internal or becomes `Review Incomplete`.
-- `Review Incomplete` is not a soft approval and must not contain patch-level code requests.
-  If a code issue is already confirmed, use `Not Mergeable`.
 - CI success never replaces code review, root-cause review, scope review, or test adequacy review.
 - Relevant CI failure means the PR cannot be `Mergeable`.
   If the failure is attributable to the PR, use `Not Mergeable`; if attribution is unclear, use `Review Incomplete`.
 - Inspect CI, check-runs, or workflow logs when the PR goal, linked issue, author/user statement, generated artifact, native image, E2E,
   test-infra, or a candidate blocker depends on runtime verification.
+- If required CI or Actions logs are unavailable after the authenticated access ladder in `GitHub and Evidence Access`, classify the effect through the `Verdict Matrix`.
 - Do not wait for or query CI when code, docs, or static evidence is sufficient for the current review result.
   State the reason in `Verification` when CI was not reviewed.
 
@@ -169,13 +150,8 @@ Do not turn speculative risks, personal style preferences, or out-of-scope polis
 
 ## Not Mergeable Feedback Mode
 
-Choose the feedback mode before writing the GitHub-facing review:
+Choose the feedback mode from the `Verdict Matrix` before writing the GitHub-facing review.
 
-- Use `Change Request` when the PR direction is aligned with the confirmed root cause,
-  but the current patch still needs implementation, test, scope, compatibility, or evidence changes.
-- Use `Needs Discussion` when public evidence shows the PR is built on a confirmed-wrong or publicly disputed problem model,
-  root-cause model, expected behavior, ownership boundary, protocol or SQL semantics,
-  compatibility assumption, or solution direction.
 - Do not use `Needs Discussion` for ordinary incomplete patches, missing tests, or missing logs when the direction is otherwise correct; request the minimum missing information or changes instead.
 - Do not ask for patch-level refinement after selecting `Needs Discussion`; ask maintainers and the author to pause the current implementation direction and resolve the discussion first.
 - For label recommendations, suggest existing labels only:
@@ -187,23 +163,40 @@ Choose the feedback mode before writing the GitHub-facing review:
 - Review only the latest PR code, tests, behavior, compatibility, regression risk, and scope.
 - Derive authoritative scope from GitHub PR metadata and `/pulls/{number}/files`; reproduce locally with triple-dot semantics.
   Record head SHA, base ref/SHA, merge-base, and whether the local file list matches GitHub.
-- Do not base the result solely on CI, and do not wait for CI when static/code evidence is already sufficient.
-- Use repository-declared style gates as authority. For ShardingSphere, Spotless and Checkstyle are authoritative.
-  Do not use `git diff --check` or other generic whitespace diagnostics as routine review verification unless the Mandatory Constraints exception applies.
 
-## Non-Behavioral Churn Rule
+## Style and Non-Behavioral Churn Authority
 
+- Use repository-declared formatting/style gates as authority. For ShardingSphere, Spotless and Checkstyle are authoritative.
+- Do not run `git diff --check`, editor whitespace lint, or other generic whitespace diagnostics as routine review verification.
+  Use them only when repository workflows explicitly require them, the user asks for whitespace review, the review target is formatting rules, or whitespace has direct semantic impact.
+- Do not report Spotless-stable whitespace, including formatter-preserved blank-line indentation, as a blocker.
 - Include import-only, whitespace-only, and formatter-only files in `Reviewed Scope` when GitHub lists them.
 - Do not report them as blockers or rollback requests unless they hide behavior, fail style gates, touch broad unrelated areas, or violate explicit scope rules.
 
 ## GitHub and Evidence Access
 
-- Prefer authenticated GitHub connector/app tools, then `gh`, then token-backed REST without printing token values, then anonymous API/HTML.
+- Treat every GitHub-facing review body as community-visible output that may be copied directly to a public Apache PR or issue.
+- Base community-visible output only on public PR / issue facts, public commits, public diff, public review threads, public documentation, repository code, and sanitized local verification summaries.
+- Do not include non-public downstream project names, private or internal repository names, customer-specific or vendor-specific context, private chats,
+  intermediate discussion results, prompt process, internal self-review notes, local-only archive details, private migration background, tokens, auth method details,
+  temporary file paths, raw private diagnostics, local absolute paths, private identifiers, or internal reasoning in community-visible output.
+- Do not use non-public context as review evidence. If such context helps orient the reviewer privately, convert it into a public-evidence question
+  and verify it against public artifacts before output.
+- Prefer authenticated GitHub connector/app tools, then authenticated `gh`, then token-backed REST, then anonymous API/HTML.
+- For `gh` and REST fallback, prefer the local configured token sources in this order: `gh auth token`, `GH_TOKEN`, then `GITHUB_TOKEN`.
+  Never print token values, write them to the skill, ledger, temporary logs, review output, shell history, debug traces, or command summaries.
 - Fetch all pages for PR files, commits, comments, reviews, and required check data.
 - Do not treat anonymous `404` or secondary-endpoint `403` as unavailable evidence until authenticated access has been tried or shown unavailable.
 - Classify access by endpoint; inaccessible checks/logs block mergeability only when required under `Evidence Sufficiency and CI Judgment`.
-- GitHub-facing output may cite only public PR/issue facts, repository code, public docs/specs, public CI/logs, or sanitized local verification summaries.
-- Never output tokens, auth method details, temporary file paths, raw private diagnostics, local absolute paths, private identifiers, prompt text, or internal reasoning.
+- When GitHub Actions logs are required evidence, do not stop after `gh run view --log` or anonymous API/HTML failure.
+  Try authenticated `gh` first, then token-backed REST for workflow or job logs, and record authenticated access as unavailable only after the configured token sources are missing,
+  expired, unauthorized, or still cannot access the endpoint.
+- Keep Actions log retrieval read-only. Do not rerun workflows, write comments, alter PR state, or request new token permissions without explicit user confirmation.
+- Download large logs to a temporary file and report only status, exit code, log path for internal use, and a small sanitized summary. Do not expose redirect URLs or raw long logs.
+- Official references for the access behavior:
+  - GitHub CLI environment variables: https://cli.github.com/manual/gh_help_environment
+  - GitHub CLI run log limitations: https://cli.github.com/manual/gh_run_view
+  - GitHub REST workflow run logs: https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#download-workflow-run-logs
 
 ## Execution Boundary
 
@@ -216,7 +209,6 @@ Choose the feedback mode before writing the GitHub-facing review:
 ## Evidence Source Strategy
 
 - Evidence priority: PR facts; same-repo issues/code/tests; ShardingSphere docs and conventions; external official specs only when needed.
-- CI status and check-runs are evidence only when relevant under `Evidence Sufficiency and CI Judgment`.
 - For SQL parser reviews, read `references/sql-parser-review.md` when SQL grammar, visitors, syntax docs, dialect behavior, or parser baselines are touched.
 - Do not rely on unverifiable blogs, forum posts, or AI-reposted content.
 
@@ -286,14 +278,14 @@ Triage policy:
 - Required public facts unavailable, inaccessible, stale, or unattributable: set `Review Result: Review Incomplete` and request only the facts needed to complete the review.
 - Wrong problem model, root-cause model, or direction: set `Review Result: Not Mergeable`, use `Feedback Mode: Needs Discussion`, and recommend `type: discussion`.
 - Any substantive off-topic/unrelated changes or substantive scope expansion: set `Review Result: Not Mergeable` and require rollback or scope narrowing.
-  Ignore non-behavioral import-only, whitespace-only, and formatter-only churn for mergeability unless it meets the Non-Behavioral Churn Rule escalation conditions.
+  Ignore non-behavioral import-only, whitespace-only, and formatter-only churn for mergeability unless it meets the `Style and Non-Behavioral Churn Authority`.
 - Change set too large: request split first, and provide only blocker-level feedback for current version.
 - If `Full Coverage Ledger Mode` is active, triage decisions select review depth and ledger setup only. They do not authorize early final output.
 
 ## Minimum Required Information
 
 - Request only facts required by the unresolved gate, and map every requested item to that gate.
-- Do not ask the author for evidence the reviewer can obtain from public PR, issue, code, CI, or workflow data.
+- Do not ask the author for evidence the reviewer can obtain through `GitHub and Evidence Access`, repository code, public docs, target-tool source, or official specs.
 - Common requests: latest changed-file scope, runtime topology, database type/version, minimal reproducible input, key logs,
   targeted test evidence, docs/release impact, or SQL parser official documentation.
 
@@ -309,7 +301,7 @@ CI/check-run review is not a substitute for code review. Query and report CI onl
 5. Verify validation: trace tests through real entry paths where applicable, map tests to fix points,
    and apply the `Specialized Proof Mini-Gates` for test, metadata, native, and docs claims.
 6. Screen unrelated change: require rollback or scope narrowing only for substantive unrelated code, config, behavior, or broad cleanup.
-   Ignore non-behavioral churn unless it meets the `Non-Behavioral Churn Rule`.
+   Ignore non-behavioral churn unless it meets the `Style and Non-Behavioral Churn Authority`.
 7. Materialize the anti-drip inventory when `Full Coverage Ledger Mode` is active;
    otherwise keep an internal inventory with the same evidence categories.
 8. Apply the `Blocker Proof Gate` to every candidate finding before it can become a public blocker.
@@ -455,7 +447,7 @@ Use this mode when the user asks for a committer reply to a PR comment, review t
 - Explain reasoning in the user's language, but draft GitHub-facing replies in English unless the user requests another language.
 - Keep private chats, private reproduction details, prompt process, and local-only analysis out of the copy-ready reply.
 - If evidence is closed, state whether to retain, withdraw, or revise; if incomplete or conflicting, draft a clarification-style reply.
-- Do not ask the author for evidence the reviewer can obtain from public PR, issue, code, CI, workflow data, target-tool source, or official docs.
+- Do not ask the author for evidence the reviewer can obtain under `Minimum Required Information`.
 - Protect committer credibility: do not provide a strong public claim, blame, or merge-blocking request unless the evidence chain is closed.
 
 ## Output Structure
@@ -476,13 +468,12 @@ Use these required structures:
 - `Correction`: prepend `### Correction` with `Previous Finding`, `Current Status` (`Retained`, `Withdrawn`, or `Changed to Review Incomplete`), and `Reason`;
   then output the applicable current result structure with exactly one bold `Review Result` line under `### Summary`.
 
-For `Not Mergeable`, choose `Feedback Mode: Change Request` for patch-level required changes or `Feedback Mode: Needs Discussion`
-when the current direction, root-cause model, problem framing, expected behavior, or ownership boundary must be reopened.
+For `Not Mergeable`, choose the feedback mode from the `Verdict Matrix`.
 Do not include patch-level `Required Change` bullets after choosing `Needs Discussion`.
 Use `P0`, `P1`, or `P2` issue severity, and include `Problem`, `Impact`, and either `Required Change` or `Discussion Needed`.
 Use `status: need more info` instead of `type: discussion` only when missing public evidence blocks root-cause or scope classification.
 Optional `Not Mergeable` sections are `Positive Feedback`, `Unrelated Changes`, `Next Steps`, and `Multi-Round Comparison`; omit placeholder headings.
-`Review Incomplete` must not contain patch-level code suggestions. If evidence already supports a concrete code change, use `Review Result: Not Mergeable`.
+`Review Incomplete` must follow the `Verdict Matrix`: no patch-level code suggestions, and use `Not Mergeable` once evidence supports a concrete required change.
 
 ## Feedback Tone Guidelines
 - Use "suggest / please / need" rather than accusatory commands.
