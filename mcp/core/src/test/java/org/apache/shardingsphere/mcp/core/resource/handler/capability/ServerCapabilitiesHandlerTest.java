@@ -240,6 +240,9 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> searchMetadataTool = findTool(capabilities, "database_gateway_search_metadata");
         Map<?, ?> searchMetadataOutputProperties = (Map<?, ?>) ((Map<?, ?>) searchMetadataTool.get("outputSchema")).get("properties");
         assertTrue(searchMetadataOutputProperties.containsKey("total_match_count"));
+        assertTrue(searchMetadataOutputProperties.containsKey("returned_count"));
+        assertTrue(searchMetadataOutputProperties.containsKey("truncated"));
+        assertTrue(searchMetadataOutputProperties.containsKey("large_result_guidance"));
         Map<?, ?> objectTypesSchema = findInputSchema(searchMetadataTool, "object_types");
         assertTrue(((List<?>) ((Map<?, ?>) objectTypesSchema.get("items")).get("enum")).containsAll(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
         Map<?, ?> validateRuntimeDatabaseTool = findTool(capabilities, "database_gateway_validate_runtime_database");

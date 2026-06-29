@@ -53,9 +53,11 @@ class ShadowToolDescriptorValidatorTest {
     @Test
     void assertExposeCompletionTargets() {
         MCPCompletionTargetDescriptor rulePromptCompletionTarget = findCompletionTarget("prompt", ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME);
-        assertThat(rulePromptCompletionTarget.getArguments(), is(List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
+        assertThat(rulePromptCompletionTarget.getArguments(), is(List.of("database", ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
         MCPCompletionTargetDescriptor defaultPromptCompletionTarget = findCompletionTarget("prompt", ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME);
-        assertThat(defaultPromptCompletionTarget.getArguments(), is(List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
+        assertThat(defaultPromptCompletionTarget.getArguments(), is(List.of("database", ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD)));
+        MCPCompletionTargetDescriptor cleanupPromptCompletionTarget = findCompletionTarget("prompt", ShadowFeatureDefinition.PLAN_ALGORITHM_CLEANUP_PROMPT_NAME);
+        assertThat(cleanupPromptCompletionTarget.getArguments(), is(List.of("database")));
         assertFalse(hasCompletionTarget("resource", ShadowFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI));
     }
     
@@ -94,6 +96,7 @@ class ShadowToolDescriptorValidatorTest {
             assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/workflow-kind"));
             assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/related-resource-uris"));
             assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/follow-up-tools"));
+            assertTrue(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(each).filter(optional -> "plan".equals(optional.getWorkflowRole())).isPresent());
         }
     }
     
@@ -146,7 +149,8 @@ class ShadowToolDescriptorValidatorTest {
     }
     
     private static Stream<String> requiredMetadataFields() {
-        return Stream.of("org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
+        return Stream.of("org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/artifact-categories", "org.apache.shardingsphere/side-effect-scope",
+                "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
     }
     
     private String readResource(final String resourceName) throws IOException {

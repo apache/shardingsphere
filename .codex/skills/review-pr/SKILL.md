@@ -56,6 +56,10 @@ Before applying the numbered review gates, enforce the public evidence boundary:
    use `Review Result: Not Mergeable` with `Feedback Mode: Needs Discussion`.
 5. Review only the latest PR code version, and use GitHub PR metadata plus `/pulls/{number}/files` as the authoritative scope boundary.
 6. Use repository-declared formatting/style gates as the formatting authority.
+   For ShardingSphere, Spotless and Checkstyle are authoritative.
+   Do not run `git diff --check`, editor whitespace lint, or other generic whitespace diagnostics as routine review verification.
+   Use them only when repository workflows explicitly require them, the user asks for whitespace review, the review target is formatting rules, or whitespace has direct semantic impact.
+   Do not report Spotless-stable whitespace, including formatter-preserved blank-line indentation, as a blocker.
 7. Treat substantive unrelated changes or substantive scope expansion as blockers; ignore non-behavioral import-only, whitespace-only, formatter-only, or IDE cleanup churn unless it hides behavior,
    fails declared gates, touches broad unrelated areas, or violates explicit scope rules.
 8. Before considering `Mergeable`, apply all triggered hard gates and specialized review gates, including semantic compatibility, counterexamples, blast-radius/shared-layer ownership,
@@ -185,6 +189,7 @@ Choose the feedback mode before writing the GitHub-facing review:
   Record head SHA, base ref/SHA, merge-base, and whether the local file list matches GitHub.
 - Do not base the result solely on CI, and do not wait for CI when static/code evidence is already sufficient.
 - Use repository-declared style gates as authority. For ShardingSphere, Spotless and Checkstyle are authoritative.
+  Do not use `git diff --check` or other generic whitespace diagnostics as routine review verification unless the Mandatory Constraints exception applies.
 
 ## Non-Behavioral Churn Rule
 

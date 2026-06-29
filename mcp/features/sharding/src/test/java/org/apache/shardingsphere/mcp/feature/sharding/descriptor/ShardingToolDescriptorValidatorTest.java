@@ -58,15 +58,19 @@ class ShardingToolDescriptorValidatorTest {
     @Test
     void assertExposeCompletionTargets() {
         MCPCompletionTargetDescriptor algorithmCompletionTarget = findCompletionTarget("prompt", ShardingFeatureDefinition.PLAN_TABLE_RULE_PROMPT_NAME);
-        assertThat(algorithmCompletionTarget.getArguments(), is(List.of("algorithm_type")));
+        assertThat(algorithmCompletionTarget.getArguments(), is(List.of("database", "algorithm_type")));
         assertThat(algorithmCompletionTarget.getMaxValues(), is(50));
+        MCPCompletionTargetDescriptor tableReferenceCompletionTarget = findCompletionTarget("prompt", ShardingFeatureDefinition.PLAN_TABLE_REFERENCE_PROMPT_NAME);
+        assertThat(tableReferenceCompletionTarget.getArguments(), is(List.of("database")));
         MCPCompletionTargetDescriptor defaultStrategyCompletionTarget = findCompletionTarget("prompt", ShardingFeatureDefinition.PLAN_DEFAULT_STRATEGY_PROMPT_NAME);
-        assertThat(defaultStrategyCompletionTarget.getArguments(), is(List.of("algorithm_type")));
+        assertThat(defaultStrategyCompletionTarget.getArguments(), is(List.of("database", "algorithm_type")));
         MCPCompletionTargetDescriptor keyGeneratorCompletionTarget = findCompletionTarget("prompt", ShardingFeatureDefinition.PLAN_KEY_GENERATOR_PROMPT_NAME);
-        assertThat(keyGeneratorCompletionTarget.getArguments(), is(List.of("key_generator_type")));
+        assertThat(keyGeneratorCompletionTarget.getArguments(), is(List.of("database", "key_generator_type")));
         assertThat(keyGeneratorCompletionTarget.getMaxValues(), is(50));
         MCPCompletionTargetDescriptor keyGenerateStrategyCompletionTarget = findCompletionTarget("prompt", ShardingFeatureDefinition.PLAN_KEY_GENERATE_STRATEGY_PROMPT_NAME);
-        assertThat(keyGenerateStrategyCompletionTarget.getArguments(), is(List.of("key_generator_type")));
+        assertThat(keyGenerateStrategyCompletionTarget.getArguments(), is(List.of("database", "key_generator_type")));
+        MCPCompletionTargetDescriptor cleanupCompletionTarget = findCompletionTarget("prompt", ShardingFeatureDefinition.PLAN_COMPONENT_CLEANUP_PROMPT_NAME);
+        assertThat(cleanupCompletionTarget.getArguments(), is(List.of("database")));
         assertFalse(hasCompletionTarget("resource", ShardingFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI));
         assertFalse(hasCompletionTarget("resource", ShardingFeatureDefinition.KEY_GENERATE_ALGORITHM_PLUGINS_RESOURCE_URI));
     }
@@ -147,6 +151,7 @@ class ShardingToolDescriptorValidatorTest {
             assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/workflow-kind"));
             assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/related-resource-uris"));
             assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/follow-up-tools"));
+            assertTrue(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(each).filter(optional -> "plan".equals(optional.getWorkflowRole())).isPresent());
         }
     }
     
@@ -209,7 +214,8 @@ class ShardingToolDescriptorValidatorTest {
     }
     
     private static Stream<String> requiredMetadataFields() {
-        return Stream.of("org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
+        return Stream.of("org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/artifact-categories", "org.apache.shardingsphere/side-effect-scope",
+                "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
     }
     
     private String readResource(final String resourceName) throws IOException {

@@ -71,6 +71,9 @@ class SearchMetadataToolHandlerTest {
         assertTrue(actualItemProperties.containsKey("matched_value"));
         assertTrue(actualProperties.containsKey("search_context"));
         assertTrue(actualProperties.containsKey("total_match_count"));
+        assertTrue(actualProperties.containsKey("returned_count"));
+        assertTrue(actualProperties.containsKey("truncated"));
+        assertTrue(actualProperties.containsKey("large_result_guidance"));
         assertTrue(actualProperties.containsKey("empty_state"));
         assertTrue(actualProperties.containsKey("ambiguity_state"));
         assertTrue(actualProperties.containsKey("next_actions"));
@@ -86,6 +89,8 @@ class SearchMetadataToolHandlerTest {
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
             assertThat(actualPayload.get("total_match_count"), is(1));
+            assertThat(actualPayload.get("returned_count"), is(1));
+            assertFalse((Boolean) actualPayload.get("truncated"));
             assertFalse(actualPayload.containsKey("next_page_token"));
             assertFalse((Boolean) actualPayload.get("has_more"));
             assertThat(actualPayload.get("continuation_mode"), is("none"));
@@ -145,8 +150,32 @@ class SearchMetadataToolHandlerTest {
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(actualNames.size(), is(9));
             assertThat(actualPayload.get("total_match_count"), is(9));
+            assertThat(actualPayload.get("returned_count"), is(9));
+            assertFalse((Boolean) actualPayload.get("truncated"));
             assertTrue(actualNames.contains("logic_db"));
             assertTrue(actualNames.contains("order_idx"));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithLargeResultGuidance() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext(createLargeDatabaseMetadata()))) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "large_db", "object_types", List.of(SupportedMCPMetadataObjectType.TABLE.name()))));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(((List<?>) actualPayload.get("items")).size(), is(100));
+            assertThat(actualPayload.get("total_match_count"), is(101));
+            assertThat(actualPayload.get("returned_count"), is(100));
+            assertTrue((Boolean) actualPayload.get("truncated"));
+            Map<?, ?> actualLargeResultGuidance = (Map<?, ?>) actualPayload.get("large_result_guidance");
+            assertThat(actualLargeResultGuidance.get("state"), is("metadata_search_result_truncated"));
+            assertThat(actualLargeResultGuidance.get("threshold"), is(100));
+            assertThat(actualLargeResultGuidance.get("narrowing_arguments"), is(List.of("database", "schema", "query", "object_types")));
+            List<?> actualNextActions = (List<?>) actualPayload.get("next_actions");
+            assertThat(actualNextActions.size(), is(1));
+            Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.getFirst();
+            assertThat(actualNextAction.get("type"), is("ask_user"));
+            assertThat(actualNextAction.get("required_inputs"), is(List.of("database", "schema", "query", "object_types")));
         }
     }
     
@@ -297,6 +326,14 @@ class SearchMetadataToolHandlerTest {
     
     private List<MCPDatabaseMetadata> createDuplicatedTableMetadata() {
         return List.of(createDatabaseMetadata("bar_db", "orders"), createDatabaseMetadata("baz_db", "orders"), createDatabaseMetadata("foo_db", "orders_archive"));
+    }
+    
+    private List<MCPDatabaseMetadata> createLargeDatabaseMetadata() {
+        List<MCPTableMetadata> tables = new LinkedList<>();
+        for (int index = 0; index < 101; index++) {
+            tables.add(new MCPTableMetadata("large_db", "public", "table_" + index, List.of(), List.of()));
+        }
+        return List.of(new MCPDatabaseMetadata("large_db", "MySQL", "", List.of(new MCPSchemaMetadata("large_db", "public", tables, List.of(), List.of()))));
     }
     
     private MCPDatabaseMetadata createDatabaseMetadata(final String databaseName, final String tableName) {

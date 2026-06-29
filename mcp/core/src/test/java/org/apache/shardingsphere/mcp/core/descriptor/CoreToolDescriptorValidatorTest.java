@@ -48,6 +48,9 @@ class CoreToolDescriptorValidatorTest {
         assertTrue(getInputProperties(descriptor).containsKey("query"));
         assertTrue(getOutputProperties(descriptor).containsKey("search_context"));
         assertTrue(getOutputProperties(descriptor).containsKey("total_match_count"));
+        assertTrue(getOutputProperties(descriptor).containsKey("returned_count"));
+        assertTrue(getOutputProperties(descriptor).containsKey("truncated"));
+        assertTrue(getOutputProperties(descriptor).containsKey("large_result_guidance"));
     }
     
     @Test

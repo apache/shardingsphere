@@ -39,6 +39,8 @@ import java.util.Set;
  */
 public final class SearchMetadataToolService {
     
+    private static final int LARGE_RESULT_THRESHOLD = 100;
+    
     private static final Map<String, Integer> OBJECT_TYPE_ORDERS = Map.of(
             "database", 0, "schema", 1, "storage_unit", 2, "table", 3, "view", 4, "column", 5, "index", 6, "sequence", 7);
     
@@ -82,7 +84,13 @@ public final class SearchMetadataToolService {
                                                     final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {
         List<MetadataSearchHit> filteredItems = matcher.filterByQuery(metadataItems, request.getQuery());
         filteredItems.sort(this::compareSearchHits);
-        return new MetadataSearchResult(filteredItems, createSearchContext(request, searchObjectTypes, broadSearchGuarded), filteredItems.size());
+        List<MetadataSearchHit> returnedItems = capSearchResult(filteredItems);
+        return new MetadataSearchResult(returnedItems, createSearchContext(request, searchObjectTypes, broadSearchGuarded), filteredItems.size(), returnedItems.size(),
+                returnedItems.size() < filteredItems.size(), LARGE_RESULT_THRESHOLD);
+    }
+    
+    private List<MetadataSearchHit> capSearchResult(final List<MetadataSearchHit> items) {
+        return items.size() <= LARGE_RESULT_THRESHOLD ? items : items.subList(0, LARGE_RESULT_THRESHOLD);
     }
     
     private Map<String, Object> createSearchContext(final MetadataSearchRequest request, final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {

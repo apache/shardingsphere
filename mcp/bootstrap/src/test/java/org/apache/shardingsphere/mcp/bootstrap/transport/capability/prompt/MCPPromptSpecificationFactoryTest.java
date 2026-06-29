@@ -82,7 +82,7 @@ class MCPPromptSpecificationFactoryTest {
                 "- plan_id: plan-1",
                 "- failure_summary: metadata mismatch",
                 "1. Treat plan_id as a current-session handle only. Do not reuse it across MCP sessions.",
-                "5. Preserve user-provided corrections when re-planning with database_gateway_plan_encrypt_rule or database_gateway_plan_mask_rule."));
+                "5. Preserve user-provided corrections when re-planning with the matching database_gateway_plan_* tool."));
     }
     
     @Test

@@ -55,8 +55,10 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
     @Test
     void assertExposeCompletionTargets() {
         MCPCompletionTargetDescriptor promptCompletionTarget = findCompletionTarget("prompt", ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME);
-        assertThat(promptCompletionTarget.getArguments(), is(List.of(ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD)));
+        assertThat(promptCompletionTarget.getArguments(), is(List.of("database", ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD)));
         assertThat(promptCompletionTarget.getMaxValues(), is(50));
+        MCPCompletionTargetDescriptor statusPromptCompletionTarget = findCompletionTarget("prompt", ReadwriteSplittingFeatureDefinition.PLAN_STATUS_PROMPT_NAME);
+        assertThat(statusPromptCompletionTarget.getArguments(), is(List.of("database")));
         assertFalse(hasCompletionTarget("resource", ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI));
     }
     
@@ -120,6 +122,7 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
             assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/workflow-kind"));
             assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/related-resource-uris"));
             assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/follow-up-tools"));
+            assertTrue(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor(each).filter(optional -> "plan".equals(optional.getWorkflowRole())).isPresent());
             assertFalse(String.valueOf(descriptor.getOutputSchema()).contains("manual_artifact_package"));
         }
     }
@@ -192,7 +195,8 @@ class ReadwriteSplittingToolDescriptorValidatorTest {
     }
     
     private static Stream<String> requiredMetadataFields() {
-        return Stream.of("org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
+        return Stream.of("org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/artifact-categories", "org.apache.shardingsphere/side-effect-scope",
+                "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
     }
     
     private MCPPromptDescriptor findPrompt(final String promptName) {

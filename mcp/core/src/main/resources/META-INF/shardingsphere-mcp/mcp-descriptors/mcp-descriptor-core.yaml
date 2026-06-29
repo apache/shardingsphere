@@ -858,6 +858,28 @@ tools:
         total_match_count:
           type: integer
           description: "Total matched metadata objects for this search scope."
+        returned_count:
+          type: integer
+          description: "Number of matched metadata objects returned after search result capping."
+        truncated:
+          type: boolean
+          description: "Whether search hits were capped by the large-result threshold."
+        large_result_guidance:
+          type: object
+          description: "Structured narrowing guidance when matched metadata results are truncated."
+          properties:
+            state:
+              type: string
+              description: "Large-result guidance state."
+            threshold:
+              type: integer
+              description: "Maximum number of metadata hits returned before truncation."
+            narrowing_arguments:
+              type: array
+              description: "Public database_gateway_search_metadata arguments the model can set to narrow the result."
+            reason:
+              type: string
+              description: "Why the model should narrow the search."
         empty_state:
           type: object
           description: "Structured empty state when no metadata hits were returned."
@@ -907,9 +929,15 @@ tools:
               reason:
                 type: string
                 description: "Why the model should take this action."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
               required_inputs:
                 type: array
                 description: "User inputs needed before continuing."
+              depends_on:
+                type: array
+                description: "Action order values that must complete before this action."
       examples:
         - response_mode: search
           items:
@@ -1380,6 +1408,9 @@ tools:
               reason:
                 type: string
                 description: "Why the model should take this action."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
               required_inputs:
                 type: array
                 description: "User inputs needed before continuing."
@@ -1405,11 +1436,20 @@ tools:
             execution_mode: execute
           next_actions:
             - order: 1
+              type: ask_user
+              title: Ask user
+              question: Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.
+              required_inputs:
+                - execution_approved
+              reason: Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.
+            - order: 2
               type: tool_call
               title: Call database_gateway_execute_update
               tool_name: database_gateway_execute_update
               arguments:
                 execution_mode: execute
+              depends_on:
+                - 1
               reason: Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.
     annotations:
       title: Execute Update SQL

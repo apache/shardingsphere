@@ -283,18 +283,20 @@ public final class WorkflowExecutionService {
         return result;
     }
     
-    private Map<String, Object> createPreviewNextAction(final WorkflowContextSnapshot snapshot) {
-        String executionMode = resolveApplyExecutionMode(snapshot);
-        return EXECUTION_MODE_MANUAL_ONLY.equals(executionMode)
-                ? MCPNextActionUtils.callTool("database_gateway_apply_workflow", createPreviewNextActionReason(executionMode), createExecutionArguments(snapshot, executionMode))
-                : MCPNextActionUtils.askUser(createPreviewNextActionReason(executionMode), List.of("approved_steps"));
-    }
-    
     private List<Map<String, Object>> createPreviewNextActions(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> previewArtifacts) {
         if (previewArtifacts.isEmpty()) {
             return MCPNextActionUtils.ordered(MCPNextActionUtils.stop("Preview has no artifacts to approve."));
         }
-        return MCPNextActionUtils.ordered(createPreviewNextAction(snapshot));
+        String executionMode = resolveApplyExecutionMode(snapshot);
+        if (EXECUTION_MODE_MANUAL_ONLY.equals(executionMode)) {
+            return MCPNextActionUtils
+                    .ordered(MCPNextActionUtils.callTool("database_gateway_apply_workflow", createPreviewNextActionReason(executionMode), createExecutionArguments(snapshot, executionMode)));
+        }
+        return MCPNextActionUtils.ordered(
+                MCPNextActionUtils.askUser(createPreviewNextActionReason(executionMode), List.of("approved_steps")),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_apply_workflow",
+                        "Apply reviewed workflow artifacts after merging approved_steps from action 1 into the arguments.",
+                        createExecutionArguments(snapshot, executionMode)), 1));
     }
     
     private String createPreviewNextActionReason(final String executionMode) {

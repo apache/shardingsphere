@@ -528,22 +528,36 @@ completionTargets:
   - referenceType: prompt
     reference: plan_sharding_table_rule
     arguments:
+      - database
       - algorithm_type
+    maxValues: 50
+  - referenceType: prompt
+    reference: plan_sharding_table_reference_rule
+    arguments:
+      - database
     maxValues: 50
   - referenceType: prompt
     reference: plan_sharding_default_strategy
     arguments:
+      - database
       - algorithm_type
     maxValues: 50
   - referenceType: prompt
     reference: plan_sharding_key_generator
     arguments:
+      - database
       - key_generator_type
     maxValues: 50
   - referenceType: prompt
     reference: plan_sharding_key_generate_strategy
     arguments:
+      - database
       - key_generator_type
+    maxValues: 50
+  - referenceType: prompt
+    reference: plan_sharding_rule_component_cleanup
+    arguments:
+      - database
     maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/sharding/algorithm-plugins
@@ -839,8 +853,14 @@ tools:
       idempotentHint: false
       openWorldHint: false
       readOnlyHint: false
+    runtime: &planningRuntime
+      workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.table.rule
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/sharding/algorithm-plugins
         - shardingsphere://features/sharding/key-generate-algorithm-plugins
@@ -869,8 +889,13 @@ tools:
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
     annotations: *planningAnnotations
+    runtime: *planningRuntime
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.table.reference
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/sharding/databases/{database}/table-reference-rules
         - shardingsphere://features/sharding/databases/{database}/table-reference-rules/{rule}
@@ -900,8 +925,13 @@ tools:
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
     annotations: *planningAnnotations
+    runtime: *planningRuntime
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.default.strategy
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/sharding/algorithm-plugins
         - shardingsphere://features/sharding/databases/{database}/default-strategy
@@ -929,8 +959,13 @@ tools:
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
     annotations: *planningAnnotations
+    runtime: *planningRuntime
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.key.generator
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/sharding/key-generate-algorithm-plugins
         - shardingsphere://features/sharding/databases/{database}/key-generators
@@ -962,8 +997,13 @@ tools:
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
     annotations: *planningAnnotations
+    runtime: *planningRuntime
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.key.generate.strategy
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/sharding/key-generate-algorithm-plugins
         - shardingsphere://features/sharding/databases/{database}/key-generators
@@ -991,8 +1031,13 @@ tools:
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
     annotations: *planningAnnotations
+    runtime: *planningRuntime
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.component.cleanup
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/sharding/databases/{database}/unused-algorithms
         - shardingsphere://features/sharding/databases/{database}/unused-key-generators
