@@ -93,7 +93,7 @@ final class ShardingWorkflowPlanningKernel {
      */
     public WorkflowContextSnapshot planTableRule(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                                  final String sessionId, final ShardingWorkflowRequest request) {
-        return planLifecycleWorkflow(workflowSessionContext, queryFacade, sessionId, request, ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+        return planLifecycleWorkflow(workflowSessionContext, sessionId, request, ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
                 "create", "Sharding table rule workflow plan.", actual -> !inspectionService.queryTableRule(queryFacade, actual.getDatabase(), actual.getTable()).isEmpty(),
                 this::hasRequiredTableRuleInputs, (actual, snapshot) -> planAlgorithms(queryFacade, actual,
                         shouldPlanShardingAlgorithm(actual), shouldPlanTableRuleKeyGenerator(actual), snapshot),
@@ -111,7 +111,7 @@ final class ShardingWorkflowPlanningKernel {
      */
     public WorkflowContextSnapshot planTableReferenceRule(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                                           final String sessionId, final ShardingWorkflowRequest request) {
-        return planLifecycleWorkflow(workflowSessionContext, queryFacade, sessionId, request, ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND,
+        return planLifecycleWorkflow(workflowSessionContext, sessionId, request, ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND,
                 "create", "Sharding table reference rule workflow plan.", actual -> !inspectionService.queryTableReferenceRule(queryFacade, actual.getDatabase(), actual.getRuleName()).isEmpty(),
                 this::hasRequiredReferenceRuleInputs, (actual, snapshot) -> true, actual -> distSQLPlanningService.planTableReferenceRule(actual, actual.getOperationType()));
     }
@@ -127,7 +127,7 @@ final class ShardingWorkflowPlanningKernel {
      */
     public WorkflowContextSnapshot planDefaultStrategy(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                                        final String sessionId, final ShardingWorkflowRequest request) {
-        return planLifecycleWorkflow(workflowSessionContext, queryFacade, sessionId, request, ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
+        return planLifecycleWorkflow(workflowSessionContext, sessionId, request, ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
                 "create", "Default sharding strategy workflow plan.", actual -> containsDefaultStrategy(inspectionService.queryDefaultStrategy(queryFacade, actual.getDatabase()),
                         queryFacade.getDatabaseType(actual.getDatabase()), actual.getDefaultStrategyType()),
                 this::hasRequiredDefaultStrategyInputs,
@@ -146,7 +146,7 @@ final class ShardingWorkflowPlanningKernel {
      */
     public WorkflowContextSnapshot planKeyGenerator(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                                     final String sessionId, final ShardingWorkflowRequest request) {
-        return planLifecycleWorkflow(workflowSessionContext, queryFacade, sessionId, request, ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND,
+        return planLifecycleWorkflow(workflowSessionContext, sessionId, request, ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND,
                 "create", "Sharding key generator workflow plan.", actual -> !inspectionService.queryKeyGenerator(queryFacade, actual.getDatabase(), actual.getKeyGeneratorName()).isEmpty(),
                 this::hasRequiredKeyGeneratorInputs, (actual, snapshot) -> planAlgorithms(queryFacade, actual, false, true, snapshot),
                 actual -> distSQLPlanningService.planKeyGenerator(actual, actual.getOperationType()));
@@ -163,7 +163,7 @@ final class ShardingWorkflowPlanningKernel {
      */
     public WorkflowContextSnapshot planKeyGenerateStrategy(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                                            final String sessionId, final ShardingWorkflowRequest request) {
-        return planLifecycleWorkflow(workflowSessionContext, queryFacade, sessionId, request, ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
+        return planLifecycleWorkflow(workflowSessionContext, sessionId, request, ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
                 "create", "Sharding key generate strategy workflow plan.",
                 actual -> !inspectionService.queryKeyGenerateStrategy(queryFacade, actual.getDatabase(), actual.getKeyGenerateStrategyName()).isEmpty(),
                 this::hasRequiredKeyGenerateStrategyInputs, (actual, snapshot) -> planAlgorithms(queryFacade, actual, false,
@@ -212,10 +212,9 @@ final class ShardingWorkflowPlanningKernel {
         return false;
     }
     
-    private WorkflowContextSnapshot planLifecycleWorkflow(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
-                                                          final String sessionId, final ShardingWorkflowRequest request, final WorkflowKind workflowKind,
-                                                          final String defaultOperationType, final String summary, final Function<ShardingWorkflowRequest, Boolean> existsSupplier,
-                                                          final Function<ShardingWorkflowRequest, Boolean> requiredInputSupplier,
+    private WorkflowContextSnapshot planLifecycleWorkflow(final WorkflowSessionContext workflowSessionContext, final String sessionId, final ShardingWorkflowRequest request,
+                                                          final WorkflowKind workflowKind, final String defaultOperationType, final String summary,
+                                                          final Function<ShardingWorkflowRequest, Boolean> existsSupplier, final Function<ShardingWorkflowRequest, Boolean> requiredInputSupplier,
                                                           final BiFunction<ShardingWorkflowRequest, WorkflowContextSnapshot, Boolean> algorithmPlanSupplier,
                                                           final Function<ShardingWorkflowRequest, RuleArtifact> artifactSupplier) {
         WorkflowContextSnapshot result = prepareSnapshot(workflowSessionContext, sessionId, request, workflowKind, defaultOperationType, summary);
@@ -238,7 +237,6 @@ final class ShardingWorkflowPlanningKernel {
         if (!algorithmPlanSupplier.apply(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
-        queryFacade.getDatabaseType(mergedRequest.getDatabase());
         result.getRuleArtifacts().add(artifactSupplier.apply(mergedRequest));
         return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
     }

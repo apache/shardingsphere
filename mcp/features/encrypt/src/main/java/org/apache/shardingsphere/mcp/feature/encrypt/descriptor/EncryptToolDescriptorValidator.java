@@ -21,8 +21,6 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidator;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;
-import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,11 +32,7 @@ import java.util.Map;
  */
 public final class EncryptToolDescriptorValidator implements MCPToolDescriptorValidator {
     
-    private static final List<String> REQUIRED_OUTPUT_FIELDS = List.of(
-            "response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs", "clarification_questions",
-            "elicitation_support", "fallback_reason", "issues", "global_steps", "current_step", "algorithm_recommendations", "property_requirements",
-            "validation_strategy", "delivery_mode", "execution_mode", "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint",
-            "distsql_artifacts", "masked_property_preview", MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS, "secret_reference_summary");
+    private static final Collection<String> REQUIRED_SECRET_WORKFLOW_OUTPUT_FIELDS = List.of("masked_property_preview", "secret_reference_summary");
     
     @Override
     public boolean supports(final MCPToolDescriptor toolDescriptor) {
@@ -47,7 +41,7 @@ public final class EncryptToolDescriptorValidator implements MCPToolDescriptorVa
     
     @Override
     public void validate(final MCPToolDescriptor toolDescriptor) {
-        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor, REQUIRED_OUTPUT_FIELDS);
+        MCPToolDescriptorValidationUtils.validateRequiredWorkflowPlanOutputFields(toolDescriptor, REQUIRED_SECRET_WORKFLOW_OUTPUT_FIELDS);
         validateExecutableDistSQLArtifacts(toolDescriptor);
     }
     

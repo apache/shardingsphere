@@ -186,7 +186,6 @@ public final class ShadowWorkflowPlanningService {
         List<Map<String, Object>> algorithms = inspectionService.queryAlgorithms(queryFacade, mergedRequest.getDatabase());
         List<Map<String, Object>> tableRules = inspectionService.queryTableRules(queryFacade, mergedRequest.getDatabase());
         List<Map<String, Object>> defaultAlgorithm = inspectionService.queryDefaultAlgorithm(queryFacade, mergedRequest.getDatabase());
-        inspectionService.queryRules(queryFacade, mergedRequest.getDatabase());
         if (!ensureAlgorithmCleanupState(mergedRequest, algorithms, tableRules, defaultAlgorithm, result, queryFacade.getDatabaseType(mergedRequest.getDatabase()))) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
