@@ -118,7 +118,7 @@ Attributes:
 
 Please refer to [Inline Expression](/en/features/sharding/concept/#row-value-expressions) for more details.
 
-Type: HINT_INLINE
+Type: COMPLEX_INLINE
 
 | *Name*                                     | *DataType* | *Description*                                                                                            | *Default Value* |
 |--------------------------------------------|------------|----------------------------------------------------------------------------------------------------------|-----------------|
@@ -132,7 +132,7 @@ Type: HINT_INLINE
 
 Please refer to [Inline Expression](/en/features/sharding/concept/#row-value-expressions) for more details.
 
-Type: COMPLEX_INLINE
+Type: HINT_INLINE
 
 | *Name*               | *DataType* | *Description*                        | *Default Value* |
 |----------------------|------------|--------------------------------------|-----------------|
