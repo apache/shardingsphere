@@ -20,7 +20,7 @@ Users can introduce the CDC Client into their own projects to implement data con
 
 Here, the openGauss database is used as an example to introduce the deployment steps of the CDC Server.
 
-Since the CDC Server is built into ShardingSphere-Proxy, you need to get ShardingSphere-Proxy. For details, please refer to the [proxy startup manual](/cn/user-manual/shardingsphere-proxy/startup/bin/).
+Since the CDC Server is built into ShardingSphere-Proxy, you need to get ShardingSphere-Proxy. For details, please refer to the [proxy startup manual](/en/user-manual/shardingsphere-proxy/startup/bin/).
 
 ### Configure GLT Module (Optional)
 

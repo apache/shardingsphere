@@ -31,7 +31,7 @@ Please refer to the following links for other configuration items:
 
 3. Configure `conf/database-*.yaml`
 
-Modify files named with the prefix `database-` in the `conf` directory, such as `conf/database-sharding.yaml` file and configure sharding rules and read/write splitting rules. See [Confuguration Mannual](/en/user-manual/shardingsphere-proxy/yaml-config/) for configuration methods. The `*` part of the `database-*.yaml` file can be named whatever you want.
+Modify files named with the prefix `database-` in the `conf` directory, such as `conf/database-sharding.yaml` file and configure sharding rules and read/write splitting rules. See [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml-config/) for configuration methods. The `*` part of the `database-*.yaml` file can be named whatever you want.
 
 ShardingSphere-Proxy supports multiple logical data sources. Each YAML configuration file named with the prefix `database-` is a logical data source.
 

@@ -97,5 +97,5 @@ public final class MaskDatabasesConfiguration {
 
 ## 相关参考
 
-- [数据脱敏的核心特性](/cn/features/mask/ )
+- [数据脱敏的核心特性](/cn/features/mask/)
 - [数据脱敏的开发者指南](/cn/dev-manual/mask/)
