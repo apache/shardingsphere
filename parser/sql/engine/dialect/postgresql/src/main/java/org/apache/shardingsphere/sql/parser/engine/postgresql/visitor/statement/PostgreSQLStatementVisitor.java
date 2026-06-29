@@ -1170,7 +1170,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         for (GroupByItemContext each : ctx.groupByList().groupByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
-        return new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items);
+        return new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items, false, containsGroupingExtension(ctx.groupByList().groupByItem()));
+    }
+    
+    private boolean containsGroupingExtension(final Collection<GroupByItemContext> groupByItems) {
+        for (GroupByItemContext each : groupByItems) {
+            if (null != each.emptyGroupingSet() || null != each.cubeClause() || null != each.rollupClause() || null != each.groupingSetsClause()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override

@@ -1392,7 +1392,16 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         for (GroupByItemContext each : ctx.groupByItem()) {
             items.addAll(generateOrderByItemsFromGroupByItem(each));
         }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, false, containsGroupingExtension(ctx.groupByItem()));
+    }
+    
+    private boolean containsGroupingExtension(final Collection<GroupByItemContext> groupByItems) {
+        for (GroupByItemContext each : groupByItems) {
+            if (null != each.rollupCubeClause() || null != each.groupingSetsClause()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private Collection<OrderByItemSegment> generateOrderByItemsFromGroupByItem(final GroupByItemContext ctx) {
