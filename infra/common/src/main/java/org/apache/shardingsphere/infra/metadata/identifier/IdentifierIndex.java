@@ -31,7 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -161,7 +160,6 @@ public final class IdentifierIndex<T> {
      * @return matched metadata object
      */
     public T get(final String identifier) {
-        Objects.requireNonNull(identifier, "identifier cannot be null.");
         Snapshot<T> currentSnapshot = snapshot;
         IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
         if (LookupMode.EXACT == rule.getLookupMode(QuoteCharacter.NONE)) {
@@ -177,7 +175,6 @@ public final class IdentifierIndex<T> {
      * @return matched metadata object
      */
     public Optional<T> find(final IdentifierValue identifierValue) {
-        Objects.requireNonNull(identifierValue, "identifierValue cannot be null.");
         Snapshot<T> currentSnapshot = snapshot;
         IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
         if (LookupMode.EXACT == rule.getLookupMode(identifierValue.getQuoteCharacter())) {

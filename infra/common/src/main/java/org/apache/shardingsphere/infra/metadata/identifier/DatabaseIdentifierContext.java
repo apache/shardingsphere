@@ -22,8 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 
-import java.util.Objects;
-
 /**
  * Database identifier context.
  */
@@ -39,7 +37,7 @@ public final class DatabaseIdentifierContext {
     }
     
     public DatabaseIdentifierContext(final IdentifierCaseRuleSet ruleSet, final boolean heterogeneousTableLookupEnabled) {
-        this.ruleSet = Objects.requireNonNull(ruleSet, "ruleSet cannot be null.");
+        this.ruleSet = ruleSet;
         this.heterogeneousTableLookupEnabled = heterogeneousTableLookupEnabled;
     }
     
@@ -59,7 +57,7 @@ public final class DatabaseIdentifierContext {
      * @param ruleSet identifier case rule set
      */
     public synchronized void refresh(final IdentifierCaseRuleSet ruleSet) {
-        this.ruleSet = Objects.requireNonNull(ruleSet, "ruleSet cannot be null.");
+        this.ruleSet = ruleSet;
     }
     
     /**
@@ -69,7 +67,7 @@ public final class DatabaseIdentifierContext {
      * @param heterogeneousTableLookupEnabled heterogeneous table lookup enabled or not
      */
     public synchronized void refresh(final IdentifierCaseRuleSet ruleSet, final boolean heterogeneousTableLookupEnabled) {
-        this.ruleSet = Objects.requireNonNull(ruleSet, "ruleSet cannot be null.");
+        this.ruleSet = ruleSet;
         this.heterogeneousTableLookupEnabled = heterogeneousTableLookupEnabled;
     }
 }
