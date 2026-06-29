@@ -119,12 +119,12 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
         Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
-        return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getStructuredContent(payload);
+        return MCPInteractionPayloads.getStructuredContent(payload);
     }
     
     protected final Map<String, Object> getFirstResourcePayload(final String responseBody) {
         Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
-        return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getFirstResourcePayload(payload);
+        return MCPInteractionPayloads.getFirstResourcePayload(payload);
     }
     
     protected final Map<String, Object> parseJsonBody(final String responseBody) {

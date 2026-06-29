@@ -623,42 +623,7 @@ class MCPJdbcMetadataLoaderTest {
     }
     
     private boolean containsMetadata(final MCPDatabaseMetadata databaseMetadata, final SupportedMCPMetadataObjectType objectType, final String objectName) {
-        for (MCPSchemaMetadata each : databaseMetadata.getSchemas()) {
-            if (SupportedMCPMetadataObjectType.SCHEMA == objectType && objectName.equals(each.getSchema())) {
-                return true;
-            }
-            for (MCPTableMetadata table : each.getTables()) {
-                if (SupportedMCPMetadataObjectType.TABLE == objectType && objectName.equals(table.getTable())) {
-                    return true;
-                }
-                for (MCPColumnMetadata column : table.getColumns()) {
-                    if (SupportedMCPMetadataObjectType.COLUMN == objectType && objectName.equals(column.getColumn())) {
-                        return true;
-                    }
-                }
-                for (MCPIndexMetadata index : table.getIndexes()) {
-                    if (SupportedMCPMetadataObjectType.INDEX == objectType && objectName.equals(index.getIndex())) {
-                        return true;
-                    }
-                }
-            }
-            for (MCPViewMetadata view : each.getViews()) {
-                if (SupportedMCPMetadataObjectType.VIEW == objectType && objectName.equals(view.getView())) {
-                    return true;
-                }
-                for (MCPColumnMetadata column : view.getColumns()) {
-                    if (SupportedMCPMetadataObjectType.COLUMN == objectType && objectName.equals(column.getColumn())) {
-                        return true;
-                    }
-                }
-            }
-            for (MCPSequenceMetadata sequence : each.getSequences()) {
-                if (SupportedMCPMetadataObjectType.SEQUENCE == objectType && objectName.equals(sequence.getSequence())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return 0 < countMetadata(databaseMetadata, objectType, objectName);
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

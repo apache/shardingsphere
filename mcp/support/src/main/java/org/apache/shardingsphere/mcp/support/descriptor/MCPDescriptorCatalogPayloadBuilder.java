@@ -77,24 +77,16 @@ final class MCPDescriptorCatalogPayloadBuilder {
     }
     
     private Map<String, Object> toResourcePayload(final MCPResourceDescriptor descriptor) {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put(MCPPayloadFieldNames.URI, descriptor.getUriTemplate());
-        result.put("name", descriptor.getName());
-        result.put("title", descriptor.getTitle());
-        result.put("description", descriptor.getDescription());
-        result.put("mimeType", descriptor.getMimeType());
-        if (!descriptor.getAnnotations().isEmpty()) {
-            result.put("annotations", toResourceAnnotationsPayload(descriptor.getAnnotations()));
-        }
-        if (!descriptor.getMeta().isEmpty()) {
-            result.put("_meta", descriptor.getMeta());
-        }
-        return result;
+        return createResourcePayload(descriptor, MCPPayloadFieldNames.URI);
     }
     
     private Map<String, Object> toResourceTemplatePayload(final MCPResourceDescriptor descriptor) {
+        return createResourcePayload(descriptor, "uriTemplate");
+    }
+    
+    private Map<String, Object> createResourcePayload(final MCPResourceDescriptor descriptor, final String uriFieldName) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put("uriTemplate", descriptor.getUriTemplate());
+        result.put(uriFieldName, descriptor.getUriTemplate());
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
