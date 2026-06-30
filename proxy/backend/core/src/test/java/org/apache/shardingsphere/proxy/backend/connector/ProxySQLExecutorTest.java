@@ -308,6 +308,9 @@ class ProxySQLExecutorTest {
                 Arguments.of("execute-with-driver-param-marker-special-zero", false, createInsertStatement(mysqlDatabaseType), true, true, true),
                 Arguments.of("execute-with-driver-param-marker-special-null", false, createInsertStatement(mysqlDatabaseType), true, true, true),
                 Arguments.of("execute-with-driver-and-explicit-keys-special-default", false, createInsertStatement(mysqlDatabaseType), true, true, true),
+                Arguments.of("execute-with-driver-and-no-column-list-special-default", false, createInsertStatement(mysqlDatabaseType), true, true, true),
+                Arguments.of("execute-with-driver-and-no-column-list-special-null", false, createInsertStatement(mysqlDatabaseType), true, true, true),
+                Arguments.of("execute-with-driver-and-no-column-list-nonspecial", false, createInsertStatement(mysqlDatabaseType), true, true, false),
                 Arguments.of("execute-with-driver-and-no-transaction", false, createInsertStatement(postgresqlDatabaseType), false, false, false));
     }
     
@@ -412,21 +415,21 @@ class ProxySQLExecutorTest {
             if ("execute-with-driver-and-explicit-keys-nonspecial".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_id"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
                 when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new LiteralExpressionSegment(0, 0, -3)));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else if ("execute-with-driver-and-explicit-keys-special-null".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_id"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
                 when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new LiteralExpressionSegment(0, 0, null)));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else if ("execute-with-driver-param-marker-nonspecial".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_id"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
                 when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
@@ -434,7 +437,7 @@ class ProxySQLExecutorTest {
             } else if ("execute-with-driver-param-marker-special-zero".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_id"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
                 when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
@@ -442,7 +445,7 @@ class ProxySQLExecutorTest {
             } else if ("execute-with-driver-param-marker-special-null".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_id"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
                 when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
@@ -450,9 +453,33 @@ class ProxySQLExecutorTest {
             } else if ("execute-with-driver-and-explicit-keys-special-default".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_id"));
+                when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_id"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
                 when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new CommonExpressionSegment(0, 0, "DEFAULT")));
+                when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+            } else if ("execute-with-driver-and-no-column-list-special-default".equals(name)) {
+                GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
+                when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.emptyList());
+                when(insertStatementContext.getColumnNames()).thenReturn(Arrays.asList("foo_id", "name"));
+                InsertValueContext insertValueContext = mock(InsertValueContext.class);
+                when(insertValueContext.getValueExpressions()).thenReturn(Arrays.asList(new CommonExpressionSegment(0, 0, "DEFAULT"), mock(LiteralExpressionSegment.class)));
+                when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+            } else if ("execute-with-driver-and-no-column-list-special-null".equals(name)) {
+                GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
+                when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.emptyList());
+                when(insertStatementContext.getColumnNames()).thenReturn(Arrays.asList("foo_id", "name"));
+                InsertValueContext insertValueContext = mock(InsertValueContext.class);
+                when(insertValueContext.getValueExpressions()).thenReturn(Arrays.asList(new LiteralExpressionSegment(0, 0, null), mock(LiteralExpressionSegment.class)));
+                when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+            } else if ("execute-with-driver-and-no-column-list-nonspecial".equals(name)) {
+                GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
+                when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+                when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.emptyList());
+                when(insertStatementContext.getColumnNames()).thenReturn(Arrays.asList("foo_id", "name"));
+                InsertValueContext insertValueContext = mock(InsertValueContext.class);
+                when(insertValueContext.getValueExpressions()).thenReturn(Arrays.asList(new LiteralExpressionSegment(0, 0, -3), mock(LiteralExpressionSegment.class)));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", isReturnGeneratedKeys);
