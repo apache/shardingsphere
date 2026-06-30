@@ -18,35 +18,32 @@ namespace
    ├     ├     ├──versions  
    ├     ├     ├     ├──0       
    ├──props                                              # Properties configuration
-   ├     ├──active_verison                                     
+   ├     ├──active_version
    ├     ├──versions  
    ├     ├     ├──0                  
    ├──metadata                                           # Metadata configuration
    ├     ├──${databaseName} 
    ├     ├     ├──data_sources                          
    ├     ├     ├     ├──units 							 # Storage unit configuration
-   ├     ├     ├     ├    ├──${dataSourceName}                        
-   ├     ├     ├     ├    ├     ├──active_verison             # Active version                                 
+   ├     ├     ├     ├    ├──${storageUnitName}
+   ├     ├     ├     ├    ├     ├──active_version             # Active version
    ├     ├     ├     ├    ├     ├──versions                   # version list
    ├     ├     ├     ├    ├     ├     ├──0
    ├     ├     ├     ├    ├──...   
    ├     ├     ├     ├──nodes 							 # Storage node configuration
-   ├     ├     ├     ├    ├──${dataSourceName}                        
-   ├     ├     ├     ├    ├     ├──active_verison             # Active version                                 
-   ├     ├     ├     ├    ├     ├──versions                   # version list
-   ├     ├     ├     ├    ├     ├     ├──0
+   ├     ├     ├     ├    ├──${storageNodeName}
    ├     ├     ├     ├    ├──...                             
    ├     ├     ├──schemas                                # Schema list
    ├     ├     ├     ├──${schemaName}                    
    ├     ├     ├     ├     ├──tables                     # Table configuration
    ├     ├     ├     ├     ├     ├──${tableName}         
-   ├     ├     ├     ├     ├     ├     ├──active_verison # Active version                                 
+   ├     ├     ├     ├     ├     ├     ├──active_version # Active version
    ├     ├     ├     ├     ├     ├     ├──versions       # version list
    ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...  
    ├     ├     ├     ├     ├──views                      # View configuration
    ├     ├     ├     ├     ├     ├──${viewName}
-   ├     ├     ├     ├     ├     ├     ├──active_verison # Active version                           
+   ├     ├     ├     ├     ├     ├     ├──active_version # Active version
    ├     ├     ├     ├     ├     ├     ├──versions       # version list
    ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...  
@@ -54,19 +51,19 @@ namespace
    ├     ├     ├     ├──sharding
    ├     ├     ├     ├     ├──algorithms
    ├     ├     ├     ├     ├     ├──${algorithmName}     # algorithm name
-   ├     ├     ├     ├     ├     ├     ├──active_verison # Active version                           
+   ├     ├     ├     ├     ├     ├     ├──active_version # Active version
    ├     ├     ├     ├     ├     ├     ├──versions       # version list
    ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...
    ├     ├     ├     ├     ├──key_generators
    ├     ├     ├     ├     ├     ├──${keyGeneratorName}  # keyGenerator name
-   ├     ├     ├     ├     ├     ├     ├──active_verison # Active version                           
+   ├     ├     ├     ├     ├     ├     ├──active_version # Active version
    ├     ├     ├     ├     ├     ├     ├──versions       # version list
    ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...         
    ├     ├     ├     ├     ├──tables
    ├     ├     ├     ├     ├     ├──${tableName}         # logic table name
-   ├     ├     ├     ├     ├     ├     ├──active_verison # Active version                           
+   ├     ├     ├     ├     ├     ├     ├──active_version # Active version
    ├     ├     ├     ├     ├     ├     ├──versions       # version list
    ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...          
@@ -187,14 +184,14 @@ columns:                                  # Columns
     dataType: 0
     generated: false
     name: id
-    primaryKey: trues
+    primaryKey: true
   order_id:
     caseSensitive: false
     dataType: 0
     generated: false
     name: order_id
     primaryKey: false
-indexs:                                   # Index
+indexes:                                  # Index
   t_user_order_id_index:                  # Index name
     name: t_user_order_id_index
 ```

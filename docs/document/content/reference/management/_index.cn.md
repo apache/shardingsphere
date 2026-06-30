@@ -18,35 +18,32 @@ namespace
    ├     ├     ├──versions  
    ├     ├     ├     ├──0       
    ├──props                                              # 属性配置
-   ├     ├──active_verison                                     
+   ├     ├──active_version
    ├     ├──versions  
    ├     ├     ├──0                  
    ├──metadata                                           # Metadata 配置
    ├     ├──${databaseName} 
    ├     ├     ├──data_sources                          
    ├     ├     ├     ├──units 							 # 存储单元结构配置
-   ├     ├     ├     ├    ├──${dataSourceName}                        
-   ├     ├     ├     ├    ├     ├──active_verison             # 激活版本                                 
+   ├     ├     ├     ├    ├──${storageUnitName}
+   ├     ├     ├     ├    ├     ├──active_version             # 激活版本
    ├     ├     ├     ├    ├     ├──versions                   # 版本号
    ├     ├     ├     ├    ├     ├     ├──0
    ├     ├     ├     ├    ├──...   
    ├     ├     ├     ├──nodes 							 # 存储节点结构配置
-   ├     ├     ├     ├    ├──${dataSourceName}                        
-   ├     ├     ├     ├    ├     ├──active_verison             # 激活版本                                
-   ├     ├     ├     ├    ├     ├──versions                   # 版本号
-   ├     ├     ├     ├    ├     ├     ├──0
+   ├     ├     ├     ├    ├──${storageNodeName}
    ├     ├     ├     ├    ├──...                             
    ├     ├     ├──schemas                                   # Schema 列表   
    ├     ├     ├     ├──${schemaName}                    
    ├     ├     ├     ├     ├──tables                     # 表结构配置
    ├     ├     ├     ├     ├     ├──${tableName}         
-   ├     ├     ├     ├     ├     ├     ├──active_verison # 激活版本                                 
+   ├     ├     ├     ├     ├     ├     ├──active_version # 激活版本
    ├     ├     ├     ├     ├     ├     ├──versions       # 版本号
    ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...  
    ├     ├     ├     ├     ├──views                      # 视图结构配置
    ├     ├     ├     ├     ├     ├──${viewName}
-   ├     ├     ├     ├     ├     ├     ├──active_verison # 激活版本                           
+   ├     ├     ├     ├     ├     ├     ├──active_version # 激活版本
    ├     ├     ├     ├     ├     ├     ├──versions       # 版本号
    ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...  
@@ -54,19 +51,19 @@ namespace
    ├     ├     ├     ├──sharding
    ├     ├     ├     ├     ├──algorithms
    ├     ├     ├     ├     ├     ├──${algorithmName}     # algorithm 名称
-   ├     ├     ├     ├     ├     ├     ├──active_verison # 激活版本                           
+   ├     ├     ├     ├     ├     ├     ├──active_version # 激活版本
    ├     ├     ├     ├     ├     ├     ├──versions       # 版本号
    ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...
    ├     ├     ├     ├     ├──key_generators
    ├     ├     ├     ├     ├     ├──${keyGeneratorName}  # keyGenerator名称
-   ├     ├     ├     ├     ├     ├     ├──active_verison # 激活版本                           
+   ├     ├     ├     ├     ├     ├     ├──active_version # 激活版本
    ├     ├     ├     ├     ├     ├     ├──versions       # 版本号
    ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...         
    ├     ├     ├     ├     ├──tables
    ├     ├     ├     ├     ├     ├──${tableName}         # 逻辑表名称
-   ├     ├     ├     ├     ├     ├     ├──active_verison # 激活版本                           
+   ├     ├     ├     ├     ├     ├     ├──active_version # 激活版本
    ├     ├     ├     ├     ├     ├     ├──versions       # 版本号
    ├     ├     ├     ├     ├     ├     ├     ├──0
    ├     ├     ├     ├     ├     ├──...          
@@ -186,14 +183,14 @@ columns:                                  # 列
     dataType: 0
     generated: false
     name: id
-    primaryKey: trues
+    primaryKey: true
   order_id:
     caseSensitive: false
     dataType: 0
     generated: false
     name: order_id
     primaryKey: false
-indexs:                                   # 索引
+indexes:                                  # 索引
   t_user_order_id_index:                  # 索引名
     name: t_user_order_id_index
 ```
