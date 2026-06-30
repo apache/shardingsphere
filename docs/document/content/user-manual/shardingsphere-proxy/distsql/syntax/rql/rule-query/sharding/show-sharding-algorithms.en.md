@@ -38,7 +38,7 @@ databaseName ::=
 
 ### Example
 
-- Query the sharding table algorithms of the specified logical database
+- Query the sharding algorithms of the specified logical database
 
 ```sql
 SHOW SHARDING ALGORITHMS FROM sharding_db;
@@ -55,7 +55,7 @@ mysql> SHOW SHARDING ALGORITHMS FROM sharding_db;
 2 rows in set (0.01 sec)
 ```
 
-- Query the sharding table algorithms of the current logical database
+- Query the sharding algorithms of the current logical database
 
 ```sql
 SHOW SHARDING ALGORITHMS;

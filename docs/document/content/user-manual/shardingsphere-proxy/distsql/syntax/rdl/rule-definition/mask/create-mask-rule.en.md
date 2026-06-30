@@ -55,7 +55,7 @@ value ::=
 
 - `algorithmType` specifies the data masking algorithm type. For more details, please refer to [Data Masking Algorithm](/en/user-manual/common-config/builtin-algorithm/mask/);
 - Duplicate `ruleName` will not be created;
-- `ifNotExists` clause is used for avoid `Duplicate mask rule` error.
+- `ifNotExists` clause is used to avoid `Duplicate mask rule` error.
 
 ### Example
 

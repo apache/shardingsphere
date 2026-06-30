@@ -5,9 +5,8 @@ weight = 2
 
 ## Background
 
-ShardingSphere built-in algorithms provide a variety of sharding algorithms, which can be divided into automatic sharding algorithms, standard sharding algorithms, composite sharding algorithms, and hint sharding algorithms, and can meet the needs of most business scenarios of users.
-
-Additionally, considering the complexity of business scenarios, the built-in algorithm also provides a way to customize the sharding algorithm. Users can complete complex sharding logic by writing java code.
+ShardingSphere provides built-in sharding algorithms, including automatic sharding algorithms, standard sharding algorithms, composite sharding algorithms, and hint sharding algorithms.
+Users can implement the corresponding SPI to provide a custom sharding algorithm for complex sharding logic.
 
 It should be noted that the sharding logic of the automatic sharding algorithm is automatically managed by ShardingSphere and needs to be used by configuring the autoTables sharding rules.
 
@@ -83,7 +82,7 @@ With Groovy expressions that uses the default implementation of the `InlineExpre
 `InlineShardingStrategy` provides single-key support for the sharding operation of `=` and `IN` in SQL.
 Simple sharding algorithms can be used through a simple configuration to avoid laborious Java code developments.
 For example, `t_user_$->{u_id % 8}` means table t_user is divided into 8 tables according to u_id, with table names from `t_user_0` to `t_user_7`.
-Please refer to [Inline Expression](/en/dev-manual/sharding/#implementation-classes) for more details.
+Please refer to [Inline Expression](/en/dev-manual/sharding/#inlineexpressionparser) for more details.
 
 Type: INLINE
 

@@ -27,7 +27,7 @@ ifExists ::=
 
 ### Supplement
 
-- `ifExists` clause used for avoid `Default shadow algorithm not exists` error.
+- `ifExists` clause is used to avoid `Default shadow algorithm not exists` error.
 
 ### Example
 

@@ -12,8 +12,8 @@ weight = 5
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-LableRelabelComputeNodes ::=
-  ('LABEL' | 'RELABEL') 'COMPUTE' 'NODE' instance_id 'WITH' labelName
+LabelRelabelComputeNode ::=
+  ('LABEL' | 'RELABEL') 'COMPUTE' 'NODE' instance_id 'WITH' labelName (',' labelName)*
 
 instance_id ::=
   string

@@ -70,7 +70,7 @@ value ::=
 - If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName`
   and `algorithmType`;
 - `algorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SQL_HINT`;
-- `ifNotExists` caluse is used for avoid `Duplicate shadow rule` error.
+- `ifNotExists` clause is used to avoid `Duplicate shadow rule` error.
 
 ### Example
 

@@ -36,8 +36,8 @@ databaseName ::=
 | 列                                | 说明                |
 |---------------------------------- |------------------- |
 | name                              | 读写分离规则名称     |
-| write_data_source_name            | 写数据源名称         |
-| read_data_source_names            | 读数据源名称列表     |
+| write_storage_unit_name           | 写存储单元名称       |
+| read_storage_unit_names           | 读存储单元名称列表   |
 | transactional_read_query_strategy | 事务内读请求路由策略  |
 | load_balancer_type                | 负载均衡算法类型      |
 | load_balancer_props               | 负载均衡算法参数      |

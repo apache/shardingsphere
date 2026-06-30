@@ -142,27 +142,6 @@ ds_0:
   username: root
   poolName: HikariPool-1
 ```
-### /metadata/${databaseName}/data_sources/nodes/ds_0/versions/0
-
-数据库连接池的，不同数据库连接池属性自适配（例如：HikariCP）。
-
-```yaml
-ds_0:
-  initializationFailTimeout: 1
-  validationTimeout: 5000
-  maxLifetime: 1800000
-  leakDetectionThreshold: 0
-  minimumIdle: 1
-  password: root
-  idleTimeout: 60000
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  maximumPoolSize: 50
-  connectionTimeout: 30000
-  username: root
-  poolName: HikariPool-1
-```
-
 ### /metadata/${databaseName}/rules/sharding/tables/t_order/versions/0
 
 分片表元数据节点持久化内容，不是用户直接编写的规则 YAML 格式。

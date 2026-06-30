@@ -1,5 +1,5 @@
 +++
-title = "Readwrite_splitting"
+title = "Readwrite Splitting"
 weight = 2
 +++
 

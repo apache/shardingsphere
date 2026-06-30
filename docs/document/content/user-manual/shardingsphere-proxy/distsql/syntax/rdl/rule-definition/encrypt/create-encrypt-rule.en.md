@@ -74,7 +74,7 @@ value ::=
 - `CIPHER` specifies the cipher column, `ASSISTED_QUERY` or `ASSISTED_QUERY_COLUMN` specifies the assisted query column, and `LIKE_QUERY` or `LIKE_QUERY_COLUMN` specifies the like query column;
 - `algorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/);
 - Duplicate `ruleName` will not be created;
-- `ifNotExists` clause used for avoid `Duplicate encrypt rule` error.
+- `ifNotExists` clause is used to avoid `Duplicate encrypt rule` error.
 
 ### Example
 

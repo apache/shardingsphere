@@ -111,7 +111,7 @@ algorithmType ::=
 - `AUDIT_STRATEGY` is used to specify the sharding audit strategy, which is optional. For the sharding audit
   generation strategy, please refer
   to [Sharding Audit](/en/user-manual/common-config/builtin-algorithm/audit/);
-- `ifNotExists` clause is used for avoid `Duplicate sharding rule` error.
+- `ifNotExists` clause is used to avoid `Duplicate sharding rule` error.
 
 ### Example
 

@@ -12,7 +12,7 @@ weight = 1
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-ShowShardingTableRule ::=
+ShowShardingTableRules ::=
   'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
 
 tableName ::=

@@ -30,7 +30,7 @@ algorithmName ::=
 
 ### Supplement
 
-- `ifExists` clause is used for avoid `shadow algorithm not exists` error.
+- `ifExists` clause is used to avoid `shadow algorithm not exists` error.
 
 ### Example
 

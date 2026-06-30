@@ -13,7 +13,7 @@ weight = 6
 {{% tab name="语法" %}}
 ```sql
 UnlabelComputeNode ::=
-  'UNLABEL' 'COMPUTE' 'NODE' instance_id 'WITH' labelName
+  'UNLABEL' 'COMPUTE' 'NODE' instance_id ('WITH' labelName (',' labelName)*)?
 
 instance_id ::=
   string

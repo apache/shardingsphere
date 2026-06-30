@@ -84,7 +84,7 @@ helm uninstall shardingsphere-proxy
 |-------------------------------------|-----------------------------------|-------------------------------|
 | `compute.image.repository`          | ShardingSphere-Proxy 的镜像名         | `apache/shardingsphere-proxy` |
 | `compute.image.pullPolicy`          | ShardingSphere-Proxy 镜像拉取策略       | `IfNotPresent`                |
-| `compute.image.tag`                 | ShardingSphere-Proxy 镜像标签         | `5.1.2`                       |
+| `compute.image.tag`                 | ShardingSphere-Proxy 镜像标签         | `${latest.release.version}`   |
 | `compute.imagePullSecrets`          | 拉取私有仓库的凭证                         | `[]`                          |
 | `compute.resources.limits`          | ShardingSphere-Proxy 容器的资源限制      | `{}`                          |
 | `compute.resources.requests.memory` | ShardingSphere-Proxy 容器申请的内存      | `2Gi`                         |
@@ -168,7 +168,7 @@ compute:
     pullPolicy: IfNotPresent
     ## Overrides the image tag whose default is the chart appVersion.
     ##
-    tag: "5.1.2"
+    tag: "${latest.release.version}"
   ## @param compute.imagePullSecrets Specify docker-registry secret names as an array
   ## e.g：
   ## imagePullSecrets:

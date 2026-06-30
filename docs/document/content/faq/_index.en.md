@@ -275,7 +275,7 @@ The codes under the package `org.apache.shardingsphere.sql.parser.autogen` are g
 The generated codes such as `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` may be too large to be indexed by the IDEA.
 You may configure the IDEA's property `idea.max.intellisense.filesize=10000`.
 
-### In SQLSever and PostgreSQL, why does the aggregation column without alias throw exception?
+### In SQL Server and PostgreSQL, why does the aggregation column without alias throw exception?
 
 Answer:
 

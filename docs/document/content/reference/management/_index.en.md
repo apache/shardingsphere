@@ -143,28 +143,6 @@ ds_0:
   poolName: HikariPool-1
 ```
 
-### /metadata/${databaseName}/data_sources/nodes/ds_0/versions/0
-
-Database connection pools, whose properties (e.g. HikariCP) are to be configured by the user.
-
-```yaml
-ds_0:
-  initializationFailTimeout: 1
-  validationTimeout: 5000
-  maxLifetime: 1800000
-  leakDetectionThreshold: 0
-  minimumIdle: 1
-  password: root
-  idleTimeout: 60000
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  maximumPoolSize: 50
-  connectionTimeout: 30000
-  username: root
-  poolName: HikariPool-1
-```
-
-
 ### /metadata/${databaseName}/rules/sharding/tables/t_order/versions/0
 
 Persisted content of the sharding table metadata node, not the user-facing rule YAML format.

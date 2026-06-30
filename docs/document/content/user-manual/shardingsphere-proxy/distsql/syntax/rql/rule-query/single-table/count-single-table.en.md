@@ -5,7 +5,7 @@ weight = 3
 
 ### Description
 
-The `COUNT SINGLE TABLE` syntax is used to query number of single table for specified database.
+The `COUNT SINGLE TABLE` syntax is used to query the number of single tables for specified database.
 
 ### Syntax
 
@@ -38,14 +38,14 @@ databaseName ::=
 
 ### Example
 
-- Query the number of single rules for specified database.
+- Query the number of single tables for specified database.
 
 ```sql
-COUNT SINGLE TABLE
+COUNT SINGLE TABLE FROM sharding_db;
 ``` 
 
 ```sql
-mysql> COUNT SINGLE TABLE;
+mysql> COUNT SINGLE TABLE FROM sharding_db;
 +-----------+-------------+-------+
 | rule_name | database    | count |
 +-----------+-------------+-------+

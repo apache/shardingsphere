@@ -16,7 +16,7 @@ weight = 17
 UnlockCluster ::=
   'UNLOCK' 'CLUSTER' ('TIMEOUT' timeoutMillis)?
 
-timeoutmillis ::=
+timeoutMillis ::=
   long
 ```
 

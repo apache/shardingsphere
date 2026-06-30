@@ -12,7 +12,7 @@ The `SHOW STATUS FROM READWRITE_SPLITTING RULE` syntax is used to query readwrit
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-ShowStatusFromReadwriteSplittingRule ::=
+ShowStatusFromReadwriteSplittingRules ::=
   'SHOW' 'STATUS' 'FROM' 'READWRITE_SPLITTING' ('RULES' | 'RULE' groupName) ('FROM' databaseName)?
 
 groupName ::=
@@ -57,7 +57,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 1 row in set (0.01 sec)
 ```
 
-- Query all readwrite-splitting storage unit from specified database
+- Query all readwrite-splitting storage unit status from specified database.
 
 ```sql
 SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
@@ -89,10 +89,10 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 1 row in set (0.01 sec)
 ```
 
-- Query all readwrite-splitting storage unit from current database
+- Query all readwrite-splitting storage unit status from current database.
 
 ```sql
-mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
+SHOW STATUS FROM READWRITE_SPLITTING RULES;
 ```
 
 ```sql

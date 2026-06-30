@@ -5,7 +5,7 @@ weight = 3
 
 ### Description
 
-The `UNREGISTER STORAGE UNIT` syntax is used to unregister storage unit from the current database
+The `UNREGISTER STORAGE UNIT` syntax is used to unregister storage units from the current database.
 
 ### Syntax
 
@@ -22,7 +22,8 @@ storageUnitName ::=
   identifier
 
 ignoreTables ::=
-  'IGNORE' ('SINGLE')? (',')? ('BROADCAST')? 'TABLES'
+  'IGNORE' 'SINGLE' 'TABLES' | 'IGNORE' 'BROADCAST' 'TABLES' |
+  'IGNORE' ('SINGLE' ',' 'BROADCAST' | 'BROADCAST' ',' 'SINGLE') 'TABLES'
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -32,13 +33,11 @@ ignoreTables ::=
 
 ### Supplement
 
-- `UNREGISTER STORAGE UNIT` will only unregister storage unit in Proxy, the real data source corresponding to the storage unit will not be
-  unregistered;
-- Unable to unregister storage unit already used by rules. `Storage unit are still in used.` will be prompted when removing
-  storage units used by rules;
-- The storage unit need to be removed only contains `SINGLE RULE`, `BROADCAST RULE` and when the user confirms that this restriction
-  can be ignored, the `IGNORE SINGLE TABLES`, `IGNORE BROADCAST TABLES`, `IGNORE SINGLE, BROADCAST TABLES` keyword can be added to remove the storage unit;
-- `ifExists` clause is used for avoid `Storage unit not exists` error.
+- `UNREGISTER STORAGE UNIT` only unregisters storage units in Proxy. The real data sources corresponding to the storage units are not unregistered;
+- Storage units already used by rules can not be unregistered. `Storage unit '%s' still used by '%s'.` will be prompted when unregistering storage units used by rules;
+- When the storage units to be unregistered are only used by single table rules or broadcast rules, and the user confirms that this restriction can be ignored,
+  `IGNORE SINGLE TABLES`, `IGNORE BROADCAST TABLES`, `IGNORE SINGLE, BROADCAST TABLES`, or `IGNORE BROADCAST, SINGLE TABLES` can be added to unregister the storage units;
+- `ifExists` clause is used to avoid `Storage unit not exists` error.
 
 ### Example
 
@@ -70,6 +69,12 @@ UNREGISTER STORAGE UNIT ds_0 IGNORE BROADCAST TABLES;
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0 IGNORE SINGLE, BROADCAST TABLES;
+```
+
+- Unregister storage unit, ignore broadcast and single tables
+
+```sql
+UNREGISTER STORAGE UNIT ds_0 IGNORE BROADCAST, SINGLE TABLES;
 ```
 
 - Unregister storage unit with `ifExists` clause
