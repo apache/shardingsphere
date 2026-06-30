@@ -33,8 +33,10 @@ migrationJobId ::=
 | column                         | Description                          |
 |--------------------------------|--------------------------------------|
 | item                           | migration job sharding serial number |
-| data source                    | migration source                     |
+| data_source                    | migration source                     |
+| tables                         | migration tables                     |
 | status                         | migration job status                 |
+| active                         | whether the migration job is active  |
 | processed_records_count        | number of processed rows             |
 | inventory_finished_percentage  | finished percentage of migration job |
 | incremental_idle_seconds       | incremental idle time                |
@@ -50,11 +52,11 @@ SHOW MIGRATION STATUS 'j010180026753ef0e25d3932d94d1673ba551';
 
 ```sql
 mysql> SHOW MIGRATION STATUS 'j010180026753ef0e25d3932d94d1673ba551';
-+------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
-| item | data_source | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
-+------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
-| 0    | ds_1        | EXECUTE_INCREMENTAL_TASK | true   | 6                       | 100                           | 25                       |               |
-+------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
++------+-------------+---------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
+| item | data_source | tables  | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
++------+-------------+---------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
+| 0    | ds_1        | t_order | EXECUTE_INCREMENTAL_TASK | true   | 6                       | 100                           | 25                       |               |
++------+-------------+---------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
 1 row in set (0.01 sec)
 ```
 

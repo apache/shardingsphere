@@ -39,10 +39,6 @@ weight = 5
 
 `ENCRYPT`、`COLUMNS`、`CIPHER`、`ENCRYPT_ALGORITHM`
 
-#### 数据库发现
-
-`DB_DISCOVERY`、`STORAGE_UNITS`、`HEARTBEAT`
-
 #### 影子压测
 
 `SHADOW`、`DEFAULT`、`SOURCE`、`SHADOW`
@@ -79,10 +75,6 @@ weight = 5
 #### 数据加密
 
 `ENCRYPT`
-
-#### 数据库发现
-
-`DB_DISCOVERY`、`TYPES`、`HEARTBEATS`
 
 #### 影子压测
 

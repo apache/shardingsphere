@@ -49,6 +49,8 @@ databaseName ::=
 | key_generate_column               | 分布式主键生成列                |
 | key_generator_type                | 分布式主键生成器类型              |
 | key_generator_props               | 分布式主键生成器参数              |
+| auditor_types                     | 分片审计算法类型                |
+| allow_hint_disable                | 是否允许通过 Hint 禁用分片审计       |
 
  ### 示例
 - 查询指定逻辑库的分片规则

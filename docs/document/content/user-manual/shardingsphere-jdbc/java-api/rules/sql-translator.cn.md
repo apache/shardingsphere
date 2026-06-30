@@ -16,18 +16,19 @@ weight = 9
 | *名称*                                    | *数据类型*  | *说明*                    |
 |-----------------------------------------|---------|-------------------------|
 | type                                    | String  | SQL 翻译器类型               |
+| props                                   | Properties | SQL 翻译器属性               |
 | useOriginalSQLWhenTranslatingFailed (?) | boolean | SQL 翻译失败是否使用原始 SQL 继续执行 |
 
 ## 操作步骤
 
 1. 配置翻译类型 type
-2. 配置 useOriginalSQLWhenTranslatingFailed 参数，是否在 SQL 翻译失败后使用原始 SQL 继续执行
+2. 配置 SQL 翻译器属性。
+3. 配置 useOriginalSQLWhenTranslatingFailed 参数，是否在 SQL 翻译失败后使用原始 SQL 继续执行。
 
 ## 配置示例
 
 ```java
 SQLTranslatorRuleConfiguration ruleConfig = new SQLTranslatorRuleConfiguration("Native", new Properties(), false);
-String translatedSQL = new SQLTranslatorRule(ruleConfig).translate();
 ```
 
 ## 相关参考

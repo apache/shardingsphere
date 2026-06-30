@@ -35,16 +35,17 @@ quotedIdentifier ::=
 
 ### 返回值说明
 
-| 列           | 说明    |
-|-------------|-------|
-| schema_name | 逻辑库名称 |
-| table_name  | 表名称   |
-| type        | 元数据类型 |
-| name        | 元数据名称 |
+| 列             | 说明    |
+|---------------|-------|
+| database_name | 逻辑库名称 |
+| table_name    | 表名称   |
+| type          | 元数据类型 |
+| name          | 元数据名称 |
+| value         | 元数据值  |
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE。` 如果也未使用 `DATABASE` 则会提示 `No database selected`。
+- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。如果也未使用 `DATABASE` 则会提示 `No database selected`。
 
 - `tableName` 和 `databaseName` 可以写成不带引号的标识符、反引号包裹的标识符或双引号包裹的标识符。
 
@@ -58,18 +59,18 @@ SHOW TABLE METADATA t_order, `t_order_1` FROM "sharding_db";
 
 ```sql
 mysql> SHOW TABLE METADATA t_order, t_order_1 FROM sharding_db;
-+-------------------+------------+--------+----------+
-| schema_name       | table_name | type   | name     |
-+-------------------+------------+--------+----------+
-| sharding_db       | t_order_1  | COLUMN | order_id |
-| sharding_db       | t_order_1  | COLUMN | user_id  |
-| sharding_db       | t_order_1  | COLUMN | status   |
-| sharding_db       | t_order_1  | INDEX  | PRIMARY  |
-| sharding_db       | t_order    | COLUMN | order_id |
-| sharding_db       | t_order    | COLUMN | user_id  |
-| sharding_db       | t_order    | COLUMN | status   |
-| sharding_db       | t_order    | INDEX  | PRIMARY  |
-+-------------------+------------+--------+----------+
++---------------+------------+--------+----------+---------------------------+
+| database_name | table_name | type   | name     | value                     |
++---------------+------------+--------+----------+---------------------------+
+| sharding_db   | t_order_1  | COLUMN | order_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order_1  | COLUMN | user_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order_1  | COLUMN | status | ShardingSphereColumn(...) |
+| sharding_db   | t_order_1  | INDEX  | PRIMARY  | ShardingSphereIndex(...)  |
+| sharding_db   | t_order  | COLUMN | order_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | COLUMN | user_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | COLUMN | status | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | INDEX  | PRIMARY  | ShardingSphereIndex(...)  |
++---------------+------------+--------+----------+---------------------------+
 8 rows in set (0.01 sec)
 ```
 
@@ -81,14 +82,14 @@ SHOW TABLE METADATA "t_order" FROM `sharding_db`;
 
 ```sql
 mysql> SHOW TABLE METADATA t_order FROM sharding_db;
-+-------------------+------------+--------+----------+
-| schema_name       | table_name | type   | name     |
-+-------------------+------------+--------+----------+
-| sharding_db       | t_order    | COLUMN | order_id |
-| sharding_db       | t_order    | COLUMN | user_id  |
-| sharding_db       | t_order    | COLUMN | status   |
-| sharding_db       | t_order    | INDEX  | PRIMARY  |
-+-------------------+------------+--------+----------+
++---------------+------------+--------+----------+---------------------------+
+| database_name | table_name | type   | name     | value                     |
++---------------+------------+--------+----------+---------------------------+
+| sharding_db   | t_order  | COLUMN | order_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | COLUMN | user_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | COLUMN | status | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | INDEX  | PRIMARY  | ShardingSphereIndex(...)  |
++---------------+------------+--------+----------+---------------------------+
 4 rows in set (0.00 sec)
 ```
 
@@ -100,18 +101,18 @@ SHOW TABLE METADATA `t_order`, "t_order_1";
 
 ```sql
 mysql> SHOW TABLE METADATA t_order, t_order_1;
-+-------------------+------------+--------+----------+
-| schema_name       | table_name | type   | name     |
-+-------------------+------------+--------+----------+
-| sharding_db       | t_order_1  | COLUMN | order_id |
-| sharding_db       | t_order_1  | COLUMN | user_id  |
-| sharding_db       | t_order_1  | COLUMN | status   |
-| sharding_db       | t_order_1  | INDEX  | PRIMARY  |
-| sharding_db       | t_order    | COLUMN | order_id |
-| sharding_db       | t_order    | COLUMN | user_id  |
-| sharding_db       | t_order    | COLUMN | status   |
-| sharding_db       | t_order    | INDEX  | PRIMARY  |
-+-------------------+------------+--------+----------+
++---------------+------------+--------+----------+---------------------------+
+| database_name | table_name | type   | name     | value                     |
++---------------+------------+--------+----------+---------------------------+
+| sharding_db   | t_order_1  | COLUMN | order_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order_1  | COLUMN | user_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order_1  | COLUMN | status | ShardingSphereColumn(...) |
+| sharding_db   | t_order_1  | INDEX  | PRIMARY  | ShardingSphereIndex(...)  |
+| sharding_db   | t_order  | COLUMN | order_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | COLUMN | user_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | COLUMN | status | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | INDEX  | PRIMARY  | ShardingSphereIndex(...)  |
++---------------+------------+--------+----------+---------------------------+
 8 rows in set (0.00 sec)
 ```
 
@@ -123,14 +124,14 @@ SHOW TABLE METADATA "t_order";
 
 ```sql
 mysql> SHOW TABLE METADATA t_order;
-+-------------------+------------+--------+----------+
-| schema_name       | table_name | type   | name     |
-+-------------------+------------+--------+----------+
-| sharding_db       | t_order    | COLUMN | order_id |
-| sharding_db       | t_order    | COLUMN | user_id  |
-| sharding_db       | t_order    | COLUMN | status   |
-| sharding_db       | t_order    | INDEX  | PRIMARY  |
-+-------------------+------------+--------+----------+
++---------------+------------+--------+----------+---------------------------+
+| database_name | table_name | type   | name     | value                     |
++---------------+------------+--------+----------+---------------------------+
+| sharding_db   | t_order  | COLUMN | order_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | COLUMN | user_id | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | COLUMN | status | ShardingSphereColumn(...) |
+| sharding_db   | t_order  | INDEX  | PRIMARY  | ShardingSphereIndex(...)  |
++---------------+------------+--------+----------+---------------------------+
 4 rows in set (0.01 sec)
 ```
 

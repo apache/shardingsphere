@@ -19,13 +19,13 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 shadowRuleDefinition ::=
-  ruleName '(' storageUnitMapping shadowTableRule (',' shadowTableRule)* ')'
+  ruleName '(' storageUnitMapping ',' shadowTableRule (',' shadowTableRule)* ')'
     
 storageUnitMapping ::=
   'SOURCE' '=' storageUnitName ',' 'SHADOW' '=' storageUnitName
 
 shadowTableRule ::=
-  tableName '(' shadowAlgorithm ')'
+  tableName '(' shadowAlgorithm (',' shadowAlgorithm)* ')'
     
 shadowAlgorithm ::=
   'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'

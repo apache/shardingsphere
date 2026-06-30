@@ -42,7 +42,7 @@ Attributes:
 | *Name*   | *Type* | *Description*             | *Default Value*                                                         |
 |----------|--------|---------------------------|-------------------------------------------------------------------------|
 | provider | String | Type for metadata persist | H2                                                                      |
-| jdbc_url | String | JDBC URL                  | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL |
+| jdbc_url | String | JDBC URL                  | jdbc:h2:mem:config;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL |
 | username | String | username                  | sa                                                                      |
 | password | String | password                  |                                                                         |
 
@@ -91,7 +91,7 @@ mode:
     type: JDBC
     props:
       provider: H2
-      jdbc_url: jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+      jdbc_url: jdbc:h2:mem:config;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL
       username: test
       password: Test@9876
 ```

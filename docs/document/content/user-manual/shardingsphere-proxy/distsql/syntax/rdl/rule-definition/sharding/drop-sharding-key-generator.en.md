@@ -5,7 +5,7 @@ weight = 10
 
 ## Description
 
-The `DROP SHARDING KEY GENERATOR` syntax is used to drop sharding key generator for specified database.
+The `DROP SHARDING KEY GENERATOR` syntax is used to drop sharding key generators from the current database.
 
 ### Syntax
 
@@ -13,7 +13,7 @@ The `DROP SHARDING KEY GENERATOR` syntax is used to drop sharding key generator 
 {{% tab name="Grammar" %}}
 ```sql
 DropShardingKeyGenerator ::=
-  'DROP' 'SHARDING' 'KEY' 'GENERATOR' ifExists? keyGeneratorName (keyGeneratorName)* ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'KEY' 'GENERATOR' ifExists? keyGeneratorName (',' keyGeneratorName)*
 
 ifExists ::=
   'IF' 'EXISTS'
@@ -21,8 +21,6 @@ ifExists ::=
 keyGeneratorName ::=
   identifier
 
-databaseName ::=
-  identifier
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -32,21 +30,20 @@ databaseName ::=
 
 ### Supplement
 
-- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted;
 - `ifExists` clause is used for avoid `Sharding key generator not exists` error.
 
 ### Example
 
-- Drop sharding key generator for specified database
-
-```sql
-DROP SHARDING KEY GENERATOR t_order_snowflake FROM sharding_db;
-```
-
-- Drop sharding key generator for current database
+- Drop sharding key generator
 
 ```sql
 DROP SHARDING KEY GENERATOR t_order_snowflake;
+```
+
+- Drop multiple sharding key generators
+
+```sql
+DROP SHARDING KEY GENERATOR t_order_snowflake, t_item_snowflake;
 ```
 
 - Drop sharding key generator with `ifExists` clause
@@ -57,7 +54,7 @@ DROP SHARDING KEY GENERATOR IF EXISTS t_order_snowflake;
 
 ### Reserved word
 
-`DROP`, `SHARDING`, `KEY`, `GENERATOR`, `FROM`
+`DROP`, `SHARDING`, `KEY`, `GENERATOR`, `IF`, `EXISTS`
 
 ### Related links
 

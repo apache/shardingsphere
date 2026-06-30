@@ -1,11 +1,11 @@
 +++
-title = "SHOW BROADCAST TABLE RULE"
+title = "SHOW BROADCAST TABLE RULES"
 weight = 1
 +++
 
 ## Description
 
-The `SHOW BROADCAST TABLE RULE` syntax is used to broadcast tables for specified database.
+The `SHOW BROADCAST TABLE RULES` syntax is used to query broadcast table rules for specified database.
 
 ### Syntax
 

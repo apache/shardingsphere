@@ -235,7 +235,7 @@ A possible Docker Compose example is,
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: apache/shardingsphere-proxy-native:5.5.3-SNAPSHOT
+    image: apache/shardingsphere-proxy-native:5.5.4-SNAPSHOT
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -249,7 +249,7 @@ You can execute the following command to build.
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-mostly" "-DskipTests" clean package
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.4-SNAPSHOT-mostly" "-DskipTests" clean package
 ```
 
 A possible Docker Compose example is,
@@ -257,7 +257,7 @@ A possible Docker Compose example is,
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: apache/shardingsphere-proxy-native:5.5.3-SNAPSHOT-mostly
+    image: apache/shardingsphere-proxy-native:5.5.4-SNAPSHOT-mostly
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -271,7 +271,7 @@ You can execute the following command to build.
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-static" "-DskipTests" clean package
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.4-SNAPSHOT-static" "-DskipTests" clean package
 ```
 
 A possible Docker Compose example is,
@@ -279,7 +279,7 @@ A possible Docker Compose example is,
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: apache/shardingsphere-proxy-native:5.5.3-SNAPSHOT-static
+    image: apache/shardingsphere-proxy-native:5.5.4-SNAPSHOT-static
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -350,7 +350,7 @@ On Ubuntu, assuming that the `conf` folder containing `global.yaml` is `/tmp/con
 
 ```bash
 cd ./shardingsphere/
-cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.3-SNAPSHOT-shardingsphere-proxy-bin/bin
+cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.4-SNAPSHOT-shardingsphere-proxy-bin/bin
 ./proxy-native "3307" "/tmp/conf" "0.0.0.0"
 ```
 
@@ -358,7 +358,7 @@ On Windows, assuming that a `conf` folder containing `global.yaml` already exist
 
 ```bash
 cd ./shardingsphere/
-cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.3-SNAPSHOT-shardingsphere-proxy-bin/bin
+cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.4-SNAPSHOT-shardingsphere-proxy-bin/bin
 ./proxy-native.exe "3307" "C:\Users\shard\Downloads\conf" "0.0.0.0"
 ```
 

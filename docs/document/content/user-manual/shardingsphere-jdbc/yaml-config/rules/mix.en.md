@@ -114,7 +114,7 @@ rules:
     assisted_encryptor:
       type: MD5
     like_encryptor:
-      type: CHAR_DIGEST_LIKE
+      type: MD5
   tables:
     t_encrypt:
       columns:

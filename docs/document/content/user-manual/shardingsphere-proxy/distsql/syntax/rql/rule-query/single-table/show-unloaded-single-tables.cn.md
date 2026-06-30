@@ -13,7 +13,11 @@ weight = 4
 {{% tab name="Grammar" %}}
 ```sql
 showUnloadedSingleTables::=
-  'SHOW' 'UNLOADED' 'SINGLE' 'TABLES'
+  'SHOW' 'UNLOADED' 'SINGLE' 'TABLES' ('FROM' fromClause)?
+
+fromClause ::=
+  databaseName ('STORAGE' 'UNIT' storageUnitName ('SCHEMA' schemaName)?)?
+  | 'STORAGE' 'UNIT' storageUnitName ('SCHEMA' schemaName)?
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -27,6 +31,7 @@ showUnloadedSingleTables::=
 |-------------------|---------------------|
 | table_name        | 单表名称             |
 | storage_unit_name | 单表所在的存储单元名称 |
+| schema_name       | Schema 名称，仅在存在 Schema 元数据时返回 |
 
 
 ### 示例
@@ -47,11 +52,16 @@ mysql> SHOW UNLOADED SINGLE TABLES;
 1 row in set (0.01 sec)
 ```
 
+- 查询指定存储单元中的未加载单表
+
+```sql
+SHOW UNLOADED SINGLE TABLES FROM STORAGE UNIT ds_0;
+```
+
 ### 保留字
 
-`SHOW`、`UNLOADED`、`SINGLE`、`TABLES`
+`SHOW`、`UNLOADED`、`SINGLE`、`TABLES`、`FROM`、`STORAGE`、`UNIT`、`SCHEMA`
 
 ### 相关链接
 
 - [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-

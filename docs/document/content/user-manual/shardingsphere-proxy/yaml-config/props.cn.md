@@ -19,7 +19,7 @@ Apache ShardingSphere 提供了丰富的系统配置属性，用户可通过 `gl
 | max-union-size-per-datasource (?)                   | int     | 每个数据源允许合并的最大 UNION ALL 数量。当路由到同一数据源的路由单元数量超过此值时，将分批合并以恢复并行执行能力。                                      | Integer.MAX_VALUE | 是    |
 | check-table-metadata-enabled (?)                    | boolean | 应用启动或元数据更新时，是否校验表元数据一致性。                                                                                                    | false           | 是      |
 | load-table-metadata-batch-size (?)                  | int     | 应用启动或刷新表元数据时，单个批次加载表元数据的数量。                                                                                                 | 1000            | 是      |
-| proxy-frontend-database-protocol-type (?)           | String  | ShardingSphere-Proxy 前端数据库协议类型。支持 `MySQL`、`PostgreSQL`、`openGauss` 和 `Firebird`。                                      | ""              | 是      |
+| proxy-frontend-database-protocol-type (?)           | String  | ShardingSphere-Proxy 前端数据库协议类型。支持 `MySQL`、`PostgreSQL`、`openGauss` 和 `Firebird`。                                      | null            | 是      |
 | proxy-frontend-flush-threshold (?)                  | int     | ShardingSphere-Proxy 前端传输记录的 I/O 刷新阈值。                                                                                       | 128             | 是      |
 | proxy-backend-query-fetch-size (?)                  | int     | Proxy 后端与数据库使用游标交互时每次获取的数据行数。数值增大可能会增加 ShardingSphere-Proxy 的内存使用。`-1` 表示使用不同 JDBC 驱动的最小值。                  | -1              | 是      |
 | proxy-frontend-executor-size (?)                    | int     | ShardingSphere-Proxy 前端 Netty 线程池线程数量。`0` 表示使用 Netty 默认值。                                                                 | 0               | 否      |

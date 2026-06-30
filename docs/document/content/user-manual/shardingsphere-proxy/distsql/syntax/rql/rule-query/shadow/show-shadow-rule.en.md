@@ -33,16 +33,14 @@ databaseName ::=
 
 ### Return value description
 
-| Column       | Description             |
-|--------------|-------------------------|
-| rule_name    | Shadow rule name        |
-| source_name  | Data source name        |
-| shadow_name  | Shadow data source name |
-| shadow_table | Shadow table            |
-
-
-
-
+| Column          | Description             |
+|-----------------|-------------------------|
+| shadow_table    | Shadow table            |
+| rule_name       | Shadow rule name        |
+| source_name     | Data source name        |
+| shadow_name     | Shadow data source name |
+| algorithm_type  | Shadow algorithm type   |
+| algorithm_props | Shadow algorithm props  |
 ### Example
 
 - Query specified shadow rule in specified database.
@@ -53,11 +51,11 @@ SHOW SHADOW RULE shadow_rule FROM shadow_db;
 
 ```sql
 mysql> SHOW SHADOW RULE shadow_rule FROM shadow_db;
-+-------------+-------------+-------------+----------------------+
-| rule_name   | source_name | shadow_name | shadow_table         |
-+-------------+-------------+-------------+----------------------+
-| shadow_rule | ds_0        | ds_1        | t_order_item,t_order |
-+-------------+-------------+-------------+----------------------+
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
+| shadow_table | rule_name   | source_name | shadow_name | algorithm_type | algorithm_props                                 |
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
+| t_order      | shadow_rule | ds_0        | ds_1        | VALUE_MATCH    | column=user_id,operation=insert,value=1         |
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
 1 row in set (0.00 sec)
 ```
 
@@ -69,11 +67,11 @@ SHOW SHADOW RULE shadow_rule;
 
 ```sql
 mysql> SHOW SHADOW RULE shadow_rule;
-+-------------+-------------+-------------+----------------------+
-| rule_name   | source_name | shadow_name | shadow_table         |
-+-------------+-------------+-------------+----------------------+
-| shadow_rule | ds_0        | ds_1        | t_order_item,t_order |
-+-------------+-------------+-------------+----------------------+
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
+| shadow_table | rule_name   | source_name | shadow_name | algorithm_type | algorithm_props                                 |
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
+| t_order      | shadow_rule | ds_0        | ds_1        | VALUE_MATCH    | column=user_id,operation=insert,value=1         |
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
 1 row in set (0.01 sec)
 ```
 
@@ -85,11 +83,11 @@ SHOW SHADOW RULES FROM shadow_db;
 
 ```sql
 mysql> SHOW SHADOW RULES FROM shadow_db;
-+-------------+-------------+-------------+----------------------+
-| rule_name   | source_name | shadow_name | shadow_table         |
-+-------------+-------------+-------------+----------------------+
-| shadow_rule | ds_0        | ds_1        | t_order_item,t_order |
-+-------------+-------------+-------------+----------------------+
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
+| shadow_table | rule_name   | source_name | shadow_name | algorithm_type | algorithm_props                                 |
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
+| t_order      | shadow_rule | ds_0        | ds_1        | VALUE_MATCH    | column=user_id,operation=insert,value=1         |
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
 1 row in set (0.00 sec)
 ```
 
@@ -101,11 +99,11 @@ SHOW SHADOW RULES;
 
 ```sql
 mysql> SHOW SHADOW RULES;
-+-------------+-------------+-------------+----------------------+
-| rule_name   | source_name | shadow_name | shadow_table         |
-+-------------+-------------+-------------+----------------------+
-| shadow_rule | ds_0        | ds_1        | t_order_item,t_order |
-+-------------+-------------+-------------+----------------------+
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
+| shadow_table | rule_name   | source_name | shadow_name | algorithm_type | algorithm_props                                 |
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
+| t_order      | shadow_rule | ds_0        | ds_1        | VALUE_MATCH    | column=user_id,operation=insert,value=1         |
++--------------+-------------+-------------+-------------+----------------+-------------------------------------------------+
 1 row in set (0.00 sec)
 ```
 ### Reserved word

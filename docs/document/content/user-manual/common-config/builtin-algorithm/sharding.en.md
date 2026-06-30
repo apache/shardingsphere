@@ -21,9 +21,12 @@ Type: MOD
 
 Attributes:
 
-| *Name*         | *DataType* | *Description*  |
-|----------------|------------|----------------|
-| sharding-count | int        | Sharding count |
+| *Name*           | *DataType* | *Description*                                | *Default Value* |
+|------------------|------------|------------------------------------------------|-----------------|
+| sharding-count   | int        | Sharding count                                 | -               |
+| start-offset (?) | int        | Start offset for extracting the sharding value | 0               |
+| stop-offset (?)  | int        | Stop offset for extracting the sharding value  | 0               |
+| zero-padding (?) | boolean    | Whether to pad the sharding suffix with zeros  | false           |
 
 #### Hash Modulo Sharding Algorithm
 
@@ -31,10 +34,10 @@ Type: HASH_MOD
 
 Attributes:
 
-| *Name*                          | *DataType* | *Description*                                                                                                                         |
-|---------------------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| sharding-count                  | int        | Sharding count                                                                                                                        |
-| normalize-numeric-int-range (?) | boolean    | Whether to normalize `Long` and `BigInteger` values in integer range to integer semantics for consistent routing across numeric types | false |
+| *Name*                          | *DataType* | *Description*                                                                                                                         | *Default Value* |
+|---------------------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| sharding-count                  | int        | Sharding count                                                                                                                        | -               |
+| normalize-numeric-int-range (?) | boolean    | Whether to normalize `Long` and `BigInteger` values in integer range to integer semantics for consistent routing across numeric types | false           |
 
 #### Volume Based Range Sharding Algorithm
 

@@ -13,7 +13,7 @@ weight = 2
 {{% tab name="语法" %}}
 ```sql
 AlterMaskRule ::=
-  'ALTER' 'MASK' 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
+  'ALTER' 'MASK' 'TABLE'? 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
 
 maskRuleDefinition ::=
   ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)* ')' ')'
@@ -66,7 +66,7 @@ COLUMNS(
 
 ### 保留字
 
-`ALTER`、`MASK`、`RULE`、`COLUMNS`、`NAME`、`TYPE`
+`ALTER`、`MASK`、`TABLE`、`RULE`、`COLUMNS`、`NAME`、`TYPE`
 
 ### 相关链接
 

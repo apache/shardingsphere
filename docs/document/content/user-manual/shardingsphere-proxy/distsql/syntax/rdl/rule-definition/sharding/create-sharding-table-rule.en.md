@@ -19,10 +19,10 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 tableRuleDefinition ::= 
-  ruleName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
+  ruleName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' auditStrategyDefinition)? ')'
 
 autoTableRuleDefinition ::=
-  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
+  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' auditStrategyDefinition)? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' | 'SHARDING_COLUMNS') '=' columnName ',' algorithmDefinition
@@ -35,7 +35,10 @@ keyGenerateAlgorithmDefinition ::=
   | 'GENERATOR' '=' keyGeneratorName
 
 auditStrategyDefinition ::= 
-  'AUDIT_STRATEGY' '(' algorithmDefinition (',' algorithmDefinition)* ')'
+  'AUDIT_STRATEGY' '(' algorithmDefinition (',' algorithmDefinition)* ',' 'ALLOW_HINT_DISABLE' '=' boolean ')'
+
+boolean ::=
+  'TRUE' | 'FALSE'
 
 algorithmDefinition ::=
   'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)?')'

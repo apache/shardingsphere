@@ -13,7 +13,7 @@ The `ALTER MASK RULE` syntax is used to create a mask rule.
 {{% tab name="Grammar" %}}
 ```sql
 AlterMaskRule ::=
-  'ALTER' 'MASK' 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
+  'ALTER' 'MASK' 'TABLE'? 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
 
 maskRuleDefinition ::=
   ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)* ')' ')'
@@ -66,7 +66,7 @@ COLUMNS(
 
 ### Reserved words
 
-`ALTER`, `MASK`, `RULE`, `COLUMNS`, `NAME`, `TYPE`
+`ALTER`, `MASK`, `TABLE`, `RULE`, `COLUMNS`, `NAME`, `TYPE`
 
 ### Related links
 

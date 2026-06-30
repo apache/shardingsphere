@@ -13,13 +13,13 @@ The `ALTER MIGRATION RULE` syntax is used to alter migration rule.
 {{% tab name="Grammar" %}}
 ```sql
 AlterMigrationRule ::=
-  'ALTER' 'MIGRATION' 'RULE' ('(' (readConfiguration ',')?  (writeConfiguration  ',')? (dataChannel)? ')')?
+  'ALTER' 'MIGRATION' 'RULE' '(' readConfiguration? (','? writeConfiguration)? (','? dataChannel)? ')'
 
 readConfiguration ::=
   'READ' '(' ('WORKER_THREAD' '=' workerThreadPoolSize ',')? ('BATCH_SIZE' '=' batchSize ',')? ('SHARDING_SIZE' '=' shardingSize ',')? (rateLimiter)? ')'
 
 writeConfiguration ::=
-  'WRITE' '(' ('WORKER_THREAD' '=' workerThreadPoolSize ',')? ('BATCH_SIZE' '=' batchSize ',')? ('SHARDING_SIZE' '=' shardingSize ',')? (rateLimiter)? ')'
+  'WRITE' '(' ('WORKER_THREAD' '=' workerThreadPoolSize ',')? ('BATCH_SIZE' '=' batchSize ',')? (rateLimiter)? ')'
 
 dataChannel ::=
   'STREAM_CHANNEL' '(' 'TYPE' '(' 'NAME' '=' algorithmName ',' propertiesDefinition ')' ')'

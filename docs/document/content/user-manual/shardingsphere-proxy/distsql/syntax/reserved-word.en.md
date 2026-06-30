@@ -40,10 +40,6 @@ weight = 5
 
 `ENCRYPT`, `COLUMNS`, `CIPHER`, `ENCRYPT_ALGORITHM`
 
-#### Database Discovery
-
-`DB_DISCOVERY`, `STORAGE_UNITS`, `HEARTBEAT`
-
 #### Shadow
 
 `SHADOW`, `DEFAULT`, `SOURCE`, `SHADOW`
@@ -80,10 +76,6 @@ weight = 5
 #### Encrypt
 
 `ENCRYPT`
-
-#### Database Discovery
-
-`DB_DISCOVERY`, `TYPES`, `HEARTBEATS`
 
 #### Shadow
 
