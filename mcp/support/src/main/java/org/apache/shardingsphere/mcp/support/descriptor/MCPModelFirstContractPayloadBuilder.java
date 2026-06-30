@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -91,7 +92,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("preflight_validation_tool", PREFLIGHT_TOOL_NAME);
         result.put("read_only_sql_tool", "database_gateway_execute_query");
         result.put("side_effect_sql_tool", "database_gateway_execute_update");
-        result.put("workflow_tools", List.of("database_gateway_apply_workflow", "database_gateway_validate_workflow"));
+        result.put("workflow_tools", List.of(WorkflowToolDescriptors.APPLY_TOOL_NAME, WorkflowToolDescriptors.VALIDATE_TOOL_NAME));
         result.put("side_effect_rule", "Preview first and continue only when the requested side effect is still intended.");
         result.put("completion_rule", "Use local completion hints on fields, prompts, and resources before guessing identifiers.");
         return result;
@@ -142,7 +143,7 @@ final class MCPModelFirstContractPayloadBuilder {
                         "call_tool database_gateway_apply_workflow execution_mode=review-then-execute approved_steps=<preview_artifacts.approval_step>",
                         "call_tool database_gateway_validate_workflow"),
                         "Reuse the same current-session plan_id and stop after validation succeeds.",
-                        List.of("database_gateway_apply_workflow", "database_gateway_validate_workflow"), List.of()),
+                        List.of(WorkflowToolDescriptors.APPLY_TOOL_NAME, WorkflowToolDescriptors.VALIDATE_TOOL_NAME), List.of()),
                 createCommonFlow("recover_from_error", List.of("follow recovery.next_actions", "prefer official list discovery methods when surface information is needed",
                         "read_resource shardingsphere://capabilities only when the server suggests the catalog resource", "ask_user only when uncertain"),
                         "Do not invent replacement calls while structured recovery actions are present.", List.of(), List.of(CATALOG_RESOURCE_URI)));
@@ -209,15 +210,15 @@ final class MCPModelFirstContractPayloadBuilder {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("planning_tools", catalog.getToolDescriptors().stream().map(MCPToolDescriptor::getName).filter(each -> each.startsWith(PLANNING_TOOL_NAME_PREFIX)).toList());
         Map<String, Object> previewTool = new LinkedHashMap<>(2, 1F);
-        previewTool.put("tool", "database_gateway_apply_workflow");
+        previewTool.put("tool", WorkflowToolDescriptors.APPLY_TOOL_NAME);
         previewTool.put(MCPPayloadFieldNames.EXECUTION_MODE, "preview");
         result.put("preview_tool", previewTool);
         Map<String, Object> executeTool = new LinkedHashMap<>(3, 1F);
-        executeTool.put("tool", "database_gateway_apply_workflow");
+        executeTool.put("tool", WorkflowToolDescriptors.APPLY_TOOL_NAME);
         executeTool.put(MCPPayloadFieldNames.EXECUTION_MODE, "review-then-execute");
         executeTool.put("execute_requires", "execution_mode=review-then-execute and explicit approved_steps copied from preview_artifacts.approval_step");
         result.put("execute_tool", executeTool);
-        result.put("validate_tool", "database_gateway_validate_workflow");
+        result.put("validate_tool", WorkflowToolDescriptors.VALIDATE_TOOL_NAME);
         return result;
     }
     

@@ -44,10 +44,21 @@ final class CoreResourceHandlers {
     static Collection<MCPResourceHandler<?>> createHandlers() {
         Collection<MCPResourceHandler<?>> result = new LinkedList<>();
         GovernanceMetadataQueryService governanceMetadataQueryService = new GovernanceMetadataQueryService();
+        addTopLevelHandlers(result);
+        addDatabaseHandlers(result);
+        addGovernanceMetadataHandlers(result, governanceMetadataQueryService);
+        addSchemaMetadataHandlers(result);
+        return result;
+    }
+    
+    private static void addTopLevelHandlers(final Collection<MCPResourceHandler<?>> result) {
         result.add(new ServerCapabilitiesHandler());
         result.add(new RuntimeStatusHandler());
         result.add(new WorkflowPlanHandler());
         result.add(new DatabaseCapabilitiesHandler());
+    }
+    
+    private static void addDatabaseHandlers(final Collection<MCPResourceHandler<?>> result) {
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryDatabases()));
@@ -55,6 +66,9 @@ final class CoreResourceHandlers {
                 "shardingsphere://databases/{database}",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryDatabase(uriVariables.getValue("database"))
                         .map(CoreResourceHandlers::createSingletonList).orElse(Collections.emptyList())));
+    }
+    
+    private static void addGovernanceMetadataHandlers(final Collection<MCPResourceHandler<?>> result, final GovernanceMetadataQueryService governanceMetadataQueryService) {
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/storage-units",
                 (requestContext, uriVariables) -> governanceMetadataQueryService.queryStorageUnits(requestContext.getQueryFacade(), uriVariables.getValue("database"))));
@@ -76,6 +90,9 @@ final class CoreResourceHandlers {
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/single-table/default-storage-unit",
                 (requestContext, uriVariables) -> governanceMetadataQueryService.queryDefaultSingleTableStorageUnit(requestContext.getQueryFacade(), uriVariables.getValue("database"))));
+    }
+    
+    private static void addSchemaMetadataHandlers(final Collection<MCPResourceHandler<?>> result) {
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySchemas(uriVariables.getValue("database"))));
@@ -134,7 +151,6 @@ final class CoreResourceHandlers {
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryIndex(
                         uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"), uriVariables.getValue("index"))
                         .map(CoreResourceHandlers::createSingletonList).orElse(Collections.emptyList())));
-        return result;
     }
     
     private static List<?> createSingletonList(final Object metadata) {

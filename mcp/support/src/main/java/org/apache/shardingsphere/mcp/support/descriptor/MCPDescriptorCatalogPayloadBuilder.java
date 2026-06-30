@@ -28,8 +28,10 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 final class MCPDescriptorCatalogPayloadBuilder {
     
@@ -164,15 +166,16 @@ final class MCPDescriptorCatalogPayloadBuilder {
     }
     
     private Map<String, Object> createCompletionHint(final String argumentName) {
-        List<Map<String, Object>> references = catalog.getCompletionTargetDescriptors().stream()
-                .filter(each -> each.getArguments().contains(argumentName)).map(this::createCompletionReferenceHint).toList();
+        List<MCPCompletionTargetDescriptor> descriptors = catalog.getCompletionTargetDescriptors().stream()
+                .filter(each -> each.getArguments().contains(argumentName)).toList();
+        List<Map<String, Object>> references = descriptors.stream().map(this::createCompletionReferenceHint).toList();
         if (references.isEmpty()) {
             return Map.of();
         }
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("available", true);
         result.put("references", references);
-        List<String> requiredContextArguments = createCompletionRequiredContextArguments(argumentName);
+        List<String> requiredContextArguments = createCompletionRequiredContextArguments(descriptors, argumentName);
         if (!requiredContextArguments.isEmpty()) {
             result.put("required_context_arguments", requiredContextArguments);
         }
@@ -187,17 +190,19 @@ final class MCPDescriptorCatalogPayloadBuilder {
         return result;
     }
     
-    private List<String> createCompletionRequiredContextArguments(final String argumentName) {
-        if ("schema".equals(argumentName)) {
-            return List.of("database");
+    private List<String> createCompletionRequiredContextArguments(final Collection<MCPCompletionTargetDescriptor> descriptors, final String argumentName) {
+        Set<String> result = new LinkedHashSet<>();
+        for (MCPCompletionTargetDescriptor each : descriptors) {
+            Object requiredContextArguments = each.getMeta().get(MCPShardingSphereMetadataKeys.REQUIRED_CONTEXT_ARGUMENTS);
+            if (!(requiredContextArguments instanceof Map)) {
+                continue;
+            }
+            Object arguments = ((Map<?, ?>) requiredContextArguments).get(argumentName);
+            if (arguments instanceof Collection) {
+                ((Collection<?>) arguments).stream().map(String::valueOf).forEach(result::add);
+            }
         }
-        if ("table".equals(argumentName) || "sequence".equals(argumentName)) {
-            return List.of("database", "schema");
-        }
-        if ("column".equals(argumentName) || "index".equals(argumentName)) {
-            return List.of("database", "schema", "table");
-        }
-        return List.of();
+        return result.stream().toList();
     }
     
     private String resolveReferenceType(final String reference) {

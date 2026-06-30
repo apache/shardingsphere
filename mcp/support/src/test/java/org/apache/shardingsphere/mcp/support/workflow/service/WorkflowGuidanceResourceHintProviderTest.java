@@ -54,6 +54,12 @@ class WorkflowGuidanceResourceHintProviderTest {
     }
     
     @Test
+    void assertCreateResourcesToReadWithDescriptorResources() {
+        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("encrypt.rule", "logic_db", "", "t_order")));
+        assertTrue(actual.contains("shardingsphere://workflow/test-resource"));
+    }
+    
+    @Test
     void assertCreateResourcesToReadWithShardingComponentCleanup() {
         List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("sharding.component.cleanup", "logic_db", "", "")));
         assertThat(actual, is(List.of(

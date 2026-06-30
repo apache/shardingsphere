@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding;
 
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
@@ -24,17 +25,17 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
  */
 public final class ShardingFeatureDefinition {
     
-    public static final WorkflowKind TABLE_RULE_WORKFLOW_KIND = WorkflowKind.valueOf("sharding.table.rule");
+    public static final WorkflowKind TABLE_RULE_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHARDING_TABLE_RULE);
     
-    public static final WorkflowKind TABLE_REFERENCE_WORKFLOW_KIND = WorkflowKind.valueOf("sharding.table.reference");
+    public static final WorkflowKind TABLE_REFERENCE_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHARDING_TABLE_REFERENCE);
     
-    public static final WorkflowKind DEFAULT_STRATEGY_WORKFLOW_KIND = WorkflowKind.valueOf("sharding.default.strategy");
+    public static final WorkflowKind DEFAULT_STRATEGY_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHARDING_DEFAULT_STRATEGY);
     
-    public static final WorkflowKind KEY_GENERATOR_WORKFLOW_KIND = WorkflowKind.valueOf("sharding.key.generator");
+    public static final WorkflowKind KEY_GENERATOR_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHARDING_KEY_GENERATOR);
     
-    public static final WorkflowKind KEY_GENERATE_STRATEGY_WORKFLOW_KIND = WorkflowKind.valueOf("sharding.key.generate.strategy");
+    public static final WorkflowKind KEY_GENERATE_STRATEGY_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHARDING_KEY_GENERATE_STRATEGY);
     
-    public static final WorkflowKind COMPONENT_CLEANUP_WORKFLOW_KIND = WorkflowKind.valueOf("sharding.component.cleanup");
+    public static final WorkflowKind COMPONENT_CLEANUP_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHARDING_COMPONENT_CLEANUP);
     
     public static final String PLAN_TABLE_RULE_TOOL_NAME = "database_gateway_plan_sharding_table_rule";
     

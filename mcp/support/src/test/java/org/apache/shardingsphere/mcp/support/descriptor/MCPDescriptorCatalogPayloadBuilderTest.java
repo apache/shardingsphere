@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
@@ -93,6 +95,21 @@ class MCPDescriptorCatalogPayloadBuilderTest {
                 "destructiveHint", true,
                 "idempotentHint", false,
                 "openWorldHint", true)));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertBuildPromptCompletionRequiredContextFromDescriptorMeta() {
+        MCPPromptDescriptor prompt = new MCPPromptDescriptor("test_prompt", "Test Prompt", "Guide a test prompt.", List.of(
+                new MCPPromptArgumentDescriptor("database", "Database", "Logical database.", false),
+                new MCPPromptArgumentDescriptor("schema", "Schema", "Schema.", false)), Map.of());
+        MCPCompletionTargetDescriptor completionTarget = new MCPCompletionTargetDescriptor("prompt", "test_prompt", List.of("database", "schema"), 50,
+                Map.of(MCPShardingSphereMetadataKeys.REQUIRED_CONTEXT_ARGUMENTS, Map.of("schema", List.of("database"))));
+        MCPDescriptorCatalog catalog = new MCPDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), List.of(prompt), List.of(), List.of(completionTarget), List.of(), List.of());
+        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(catalog, List.of(), List.of(), List.of());
+        Map<String, Object> actualPrompt = ((List<Map<String, Object>>) payload.get("prompts")).get(0);
+        Map<String, Object> actualSchemaArgument = ((List<Map<String, Object>>) actualPrompt.get("arguments")).get(1);
+        assertThat(((Map<String, Object>) actualSchemaArgument.get("completion")).get("required_context_arguments"), is(List.of("database")));
     }
     
     private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPToolDescriptor> toolDescriptors) {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting;
 
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
@@ -32,9 +33,9 @@ public final class ReadwriteSplittingFeatureDefinition {
     
     public static final String PLAN_STATUS_PROMPT_NAME = "plan_readwrite_splitting_status";
     
-    public static final WorkflowKind RULE_WORKFLOW_KIND = WorkflowKind.valueOf("readwrite.rule");
+    public static final WorkflowKind RULE_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.READWRITE_RULE);
     
-    public static final WorkflowKind STATUS_WORKFLOW_KIND = WorkflowKind.valueOf("readwrite.status");
+    public static final WorkflowKind STATUS_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.READWRITE_STATUS);
     
     public static final String RULE_FIELD = "rule";
     

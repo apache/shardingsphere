@@ -20,8 +20,10 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
@@ -45,77 +47,9 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowGuidancePayloadBuilder {
     
-    private static final String APPLY_WORKFLOW = "database_gateway_apply_workflow";
-    
-    private static final String VALIDATE_WORKFLOW = "database_gateway_validate_workflow";
-    
     private static final String EXECUTION_MODE_PREVIEW = "preview";
     
     private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
-    
-    private static final String ENCRYPT_RULE_WORKFLOW_KIND = "encrypt.rule";
-    
-    private static final String MASK_RULE_WORKFLOW_KIND = "mask.rule";
-    
-    private static final String BROADCAST_RULE_WORKFLOW_KIND = "broadcast.rule";
-    
-    private static final String READWRITE_RULE_WORKFLOW_KIND = "readwrite.rule";
-    
-    private static final String READWRITE_STATUS_WORKFLOW_KIND = "readwrite.status";
-    
-    private static final String SHADOW_RULE_WORKFLOW_KIND = "shadow.rule";
-    
-    private static final String SHADOW_DEFAULT_ALGORITHM_WORKFLOW_KIND = "shadow.default";
-    
-    private static final String SHADOW_ALGORITHM_CLEANUP_WORKFLOW_KIND = "shadow.cleanup";
-    
-    private static final String SHARDING_TABLE_RULE_WORKFLOW_KIND = "sharding.table.rule";
-    
-    private static final String SHARDING_TABLE_REFERENCE_WORKFLOW_KIND = "sharding.table.reference";
-    
-    private static final String SHARDING_DEFAULT_STRATEGY_WORKFLOW_KIND = "sharding.default.strategy";
-    
-    private static final String SHARDING_KEY_GENERATOR_WORKFLOW_KIND = "sharding.key.generator";
-    
-    private static final String SHARDING_KEY_GENERATE_STRATEGY_WORKFLOW_KIND = "sharding.key.generate.strategy";
-    
-    private static final String SHARDING_COMPONENT_CLEANUP_WORKFLOW_KIND = "sharding.component.cleanup";
-    
-    private static final String PLAN_ENCRYPT_RULE = "database_gateway_plan_encrypt_rule";
-    
-    private static final String PLAN_MASK_RULE = "database_gateway_plan_mask_rule";
-    
-    private static final String PLAN_BROADCAST_RULE = "database_gateway_plan_broadcast_rule";
-    
-    private static final String PLAN_READWRITE_RULE = "database_gateway_plan_readwrite_splitting_rule";
-    
-    private static final String PLAN_READWRITE_STATUS = "database_gateway_plan_readwrite_splitting_status";
-    
-    private static final String PLAN_SHADOW_RULE = "database_gateway_plan_shadow_rule";
-    
-    private static final String PLAN_DEFAULT_SHADOW_ALGORITHM = "database_gateway_plan_default_shadow_algorithm";
-    
-    private static final String PLAN_SHADOW_ALGORITHM_CLEANUP = "database_gateway_plan_shadow_algorithm_cleanup";
-    
-    private static final String PLAN_SHARDING_TABLE_RULE = "database_gateway_plan_sharding_table_rule";
-    
-    private static final String PLAN_SHARDING_TABLE_REFERENCE_RULE = "database_gateway_plan_sharding_table_reference_rule";
-    
-    private static final String PLAN_SHARDING_DEFAULT_STRATEGY = "database_gateway_plan_sharding_default_strategy";
-    
-    private static final String PLAN_SHARDING_KEY_GENERATOR = "database_gateway_plan_sharding_key_generator";
-    
-    private static final String PLAN_SHARDING_KEY_GENERATE_STRATEGY = "database_gateway_plan_sharding_key_generate_strategy";
-    
-    private static final String PLAN_SHARDING_COMPONENT_CLEANUP = "database_gateway_plan_sharding_rule_component_cleanup";
-    
-    private static final Map<String, String> PLANNING_TOOLS = Map.ofEntries(Map.entry(ENCRYPT_RULE_WORKFLOW_KIND, PLAN_ENCRYPT_RULE), Map.entry(MASK_RULE_WORKFLOW_KIND, PLAN_MASK_RULE),
-            Map.entry(BROADCAST_RULE_WORKFLOW_KIND, PLAN_BROADCAST_RULE), Map.entry(READWRITE_RULE_WORKFLOW_KIND, PLAN_READWRITE_RULE),
-            Map.entry(READWRITE_STATUS_WORKFLOW_KIND, PLAN_READWRITE_STATUS), Map.entry(SHADOW_RULE_WORKFLOW_KIND, PLAN_SHADOW_RULE),
-            Map.entry(SHADOW_DEFAULT_ALGORITHM_WORKFLOW_KIND, PLAN_DEFAULT_SHADOW_ALGORITHM), Map.entry(SHADOW_ALGORITHM_CLEANUP_WORKFLOW_KIND, PLAN_SHADOW_ALGORITHM_CLEANUP),
-            Map.entry(SHARDING_TABLE_RULE_WORKFLOW_KIND, PLAN_SHARDING_TABLE_RULE), Map.entry(SHARDING_TABLE_REFERENCE_WORKFLOW_KIND, PLAN_SHARDING_TABLE_REFERENCE_RULE),
-            Map.entry(SHARDING_DEFAULT_STRATEGY_WORKFLOW_KIND, PLAN_SHARDING_DEFAULT_STRATEGY), Map.entry(SHARDING_KEY_GENERATOR_WORKFLOW_KIND, PLAN_SHARDING_KEY_GENERATOR),
-            Map.entry(SHARDING_KEY_GENERATE_STRATEGY_WORKFLOW_KIND, PLAN_SHARDING_KEY_GENERATE_STRATEGY), Map.entry(SHARDING_COMPONENT_CLEANUP_WORKFLOW_KIND, PLAN_SHARDING_COMPONENT_CLEANUP));
     
     /**
      * Append model-facing next action guidance to a planning response.
@@ -156,7 +90,7 @@ public final class WorkflowGuidancePayloadBuilder {
     public static void appendApplyGuidance(final Map<String, Object> payload, final String status) {
         List<Map<String, Object>> nextActions = new LinkedList<>();
         if (WorkflowLifecycle.STATUS_COMPLETED.equals(status)) {
-            nextActions.add(createToolAction(VALIDATE_WORKFLOW, "Validate the runtime state after workflow artifacts are applied or exported.",
+            nextActions.add(createToolAction(WorkflowToolDescriptors.VALIDATE_TOOL_NAME, "Validate the runtime state after workflow artifacts are applied or exported.",
                     Map.of(WorkflowFieldNames.PLAN_ID, Objects.toString(payload.get(WorkflowFieldNames.PLAN_ID), ""))));
         }
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
@@ -346,7 +280,7 @@ public final class WorkflowGuidancePayloadBuilder {
             return List.of(createUserAction("Ask for the missing inputs, then call the same planning tool with the existing plan_id.", missingRequiredInputs));
         }
         if (WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus())) {
-            return List.of(createToolAction(APPLY_WORKFLOW, "Preview workflow artifacts before execution.",
+            return List.of(createToolAction(WorkflowToolDescriptors.APPLY_TOOL_NAME, "Preview workflow artifacts before execution.",
                     Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW)));
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus())) {
@@ -386,7 +320,7 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static String resolvePlanningTool(final WorkflowContextSnapshot snapshot) {
-        return PLANNING_TOOLS.getOrDefault(resolveWorkflowKind(snapshot), "");
+        return MCPDescriptorCatalogIndex.findPlanningToolNameByWorkflowKind(resolveWorkflowKind(snapshot)).orElse("");
     }
     
     private static String resolveWorkflowKind(final WorkflowContextSnapshot snapshot) {

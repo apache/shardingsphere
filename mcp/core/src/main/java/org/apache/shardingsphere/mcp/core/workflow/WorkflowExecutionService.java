@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
@@ -127,11 +128,11 @@ public final class WorkflowExecutionService {
     
     private String requireExecutionMode(final WorkflowContextSnapshot snapshot, final String executionMode) {
         if (executionMode.isEmpty()) {
-            throw new MCPExecutionModeRequiredException("database_gateway_apply_workflow", EXECUTION_MODES, createPreviewSuggestedArguments(snapshot));
+            throw new MCPExecutionModeRequiredException(WorkflowToolDescriptors.APPLY_TOOL_NAME, EXECUTION_MODES, createPreviewSuggestedArguments(snapshot));
         }
         String result = executionMode.toLowerCase();
         if (!EXECUTION_MODES.contains(result)) {
-            throw new MCPInvalidExecutionModeException("database_gateway_apply_workflow", EXECUTION_MODES, createPreviewSuggestedArguments(snapshot));
+            throw new MCPInvalidExecutionModeException(WorkflowToolDescriptors.APPLY_TOOL_NAME, EXECUTION_MODES, createPreviewSuggestedArguments(snapshot));
         }
         return result;
     }

@@ -82,8 +82,10 @@ public final class StatementClassifier {
     private boolean isSavepointStatement(final String upperSql) {
         return "SAVEPOINT".equals(upperSql)
                 || upperSql.startsWith("SAVEPOINT ")
-                || upperSql.startsWith("ROLLBACK TO SAVEPOINT")
-                || upperSql.startsWith("RELEASE SAVEPOINT");
+                || "ROLLBACK TO".equals(upperSql)
+                || upperSql.startsWith("ROLLBACK TO ")
+                || "RELEASE SAVEPOINT".equals(upperSql)
+                || upperSql.startsWith("RELEASE SAVEPOINT ");
     }
     
     private String extractStatementType(final String upperSql) {
@@ -93,6 +95,9 @@ public final class StatementClassifier {
         if (upperSql.startsWith("ROLLBACK TO SAVEPOINT")) {
             return "ROLLBACK TO SAVEPOINT";
         }
+        if (upperSql.startsWith("ROLLBACK TO")) {
+            return "ROLLBACK TO";
+        }
         if (upperSql.startsWith("RELEASE SAVEPOINT")) {
             return "RELEASE SAVEPOINT";
         }
@@ -101,14 +106,19 @@ public final class StatementClassifier {
     
     private String extractSavepointName(final String sql) {
         String[] tokens = sql.split("\\s+");
-        if ("SAVEPOINT".equalsIgnoreCase(tokens[0]) && tokens.length >= 2) {
-            return tokens[tokens.length - 1];
+        if ("SAVEPOINT".equalsIgnoreCase(tokens[0]) && 2 == tokens.length) {
+            return tokens[1];
         }
-        if ("RELEASE".equalsIgnoreCase(tokens[0]) && tokens.length >= 3) {
-            return tokens[tokens.length - 1];
+        if ("RELEASE".equalsIgnoreCase(tokens[0]) && 3 == tokens.length && "SAVEPOINT".equalsIgnoreCase(tokens[1])) {
+            return tokens[2];
         }
-        if ("ROLLBACK".equalsIgnoreCase(tokens[0]) && tokens.length >= 4) {
-            return tokens[tokens.length - 1];
+        if ("ROLLBACK".equalsIgnoreCase(tokens[0]) && tokens.length >= 3 && "TO".equalsIgnoreCase(tokens[1])) {
+            if (3 == tokens.length && !"SAVEPOINT".equalsIgnoreCase(tokens[2])) {
+                return tokens[2];
+            }
+            if (4 == tokens.length && "SAVEPOINT".equalsIgnoreCase(tokens[2])) {
+                return tokens[3];
+            }
         }
         return "";
     }
@@ -117,7 +127,13 @@ public final class StatementClassifier {
         if (!savepointName.isEmpty()) {
             return;
         }
-        ShardingSpherePreconditions.checkState(!"SAVEPOINT".equals(statementType) && !"ROLLBACK TO SAVEPOINT".equals(statementType) && !"RELEASE SAVEPOINT".equals(statementType),
-                () -> new IllegalArgumentException("Savepoint name is required."));
+        ShardingSpherePreconditions.checkState(!isSavepointStatementType(statementType), () -> new IllegalArgumentException("Savepoint name is required."));
+    }
+    
+    private boolean isSavepointStatementType(final String statementType) {
+        return "SAVEPOINT".equals(statementType)
+                || "ROLLBACK TO".equals(statementType)
+                || "ROLLBACK TO SAVEPOINT".equals(statementType)
+                || "RELEASE SAVEPOINT".equals(statementType);
     }
 }
