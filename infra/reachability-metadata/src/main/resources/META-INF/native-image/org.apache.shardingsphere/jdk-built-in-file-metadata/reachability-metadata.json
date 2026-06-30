@@ -1,0 +1,238 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.jdk.management.SubstrateRuntimeMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.jdk.management.SubstrateCompilationMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.jdk.management.SubstrateThreadMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.jdk.management.SubstrateClassLoadingMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.genscavenge.IncrementalGarbageCollectorMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.code.CodeCacheManagerMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$OldGenerationMemoryPoolMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$EdenMemoryPoolMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.genscavenge.CompleteGarbageCollectorMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.genscavenge.HeapImplMemoryMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
+      },
+      "type": "com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$SurvivorMemoryPoolMXBean"
+    },
+    {
+      "condition": {
+        "typeReached": "com.sun.management.internal.OperatingSystemImpl"
+      },
+      "type": "com.sun.management.internal.OperatingSystemImpl"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.lang.Math"
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.util.ReflectionUtil"
+      },
+      "type": "java.lang.Module",
+      "methods": [
+        {
+          "name": "getDescriptor",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "java.lang.Object"
+      },
+      "type": "java.lang.ObjectBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "java.lang.Object"
+      },
+      "type": "java.lang.ObjectCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.lang.System"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "java.lang.foreign.AddressLayout"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.sql.ResultSet"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"
+      },
+      "type": "java.util.AbstractList"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.util.Arrays"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"
+      },
+      "type": "java.util.Arrays$ArrayList"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.util.Collections"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"
+      },
+      "type": "java.util.Collections$SingletonMap"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.introspect.AnnotatedFieldCollector"
+      },
+      "type": "java.util.Collections$UnmodifiableMap"
+    },
+    {
+      "condition": {
+        "typeReached": "com.fasterxml.jackson.databind.introspect.AnnotatedCreatorCollector"
+      },
+      "type": "java.util.HashSet"
+    },
+    {
+      "condition": {
+        "typeReached": "org.yaml.snakeyaml.constructor.BaseConstructor"
+      },
+      "type": "java.util.LinkedHashSet",
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.util.Objects"
+    },
+    {
+      "condition": {
+        "typeReached": "org.yaml.snakeyaml.constructor.BaseConstructor"
+      },
+      "type": "java.util.Properties",
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"
+      },
+      "type": "java.util.RandomAccess"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.util.TimeZone"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.util.UUID"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.util.function.BiPredicate"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.util.function.Consumer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "java.util.function.Predicate"
+    },
+    {
+      "condition": {
+        "typeReached": "org.h2.value.ValueUuid"
+      },
+      "type": "sun.security.provider.SecureRandom"
+    },
+    {
+      "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.guava.reflect.Reflection"
+      },
+      "type": {
+        "proxy": [
+          "java.lang.reflect.TypeVariable"
+        ]
+      }
+    }
+  ]
+}

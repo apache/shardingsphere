@@ -50,7 +50,7 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.5</version>
+                <version>1.1.3</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
@@ -79,13 +79,14 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.5</version>
+                <version>1.1.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
                         <buildArg>-H:+UnlockExperimentalVMOptions</buildArg>
                         <buildArg>-H:+AddAllCharsets</buildArg>
                         <buildArg>-H:+IncludeAllLocales</buildArg>
+                        <buildArg>-H:+TreatAllTypeReachableConditionsAsTypeReached</buildArg>
                     </buildArgs>
                 </configuration>
                 <executions>
@@ -116,7 +117,7 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.5'
+   id 'org.graalvm.buildtools.native' version '1.1.3'
 }
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-infra-reachability-metadata:${shardingsphere.version}'
@@ -127,12 +128,12 @@ dependencies {
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.5'
+   id 'org.graalvm.buildtools.native' version '1.1.3'
 }
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
    implementation 'org.apache.shardingsphere:shardingsphere-infra-reachability-metadata:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.5', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '1.1.3', classifier: 'repository', ext: 'zip')
 }
 graalvmNative {
    binaries {
@@ -296,7 +297,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.5</version>
+                <version>1.1.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -380,7 +381,7 @@ without it being registered as reachable. Add it to the resource metadata to sol
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.5</version>
+                <version>1.1.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -403,3 +404,7 @@ without it being registered as reachable. Add it to the resource metadata to sol
     且 Etcd 的 Cluster 模式会与 GraalVM Tracing Agent 产生冲突。
     若开发者需要在通过 Linux 编译的 GraalVM Native Image 下使用 Etcd 的 Cluster 模式，
     需要自行提供额外的 GraalVM Reachability Metadata 相关的 JSON。
+
+11. 受 https://github.com/apache/shardingsphere/issues/38943 影响，
+    通过 GraalVM CE For JDK 25.0.2 编译 GraalVM Native Image，
+    总是需要 `-H:+TreatAllTypeReachableConditionsAsTypeReached` 的 `buildArg`。
