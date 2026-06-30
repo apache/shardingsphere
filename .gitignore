@@ -60,6 +60,7 @@ document/public/
 *.html-e
 
 # codex ignore
+.agents/
 .codex/log/
 .codex/sessions/
 .codex/tmp/

@@ -13,9 +13,9 @@ The `ALTER READWRITE_SPLITTING RULE ENABLE/DISABLE` syntax is used enable/disabl
 {{% tab name="Grammar" %}}
 ```sql
 AlterReadwriteSplittingRule ::=
-  'ALTER' 'READWRITE_SPLITTING' 'RULE' groupName ('ENABLE' | 'DISABLE') storageUnitName 'FROM' databaseName
+  'ALTER' 'READWRITE_SPLITTING' 'RULE' ruleName ('ENABLE' | 'DISABLE') storageUnitName ('FROM' databaseName)?
 
-groupName ::=
+ruleName ::=
   identifier
 
 storageUnitName ::=
@@ -62,7 +62,7 @@ ALTER READWRITE_SPLITTING RULE ms_group_1 ENABLE read_ds_0;
 
 ### Reserved word
 
-`ALTER`, `READWRITE_SPLITTING`, `RULE`, `ENABLE`, `DISABLE`
+`ALTER`, `READWRITE_SPLITTING`, `RULE`, `ENABLE`, `DISABLE`, `FROM`
 
 ### Related links
 

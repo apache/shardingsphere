@@ -20,9 +20,13 @@ package org.apache.shardingsphere.mcp.feature.encrypt.descriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +34,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,6 +51,11 @@ class EncryptToolDescriptorValidatorTest {
     }
     
     @Test
+    void assertLoadByServiceLoader() {
+        assertTrue(ServiceLoader.load(MCPToolDescriptorValidator.class).stream().map(ServiceLoader.Provider::type).anyMatch(EncryptToolDescriptorValidator.class::equals));
+    }
+    
+    @Test
     void assertPromptUsesGuidanceName() {
         MCPPromptDescriptor actual = findPrompt(EncryptFeatureDefinition.PLAN_PROMPT_NAME);
         assertThat((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.RELATED_TOOLS),
@@ -53,9 +64,19 @@ class EncryptToolDescriptorValidatorTest {
     }
     
     @Test
-    void assertDoesNotExposeCompletionTargets() {
-        assertFalse(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(each -> EncryptFeatureDefinition.PLAN_PROMPT_NAME.equals(each.getReference())));
-        assertFalse(MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream().anyMatch(each -> "shardingsphere://features/encrypt/algorithms".equals(each.getReference())));
+    void assertExposeCompletionTargets() {
+        List<String> expectedArguments = List.of("algorithm_type", "assisted_query_algorithm_type", "like_query_algorithm_type");
+        MCPCompletionTargetDescriptor promptCompletionTarget = findCompletionTarget("prompt", EncryptFeatureDefinition.PLAN_PROMPT_NAME);
+        assertThat(promptCompletionTarget.getArguments(), is(expectedArguments));
+        assertFalse(hasCompletionTarget("resource", EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI));
+    }
+    
+    @Test
+    void assertPromptExposesCompletionArguments() throws IOException {
+        String actual = readResource("META-INF/shardingsphere-mcp/prompts/plan-encrypt-rule.md");
+        for (String each : findCompletionTarget("prompt", EncryptFeatureDefinition.PLAN_PROMPT_NAME).getArguments()) {
+            assertTrue(actual.contains("- " + each + ": {{" + each + "}}"));
+        }
     }
     
     @Test
@@ -69,6 +90,21 @@ class EncryptToolDescriptorValidatorTest {
         assertTrue(supportProperties.containsKey("form_mode"));
         assertTrue(supportProperties.containsKey("url_mode"));
         assertTrue(supportProperties.containsKey("selected_interaction"));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertOutputSchemaDeclaresPlanResponseFields() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> actual = (Map<String, Object>) descriptor.getOutputSchema().get("properties");
+        assertTrue(actual.keySet().containsAll(List.of(
+                "response_mode", "plan_id", "workflow_kind", "status", "issues", "global_steps", "current_step", "algorithm_recommendations",
+                "property_requirements", "validation_strategy", "delivery_mode", "execution_mode", "intent_inference", "argument_provenance", "review_focus",
+                "missing_required_inputs", "clarification_questions", "resources_to_read", "proxy_topology_hint", "next_actions", "distsql_artifacts", "masked_property_preview",
+                "secret_reference_summary")));
+        assertFalse(actual.containsKey("ddl_artifacts"));
+        assertFalse(actual.containsKey("index_plan"));
+        assertFalse(actual.containsKey("derived_column_plan"));
     }
     
     @Test
@@ -96,6 +132,13 @@ class EncryptToolDescriptorValidatorTest {
     }
     
     @Test
+    void assertPromptAvoidsRawSecretEcho() throws IOException {
+        String actual = readResource("META-INF/shardingsphere-mcp/prompts/plan-encrypt-rule.md");
+        assertTrue(actual.contains("Do not echo raw secret property values"));
+        assertTrue(actual.contains("masked values or protected channels"));
+    }
+    
+    @Test
     @SuppressWarnings("unchecked")
     void assertValidateRejectsMissingOutputField() {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
@@ -108,8 +151,80 @@ class EncryptToolDescriptorValidatorTest {
         assertThat(actual.getMessage(), is("Tool `database_gateway_plan_encrypt_rule` outputSchema must declare `resources_to_read`."));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertValidateRejectsMissingTemplateOutputFieldArguments")
+    @SuppressWarnings("unchecked")
+    void assertValidateRejectsMissingTemplateOutputField(final String fieldName) {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
+        Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) outputSchema.get("properties"));
+        properties.remove(fieldName);
+        outputSchema.put("properties", properties);
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new EncryptToolDescriptorValidator().validate(new MCPToolDescriptor(
+                descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta())));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_encrypt_rule` outputSchema must declare `" + fieldName + "`."));
+    }
+    
+    private static Stream<String> assertValidateRejectsMissingTemplateOutputFieldArguments() {
+        return Stream.of(
+                "response_mode", "plan_id", "workflow_kind", "status", "missing_required_inputs", "clarification_questions", "elicitation_support", "fallback_reason",
+                "issues", "global_steps", "current_step", "algorithm_recommendations", "property_requirements", "validation_strategy", "delivery_mode", "execution_mode",
+                "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint", "distsql_artifacts", "masked_property_preview", "resources_to_read",
+                "next_actions", "secret_reference_summary");
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertInputSchemaDeclaresSecretReferenceObjects() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
+        assertTrue(String.valueOf(((Map<?, ?>) properties.get("primary_algorithm_properties")).get("description")).contains("protected placeholder objects"));
+        assertTrue(String.valueOf(((Map<?, ?>) properties.get("assisted_query_algorithm_properties")).get("description")).contains("protected placeholder objects"));
+        assertTrue(String.valueOf(((Map<?, ?>) properties.get("like_query_algorithm_properties")).get("description")).contains("protected placeholder objects"));
+    }
+    
+    @Test
+    void assertValidateExecutableEncryptDistSQLExamples() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        new EncryptToolDescriptorValidator().validate(descriptor);
+    }
+    
+    @Test
+    void assertValidateRejectsUnquotedExecutableEncryptAlgorithmType() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new EncryptToolDescriptorValidator().validate(
+                createDescriptorWithExampleSQL("CREATE ENCRYPT RULE orders (COLUMNS((NAME=status, CIPHER=status_cipher, "
+                        + "ENCRYPT_ALGORITHM(TYPE(NAME=AES, PROPERTIES('aes-key-value'='******', 'digest-algorithm-name'='SHA-1'))))))")));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_encrypt_rule` output example executable encrypt DistSQL must quote algorithm type as a string literal."));
+    }
+    
+    @Test
+    void assertValidateRejectsMissingExecutableAesDigest() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new EncryptToolDescriptorValidator().validate(
+                createDescriptorWithExampleSQL("CREATE ENCRYPT RULE orders (COLUMNS((NAME=status, CIPHER=status_cipher, "
+                        + "ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='******'))))))")));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_encrypt_rule` output example executable AES DistSQL must include `digest-algorithm-name`."));
+    }
+    
     private MCPPromptDescriptor findPrompt(final String promptName) {
         return MCPDescriptorCatalogIndex.getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private MCPCompletionTargetDescriptor findCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .filter(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference())).findFirst().orElseThrow();
+    }
+    
+    private boolean hasCompletionTarget(final String referenceType, final String reference) {
+        return MCPDescriptorCatalogIndex.getCompletionTargetDescriptors().stream()
+                .anyMatch(each -> referenceType.equals(each.getReferenceType()) && reference.equals(each.getReference()));
+    }
+    
+    private MCPToolDescriptor createDescriptorWithExampleSQL(final String sql) {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(EncryptFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
+        outputSchema.put("examples", List.of(Map.of("distsql_artifacts", List.of(Map.of("artifact_type", "rule_dist_sql", "sql", sql)))));
+        return new MCPToolDescriptor(descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema,
+                descriptor.getAnnotations(), descriptor.getMeta());
     }
     
     private String readResource(final String resourceName) throws IOException {

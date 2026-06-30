@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -76,7 +77,9 @@ class PostgreSQLDatabaseMetaDataTest {
     
     @Test
     void assertGetIndexOption() {
-        assertTrue(dialectDatabaseMetaData.getIndexOption().isSchemaUniquenessLevel());
+        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
+        assertTrue(actual.isSchemaUniquenessLevel());
+        assertThat(actual.getIndexNameMaxLength(), is(63));
     }
     
     @Test

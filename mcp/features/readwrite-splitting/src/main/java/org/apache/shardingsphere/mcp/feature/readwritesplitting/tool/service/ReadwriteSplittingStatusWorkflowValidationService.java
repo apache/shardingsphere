@@ -55,14 +55,6 @@ public final class ReadwriteSplittingStatusWorkflowValidationService implements 
         workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
     }
     
-    ReadwriteSplittingStatusWorkflowValidationService(final ReadwriteSplittingInspectionService inspectionService,
-                                                      final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService,
-                                                      final WorkflowSynchronizationSupport workflowSynchronizationSupport) {
-        this.inspectionService = inspectionService;
-        this.distSQLPlanningService = distSQLPlanningService;
-        this.workflowSynchronizationSupport = workflowSynchronizationSupport;
-    }
-    
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
                                         final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId,

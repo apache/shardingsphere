@@ -47,8 +47,15 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     
     private Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
+    private ProgrammaticRuntimeFixture sharedRuntimeFixture;
+    
     @AfterEach
     void tearDownContainer() {
+        if (useSharedDatabaseBackedRuntime()) {
+            container = null;
+            runtimeDatabases = null;
+            return;
+        }
         if (null != container) {
             container.stop();
             container = null;
@@ -96,10 +103,6 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
         return sendJsonRpcRequest(httpClient, createSessionHeaders(sessionId), "resource-1", "resources/read", Map.of("uri", resourceUri));
     }
     
-    protected final HttpResponse<String> sendCapabilitiesRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
-        return sendJsonRpcRequest(httpClient, headers, "resource-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"));
-    }
-    
     protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(getEndpointUri()).DELETE();
         applyHeaders(requestBuilder, headers);
@@ -114,20 +117,14 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
         return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
     }
     
-    protected final HttpResponse<String> openEventStream(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(getEndpointUri()).GET();
-        applyHeaders(requestBuilder, headers);
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-    }
-    
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
         Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
-        return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getStructuredContent(payload);
+        return MCPInteractionPayloads.getStructuredContent(payload);
     }
     
     protected final Map<String, Object> getFirstResourcePayload(final String responseBody) {
         Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
-        return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getFirstResourcePayload(payload);
+        return MCPInteractionPayloads.getFirstResourcePayload(payload);
     }
     
     protected final Map<String, Object> parseJsonBody(final String responseBody) {
@@ -174,12 +171,50 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     protected final void prepareRuntimeFixture() throws IOException {
         Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(),
                 () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed MCP programmatic contract E2E test."));
-        container = MySQLRuntimeTestSupport.createContainer();
-        container.start();
+        if (useSharedDatabaseBackedRuntime()) {
+            prepareSharedDatabaseBackedRuntime();
+            return;
+        }
+        applyRuntimeFixture(createRuntimeFixture());
+    }
+    
+    private void prepareSharedDatabaseBackedRuntime() throws IOException {
+        if (null == sharedRuntimeFixture) {
+            sharedRuntimeFixture = createRuntimeFixture();
+        }
+        applyRuntimeFixture(sharedRuntimeFixture);
+    }
+    
+    private ProgrammaticRuntimeFixture createRuntimeFixture() throws IOException {
+        GenericContainer<?> result = MySQLRuntimeTestSupport.createContainer();
+        boolean success = false;
         try {
-            runtimeDatabases = MySQLRuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(container);
+            result.start();
+            Map<String, RuntimeDatabaseConfiguration> actualRuntimeDatabases = MySQLRuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(result);
+            success = true;
+            return new ProgrammaticRuntimeFixture(result, actualRuntimeDatabases);
         } catch (final SQLException ex) {
             throw new IOException("Failed to initialize MCP E2E runtime databases.", ex);
+        } finally {
+            if (!success) {
+                result.stop();
+            }
+        }
+    }
+    
+    private void applyRuntimeFixture(final ProgrammaticRuntimeFixture fixture) {
+        container = fixture.container();
+        runtimeDatabases = fixture.runtimeDatabases();
+    }
+    
+    protected boolean useSharedDatabaseBackedRuntime() {
+        return false;
+    }
+    
+    protected void closeSharedDatabaseBackedRuntime() {
+        if (null != sharedRuntimeFixture) {
+            sharedRuntimeFixture.close();
+            sharedRuntimeFixture = null;
         }
     }
     
@@ -190,5 +225,30 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     
     private void applyHeaders(final HttpRequest.Builder requestBuilder, final Map<String, String> headers) {
         headers.forEach(requestBuilder::setHeader);
+    }
+    
+    private static final class ProgrammaticRuntimeFixture implements AutoCloseable {
+        
+        private final GenericContainer<?> container;
+        
+        private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
+        
+        private ProgrammaticRuntimeFixture(final GenericContainer<?> container, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+            this.container = container;
+            this.runtimeDatabases = runtimeDatabases;
+        }
+        
+        private GenericContainer<?> container() {
+            return container;
+        }
+        
+        private Map<String, RuntimeDatabaseConfiguration> runtimeDatabases() {
+            return runtimeDatabases;
+        }
+        
+        @Override
+        public void close() {
+            container.stop();
+        }
     }
 }

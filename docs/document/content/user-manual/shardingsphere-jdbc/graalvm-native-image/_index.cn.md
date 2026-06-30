@@ -15,7 +15,7 @@ CE 的 `native-image` 命令行工具的长篇大论的 shell 命令。
 ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 GraalVM Native Image。使用者可通过 SDKMAN! 快速切换 JDK。这同理
 适用于 https://sdkman.io/jdks#graal ， https://sdkman.io/jdks#nik 和 https://sdkman.io/jdks#mandrel 等 `GraalVM CE` 的下游发行版。
 
-- GraalVM CE For JDK 24.0.2，对应于 SDKMAN! 的 `24.0.2-graalce`
+- GraalVM CE For JDK 25.0.2，对应于 SDKMAN! 的 `25.0.2-graalce`
 
 用户依然可以使用 SDKMAN! 上的 `21.0.8-graal` 等旧版本的 Oracle GraalVM 来构建 ShardingSphere 的 GraalVM Native Image 产物。
 但这将导致集成部分第三方依赖时，构建 GraalVM Native Image 失败。
@@ -317,8 +317,8 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 `com.mysql:mysql-connector-j` 等其他数据库驱动的 GraalVM Reachability Metadata 应自行定义，
 或将对应 JSON 提交到 https://github.com/oracle/graalvm-reachability-metadata 一侧。
 
-以 `com.mysql:mysql-connector-j:9.0.0` 的 `com.mysql.cj.jdbc.MysqlXADataSource` 类为例，这是 MySQL JDBC Driver 的 `javax.sql.XADataSource` 的实现。
-用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reachability-metadata.json`文件内定义如下 JSON。
+以 `com.mysql:mysql-connector-j:8.4.0` 的 `com.mysql.cj.jdbc.MysqlXADataSource` 类为例，这是 MySQL JDBC Driver 的 `javax.sql.XADataSource` 的实现。
+用户需要在自有项目的 classpath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/8.4.0/` 文件夹的 `reachability-metadata.json`文件内定义如下 JSON。
 
 ```json
 {

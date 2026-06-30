@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
@@ -27,10 +28,12 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMe
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -69,7 +72,7 @@ class MCPJdbcMetadataLoaderTest {
     
     @Test
     void assertLoad() throws SQLException {
-        LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration("PostgreSQL", createStandardPostgreSQLMetadataConnection())));
+        LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration(createStandardPostgreSQLMetadataConnection())));
         assertThat(actual.findMetadata("logic_db").map(MCPDatabaseMetadata::getDatabaseType).orElseThrow(), is("PostgreSQL"));
         assertThat(actual.findMetadata("logic_db").orElseThrow().getDatabaseVersion(), is("16.2"));
     }
@@ -77,15 +80,15 @@ class MCPJdbcMetadataLoaderTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadTypedMetadataArguments")
     void assertLoadWithTypedMetadata(final String name, final SupportedMCPMetadataObjectType objectType, final String objectName) throws SQLException {
-        LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration("PostgreSQL", createStandardPostgreSQLMetadataConnection())));
+        LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration(createStandardPostgreSQLMetadataConnection())));
         assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), objectType, objectName));
     }
     
     @Test
     void assertLoadWithMultipleLogicalDatabases() throws SQLException {
         Map<String, RuntimeDatabaseConfiguration> connectionConfigs = Map.of(
-                "logic_db", createMockRuntimeDatabaseConfiguration("PostgreSQL", createStandardPostgreSQLMetadataConnection()),
-                "analytics_db", createMockRuntimeDatabaseConfiguration("PostgreSQL", createStandardPostgreSQLMetadataConnection()));
+                "logic_db", createMockRuntimeDatabaseConfiguration(createStandardPostgreSQLMetadataConnection()),
+                "analytics_db", createMockRuntimeDatabaseConfiguration(createStandardPostgreSQLMetadataConnection()));
         LoadedMetadataCatalog actual = load(connectionConfigs);
         assertThat(actual.getDatabaseMetadataMap().size(), is(2));
         assertTrue(actual.findMetadata("analytics_db").isPresent());
@@ -96,7 +99,7 @@ class MCPJdbcMetadataLoaderTest {
         Driver mockDriver = new MockDriver("jdbc:mock:no-schema", createConnectionWithoutSchema("MySQL"));
         DriverManager.registerDriver(mockDriver);
         try {
-            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", MockDriver.class.getName())));
+            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration("jdbc:mock:no-schema", "", "", MockDriver.class.getName())));
             MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
             assertThat(databaseMetadata.getSchemas().size(), is(1));
             assertThat(databaseMetadata.getSchemas().get(0).getSchema(), is("logic_db"));
@@ -112,12 +115,10 @@ class MCPJdbcMetadataLoaderTest {
     void assertLoadWithoutSystemCatalogForDatabaseAsSchema() throws SQLException {
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        ResultSet orderColumns = mockResultSet("COLUMN_NAME", "order_id");
-        ResultSet orderIndexes = mockResultSet("INDEX_NAME", "idx_orders_status");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn("MySQL");
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
         when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl("MySQL"));
+        mockEmptyScalarQueries(connection);
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return mockMultiRowResultSet("TABLE".equals(tableTypes[0])
@@ -126,11 +127,13 @@ class MCPJdbcMetadataLoaderTest {
                             Map.of("TABLE_CAT", "logic_db", "TABLE_SCHEM", "", "TABLE_NAME", "orders"))
                     : List.of());
         });
+        ResultSet orderColumns = mockResultSet("COLUMN_NAME", "order_id");
         when(databaseMetaData.getColumns(eq("logic_db"), isNull(), eq("orders"), eq("%"))).thenReturn(orderColumns);
+        ResultSet orderIndexes = mockResultSet("INDEX_NAME", "idx_orders_status");
         when(databaseMetaData.getIndexInfo(eq("logic_db"), isNull(), eq("orders"), eq(false), eq(false))).thenReturn(orderIndexes);
         when(databaseMetaData.getColumns(eq("information_schema"), isNull(), eq("GLOBAL_STATUS"), eq("%")))
                 .thenThrow(new SQLException("system catalog should be skipped"));
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("MySQL", connection);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "GLOBAL_STATUS"));
@@ -141,21 +144,21 @@ class MCPJdbcMetadataLoaderTest {
     void assertLoadWithCatalogBackedMetadataUsingLogicalSchemaName() throws SQLException {
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        ResultSet orderColumns = mockResultSet("COLUMN_NAME", "order_id");
-        ResultSet orderIndexes = mockResultSet("INDEX_NAME", "idx_orders_status");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn("MySQL");
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
         when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl("MySQL"));
+        mockEmptyScalarQueries(connection);
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return mockMultiRowResultSet("TABLE".equals(tableTypes[0])
                     ? List.of(Map.of("TABLE_CAT", "orders", "TABLE_SCHEM", "", "TABLE_NAME", "orders"))
                     : List.of());
         });
+        ResultSet orderColumns = mockResultSet("COLUMN_NAME", "order_id");
         when(databaseMetaData.getColumns(eq("orders"), isNull(), eq("orders"), eq("%"))).thenReturn(orderColumns);
+        ResultSet orderIndexes = mockResultSet("INDEX_NAME", "idx_orders_status");
         when(databaseMetaData.getIndexInfo(eq("orders"), isNull(), eq("orders"), eq(false), eq(false))).thenReturn(orderIndexes);
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("MySQL", connection);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertThat(actual.getSchemas().get(0).getSchema(), is("logic_db"));
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
@@ -164,7 +167,7 @@ class MCPJdbcMetadataLoaderTest {
     
     @Test
     void assertLoadWithSchemaRegisteredOnce() throws SQLException {
-        LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration("PostgreSQL", createStandardPostgreSQLMetadataConnection())));
+        LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration(createStandardPostgreSQLMetadataConnection())));
         MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.VIEW, "active_orders"));
@@ -174,7 +177,7 @@ class MCPJdbcMetadataLoaderTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadWithoutSequenceQueryArguments")
     void assertLoadWithoutSequenceQuery(final String name, final String databaseType) throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(databaseType, createConnectionWithoutSchema(databaseType));
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(createConnectionWithoutSchema(databaseType));
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
@@ -200,7 +203,7 @@ class MCPJdbcMetadataLoaderTest {
                 Map.of("orders", List.of("order_id")),
                 Map.of(),
                 List.of());
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("PostgreSQL", connection);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, ""));
@@ -214,7 +217,7 @@ class MCPJdbcMetadataLoaderTest {
                 Map.of("active_orders", List.of("order_id")),
                 Map.of(),
                 List.of());
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("PostgreSQL", connection);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.VIEW, "active_orders"));
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.VIEW, ""));
@@ -228,7 +231,7 @@ class MCPJdbcMetadataLoaderTest {
                 Map.of("orders", List.of("", "order_id")),
                 Map.of(),
                 List.of());
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("PostgreSQL", connection);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.COLUMN, "order_id"));
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.COLUMN, ""));
@@ -242,7 +245,7 @@ class MCPJdbcMetadataLoaderTest {
                 Map.of("orders", List.of("order_id")),
                 Map.of("orders", List.of("", "idx_orders_status", "idx_orders_status")),
                 List.of());
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("PostgreSQL", connection);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"));
         assertThat(countMetadata(actual, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"), is(1));
@@ -256,7 +259,7 @@ class MCPJdbcMetadataLoaderTest {
                 Map.of(),
                 Map.of(),
                 List.of(Map.of("SEQUENCE_SCHEMA", "PG_CATALOG", "SEQUENCE_NAME", "order_seq")));
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("PostgreSQL", connection);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
     }
@@ -269,7 +272,7 @@ class MCPJdbcMetadataLoaderTest {
                 Map.of(),
                 Map.of(),
                 List.of(Map.of("SEQUENCE_SCHEMA", "public", "SEQUENCE_NAME", "")));
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("PostgreSQL", connection);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.SEQUENCE, ""));
     }
@@ -282,7 +285,7 @@ class MCPJdbcMetadataLoaderTest {
                 Map.of("orders", List.of("order_id")),
                 Map.of(),
                 List.of());
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("PostgreSQL", connection);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertThat(countMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"), is(1));
     }
@@ -295,7 +298,7 @@ class MCPJdbcMetadataLoaderTest {
                 Map.of("active_orders", List.of("order_id")),
                 Map.of(),
                 List.of());
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("PostgreSQL", connection);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertThat(countMetadata(actual, SupportedMCPMetadataObjectType.VIEW, "active_orders"), is(1));
     }
@@ -306,43 +309,12 @@ class MCPJdbcMetadataLoaderTest {
         DriverManager.registerDriver(mockDriver);
         try {
             RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                    () -> load(Map.of("logic_db", new RuntimeDatabaseConfiguration("PostgreSQL", "jdbc:mock:failed-sequence-query", "", "", MockDriver.class.getName()))));
+                    () -> load(Map.of("logic_db", new RuntimeDatabaseConfiguration("jdbc:mock:failed-sequence-query", "", "", MockDriver.class.getName()))));
             assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: connection_failed."));
             assertThat(actual.getCause().getMessage(), is("sequence metadata query failed"));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }
-    }
-    
-    @Test
-    void assertLoadWithMismatchedDatabaseType() throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("MySQL", createConnectionWithoutSchema("PostgreSQL"));
-        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class, () -> load(Map.of("logic_db", runtimeDatabaseConfiguration)));
-        assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: invalid_configuration."));
-        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
-        assertThat(actual.getCause().getMessage(), is("Configured databaseType `MySQL` does not match actual database type `PostgreSQL` for database `logic_db`."));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("loadCompatibleMySQLBranchDatabaseTypeArguments")
-    void assertLoadWithCompatibleMySQLBranchDatabaseType(final String name, final String configuredDatabaseType, final String productName,
-                                                         final String probeQuery, final String probeResult) throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(configuredDatabaseType,
-                createConnectionWithoutSchema(productName, "jdbc:mysql://metadata-loader/test", Map.of(probeQuery, probeResult)));
-        MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
-        assertThat(actual.getDatabaseType(), is(configuredDatabaseType));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("loadRejectMySQLMismatchArguments")
-    void assertLoadRejectsMySQLMismatchForBranchDatabase(final String name, final String configuredDatabaseType, final String probeQuery,
-                                                         final String probeResult) throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(configuredDatabaseType,
-                createConnectionWithoutSchema("MySQL", "jdbc:mysql://metadata-loader/test", Map.of(probeQuery, probeResult)));
-        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class, () -> load(Map.of("logic_db", runtimeDatabaseConfiguration)));
-        assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: invalid_configuration."));
-        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
-        assertThat(actual.getCause().getMessage(), is(String.format("Configured databaseType `%s` does not match actual database type `MySQL` for database `logic_db`.", configuredDatabaseType)));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -353,7 +325,7 @@ class MCPJdbcMetadataLoaderTest {
         Driver mockDriver = new MockDriver(jdbcUrl, createConnectionWithSequenceMetadata(databaseType, sequenceSchema, sequenceName, sequenceQuery));
         DriverManager.registerDriver(mockDriver);
         try {
-            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, "", "", MockDriver.class.getName())));
+            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration(jdbcUrl, "", "", MockDriver.class.getName())));
             assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), SupportedMCPMetadataObjectType.SEQUENCE, sequenceName));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
@@ -361,14 +333,16 @@ class MCPJdbcMetadataLoaderTest {
     }
     
     private LoadedMetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        MCPJdbcDatabaseProfileLoader databaseProfileLoader = new MCPJdbcDatabaseProfileLoader();
-        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        Map<String, RuntimeDatabaseProfile> databaseProfiles = databaseProfileLoader.load(runtimeDatabases);
-        Map<String, MCPDatabaseMetadata> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
-        for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
-            result.put(entry.getKey(), metadataLoader.load(entry.getKey(), entry.getValue(), databaseProfiles.get(entry.getKey())));
+        try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
+            MCPJdbcDatabaseProfileLoader databaseProfileLoader = new MCPJdbcDatabaseProfileLoader();
+            MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
+            Map<String, RuntimeDatabaseProfile> databaseProfiles = databaseProfileLoader.load(runtimeDatabases);
+            Map<String, MCPDatabaseMetadata> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
+            for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
+                result.put(entry.getKey(), metadataLoader.load(entry.getKey(), entry.getValue(), databaseProfiles.get(entry.getKey())));
+            }
+            return new LoadedMetadataCatalog(result);
         }
-        return new LoadedMetadataCatalog(result);
     }
     
     private static Stream<Arguments> loadTypedMetadataArguments() {
@@ -402,27 +376,11 @@ class MCPJdbcMetadataLoaderTest {
                 Arguments.of("unsupported database type", "MySQL"));
     }
     
-    private static Stream<Arguments> loadCompatibleMySQLBranchDatabaseTypeArguments() {
-        return Stream.of(
-                Arguments.of("doris version comment probe", "Doris", "MySQL", "SELECT @@version_comment", "Doris version doris-3.0.3"),
-                Arguments.of("mariadb version probe", "MariaDB", "MySQL", "SELECT VERSION()", "10.4.7-MariaDB"));
-    }
-    
-    private static Stream<Arguments> loadRejectMySQLMismatchArguments() {
-        return Stream.of(
-                Arguments.of("reject mysql backend configured as doris", "Doris", "SELECT @@version_comment", "MySQL Community Server - GPL"),
-                Arguments.of("reject mysql backend configured as mariadb", "MariaDB", "SELECT VERSION()", "8.0.36"));
-    }
-    
     private Connection createConnectionWithoutSchema(final String databaseType) throws SQLException {
-        return createConnectionWithoutSchema(databaseType, getMetadataJdbcUrl(databaseType));
+        return createConnectionWithoutSchemaByURL(getMetadataJdbcUrl(databaseType));
     }
     
-    private Connection createConnectionWithoutSchema(final String databaseProductName, final String jdbcUrl) throws SQLException {
-        return createConnectionWithoutSchema(databaseProductName, jdbcUrl, Map.of());
-    }
-    
-    private Connection createConnectionWithoutSchema(final String databaseProductName, final String jdbcUrl, final Map<String, String> scalarQueries) throws SQLException {
+    private Connection createConnectionWithoutSchemaByURL(final String jdbcUrl) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         Statement statement = mock(Statement.class);
@@ -433,7 +391,6 @@ class MCPJdbcMetadataLoaderTest {
         ResultSet emptyQueryResultSet = mockMultiRowResultSet(List.of());
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseProductName);
         when(databaseMetaData.getURL()).thenReturn(jdbcUrl);
         when(statement.executeQuery(anyString())).thenReturn(emptyQueryResultSet);
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
@@ -442,10 +399,6 @@ class MCPJdbcMetadataLoaderTest {
         });
         when(databaseMetaData.getColumns(isNull(), isNull(), eq("orders"), eq("%"))).thenReturn(columnResultSet);
         when(databaseMetaData.getIndexInfo(isNull(), isNull(), eq("orders"), eq(false), eq(false))).thenReturn(indexResultSet);
-        for (Entry<String, String> entry : scalarQueries.entrySet()) {
-            ResultSet scalarResultSet = mockScalarResultSet(entry.getValue());
-            when(statement.executeQuery(entry.getKey())).thenReturn(scalarResultSet);
-        }
         return result;
     }
     
@@ -457,11 +410,12 @@ class MCPJdbcMetadataLoaderTest {
         ResultSet tableResultSet = mockResultSet("TABLE_NAME");
         ResultSet viewResultSet = mockResultSet("TABLE_NAME");
         ResultSet sequenceResultSet = mockSingleRowResultSet(Map.of("SEQUENCE_SCHEMA", sequenceSchema, "SEQUENCE_NAME", sequenceName));
+        ResultSet emptyQueryResultSet = mockMultiRowResultSet(List.of());
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
         when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl(databaseType));
+        when(statement.executeQuery(anyString())).thenReturn(emptyQueryResultSet);
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return "TABLE".equals(tableTypes[0]) ? tableResultSet : viewResultSet;
@@ -478,7 +432,6 @@ class MCPJdbcMetadataLoaderTest {
         ResultSet viewResultSet = mockResultSet("TABLE_NAME");
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn("PostgreSQL");
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
         when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl("PostgreSQL"));
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
@@ -505,15 +458,13 @@ class MCPJdbcMetadataLoaderTest {
                         "order_items", List.of("PRIMARY_KEY_C")),
                 List.of(Map.of("SEQUENCE_SCHEMA", "PUBLIC", "SEQUENCE_NAME", "order_seq")));
         DatabaseMetaData databaseMetaData = result.getMetaData();
-        when(databaseMetaData.getDatabaseProductName()).thenReturn("");
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("16.2");
         when(databaseMetaData.getURL()).thenReturn("jdbc:postgresql://metadata-loader/test");
         return result;
     }
     
-    private RuntimeDatabaseConfiguration createMockRuntimeDatabaseConfiguration(final String databaseType, final Connection connection) throws SQLException {
+    private RuntimeDatabaseConfiguration createMockRuntimeDatabaseConfiguration(final Connection connection) throws SQLException {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
-        when(result.getDatabaseType()).thenReturn(databaseType);
         when(result.openConnection(anyString())).thenReturn(connection);
         return result;
     }
@@ -530,11 +481,12 @@ class MCPJdbcMetadataLoaderTest {
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         Statement statement = mock(Statement.class);
         ResultSet sequenceResultSet = mockMultiRowResultSet(sequenceRows);
+        ResultSet emptyQueryResultSet = mockMultiRowResultSet(List.of());
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
         when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl(databaseType));
+        when(statement.executeQuery(anyString())).thenReturn(emptyQueryResultSet);
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return mockMultiRowResultSet("TABLE".equals(tableTypes[0]) ? tableRows : viewRows);
@@ -549,6 +501,13 @@ class MCPJdbcMetadataLoaderTest {
         });
         when(statement.executeQuery(getSequenceQuery(databaseType))).thenReturn(sequenceResultSet);
         return result;
+    }
+    
+    private void mockEmptyScalarQueries(final Connection connection) throws SQLException {
+        Statement statement = mock(Statement.class);
+        ResultSet resultSet = mockMultiRowResultSet(List.of());
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(anyString())).thenReturn(resultSet);
     }
     
     private String getSequenceQuery(final String databaseType) {
@@ -587,13 +546,6 @@ class MCPJdbcMetadataLoaderTest {
         return result;
     }
     
-    private ResultSet mockScalarResultSet(final String value) throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString(1)).thenReturn(value);
-        return result;
-    }
-    
     private ResultSet mockMultiRowResultSet(final List<Map<String, String>> values) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         AtomicInteger rowIndex = new AtomicInteger(-1);
@@ -607,9 +559,6 @@ class MCPJdbcMetadataLoaderTest {
     
     private String getMetadataJdbcUrl(final String databaseType) {
         if ("MySQL".equals(databaseType)) {
-            return "jdbc:mysql://metadata-loader/test";
-        }
-        if ("Doris".equals(databaseType)) {
             return "jdbc:mysql://metadata-loader/test";
         }
         if ("PostgreSQL".equals(databaseType)) {
@@ -674,42 +623,7 @@ class MCPJdbcMetadataLoaderTest {
     }
     
     private boolean containsMetadata(final MCPDatabaseMetadata databaseMetadata, final SupportedMCPMetadataObjectType objectType, final String objectName) {
-        for (MCPSchemaMetadata each : databaseMetadata.getSchemas()) {
-            if (SupportedMCPMetadataObjectType.SCHEMA == objectType && objectName.equals(each.getSchema())) {
-                return true;
-            }
-            for (MCPTableMetadata table : each.getTables()) {
-                if (SupportedMCPMetadataObjectType.TABLE == objectType && objectName.equals(table.getTable())) {
-                    return true;
-                }
-                for (MCPColumnMetadata column : table.getColumns()) {
-                    if (SupportedMCPMetadataObjectType.COLUMN == objectType && objectName.equals(column.getColumn())) {
-                        return true;
-                    }
-                }
-                for (MCPIndexMetadata index : table.getIndexes()) {
-                    if (SupportedMCPMetadataObjectType.INDEX == objectType && objectName.equals(index.getIndex())) {
-                        return true;
-                    }
-                }
-            }
-            for (MCPViewMetadata view : each.getViews()) {
-                if (SupportedMCPMetadataObjectType.VIEW == objectType && objectName.equals(view.getView())) {
-                    return true;
-                }
-                for (MCPColumnMetadata column : view.getColumns()) {
-                    if (SupportedMCPMetadataObjectType.COLUMN == objectType && objectName.equals(column.getColumn())) {
-                        return true;
-                    }
-                }
-            }
-            for (MCPSequenceMetadata sequence : each.getSequences()) {
-                if (SupportedMCPMetadataObjectType.SEQUENCE == objectType && objectName.equals(sequence.getSequence())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return 0 < countMetadata(databaseMetadata, objectType, objectName);
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.TemporalLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -84,6 +85,12 @@ class EncryptInsertValuesTokenGeneratorTest {
         assertThat(generator.generateSQLToken(createLiteralInsertStatementContext()).toString(), is("(1, 'Tom', 0, 'encryptValue', 'assistedEncryptValue', 'likeEncryptValue')"));
     }
     
+    @Test
+    void assertGenerateSQLTokenWithTemporalLiteralValue() {
+        generator.setPreviousSQLTokens(Collections.emptyList());
+        assertThat(generator.generateSQLToken(createTemporalLiteralInsertStatementContext()).toString(), is("(1, 'Tom', 0, 'encryptValue', 'assistedEncryptValue', 'likeEncryptValue')"));
+    }
+    
     private InsertStatementContext createLiteralInsertStatementContext() {
         ShardingSphereDatabase database = EncryptGeneratorFixtureBuilder.createDatabase();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(
@@ -96,6 +103,26 @@ class EncryptInsertValuesTokenGeneratorTest {
         valueExpressions.add(new LiteralExpressionSegment(0, 0, "Tom"));
         valueExpressions.add(new LiteralExpressionSegment(0, 0, 0));
         valueExpressions.add(new LiteralExpressionSegment(0, 0, "123456"));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(DATABASE_TYPE)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))))
+                .insertColumns(insertColumnsSegment).values(Collections.singletonList(new InsertValuesSegment(0, 0, valueExpressions))).build();
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        return new InsertStatementContext(insertStatement, metaData, "foo_db");
+    }
+    
+    private InsertStatementContext createTemporalLiteralInsertStatementContext() {
+        ShardingSphereDatabase database = EncryptGeneratorFixtureBuilder.createDatabase();
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(
+                new ColumnSegment(0, 0, new IdentifierValue("id")),
+                new ColumnSegment(0, 0, new IdentifierValue("name")),
+                new ColumnSegment(0, 0, new IdentifierValue("status")),
+                new ColumnSegment(0, 0, new IdentifierValue("pwd"))));
+        List<ExpressionSegment> valueExpressions = new ArrayList<>(4);
+        valueExpressions.add(new LiteralExpressionSegment(0, 0, 1));
+        valueExpressions.add(new LiteralExpressionSegment(0, 0, "Tom"));
+        valueExpressions.add(new LiteralExpressionSegment(0, 0, 0));
+        valueExpressions.add(new TemporalLiteralExpressionSegment(0, 0, "2024-03-01", "DATE '2024-03-01'"));
         InsertStatement insertStatement = InsertStatement.builder().databaseType(DATABASE_TYPE)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))))
                 .insertColumns(insertColumnsSegment).values(Collections.singletonList(new InsertValuesSegment(0, 0, valueExpressions))).build();

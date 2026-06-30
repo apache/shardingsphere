@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,6 +52,10 @@ public final class EncryptWorkflowOptions {
     
     private final Map<String, String> likeQueryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
     
+    private final Map<String, SecretReferenceValue> assistedQueryAlgorithmSecretReferences = new LinkedHashMap<>(8, 1F);
+    
+    private final Map<String, SecretReferenceValue> likeQueryAlgorithmSecretReferences = new LinkedHashMap<>(8, 1F);
+    
     public void setAssistedQueryAlgorithmType(final String assistedQueryAlgorithmType) {
         this.assistedQueryAlgorithmType = normalize(assistedQueryAlgorithmType);
     }
@@ -71,11 +77,21 @@ public final class EncryptWorkflowOptions {
     }
     
     Map<String, String> getAlgorithmProperties(final String algorithmRole) {
-        if ("assisted_query".equals(algorithmRole)) {
+        if (EncryptFeatureDefinition.ALGORITHM_ROLE_ASSISTED_QUERY.equals(algorithmRole)) {
             return assistedQueryAlgorithmProperties;
         }
-        if ("like_query".equals(algorithmRole)) {
+        if (EncryptFeatureDefinition.ALGORITHM_ROLE_LIKE_QUERY.equals(algorithmRole)) {
             return likeQueryAlgorithmProperties;
+        }
+        return Map.of();
+    }
+    
+    Map<String, SecretReferenceValue> getSecretReferences(final String algorithmRole) {
+        if (EncryptFeatureDefinition.ALGORITHM_ROLE_ASSISTED_QUERY.equals(algorithmRole)) {
+            return assistedQueryAlgorithmSecretReferences;
+        }
+        if (EncryptFeatureDefinition.ALGORITHM_ROLE_LIKE_QUERY.equals(algorithmRole)) {
+            return likeQueryAlgorithmSecretReferences;
         }
         return Map.of();
     }
@@ -99,6 +115,10 @@ public final class EncryptWorkflowOptions {
         target.getAssistedQueryAlgorithmProperties().putAll(assistedQueryAlgorithmProperties);
         target.getLikeQueryAlgorithmProperties().clear();
         target.getLikeQueryAlgorithmProperties().putAll(likeQueryAlgorithmProperties);
+        target.getAssistedQueryAlgorithmSecretReferences().clear();
+        target.getAssistedQueryAlgorithmSecretReferences().putAll(assistedQueryAlgorithmSecretReferences);
+        target.getLikeQueryAlgorithmSecretReferences().clear();
+        target.getLikeQueryAlgorithmSecretReferences().putAll(likeQueryAlgorithmSecretReferences);
     }
     
     void overlayTo(final EncryptWorkflowOptions target) {
@@ -128,6 +148,8 @@ public final class EncryptWorkflowOptions {
         }
         target.getAssistedQueryAlgorithmProperties().putAll(assistedQueryAlgorithmProperties);
         target.getLikeQueryAlgorithmProperties().putAll(likeQueryAlgorithmProperties);
+        target.getAssistedQueryAlgorithmSecretReferences().putAll(assistedQueryAlgorithmSecretReferences);
+        target.getLikeQueryAlgorithmSecretReferences().putAll(likeQueryAlgorithmSecretReferences);
     }
     
     private static boolean hasText(final String value) {

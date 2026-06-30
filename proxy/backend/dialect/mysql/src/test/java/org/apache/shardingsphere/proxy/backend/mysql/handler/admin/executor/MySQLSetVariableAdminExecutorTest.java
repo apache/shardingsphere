@@ -31,9 +31,12 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment.VariableType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -101,6 +104,30 @@ class MySQLSetVariableAdminExecutorTest {
         assertThat(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.UTF_8));
     }
     
+    @Test
+    void assertExecuteWithUserVariableEqualsOperator() throws SQLException {
+        SetStatement setStatement = parseSetStatement("SET @test_var = 1");
+        assertThat(setStatement.getVariableAssigns().iterator().next().getVariable().getVariableType(), is(VariableType.USER));
+        MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        RequiredSessionVariableRecorder recorder = new RequiredSessionVariableRecorder();
+        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(recorder);
+        executor.execute(connectionSession, mock());
+        assertThat(recorder.toSetSQLs(databaseType.getType()), is(Collections.singletonList("SET @test_var=1")));
+    }
+    
+    @Test
+    void assertExecuteWithUserVariableAssignmentOperator() throws SQLException {
+        SetStatement setStatement = parseSetStatement("SET @test_var := 1");
+        assertThat(setStatement.getVariableAssigns().iterator().next().getVariable().getVariableType(), is(VariableType.USER));
+        MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        RequiredSessionVariableRecorder recorder = new RequiredSessionVariableRecorder();
+        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(recorder);
+        executor.execute(connectionSession, mock());
+        assertThat(recorder.toSetSQLs(databaseType.getType()), is(Collections.singletonList("SET @test_var=1")));
+    }
+    
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
         when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
@@ -123,9 +150,10 @@ class MySQLSetVariableAdminExecutorTest {
     
     @Test
     void assertSetUnknownSystemVariable() {
-        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "unknown_variable"), "")));
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "unknown_var", "SESSION"), "1")));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
-        assertThrows(UnknownSystemVariableException.class, () -> executor.execute(mock(), mock()));
+        UnknownSystemVariableException actual = assertThrows(UnknownSystemVariableException.class, () -> executor.execute(mock(), mock()));
+        assertThat(actual.getVariableName(), is("unknown_var"));
     }
     
     @Test
@@ -133,5 +161,10 @@ class MySQLSetVariableAdminExecutorTest {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "max_connections"), "")));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         assertThrows(ErrorGlobalVariableException.class, () -> executor.execute(mock(), mock()));
+    }
+    
+    private SetStatement parseSetStatement(final String sql) {
+        SQLStatement result = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(1, 1L), new CacheOption(1, 1L))).getSQLParserEngine(databaseType).parse(sql, false);
+        return (SetStatement) result;
     }
 }

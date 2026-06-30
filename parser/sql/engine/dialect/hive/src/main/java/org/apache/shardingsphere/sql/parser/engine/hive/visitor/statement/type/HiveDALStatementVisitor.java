@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DescribeConnectorContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DescribeDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DescribeTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.OptimizeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowCompactionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowConfContext;
@@ -72,6 +73,9 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQL
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege.MySQLShowGrantsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLOptimizeTableStatement;
+
+import java.util.Collections;
 
 /**
  * DAL statement visitor for Hive.
@@ -86,6 +90,11 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitUse(final UseContext ctx) {
         String database = null == ctx.DEFAULT() ? new IdentifierValue(ctx.identifier().getText()).getValue() : "default";
         return new MySQLUseStatement(getDatabaseType(), database);
+    }
+    
+    @Override
+    public ASTNode visitOptimizeTable(final OptimizeTableContext ctx) {
+        return new MySQLOptimizeTableStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
     }
     
     @Override

@@ -98,11 +98,10 @@ final class LLMMCPToolDefinitionFactory {
                 "parameters", Map.of(
                         "type", "object",
                         "properties", Map.of(
-                                "reference", createCompletionReferenceSchema(),
-                                "argument_name", Map.of("type", "string", "description", "Argument name to complete."),
-                                "argument_value", Map.of("type", "string", "description", "Argument prefix."),
-                                "context_arguments", Map.of("type", "object", "description", "Known arguments for contextual completion.")),
-                        "required", List.of("reference", "argument_name"),
+                                "ref", createCompletionReferenceSchema(),
+                                "argument", createCompletionArgumentSchema(),
+                                "context", createCompletionContextSchema()),
+                        "required", List.of("ref", "argument"),
                         "additionalProperties", false)));
     }
     
@@ -117,6 +116,24 @@ final class LLMMCPToolDefinitionFactory {
         result.put("required", List.of("type"));
         result.put("additionalProperties", false);
         return result;
+    }
+    
+    private Map<String, Object> createCompletionArgumentSchema() {
+        return Map.of(
+                "type", "object",
+                "properties", Map.of(
+                        "name", Map.of("type", "string", "description", "Argument name to complete."),
+                        "value", Map.of("type", "string", "description", "Argument prefix.")),
+                "required", List.of("name"),
+                "additionalProperties", false);
+    }
+    
+    private Map<String, Object> createCompletionContextSchema() {
+        return Map.of(
+                "type", "object",
+                "properties", Map.of("arguments", Map.of("type", "object", "description", "Known arguments for contextual completion.")),
+                "required", List.of("arguments"),
+                "additionalProperties", false);
     }
     
     private Map<String, Object> createOfficialToolDefinition(final String toolName) {

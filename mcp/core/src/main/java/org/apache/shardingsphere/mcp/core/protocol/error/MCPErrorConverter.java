@@ -103,13 +103,13 @@ public final class MCPErrorConverter {
             return createError(cause, "Invalid request.");
         }
         if (cause instanceof IllegalStateException) {
-            return createError(cause, "MCP transaction operation failed.");
+            return createError(cause, "MCP operation failed.");
         }
         return createError(cause, "Service is temporarily unavailable.");
     }
     
     private static MCPErrorResponse createError(final Throwable cause, final String defaultMessage) {
-        String message = Objects.toString(cause.getMessage(), defaultMessage).trim();
+        String message = MCPQueryRecoveryPayloadFactory.isQueryFailure(cause) ? defaultMessage : Objects.toString(cause.getMessage(), defaultMessage).trim();
         return new MCPErrorResponse(message, MCPRecoveryPayloadFactory.create(cause));
     }
 }

@@ -106,11 +106,9 @@ public final class TestShardingService {
     
     /**
      * Process success in Presto Iceberg Connector or Doris FE.
-     * There are bugs with Presto's transaction support, see <a href="https://github.com/prestodb/presto/issues/25204">prestodb/presto#25204</a> .
-     * Can't execute {@code orderItemRepository.assertRollbackWithTransactions();} here.
      * There is a bug with Doris FE's support for transaction rollback.
      * Statements that have been successfully executed in a single transaction unit will not be rolled back.
-     * Refer to <a href="https://doris.apache.org/docs/3.0/data-operate/transaction#failed-statements-within-a-transaction">Failed Statements Within a Transaction</a> .
+     * Refer to <a href="https://doris.apache.org/docs/4.x/data-operate/transaction#failed-statements-in-a-transaction">Failed Statements in a Transaction</a> .
      *
      * @throws SQLException SQL exception
      */

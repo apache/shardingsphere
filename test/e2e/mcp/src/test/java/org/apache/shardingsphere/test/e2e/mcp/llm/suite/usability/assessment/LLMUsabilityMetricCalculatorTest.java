@@ -236,17 +236,6 @@ class LLMUsabilityMetricCalculatorTest {
     }
     
     @Test
-    void assertCreateScorecardWithArgumentNormalizationAsNativeCoverage() {
-        LLMUsabilityScenarioResult actualScenario = new LLMUsabilityMetricCalculator().evaluateScenario(createRequiredToolScenario(), createArtifactBundle(List.of(
-                createArgumentNormalizedToolCall(1, "database_gateway_execute_update", Map.of()))));
-        LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of(actualScenario));
-        assertThat(actual.getOverallScore(), is(100.0D));
-        assertTrue(actual.isFullScore());
-        assertThat(actual.getNativeToolCallRate(), is(1.0D));
-        assertThat(actual.getHarnessRecoveryRate(), is(0.0D));
-    }
-    
-    @Test
     void assertCreateScorecardWithNaturalAndProtocolSuccessRates() {
         LLMUsabilityMetricCalculator calculator = new LLMUsabilityMetricCalculator();
         LLMUsabilityScenarioResult naturalScenario = calculator.evaluateScenario(createScenario(), createArtifactBundle(List.of(
@@ -268,16 +257,12 @@ class LLMUsabilityMetricCalculatorTest {
         return new MCPInteractionTraceRecord(sequence, "tool_call", MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN, targetName, Map.of(), structuredContent, true, 0L);
     }
     
-    private MCPInteractionTraceRecord createArgumentNormalizedToolCall(final int sequence, final String targetName, final Map<String, Object> structuredContent) {
-        return new MCPInteractionTraceRecord(sequence, "tool_call", MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN, targetName, Map.of(), structuredContent, true, 0L);
-    }
-    
     private LLME2EArtifactBundle createArtifactBundle(final List<MCPInteractionTraceRecord> interactionTrace) {
-        return new LLME2EArtifactBundle("scenario", "", "", "", "", Map.of(), "", List.of(), interactionTrace, List.of(), LLME2EAssertionReport.isSuccess("ok"));
+        return new LLME2EArtifactBundle("scenario", "", "", "", "", "", List.of(), interactionTrace, List.of(), LLME2EAssertionReport.isSuccess("ok"));
     }
     
     private LLME2EArtifactBundle createFailedArtifactBundle(final List<MCPInteractionTraceRecord> interactionTrace) {
-        return new LLME2EArtifactBundle("scenario", "", "", "", "", Map.of(), "", List.of(), interactionTrace, List.of(), LLME2EAssertionReport.failure("failed", "failed"));
+        return new LLME2EArtifactBundle("scenario", "", "", "", "", "", List.of(), interactionTrace, List.of(), LLME2EAssertionReport.failure("failed", "failed"));
     }
     
     private LLMUsabilityScenario createScenario() {

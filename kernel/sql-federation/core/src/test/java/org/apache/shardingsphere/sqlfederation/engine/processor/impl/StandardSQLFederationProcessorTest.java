@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sqlfederation.engine.processor.impl;
 
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
-import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
+import org.apache.calcite.adapter.enumerable.EnumerableRel.Prefer;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.runtime.Bindable;
@@ -61,11 +61,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -211,7 +210,8 @@ class StandardSQLFederationProcessorTest {
             processor.prepare(prepareEngine, callback, databaseName, schemaName, federationContext, compilerContext, rootSchema);
         }
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
-        when(executionPlan.getPhysicalPlan()).thenReturn(mock(EnumerableRel.class));
+        EnumerableRel physicalPlan = mock(EnumerableRel.class);
+        when(executionPlan.getPhysicalPlan()).thenReturn(physicalPlan);
         when(executionPlan.getResultColumnType()).thenReturn(mock(org.apache.calcite.rel.type.RelDataType.class));
         SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
         Bindable<Object> bindable = mock(Bindable.class);
@@ -220,9 +220,9 @@ class StandardSQLFederationProcessorTest {
         when(enumerable.enumerator()).thenReturn(enumerator);
         when(bindable.bind(any())).thenReturn(enumerable);
         try (
-                MockedStatic<EnumerableInterpretable> ignoredInterpretable = mockStatic(EnumerableInterpretable.class);
+                MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class);
                 MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            ignoredInterpretable.when(() -> EnumerableInterpretable.toBindable(any(Map.class), any(), any(), any())).thenReturn(bindable);
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(physicalPlan, Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
             ResultSet result = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);
@@ -251,7 +251,8 @@ class StandardSQLFederationProcessorTest {
             processor.prepare(prepareEngine, callback, databaseName, schemaName, federationContext, compilerContext, rootSchema);
         }
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
-        when(executionPlan.getPhysicalPlan()).thenReturn(mock(EnumerableRel.class));
+        EnumerableRel physicalPlan = mock(EnumerableRel.class);
+        when(executionPlan.getPhysicalPlan()).thenReturn(physicalPlan);
         when(executionPlan.getResultColumnType()).thenReturn(mock(org.apache.calcite.rel.type.RelDataType.class));
         SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
         Bindable<Object> bindable = mock(Bindable.class);
@@ -260,9 +261,9 @@ class StandardSQLFederationProcessorTest {
         when(enumerable.enumerator()).thenReturn(enumerator);
         when(bindable.bind(any())).thenReturn(enumerable);
         try (
-                MockedStatic<EnumerableInterpretable> ignoredInterpretable = mockStatic(EnumerableInterpretable.class);
+                MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class);
                 MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            ignoredInterpretable.when(() -> EnumerableInterpretable.toBindable(any(Map.class), any(), any(), any())).thenReturn(bindable);
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(physicalPlan, Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
             ResultSet previewResult = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);

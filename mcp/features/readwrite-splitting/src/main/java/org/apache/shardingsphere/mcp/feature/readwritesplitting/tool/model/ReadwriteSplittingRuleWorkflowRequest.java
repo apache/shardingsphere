@@ -115,6 +115,11 @@ public final class ReadwriteSplittingRuleWorkflowRequest extends WorkflowRequest
     }
     
     @Override
+    public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+        return "primary".equals(algorithmRole) ? loadBalancerProperties : super.getAlgorithmProperties(algorithmRole);
+    }
+    
+    @Override
     public ReadwriteSplittingRuleWorkflowRequest copy() {
         ReadwriteSplittingRuleWorkflowRequest result = copyTo(new ReadwriteSplittingRuleWorkflowRequest());
         result.setRuleName(ruleName);

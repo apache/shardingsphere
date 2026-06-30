@@ -80,14 +80,18 @@ class EncryptTest {
     }
     
     private void processSuccess() throws SQLException {
-        final Collection<Long> orderIds = insertData();
-        assertThat(orderRepository.selectAll(), is(IntStream.range(1, 11).mapToObj(each -> new Order(each, each % 2, each, each, "INSERT_TEST")).collect(Collectors.toList())));
-        assertThat(orderItemRepository.selectAll(), is(IntStream.range(1, 11).mapToObj(each -> new OrderItem(each, each, each, "13800000001", "INSERT_TEST")).collect(Collectors.toList())));
-        assertThat(addressRepository.selectAll(), is(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
+        Collection<Long> orderIds = insertData();
+        assertInsertedData();
         deleteData(orderIds);
         assertTrue(orderRepository.selectAll().isEmpty());
         assertTrue(orderItemRepository.selectAll().isEmpty());
         assertTrue(addressRepository.selectAll().isEmpty());
+    }
+    
+    private void assertInsertedData() throws SQLException {
+        assertThat(orderRepository.selectAll(), is(IntStream.range(1, 11).mapToObj(each -> new Order(each, each % 2, each, each, "INSERT_TEST")).collect(Collectors.toList())));
+        assertThat(orderItemRepository.selectAll(), is(IntStream.range(1, 11).mapToObj(each -> new OrderItem(each, each, each, "13800000001", "INSERT_TEST")).collect(Collectors.toList())));
+        assertThat(addressRepository.selectAll(), is(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
     }
     
     private Collection<Long> insertData() throws SQLException {

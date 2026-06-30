@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -200,7 +199,7 @@ public final class MCPCompletionService {
                                                         final String guidanceResourceUri) {
         if ("missing_context".equals(diagnostic)) {
             return guidanceResourceUri.isEmpty()
-                    ? List.of(createCompletionAction(descriptor, new ArrayList<>(missingContextArguments).get(0), "", contextArguments, missingContextArguments,
+                    ? List.of(createCompletionAction(descriptor, missingContextArguments.iterator().next(), "", contextArguments, missingContextArguments,
                             "Complete or provide the missing context argument before retrying this completion."))
                     : List.of(MCPNextActionUtils.readResource(guidanceResourceUri, "Read the nearest metadata resource before retrying this completion."));
         }

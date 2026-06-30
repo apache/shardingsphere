@@ -26,10 +26,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.Paren;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.TemporalLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.DateTimeLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NullLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
@@ -279,7 +281,10 @@ public final class SQLUtils {
             return new LiteralExpressionSegment(startIndex, stopIndex, null);
         }
         if (astNode instanceof TemporalLiteralValue) {
-            return new LiteralExpressionSegment(startIndex, stopIndex, ((TemporalLiteralValue) astNode).getValue());
+            return new TemporalLiteralExpressionSegment(startIndex, stopIndex, ((TemporalLiteralValue) astNode).getValue(), text);
+        }
+        if (astNode instanceof DateTimeLiteralValue) {
+            return new TemporalLiteralExpressionSegment(startIndex, stopIndex, ((DateTimeLiteralValue) astNode).getDateTimeValue(), text);
         }
         if (astNode instanceof OtherLiteralValue) {
             return new CommonExpressionSegment(startIndex, stopIndex, ((OtherLiteralValue) astNode).getValue());

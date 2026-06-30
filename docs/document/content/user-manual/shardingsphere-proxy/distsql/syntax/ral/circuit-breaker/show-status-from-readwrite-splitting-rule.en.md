@@ -54,7 +54,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 +-------------+--------------+----------+
 | ms_group_0  | ds_0         | disabled |
 +-------------+--------------+----------+
-1 rows in set (0.01 sec)
+1 row in set (0.01 sec)
 ```
 
 - Query all readwrite-splitting storage unit from specified database
@@ -70,7 +70,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
 +-------------+--------------+----------+
 | ms_group_0  | ds_0         | disabled |
 +-------------+--------------+----------+
-1 rows in set (0.01 sec)
+1 row in set (0.01 sec)
 ```
 
 - Query readwrite-splitting storage unit status for specified readwrite-splitting rule in current database
@@ -86,7 +86,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 +-------------+--------------+----------+
 | ms_group_0  | ds_0         | disabled |
 +-------------+--------------+----------+
-1 rows in set (0.01 sec)
+1 row in set (0.01 sec)
 ```
 
 - Query all readwrite-splitting storage unit from current database
@@ -102,7 +102,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
 +-------------+--------------+----------+
 | ms_group_0  | ds_0         | disabled |
 +-------------+--------------+----------+
-1 rows in set (0.01 sec)
+1 row in set (0.01 sec)
 ```
 
 ### Reserved word

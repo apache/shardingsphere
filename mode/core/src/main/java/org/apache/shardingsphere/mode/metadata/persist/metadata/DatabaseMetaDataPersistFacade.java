@@ -106,7 +106,7 @@ public final class DatabaseMetaDataPersistFacade {
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
                 database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(), new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName),
-                database.getIdentifierContext());
+                database.getIdentifierContext(), database.getAllSchemas());
         try {
             Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(database.getProtocolType(), material);
             for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
@@ -130,7 +130,7 @@ public final class DatabaseMetaDataPersistFacade {
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
                 database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
-                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName), database.getIdentifierContext());
+                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName), database.getIdentifierContext(), database.getAllSchemas());
         try {
             Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(needReloadTables, database.getProtocolType(), material);
             Map<String, Collection<ShardingSphereTable>> result = new HashMap<>(schemas.size(), 1F);

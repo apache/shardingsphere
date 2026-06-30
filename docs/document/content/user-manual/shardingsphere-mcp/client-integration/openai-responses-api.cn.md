@@ -9,7 +9,7 @@ weight = 3
 
 - 适合在后端服务、Agent 平台或自研应用中通过 OpenAI API 调用 ShardingSphere-MCP。
 - 适合在模型调用中按需导入 ShardingSphere-MCP 工具，并通过 `allowed_tools`、`require_approval` 或 OAuth 参数约束使用范围。
-- 接入完成后，可以让模型在 API 调用中查看逻辑库中的表、查看表结构、执行受控只读查询，或调用 `database_gateway_validate_proxy_connectivity` 对已经配置的 runtime database 进行接入前校验。
+- 接入完成后，可以让模型在 API 调用中查看逻辑库中的表、查看表结构、执行受控只读查询，或调用 `database_gateway_validate_runtime_database` 对已经配置的 runtime database 进行接入前校验。
 
 ## 前置条件
 
@@ -42,7 +42,7 @@ response = client.responses.create(
             "server_url": "https://example.com/mcp",
             "allowed_tools": [
                 "database_gateway_search_metadata",
-                "database_gateway_validate_proxy_connectivity",
+                "database_gateway_validate_runtime_database",
             ],
         }
     ],
@@ -71,7 +71,7 @@ response = client.responses.create(
 - 可以先用一条最小验证请求确认导入与调用链路，例如：
   - 查看 `<logic-database>` 中有哪些表。
   - 查看 `orders` 表的列和索引。
-  - 对已经配置的 runtime database 调用 `database_gateway_validate_proxy_connectivity`。
+  - 对已经配置的 runtime database 调用 `database_gateway_validate_runtime_database`。
 - 当 `mcp_list_tools`、审批流程或最终查询结果按预期返回时，说明接入已经生效。
 
 如果接入失败，优先检查：

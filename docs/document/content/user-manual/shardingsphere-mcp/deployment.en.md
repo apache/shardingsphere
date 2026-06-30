@@ -44,7 +44,6 @@ transport:
 
 runtimeDatabases:
   "<logic-database>":
-    databaseType: MySQL
     jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
     username: "<proxy-username>"
     password: "<proxy-password>"
@@ -78,12 +77,14 @@ Configure `runtimeDatabases` according to the target capability boundary:
 
 ## Secure deployment
 
-The built-in HTTP Server does not provide authentication or authorization.
+The built-in HTTP Server does not provide authentication, authorization, rate limiting, or audit logging.
+Exposing the built-in HTTP Server directly to the public Internet is not a supported production boundary.
 For remote access, place it in a trusted network or behind a reverse proxy or gateway that handles:
 
 - TLS termination.
 - Authentication.
 - Authorization policy.
+- Rate limiting.
 - Network access control.
 - Audit logs.
 
@@ -91,7 +92,7 @@ HTTP binding recommendations:
 
 - Use `127.0.0.1` for local debugging.
 - Use a controlled network interface for container or intranet deployments.
-- Avoid exposing the MCP Server directly to remote clients.
+- Avoid exposing the MCP Server directly to remote clients. Route remote access through a trusted gateway.
 - When sessions must be associated with external users or request sources, let a trusted gateway inject session attribution headers. Do not allow clients to forge these headers directly.
 
 ### Trusted gateway and TLS termination example
@@ -203,7 +204,7 @@ After deployment, verify that ShardingSphere-MCP is truly usable instead of stop
 3. Runtime databases are ready
 
    - Read `shardingsphere://runtime` and confirm that the transport, runtime database summary, and readiness details are visible.
-   - Call `database_gateway_validate_proxy_connectivity`, or run a minimal task such as “Show tables in `<logic-database>`” from the AI application to confirm that the configured runtime database is usable.
+   - Call `database_gateway_validate_runtime_database`, or run a minimal task such as “Show tables in `<logic-database>`” from the AI application to confirm that the configured runtime database is usable.
    - A running MCP Server process alone does not mean that the target runtime database is ready. Connectivity failures, insufficient privileges, or invisible logical databases can still block tasks.
 
 ## Basic Observability Entrypoints

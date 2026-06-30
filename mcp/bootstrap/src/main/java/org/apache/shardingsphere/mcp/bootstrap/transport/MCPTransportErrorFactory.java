@@ -23,9 +23,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * MCP transport error factory.
@@ -40,15 +45,38 @@ public final class MCPTransportErrorFactory {
      * @return MCP transport error
      */
     public static McpError createError(final Throwable cause) {
+        if (cause instanceof MCPTransportSecurityException) {
+            MCPErrorResponse errorResponse = new MCPErrorResponse(cause.getMessage(), createTransportSecurityRecovery((MCPTransportSecurityException) cause));
+            return McpError.builder(getProtocolErrorCode(cause)).message(errorResponse.getMessage()).data(errorResponse.toPayload()).build();
+        }
         MCPErrorResponse errorResponse = MCPErrorConverter.convert(cause);
         return McpError.builder(getProtocolErrorCode(cause)).message(errorResponse.getMessage()).data(errorResponse.toPayload()).build();
+    }
+    
+    private static Map<String, Object> createTransportSecurityRecovery(final MCPTransportSecurityException cause) {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("response_mode", "recovery");
+        result.put("recovery_category", "transport_security");
+        result.put("recoverable", false);
+        result.put("category", cause.getCategory());
+        result.put("model_action", createTransportSecurityModelAction(cause.getCategory()));
+        result.put("next_actions", List.of(Map.of("order", 1, "type", "terminal", "title", "Stop", "reason", "Transport security policy rejected the request.")));
+        return result;
+    }
+    
+    private static String createTransportSecurityModelAction(final String category) {
+        if (MCPTransportSecurityException.CATEGORY_ORIGIN_NOT_ALLOWED.equals(category)) {
+            return "Use an allowed loopback Origin or omit Origin for trusted local MCP HTTP requests.";
+        }
+        return "Start a new MCP session or align trusted session attribution headers before retrying.";
     }
     
     private static int getProtocolErrorCode(final Throwable cause) {
         if (cause instanceof UnsupportedResourceUriException) {
             return McpSchema.ErrorCodes.RESOURCE_NOT_FOUND;
         }
-        if (cause instanceof MCPInvalidRequestException || cause instanceof MCPUnsupportedException || cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
+        if (cause instanceof MCPTransportSecurityException || cause instanceof MCPInvalidRequestException || cause instanceof MCPUnsupportedException || cause instanceof IllegalArgumentException
+                || cause instanceof UnsupportedOperationException) {
             return McpSchema.ErrorCodes.INVALID_PARAMS;
         }
         return McpSchema.ErrorCodes.INTERNAL_ERROR;

@@ -45,6 +45,21 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 
 如果 feature 是可选插件，构建后把 jar 放入发行包 `plugins/` 目录。
 
+## Feature Workflow 模板
+
+需要规划、预览、执行和校验规则变更的 feature，应以数据加密 MCP feature 的规则 workflow 作为模板。
+模板实现应满足：
+
+- Feature 业务逻辑保留在 `mcp/features/<feature>`；`mcp/support` 和 `mcp/core` 只承载通用 workflow、执行、redaction、descriptor 和 runtime 契约。
+- Handler 声明 canonical tool name、context type 和 workflow definition；descriptor 和 prompt 维护模型可见契约，handler 不重复维护描述字段。
+- 规划前先读取 feature 自有 resources，例如算法、规则或现有配置资源，再生成可审查的 DistSQL artifact。
+- 输出 schema 只暴露当前 feature 支持的 artifact；不要保留不支持的字段作为占位，也不要让模型依赖真实物理表结构。
+- 有副作用的执行必须先 preview，再根据用户明确批准的 `approved_steps` 执行。
+- 敏感参数在模型可见的计划、预览、执行、校验、恢复和错误输出中必须掩码；执行路径使用受控上下文中的原始值。
+- 校验逻辑应读取 Proxy 可见的规则状态或 feature 状态，避免把不属于当前 feature 的物理操作作为验收条件。
+- Descriptor 启动期校验应覆盖 tool/resource/prompt 名称唯一性、schema 字段、side-effect annotations、related resources、follow-up tools、
+  completion target 和 workflow recovery path。
+
 ## Handler 与 Descriptor
 
 对外新增 tool：

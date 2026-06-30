@@ -1,11 +1,11 @@
 +++
-title = "SHOW SHADOW TABLE RULES"
+title = "SHOW SHADOW TABLE RULE"
 weight = 2
 +++
 
 ### Description
 
-The `SHOW SHADOW TABLE RULES` syntax is used to query shadow table rules for specified database.
+The `SHOW SHADOW TABLE RULE` syntax is used to query shadow table rules for specified database.
 
 ### Syntax
 
@@ -13,7 +13,10 @@ The `SHOW SHADOW TABLE RULES` syntax is used to query shadow table rules for spe
 {{% tab name="Grammar" %}}
 ```sql
 ShowShadowTableRule::=
-  'SHOW' 'SHADOW' 'TABLE' 'RULES' ('FROM' databaseName)?
+  'SHOW' 'SHADOW' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
+
+tableName ::=
+  identifier
 
 databaseName ::=
   identifier
@@ -54,6 +57,12 @@ mysql> SHOW SHADOW TABLE RULES FROM shadow_db;
 2 rows in set (0.00 sec)
 ```
 
+- Query a shadow table rule for current database.
+
+```sql
+SHOW SHADOW TABLE RULE t_order;
+```
+
 - Query shadow table rules for current database.
 
 ```sql
@@ -72,7 +81,7 @@ mysql> SHOW SHADOW TABLE RULES;
 ```
 ### Reserved word
 
-`SHOW`, `SHADOW`, `TABLE`, `RULES`, `FROM`
+`SHOW`, `SHADOW`, `TABLE`, `RULE`, `RULES`, `FROM`
 
 ### Related links
 

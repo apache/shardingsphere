@@ -7,12 +7,12 @@
       "type": "com.microsoft.sqlserver.jdbc.ConfigurableRetryLogic"
     }
   ],
-  "bundles": [
+  "resources": [
     {
       "condition": {
         "typeReached": "com.microsoft.sqlserver.jdbc.SQLServerResource"
       },
-      "name": "com.microsoft.sqlserver.jdbc.SQLServerResource"
+      "bundle": "com.microsoft.sqlserver.jdbc.SQLServerResource"
     }
   ]
 }

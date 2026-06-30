@@ -61,8 +61,7 @@ public final class YamlRuntimeDatabaseConfigurationsValidator implements Constra
     }
     
     private boolean validateRequiredProperties(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
-        boolean result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.DATABASE_TYPE, context);
-        result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.JDBC_URL, context) && result;
+        boolean result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.JDBC_URL, context);
         result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.USERNAME, context) && result;
         return validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.DRIVER_CLASS_NAME, context) && result;
     }

@@ -24,7 +24,7 @@ the possible Maven dependencies are as follows,
         <groupId>com.clickhouse</groupId>
         <artifactId>clickhouse-jdbc</artifactId>
         <classifier>all</classifier>
-        <version>0.9.5</version>
+        <version>0.9.8</version>
     </dependency>
 </dependencies>
 ```
@@ -38,7 +38,7 @@ Write a Docker Compose file to start ClickHouse.
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:25.12.1.649
+    image: clickhouse/clickhouse-server:26.6.1.1193
     environment:
       CLICKHOUSE_SKIP_USER_SETUP: "1"
     ports:

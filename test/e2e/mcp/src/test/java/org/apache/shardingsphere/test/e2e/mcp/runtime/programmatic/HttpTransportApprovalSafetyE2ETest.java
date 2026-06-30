@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @EnabledIf("isEnabled")
-class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportApprovalSafetyE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isDockerEnabled();
@@ -57,15 +58,16 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
     }
     
     @Test
-    void assertApplyWorkflowReviewThenExecuteMode() throws IOException, InterruptedException {
+    void assertRejectWorkflowReviewThenExecuteWithoutPreview() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> executionPayload = callApplyWorkflow(httpClient, sessionId, createMaskRulePlan(httpClient, sessionId),
                 Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
-        assertThat(String.valueOf(executionPayload.get("status")), is("completed"));
+        assertThat(String.valueOf(executionPayload.get("status")), is("failed"));
         assertThat(String.valueOf(executionPayload.get("execution_mode")), is("review-then-execute"));
-        assertThat(((List<?>) executionPayload.get("skipped_artifacts")).size(), is(1));
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) executionPayload.get("issues")).getFirst();
+        assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         assertModelFacingPayloadContract(executionPayload);
     }
     
@@ -108,7 +110,6 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
     }
     
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
-        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     

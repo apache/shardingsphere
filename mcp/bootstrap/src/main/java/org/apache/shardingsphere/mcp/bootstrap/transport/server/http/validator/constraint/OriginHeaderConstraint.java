@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportOriginUtils;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
 
 import java.net.URI;
 
@@ -56,6 +57,6 @@ public final class OriginHeaderConstraint implements TransportHeaderConstraint {
     
     private ServerTransportSecurityException createForbiddenException(final String reason) {
         log.warn("Rejected MCP HTTP request origin: reason={}, loopbackBinding={}.", reason, loopbackBinding);
-        return new ServerTransportSecurityException(403, FORBIDDEN_MESSAGE);
+        return new MCPTransportSecurityException(403, FORBIDDEN_MESSAGE, MCPTransportSecurityException.CATEGORY_ORIGIN_NOT_ALLOWED);
     }
 }

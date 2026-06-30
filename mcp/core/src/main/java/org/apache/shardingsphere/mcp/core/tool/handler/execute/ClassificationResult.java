@@ -44,15 +44,6 @@ public final class ClassificationResult {
     
     private final Optional<SupportedMCPStatement> analyzedStatementClass;
     
-    /**
-     * Create statement classification result.
-     *
-     * @param statementClass statement class
-     * @param statementType statement type
-     * @param normalizedSql normalized SQL
-     * @param targetObjectName target object name
-     * @param savepointName savepoint name
-     */
     public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName) {
         this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, null);
     }

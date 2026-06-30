@@ -64,7 +64,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerE2EContainer
         addEnv("TZ", "UTC");
         mapResources(config.getMountedResources());
         setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(
-                storageContainerConnectOption.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD)));
+                storageContainerConnectOption.getProxyURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD)));
         withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
     }
     
@@ -73,7 +73,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerE2EContainer
         DataSource dataSource = targetDataSourceProvider.get();
         if (null == dataSource) {
             targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(
-                    storageContainerConnectOption.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
+                    storageContainerConnectOption.getProxyURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
         }
         return targetDataSourceProvider.get();
     }

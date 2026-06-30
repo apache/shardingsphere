@@ -108,19 +108,22 @@ class MySQLMultiStatementsProxyBackendHandlerTest {
     
     @Test
     void assertExecuteAfterRepeatedProxyLifecycle() throws SQLException {
-        final String sql = "UPDATE t SET v=v+1 WHERE id=1;UPDATE t SET v=v+1 WHERE id=2;UPDATE t SET v=v+1 WHERE id=3";
-        final ConnectionSession connectionSession = mockConnectionSession();
-        final UpdateStatement expectedStatement = mock(UpdateStatement.class);
         ContextManager contextManager = mockContextManager();
         initBackendExecutorContext(contextManager);
-        final ExecutorEngine previousExecutorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
+        assertBackendExecutorContextReinitialized(BackendExecutorContext.getInstance().getExecutorEngine());
+        String sql = "UPDATE t SET v=v+1 WHERE id=1;UPDATE t SET v=v+1 WHERE id=2;UPDATE t SET v=v+1 WHERE id=3";
+        ConnectionSession connectionSession = mockConnectionSession();
+        UpdateStatement expectedStatement = mock(UpdateStatement.class);
+        ResponseHeader actual = new MySQLMultiStatementsProxyBackendHandler(connectionSession, expectedStatement, sql).execute();
+        assertThat(actual, isA(MultiStatementsUpdateResponseHeader.class));
+        assertThat(((MultiStatementsUpdateResponseHeader) actual).getUpdateResponseHeaders().size(), is(3));
+    }
+    
+    private void assertBackendExecutorContextReinitialized(final ExecutorEngine previousExecutorEngine) {
         BackendExecutorContext.getInstance().shutdown();
         assertThrows(IllegalStateException.class, () -> BackendExecutorContext.getInstance().getExecutorEngine());
         BackendExecutorContext.getInstance().init();
         assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(not(previousExecutorEngine)));
-        ResponseHeader actual = new MySQLMultiStatementsProxyBackendHandler(connectionSession, expectedStatement, sql).execute();
-        assertThat(actual, isA(MultiStatementsUpdateResponseHeader.class));
-        assertThat(((MultiStatementsUpdateResponseHeader) actual).getUpdateResponseHeaders().size(), is(3));
     }
     
     @Test

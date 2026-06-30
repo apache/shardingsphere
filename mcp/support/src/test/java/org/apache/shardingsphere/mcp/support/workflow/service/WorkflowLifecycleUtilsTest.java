@@ -57,20 +57,6 @@ class WorkflowLifecycleUtilsTest {
     }
     
     @Test
-    void assertResolveOperationType() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        clarifiedIntent.setOperationType("drop");
-        snapshot.setClarifiedIntent(clarifiedIntent);
-        assertThat(WorkflowLifecycleUtils.resolveOperationType(snapshot), is("drop"));
-    }
-    
-    @Test
-    void assertResolveOperationTypeWithoutClarifiedIntent() {
-        assertThat(WorkflowLifecycleUtils.resolveOperationType(new WorkflowContextSnapshot()), is(""));
-    }
-    
-    @Test
     void assertIsDropWorkflow() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();

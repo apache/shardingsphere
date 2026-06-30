@@ -255,6 +255,9 @@ public final class EncryptProjectionTokenGenerator {
         if (null == subqueryType || SubqueryType.PROJECTION == subqueryType) {
             return Collections.singleton(generateProjection(encryptColumn, columnProjection));
         }
+        if (SubqueryType.VIEW_DEFINITION == subqueryType) {
+            return Collections.singleton(generateViewDefinitionProjection(encryptColumn, columnProjection));
+        }
         if (SubqueryType.TABLE == subqueryType || SubqueryType.JOIN == subqueryType || SubqueryType.WITH == subqueryType) {
             return generateProjectionsInTableSegmentSubquery(encryptColumn, columnProjection);
         }
@@ -274,6 +277,14 @@ public final class EncryptProjectionTokenGenerator {
         IdentifierValue cipherColumnName = new IdentifierValue(encryptColumnName, quoteCharacter);
         IdentifierValue cipherColumnAlias = columnProjection.getAlias().orElse(columnProjection.getName());
         return new ColumnProjection(columnProjection.getOwner().orElse(null), cipherColumnName, cipherColumnAlias,
+                databaseType, columnProjection.getLeftParentheses().orElse(null), columnProjection.getRightParentheses().orElse(null));
+    }
+    
+    private ColumnProjection generateViewDefinitionProjection(final EncryptColumn encryptColumn, final ColumnProjection columnProjection) {
+        String encryptColumnName = getEncryptColumnName(columnProjection, encryptColumn);
+        QuoteCharacter quoteCharacter = getQuoteCharacter(columnProjection);
+        IdentifierValue cipherColumnName = new IdentifierValue(encryptColumnName, quoteCharacter);
+        return new ColumnProjection(columnProjection.getOwner().orElse(null), cipherColumnName, null,
                 databaseType, columnProjection.getLeftParentheses().orElse(null), columnProjection.getRightParentheses().orElse(null));
     }
     

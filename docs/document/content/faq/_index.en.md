@@ -109,7 +109,7 @@ Answer:
 
 ## Sharding
 
-### How to solve `Cloud not resolve placeholder … in string value …` error?
+### How to solve `Could not resolve placeholder … in string value …` error?
 
 Answer:
 

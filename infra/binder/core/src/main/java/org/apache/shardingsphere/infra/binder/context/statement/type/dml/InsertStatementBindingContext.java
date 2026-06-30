@@ -121,7 +121,8 @@ public final class InsertStatementBindingContext implements SQLStatementContext 
             return Optional.empty();
         }
         Collection<ColumnAssignmentSegment> onDuplicateKeyColumns = onDuplicateKeyColumnsSegment.get().getColumns();
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(onDuplicateKeyColumns, params, parametersOffset.get());
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(onDuplicateKeyColumns, params, parametersOffset.get(),
+                baseContext.getSqlStatement().getParameterMarkers());
         parametersOffset.addAndGet(onDuplicateUpdateContext.getParameterCount());
         return Optional.of(onDuplicateUpdateContext);
     }

@@ -9,7 +9,7 @@ weight = 5
 
 - 适合在 Anthropic Messages API 中直接挂接远程 ShardingSphere-MCP，而不单独实现 MCP client。
 - 适合在 Claude API 请求中按需暴露 ShardingSphere-MCP 的元数据查询、受控查询、规则规划和接入前预检能力。
-- 接入完成后，可以在 Claude 会话中查看逻辑库中的表、查看表结构，或调用 `database_gateway_validate_proxy_connectivity` 对已经配置的 runtime database 进行接入前校验。
+- 接入完成后，可以在 Claude 会话中查看逻辑库中的表、查看表结构，或调用 `database_gateway_validate_runtime_database` 对已经配置的 runtime database 进行接入前校验。
 
 ## 前置条件
 
@@ -79,7 +79,7 @@ curl https://api.anthropic.com/v1/messages \
     "database_gateway_search_metadata": {
       "enabled": true
     },
-    "database_gateway_validate_proxy_connectivity": {
+    "database_gateway_validate_runtime_database": {
       "enabled": true
     }
   }
@@ -97,7 +97,7 @@ curl https://api.anthropic.com/v1/messages \
 - 在 Claude 会话中执行一条最小验证任务，例如：
   - 查看 `<logic-database>` 中有哪些表。
   - 查看 `orders` 表的列和索引。
-  - 对已经配置的 runtime database 调用 `database_gateway_validate_proxy_connectivity`。
+  - 对已经配置的 runtime database 调用 `database_gateway_validate_runtime_database`。
 - 如果 Claude 能返回来自 ShardingSphere-MCP 的工具结果，说明接入已经生效。
 
 如果接入失败，优先检查：

@@ -27,7 +27,7 @@ model_first_summary:
   metadata_rule: {first_resource: 'shardingsphere://databases', search_tool: database_gateway_search_metadata,
     detail_rule: Read the returned resource.uri when the list or search response points
       to a detail resource.}
-  preflight_rule: {tool: database_gateway_validate_proxy_connectivity, input_rule: Pass
+  preflight_rule: {tool: database_gateway_validate_runtime_database, input_rule: Pass
       only a configured runtime database name., secret_rule: Connection details stay
       in administrator runtime configuration and are not tool arguments.}
   sql_tool_selection:
@@ -46,10 +46,11 @@ model_first_summary:
       database_gateway_plan_sharding_key_generate_strategy, database_gateway_plan_sharding_rule_component_cleanup]
     preview_tool: {tool: database_gateway_apply_workflow, execution_mode: preview}
     execute_tool: {tool: database_gateway_apply_workflow, execution_mode: review-then-execute,
-      execute_requires: execution_mode=review-then-execute}
+      execute_requires: execution_mode=review-then-execute and explicit approved_steps
+        copied from preview_artifacts.approval_step}
     validate_tool: database_gateway_validate_workflow
   completion_rule: Use MCP completion for missing database, schema, table, column,
-    index, or sequence values before guessing identifiers.
+    index, sequence, or storage unit values before guessing identifiers.
   recovery_rule: Follow structured recovery.next_actions before inventing a replacement
     call.
 model_contract:
@@ -60,7 +61,7 @@ model_contract:
   argument_completion_method: completion/complete
   optional_catalog_resource: shardingsphere://capabilities
   metadata_first_resource: shardingsphere://databases
-  preflight_rule: Use database_gateway_validate_proxy_connectivity with a configured
+  preflight_rule: Use database_gateway_validate_runtime_database with a configured
     database name before onboarding or troubleshooting runtime connectivity.
   sql_tool_selection: {read_only: Use database_gateway_execute_query for one classifier-approved
       SELECT or EXPLAIN ANALYZE statement., side_effecting: Use database_gateway_execute_update
@@ -71,8 +72,8 @@ model_contract:
     side effect is still intended.
   next_action_rule: 'Use canonical next_actions fields: type, tool_name, resource_uri,
     and arguments.'
-  detail_resource_rule: Read each resource payload_contract before assuming detail
-    fields.
+  detail_resource_rule: Use resource descriptors, outputSchema, and returned payload
+    keys before assuming detail fields.
   recovery_rule: When a call fails with recovery.next_actions, follow those structured
     actions before inventing a new call.
 surface_summary:
@@ -82,7 +83,7 @@ surface_summary:
   optional_catalog_resource: shardingsphere://capabilities
   metadata_resource: shardingsphere://databases
   metadata_search_tool: database_gateway_search_metadata
-  preflight_validation_tool: database_gateway_validate_proxy_connectivity
+  preflight_validation_tool: database_gateway_validate_runtime_database
   read_only_sql_tool: database_gateway_execute_query
   side_effect_sql_tool: database_gateway_execute_update
   workflow_tools: [database_gateway_apply_workflow, database_gateway_validate_workflow]
@@ -99,10 +100,6 @@ field_naming_contract:
   payload_fields: ShardingSphere-owned structured payload fields use snake_case.
   descriptor_fields: Descriptor-derived MCP schema fields keep the protocol or JSON
     Schema field names required by MCP clients.
-  alias_rule: Do not assume camelCase and snake_case variants are aliases unless the
-    same descriptor explicitly documents both.
-  cleanup_rule: Prefer one canonical ShardingSphere payload field over parallel compatibility
-    aliases.
 next_action_contract:
 - type: resource_read
   required_fields: [order, type, title, resource_uri]
@@ -113,10 +110,9 @@ next_action_contract:
   optional_fields: [reason, depends_on]
   description: Call another MCP tool with server-suggested arguments.
 - type: completion
-  required_fields: [order, type, title, reference_type, reference, argument_name,
-    context_arguments]
-  optional_fields: [argument_prefix, missing_context_arguments, resume_target_type,
-    resume_target, resume_arguments, reason, depends_on]
+  required_fields: [order, type, title, ref, argument]
+  optional_fields: [context, missing_context_arguments, resume_ref, resume_arguments,
+    reason, depends_on]
   description: Use MCP completion for one argument before retrying.
 - type: ask_user
   required_fields: [order, type, title, question]
@@ -134,10 +130,10 @@ common_flows:
   referenced_tools: [database_gateway_search_metadata]
   referenced_resources: ['shardingsphere://databases']
 - flow_id: validate_runtime_database
-  steps: ['read_resource shardingsphere://databases', call_tool database_gateway_validate_proxy_connectivity]
+  steps: ['read_resource shardingsphere://databases', call_tool database_gateway_validate_runtime_database]
   stop_condition: Stop after the configured runtime database reports ready or returns
     structured recovery guidance.
-  referenced_tools: [database_gateway_validate_proxy_connectivity]
+  referenced_tools: [database_gateway_validate_runtime_database]
   referenced_resources: ['shardingsphere://databases']
 - flow_id: read_only_sql
   steps: ['read_resource shardingsphere://databases/{database}/capabilities', call_tool
@@ -154,8 +150,8 @@ common_flows:
   referenced_resources: &id001 []
 - flow_id: workflow_plan_apply_validate
   steps: [call_tool descriptor-backed feature planning tool, call_tool database_gateway_apply_workflow
-      execution_mode=preview, call_tool database_gateway_apply_workflow review-then-execute,
-    call_tool database_gateway_validate_workflow]
+      execution_mode=preview, call_tool database_gateway_apply_workflow execution_mode=review-then-execute
+      approved_steps=<preview_artifacts.approval_step>, call_tool database_gateway_validate_workflow]
   stop_condition: Reuse the same current-session plan_id and stop after validation
     succeeds.
   referenced_tools: [database_gateway_apply_workflow, database_gateway_validate_workflow]
@@ -170,9 +166,6 @@ common_flows:
   referenced_resources: ['shardingsphere://capabilities']
 protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
   toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: 08a999a08459a01e013017a021be2a6a24acc2267cd4c444468a9e40d2585ec9,
-  promptSet: 7bab1e40052794920788db6b2273747f64c9a50845521cfaa789acfb16bde104, resourceNavigation: 64bf1a1ca4856b55a21b09922aa8df6e7bb7f043faa38977680d1a1e3c060bae,
-  modelFacingSchemas: 437850f6d578d1192425655a4639a7fd1162f312426cbbdbdd2cb17e39fb981b}
 resources:
 - uri: shardingsphere://capabilities
   name: server-capability-catalog
@@ -226,6 +219,15 @@ resourceTemplates:
       database_gateway_validate_workflow]
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
+- uriTemplate: shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule
+  name: broadcast-table-rule
+  _meta:
+    org.apache.shardingsphere/resource-kind: rule
+    org.apache.shardingsphere/related-tools: [database_gateway_plan_broadcast_rule,
+      database_gateway_validate_workflow]
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+    - {name: table, required: true}
 - uriTemplate: shardingsphere://features/broadcast/databases/{database}/rule-count
   name: broadcast-rule-count
   _meta:
@@ -245,6 +247,47 @@ resourceTemplates:
   _meta:
     org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/related-tools: [database_gateway_execute_query, database_gateway_execute_update]
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+- uriTemplate: shardingsphere://databases/{database}/storage-units
+  name: storage-units
+  _meta:
+    org.apache.shardingsphere/resource-kind: list
+    org.apache.shardingsphere/related-tools: [database_gateway_search_metadata]
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+- uriTemplate: shardingsphere://databases/{database}/storage-units/{storageUnit}
+  name: storage-unit-detail
+  _meta:
+    org.apache.shardingsphere/resource-kind: detail
+    org.apache.shardingsphere/related-tools: [database_gateway_search_metadata]
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+    - {name: storageUnit, required: true}
+- uriTemplate: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+  name: storage-unit-used-by-rules
+  _meta:
+    org.apache.shardingsphere/resource-kind: list
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+    - {name: storageUnit, required: true}
+- uriTemplate: shardingsphere://databases/{database}/single-tables
+  name: single-tables
+  _meta:
+    org.apache.shardingsphere/resource-kind: list
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+- uriTemplate: shardingsphere://databases/{database}/single-tables/{table}
+  name: single-table-detail
+  _meta:
+    org.apache.shardingsphere/resource-kind: detail
+    org.apache.shardingsphere/uri-variables:
+    - {name: database, required: true}
+    - {name: table, required: true}
+- uriTemplate: shardingsphere://databases/{database}/single-table/default-storage-unit
+  name: default-single-table-storage-unit
+  _meta:
+    org.apache.shardingsphere/resource-kind: detail
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
 - uriTemplate: shardingsphere://databases/{database}/schemas
@@ -669,8 +712,8 @@ tools:
 - name: database_gateway_search_metadata
   annotations: {title: Search Metadata, readOnlyHint: true, destructiveHint: false,
     idempotentHint: true, openWorldHint: true}
-- name: database_gateway_validate_proxy_connectivity
-  annotations: {title: Validate Proxy Connectivity, readOnlyHint: true, destructiveHint: false,
+- name: database_gateway_validate_runtime_database
+  annotations: {title: Validate Runtime Database, readOnlyHint: true, destructiveHint: false,
     idempotentHint: true, openWorldHint: true}
 - name: database_gateway_execute_query
   annotations: {title: Execute Query SQL, readOnlyHint: true, destructiveHint: false,
@@ -744,6 +787,7 @@ prompts:
   - {name: database, required: false}
   - {name: operation_type, required: false}
   - {name: algorithm_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_encrypt_rule
   title: Plan Encrypt Rule
   arguments:
@@ -774,6 +818,7 @@ prompts:
   - {name: read_storage_units, required: false}
   - {name: transactional_read_query_strategy, required: false}
   - {name: load_balancer_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_readwrite_splitting_status
   title: Plan Readwrite-Splitting Status
   arguments:
@@ -781,11 +826,13 @@ prompts:
   - {name: rule, required: false}
   - {name: storage_unit, required: false}
   - {name: target_status, required: false}
+  - {name: plan_id, required: false}
 - name: plan_shadow_algorithm_cleanup
   title: Plan Shadow Algorithm Cleanup
   arguments:
   - {name: database, required: false}
   - {name: algorithm_name, required: false}
+  - {name: plan_id, required: false}
 - name: plan_shadow_rule
   title: Plan Shadow Rule
   arguments:
@@ -796,36 +843,47 @@ prompts:
   - {name: shadow_storage_unit, required: false}
   - {name: table, required: false}
   - {name: algorithm_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_default_strategy
   title: Plan Sharding Default Strategy
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: algorithm_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_key_generate_strategy
   title: Plan Sharding Key Generate Strategy
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: key_generator_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_key_generator
   title: Plan Sharding Key Generator
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: key_generator_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_rule_component_cleanup
   title: Plan Sharding Rule Component Cleanup
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_table_reference_rule
   title: Plan Sharding Table Reference Rule
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: plan_id, required: false}
 - name: plan_sharding_table_rule
   title: Plan Sharding Table Rule
   arguments:
   - {name: database, required: false}
   - {name: operation_type, required: false}
+  - {name: algorithm_type, required: false}
+  - {name: plan_id, required: false}
 - name: recover_workflow
   title: Recover Workflow
   arguments:
@@ -838,12 +896,40 @@ prompts:
   - {name: schema, required: false}
   - {name: sql_intent, required: true}
 completionTargets:
+- referenceType: prompt
+  reference: plan_broadcast_rule
+  arguments: [database]
+  maxValues: 50
 - referenceType: resource
   reference: shardingsphere://databases/{database}
   arguments: [database]
   maxValues: 50
 - referenceType: resource
   reference: shardingsphere://databases/{database}/schemas
+  arguments: [database]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/storage-units
+  arguments: [database]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/storage-units/{storageUnit}
+  arguments: [database, storageUnit]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+  arguments: [database, storageUnit]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/single-tables
+  arguments: [database]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/single-tables/{table}
+  arguments: [database, table]
+  maxValues: 50
+- referenceType: resource
+  reference: shardingsphere://databases/{database}/single-table/default-storage-unit
   arguments: [database]
   maxValues: 50
 - referenceType: resource
@@ -881,6 +967,58 @@ completionTargets:
 - referenceType: resource
   reference: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
   arguments: [database, schema, sequence]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_encrypt_rule
+  arguments: [algorithm_type, assisted_query_algorithm_type, like_query_algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_mask_rule
+  arguments: [algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_readwrite_splitting_rule
+  arguments: [database, load_balancer_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_readwrite_splitting_status
+  arguments: [database]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_shadow_rule
+  arguments: [database, algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_default_shadow_algorithm
+  arguments: [database, algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_shadow_algorithm_cleanup
+  arguments: [database]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_table_rule
+  arguments: [database, algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_table_reference_rule
+  arguments: [database]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_default_strategy
+  arguments: [database, algorithm_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_key_generator
+  arguments: [database, key_generator_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_key_generate_strategy
+  arguments: [database, key_generator_type]
+  maxValues: 50
+- referenceType: prompt
+  reference: plan_sharding_rule_component_cleanup
+  arguments: [database]
   maxValues: 50
 - referenceType: prompt
   reference: inspect_metadata

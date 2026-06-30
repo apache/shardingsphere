@@ -22,7 +22,7 @@ Main application scenarios for Hint:
 
 ### Hint Configuration
 
-Hint algorithms require users to implement the interface of `org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm`.
+Hint algorithms require users to implement the interface of `org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm`.
 `org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm` has two built-in implementations,
 
 - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`

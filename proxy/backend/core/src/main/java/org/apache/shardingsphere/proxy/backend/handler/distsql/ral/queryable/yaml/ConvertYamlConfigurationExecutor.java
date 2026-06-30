@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.custom.Custo
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.DatabaseNameValidator;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -74,6 +75,7 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
         }
         Preconditions.checkNotNull(yamlConfig, "Invalid yaml file `%s`", file.getName());
         Preconditions.checkNotNull(yamlConfig.getDatabaseName(), "`databaseName` in file `%s` is required.", file.getName());
+        DatabaseNameValidator.validate(yamlConfig.getDatabaseName());
         return Collections.singleton(new LocalDataQueryResultRow(convertYamlConfigurationToDistSQL(yamlConfig)));
     }
     

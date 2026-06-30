@@ -129,16 +129,25 @@ public final class DatabaseIdentifierContextFactory {
     
     private static IdentifierCaseRuleSet createScopeAwareRuleSet(final IdentifierCaseRuleSet protocolRuleSet, final IdentifierCaseRuleSet storageRuleSet) {
         IdentifierCaseRuleSet databaseRuleSet = IdentifierCaseRuleSets.newInsensitiveRuleSet();
+        IdentifierCaseRuleSet storageObjectRuleSet = IdentifierCaseRuleSets.newQuotedInsensitiveRuleSet();
         Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
         for (IdentifierScope each : IdentifierScope.values()) {
             if (IdentifierScope.DATABASE == each) {
                 scopedRules.put(each, databaseRuleSet.getRule(each));
                 continue;
             }
+            if (isStorageObjectScope(each)) {
+                scopedRules.put(each, storageObjectRuleSet.getRule(each));
+                continue;
+            }
             scopedRules.put(each, IdentifierScope.SCHEMA == each ? protocolRuleSet.getRule(each) : storageRuleSet.getRule(each));
         }
         scopedRules.put(IdentifierScope.LOGICAL_TABLE, protocolRuleSet.getRule(IdentifierScope.LOGICAL_TABLE));
         return new IdentifierCaseRuleSet(storageRuleSet.getRule(IdentifierScope.TABLE), scopedRules);
+    }
+    
+    private static boolean isStorageObjectScope(final IdentifierScope identifierScope) {
+        return IdentifierScope.COLUMN == identifierScope || IdentifierScope.INDEX == identifierScope || IdentifierScope.CONSTRAINT == identifierScope;
     }
     
     private static Optional<DatabaseType> getIdentifierRuleDatabaseType(final ResourceMetaData resourceMetaData) {
@@ -159,6 +168,10 @@ public final class DatabaseIdentifierContextFactory {
     
     private static boolean isHeterogeneous(final DatabaseType protocolType, final Collection<DatabaseType> storageDatabaseTypes) {
         return null != protocolType && null != protocolType.getType() && storageDatabaseTypes.stream()
-                .anyMatch(each -> null != each && null != each.getType() && !protocolType.getType().equalsIgnoreCase(each.getType()));
+                .anyMatch(each -> null != each && null != each.getType() && !isSameProtocolType(protocolType, each));
+    }
+    
+    private static boolean isSameProtocolType(final DatabaseType protocolType, final DatabaseType storageType) {
+        return protocolType.getType().equalsIgnoreCase(storageType.getType());
     }
 }

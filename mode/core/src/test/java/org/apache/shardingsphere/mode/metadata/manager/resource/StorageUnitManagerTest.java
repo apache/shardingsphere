@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -31,7 +32,9 @@ import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
@@ -42,8 +45,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -92,6 +98,24 @@ class StorageUnitManagerTest {
         assertDoesNotThrow(() -> createManager(metaDataContexts, resourceSwitchManager).register(DATABASE_NAME, Collections.emptyMap()));
         verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
         verify(metaDataContexts.getMetaData(), never()).putDatabase(any(ShardingSphereDatabase.class));
+    }
+    
+    @Test
+    void assertRegisterClosesNewDataSourcesWhenReloadFails() {
+        MetaDataContexts metaDataContexts = mockMetaDataContexts();
+        ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
+        MockedDataSource newDataSource = new MockedDataSource();
+        SwitchingResource switchingResource = new SwitchingResource(Collections.singletonMap(new StorageNode("new_ds"), newDataSource),
+                Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
+        when(resourceSwitchManager.switchByRegisterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean())).thenReturn(switchingResource);
+        try (
+                MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenThrow(new IllegalStateException("reload error")))) {
+            assertThrows(IllegalStateException.class, () -> createManager(metaDataContexts, resourceSwitchManager).register(DATABASE_NAME, Collections.emptyMap()));
+        }
+        Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(newDataSource::isClosed);
+        assertTrue(newDataSource.isClosed());
+        verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
     }
     
     @Test

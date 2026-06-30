@@ -35,7 +35,7 @@ final class MCPModelFirstContractPayloadBuilder {
     
     private static final String PLANNING_TOOL_NAME_PREFIX = "database_gateway_plan_";
     
-    private static final String PREFLIGHT_TOOL_NAME = "database_gateway_validate_proxy_connectivity";
+    private static final String PREFLIGHT_TOOL_NAME = "database_gateway_validate_runtime_database";
     
     private static final String CATALOG_RESOURCE_URI = "shardingsphere://capabilities";
     
@@ -57,7 +57,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("sql_tool_selection", createSqlToolSelection());
         result.put("side_effect_rule", "Preview side effects first; execute only when the requested side effect is still intended.");
         result.put("workflow_rule", createWorkflowRule());
-        result.put("completion_rule", "Use MCP completion for missing database, schema, table, column, index, or sequence values before guessing identifiers.");
+        result.put("completion_rule", "Use MCP completion for missing database, schema, table, column, index, sequence, or storage unit values before guessing identifiers.");
         result.put("recovery_rule", "Follow structured recovery.next_actions before inventing a replacement call.");
         return result;
     }
@@ -69,14 +69,14 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
         result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
         result.put("metadata_first_resource", "shardingsphere://databases");
-        result.put("preflight_rule", "Use database_gateway_validate_proxy_connectivity with a configured database name before onboarding or troubleshooting runtime connectivity.");
+        result.put("preflight_rule", "Use database_gateway_validate_runtime_database with a configured database name before onboarding or troubleshooting runtime connectivity.");
         result.put("sql_tool_selection", Map.of(
                 "read_only", "Use database_gateway_execute_query for one classifier-approved SELECT or EXPLAIN ANALYZE statement.",
                 "side_effecting", "Use database_gateway_execute_update with execution_mode=preview before execution."));
         result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
         result.put("side_effect_rule", "Preview before side effects and continue only when the requested side effect is still intended.");
         result.put("next_action_rule", "Use canonical next_actions fields: type, tool_name, resource_uri, and arguments.");
-        result.put("detail_resource_rule", "Read each resource payload_contract before assuming detail fields.");
+        result.put("detail_resource_rule", "Use resource descriptors, outputSchema, and returned payload keys before assuming detail fields.");
         result.put("recovery_rule", "When a call fails with recovery.next_actions, follow those structured actions before inventing a new call.");
         return result;
     }
@@ -98,14 +98,12 @@ final class MCPModelFirstContractPayloadBuilder {
     }
     
     Map<String, Object> createFieldNamingContract() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("official_discovery_methods", List.of("tools/list", "resources/list", "resources/templates/list", "prompts/list"));
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
         result.put("catalog_fields", List.of("supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability"));
         result.put("payload_fields", "ShardingSphere-owned structured payload fields use snake_case.");
         result.put("descriptor_fields", "Descriptor-derived MCP schema fields keep the protocol or JSON Schema field names required by MCP clients.");
-        result.put("alias_rule", "Do not assume camelCase and snake_case variants are aliases unless the same descriptor explicitly documents both.");
-        result.put("cleanup_rule", "Prefer one canonical ShardingSphere payload field over parallel compatibility aliases.");
         return result;
     }
     
@@ -116,8 +114,8 @@ final class MCPModelFirstContractPayloadBuilder {
                 createNextActionContractEntry("tool_call", List.of("order", "type", "title", "tool_name", "arguments"),
                         List.of("reason", "depends_on"), "Call another MCP tool with server-suggested arguments."),
                 createNextActionContractEntry("completion",
-                        List.of("order", "type", "title", "reference_type", "reference", "argument_name", "context_arguments"),
-                        List.of("argument_prefix", "missing_context_arguments", "resume_target_type", "resume_target", "resume_arguments", "reason", "depends_on"),
+                        List.of("order", "type", "title", "ref", "argument"),
+                        List.of("context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on"),
                         "Use MCP completion for one argument before retrying."),
                 createNextActionContractEntry("ask_user", List.of("order", "type", "title", "question"),
                         List.of("required_inputs", "reason", "depends_on"), "Ask the user for missing input."),
@@ -131,7 +129,7 @@ final class MCPModelFirstContractPayloadBuilder {
                         "call_tool database_gateway_search_metadata", "read_resource returned resource.uri"),
                         "Stop when the requested metadata detail resource is read.",
                         List.of("database_gateway_search_metadata"), List.of("shardingsphere://databases")),
-                createCommonFlow("validate_runtime_database", List.of("read_resource shardingsphere://databases", "call_tool database_gateway_validate_proxy_connectivity"),
+                createCommonFlow("validate_runtime_database", List.of("read_resource shardingsphere://databases", "call_tool database_gateway_validate_runtime_database"),
                         "Stop after the configured runtime database reports ready or returns structured recovery guidance.",
                         List.of(PREFLIGHT_TOOL_NAME), List.of("shardingsphere://databases")),
                 createCommonFlow("read_only_sql", List.of("read_resource shardingsphere://databases/{database}/capabilities", "call_tool database_gateway_execute_query"),
@@ -141,7 +139,8 @@ final class MCPModelFirstContractPayloadBuilder {
                         "call_tool database_gateway_execute_update execution_mode=execute"),
                         "Execute only after reviewing the previewed SQL and side-effect scope.", List.of("database_gateway_execute_update"), List.of()),
                 createCommonFlow("workflow_plan_apply_validate", List.of("call_tool descriptor-backed feature planning tool", "call_tool database_gateway_apply_workflow execution_mode=preview",
-                        "call_tool database_gateway_apply_workflow review-then-execute", "call_tool database_gateway_validate_workflow"),
+                        "call_tool database_gateway_apply_workflow execution_mode=review-then-execute approved_steps=<preview_artifacts.approval_step>",
+                        "call_tool database_gateway_validate_workflow"),
                         "Reuse the same current-session plan_id and stop after validation succeeds.",
                         List.of("database_gateway_apply_workflow", "database_gateway_validate_workflow"), List.of()),
                 createCommonFlow("recover_from_error", List.of("follow recovery.next_actions", "prefer official list discovery methods when surface information is needed",
@@ -216,7 +215,7 @@ final class MCPModelFirstContractPayloadBuilder {
         Map<String, Object> executeTool = new LinkedHashMap<>(3, 1F);
         executeTool.put("tool", "database_gateway_apply_workflow");
         executeTool.put(MCPPayloadFieldNames.EXECUTION_MODE, "review-then-execute");
-        executeTool.put("execute_requires", "execution_mode=review-then-execute");
+        executeTool.put("execute_requires", "execution_mode=review-then-execute and explicit approved_steps copied from preview_artifacts.approval_step");
         result.put("execute_tool", executeTool);
         result.put("validate_tool", "database_gateway_validate_workflow");
         return result;

@@ -51,6 +51,13 @@ class LLMMCPActionExecutorTest {
     }
     
     @Test
+    void assertExecuteSafelyRejectsNonStringResourceUri() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(MCPInteractionActionNames.READ_RESOURCE, Map.of("uri", 1)));
+        assertThat(actual.getMessage(), is("Resource URI is required."));
+    }
+    
+    @Test
     void assertExecuteSafelyWithListPrompts() throws InterruptedException {
         assertThat(new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(MCPInteractionActionNames.LIST_PROMPTS, Map.of()), is(Map.of("prompts", List.of())));
     }
@@ -68,10 +75,9 @@ class LLMMCPActionExecutorTest {
     void assertExecuteSafelyWithCompletionReference() throws InterruptedException {
         FakeMCPInteractionClient client = new FakeMCPInteractionClient();
         Map<String, Object> actual = new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.COMPLETE, Map.of(
-                "reference", Map.of("type", "prompt", "name", "inspect_metadata"),
-                "argument_name", "schema",
-                "argument_value", "pub",
-                "context_arguments", Map.of("database", "logic_db")));
+                "ref", Map.of("type", "ref/prompt", "name", "inspect_metadata"),
+                "argument", Map.of("name", "schema", "value", "pub"),
+                "context", Map.of("arguments", Map.of("database", "logic_db"))));
         assertThat(actual, is(Map.of("completion", "public")));
         assertThat(client.completionReference, is(Map.of("type", "ref/prompt", "name", "inspect_metadata")));
         assertThat(client.completionArgumentName, is("schema"));
@@ -80,18 +86,41 @@ class LLMMCPActionExecutorTest {
     }
     
     @Test
-    void assertExecuteSafelyWithInlineCompletionReference() throws InterruptedException {
+    void assertExecuteSafelyWithCompletionResourceReference() throws InterruptedException {
         FakeMCPInteractionClient client = new FakeMCPInteractionClient();
-        new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.COMPLETE, Map.of("reference_type", "resource", "resource_uri", "shardingsphere://databases", "argument_name", "uri"));
+        new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.COMPLETE, Map.of(
+                "ref", Map.of("type", "ref/resource", "uri", "shardingsphere://databases"),
+                "argument", Map.of("name", "uri")));
         assertThat(client.completionReference, is(Map.of("type", "ref/resource", "uri", "shardingsphere://databases")));
     }
     
     @Test
-    void assertExecuteSafelyWithCompletionRecovery() throws InterruptedException {
-        Map<String, Object> actual = new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(MCPInteractionActionNames.COMPLETE, Map.of("argument_value", "pub"));
-        assertThat(actual.get("response_mode"), is("recovery"));
-        assertThat(actual.get("error_code"), is("invalid_tool_arguments"));
-        assertThat(actual.get("message"), is("mcp_complete requires a reference object and argument_name."));
+    void assertExecuteSafelyRejectsUnsupportedCompletionReferenceType() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(
+                MCPInteractionActionNames.COMPLETE, Map.of("ref", Map.of("type", "REF/PROMPT", "name", "inspect_metadata"), "argument", Map.of("name", "schema"))));
+        assertThat(actual.getMessage(), is("mcp_complete ref.type must be ref/prompt or ref/resource."));
+    }
+    
+    @Test
+    void assertExecuteSafelyRejectsNonStringCompletionArgumentName() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(
+                MCPInteractionActionNames.COMPLETE, Map.of("ref", Map.of("type", "ref/resource", "uri", "shardingsphere://databases"), "argument", Map.of("name", 1))));
+        assertThat(actual.getMessage(), is("mcp_complete argument.name is required."));
+    }
+    
+    @Test
+    void assertExecuteSafelyRejectsNonObjectCompletionContext() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(
+                MCPInteractionActionNames.COMPLETE, Map.of("ref", Map.of("type", "ref/resource", "uri", "shardingsphere://databases"), "argument", Map.of("name", "uri"), "context", "invalid")));
+        assertThat(actual.getMessage(), is("mcp_complete context must be an object."));
+    }
+    
+    @Test
+    void assertExecuteSafelyRejectsNonStringCompletionContextArgument() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(
+                MCPInteractionActionNames.COMPLETE,
+                Map.of("ref", Map.of("type", "ref/resource", "uri", "shardingsphere://databases"), "argument", Map.of("name", "uri"), "context", Map.of("arguments", Map.of("database", 1)))));
+        assertThat(actual.getMessage(), is("mcp_complete context.arguments values must be strings."));
     }
     
     @Test

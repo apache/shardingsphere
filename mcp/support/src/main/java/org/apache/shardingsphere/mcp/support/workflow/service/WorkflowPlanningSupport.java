@@ -201,7 +201,7 @@ public final class WorkflowPlanningSupport {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
-        addMissingQuestions(request, clarifiedIntent);
+        addMissingQuestions(request, clarifiedIntent, snapshot);
         if (isEmptyIdentifier(request.getSchema()) || isEmptyIdentifier(request.getTable()) || isEmptyIdentifier(request.getColumn())) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
@@ -213,63 +213,31 @@ public final class WorkflowPlanningSupport {
         return true;
     }
     
-    /**
-     * Ensure rule DistSQL planning context is complete and valid without reading logical metadata.
-     *
-     * @param request workflow request
-     * @param clarifiedIntent clarified intent
-     * @param snapshot workflow snapshot
-     * @return whether rule planning context is ready
-     */
-    public boolean ensureRulePlanningContext(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
-        if (isEmptyIdentifier(request.getDatabase())) {
-            clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
-                    "Database is required before planning.", "Provide the logical database name.", true, Map.of()));
-            snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
-            return false;
-        }
-        if (!ensureSupportedIdentifier(WorkflowFieldNames.DATABASE, request.getDatabase(), snapshot)
-                || !ensureSupportedIdentifier(WorkflowFieldNames.SCHEMA, request.getSchema(), snapshot)
-                || !ensureSupportedIdentifier(WorkflowFieldNames.TABLE, request.getTable(), snapshot)
-                || !ensureSupportedIdentifier(WorkflowFieldNames.COLUMN, request.getColumn(), snapshot)) {
-            snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
-            return false;
-        }
-        addMissingRuleQuestions(request, clarifiedIntent, snapshot);
-        if (isEmptyIdentifier(request.getTable()) || isEmptyIdentifier(request.getColumn())) {
-            snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
-            return false;
-        }
-        return true;
-    }
-    
     private boolean isEmptyIdentifier(final String identifier) {
         return WorkflowSQLUtils.normalizeIdentifier(identifier).isEmpty();
     }
     
-    private void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+    private void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (isEmptyIdentifier(request.getSchema())) {
             clarifiedIntent.getClarificationMessages().add("Please specify schema.");
         }
-        if (isEmptyIdentifier(request.getTable())) {
-            clarifiedIntent.getClarificationMessages().add("Please specify target table.");
-        }
-        if (isEmptyIdentifier(request.getColumn())) {
-            clarifiedIntent.getClarificationMessages().add("Please specify target column.");
-        }
+        addMissingTableQuestion(request, clarifiedIntent, snapshot, "Table is required before planning.");
+        addMissingColumnQuestion(request, clarifiedIntent, snapshot, "Column is required before planning.");
     }
     
-    private void addMissingRuleQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
+    private void addMissingTableQuestion(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String message) {
         if (isEmptyIdentifier(request.getTable())) {
             clarifiedIntent.getClarificationMessages().add("Please specify target table.");
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_REQUIRED, "error", "intaking",
-                    "Table is required before planning rule DistSQL.", "Provide the logical table name.", true, Map.of()));
+                    message, "Provide the logical table name.", true, Map.of()));
         }
+    }
+    
+    private void addMissingColumnQuestion(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String message) {
         if (isEmptyIdentifier(request.getColumn())) {
             clarifiedIntent.getClarificationMessages().add("Please specify target column.");
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_REQUIRED, "error", "intaking",
-                    "Column is required before planning rule DistSQL.", "Provide the logical column name.", true, Map.of()));
+                    message, "Provide the logical column name.", true, Map.of()));
         }
     }
     

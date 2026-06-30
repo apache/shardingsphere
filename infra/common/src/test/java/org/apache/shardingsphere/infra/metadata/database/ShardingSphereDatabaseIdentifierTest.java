@@ -132,7 +132,7 @@ class ShardingSphereDatabaseIdentifierTest {
         database.refreshIdentifierContext(new ConfigurationProperties(props));
         assertFalse(database.containsSchema("FOO_SCHEMA"));
         assertFalse(database.getSchema("foo_schema").containsTable("FOO_TBL"));
-        assertFalse(database.getSchema("foo_schema").getTable("foo_tbl").containsColumn("FOO_COL"));
+        assertTrue(database.getSchema("foo_schema").getTable("foo_tbl").containsColumn("FOO_COL"));
     }
     
     private ShardingSphereDatabase createDatabase(final DatabaseType databaseType, final String schemaName) {

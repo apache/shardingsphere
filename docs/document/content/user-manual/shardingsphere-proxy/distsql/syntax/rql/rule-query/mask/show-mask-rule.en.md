@@ -13,7 +13,7 @@ The `SHOW MASK RULES` syntax is used to query mask rules for specified database.
 {{% tab name="Grammar" %}}
 ```sql
 ShowMaskRule::=
-  'SHOW' 'MASK' ('RULES' | 'RULE' ruleName) ('FROM' databaseName)?
+  'SHOW' 'MASK' 'TABLE'? ('RULE' ruleName | 'RULES') ('FROM' databaseName)?
 
 ruleName ::=
   identifier
@@ -91,12 +91,12 @@ SHOW MASK RULE t_mask FROM mask_db;
 
 ```sql
 mysql> SHOW MASK RULE t_mask FROM mask_db;
-+--------+--------------+------------------+--------------------------------+
-| table  | logic_column | mask_algorithm   | props                          |
-+--------+--------------+------------------+--------------------------------+
-| t_mask | phoneNum     | MASK_FROM_X_TO_Y | to-y=2,replace-char=*,from-x=1 |
-| t_mask | address      | MD5              |                                |
-+--------+--------------+------------------+--------------------------------+
++--------+----------+------------------+--------------------------------+
+| table  | column   | algorithm_type   | algorithm_props                |
++--------+----------+------------------+--------------------------------+
+| t_mask | phoneNum | MASK_FROM_X_TO_Y | to-y=2,replace-char=*,from-x=1 |
+| t_mask | address  | MD5              |                                |
++--------+----------+------------------+--------------------------------+
 2 rows in set (0.00 sec)
 ```
 
@@ -108,18 +108,18 @@ SHOW MASK RULE t_mask;
 
 ```sql
 mysql> SHOW MASK RULE t_mask;
-+--------+--------------+------------------+--------------------------------+
-| table  | logic_column | mask_algorithm   | props                          |
-+--------+--------------+------------------+--------------------------------+
-| t_mask | phoneNum     | MASK_FROM_X_TO_Y | to-y=2,replace-char=*,from-x=1 |
-| t_mask | address      | MD5              |                                |
-+--------+--------------+------------------+--------------------------------+
++--------+----------+------------------+--------------------------------+
+| table  | column   | algorithm_type   | algorithm_props                |
++--------+----------+------------------+--------------------------------+
+| t_mask | phoneNum | MASK_FROM_X_TO_Y | to-y=2,replace-char=*,from-x=1 |
+| t_mask | address  | MD5              |                                |
++--------+----------+------------------+--------------------------------+
 2 rows in set (0.00 sec)
 ```
 
 ### Reserved word
 
-`SHOW`, `MASK`, `RULE`, `RULES`, `FROM`
+`SHOW`, `MASK`, `TABLE`, `RULE`, `RULES`, `FROM`
 
 ### Related links
 

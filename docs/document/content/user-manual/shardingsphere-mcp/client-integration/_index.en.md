@@ -39,7 +39,7 @@ After configuration, users describe tasks directly in the conversation. Examples
 - Show the tables in `<logic-database>`.
 - Inspect columns and indexes for `<table-name>`.
 - Run a read-only query and limit the result to 100 rows.
-- Call `database_gateway_validate_proxy_connectivity` for a configured runtime database.
+- Call `database_gateway_validate_runtime_database` for a configured runtime database.
 - Plan a data encryption or data masking rule and preview it without execution.
 
 When SQL execution, rule changes, or rule change plan execution is involved, review the preview content before confirming execution. For custom integration or protocol debugging, see the [Custom Integration Appendix](../developer-appendix/).

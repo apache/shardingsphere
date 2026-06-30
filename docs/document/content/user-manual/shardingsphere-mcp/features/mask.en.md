@@ -58,6 +58,25 @@ After a plan is generated, review:
 - Whether runtime rules or existing business SQL may be affected.
 - Whether no extra DDL, index, data processing, or SQL executability probing task is expected from ShardingSphere-MCP.
 
+## Sensitive parameter handling
+
+Some masking algorithm parameters may need to be supplied by operators in a controlled way, such as replacement characters or custom algorithm properties.
+Use a secret reference object in algorithm properties:
+
+```json
+{
+  "primary_algorithm_properties": {
+    "replace-char": {
+      "secret_ref": "placeholder://secret-value-1"
+    }
+  }
+}
+```
+
+The `secret_ref` in a placeholder object only marks a sensitive slot for manual replacement.
+Planning, preview, execution results, and validation output show only neutral placeholders or `******`; they do not echo `secret_ref` or real sensitive values.
+If a rule change still contains sensitive placeholders, automatic execution returns `secret_reference_manual_execution_required` before side effects. Operators should replace real values outside MCP and the AI application, then execute manually.
+
 ## Apply and validate
 
 Preview first, then review rule DistSQL and side-effect scope before execution.

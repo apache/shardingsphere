@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 
 import java.util.LinkedHashMap;
@@ -97,7 +98,14 @@ public final class FirebirdFetchStatementCache {
      *
      * @param connectionId connection ID
      */
+    @SneakyThrows
     public void unregisterConnection(final int connectionId) {
-        statementRegistry.remove(connectionId);
+        Map<Integer, ProxyBackendHandler> statements = statementRegistry.remove(connectionId);
+        if (null == statements) {
+            return;
+        }
+        for (ProxyBackendHandler each : statements.values()) {
+            each.close();
+        }
     }
 }

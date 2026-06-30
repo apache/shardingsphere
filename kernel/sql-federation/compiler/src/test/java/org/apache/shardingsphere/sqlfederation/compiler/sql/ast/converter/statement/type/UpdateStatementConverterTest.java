@@ -46,8 +46,10 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UpdateStatementConverterTest {
     
@@ -80,6 +82,35 @@ class UpdateStatementConverterTest {
         SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement);
         assertNull(actual.offset);
         assertNull(actual.fetch);
+    }
+    
+    @Test
+    void assertConvertWithResolvedTargetTableAlias() {
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("ScrapReason")));
+        tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("sr")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(tableSegment)
+                .setAssignment(createSetAssignmentSegment())
+                .where(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)))
+                .targetTableIsFromAlias(true)
+                .build();
+        SqlUpdate actual = (SqlUpdate) new UpdateStatementConverter().convert(updateStatement);
+        assertThat(((SqlIdentifier) actual.getTargetTable()).getSimple(), is("ScrapReason"));
+        assertThat(actual.getAlias().getSimple(), is("sr"));
+    }
+    
+    @Test
+    void assertConvertWithUnresolvedTargetTableAlias() {
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("sr")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(tableSegment)
+                .setAssignment(createSetAssignmentSegment())
+                .where(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)))
+                .targetTableIsFromAlias(true)
+                .build();
+        assertThrows(IllegalStateException.class, () -> new UpdateStatementConverter().convert(updateStatement));
     }
     
     private UpdateStatement createUpdateStatement(final boolean withAlias, final OrderBySegment orderBy, final LimitSegment limit) {

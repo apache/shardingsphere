@@ -61,11 +61,10 @@ Class name: org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfi
 
 Attributes:
 
-| *Name*     | *DataType* | *Description*                |
-|------------|------------|------------------------------|
-| name       | String     | Encrypt algorithm name       |
-| type       | String     | Encrypt algorithm type       |
-| properties | Properties | Encrypt algorithm properties |
+| *Name* | *DataType* | *Description*                |
+|--------|------------|------------------------------|
+| type   | String     | Encrypt algorithm type       |
+| props  | Properties | Encrypt algorithm properties |
 
 Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/common-config/builtin-algorithm/encrypt) for more details about type of algorithm.
 
@@ -86,13 +85,12 @@ public final class EncryptDatabasesConfiguration {
         props.setProperty("digest-algorithm-name", "SHA-1");
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", new EncryptColumnItemRuleConfiguration("username", "name_encryptor"));
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd", "pwd_encryptor"));
-        columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_encryptor"));
-        columnConfigTest.setLikeQuery(new EncryptColumnItemRuleConfiguration("like_pwd", "like_encryptor"));
+        columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_assisted_encryptor"));
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
         encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
-        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
-        encryptAlgorithmConfigs.put("like_encryptor", new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
+        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("AES", props));
+        encryptAlgorithmConfigs.put("pwd_assisted_encryptor", new AlgorithmConfiguration("MD5", new Properties()));
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
         return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfig), props);
     }
@@ -101,5 +99,5 @@ public final class EncryptDatabasesConfiguration {
 
 ## Related References
 
-- [The feature description of Data Encryption](/en/features/encrypt/ )
+- [The feature description of Data Encryption](/en/features/encrypt/)
 - [Dev Guide of Data Encryption](/en/dev-manual/encrypt/)

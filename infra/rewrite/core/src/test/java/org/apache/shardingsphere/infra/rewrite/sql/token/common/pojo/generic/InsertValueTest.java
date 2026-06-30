@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Type
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.TemporalLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -77,6 +78,16 @@ class InsertValueTest {
         InsertValue insertValue = new InsertValue(expressionSegments);
         String actualToString = insertValue.toString();
         String expectedToString = "(SYSDATE)";
+        assertThat(actualToString, is(expectedToString));
+    }
+    
+    @Test
+    void assertTemporalLiteralToString() {
+        List<ExpressionSegment> expressionSegments = new ArrayList<>(1);
+        expressionSegments.add(new TemporalLiteralExpressionSegment(0, 16, "2017-08-08", "DATE '2017-08-08'"));
+        InsertValue insertValue = new InsertValue(expressionSegments);
+        String actualToString = insertValue.toString();
+        String expectedToString = "(DATE '2017-08-08')";
         assertThat(actualToString, is(expectedToString));
     }
 }

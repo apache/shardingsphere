@@ -35,8 +35,6 @@ public final class MCPInteractionTraceRecord {
     
     public static final String HARNESS_TEXT_RECOVERY_ORIGIN = "harness_text_recovery";
     
-    public static final String HARNESS_ARGUMENT_NORMALIZATION_ORIGIN = "harness_argument_normalization";
-    
     private final int sequence;
     
     private final String actionKind;

@@ -54,7 +54,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 +-------------+--------------+----------+
 | ms_group_0  | ds_0         | disabled |
 +-------------+--------------+----------+
-1 rows in set (0.01 sec)
+1 row in set (0.01 sec)
 ```
 
 - 查询指定逻辑库中所有读写分离存储单元状态
@@ -70,7 +70,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
 +-------------+--------------+----------+
 | ms_group_0  | ds_0         | disabled |
 +-------------+--------------+----------+
-1 rows in set (0.00 sec)
+1 row in set (0.00 sec)
 ```
 
 - 查询当前逻辑库中指定读写分离规则中读写分离存储单元状态
@@ -86,7 +86,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 +-------------+--------------+----------+
 | ms_group_0  | ds_0         | disabled |
 +-------------+--------------+----------+
-1 rows in set (0.01 sec)
+1 row in set (0.01 sec)
 ```
 
 - 查询当前逻辑库中所有读写分离存储单元状态
@@ -102,7 +102,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
 +-------------+--------------+----------+
 | ms_group_0  | ds_0         | disabled |
 +-------------+--------------+----------+
-1 rows in set (0.01 sec)
+1 row in set (0.01 sec)
 ```
 
 ### 保留字

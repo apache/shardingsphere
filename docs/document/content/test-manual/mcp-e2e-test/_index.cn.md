@@ -19,6 +19,24 @@ chapter = true
 - 真实模型驱动的 MCP usability。
 - Encrypt 和 Mask workflow 可用性验证。
 
+## Feature 模板验收
+
+当某个 MCP feature 被作为 workflow 模板时，E2E 测试应覆盖协议可发现性、模型可用性和负向契约。
+以 Encrypt workflow 为例，模板级验收至少包括：
+
+- Completion 能返回 feature 可用的算法或候选值。
+- Plan 输出只包含当前 feature 支持的 DistSQL artifact。
+- Plan 输出不包含不支持的物理 DDL、索引、迁移、回填或清理 artifact。
+- `resources_to_read` 指向 feature 自有算法、规则或配置资源，而不是不属于该 feature 的物理元数据资源。
+- Descriptor output schema 不暴露当前 feature 不支持的输出字段。
+- 计划、workflow resource、preview、apply、validate、recovery 和 trace 可见输出不泄露敏感参数。
+- 自定义或能力未知的算法应被标记为未确认，而不是被当作已知能力处理。
+- Drop 场景应验证规则删除语义，不把物理清理作为成功条件。
+- 不支持的 alter 扩展应返回清晰限制，而不是生成不完整 workflow。
+- Apply 必须经过 preview，并校验用户批准的步骤。
+
+测试复用应保留在 `test/e2e/mcp` 内的本地 helper 中；不要为了模板验收新增测试 jar 或跨模块测试支撑模块。
+
 ## 本地准备
 
 先安装 MCP E2E 依赖模块到本地仓库：

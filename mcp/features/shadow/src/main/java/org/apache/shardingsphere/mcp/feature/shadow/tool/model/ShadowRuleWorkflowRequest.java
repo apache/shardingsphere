@@ -99,6 +99,11 @@ public final class ShadowRuleWorkflowRequest extends WorkflowRequest {
     }
     
     @Override
+    public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+        return "primary".equals(algorithmRole) ? algorithmProperties : super.getAlgorithmProperties(algorithmRole);
+    }
+    
+    @Override
     public ShadowRuleWorkflowRequest copy() {
         ShadowRuleWorkflowRequest result = copyTo(new ShadowRuleWorkflowRequest());
         result.setRuleName(ruleName);

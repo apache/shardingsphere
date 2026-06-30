@@ -47,7 +47,7 @@ class RuntimeStatusHandlerTest {
             assertThat(((Map<?, ?>) actual.get("redaction_summary")).get("marker"), is("******"));
             assertRuntimeDiagnostics(actual, "ready");
             assertRuntimeProtection(actual);
-            assertTrue(String.valueOf(actual.get("capability_fingerprint")).matches("[0-9a-f]{64}"));
+            assertFalse(actual.containsKey("capability_fingerprint"));
             assertRuntimeCapability((List<?>) actual.get("databases"), "logic_db");
             assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities", "shardingsphere://databases")));
             assertThat(actual.get("next_actions"), is(List.of()));
@@ -95,10 +95,14 @@ class RuntimeStatusHandlerTest {
         assertTrue(actualSafeCategories.contains("invalid_configuration"));
         assertTrue(actualSafeCategories.contains("database_unavailable"));
         assertTrue(actualSafeCategories.contains("connection_failed"));
+        assertTrue(actualSafeCategories.contains("database_not_visible"));
         List<?> actualOperatorNextActions = (List<?>) actualDiagnostics.get("operator_next_actions");
-        assertThat(actualOperatorNextActions.size(), is(7));
-        assertThat(((Map<?, ?>) actualOperatorNextActions.get(4)).get("category"), is("invalid_configuration"));
-        assertTrue((Boolean) ((Map<?, ?>) actualOperatorNextActions.get(4)).get("secret_safe"));
+        assertThat(actualOperatorNextActions.size(), is(8));
+        Map<?, ?> actualInvalidConfigurationAction = (Map<?, ?>) actualOperatorNextActions.get(4);
+        assertThat(actualInvalidConfigurationAction.get("category"), is("invalid_configuration"));
+        assertThat(actualInvalidConfigurationAction.get("operator_action"), is("Fix runtimeDatabases JDBC URL, driver, or binding configuration."));
+        assertTrue((Boolean) actualInvalidConfigurationAction.get("secret_safe"));
+        assertThat(((Map<?, ?>) actualOperatorNextActions.get(7)).get("category"), is("database_not_visible"));
     }
     
     private void assertRuntimeProtection(final Map<String, Object> payload) {

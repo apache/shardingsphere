@@ -59,7 +59,7 @@ class WorkflowPlanningSupportTest {
         assertFalse(actual);
         assertThat(snapshot.getStatus(), is("clarifying"));
         assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please provide logical database first.")));
-        assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
+        assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
     }
     
     @Test
@@ -72,35 +72,7 @@ class WorkflowPlanningSupportTest {
         assertFalse(actual);
         assertThat(snapshot.getStatus(), is("clarifying"));
         assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please provide logical database first.")));
-        assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
-    }
-    
-    @Test
-    void assertEnsureRulePlanningContextDoesNotReadMetadata() {
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setTable("orders");
-        request.setColumn("phone");
-        boolean actual = planningSupport.ensureRulePlanningContext(request, clarifiedIntent, snapshot);
-        assertTrue(actual);
-        assertTrue(clarifiedIntent.getClarificationMessages().isEmpty());
-        assertTrue(snapshot.getIssues().isEmpty());
-    }
-    
-    @Test
-    void assertEnsureRulePlanningContextRejectsMissingTableAndColumn() {
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        boolean actual = planningSupport.ensureRulePlanningContext(request, clarifiedIntent, snapshot);
-        assertFalse(actual);
-        assertThat(snapshot.getStatus(), is("clarifying"));
-        assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please specify target table.", "Please specify target column.")));
-        assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.TABLE_REQUIRED));
-        assertThat(snapshot.getIssues().get(1).getCode(), is(WorkflowIssueCode.COLUMN_REQUIRED));
+        assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
     }
     
     @Test
@@ -114,7 +86,7 @@ class WorkflowPlanningSupportTest {
         boolean actual = planningSupport.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), request, clarifiedIntent, snapshot);
         assertFalse(actual);
         assertThat(snapshot.getStatus(), is("failed"));
-        assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER));
+        assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER));
     }
     
     @Test
@@ -247,7 +219,7 @@ class WorkflowPlanningSupportTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         WorkflowRequest request = new WorkflowRequest();
-        request.setExecutionMode("");
+        request.setExecutionMode("review-then-execute");
         request.setNaturalLanguageIntent("export reviewable artifacts for manual execution outside MCP");
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         planningSupport.prepareSnapshot(snapshot, WorkflowKind.valueOf("mask.rule"), request, null, clarifiedIntent, "summary", List.of("step-1"), List.of("rules"));
@@ -266,7 +238,7 @@ class WorkflowPlanningSupportTest {
         assertThat(actual, is(expectedResult));
         assertThat(snapshot.getIssues().isEmpty(), is(null == expectedIssueCode));
         if (null != expectedIssueCode) {
-            assertThat(snapshot.getIssues().get(0).getCode(), is(expectedIssueCode));
+            assertThat(snapshot.getIssues().getFirst().getCode(), is(expectedIssueCode));
         }
     }
     
@@ -293,7 +265,7 @@ class WorkflowPlanningSupportTest {
         assertThat(request.getPrimaryAlgorithmProperties().get("mask-char"), is("*"));
         assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please provide property `from-x`.")));
         assertThat(snapshot.getPropertyRequirements().size(), is(2));
-        assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
+        assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
     }
     
     private static Stream<Arguments> getEnsureLifecycleStateCases() {

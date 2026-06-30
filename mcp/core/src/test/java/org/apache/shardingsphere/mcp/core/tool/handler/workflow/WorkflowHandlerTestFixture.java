@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
@@ -77,6 +78,12 @@ final class WorkflowHandlerTestFixture {
     static WorkflowRuntimeDefinition createDefinition(final String workflowKind, final MCPWorkflowValidationHandler validationHandler,
                                                       final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler) {
         return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), validationHandler, applySynchronizationHandler);
+    }
+    
+    static WorkflowRuntimeDefinition createDefinition(final String workflowKind, final MCPWorkflowValidationHandler validationHandler,
+                                                      final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler,
+                                                      final MCPWorkflowApplyArtifactValidator applyArtifactValidator) {
+        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), validationHandler, applySynchronizationHandler, applyArtifactValidator);
     }
     
     record Context(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,

@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -72,7 +71,7 @@ public final class SQLE2ETestCaseAssertion {
         }
         Collection<SQLValue> result = new LinkedList<>();
         int count = 0;
-        for (String each : Splitter.on(",").trimResults().splitToList(parameters)) {
+        for (String each : Splitter.on(",").splitToList(parameters)) {
             List<String> parameterPair = parse(each);
             result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
         }
@@ -80,19 +79,14 @@ public final class SQLE2ETestCaseAssertion {
     }
     
     private List<String> parse(final String param) {
-        List<String> result = Splitter.on(":").trimResults().splitToList(param);
-        int size = result.size();
-        if (size <= 2) {
-            return result;
-        }
-        return parseComplex(param);
-    }
-    
-    private List<String> parseComplex(final String param) {
-        List<String> result = new ArrayList<>(2);
         int index = param.lastIndexOf(":");
-        result.add(param.substring(0, index));
-        result.add(param.substring(index + 1));
+        if (index < 0) {
+            return Splitter.on(":").trimResults().splitToList(param);
+        }
+        List<String> result = new LinkedList<>();
+        String value = param.substring(0, index);
+        result.add(value.trim().isEmpty() ? value : value.trim());
+        result.add(param.substring(index + 1).trim());
         return result;
     }
 }

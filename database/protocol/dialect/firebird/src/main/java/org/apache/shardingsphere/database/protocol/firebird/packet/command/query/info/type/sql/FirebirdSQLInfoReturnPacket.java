@@ -34,7 +34,21 @@ import java.util.List;
 @Getter
 public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     
+    private static final int REQ_SELECT_COUNT = 13;
+    
+    private static final int REQ_INSERT_COUNT = 14;
+    
+    private static final int REQ_UPDATE_COUNT = 15;
+    
+    private static final int REQ_DELETE_COUNT = 16;
+    
+    private static final int COUNT_VALUE_LENGTH = 4;
+    
+    private static final int RECORDS_CLUSTER_LENGTH = 4 * (1 + 2 + COUNT_VALUE_LENGTH);
+    
     private final List<FirebirdInfoPacketType> infoItems;
+    
+    private final FirebirdSQLRecordsInfo recordsInfo;
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
@@ -51,7 +65,6 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
         // TODO implement other request types handle
         switch (type) {
             case RECORDS:
-                // TODO handle actual update count
                 processRecords(payload);
                 return;
             default:
@@ -60,20 +73,17 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     }
     
     private void processRecords(final FirebirdPacketPayload payload) {
-        // TODO handle actual update count
         payload.writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
-        payload.writeInt2LE(0);
-        payload.writeInt1(FirebirdSQLInfoReturnValue.SELECT.getCode());
-        payload.writeInt2LE(4);
-        payload.writeInt4LE(0);
-        payload.writeInt1(FirebirdSQLInfoReturnValue.INSERT.getCode());
-        payload.writeInt2LE(4);
-        payload.writeInt4LE(0);
-        payload.writeInt1(FirebirdSQLInfoReturnValue.UPDATE.getCode());
-        payload.writeInt2LE(4);
-        payload.writeInt4LE(0);
-        payload.writeInt1(FirebirdSQLInfoReturnValue.DELETE.getCode());
-        payload.writeInt2LE(4);
-        payload.writeInt4LE(0);
+        payload.writeInt2LE(RECORDS_CLUSTER_LENGTH);
+        writeCount(payload, REQ_SELECT_COUNT, 0L);
+        writeCount(payload, REQ_INSERT_COUNT, recordsInfo.getInsertCount());
+        writeCount(payload, REQ_UPDATE_COUNT, recordsInfo.getUpdateCount());
+        writeCount(payload, REQ_DELETE_COUNT, recordsInfo.getDeleteCount());
+    }
+    
+    private void writeCount(final FirebirdPacketPayload payload, final int countType, final long count) {
+        payload.writeInt1(countType);
+        payload.writeInt2LE(COUNT_VALUE_LENGTH);
+        payload.writeInt4LE((int) count);
     }
 }

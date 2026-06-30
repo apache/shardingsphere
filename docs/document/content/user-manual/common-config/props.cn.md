@@ -6,19 +6,21 @@ chapter = true
 
 ## 背景信息
 
-Apache ShardingSphere 提供属性配置的方式配置系统级配置。
+Apache ShardingSphere 提供属性配置来设置系统级行为。
 
 ## 参数解释
 
-| *名称*                               | *数据类型*  | *说明*                                                                                                                                | *默认值*    |
-|------------------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------|----------|
-| sql-show (?)                       | boolean | 是否在日志中打印 SQL<br /> 打印 SQL 可以帮助开发者快速定位系统问题。日志内容包含：逻辑 SQL，真实 SQL 和 SQL 解析结果。<br /> 如果开启配置，日志将使用 Topic `org.apache.shardingsphere.sql`，日志级别是 INFO | false    |
-| sql-simple (?)                     | boolean | 是否在日志中打印简单风格的 SQL                                                                                                                   | false    |
-| kernel-executor-size (?)           | int     | 用于设置任务处理线程池的大小<br />每个 ShardingSphereDataSource 使用一个独立的线程池，同一个 JVM 的不同数据源不共享线程池                                                     | infinite |
-| max-connections-size-per-query (?) | int     | 一次查询请求在每个数据库实例中所能使用的最大连接数                                                                                                           | 1        |
-| max-union-size-per-datasource (?)  | int     | 每个数据源允许合并的最大 UNION ALL 数量。当路由到同一数据源的路由单元数量超过此值时，将分批合并以恢复并行执行能力                                                                       | Integer.MAX_VALUE |
-| check-table-metadata-enabled (?)   | boolean | 在程序启动和更新时，是否检查分片元数据的结构一致性                                                                                                           | false    |
-| load-table-metadata-batch-size (?) | int     | 在程序启动或刷新元数据时，单个批次加载表元数据的数量                                                                                                          | 1000     |
+| *名称*                                                | *数据类型*  | *说明*                                                                                                                         | *默认值*           |
+|-----------------------------------------------------|---------|------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| sql-show (?)                                        | boolean | 是否在日志中打印 SQL。SQL 日志内容包含：逻辑 SQL、真实 SQL 和 SQL 解析结果。如果开启配置，日志将使用 Topic `org.apache.shardingsphere.sql`，日志级别为 INFO。 | false           |
+| sql-simple (?)                                      | boolean | 是否在日志中打印简单风格的 SQL。                                                                                                          | false           |
+| kernel-executor-size (?)                            | int     | SQL 执行工作线程池大小。每个 ShardingSphereDataSource 使用独立线程池，同一个 JVM 的不同数据源不共享线程池。`0` 表示不限制。                              | 0               |
+| max-connections-size-per-query (?)                  | int     | 一次查询请求在每个数据库实例中所能使用的最大连接数。                                                                                                  | 1               |
+| max-union-size-per-datasource (?)                   | int     | 每个数据源允许合并的最大 UNION ALL 数量。当路由到同一数据源的路由单元数量超过此值时，将分批合并以恢复并行执行能力。                                      | Integer.MAX_VALUE |
+| check-table-metadata-enabled (?)                    | boolean | 应用启动或元数据更新时，是否校验表元数据一致性。                                                                                                    | false           |
+| load-table-metadata-batch-size (?)                  | int     | 应用启动或刷新表元数据时，单个批次加载表元数据的数量。                                                                                                 | 1000            |
+| metadata-identifier-case-sensitivity (?)            | String  | 元数据标识符大小写敏感策略。可选值为 `AUTO`、`SENSITIVE` 和 `INSENSITIVE`。                                                                      | AUTO            |
+| groovy-inline-expression-parsing-cache-max-size (?) | long    | Groovy 行表达式解析缓存的最大容量。                                                                                                      | 1000            |
 
 ## 操作步骤
 

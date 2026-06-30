@@ -15,11 +15,13 @@ private ShardingRuleConfiguration createShardingRuleConfiguration() {
     ShardingRuleConfiguration result = new ShardingRuleConfiguration();
     result.getTables().add(getOrderTableRuleConfiguration());
     result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
-    result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
+    result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
     Properties props = new Properties();
     props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
+    Properties tableShardingProps = new Properties();
+    tableShardingProps.setProperty("sharding-count", "2");
     result.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", props));
-    result.getShardingAlgorithms().put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
+    result.getShardingAlgorithms().put("hash_mod", new AlgorithmConfiguration("HASH_MOD", tableShardingProps));
     result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
     result.getKeyGenerateStrategies().put("t_order_order_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "order_id"));
     return result;
@@ -32,12 +34,12 @@ private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
 
 // 读写分离配置
 private static ReadwriteSplittingRuleConfiguration createReadwriteSplittingConfiguration() {
-    ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration("replica_ds_0", Arrays.asList("readwrite_ds_0"), true), "");
-    ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration("replica_ds_1", Arrays.asList("readwrite_ds_1"), true), "");
-    Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-    dataSources.add(dataSourceRuleConfiguration1);
-    dataSources.add(dataSourceRuleConfiguration2);
-    return new ReadwriteSplittingRuleConfiguration(dataSources, Collections.emptyMap());
+    ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfiguration1 = new ReadwriteSplittingDataSourceGroupRuleConfiguration("replica_ds_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null);
+    ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfiguration2 = new ReadwriteSplittingDataSourceGroupRuleConfiguration("replica_ds_1", "write_ds_1", Arrays.asList("read_ds_2", "read_ds_3"), null);
+    Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = new LinkedList<>();
+    dataSourceGroups.add(dataSourceGroupConfiguration1);
+    dataSourceGroups.add(dataSourceGroupConfiguration2);
+    return new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
 }
 
 // 数据加密配置
@@ -47,13 +49,12 @@ private static EncryptRuleConfiguration createEncryptRuleConfiguration() {
     props.setProperty("digest-algorithm-name", "SHA-1");
     EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", new EncryptColumnItemRuleConfiguration("username", "name_encryptor"));
     EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd", "pwd_encryptor"));
-    columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_encryptor"));
-    columnConfigTest.setLikeQuery(new EncryptColumnItemRuleConfiguration("like_pwd", "like_encryptor"));
+    columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_assisted_encryptor"));
     EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
     Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
     encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
-    encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
-    encryptAlgorithmConfigs.put("like_encryptor", new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
+    encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("AES", props));
+    encryptAlgorithmConfigs.put("pwd_assisted_encryptor", new AlgorithmConfiguration("MD5", new Properties()));
     return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
 }
 ```

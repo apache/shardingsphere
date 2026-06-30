@@ -42,7 +42,7 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 - Narrows scope by `database`, `schema`, `query`, and `object_types`.
 - `object_types` supports `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence`.
 
-`database_gateway_validate_proxy_connectivity`
+`database_gateway_validate_runtime_database`
 
 - Validates a configured runtime database before formal onboarding.
 - Required input is `database`.
@@ -60,7 +60,7 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 `database_gateway_execute_update`
 
 - Previews or executes one supported side-effecting SQL statement.
-- `execution_mode=preview` only classifies the SQL and previews the side-effect scope.
+- `execution_mode=preview` only classifies the SQL and previews the side-effect scope; it is not a database dry run.
 - `execution_mode=execute` executes the SQL after review.
 - Multiple statements and banned commands are rejected.
 

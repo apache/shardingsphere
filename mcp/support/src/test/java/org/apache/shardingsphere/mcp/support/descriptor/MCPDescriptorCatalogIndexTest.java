@@ -101,6 +101,8 @@ class MCPDescriptorCatalogIndexTest {
     void assertGetCompletionTargetDescriptors() {
         Collection<MCPCompletionTargetDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getCompletionTargetDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "prompt".equals(each.getReferenceType()) && "inspect_metadata".equals(each.getReference())));
+        assertTrue(actualDescriptors.stream().filter(each -> "resource".equals(each.getReferenceType()))
+                .allMatch(each -> MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(each.getReference()).isTemplated()));
     }
     
     @Test
@@ -129,10 +131,6 @@ class MCPDescriptorCatalogIndexTest {
         assertThat(actual.get("supportedResources"), is(List.of("shardingsphere://workflows/{plan_id}")));
         assertThat(actual.get("supportedTools"), is(List.of("database_gateway_apply_workflow")));
         assertThat(actual.get("supportedStatementClasses"), is(List.of("SELECT")));
-    }
-    
-    @Test
-    void assertGetDescriptorCatalogFingerprint() {
-        assertFalse(MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint().isEmpty());
+        assertFalse(actual.containsKey("fingerprints"));
     }
 }

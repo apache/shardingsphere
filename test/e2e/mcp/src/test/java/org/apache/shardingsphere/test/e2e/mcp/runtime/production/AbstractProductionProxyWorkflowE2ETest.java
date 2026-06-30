@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyEncryptWorkflowRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyEncryptWorkflowRuntimeTestSupport.ProxyEncryptWorkflowRuntimeFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -33,15 +37,33 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProductionRuntimeE2ETest {
     
     private ProxyEncryptWorkflowRuntimeFixture runtimeFixture;
     
+    private ProxyEncryptWorkflowRuntimeFixture sharedRuntimeFixture;
+    
+    private boolean sharedRuntimeFixtureSelected;
+    
     @AfterEach
     void tearDownFixture() {
+        if (sharedRuntimeFixtureSelected) {
+            runtimeFixture = null;
+            sharedRuntimeFixtureSelected = false;
+            return;
+        }
         if (null != runtimeFixture) {
             runtimeFixture.close();
             runtimeFixture = null;
+        }
+    }
+    
+    @AfterAll
+    void tearDownSharedFixture() {
+        if (null != sharedRuntimeFixture) {
+            sharedRuntimeFixture.close();
+            sharedRuntimeFixture = null;
         }
     }
     
@@ -55,10 +77,21 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
         Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(),
                 () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the Proxy-backed workflow E2E tests."));
         try {
+            if (sharedRuntimeFixtureSelected) {
+                prepareSharedRuntimeFixture();
+                return;
+            }
             runtimeFixture = ProxyEncryptWorkflowRuntimeTestSupport.createFixture();
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
+    }
+    
+    private void prepareSharedRuntimeFixture() throws SQLException {
+        if (null == sharedRuntimeFixture) {
+            sharedRuntimeFixture = ProxyEncryptWorkflowRuntimeTestSupport.createFixture();
+        }
+        runtimeFixture = sharedRuntimeFixture;
     }
     
     @Override
@@ -70,10 +103,8 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
         return runtimeFixture.getLogicalDatabaseName();
     }
     
-    protected final int countPhysicalColumn(final String columnName) throws SQLException {
-        return MySQLRuntimeTestSupport.querySingleInt(runtimeFixture.getStorageContainer(), String.format(
-                "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = '%s' AND table_name = 'orders' AND column_name = '%s'",
-                runtimeFixture.getPhysicalDatabaseName(), columnName));
+    protected final void useSharedReadOnlyRuntimeFixture() {
+        sharedRuntimeFixtureSelected = true;
     }
     
     protected final void assertValidationPassed(final Map<String, Object> actualValidationResponse) {
@@ -83,13 +114,26 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
         assertThat(actualValidationResponse.toString(), getMapList(actualValidationResponse.get("mismatches")).size(), is(0));
     }
     
-    protected final void assertValidationFailed(final Map<String, Object> actualValidationResponse) {
-        assertThat(actualValidationResponse.toString(), String.valueOf(actualValidationResponse.get("status")), is("failed"));
-        assertThat(actualValidationResponse.toString(), String.valueOf(actualValidationResponse.get("overall_status")), is("failed"));
-    }
-    
     protected final void assertApplyCompleted(final Map<String, Object> actualApplyResponse) {
         assertThat(actualApplyResponse.toString(), String.valueOf(actualApplyResponse.get("status")), is("completed"));
+    }
+    
+    protected final Map<String, Object> applyReviewedWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
+        return interactionClient.call(WorkflowToolDescriptors.APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, getApprovedSteps(previewWorkflow(interactionClient, planId))));
+    }
+    
+    protected final Map<String, Object> previewWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
+        Map<String, Object> result = interactionClient.call(WorkflowToolDescriptors.APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
+        assertThat(String.valueOf(result.get("status")), is("preview"));
+        return result;
+    }
+    
+    protected final List<String> getApprovedSteps(final Map<String, Object> previewResponse) {
+        return getMapList(previewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList();
+    }
+    
+    protected final Map<String, Object> createReviewThenExecuteArguments(final String planId, final List<String> approvedSteps) {
+        return Map.of("plan_id", planId, "execution_mode", "review-then-execute", "approved_steps", approvedSteps);
     }
     
     protected final List<String> getIssueCodes(final Map<String, Object> payload) {

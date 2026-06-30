@@ -64,7 +64,7 @@ class MCPInteractionPayloadsTest {
     @Test
     void assertGetResultContents() {
         Map<String, Object> payload = Map.of("result", Map.of("content", List.of(Map.of("text", "{\"status\":\"ok\"}"))));
-        assertThat(MCPInteractionPayloads.getResultContents(payload).get(0).get("text"), is("{\"status\":\"ok\"}"));
+        assertThat(MCPInteractionPayloads.getResultContents(payload).getFirst().get("text"), is("{\"status\":\"ok\"}"));
     }
     
     @Test
@@ -75,7 +75,7 @@ class MCPInteractionPayloadsTest {
     @Test
     void assertGetListResourcesPayload() {
         Map<String, Object> actualPayload = MCPInteractionPayloads.getListResourcesPayload(Map.of("result", Map.of("resources", List.of(Map.of("uri", "shardingsphere://capabilities")))));
-        assertThat(MCPInteractionPayloads.castToList(actualPayload.get("resources")).get(0).get("uri"), is("shardingsphere://capabilities"));
+        assertThat(MCPInteractionPayloads.castToList(actualPayload.get("resources")).getFirst().get("uri"), is("shardingsphere://capabilities"));
     }
     
     @Test
@@ -91,14 +91,22 @@ class MCPInteractionPayloadsTest {
     }
     
     @Test
-    void assertGetStructuredContentFromTextContent() {
-        Map<String, Object> payload = Map.of("result", Map.of("content", List.of(Map.of("text", "{\"status\":\"ok\"}"))));
+    void assertGetStructuredContentPrefersStructuredContent() {
+        Map<String, Object> payload = Map.of("result", Map.of(
+                "structuredContent", Map.of("status", "ok"),
+                "content", List.of(Map.of("type", "text", "text", "{\"status\":\"fallback\"}"))));
         assertThat(MCPInteractionPayloads.getStructuredContent(payload).get("status"), is("ok"));
     }
     
     @Test
+    void assertGetStructuredContentRejectsTextContentFallback() {
+        Map<String, Object> payload = Map.of("result", Map.of("content", List.of(Map.of("text", "{\"status\":\"ok\"}"))));
+        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getStructuredContent(payload));
+    }
+    
+    @Test
     void assertGetStructuredContentWithoutContent() {
-        assertTrue(MCPInteractionPayloads.getStructuredContent(Map.of("result", Map.of())).isEmpty());
+        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getStructuredContent(Map.of("result", Map.of())));
     }
     
     @Test
@@ -130,6 +138,6 @@ class MCPInteractionPayloadsTest {
     
     @Test
     void assertCastToList() {
-        assertThat(MCPInteractionPayloads.castToList(List.of(Map.of("name", "orders"))).get(0).get("name"), is("orders"));
+        assertThat(MCPInteractionPayloads.castToList(List.of(Map.of("name", "orders"))).getFirst().get("name"), is("orders"));
     }
 }

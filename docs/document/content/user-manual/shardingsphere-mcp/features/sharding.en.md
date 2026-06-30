@@ -22,8 +22,11 @@ It generates sharding rule DistSQL only. It does not generate physical DDL, inde
 ## Review checklist
 
 - Confirm that table rule plans use only sharding rule DistSQL and logical identifiers.
+- Review sharding `algorithm_recommendations` and `property_requirements`; for example, inline algorithms require `algorithm-expression`, and MOD-style algorithms require `sharding-count`.
 - Confirm that key generator and key generate strategy plans keep generator properties separate from sharding algorithm properties.
+- Review key-generator recommendations separately from sharding algorithm recommendations. Snowflake properties are optional unless the deployment requires fixed values.
 - Confirm cleanup plans include unused-state and used-by checks.
+- Confirm the returned `plan_id`, `resources_to_read`, `next_actions`, and `distsql_artifacts` before applying the workflow.
 - Preview the workflow before execution and validate Proxy-visible rule state after execution.
 
 For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).

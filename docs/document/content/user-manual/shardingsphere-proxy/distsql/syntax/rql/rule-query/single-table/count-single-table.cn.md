@@ -1,5 +1,5 @@
 +++
-title = "COUNT SINGLE_TABLE RULE"
+title = "COUNT SINGLE TABLE"
 weight = 3
 +++
 
@@ -31,10 +31,11 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列        | 说明         |
-|----------|------------|
-| database | 单表所在的数据库名称 |
-| count    | 单表个数       |
+| 列         | 说明          |
+|-----------|---------------|
+| rule_name | 单表规则名称    |
+| database  | 单表所在的数据库名称 |
+| count     | 单表个数        |
 
 ### 示例
 
@@ -46,11 +47,11 @@ COUNT SINGLE TABLE
 
 ```sql
 mysql> COUNT SINGLE TABLE;
-+----------+--------+
-| database | count  |
-+----------+--------+
-| ds       | 2      |
-+----------+--------+
++-----------+-------------+-------+
+| rule_name | database    | count |
++-----------+-------------+-------+
+| single    | sharding_db | 2     |
++-----------+-------------+-------+
 1 row in set (0.02 sec)
 ```
 
@@ -61,4 +62,3 @@ mysql> COUNT SINGLE TABLE;
 ### 相关链接
 
 - [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-

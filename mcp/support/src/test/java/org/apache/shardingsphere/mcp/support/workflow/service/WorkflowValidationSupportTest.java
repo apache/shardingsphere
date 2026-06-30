@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
@@ -29,23 +25,16 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class WorkflowValidationSupportTest {
     
@@ -61,7 +50,6 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("status"), is("failed"));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
         assertThat(actualResult.get("recovery_guidance"), is("Continue the workflow from the same session that created the plan."));
-        assertFalse(actualResult.containsKey("requires_user_approval"));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
     
@@ -99,75 +87,6 @@ class WorkflowValidationSupportTest {
     }
     
     @Test
-    void assertValidateLogicalMetadataWhenColumnExists() {
-        WorkflowContextSnapshot snapshot = createSnapshot();
-        ValidationReport validationReport = new ValidationReport();
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone"))
-                .thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
-        ValidationSection actualValidationSection = validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, validationReport);
-        assertThat(actualValidationSection.getStatus(), is("passed"));
-        assertThat(validationReport.getMismatches(), is(List.of()));
-    }
-    
-    @Test
-    void assertValidateLogicalMetadataNormalizesDelimitedIdentifiers() {
-        WorkflowContextSnapshot snapshot = createSnapshot();
-        snapshot.getRequest().setDatabase("`logic_db`");
-        snapshot.getRequest().setSchema("`public`");
-        snapshot.getRequest().setTable("`orders`");
-        snapshot.getRequest().setColumn("`phone`");
-        ValidationReport validationReport = new ValidationReport();
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone"))
-                .thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
-        ValidationSection actualValidationSection = validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, validationReport);
-        assertThat(actualValidationSection.getStatus(), is("passed"));
-        assertThat(validationReport.getMismatches(), is(List.of()));
-    }
-    
-    @Test
-    void assertValidateLogicalMetadataCanonicalizesPostgreSQLUnquotedIdentifiers() {
-        WorkflowContextSnapshot snapshot = createSnapshot();
-        snapshot.getRequest().setSchema("Public");
-        snapshot.getRequest().setTable("Orders");
-        snapshot.getRequest().setColumn("Phone");
-        ValidationReport validationReport = new ValidationReport();
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata("PostgreSQL")));
-        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone"))
-                .thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
-        ValidationSection actualValidationSection = validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, validationReport);
-        assertThat(actualValidationSection.getStatus(), is("passed"));
-        assertThat(validationReport.getMismatches(), is(List.of()));
-    }
-    
-    @Test
-    void assertValidateLogicalMetadataPreservesPostgreSQLDelimitedIdentifiers() {
-        WorkflowContextSnapshot snapshot = createSnapshot();
-        snapshot.getRequest().setSchema("\"Public\"");
-        snapshot.getRequest().setTable("\"Orders\"");
-        snapshot.getRequest().setColumn("\"Phone\"");
-        ValidationReport validationReport = new ValidationReport();
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata("PostgreSQL")));
-        when(metadataQueryFacade.queryTableColumn("logic_db", "Public", "Orders", "Phone"))
-                .thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "Public", "Orders", "", "Phone")));
-        ValidationSection actualValidationSection = validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, validationReport);
-        assertThat(actualValidationSection.getStatus(), is("passed"));
-        assertThat(validationReport.getMismatches(), is(List.of()));
-    }
-    
-    @Test
-    void assertValidateLogicalMetadataWhenColumnMissing() {
-        WorkflowContextSnapshot snapshot = createSnapshot();
-        ValidationReport validationReport = new ValidationReport();
-        ValidationSection actualValidationSection = validationSupport.validateLogicalMetadata(snapshot, mock(MCPMetadataQueryFacade.class), validationReport);
-        assertThat(actualValidationSection.getStatus(), is("failed"));
-        assertThat(((Map<?, ?>) validationReport.getMismatches().get(0)).get("code"), is(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH));
-    }
-    
-    @Test
     void assertCreateProjectionValidationSql() {
         assertThat(validationSupport.createProjectionValidationSql(createSnapshot()), is("SELECT phone FROM orders"));
     }
@@ -189,31 +108,6 @@ class WorkflowValidationSupportTest {
     }
     
     @Test
-    void assertValidateSqlExecutability() {
-        ValidationReport validationReport = new ValidationReport();
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        ValidationSection actualValidationSection = validationSupport.validateSqlExecutability(executionFacade, "session-1", createSnapshot(), validationReport,
-                List.of("SELECT phone FROM orders", "SELECT phone FROM orders WHERE phone = 'sample'"), "Validation SQLs are executable from the logical view.");
-        assertThat(actualValidationSection.getStatus(), is("passed"));
-        assertThat(actualValidationSection.getEvidence(), is(List.of("SELECT phone FROM orders", "SELECT phone FROM orders WHERE phone = 'sample'")));
-        assertThat(validationReport.getMismatches(), is(List.of()));
-        verify(executionFacade, times(2)).execute(any());
-    }
-    
-    @Test
-    void assertValidateSqlExecutabilityWhenExecutionFails() {
-        ValidationReport validationReport = new ValidationReport();
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenThrow(new IllegalStateException("sql failed"));
-        ValidationSection actualValidationSection = validationSupport.validateSqlExecutability(executionFacade, "session-1", createSnapshot(), validationReport,
-                List.of("SELECT phone FROM orders"), "Validation SQL is executable from the logical view.");
-        assertThat(actualValidationSection.getStatus(), is("failed"));
-        assertThat(validationReport.getMismatches().size(), is(1));
-        assertThat(validationReport.getMismatches().get(0).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
-    }
-    
-    @Test
     void assertFinalizeValidationMarksValidatedStatus() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
@@ -230,11 +124,8 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("status"), is("validated"));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
         assertThat(actualResult.get("recovery_guidance"), is(""));
-        assertFalse(actualResult.containsKey("recommended_recovery"));
-        assertFalse(actualResult.containsKey("recommended_next_tool"));
         List<?> actualNextActions = (List<?>) actualResult.get("next_actions");
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("terminal"));
-        assertFalse(((Map<?, ?>) actualNextActions.get(0)).containsKey("requires_user_approval"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("validated"));
         assertThat(workflowSessionContext.getRequired("plan-1").getInteractionPlan().getCurrentStep(), is("validated"));
     }
@@ -269,7 +160,6 @@ class WorkflowValidationSupportTest {
         workflowSessionContext.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         List<?> actualNextActions = (List<?>) actualResult.get("next_actions");
-        assertFalse(actualResult.containsKey("recommended_next_tool"));
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("tool_name"), is("database_gateway_plan_encrypt_rule"));
     }
     
@@ -286,10 +176,8 @@ class WorkflowValidationSupportTest {
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0);
         assertThat(actualResult.get("recovery_guidance"), is("Manual-only artifacts are exported but not executed by MCP. Execute them manually, then run database_gateway_validate_workflow again."));
-        assertFalse(actualResult.containsKey("requires_user_approval"));
         assertThat(actualNextAction.get("type"), is("ask_user"));
         assertThat(actualNextAction.get("required_inputs"), is(List.of("manual_artifacts_executed")));
-        assertFalse(actualNextAction.containsKey("requires_user_approval"));
         assertFalse(actualNextAction.containsKey("tool_name"));
     }
     
@@ -302,7 +190,6 @@ class WorkflowValidationSupportTest {
         assertThat(actualMismatch.get("actual"), is("actual"));
         assertThat(actualMismatch.get("impact"), is("impact"));
         assertThat(actualMismatch.get("remediation"), is("fix it"));
-        assertFalse(actualMismatch.containsKey("suggested_next_action"));
     }
     
     private WorkflowContextSnapshot createSnapshot() {
@@ -316,9 +203,5 @@ class WorkflowValidationSupportTest {
         request.setColumn("phone");
         result.setRequest(request);
         return result;
-    }
-    
-    private MCPDatabaseMetadata createDatabaseMetadata(final String databaseType) {
-        return new MCPDatabaseMetadata("logic_db", databaseType, "8.0", List.of());
     }
 }

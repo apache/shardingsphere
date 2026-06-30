@@ -61,8 +61,8 @@ class ShadowToolHandlerTest {
         WorkflowContextFixture fixture = createWorkflowContextFixture();
         MCPResponse actual = new PlanShadowRuleToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
                 "database", "logic_db",
-                "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order"),
-                "user_overrides", Map.of("algorithm_type", "SQL_HINT"))));
+                "algorithm_type", "SQL_HINT",
+                "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order"))));
         assertFalse(actual.toPayload().containsKey("ddl_artifacts"));
         ArgumentCaptor<ShadowRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowRuleWorkflowRequest.class);
         verify(planningService).planRule(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
@@ -115,7 +115,7 @@ class ShadowToolHandlerTest {
         clarifiedIntent.setOperationType("create");
         result.setClarifiedIntent(clarifiedIntent);
         result.setInteractionPlan(InteractionPlan.create("plan-1", request, "Shadow workflow plan.", List.of("review"), List.of("rules")));
-        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE SHADOW RULE shadow_rule(SOURCE=demo_ds, SHADOW=demo_ds_shadow, t_order(TYPE(NAME='sql_hint')))"));
+        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE SHADOW RULE `shadow_rule`(SOURCE=`demo_ds`, SHADOW=`demo_ds_shadow`, `t_order`(TYPE(NAME='sql_hint')))"));
         return result;
     }
     
