@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyEncryptWorkflowRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyEncryptWorkflowRuntimeTestSupport.ProxyEncryptWorkflowRuntimeFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
@@ -114,6 +116,24 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     protected final void assertApplyCompleted(final Map<String, Object> actualApplyResponse) {
         assertThat(actualApplyResponse.toString(), String.valueOf(actualApplyResponse.get("status")), is("completed"));
+    }
+    
+    protected final Map<String, Object> applyReviewedWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
+        return interactionClient.call(WorkflowToolDescriptors.APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, getApprovedSteps(previewWorkflow(interactionClient, planId))));
+    }
+    
+    protected final Map<String, Object> previewWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
+        Map<String, Object> result = interactionClient.call(WorkflowToolDescriptors.APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
+        assertThat(String.valueOf(result.get("status")), is("preview"));
+        return result;
+    }
+    
+    protected final List<String> getApprovedSteps(final Map<String, Object> previewResponse) {
+        return getMapList(previewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList();
+    }
+    
+    protected final Map<String, Object> createReviewThenExecuteArguments(final String planId, final List<String> approvedSteps) {
+        return Map.of("plan_id", planId, "execution_mode", "review-then-execute", "approved_steps", approvedSteps);
     }
     
     protected final List<String> getIssueCodes(final Map<String, Object> payload) {
