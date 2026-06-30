@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMe
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -64,7 +63,7 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         Map<String, Object> inferredContextArguments = applyContextDefaults(handlerContext, requestContext.getArgumentName(), contextArguments);
         Collection<String> missingContextArguments = createMissingContextArguments(requestContext.getArgumentName(), contextArguments);
         String guidanceResourceUri = createNearestResourceUri(
-                missingContextArguments.isEmpty() ? requestContext.getArgumentName() : new ArrayList<>(missingContextArguments).get(0), contextArguments);
+                missingContextArguments.isEmpty() ? requestContext.getArgumentName() : missingContextArguments.iterator().next(), contextArguments);
         return new MCPCompletionProviderResult(
                 completeMetadata(handlerContext, requestContext.getArgumentName(), contextArguments), inferredContextArguments, missingContextArguments, guidanceResourceUri);
     }
