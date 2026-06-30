@@ -249,12 +249,11 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
                             "cipher_column_name", "status_cipher", "primary_algorithm_properties", Map.of("aes-key-value", "approved-secret")));
             assertThat(String.valueOf(actualPlannedResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlannedResponse.get("plan_id"));
-            Map<String, Object> actualPreviewResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
-            assertThat(String.valueOf(actualPreviewResponse.get("status")), is("preview"));
+            Map<String, Object> actualPreviewResponse = previewWorkflow(interactionClient, planId);
             List<Map<String, Object>> actualPreviewArtifacts = getMapList(actualPreviewResponse.get("preview_artifacts"));
             assertThat(actualPreviewArtifacts.size(), is(1));
             assertThat(String.valueOf(actualPreviewArtifacts.getFirst().get("approval_step")), is("rule_distsql"));
-            Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, List.of("rule_distsql")));
+            Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, List.of("rule_distsql")));
             assertThat(String.valueOf(actualRuleApplyResponse.get("status")), is("completed"));
             assertThat(getStringList(actualRuleApplyResponse.get("executed_ddl")).size(), is(0));
             assertThat(getStringList(actualRuleApplyResponse.get("executed_distsql")).size(), is(1));
@@ -344,22 +343,12 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
         assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
     }
     
-    private Map<String, Object> applyReviewedWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
-        return applyReviewedWorkflow(interactionClient, planId, "");
-    }
-    
     private Map<String, Object> applyReviewedWorkflow(final MCPInteractionClient interactionClient, final String planId, final String secretValue) throws IOException, InterruptedException {
-        Map<String, Object> previewResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
-        assertThat(String.valueOf(previewResponse.get("status")), is("preview"));
+        Map<String, Object> previewResponse = previewWorkflow(interactionClient, planId);
         assertSecretRedacted(previewResponse, secretValue);
-        List<String> approvedSteps = getMapList(previewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList();
-        Map<String, Object> result = interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, approvedSteps));
+        Map<String, Object> result = interactionClient.call(APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, getApprovedSteps(previewResponse)));
         assertSecretRedacted(result, secretValue);
         return result;
-    }
-    
-    private Map<String, Object> createApplyArguments(final String planId, final List<String> approvedSteps) {
-        return Map.of("plan_id", planId, "execution_mode", "review-then-execute", "approved_steps", approvedSteps);
     }
     
     private Map<String, Object> findItemByField(final List<Map<String, Object>> items, final String fieldName, final String expectedValue) {

@@ -152,11 +152,10 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                             "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
-            Map<String, Object> actualPreviewResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
-            assertThat(String.valueOf(actualPreviewResponse.get("status")), is("preview"));
+            Map<String, Object> actualPreviewResponse = previewWorkflow(interactionClient, planId);
             assertThat(getMapList(actualPreviewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList(),
                     is(List.of("rule_distsql")));
-            Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, List.of("rule_distsql")));
+            Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, List.of("rule_distsql")));
             assertThat(String.valueOf(actualRuleApplyResponse.get("status")), is("completed"));
             assertThat(getStringList(actualRuleApplyResponse.get("executed_distsql")).size(), is(1));
             assertThat(getStringList(actualRuleApplyResponse.get("skipped_artifacts")).size(), is(0));
@@ -196,17 +195,6 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
         String planId = String.valueOf(actualCreatePlanResponse.get("plan_id"));
         assertApplyCompleted(applyReviewedWorkflow(interactionClient, planId));
         assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
-    }
-    
-    private Map<String, Object> applyReviewedWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
-        Map<String, Object> previewResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
-        assertThat(String.valueOf(previewResponse.get("status")), is("preview"));
-        List<String> approvedSteps = getMapList(previewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList();
-        return interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, approvedSteps));
-    }
-    
-    private Map<String, Object> createApplyArguments(final String planId, final List<String> approvedSteps) {
-        return Map.of("plan_id", planId, "execution_mode", "review-then-execute", "approved_steps", approvedSteps);
     }
     
     private Map<String, Object> findItemByField(final List<Map<String, Object>> items, final String fieldName, final String expectedValue) {

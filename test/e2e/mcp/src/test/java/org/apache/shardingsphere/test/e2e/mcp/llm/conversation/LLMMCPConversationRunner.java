@@ -86,7 +86,6 @@ public final class LLMMCPConversationRunner {
         List<LLMChatMessage> messages = createInitialMessages(scenario);
         LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts(modelProvider, modelName);
         try {
-            llmChatClient.waitUntilReady();
             openInteractionClient();
             LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
             LLMMCPConversationTurnPlanner turnPlanner = new LLMMCPConversationTurnPlanner(instructionFactory);
