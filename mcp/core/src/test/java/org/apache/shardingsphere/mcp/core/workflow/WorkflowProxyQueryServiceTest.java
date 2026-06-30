@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -198,9 +197,8 @@ class WorkflowProxyQueryServiceTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("COLUMN_NAME");
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getObject(1)).thenReturn("status_cipher", "status_assisted_query");
-        Set<String> columnNames = new LinkedHashSet<>(List.of("status_cipher", "status_assisted_query"));
         WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
-        Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "", "orders", columnNames);
+        Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "", "orders", List.of("status_cipher", "status_assisted_query"));
         assertThat(actual, is(Set.of("status_cipher", "status_assisted_query")));
     }
     
@@ -222,7 +220,7 @@ class WorkflowProxyQueryServiceTest {
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getObject(1)).thenReturn("status_cipher");
         WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig), databaseType);
-        Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "public", "orders", new LinkedHashSet<>(List.of("status_cipher")));
+        Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "public", "orders", List.of("status_cipher"));
         assertThat(actual, is(Set.of("status_cipher")));
     }
     
