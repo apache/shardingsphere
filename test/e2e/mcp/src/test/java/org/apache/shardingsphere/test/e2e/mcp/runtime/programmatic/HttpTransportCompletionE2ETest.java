@@ -50,20 +50,16 @@ class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRunti
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> promptReference = Map.of("type", "ref/prompt", "name", "inspect_metadata");
-        assertThat(completeValues(httpClient, sessionId, promptReference, "database", "logic", Map.of()), is(List.of("logic_db")));
-        assertThat(completeValues(httpClient, sessionId, promptReference, "schema", "logic", Map.of("database", "logic_db")), is(List.of("logic_db")));
-        assertThat(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}"),
-                "table", "ord", Map.of("database", "logic_db", "schema", "logic_db")),
-                is(List.of("order_items", "orders")));
-        assertThat(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}"),
-                "column", "sta", Map.of("database", "logic_db", "schema", "logic_db", "table", "orders")),
-                is(List.of("status")));
-        assertThat(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"),
-                "index", "idx", Map.of("database", "logic_db", "schema", "logic_db", "table", "orders")),
-                is(List.of("idx_orders_status")));
-        assertThat(completeValues(httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"),
-                "sequence", "ord", Map.of("database", "logic_db", "schema", "logic_db")),
-                is(List.of()));
+        assertCompletionValues("database completion", httpClient, sessionId, promptReference, "database", "logic", Map.of(), List.of("logic_db"));
+        assertCompletionValues("schema completion", httpClient, sessionId, promptReference, "schema", "logic", Map.of("database", "logic_db"), List.of("logic_db"));
+        assertCompletionValues("table completion", httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}"),
+                "table", "ord", Map.of("database", "logic_db", "schema", "logic_db"), List.of("order_items", "orders"));
+        assertCompletionValues("column completion", httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}"),
+                "column", "sta", Map.of("database", "logic_db", "schema", "logic_db", "table", "orders"), List.of("status"));
+        assertCompletionValues("index completion", httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"),
+                "index", "idx", Map.of("database", "logic_db", "schema", "logic_db", "table", "orders"), List.of("idx_orders_status"));
+        assertCompletionValues("sequence completion", httpClient, sessionId, createResourceReference("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"),
+                "sequence", "ord", Map.of("database", "logic_db", "schema", "logic_db"), List.of());
     }
     
     @Test
@@ -81,19 +77,14 @@ class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRunti
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        Map<String, Object> loadBalanceAlgorithmCompletion = complete(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "plan_readwrite_splitting_rule"),
-                "load_balancer_type", "ROUND", Map.of());
-        List<String> loadBalanceAlgorithmValues = extractCompletionValues(loadBalanceAlgorithmCompletion);
-        assertTrue(loadBalanceAlgorithmValues.contains("ROUND_ROBIN"), loadBalanceAlgorithmCompletion::toString);
-        List<String> shadowAlgorithmValues = completeValues(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "plan_shadow_rule"),
-                "algorithm_type", "VALUE", Map.of());
-        assertTrue(shadowAlgorithmValues.contains("VALUE_MATCH"), shadowAlgorithmValues::toString);
-        List<String> shardingAlgorithmValues = completeValues(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "plan_sharding_table_rule"),
-                "algorithm_type", "INLINE", Map.of());
-        assertTrue(shardingAlgorithmValues.contains("INLINE"), shardingAlgorithmValues::toString);
-        List<String> keyGenerateAlgorithmValues = completeValues(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "plan_sharding_key_generator"),
-                "key_generator_type", "SNOW", Map.of());
-        assertTrue(keyGenerateAlgorithmValues.contains("SNOWFLAKE"), keyGenerateAlgorithmValues::toString);
+        assertCompletionValuesContain("readwrite-splitting load balancer completion", httpClient, sessionId,
+                Map.of("type", "ref/prompt", "name", "plan_readwrite_splitting_rule"), "load_balancer_type", "ROUND", "ROUND_ROBIN");
+        assertCompletionValuesContain("shadow algorithm completion", httpClient, sessionId,
+                Map.of("type", "ref/prompt", "name", "plan_shadow_rule"), "algorithm_type", "VALUE", "VALUE_MATCH");
+        assertCompletionValuesContain("sharding algorithm completion", httpClient, sessionId,
+                Map.of("type", "ref/prompt", "name", "plan_sharding_table_rule"), "algorithm_type", "INLINE", "INLINE");
+        assertCompletionValuesContain("sharding key generator completion", httpClient, sessionId,
+                Map.of("type", "ref/prompt", "name", "plan_sharding_key_generator"), "key_generator_type", "SNOW", "SNOWFLAKE");
     }
     
     @Test
@@ -117,6 +108,18 @@ class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRunti
                                         final String argumentName, final String argumentValue,
                                         final Map<String, String> contextArguments) throws IOException, InterruptedException {
         return extractCompletionValues(complete(httpClient, sessionId, reference, argumentName, argumentValue, contextArguments));
+    }
+    
+    private void assertCompletionValues(final String scenarioName, final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,
+                                        final String argumentName, final String argumentValue, final Map<String, String> contextArguments,
+                                        final List<String> expectedValues) throws IOException, InterruptedException {
+        assertThat(scenarioName, completeValues(httpClient, sessionId, reference, argumentName, argumentValue, contextArguments), is(expectedValues));
+    }
+    
+    private void assertCompletionValuesContain(final String scenarioName, final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,
+                                               final String argumentName, final String argumentValue, final String expectedValue) throws IOException, InterruptedException {
+        List<String> actualValues = completeValues(httpClient, sessionId, reference, argumentName, argumentValue, Map.of());
+        assertTrue(actualValues.contains(expectedValue), () -> scenarioName + ": " + actualValues);
     }
     
     private List<String> extractCompletionValues(final Map<String, Object> result) {
