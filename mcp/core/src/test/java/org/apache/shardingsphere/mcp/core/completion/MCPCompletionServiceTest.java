@@ -111,7 +111,7 @@ class MCPCompletionServiceTest {
     @Test
     void assertCompleteReplacesEmptyContextWithInferredContext() {
         MCPCompletionResult actual = complete(new InMemoryWorkflowSessionContext(), createDescriptor("inspect_metadata", "table", 50), "table", "t_",
-                new LinkedHashMap<>(Map.of("database", "logic_db", "schema", "")), List.of(new InferredContextCompletionProvider()));
+                Map.of("database", "logic_db", "schema", ""), List.of(new InferredContextCompletionProvider()));
         assertThat(actual.getValues(), is(List.of("t_order")));
         assertThat(((Map<?, ?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.CONTEXT_ARGUMENTS)).get("schema"), is("public"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));

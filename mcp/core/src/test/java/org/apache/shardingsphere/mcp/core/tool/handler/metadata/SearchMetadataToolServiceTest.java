@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMeta
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +106,7 @@ class SearchMetadataToolServiceTest {
     
     @Test
     void assertExecuteSearchWithCompleteResult() {
-        Set<SupportedMCPMetadataObjectType> objectTypes = new LinkedHashSet<>(List.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW));
+        Set<SupportedMCPMetadataObjectType> objectTypes = Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW);
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
                 new MetadataSearchRequest("logic_db", "", "order", objectTypes));
         assertThat(actual.getItems().size(), is(4));

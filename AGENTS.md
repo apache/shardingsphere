@@ -87,13 +87,21 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       `Collections.unmodifiableList`, `Collections.unmodifiableSet`, `Collections.unmodifiableMap`,
       `Collectors.toUnmodifiableList`, `Collectors.toUnmodifiableSet`, `Collectors.toUnmodifiableMap`,
       Guava `ImmutableList` / `ImmutableSet` / `ImmutableMap`, or similar explicit immutable copy/wrapper APIs
-      when the only reason is defensive programming.
+      when the only reason is defensive programming, possible mutability, or possible ordering.
+    - Do not create semantics-free collection copies.
+      Before adding `new ArrayList<>(...)`, `new LinkedList<>(...)`, `new HashSet<>(...)`, `new LinkedHashSet<>(...)`, `new HashMap<>(...)`, or `new LinkedHashMap<>(...)`,
+      verify the concrete semantic reason.
+      Without such a reason, forbidden patterns include `new LinkedHashSet<>(List.of(...))`, `new LinkedList<>(List.of(...))`, `new LinkedHashMap<>(Map.of(...))`,
+      copying the fresh result of a loader, builder, parser, or factory that already returns an owned collection,
+      copying a local collection freshly created in the same method only to update its element contents,
+      or creating `new HashSet<>(values)` only for `contains` when an existing set already contains the same values.
     - Ordinary collection literals or direct transformation results are allowed when they express data construction or transformation.
       Do not flag `List.of`, `Set.of`, `Map.of`, or `Stream.toList()` by default, and do not replace `Stream.toList()` with a mutable collector
       unless the code has a concrete mutability requirement.
     - Explicit collection copies or wrappers are allowed only with a concrete semantic reason, such as enforcing a documented public API contract,
       preserving a snapshot across shared ownership or asynchronous execution, protecting cached/global state from mutation,
       isolating later local mutation, or satisfying an external API requirement.
+      In tests, wrap `List.of`, `Set.of`, or `Map.of` in a mutable implementation only when that exact instance is mutated or when mutability is the scenario under test.
       Record the reason in the plan, review note, final response, or nearby code rationale.
 - **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.
 
@@ -117,29 +125,6 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Parameterized tests naming**: all parameterized tests must set an explicit `name` and use the `"{0}"` template for display names.
 - **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
 - **Reflection Rule**: when tests must touch fields or methods via reflection, use `Plugins.getMemberAccessor()`—direct reflection APIs are forbidden.
-
-## Tool Usage Guide
-
-### Exa - Web Search
-**Purpose**: fetch the latest web information, official links, or announcements.
-**When to Trigger**
-- Needing current events, announcements, or security advisories.
-- Looking up official website entry points.
-- Verifying external information sources.
-**Key Parameters**
-- Keywords: ≤ 12.
-- `web_search_exa`: moderate.
-
-### mcp-deepwiki
-- Deep knowledge aggregation.
-  **Purpose**: deep semantic document retrieval, knowledge aggregation, and multi-source summarization.
-  **When to Trigger**
-    - Explaining technical concepts or contrasting standards.
-    - Describing algorithm principles.
-    - Integrating multiple official sources.
-      **Key Parameters**
-    - `topic`: technical topic or concept (e.g., "adaptive servo control").
-    - `depth`: 1-3 to control semantic layers.
 
 ## Dangerous Operation Confirmation Mechanism
 
@@ -296,90 +281,12 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - For utilities with multiple return paths, record the branch list and update it if the code changes.
 - Use Jacoco to confirm expectations when coverage is in question; document any unreachable code instead of adding redundant tests.
 
-## Response Style
-
-### Language and Tone
-- **Language Consistency**: respond in the same language as the user; if the user explicitly specifies a language, prioritize that language.
-- **Friendly and Natural**: interact like a professional peer; avoid stiff formal language.
-- **No Emojis or Symbols**: do not use emojis or decorative graphic symbols in any reply.
-- **Hit the Point Fast**: start with a sentence that captures the core idea, especially for complex problems.
-
-### Content Organization
-- **Hierarchical**: separate sections with headings/subheadings; split long content into sections.
-- **Focused Bullets**: break long paragraphs into short sentences or bullets, each covering a single idea.
-- **Logical Flow**: use ordered lists for multi-step work (1. 2. 3.) and unordered lists for peers (- or *).
-- **Proper Spacing**: keep blank lines or `---` between blocks to boost readability.
-> Avoid complex tables in the terminal (especially for long, code-heavy, or narrative content).
-
-### Visual & Layout Optimization
-- **Keep It Simple**: limit each line length to ≤200 characters.
-- **Leave White Space**: use blank lines wisely to avoid cramped output.
-- **Align Consistently**: stick to one indentation and bullet style (use `-` instead of mixing symbols).
-- **Emphasize Key Points**: highlight critical items with **bold** or *italics*.
-
-### Technical Content Guidelines
-
-#### Code & Data Presentation
-- **Code Blocks**: wrap multi-line code/config/logs inside Markdown fences with language hints (e.g., a fenced Java block).
-- **Focus on the Core**: trim unrelated snippets (like imports) to spotlight essential logic.
-- **Diff Markers**: show changes with `+` / `-` for quick scanning.
-- **Line Numbers**: add them when needed (e.g., debugging scenarios).
-
-#### Structured Data
-- **Prefer Lists**: use lists over tables in most cases.
-- **Tables Sparingly**: only use Markdown tables when strict alignment is required (e.g., parameter comparisons).
-
-### Interaction & User Experience
-- **Immediate Feedback**: respond quickly; avoid long silent periods.
-- **Visible Status**: surface progress for important actions (e.g., “Processing...”).
-- **Friendly Errors**: clearly explain failures and suggest actionable fixes.
-
-### Ending Suggestions
-- Append a **short summary** after complex content to reiterate the core points.
-- **Guide the Next Step**: close with actionable advice, instructions, or an invitation for follow-up questions.
-
-### Brevity & Signal
-- Prefer tables/bullets over prose walls; cite file paths (`kernel/src/...`) directly.
-- Eliminate repeated wording; reference prior sections instead of restating.
-- Default to ASCII; only mirror existing non-ASCII content when necessary.
-
 ## Governance Basics
 - Follow the instruction order from Core Principle #7 and surface conflicts with rationale when they arise.
 - Technical choices must satisfy ASF transparency: include license headers, document intent, and keep rationales visible to reviewers.
 - Default to the smallest safe change: monthly feature trains plus weekly patch windows reward incremental fixes unless the product requires deeper refactors.
 - Secure approvals for structural changes (new modules, configs, knobs); localized doc or code tweaks may land after self-review when you surface the evidence reviewers expect (tests, configs, reproduction steps).
 - Maintain deterministic builds, measurable coverage, and clear rollback notes; avoid speculative work without a benefit statement.
-
-## Platform Snapshot
-- ShardingSphere layers sharding, encryption, traffic governance, and observability on top of existing databases.
-- Module map summary:
-  - `infra`/`database`/`parser`/`kernel`/`mode`: shared infrastructure for SQL parsing, routing, and governance metadata.
-  - `jdbc`/`jdbc-dialect`/`proxy`: integration points for clients and protocols.
-  - `features`: sharding, read/write splitting, encryption, shadow, traffic control.
-  - `agent`: bytecode helpers; `examples`, `docs`, `distribution`: runnable demos and release assets.
-- Layout standard: `src/main/java` + `src/test/java`; anything under `target/` is generated and must not be edited.
-
-### Data Flow & Integration Map
-1. **Client request** enters via `jdbc` or `proxy`.
-2. **SQL parsing/rewriting** happens in `parser` plus `infra` dialect layers.
-3. **Routing & planning** runs inside `kernel` using metadata from `database` and hints from `mode`.
-4. **Feature hooks** (sharding/encryption/etc.) in `features` adjust routes or payloads.
-5. **Executor/adapters** send work to physical databases and gather results.
-6. **Observability & governance** loops feed metrics/traffic rules back through `mode`.
-Use this flow to justify design changes and to debug regressions.
-
-### Deployment Modes
-- **Proxy cluster + registry** (ZooKeeper/Etcd): clients speak MySQL/PostgreSQL to `proxy`; governance state resides in `mode`.
-- **JDBC embedded**: applications embed the `jdbc` driver with YAML/Spring configs describing sharding and encryption.
-- **Hybrid**: compute happens in applications while governance/observability leverage `mode`.
-Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8.0) your change targets.
-
-## Design Playbook
-- **Preferred styles:** elegant, minimal solutions that keep methods/tests lean, use guard clauses, and delete dead code immediately.
-- **Patterns to lean on:** builders/factories from `infra`, SPI-driven extensions, DTOs with explicit ownership contracts, explicit strategy enums.
-- **Anti-patterns:** duplicating parsing logic, bypassing metadata caches, silently accepting invalid configs, static singletons in shared modules, or overbuilt helpers.
-- **Known pitfalls:** routing regressions when shadow rules are skipped, timezone drift from poor time-mocking, forgetting standalone vs cluster (`mode`) validation, missing ASF headers, Mockito inline mocks breaking on JDKs that block self-attach.
-- **Success recipe:** explain why the change exists, cite the affected data-flow step, keep public APIs backward compatible, and record defaults/knobs alongside code changes.
 
 ## Verification & Commands
 - Core commands: `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>` (scoped unit tests),
@@ -418,28 +325,11 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - Mention observability or agent impacts (metrics exporters, tracing hooks) whenever touched.
 - Capture performance guardrails—baseline vs new latency/QPS, CPU, memory observations—when runtime paths change.
 
-## Collaboration Patterns & Rituals
-- **Response focus:** for change requests list goal/constraints/suspected files/validation plan; for code reviews highlight issues + risks + suggested fixes; for status updates summarize completed work + verification + risks/TODOs; for failures/blockers share attempted command, reason for failure, and what you need next.
-- **Anti-patterns:** do not accept vague orders (“optimize stuff”); always clarify module + expected result.
-- **Hand-off checklist:** intent, edited files, rationale, executed commands (with exit codes), open risks, related issues/PRs.
-- **Release & rollback:** (1) restate why the release needs the change and cite affected modules/configs, (2) after implementation capture tests/perf smokes and document Spotless/Jacoco/static results plus translation/backport tasks, (3) outline rollback steps (disable knob, revert YAML/module) and how to confirm success, (4) prep release-note snippets or anchor updates for reviewers.
-- **Escalation etiquette:** commit messages use `module: intent`, reviews prioritize regression risks, approval requests follow “Command → Purpose → Sandbox limitation → Expected output,” and halt for guidance whenever sandbox limits conflict with `CODE_OF_CONDUCT.md`.
-
-## Prompt & Reference Snapshot
-- **Parser / dialect:** include target database version, sample SQL, expected AST deltas, and downstream modules relying on the result.
-- **Kernel routing & features:** describe metadata shape (tables, binding, sharding/encryption rules), knob values, and which `features` hook processes the change.
-- **Proxy runtime & governance:** state startup command, `conf/server.yaml`, registry/mode config, relevant logs, and client protocol.
-- **Observability / agent:** mention metrics or tracing plugins touched plus expected signal format and dashboards affected.
-- **Docs / config updates:** specify audience (user/admin), file path, translation implications, and any screenshots/assets added.
-- **Process & releases:** cite commit/PR intent, release-train context, maturity level, and rollback plan.
-- **Compliance & conduct:** flag license-header risk, third-party code usage, and inclusive language considerations.
-
 ## Mocking & SPI Guidance
 - Favor Mockito over bespoke fixtures; only add new fixture classes when mocks cannot express the scenario.
 - Use marker interfaces when distinct rule/attribute types are needed; reuse SPI types such as `ShardingSphereRule` where possible.
 - Name tests after the production method under test; never probe private helpers directly—document unreachable branches instead.
 - Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs.
-- For static/constructor mocking, use `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings`; avoid hand-written `mockStatic`/`mockConstruction` unless you documented why the extension cannot be used.
 - When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension's constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if `AutoMockExtension` cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.
 - Before coding tests, follow the Coverage & Branch Checklist to map inputs/branches to planned assertions.
 - When a component is available via SPI (e.g., `TypedSPILoader`, `DatabaseTypedSPILoader`, `PushDownMetaDataRefresher`), obtain the instance through SPI by default; note any exceptions in the plan.

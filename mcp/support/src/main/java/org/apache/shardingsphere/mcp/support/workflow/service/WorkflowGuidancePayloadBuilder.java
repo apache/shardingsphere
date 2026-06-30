@@ -309,14 +309,13 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static List<Map<String, Object>> addSequencing(final List<Map<String, Object>> nextActions) {
-        List<Map<String, Object>> result = new LinkedList<>(nextActions);
-        for (int index = 0; index < result.size(); index++) {
-            result.get(index).put("order", index + 1);
-            if (0 < index && "ask_user".equals(result.get(index - 1).get("type"))) {
-                result.get(index).put("depends_on", List.of(index));
+        for (int index = 0; index < nextActions.size(); index++) {
+            nextActions.get(index).put("order", index + 1);
+            if (0 < index && "ask_user".equals(nextActions.get(index - 1).get("type"))) {
+                nextActions.get(index).put("depends_on", List.of(index));
             }
         }
-        return result;
+        return nextActions;
     }
     
     private static String resolvePlanningTool(final WorkflowContextSnapshot snapshot) {
