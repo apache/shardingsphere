@@ -268,9 +268,8 @@ final class ShardingWorkflowPlanningKernel {
     }
     
     private boolean ensureIdentifiers(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
-        if (WorkflowSQLUtils.isSupportedIdentifier(request.getDatabase()) && WorkflowSQLUtils.isSupportedIdentifier(request.getTable())
-                && WorkflowSQLUtils.isSupportedIdentifier(request.getColumn()) && WorkflowSQLUtils.isSupportedIdentifier(request.getRuleName())
-                && WorkflowSQLUtils.isSupportedIdentifier(request.getKeyGeneratorName()) && WorkflowSQLUtils.isSupportedIdentifier(request.getKeyGenerateStrategyName())
+        if (areSupportedIdentifiers(List.of(
+                request.getDatabase(), request.getTable(), request.getColumn(), request.getRuleName(), request.getKeyGeneratorName(), request.getKeyGenerateStrategyName()))
                 && areSupportedIdentifiers(splitCsv(request.getShardingColumns()))) {
             return true;
         }
@@ -377,12 +376,12 @@ final class ShardingWorkflowPlanningKernel {
     }
     
     private boolean hasRequiredCleanupInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
-        boolean result = !request.getComponentType().isEmpty() && !request.getComponentName().isEmpty();
-        if (!result) {
-            snapshot.getClarifiedIntent().getClarificationMessages().add("Please provide component type and component name.");
-            snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
+        if (!request.getComponentType().isEmpty() && !request.getComponentName().isEmpty()) {
+            return true;
         }
-        return result;
+        snapshot.getClarifiedIntent().getClarificationMessages().add("Please provide component type and component name.");
+        snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
+        return false;
     }
     
     private boolean require(final ShardingWorkflowRequest request, final String value, final String message) {

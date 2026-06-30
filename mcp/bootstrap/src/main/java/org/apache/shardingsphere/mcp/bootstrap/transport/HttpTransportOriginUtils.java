@@ -21,9 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -32,26 +29,6 @@ import java.util.Objects;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HttpTransportOriginUtils {
-    
-    /**
-     * Normalize origins.
-     *
-     * @param origins origins
-     * @return normalized origins
-     */
-    public static List<String> normalizeOrigins(final Collection<String> origins) {
-        return null == origins ? Collections.emptyList() : origins.stream().map(HttpTransportOriginUtils::normalizeOrigin).filter(each -> !each.isEmpty()).toList();
-    }
-    
-    /**
-     * Check whether the value is a valid HTTP origin.
-     *
-     * @param value value
-     * @return true if the value is a valid HTTP origin, otherwise false
-     */
-    public static boolean isValidOrigin(final String value) {
-        return !normalizeOrigin(value).isEmpty();
-    }
     
     /**
      * Normalize origin.

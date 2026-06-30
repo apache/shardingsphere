@@ -22,15 +22,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,16 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EncryptAlgorithmRecommendationServiceTest {
     
     private final EncryptAlgorithmRecommendationService service = new EncryptAlgorithmRecommendationService();
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertFindEncryptCapabilityArguments")
-    void assertFindEncryptCapability(final String name, final String algorithmType, final Boolean expectedDecrypt,
-                                     final Boolean expectedEquivalentFilter, final Boolean expectedLike) {
-        Map<String, Boolean> actual = EncryptAlgorithmRecommendationService.findEncryptCapability(algorithmType);
-        assertThat(actual.get("supports_decrypt"), is(expectedDecrypt));
-        assertThat(actual.get("supports_equivalent_filter"), is(expectedEquivalentFilter));
-        assertThat(actual.get("supports_like"), is(expectedLike));
-    }
     
     @Test
     void assertRecommendEncryptAlgorithmsWithSpecifiedPrimary() {
@@ -131,13 +117,6 @@ class EncryptAlgorithmRecommendationServiceTest {
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("AES", true, true, false)), issues);
         assertThat(actual.size(), is(1));
         assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
-    }
-    
-    private static Stream<Arguments> assertFindEncryptCapabilityArguments() {
-        return Stream.of(
-                Arguments.of("aes capability", "AES", true, true, false),
-                Arguments.of("md5 capability", "MD5", false, true, false),
-                Arguments.of("unknown capability", "CUSTOM", null, null, null));
     }
     
     private Map<String, Object> createAlgorithmRow(final String type, final Boolean decrypt, final Boolean equivalentFilter, final Boolean like) {

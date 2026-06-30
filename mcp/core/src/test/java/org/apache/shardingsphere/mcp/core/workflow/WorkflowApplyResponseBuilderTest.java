@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.workflow;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.junit.jupiter.api.Test;
 
@@ -34,14 +35,24 @@ class WorkflowApplyResponseBuilderTest {
     
     @Test
     void assertBuildPreviewResponse() {
-        Map<String, Object> actual = new WorkflowApplyResponseBuilder().build(createSnapshot("encrypt.table"), "preview", "preview",
-                List.of(), List.of(), List.of(), List.of(), List.of(), Map.of());
+        List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> executableArtifacts = List.of(
+                new WorkflowArtifactBundle.ExecutableWorkflowArtifact(
+                        WorkflowArtifactPayloadUtils.STEP_DDL, "add-column", "ALTER TABLE orders ADD COLUMN phone VARCHAR(32)", false),
+                new WorkflowArtifactBundle.ExecutableWorkflowArtifact(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL,
+                        "CREATE MASK RULE orders", true));
+        Map<String, Object> actual = new WorkflowApplyResponseBuilder().buildPreviewResponse(createSnapshot("encrypt.table"), executableArtifacts, "review-then-execute", Map.of());
         assertThat(actual.get("response_mode"), is("preview"));
         assertThat(actual.get("plan_id"), is("plan-1"));
         assertThat(actual.get("status"), is("preview"));
         assertThat(actual.get("execution_mode"), is("preview"));
         assertThat(actual.get("manual_artifacts"), is(List.of()));
         assertThat(actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE), is(Map.of()));
+        assertThat(((List<?>) actual.get("preview_artifacts")).size(), is(2));
+        Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
+        assertThat(actualReviewFocus.get("artifact_categories"), is(List.of("add-column", "rule_distsql")));
+        assertThat(actualReviewFocus.get("side_effect_scope"), is(List.of("physical-structure", "rule-metadata")));
+        assertThat(actualReviewFocus.get("approval_values"), is(List.of("ddl", "rule_distsql")));
+        assertThat(((List<?>) actual.get("next_actions")).size(), is(2));
     }
     
     @Test

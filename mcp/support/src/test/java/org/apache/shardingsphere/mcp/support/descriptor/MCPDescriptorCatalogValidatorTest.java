@@ -110,7 +110,7 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     @SuppressWarnings("unchecked")
     void assertValidateRejectsApplyDescriptorWithoutSecretReferenceSummary() {
-        MCPToolDescriptor descriptor = WorkflowToolDescriptors.createExecution();
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(WorkflowToolDescriptors.APPLY_TOOL_NAME);
         Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
         Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) outputSchema.get("properties"));
         properties.remove("secret_reference_summary");

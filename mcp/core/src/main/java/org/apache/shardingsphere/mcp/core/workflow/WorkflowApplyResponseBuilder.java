@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
+import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowGuidancePayloadBuilder;
 
@@ -34,6 +37,10 @@ import java.util.Map;
  * Builds workflow apply response payloads.
  */
 public final class WorkflowApplyResponseBuilder {
+    
+    private static final String EXECUTION_MODE_PREVIEW = "preview";
+    
+    private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
     
     /**
      * Build workflow apply response payload.
@@ -78,14 +85,105 @@ public final class WorkflowApplyResponseBuilder {
         return result;
     }
     
+    /**
+     * Build workflow preview response payload.
+     *
+     * @param snapshot workflow snapshot
+     * @param executableArtifacts executable workflow artifacts
+     * @param applyExecutionMode execution mode to use after preview
+     * @param manualArtifactPackage manual artifact package
+     * @return workflow preview response payload
+     */
+    public Map<String, Object> buildPreviewResponse(final WorkflowContextSnapshot snapshot, final Collection<WorkflowArtifactBundle.ExecutableWorkflowArtifact> executableArtifacts,
+                                                    final String applyExecutionMode, final Map<String, Object> manualArtifactPackage) {
+        List<Map<String, Object>> previewArtifacts = createPreviewArtifacts(executableArtifacts);
+        Map<String, Object> result = build(snapshot, EXECUTION_MODE_PREVIEW, EXECUTION_MODE_PREVIEW,
+                List.of(), List.of(), List.of(), List.of(), List.of(), manualArtifactPackage);
+        result.put("would_apply", false);
+        result.put("preview_artifacts", previewArtifacts);
+        result.put("review_focus", createPreviewReviewFocus(applyExecutionMode, previewArtifacts));
+        result.put("review_summary", createReviewSummary(previewArtifacts));
+        result.put("argument_provenance", createPreviewArgumentProvenance());
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createPreviewNextActions(snapshot, applyExecutionMode, previewArtifacts));
+        return result;
+    }
+    
     private String resolveResponseMode(final String status, final String executionMode) {
-        if ("preview".equals(executionMode)) {
+        if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return MCPResponseMode.PREVIEW;
         }
-        if ("manual-only".equals(executionMode)) {
+        if (EXECUTION_MODE_MANUAL_ONLY.equals(executionMode)) {
             return MCPResponseMode.MANUAL_ONLY;
         }
         return WorkflowLifecycle.STATUS_COMPLETED.equals(status) ? MCPResponseMode.EXECUTED : MCPResponseMode.TERMINAL;
+    }
+    
+    private List<Map<String, Object>> createPreviewArtifacts(final Collection<WorkflowArtifactBundle.ExecutableWorkflowArtifact> executableArtifacts) {
+        return executableArtifacts.stream().map(this::createPreviewArtifact).toList();
+    }
+    
+    private Map<String, Object> createPreviewArtifact(final WorkflowArtifactBundle.ExecutableWorkflowArtifact artifact) {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("approval_step", artifact.approvalStep());
+        result.put("artifact_type", artifact.artifactType());
+        result.put("sql", artifact.displaySql());
+        result.put("side_effect_scope", artifact.ruleDistSql() ? "rule-metadata" : "physical-structure");
+        return result;
+    }
+    
+    private Map<String, Object> createPreviewReviewFocus(final String applyExecutionMode, final List<Map<String, Object>> previewArtifacts) {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("artifact_categories", previewArtifacts.stream().map(each -> (String) each.get("artifact_type")).distinct().toList());
+        result.put("side_effect_scope", previewArtifacts.stream().map(each -> (String) each.get("side_effect_scope")).distinct().toList());
+        boolean manualOnly = EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode);
+        result.put("manual_only", manualOnly);
+        if (!manualOnly && !previewArtifacts.isEmpty()) {
+            result.put("approval_field", "approved_steps");
+            result.put("approval_values", previewArtifacts.stream().map(each -> (String) each.get("approval_step")).distinct().toList());
+        }
+        return result;
+    }
+    
+    private String createReviewSummary(final List<Map<String, Object>> previewArtifacts) {
+        if (previewArtifacts.isEmpty()) {
+            return "Previewed 0 workflow artifacts. Nothing has been applied.";
+        }
+        String artifactLabel = 1 == previewArtifacts.size() ? "artifact" : "artifacts";
+        String sideEffectScopes = String.join(", ", previewArtifacts.stream()
+                .map(each -> (String) each.get("side_effect_scope"))
+                .distinct()
+                .toList());
+        return String.format("Previewed %d workflow %s with side-effect scope %s. Nothing has been applied.", previewArtifacts.size(), artifactLabel, sideEffectScopes);
+    }
+    
+    private Map<String, Object> createPreviewArgumentProvenance() {
+        return Map.of(WorkflowFieldNames.PLAN_ID, "server_generated", WorkflowFieldNames.EXECUTION_MODE, "server_defaulted");
+    }
+    
+    private List<Map<String, Object>> createPreviewNextActions(final WorkflowContextSnapshot snapshot, final String applyExecutionMode,
+                                                               final List<Map<String, Object>> previewArtifacts) {
+        if (previewArtifacts.isEmpty()) {
+            return MCPNextActionUtils.ordered(MCPNextActionUtils.stop("Preview has no artifacts to approve."));
+        }
+        if (EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode)) {
+            return MCPNextActionUtils.ordered(MCPNextActionUtils.callTool("database_gateway_apply_workflow",
+                    createPreviewNextActionReason(applyExecutionMode), createExecutionArguments(snapshot, applyExecutionMode)));
+        }
+        return MCPNextActionUtils.ordered(
+                MCPNextActionUtils.askUser(createPreviewNextActionReason(applyExecutionMode), List.of("approved_steps")),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_apply_workflow",
+                        "Apply reviewed workflow artifacts after merging approved_steps from action 1 into the arguments.",
+                        createExecutionArguments(snapshot, applyExecutionMode)), 1));
+    }
+    
+    private String createPreviewNextActionReason(final String applyExecutionMode) {
+        return EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode)
+                ? "Export reviewed workflow artifacts without applying runtime side effects."
+                : "Confirm the preview_artifacts.approval_step values to approve before execution.";
+    }
+    
+    private Map<String, Object> createExecutionArguments(final WorkflowContextSnapshot snapshot, final String executionMode) {
+        return Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, executionMode);
     }
     
     private Map<String, Object> createManualFollowUp() {
