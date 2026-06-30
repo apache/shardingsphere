@@ -60,6 +60,7 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(String.valueOf(actual.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
+        assertThat(castToMap(actual.get("sql_tool_selection")).keySet().stream().toList(), is(List.of("read_only", "side_effecting")));
         assertThat(actual.get("side_effect_rule"), is("Preview before side effects and continue only when the requested side effect is still intended."));
         assertThat(actual.get("detail_resource_rule"), is("Use resource descriptors, outputSchema, and returned payload keys before assuming detail fields."));
     }

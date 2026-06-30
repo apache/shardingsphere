@@ -71,9 +71,10 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
         result.put("metadata_first_resource", "shardingsphere://databases");
         result.put("preflight_rule", "Use database_gateway_validate_runtime_database with a configured database name before onboarding or troubleshooting runtime connectivity.");
-        result.put("sql_tool_selection", Map.of(
-                "read_only", "Use database_gateway_execute_query for one classifier-approved SELECT or EXPLAIN ANALYZE statement.",
-                "side_effecting", "Use database_gateway_execute_update with execution_mode=preview before execution."));
+        Map<String, Object> sqlToolSelection = new LinkedHashMap<>(2, 1F);
+        sqlToolSelection.put("read_only", "Use database_gateway_execute_query for one classifier-approved SELECT or EXPLAIN ANALYZE statement.");
+        sqlToolSelection.put("side_effecting", "Use database_gateway_execute_update with execution_mode=preview before execution.");
+        result.put("sql_tool_selection", sqlToolSelection);
         result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
         result.put("side_effect_rule", "Preview before side effects and continue only when the requested side effect is still intended.");
         result.put("next_action_rule", "Use canonical next_actions fields: type, tool_name, resource_uri, and arguments.");
