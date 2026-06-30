@@ -16,19 +16,16 @@ AlterDefaultShardingStrategy ::=
   'ALTER' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
 
 shardingStrategy ::=
-  'TYPE' '=' strategyType ((',' ('SHARDING_COLUMN' '=' columnName | 'SHARDING_COLUMNS' '=' columnNames))? ',' shardingAlgorithm)?
-
-strategyType ::=
-  string | 'STANDARD' | 'COMPLEX' | 'HINT' | 'NONE'
+  'TYPE' '=' 'NONE'
+  | 'TYPE' '=' 'STANDARD' ',' 'SHARDING_COLUMN' '=' columnName ',' shardingAlgorithm
+  | 'TYPE' '=' 'COMPLEX' ',' 'SHARDING_COLUMNS' '=' columnName ',' columnName (',' columnName)* ',' shardingAlgorithm
+  | 'TYPE' '=' 'HINT' ',' shardingAlgorithm
 
 shardingAlgorithm ::=
   'SHARDING_ALGORITHM' '(' algorithmDefinition ')'
 
 algorithmDefinition ::=
   'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
-
-columnNames ::=
-  columnName (',' columnName)+
 
 columnName ::=
   identifier

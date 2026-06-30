@@ -85,11 +85,12 @@ public final class EncryptDatabasesConfiguration {
         props.setProperty("digest-algorithm-name", "SHA-1");
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", new EncryptColumnItemRuleConfiguration("username", "name_encryptor"));
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd", "pwd_encryptor"));
-        columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_encryptor"));
+        columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_assisted_encryptor"));
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
         encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
-        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("MD5", new Properties()));
+        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("AES", props));
+        encryptAlgorithmConfigs.put("pwd_assisted_encryptor", new AlgorithmConfiguration("MD5", new Properties()));
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
         return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfig), props);
     }

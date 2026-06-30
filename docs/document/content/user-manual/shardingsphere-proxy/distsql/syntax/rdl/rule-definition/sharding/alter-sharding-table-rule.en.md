@@ -22,17 +22,13 @@ autoTableRuleDefinition ::=
   ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' auditStrategyDefinition)? ')'
 
 strategyDefinition ::=
-  'TYPE' '=' strategyType ((',' shardingColumnDefinition)? ',' shardingAlgorithm)?
-
-shardingColumnDefinition ::=
-  'SHARDING_COLUMN' '=' columnName
-  | 'SHARDING_COLUMNS' '=' columnName ',' columnName (',' columnName)*
+  'TYPE' '=' 'NONE'
+  | 'TYPE' '=' 'STANDARD' ',' 'SHARDING_COLUMN' '=' columnName ',' shardingAlgorithm
+  | 'TYPE' '=' 'COMPLEX' ',' 'SHARDING_COLUMNS' '=' columnName ',' columnName (',' columnName)* ',' shardingAlgorithm
+  | 'TYPE' '=' 'HINT' ',' shardingAlgorithm
 
 shardingAlgorithm ::=
   'SHARDING_ALGORITHM' '(' algorithmDefinition ')'
-
-strategyType ::=
-  'STANDARD' | 'COMPLEX' | 'HINT' | 'NONE' | string
 
 keyGenerateStrategyDefinition ::= 
   'COLUMN' '=' columnName ',' keyGenerateAlgorithmDefinition
