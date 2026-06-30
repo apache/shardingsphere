@@ -25,7 +25,6 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,7 +42,7 @@ class MCPPromptSpecificationFactoryTest {
     @Test
     void assertCreatePromptSpecifications() {
         List<SyncPromptSpecification> actual = new MCPPromptSpecificationFactory().createPromptSpecifications();
-        Set<String> actualNames = new LinkedHashSet<>(actual.stream().map(each -> each.prompt().name()).toList());
+        List<String> actualNames = actual.stream().map(each -> each.prompt().name()).toList();
         assertTrue(actualNames.containsAll(Set.of("inspect_metadata", "safe_sql_execution", "recover_workflow", "plan_encrypt_rule", "plan_mask_rule")));
         SyncPromptSpecification actualPromptSpecification = findPrompt(actual, "safe_sql_execution");
         assertThat(actualPromptSpecification.prompt().title(), is("Safe SQL Execution"));

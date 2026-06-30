@@ -365,7 +365,7 @@ final class MCPDescriptorCatalogValidator {
     private static void validatePromptTemplate(final MCPPromptDescriptor descriptor, final MCPPromptTemplateBinding binding) {
         String template = MCPPromptTemplateLoader.load(binding.getTemplateResource());
         validateNoUnsupportedModelFacingPlaceholders(binding, template);
-        Set<String> declaredArguments = new HashSet<>(descriptor.getArguments().stream().map(MCPPromptArgumentDescriptor::getName).toList());
+        Set<String> declaredArguments = descriptor.getArguments().stream().map(MCPPromptArgumentDescriptor::getName).collect(Collectors.toSet());
         Set<String> renderedArguments = MCPPromptTemplateLoader.extractPlaceholders(template);
         for (String each : renderedArguments) {
             ShardingSpherePreconditions.checkState(declaredArguments.contains(each),

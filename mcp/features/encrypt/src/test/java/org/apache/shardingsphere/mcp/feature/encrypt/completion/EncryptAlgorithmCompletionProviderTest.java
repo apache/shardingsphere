@@ -29,7 +29,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -75,14 +74,15 @@ class EncryptAlgorithmCompletionProviderTest {
                 Map.of("type", "")));
         MCPDatabaseHandlerContext handlerContext = mock(MCPDatabaseHandlerContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
-        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(new EncryptAlgorithmCompletionProvider().complete(handlerContext,
-                createRequestContext("prompt", EncryptFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type")).getCandidates());
+        Collection<MCPCompletionCandidate> actualCandidates = new EncryptAlgorithmCompletionProvider().complete(handlerContext,
+                createRequestContext("prompt", EncryptFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type")).getCandidates();
         assertThat(actualCandidates.size(), is(1));
-        assertThat(actualCandidates.getFirst().getValue(), is("AES"));
-        assertThat(actualCandidates.getFirst().getLabel(), is("AES encryptor"));
-        assertThat(actualCandidates.getFirst().getSource(), is("encrypt-algorithm"));
-        assertNull(actualCandidates.getFirst().getUpdateTime());
-        assertThat(actualCandidates.getFirst().getRankingReason(), is(""));
+        MCPCompletionCandidate actualCandidate = actualCandidates.iterator().next();
+        assertThat(actualCandidate.getValue(), is("AES"));
+        assertThat(actualCandidate.getLabel(), is("AES encryptor"));
+        assertThat(actualCandidate.getSource(), is("encrypt-algorithm"));
+        assertNull(actualCandidate.getUpdateTime());
+        assertThat(actualCandidate.getRankingReason(), is(""));
     }
     
     private static Collection<Arguments> supportedReferences() {

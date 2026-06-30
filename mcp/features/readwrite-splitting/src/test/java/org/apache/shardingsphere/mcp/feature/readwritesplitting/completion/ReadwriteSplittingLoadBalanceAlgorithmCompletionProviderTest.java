@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -72,11 +72,12 @@ class ReadwriteSplittingLoadBalanceAlgorithmCompletionProviderTest {
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext(ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME));
-        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
+        Collection<MCPCompletionCandidate> actualCandidates = actual.getCandidates();
         assertThat(actualCandidates.size(), is(1));
-        assertThat(actualCandidates.getFirst().getValue(), is("ROUND_ROBIN"));
-        assertThat(actualCandidates.getFirst().getLabel(), is("Round robin load balance"));
-        assertThat(actualCandidates.getFirst().getSource(), is("readwrite-splitting-load-balance-algorithm"));
+        MCPCompletionCandidate actualCandidate = actualCandidates.iterator().next();
+        assertThat(actualCandidate.getValue(), is("ROUND_ROBIN"));
+        assertThat(actualCandidate.getLabel(), is("Round robin load balance"));
+        assertThat(actualCandidate.getSource(), is("readwrite-splitting-load-balance-algorithm"));
     }
     
     @Test
