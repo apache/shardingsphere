@@ -16,7 +16,7 @@ StartMigrationCheck ::=
   'START' 'MIGRATION' 'CHECK' migrationJobId 
 
 migrationJobId ::=
-  string
+  integer | identifier | string
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}

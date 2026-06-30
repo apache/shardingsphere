@@ -13,7 +13,7 @@ weight = 1
 {{% tab name="语法" %}}
 ```sql
 CreateMaskRule ::=
-  'CREATE' 'MASK' 'RULE' ifNotExists? maskRuleDefinition (',' maskRuleDefinition)*
+  'CREATE' 'MASK' 'TABLE'? 'RULE' ifNotExists? maskRuleDefinition (',' maskRuleDefinition)*
 
 ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
@@ -81,7 +81,7 @@ COLUMNS(
 
 ### 保留字
 
-`CREATE`、`MASK`、`RULE`、`COLUMNS`、`NAME`、`TYPE`
+`CREATE`、`MASK`、`TABLE`、`RULE`、`COLUMNS`、`NAME`、`TYPE`
 
 ### 相关链接
 

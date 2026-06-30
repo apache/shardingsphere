@@ -49,6 +49,8 @@ databaseName ::=
 | key_generate_column               | Sharding key generator column                             |
 | key_generator_type                | Sharding key generator type                               |
 | key_generator_props               | Sharding key generator properties                         |
+| auditor_types                     | Sharding auditor types                                    |
+| allow_hint_disable                | Whether hint can disable sharding auditors                |
 
  ### Example
 

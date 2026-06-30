@@ -1,16 +1,16 @@
 +++
 title = "SHOW RULES USED STORAGE UNIT"
-weight = 12
+weight = 2
 +++
 
-### 描述
+### Description
 
-`SHOW RULES USED STORAGE UNIT` 语法用于查询指定逻辑库中使用指定存储单元的规则。
+The `SHOW RULES USED STORAGE UNIT` syntax is used to query the rules that use the specified storage unit in the specified database.
 
-### 语法
+### Syntax
 
 {{< tabs >}}
-{{% tab name="语法" %}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowRulesUsedStorageUnit ::=
   'SHOW' 'RULES' 'USED' 'STORAGE' 'UNIT' storageUnitName ('FROM' databaseName)?
@@ -22,25 +22,25 @@ databaseName ::=
   identifier
 ```
 {{% /tab %}}
-{{% tab name="铁路图" %}}
+{{% tab name="Railroad diagram" %}}
 <iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
 {{% /tab %}}
 {{< /tabs >}}
 
-### 返回值说明
+### Return Value Description
 
-| 列    | 说明   |
-|------|------|
-| type | 规则类型 |
-| name | 规则名称 |
+| Columns     | Description   |
+|-------------|---------------|
+| type        | rule type     |
+| name        | rule name     |
 
-### 补充说明
+### Supplement
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE。` 如果也未使用 `DATABASE` 则会提示 `No database selected`。
+- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
 
-### 示例
+### Example
 
-- 查询指定逻辑库中使用指定存储单元的规则
+- Query the rules for using the specified storage unit in specified database
 
 ```sql
 SHOW RULES USED STORAGE UNIT ds_1 FROM sharding_db;
@@ -57,7 +57,7 @@ mysql> SHOW RULES USED STORAGE UNIT ds_1 FROM sharding_db;
 2 rows in set (0.01 sec)
 ```
 
-- 查询当前逻辑库中使用指定存储单元的规则
+- Query the rules for using the specified storage unit in current database
 
 ```sql
 SHOW RULES USED STORAGE UNIT ds_1;
@@ -74,10 +74,10 @@ mysql> SHOW RULES USED STORAGE UNIT ds_1;
 2 rows in set (0.01 sec)
 ```
 
-### 保留字
+### Reserved word
 
-`SHOW`、`RULES`、`USED`、`STORAGE`、`UNIT`、`FROM`
+`SHOW`, `RULES`, `USED`, `STORAGE`, `UNIT`, `FROM`
 
-### 相关链接
+### Related links
 
-- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

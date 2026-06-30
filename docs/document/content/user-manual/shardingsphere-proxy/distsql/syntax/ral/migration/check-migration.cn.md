@@ -17,7 +17,7 @@ ShowMigrationList ::=
   'CHECK' 'MIGRATION' migrationJobId 'BY' 'TYPE' '(' 'NAME' '=' migrationCheckAlgorithmType ')'
 
 migrationJobId ::=
-  string
+  integer | identifier | string
 
 migrationCheckAlgorithmType ::=
   string

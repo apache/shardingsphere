@@ -16,18 +16,19 @@ Attributes:
 | *name*                                  | *DataType* | *Description*                                    |
 |-----------------------------------------|------------|--------------------------------------------------|
 | type                                    | String     | SQL translator type                              |
+| props                                   | Properties | SQL translator properties                        |
 | useOriginalSQLWhenTranslatingFailed (?) | boolean    | Whether use original SQL when translating failed |
 
 ## Procedure
 
 1. Set SQL translator type.
-2. Set useOriginalSQLWhenTranslatingFailed to decide whether use original SQL when translating failed.
+2. Set SQL translator properties.
+3. Set useOriginalSQLWhenTranslatingFailed to decide whether use original SQL when translating failed.
 
 ## Sample
 
 ```java
 SQLTranslatorRuleConfiguration ruleConfig = new SQLTranslatorRuleConfiguration("Native", new Properties(), false);
-String translatedSQL = new SQLTranslatorRule(ruleConfig).translate();
 ```
 
 ## Related References

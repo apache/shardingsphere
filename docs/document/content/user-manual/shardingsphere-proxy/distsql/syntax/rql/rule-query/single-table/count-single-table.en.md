@@ -1,5 +1,5 @@
 +++
-title = "COUNT SINGLE_TABLE RULE"
+title = "COUNT SINGLE TABLE"
 weight = 3
 +++
 

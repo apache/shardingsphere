@@ -1,19 +1,19 @@
 +++
-title = "START MIGRATION CHECK"
-weight = 12
+title = "DROP MIGRATION CHECK"
+weight = 13
 +++
 
 ### Description
 
-The `START MIGRATION CHECK` syntax is used to stop migration check process.
+The `DROP MIGRATION CHECK` syntax is used to drop migration check results for the specified migration job.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-StartMigrationCheck ::=
-  'START' 'MIGRATION' 'CHECK' migrationJobId 
+DropMigrationCheck ::=
+  'DROP' 'MIGRATION' 'CHECK' migrationJobId
 
 migrationJobId ::=
   integer | identifier | string
@@ -26,19 +26,19 @@ migrationJobId ::=
 
 ### Supplement
 
-- `migrationJobId` needs to be obtained through [SHOW MIGRATION LIST](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/migration/show-migration-list/) syntax query
+- `migrationJobId` needs to be obtained through [SHOW MIGRATION LIST](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/migration/show-migration-list/).
 
 ### Example
 
-- Stop migration check process
+- Drop migration check results
 
 ```sql
-START MIGRATION CHECK 'j010180026753ef0e25d3932d94d1673ba551';
+DROP MIGRATION CHECK 'j010180026753ef0e25d3932d94d1673ba551';
 ```
 
 ### Reserved word
 
-`START`, `MIGRATION`, `CHECK`
+`DROP`, `MIGRATION`, `CHECK`
 
 ### Related links
 

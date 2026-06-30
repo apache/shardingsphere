@@ -42,7 +42,7 @@ mode:
 | *名称*     | *数据类型* | *说明*     | *默认值*                                                                   |
 |----------|--------|----------|-------------------------------------------------------------------------|
 | provider | String | 元数据存储类型  | H2                                                                      |
-| jdbc_url | String | JDBC URL | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL |
+| jdbc_url | String | JDBC URL | jdbc:h2:mem:config;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL |
 | username | String | 账号       | sa                                                                      |
 | password | String | 密码       |                                                                         |
 
@@ -91,7 +91,7 @@ mode:
     type: JDBC
     props:
       provider: H2
-      jdbc_url: jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+      jdbc_url: jdbc:h2:mem:config;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL
       username: test
       password: Test@9876
 ```

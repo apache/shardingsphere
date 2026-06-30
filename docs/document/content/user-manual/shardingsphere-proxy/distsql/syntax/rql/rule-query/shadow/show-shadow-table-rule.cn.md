@@ -1,19 +1,22 @@
 +++
-title = "SHOW SHADOW TABLE RULES"
+title = "SHOW SHADOW TABLE RULE"
 weight = 2
 +++
 
 ### 描述
 
-`SHOW SHADOW TABLE RULES` 语法用于查询指定逻辑库中的影子表规则。
+`SHOW SHADOW TABLE RULE` 语法用于查询指定逻辑库中的影子表规则。
 
 ### 语法
 
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-ShowEncryptRule::=
-  'SHOW' 'SHADOW' 'TABLE' 'RULES' ('FROM' databaseName)?
+ShowShadowTableRule::=
+  'SHOW' 'SHADOW' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
+
+tableName ::=
+  identifier
 
 databaseName ::=
   identifier
@@ -54,6 +57,12 @@ mysql> SHOW SHADOW TABLE RULES FROM shadow_db;
 2 rows in set (0.00 sec)
 ```
 
+- 查询当前逻辑库中的指定影子表规则
+
+```sql
+SHOW SHADOW TABLE RULE t_order;
+```
+
 - 查询当前逻辑库中的影子表规则
 
 ```sql
@@ -73,9 +82,8 @@ mysql> SHOW SHADOW TABLE RULES;
 
 ### 保留字
 
-`SHOW`、`SHADOW`、`TABLE`、`RULES`、`FROM`
+`SHOW`、`SHADOW`、`TABLE`、`RULE`、`RULES`、`FROM`
 
 ### 相关链接
 
 - [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-

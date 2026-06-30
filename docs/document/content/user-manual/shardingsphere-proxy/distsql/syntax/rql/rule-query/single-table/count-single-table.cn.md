@@ -1,5 +1,5 @@
 +++
-title = "COUNT SINGLE_TABLE RULE"
+title = "COUNT SINGLE TABLE"
 weight = 3
 +++
 
@@ -61,4 +61,3 @@ mysql> COUNT SINGLE TABLE;
 ### 相关链接
 
 - [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-

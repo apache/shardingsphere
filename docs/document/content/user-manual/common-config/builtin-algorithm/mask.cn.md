@@ -32,7 +32,7 @@ weight = 9
 | *名称*         | *数据类型* | *说明*  |
 |--------------|--------|-------|
 | first-n      | int    | 前 n 位 |
-| last-m       | int    | 后 n 位 |
+| last-m       | int    | 后 m 位 |
 | replace-char | String | 替换字符  |
 
 #### 保留自 X 至 Y 脱敏算法
@@ -56,7 +56,7 @@ weight = 9
 | *名称*         | *数据类型* | *说明*  |
 |--------------|--------|-------|
 | first-n      | int    | 前 n 位 |
-| last-m       | int    | 后 n 位 |
+| last-m       | int    | 后 m 位 |
 | replace-char | String | 替换字符  |
 
 #### 遮盖自 X 至 Y 脱敏算法

@@ -19,13 +19,16 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 shardingStrategy ::=
-  'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' '=' columnName | 'SHARDING_COLUMNS' '=' columnNames) ',' 'SHARDING_ALGORITHM' '=' algorithmDefinition
+  'TYPE' '=' strategyType ((',' ('SHARDING_COLUMN' '=' columnName | 'SHARDING_COLUMNS' '=' columnNames))? ',' shardingAlgorithm)?
 
 strategyType ::=
-  string
+  string | 'STANDARD' | 'COMPLEX' | 'HINT' | 'NONE'
+
+shardingAlgorithm ::=
+  'SHARDING_ALGORITHM' '(' algorithmDefinition ')'
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'  
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 columnNames ::=
   columnName (',' columnName)+

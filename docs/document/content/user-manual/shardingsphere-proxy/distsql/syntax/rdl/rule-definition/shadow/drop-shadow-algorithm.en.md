@@ -5,7 +5,7 @@ weight = 7
 
 ## Description
 
-The `DROP SHADOW ALGORITHM` syntax is used to drop shadow algorithm for specified database
+The `DROP SHADOW ALGORITHM` syntax is used to drop shadow algorithms from the current database.
 
 ### Syntax
 
@@ -13,7 +13,7 @@ The `DROP SHADOW ALGORITHM` syntax is used to drop shadow algorithm for specifie
 {{% tab name="Grammar" %}}
 ```sql
 DropShadowAlgorithm ::=
-  'DROP' 'SHADOW' 'ALGORITHM' ifExists? algorithmName (',' algorithmName)* ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'ALGORITHM' ifExists? algorithmName (',' algorithmName)*
 
 ifExists ::=
   'IF' 'EXISTS'
@@ -21,8 +21,6 @@ ifExists ::=
 algorithmName ::=
   identifier
 
-databaseName ::=
-  identifier
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -32,18 +30,17 @@ databaseName ::=
 
 ### Supplement
 
-- When databaseName is not specified, the default is the currently used DATABASE. If DATABASE is not used, No database selected will be prompted;
 - `ifExists` clause is used for avoid `shadow algorithm not exists` error.
 
 ### Example
 
-- Drop mutiple shadow algorithm for specified database
+- Drop multiple shadow algorithms
 
 ```sql
-DROP SHADOW ALGORITHM shadow_rule_t_order_sql_hint_0, shadow_rule_t_order_item_sql_hint_0 FROM shadow_db;
+DROP SHADOW ALGORITHM shadow_rule_t_order_sql_hint_0, shadow_rule_t_order_item_sql_hint_0;
 ```
 
-- Drop single shadow algorithm for current database
+- Drop a shadow algorithm
 
 ```sql
 DROP SHADOW ALGORITHM shadow_rule_t_order_sql_hint_0;
@@ -57,7 +54,7 @@ DROP SHADOW ALGORITHM IF EXISTS shadow_rule_t_order_sql_hint_0;
 
 ### Reserved word
 
-`DROP`, `SHODOW`, `ALGORITHM`, `FROM`
+`DROP`, `SHADOW`, `ALGORITHM`, `IF`, `EXISTS`
 
 ### Related links
 

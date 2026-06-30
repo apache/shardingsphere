@@ -27,10 +27,10 @@ ShowMigrationList ::=
 |--------------------|-------------------------------|
 | id                 | migration job id              |
 | tables             | migration tables              |
-| job_item_count     | migration job sharding number |
 | active             | migration job states          |
 | create_time        | migration job create time     |
 | stop_time          | migration job stop time       |
+| job_item_count     | migration job sharding number |
 | job_sharding_nodes | migration job sharding nodes  |
 
 ### Example

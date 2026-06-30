@@ -13,7 +13,7 @@ weight = 1
 {{% tab name="语法" %}}
 ```sql
 ShowMaskRule::=
-  'SHOW' 'MASK' ('RULES' | 'RULE' ruleName) ('FROM' databaseName)?
+  'SHOW' 'MASK' ('RULES' | 'TABLE'? 'RULE' ruleName) ('FROM' databaseName)?
 
 ruleName ::=
   identifier
@@ -88,12 +88,12 @@ SHOW MASK RULE t_mask FROM mask_db;
 
 ```sql
 mysql> SHOW MASK RULE t_mask FROM mask_db;
-+--------+--------------+------------------+--------------------------------+
-| table  | logic_column | mask_algorithm   | props                          |
-+--------+--------------+------------------+--------------------------------+
-| t_mask | phoneNum     | MASK_FROM_X_TO_Y | to-y=2,replace-char=*,from-x=1 |
-| t_mask | address      | MD5              |                                |
-+--------+--------------+------------------+--------------------------------+
++--------+----------+------------------+--------------------------------+
+| table  | column   | algorithm_type   | algorithm_props                |
++--------+----------+------------------+--------------------------------+
+| t_mask | phoneNum | MASK_FROM_X_TO_Y | to-y=2,replace-char=*,from-x=1 |
+| t_mask | address  | MD5              |                                |
++--------+----------+------------------+--------------------------------+
 2 rows in set (0.00 sec)
 ```
 
@@ -105,20 +105,19 @@ SHOW MASK RULE t_mask;
 
 ```sql
 mysql> SHOW MASK RULE t_mask;
-+--------+--------------+------------------+--------------------------------+
-| table  | logic_column | mask_algorithm   | props                          |
-+--------+--------------+------------------+--------------------------------+
-| t_mask | phoneNum     | MASK_FROM_X_TO_Y | to-y=2,replace-char=*,from-x=1 |
-| t_mask | address      | MD5              |                                |
-+--------+--------------+------------------+--------------------------------+
++--------+----------+------------------+--------------------------------+
+| table  | column   | algorithm_type   | algorithm_props                |
++--------+----------+------------------+--------------------------------+
+| t_mask | phoneNum | MASK_FROM_X_TO_Y | to-y=2,replace-char=*,from-x=1 |
+| t_mask | address  | MD5              |                                |
++--------+----------+------------------+--------------------------------+
 2 rows in set (0.00 sec)
 ```
 
 ### 保留字
 
-`SHOW`、`MASK`、`RULE`、`RULES`、`FROM`
+`SHOW`、`MASK`、`TABLE`、`RULE`、`RULES`、`FROM`
 
 ### 相关链接
 
 - [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-

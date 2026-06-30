@@ -5,7 +5,7 @@ weight = 6
 
 ## Description
 
-The `DROP DEFAULT SHARDING STRATEGY` syntax is used to drop default sharding strategy for specified database.
+The `DROP DEFAULT SHARDING STRATEGY` syntax is used to drop the default sharding strategy from the current database.
 
 ### Syntax
 
@@ -13,13 +13,11 @@ The `DROP DEFAULT SHARDING STRATEGY` syntax is used to drop default sharding str
 {{% tab name="Grammar" %}}
 ```sql
 DropDefaultShardingStrategy ::=
-  'DROP' 'DEFAULT' 'SHARDING' ('TABLE' | 'DATABASE') 'STRATEGY' ifExists? ('FROM' databaseName)?
+  'DROP' 'DEFAULT' 'SHARDING' ('TABLE' | 'DATABASE') 'STRATEGY' ifExists?
 
 ifExists ::=
   'IF' 'EXISTS'
 
-databaseName ::=
-  identifier
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -29,18 +27,17 @@ databaseName ::=
 
 ### Supplement
 
-- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted;
 - `ifExists` clause is used for avoid `Default sharding strategy not exists` error.
 
 ### Example
 
-- Drop default sharding table strategy for specified database
+- Drop default sharding table strategy
 
 ```sql
-DROP DEFAULT SHARDING TABLE STRATEGY FROM sharding_db;
+DROP DEFAULT SHARDING TABLE STRATEGY;
 ```
 
-- Drop default sharding database strategy for current database
+- Drop default sharding database strategy
 
 ```sql
 DROP DEFAULT SHARDING DATABASE STRATEGY;
@@ -60,7 +57,7 @@ DROP DEFAULT SHARDING DATABASE STRATEGY IF EXISTS;
 
 ### Reserved word
 
-`DROP`, `DEFAULT` , `SHARDING`, `TABLE`, `DATABASE` ,`STRATEGY`, `FROM`
+`DROP`, `DEFAULT`, `SHARDING`, `TABLE`, `DATABASE`, `STRATEGY`, `IF`, `EXISTS`
 
 ### Related links
 

@@ -13,7 +13,11 @@ The `SHOW UNLOADED SINGLE TABLES` syntax is used to query unloaded single tables
 {{% tab name="Grammar" %}}
 ```sql
 showUnloadedSingleTables::=
-  'SHOW' 'UNLOADED' 'SINGLE' 'TABLES'
+  'SHOW' 'UNLOADED' 'SINGLE' 'TABLES' ('FROM' fromClause)?
+
+fromClause ::=
+  databaseName ('STORAGE' 'UNIT' storageUnitName ('SCHEMA' schemaName)?)?
+  | 'STORAGE' 'UNIT' storageUnitName ('SCHEMA' schemaName)?
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -27,6 +31,7 @@ showUnloadedSingleTables::=
 |-------------------|---------------------------------------------------------|
 | table_name        | Single table name                                       |
 | storage_unit_name | The storage unit name where the single table is located |
+| schema_name       | Schema name, returned only when schema metadata exists  |
 
 
 ### Example
@@ -47,9 +52,15 @@ mysql> SHOW UNLOADED SINGLE TABLES;
 1 row in set (0.01 sec)
 ```
 
+- Query unloaded single tables from specified storage unit.
+
+```sql
+SHOW UNLOADED SINGLE TABLES FROM STORAGE UNIT ds_0;
+```
+
 ### Reserved word
 
-`SHOW`, `UNLOADED`, `SINGLE`, `TABLES`
+`SHOW`, `UNLOADED`, `SINGLE`, `TABLES`, `FROM`, `STORAGE`, `UNIT`, `SCHEMA`
 
 ### Related links
 
