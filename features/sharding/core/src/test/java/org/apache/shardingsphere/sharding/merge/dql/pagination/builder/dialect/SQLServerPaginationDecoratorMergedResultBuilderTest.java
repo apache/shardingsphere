@@ -55,6 +55,15 @@ class SQLServerPaginationDecoratorMergedResultBuilderTest {
         assertThat(actual, isA(TopAndRowNumberDecoratorMergedResult.class));
     }
     
+    @Test
+    void assertBuildWithRowNumberOffsetAndLimitRowCount() throws SQLException {
+        SQLServerPaginationDecoratorMergedResultBuilder builder = new SQLServerPaginationDecoratorMergedResultBuilder();
+        PaginationContext paginationContext = new PaginationContext(
+                new NumberLiteralRowNumberValueSegment(0, 0, 10L, true), new NumberLiteralLimitValueSegment(0, 0, 10L), Collections.emptyList());
+        DecoratorMergedResult actual = builder.build(new StubMergedResult(), paginationContext);
+        assertThat(actual, isA(TopAndRowNumberDecoratorMergedResult.class));
+    }
+    
     private static final class StubMergedResult implements MergedResult {
         
         @Override
