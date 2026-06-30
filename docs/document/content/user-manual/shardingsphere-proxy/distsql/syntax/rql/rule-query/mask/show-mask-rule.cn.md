@@ -13,7 +13,7 @@ weight = 1
 {{% tab name="语法" %}}
 ```sql
 ShowMaskRule::=
-  'SHOW' 'MASK' ('RULES' | 'TABLE'? 'RULE' ruleName) ('FROM' databaseName)?
+  'SHOW' 'MASK' 'TABLE'? ('RULE' ruleName | 'RULES') ('FROM' databaseName)?
 
 ruleName ::=
   identifier

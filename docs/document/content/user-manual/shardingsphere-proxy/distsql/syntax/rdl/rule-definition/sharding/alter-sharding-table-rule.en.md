@@ -22,7 +22,13 @@ autoTableRuleDefinition ::=
   ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' auditStrategyDefinition)? ')'
 
 strategyDefinition ::=
-  'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' | 'SHARDING_COLUMNS') '=' columnName ',' algorithmDefinition
+  'TYPE' '=' 'NONE'
+  | 'TYPE' '=' 'STANDARD' ',' 'SHARDING_COLUMN' '=' columnName ',' shardingAlgorithm
+  | 'TYPE' '=' 'COMPLEX' ',' 'SHARDING_COLUMNS' '=' columnName ',' columnName (',' columnName)* ',' shardingAlgorithm
+  | 'TYPE' '=' 'HINT' ',' shardingAlgorithm
+
+shardingAlgorithm ::=
+  'SHARDING_ALGORITHM' '(' algorithmDefinition ')'
 
 keyGenerateStrategyDefinition ::= 
   'COLUMN' '=' columnName ',' keyGenerateAlgorithmDefinition
@@ -38,10 +44,10 @@ boolean ::=
   'TRUE' | 'FALSE'
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)?')'
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string
@@ -64,9 +70,6 @@ columnName ::=
 keyGeneratorName ::=
   identifier
 
-strategyType ::=
-  string
-
 algorithmType ::=
   string
 ```
@@ -86,10 +89,7 @@ algorithmType ::=
       expressions to specify required resources;
     - `DATABASE_STRATEGY`, `TABLE_STRATEGY` are the database sharding strategy and the table sharding strategy, which
       are optional, and the default strategy is used when not configured;
-    - The attribute `TYPE` in `strategyDefinition` is used to specify the type
-      of [Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/#class-based-sharding-algorithm), currently only
-      supports `STANDARD`, `COMPLEX`. Using `COMPLEX` requires specifying multiple sharding columns
-      with `SHARDING_COLUMNS`.
+    - The attribute `TYPE` in `strategyDefinition` specifies the strategy type. `STANDARD`, `COMPLEX`, `HINT`, and `NONE` are supported. Using `COMPLEX` requires specifying multiple sharding columns with `SHARDING_COLUMNS`.
 - use auto sharding table rule:
     - `STORAGE_UNITS` can only use storage units that have been registered to the current database, and the required storage units can be
       specified by enumeration or INLINE expression;
@@ -147,7 +147,7 @@ AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 
 ### Reserved word
 
-`ALTER`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `STORAGE_UNITS`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `AUDITORS`, `ALLOW_HINT_DISABLE`
+`ALTER`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `STORAGE_UNITS`, `SHARDING_COLUMN`, `SHARDING_COLUMNS`, `TYPE`, `GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `ALLOW_HINT_DISABLE`, `TRUE`, `FALSE`
 
 ### Related links
 

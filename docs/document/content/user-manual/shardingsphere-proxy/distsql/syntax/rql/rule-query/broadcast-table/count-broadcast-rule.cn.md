@@ -52,7 +52,7 @@ mysql> COUNT BROADCAST RULE FROM sharding_db;
 +--------------------------+----------------+-------+
 | broadcast_table          | sharding_db    | 0     |
 +--------------------------+----------------+-------+
-1 rows in set (0.00 sec)
+1 row in set (0.00 sec)
 ```
 
 - 查询当前逻辑库中的广播表规则数量
@@ -68,7 +68,7 @@ mysql> COUNT BROADCAST RULE;
 +--------------------------+----------------+-------+
 | broadcast_table          | sharding_db    | 0     |
 +--------------------------+----------------+-------+
-1 rows in set (0.00 sec)
+1 row in set (0.00 sec)
 ```
 
 ### 保留字

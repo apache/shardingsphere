@@ -48,11 +48,10 @@ weight = 6
 
 可配置属性：
 
-| *名称*       | *数据类型*     | *说明*     |
-|------------|------------|----------|
-| name       | String     | 脱敏算法名称   |
-| type       | String     | 脱敏算法类型   |
-| properties | Properties | 脱敏算法属性配置 |
+| *名称* | *数据类型*     | *说明*     |
+|------|------------|----------|
+| type | String     | 脱敏算法类型   |
+| props | Properties | 脱敏算法属性配置 |
 
 算法类型的详情，请参见[内置脱敏算法列表](/cn/user-manual/common-config/builtin-algorithm/mask)。
 

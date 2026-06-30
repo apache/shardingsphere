@@ -19,7 +19,7 @@ encryptDefinition ::=
   ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)*  ')' ')'
 
 columnDefinition ::=
-  '(' 'NAME' '=' columnName ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
+  '(' 'NAME' '=' columnName ',' 'CIPHER' '=' cipherColumnName (',' ('ASSISTED_QUERY' | 'ASSISTED_QUERY_COLUMN') '=' assistedQueryColumnName)? (',' ('LIKE_QUERY' | 'LIKE_QUERY_COLUMN') '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')'
 
 encryptAlgorithmDefinition ::=
   'ENCRYPT_ALGORITHM' '(' algorithmDefinition ')'
@@ -34,7 +34,7 @@ algorithmDefinition ::=
   'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 ruleName ::=
   identifier
@@ -68,7 +68,7 @@ value ::=
 
 ### Supplement
 
-- `CIPHER` specifies the cipher column, `ASSISTED_QUERY` specifies the assisted query column，`LIKE_QUERY` specifies the like query column
+- `CIPHER` specifies the cipher column, `ASSISTED_QUERY` or `ASSISTED_QUERY_COLUMN` specifies the assisted query column, and `LIKE_QUERY` or `LIKE_QUERY_COLUMN` specifies the like query column
 - `algorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/)
 
 ### Example
@@ -85,7 +85,7 @@ COLUMNS(
 
 ### Reserved words
 
-`ALTER`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `ASSISTED_QUERY`, `LIKE_QUERY`, `ENCRYPT_ALGORITHM`, `ASSISTED_QUERY_ALGORITHM`, `LIKE_QUERY_ALGORITHM`, `TYPE`, `TRUE`, `FALSE`
+`ALTER`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `ASSISTED_QUERY`, `ASSISTED_QUERY_COLUMN`, `LIKE_QUERY`, `LIKE_QUERY_COLUMN`, `ENCRYPT_ALGORITHM`, `ASSISTED_QUERY_ALGORITHM`, `LIKE_QUERY_ALGORITHM`, `TYPE`, `TRUE`, `FALSE`
 
 ### Related links
 

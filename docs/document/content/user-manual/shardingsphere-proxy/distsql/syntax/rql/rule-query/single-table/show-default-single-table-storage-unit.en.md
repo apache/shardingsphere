@@ -5,7 +5,7 @@ weight = 2
 
 ### Description
 
-The `SHOW DEFAULT SINGLE TABLE STORAGE UNIT` syntax is used to query storage units for specified database.
+The `SHOW DEFAULT SINGLE TABLE STORAGE UNIT` syntax is used to query the default single table storage unit for the specified or current database.
 
 ### Syntax
 
@@ -36,7 +36,7 @@ databaseName ::=
 
 ### Example
 
-- Query storage units for specified database.
+- Query the default single table storage unit for current database.
 
 ```sql
 SHOW DEFAULT SINGLE TABLE STORAGE UNIT

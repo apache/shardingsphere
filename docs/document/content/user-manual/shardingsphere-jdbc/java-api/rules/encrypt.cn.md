@@ -61,11 +61,10 @@ weight = 5
 
 可配置属性：
 
-| *名称*       | *数据类型*     | *说明*      |
-|------------|------------|-----------|
-| name       | String     | 加解密算法名称   |
-| type       | String     | 加解密算法类型   |
-| properties | Properties | 加解密算法属性配置 |
+| *名称* | *数据类型*     | *说明*      |
+|------|------------|-----------|
+| type | String     | 加解密算法类型   |
+| props | Properties | 加解密算法属性配置 |
 
 算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/common-config/builtin-algorithm/encrypt)。
 
@@ -86,11 +85,12 @@ public final class EncryptDatabasesConfiguration {
         props.setProperty("digest-algorithm-name", "SHA-1");
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", new EncryptColumnItemRuleConfiguration("username", "name_encryptor"));
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd", "pwd_encryptor"));
-        columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_encryptor"));
+        columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_assisted_encryptor"));
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
         encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
-        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
+        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("AES", props));
+        encryptAlgorithmConfigs.put("pwd_assisted_encryptor", new AlgorithmConfiguration("MD5", new Properties()));
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
         return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfig), props);
     }

@@ -173,11 +173,13 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
         result.getTables().add(getOrderItemTableRuleConfiguration());
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order, t_order_item"));
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
-        result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
+        result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
+        Properties tableShardingProps = new Properties();
+        tableShardingProps.setProperty("sharding-count", "2");
         result.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", props));
-        result.getShardingAlgorithms().put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
+        result.getShardingAlgorithms().put("hash_mod", new AlgorithmConfiguration("HASH_MOD", tableShardingProps));
         result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         result.getKeyGenerateStrategies().put("t_order_order_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "order_id"));
         result.getKeyGenerateStrategies().put("t_order_item_order_item_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order_item", "order_item_id"));
@@ -204,7 +206,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
     }
     
     private BroadcastRuleConfiguration createBroadcastRuleConfiguration() {
-        return new BroadcastRuleConfiguration(Collections.singletonList("t_address"));;
+        return new BroadcastRuleConfiguration(Collections.singletonList("t_address"));
     }
 }
 ```

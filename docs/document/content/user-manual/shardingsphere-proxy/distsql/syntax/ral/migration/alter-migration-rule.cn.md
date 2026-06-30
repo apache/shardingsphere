@@ -22,7 +22,7 @@ writeConfiguration ::=
   'WRITE' '(' ('WORKER_THREAD' '=' workerThreadPoolSize ',')? ('BATCH_SIZE' '=' batchSize ',')? (rateLimiter)? ')'
 
 dataChannel ::=
-  'STREAM_CHANNEL' '(' 'TYPE' '(' 'NAME' '=' algorithmName ',' propertiesDefinition ')' ')'
+  'STREAM_CHANNEL' '(' algorithmDefinition ')'
 
 workerThreadPoolSize ::=
   int
@@ -34,13 +34,16 @@ shardingSize ::=
   int
 
 rateLimiter ::=
-  'RATE_LIMITER' '(' 'TYPE' '(' 'NAME' '=' algorithmName ',' propertiesDefinition ')' ')'
+  'RATE_LIMITER' '(' algorithmDefinition ')'
 
 algorithmName ::=
   string
 
+algorithmDefinition ::=
+  'TYPE' '(' 'NAME' '=' algorithmName (',' propertiesDefinition)? ')'
+
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string

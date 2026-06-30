@@ -48,11 +48,10 @@ Class name: org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfi
 
 Attributes:
 
-| *Name*     | *DataType* | *Description*             |
-|------------|------------|---------------------------|
-| name       | String     | Mask algorithm name       |
-| type       | String     | Mask algorithm type       |
-| properties | Properties | Mask algorithm properties |
+| *Name* | *DataType* | *Description*             |
+|--------|------------|---------------------------|
+| type   | String     | Mask algorithm type       |
+| props  | Properties | Mask algorithm properties |
 
 Please refer to [Built-in Data Masking Algorithm List](/en/user-manual/common-config/builtin-algorithm/mask) for more details about type of algorithm.
 

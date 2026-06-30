@@ -5,7 +5,7 @@ weight = 2
 
 ## Description
 
-The `ALTER MASK RULE` syntax is used to create a mask rule.
+The `ALTER MASK RULE` syntax is used to alter a mask rule.
 
 ### Syntax
 
@@ -25,7 +25,7 @@ maskAlgorithmDefinition ::=
   'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 ruleName ::=
   identifier
