@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowGuidancePayloadBuilder;
@@ -166,12 +167,12 @@ public final class WorkflowApplyResponseBuilder {
             return MCPNextActionUtils.ordered(MCPNextActionUtils.stop("Preview has no artifacts to approve."));
         }
         if (EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode)) {
-            return MCPNextActionUtils.ordered(MCPNextActionUtils.callTool("database_gateway_apply_workflow",
+            return MCPNextActionUtils.ordered(MCPNextActionUtils.callTool(WorkflowToolDescriptors.APPLY_TOOL_NAME,
                     createPreviewNextActionReason(applyExecutionMode), createExecutionArguments(snapshot, applyExecutionMode)));
         }
         return MCPNextActionUtils.ordered(
                 MCPNextActionUtils.askUser(createPreviewNextActionReason(applyExecutionMode), List.of("approved_steps")),
-                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_apply_workflow",
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(WorkflowToolDescriptors.APPLY_TOOL_NAME,
                         "Apply reviewed workflow artifacts after merging approved_steps from action 1 into the arguments.",
                         createExecutionArguments(snapshot, applyExecutionMode)), 1));
     }
@@ -191,7 +192,7 @@ public final class WorkflowApplyResponseBuilder {
                 "confirmation_required", true,
                 "confirmation_field", "manual_artifacts_executed",
                 "validation_blocked_until", "manual_artifacts_executed",
-                "validation_tool_after_manual_execution", "database_gateway_validate_workflow",
+                "validation_tool_after_manual_execution", WorkflowToolDescriptors.VALIDATE_TOOL_NAME,
                 "safe_independent_read_only_checks", "database_gateway_execute_query may run before manual execution confirmation when the user asked for read-only verification.");
     }
     
@@ -211,7 +212,7 @@ public final class WorkflowApplyResponseBuilder {
         result.put("external_execution_required", true);
         result.put("requires_user_confirmation", true);
         result.put("validation_blocked_until", "manual_artifacts_executed");
-        result.put("validation_tool_after_manual_execution", "database_gateway_validate_workflow");
+        result.put("validation_tool_after_manual_execution", WorkflowToolDescriptors.VALIDATE_TOOL_NAME);
         result.put("validation_arguments_after_manual_execution", Map.of(WorkflowFieldNames.PLAN_ID, planId));
         return result;
     }

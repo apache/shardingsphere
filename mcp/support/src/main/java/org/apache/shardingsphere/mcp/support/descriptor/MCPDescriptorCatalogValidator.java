@@ -34,15 +34,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 final class MCPDescriptorCatalogValidator {
     
     private static final Collection<String> REMOVED_MODEL_FACING_FIELDS = Set.of(
             "target_tool", "target_resource", "required_arguments", "action_kind", "suggested_next_tool", "suggested_next_tools", "recommended_next_tool",
             "recommended_recovery", "suggested_next_action", "approved_by_user", "requires_user_approval", "approval_required", "user_overrides");
+    
+    private static final Collection<String> SUPPORTED_INPUT_SCHEMA_TOP_LEVEL_FIELDS = Set.of("type", "properties", "required", "additionalProperties");
     
     private static final Map<String, Collection<String>> NEXT_ACTION_ALLOWED_FIELDS = createNextActionAllowedFields();
     
@@ -84,7 +86,7 @@ final class MCPDescriptorCatalogValidator {
     
     static void validate(final MCPDescriptorCatalog catalog) {
         validateResourceDescriptors(catalog);
-        validateToolDescriptors(catalog.getToolDescriptors(), catalog.getToolRuntimeDescriptors());
+        validateToolDescriptors(catalog);
         validatePromptDescriptors(catalog.getPromptDescriptors(), catalog.getPromptTemplateBindings());
         validateCompletionTargetDescriptors(catalog.getCompletionTargetDescriptors(), catalog.getPromptDescriptors(), catalog.getAllResourceDescriptors());
         validateResourceNavigationDescriptors(catalog.getResourceNavigationDescriptors(), catalog);
@@ -139,11 +141,16 @@ final class MCPDescriptorCatalogValidator {
         }
     }
     
-    private static void validateToolDescriptors(final Collection<MCPToolDescriptor> descriptors, final Collection<MCPToolRuntimeDescriptor> runtimeDescriptors) {
+    private static void validateToolDescriptors(final MCPDescriptorCatalog catalog) {
+        Collection<MCPToolDescriptor> descriptors = catalog.getToolDescriptors();
+        Collection<MCPToolRuntimeDescriptor> runtimeDescriptors = catalog.getToolRuntimeDescriptors();
         Collection<MCPToolDescriptorValidator> descriptorValidators = MCPToolDescriptorValidatorLoader.load();
         Map<String, MCPToolDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         Map<String, MCPToolRuntimeDescriptor> runtimes = runtimeDescriptors.stream()
                 .collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each));
+        Set<String> resourceIdentifiers = catalog.getAllResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).collect(Collectors.toSet());
+        Set<String> shardingSphereResourceIdentifiers = catalog.getShardingSphereResourceMetadata().stream()
+                .map(ShardingSphereMCPResourceMetadata::getUriOrTemplate).collect(Collectors.toSet());
         for (MCPToolDescriptor each : descriptors) {
             ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(each.getName(), each),
                     () -> new IllegalStateException(String.format("Duplicate MCP tool descriptor `%s`.", each.getName())));
@@ -151,16 +158,58 @@ final class MCPDescriptorCatalogValidator {
             validateToolOutputSchema(each, descriptorValidators);
             validateDestructiveToolDescriptor(each, runtimes.get(each.getName()));
             validatePlanningExecutionMode(each);
+            validateRelatedResourceUris(each, resourceIdentifiers, shardingSphereResourceIdentifiers);
         }
+        validatePlanningToolRuntimeDescriptors(registered, runtimeDescriptors);
     }
     
     private static void validateToolInputSchema(final MCPToolDescriptor descriptor) {
         Map<String, Object> inputSchema = descriptor.getInputSchema();
+        for (String each : inputSchema.keySet()) {
+            ShardingSpherePreconditions.checkState(SUPPORTED_INPUT_SCHEMA_TOP_LEVEL_FIELDS.contains(each),
+                    () -> new IllegalStateException(String.format("Tool `%s` inputSchema contains unsupported top-level field `%s`.", descriptor.getName(), each)));
+        }
         ShardingSpherePreconditions.checkState("object".equals(inputSchema.get("type")),
                 () -> new IllegalStateException(String.format("Tool `%s` inputSchema must be an object.", descriptor.getName())));
         Object properties = inputSchema.get("properties");
         ShardingSpherePreconditions.checkState(properties instanceof Map, () -> new IllegalStateException(String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName())));
         validateNoRemovedModelFacingFields(descriptor, inputSchema);
+    }
+    
+    private static void validateRelatedResourceUris(final MCPToolDescriptor descriptor, final Set<String> resourceIdentifiers, final Set<String> shardingSphereResourceIdentifiers) {
+        Object value = descriptor.getMeta().get(MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS);
+        if (null == value) {
+            return;
+        }
+        ShardingSpherePreconditions.checkState(value instanceof Collection,
+                () -> new IllegalStateException(String.format("Tool `%s` metadata `%s` must be a list.", descriptor.getName(), MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS)));
+        for (Object each : (Collection<?>) value) {
+            String uri = String.valueOf(each);
+            ShardingSpherePreconditions.checkState(resourceIdentifiers.contains(uri),
+                    () -> new IllegalStateException(String.format("Tool `%s` metadata `%s` references unknown resource `%s`.",
+                            descriptor.getName(), MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, uri)));
+            ShardingSpherePreconditions.checkState(shardingSphereResourceIdentifiers.contains(uri),
+                    () -> new IllegalStateException(String.format("Tool `%s` metadata `%s` references resource `%s` without ShardingSphere metadata.",
+                            descriptor.getName(), MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, uri)));
+        }
+    }
+    
+    private static void validatePlanningToolRuntimeDescriptors(final Map<String, MCPToolDescriptor> descriptors, final Collection<MCPToolRuntimeDescriptor> runtimeDescriptors) {
+        Map<String, String> workflowKinds = new LinkedHashMap<>(runtimeDescriptors.size(), 1F);
+        for (MCPToolRuntimeDescriptor each : runtimeDescriptors) {
+            if (!"plan".equals(each.getWorkflowRole())) {
+                continue;
+            }
+            MCPToolDescriptor descriptor = descriptors.get(each.getToolName());
+            ShardingSpherePreconditions.checkState(null != descriptor,
+                    () -> new IllegalStateException(String.format("Planning runtime tool `%s` must reference a registered tool descriptor.", each.getToolName())));
+            Object workflowKind = descriptor.getMeta().get(MCPShardingSphereMetadataKeys.WORKFLOW_KIND);
+            ShardingSpherePreconditions.checkState(null != workflowKind && !workflowKind.toString().isBlank(),
+                    () -> new IllegalStateException(String.format("Planning tool `%s` metadata must declare `%s`.", each.getToolName(), MCPShardingSphereMetadataKeys.WORKFLOW_KIND)));
+            String previousToolName = workflowKinds.putIfAbsent(workflowKind.toString(), each.getToolName());
+            ShardingSpherePreconditions.checkState(null == previousToolName, () -> new IllegalStateException(
+                    String.format("Planning workflow kind `%s` is used by both `%s` and `%s`.", workflowKind, previousToolName, each.getToolName())));
+        }
     }
     
     private static void validateToolOutputSchema(final MCPToolDescriptor descriptor, final Collection<MCPToolDescriptorValidator> descriptorValidators) {
@@ -436,8 +485,34 @@ final class MCPDescriptorCatalogValidator {
             validateCompletionReference(each, promptNames, resourceDescriptors.keySet());
             validatePromptCompletionArguments(each, promptArguments);
             validateResourceCompletionArguments(each, resourceDescriptors);
+            validateCompletionRequiredContextArguments(each);
             ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(each.getReferenceType() + ":" + each.getReference(), each),
                     () -> new IllegalStateException(String.format("Duplicate MCP completion target `%s:%s`.", each.getReferenceType(), each.getReference())));
+        }
+    }
+    
+    private static void validateCompletionRequiredContextArguments(final MCPCompletionTargetDescriptor descriptor) {
+        Object value = descriptor.getMeta().get(MCPShardingSphereMetadataKeys.REQUIRED_CONTEXT_ARGUMENTS);
+        if (null == value) {
+            return;
+        }
+        ShardingSpherePreconditions.checkState(value instanceof Map,
+                () -> new IllegalStateException(String.format("Completion target `%s:%s` metadata `%s` must be an object.",
+                        descriptor.getReferenceType(), descriptor.getReference(), MCPShardingSphereMetadataKeys.REQUIRED_CONTEXT_ARGUMENTS)));
+        Set<String> argumentNames = new HashSet<>(descriptor.getArguments());
+        for (Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
+            String argumentName = String.valueOf(entry.getKey());
+            ShardingSpherePreconditions.checkState(argumentNames.contains(argumentName),
+                    () -> new IllegalStateException(String.format("Completion target `%s:%s` required context argument `%s` is not declared by the target.",
+                            descriptor.getReferenceType(), descriptor.getReference(), argumentName)));
+            ShardingSpherePreconditions.checkState(entry.getValue() instanceof Collection,
+                    () -> new IllegalStateException(String.format("Completion target `%s:%s` required context for `%s` must be a list.",
+                            descriptor.getReferenceType(), descriptor.getReference(), argumentName)));
+            for (Object each : (Collection<?>) entry.getValue()) {
+                ShardingSpherePreconditions.checkState(argumentNames.contains(String.valueOf(each)),
+                        () -> new IllegalStateException(String.format("Completion target `%s:%s` context argument `%s` for `%s` is not declared by the target.",
+                                descriptor.getReferenceType(), descriptor.getReference(), each, argumentName)));
+            }
         }
     }
     

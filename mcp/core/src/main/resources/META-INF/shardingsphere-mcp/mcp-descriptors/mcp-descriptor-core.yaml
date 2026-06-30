@@ -548,12 +548,20 @@ completionTargets:
       - database
       - storageUnit
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        storageUnit:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
     arguments:
       - database
       - storageUnit
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        storageUnit:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/single-tables
     arguments:
@@ -565,6 +573,10 @@ completionTargets:
       - database
       - table
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        table:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/single-table/default-storage-unit
     arguments:
@@ -576,12 +588,20 @@ completionTargets:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
     arguments:
@@ -589,6 +609,13 @@ completionTargets:
       - schema
       - table
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
     arguments:
@@ -596,6 +623,13 @@ completionTargets:
       - schema
       - table
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
     arguments:
@@ -604,6 +638,17 @@ completionTargets:
       - table
       - column
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
+        column:
+          - database
+          - schema
+          - table
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
     arguments:
@@ -611,6 +656,13 @@ completionTargets:
       - schema
       - table
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
     arguments:
@@ -619,12 +671,27 @@ completionTargets:
       - table
       - index
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
+        index:
+          - database
+          - schema
+          - table
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/sequences
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
     arguments:
@@ -632,6 +699,13 @@ completionTargets:
       - schema
       - sequence
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        sequence:
+          - database
+          - schema
 resourceNavigation:
   - from: shardingsphere://capabilities
     to: shardingsphere://runtime

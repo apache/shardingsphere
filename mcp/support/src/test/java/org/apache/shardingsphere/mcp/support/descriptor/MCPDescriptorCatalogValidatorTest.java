@@ -78,6 +78,45 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
+    void assertValidateRejectsUnsupportedInputSchemaTopLevelField() {
+        Map<String, Object> inputSchema = new LinkedHashMap<>(createInputSchema());
+        inputSchema.put("oneOf", List.of(Map.of("required", List.of("query"))));
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.", inputSchema,
+                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                "Tool `database_gateway_test_tool` inputSchema contains unsupported top-level field `oneOf`.");
+    }
+    
+    @Test
+    void assertValidateRejectsUnknownRelatedResourceUri() {
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.", createInputSchema(),
+                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true),
+                Map.of(MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, List.of("shardingsphere://unknown"))))),
+                "Tool `database_gateway_test_tool` metadata `org.apache.shardingsphere/related-resource-uris` references unknown resource `shardingsphere://unknown`.");
+    }
+    
+    @Test
+    void assertValidateRejectsPlanningRuntimeWithoutWorkflowKind() {
+        String toolName = "database_gateway_test_plan_rule";
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", true, false, true, true), createOutputSchema())),
+                List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
+                "Planning tool `database_gateway_test_plan_rule` metadata must declare `org.apache.shardingsphere/workflow-kind`.");
+    }
+    
+    @Test
+    void assertValidateRejectsDuplicatePlanningWorkflowKind() {
+        MCPToolDescriptor firstTool = createToolDescriptor("database_gateway_test_plan_rule", new MCPToolAnnotations("Test Tool", true, false, true, true), createOutputSchema(),
+                Map.of(MCPShardingSphereMetadataKeys.WORKFLOW_KIND, "test.rule"));
+        MCPToolDescriptor secondTool = createToolDescriptor("database_gateway_test_plan_rule_again", new MCPToolAnnotations("Test Tool", true, false, true, true), createOutputSchema(),
+                Map.of(MCPShardingSphereMetadataKeys.WORKFLOW_KIND, "test.rule"));
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(firstTool, secondTool), List.of(
+                new MCPToolRuntimeDescriptor(firstTool.getName(), "plan", List.of()),
+                new MCPToolRuntimeDescriptor(secondTool.getName(), "plan", List.of()))),
+                "Planning workflow kind `test.rule` is used by both `database_gateway_test_plan_rule` and `database_gateway_test_plan_rule_again`.");
+    }
+    
+    @Test
     void assertValidateRejectsUnsupportedNextActionSchemaField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
@@ -154,6 +193,20 @@ class MCPDescriptorCatalogValidatorTest {
                 List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md")))));
     }
     
+    @Test
+    void assertValidateRejectsUnknownCompletionRequiredContextArgument() {
+        MCPPromptDescriptor prompt = createPromptDescriptor("test_prompt", List.of(
+                new MCPPromptArgumentDescriptor("database", "Database", "Logical database.", false),
+                new MCPPromptArgumentDescriptor("schema", "Schema", "Schema.", false)),
+                Map.of("org.apache.shardingsphere/client-form-only-arguments", List.of("database", "schema")));
+        MCPCompletionTargetDescriptor completion = new MCPCompletionTargetDescriptor("prompt", "test_prompt", List.of("database", "schema"), 50,
+                Map.of(MCPShardingSphereMetadataKeys.REQUIRED_CONTEXT_ARGUMENTS, Map.of("schema", List.of("tenant"))));
+        assertValidationError(new MCPDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), List.of(prompt),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md")),
+                List.of(completion), List.of(), List.of()),
+                "Completion target `prompt:test_prompt` context argument `tenant` for `schema` is not declared by the target.");
+    }
+    
     private void assertValidationError(final MCPDescriptorCatalog catalog, final String expectedMessage) {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogValidator.validate(catalog));
         assertThat(actual.getMessage(), is(expectedMessage));
@@ -166,6 +219,11 @@ class MCPDescriptorCatalogValidatorTest {
     private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPResourceDescriptor> resourceTemplateDescriptors,
                                                final List<MCPToolDescriptor> toolDescriptors) {
         return new MCPDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), List.of());
+    }
+    
+    private MCPDescriptorCatalog createToolRuntimeCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPToolDescriptor> toolDescriptors,
+                                                          final List<MCPToolRuntimeDescriptor> runtimeDescriptors) {
+        return new MCPDescriptorCatalog(resourceDescriptors, List.of(), List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), runtimeDescriptors);
     }
     
     private MCPDescriptorCatalog createPromptCatalog(final List<MCPPromptDescriptor> promptDescriptors, final List<MCPPromptTemplateBinding> promptTemplateBindings) {
@@ -190,7 +248,11 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     private MCPToolDescriptor createToolDescriptor(final String toolName, final MCPToolAnnotations annotations, final Map<String, Object> outputSchema) {
-        return new MCPToolDescriptor(toolName, "Test Tool", "Run a test tool.", createInputSchema(), outputSchema, annotations, Map.of());
+        return createToolDescriptor(toolName, annotations, outputSchema, Map.of());
+    }
+    
+    private MCPToolDescriptor createToolDescriptor(final String toolName, final MCPToolAnnotations annotations, final Map<String, Object> outputSchema, final Map<String, Object> meta) {
+        return new MCPToolDescriptor(toolName, "Test Tool", "Run a test tool.", createInputSchema(), outputSchema, annotations, meta);
     }
     
     private Map<String, Object> createInputSchema() {

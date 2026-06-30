@@ -140,12 +140,20 @@ completionTargets:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: prompt
     reference: safe_sql_execution
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: prompt
     reference: recover_workflow
     arguments:

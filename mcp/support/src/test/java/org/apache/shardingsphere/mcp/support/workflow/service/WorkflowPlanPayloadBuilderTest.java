@@ -31,8 +31,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 import java.util.Map;
@@ -341,19 +339,11 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_plan_encrypt_rule"));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @CsvSource({
-            "table rule,sharding.table.rule,database_gateway_plan_sharding_table_rule",
-            "table reference,sharding.table.reference,database_gateway_plan_sharding_table_reference_rule",
-            "default strategy,sharding.default.strategy,database_gateway_plan_sharding_default_strategy",
-            "key generator,sharding.key.generator,database_gateway_plan_sharding_key_generator",
-            "key generate strategy,sharding.key.generate.strategy,database_gateway_plan_sharding_key_generate_strategy",
-            "component cleanup,sharding.component.cleanup,database_gateway_plan_sharding_rule_component_cleanup"
-    })
-    void assertBuildRecommendsShardingPlanningToolAfterFailure(final String displayName, final String workflowKind, final String expectedToolName) {
+    @Test
+    void assertBuildAsksUserWhenPlanningToolIsNotInCatalogAfterFailure() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf(workflowKind));
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("sharding.table.rule"));
         snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
         snapshot.setClarifiedIntent(new ClarifiedIntent());
         WorkflowRequest request = new WorkflowRequest();
@@ -361,7 +351,8 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Sharding workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
-        assertThat(actualNextAction.get("tool_name"), is(expectedToolName));
+        assertThat(actualNextAction.get("type"), is("ask_user"));
+        assertThat(actualNextAction.get("required_inputs"), is(List.of("workflow_kind", "issues")));
     }
     
     private List<String> extractResourceUris(final List<?> resources) {
