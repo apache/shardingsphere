@@ -26,7 +26,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   write_db_shadow:
     url: jdbc:postgresql://postgresql.readwrite_splitting_and_shadow.host:5432/write_db_shadow
@@ -36,7 +36,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   read_0:
     url: jdbc:postgresql://postgresql.readwrite_splitting_and_shadow.host:5432/read_0
@@ -46,7 +46,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   read_1:
     url: jdbc:postgresql://postgresql.readwrite_splitting_and_shadow.host:5432/read_1
@@ -56,7 +56,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
 
 rules:

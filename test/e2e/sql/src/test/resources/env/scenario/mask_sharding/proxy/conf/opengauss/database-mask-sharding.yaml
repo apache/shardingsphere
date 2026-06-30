@@ -26,7 +26,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   mask_ds_1:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_1
@@ -36,7 +36,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   mask_ds_2:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_2
@@ -46,7 +46,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   mask_ds_3:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_3
@@ -56,7 +56,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   mask_ds_4:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_4
@@ -66,7 +66,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   mask_ds_5:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_5
@@ -76,7 +76,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   mask_ds_6:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_6
@@ -86,7 +86,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   mask_ds_7:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_7
@@ -96,7 +96,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   mask_ds_8:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_8
@@ -106,7 +106,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   mask_ds_9:
     url: jdbc:opengauss://opengauss.mask_sharding.host:5432/mask_ds_9
@@ -116,7 +116,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
 
 rules:
