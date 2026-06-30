@@ -5,7 +5,7 @@ weight = 1
 
 ## Description
 
-The `ALTER READWRITE_SPLITTING RULE ENABLE/DISABLE` syntax is used enable/disable a specified read source for specified readwrite-splitting rule.
+The `ALTER READWRITE_SPLITTING RULE ENABLE/DISABLE` syntax is used to enable/disable a specified read source for specified readwrite-splitting rule.
 
 ### Syntax
 

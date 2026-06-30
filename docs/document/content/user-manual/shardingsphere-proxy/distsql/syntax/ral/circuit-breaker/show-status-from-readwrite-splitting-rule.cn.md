@@ -12,7 +12,7 @@ weight = 2
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-ShowStatusFromReadwriteSplittingRule ::=
+ShowStatusFromReadwriteSplittingRules ::=
   'SHOW' 'STATUS' 'FROM' 'READWRITE_SPLITTING' ('RULES' | 'RULE' groupName) ('FROM' databaseName)?
 
 groupName ::=
@@ -92,7 +92,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 - 查询当前逻辑库中所有读写分离存储单元状态
 
 ```sql
-mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
+SHOW STATUS FROM READWRITE_SPLITTING RULES;
 ```
 
 ```sql

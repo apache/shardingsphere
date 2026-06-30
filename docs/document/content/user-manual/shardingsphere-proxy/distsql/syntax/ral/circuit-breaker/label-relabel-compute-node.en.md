@@ -1,19 +1,19 @@
 +++
-title = "LABEL|RELABEL COMPUTE NODES"
+title = "LABEL|RELABEL COMPUTE NODE"
 weight = 5
 +++
 
 ### Description
 
-The `LABEL|RELABEL COMPUTE NODES` syntax is used to label `PROXY` instance.
+The `LABEL|RELABEL COMPUTE NODE` syntax is used to label `PROXY` instance.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-LableRelabelComputeNodes ::=
-  ('LABEL' | 'RELABEL') 'COMPUTE' 'NODE' instance_id 'WITH' labelName
+LabelRelabelComputeNode ::=
+  ('LABEL' | 'RELABEL') 'COMPUTE' 'NODE' instance_id 'WITH' labelName (',' labelName)*
 
 instance_id ::=
   string
@@ -29,7 +29,7 @@ labelName ::=
 
 ### Supplement
 
-- needs to be obtained through [SHOW COMPUTE NODES](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/circuit-breaker/show-compute-nodes/) syntax query
+- `instance_id` needs to be obtained through [SHOW COMPUTE NODES](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/circuit-breaker/show-compute-nodes/) syntax query
 
 - `RELABEL` is used to relabel `PROXY` instance
 
@@ -49,7 +49,7 @@ RELABEL COMPUTE NODE "0699e636-ade9-4681-b37a-65240c584bb3" WITH label_2;
 
 ### Reserved word
 
-`LABEL`, `RELABEL`, `COMPUTE`, `NODES`, `WITH`
+`LABEL`, `RELABEL`, `COMPUTE`, `NODE`, `WITH`
 
 ### Related links
 

@@ -5,7 +5,7 @@ weight = 2
 
 ## 背景信息
 
-ShardingSphere 内置提供了多种分片算法，按照类型可以划分为自动分片算法、标准分片算法、复合分片算法和 Hint 分片算法，能够满足用户绝大多数业务场景的需要。此外，考虑到业务场景的复杂性，内置算法也提供了自定义分片算法的方式，用户可以通过编写 Java 代码来完成复杂的分片逻辑。
+ShardingSphere 内置提供了多种分片算法，按照类型可以划分为自动分片算法、标准分片算法、复合分片算法和 Hint 分片算法。用户可以通过实现对应的 SPI 提供自定义分片算法，以完成复杂的分片逻辑。
 需要注意的是，自动分片算法的分片逻辑由 ShardingSphere 自动管理，需要通过配置 autoTables 分片规则进行使用。
 
 ## 参数解释
@@ -79,7 +79,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 使用 `InlineExpressionParser` SPI 的默认实现的 Groovy 的表达式，提供对 SQL 语句中的 `=` 和 `IN` 的分片操作支持，只支持单分片键。
 对于简单的分片算法，可以通过简单的配置使用，从而避免繁琐的 Java 代码开发，如: `t_user_$->{u_id % 8}` 表示 `t_user` 表根据 `u_id` 模 8，而分成 8 张表，表名称为 `t_user_0` 到 `t_user_7`。
-详情请参见[行表达式](/cn/dev-manual/sharding/#implementation-classes)。
+详情请参见[行表达式](/cn/dev-manual/sharding/#inlineexpressionparser)。
 
 类型：INLINE
 

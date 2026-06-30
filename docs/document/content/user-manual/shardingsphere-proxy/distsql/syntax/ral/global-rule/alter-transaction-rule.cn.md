@@ -13,7 +13,10 @@ weight = 3
 {{% tab name="语法" %}}
 ```sql
 AlterTransactionRule ::=
-  'ALTER' 'TRANSACTION' 'RULE' '(' 'DEFAULT' '=' defaultTransactionType ',' 'TYPE' '(' 'NAME' '=' transactionManager ',' propertiesDefinition ')' ')'
+  'ALTER' 'TRANSACTION' 'RULE' '(' 'DEFAULT' '=' defaultTransactionType (',' transactionProvider)? ')'
+
+transactionProvider ::=
+  'TYPE' '(' 'NAME' '=' transactionManager (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
   'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
@@ -40,7 +43,7 @@ value ::=
 
 - `defaultTransactionType` 支持 `LOCAL`、`XA`、`BASE`
 
-- `transactionManager` 支持  `Atomikos` 和 `Narayana`
+- `transactionManager` 支持 `Atomikos` 和 `Narayana`
 
 ### 示例
 

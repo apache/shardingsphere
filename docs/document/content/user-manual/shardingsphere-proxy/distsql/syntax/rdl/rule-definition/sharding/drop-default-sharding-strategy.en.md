@@ -27,7 +27,7 @@ ifExists ::=
 
 ### Supplement
 
-- `ifExists` clause is used for avoid `Default sharding strategy not exists` error.
+- `ifExists` clause is used to avoid `Default sharding strategy not exists` error.
 
 ### Example
 

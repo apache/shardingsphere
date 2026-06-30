@@ -40,7 +40,7 @@ tableName ::=
 - The referenced sharding tables should be sharded in the same storage units and have the same number of sharding nodes. For
   example `ds_${0..1}.t_order_${0..1}` and `ds_${0..1}.t_order_item_${0..1}`;
 - The referenced sharding tables should use consistent sharding algorithms. For example `t_order_{order_id % 2}` and `t_order_item_{order_item_id % 2}`;
-- `ifNotExists` clause used for avoid `Duplicate sharding table reference rule` error.
+- `ifNotExists` clause is used to avoid `Duplicate sharding table reference rule` error.
 
 ### Example
 

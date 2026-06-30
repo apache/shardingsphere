@@ -30,7 +30,7 @@ ruleName ::=
 
 ### Supplement
 
-- `ifExists` clause is used for avoid `Readwrite-splitting rule not exists` error.
+- `ifExists` clause is used to avoid `Readwrite-splitting rule not exists` error.
 
 ### Example
 

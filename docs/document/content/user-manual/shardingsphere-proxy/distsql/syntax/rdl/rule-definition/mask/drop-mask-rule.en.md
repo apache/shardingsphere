@@ -29,7 +29,7 @@ ruleName ::=
 
 ### Supplement
 
-- `ifExists` clause used for avoid `Mask rule not exists` error.
+- `ifExists` clause is used to avoid `Mask rule not exists` error.
 
 ### Example
 

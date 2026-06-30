@@ -31,7 +31,7 @@ tableName ::=
 ### Supplement
 
 - `tableName` can use an existing table or a table that will be created;
-- `ifNotExists` clause is used for avoid `Duplicate Broadcast rule` error.
+- `ifNotExists` clause is used to avoid `Duplicate Broadcast rule` error.
 
 ### Example
 

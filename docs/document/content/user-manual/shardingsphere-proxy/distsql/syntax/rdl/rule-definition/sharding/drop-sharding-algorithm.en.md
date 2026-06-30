@@ -30,7 +30,7 @@ algorithmName ::=
 
 ### Supplement
 
-- `ifExists` clause used for avoid `Sharding algorithm not exists` error.
+- `ifExists` clause is used to avoid `Sharding algorithm not exists` error.
 
 ### Example
 

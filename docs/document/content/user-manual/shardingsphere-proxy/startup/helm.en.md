@@ -86,7 +86,7 @@ helm uninstall shardingsphere-proxy
 |-------------------------------------|--------------------------------------------------------------|-------------------------------|
 | `compute.image.repository`          | Image name of ShardingSphere-Proxy.                          | `apache/shardingsphere-proxy` |
 | `compute.image.pullPolicy`          | The policy for pulling ShardingSphere-Proxy image            | `IfNotPresent`                |
-| `compute.image.tag`                 | ShardingSphere-Proxy image tag                               | `5.1.2`                       |
+| `compute.image.tag`                 | ShardingSphere-Proxy image tag                               | `${latest.release.version}`   |
 | `compute.imagePullSecrets`          | Specify docker-registry secret names as an array             | `[]`                          |
 | `compute.resources.limits`          | The resources limits for the ShardingSphere-Proxy containers | `{}`                          |
 | `compute.resources.requests.memory` | The requested memory for the ShardingSphere-Proxy containers | `2Gi`                         |
@@ -172,7 +172,7 @@ compute:
     pullPolicy: IfNotPresent
     ## Overrides the image tag whose default is the chart appVersion.
     ##
-    tag: "5.1.2"
+    tag: "${latest.release.version}"
   ## @param compute.imagePullSecrets Specify docker-registry secret names as an array
   ## e.g：
   ## imagePullSecrets:

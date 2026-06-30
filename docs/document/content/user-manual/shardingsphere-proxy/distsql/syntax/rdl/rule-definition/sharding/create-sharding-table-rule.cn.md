@@ -102,7 +102,7 @@ algorithmType ::=
     - 使用 `TYPE(NAME=..., PROPERTIES(...))` 内联定义主键生成算法；
     - 使用 `GENERATOR=keyGeneratorName` 引用已经存在的独立 `SHARDING KEY GENERATOR`；
 - `AUDIT_STRATEGY`
-  用于指定分配审计生成策略，为可选项，关于分片审计生成策略可参考[分片审计](/cn/user-manual/common-config/builtin-algorithm/audit/)；
+  用于指定分片审计策略，为可选项，关于分片审计策略可参考[分片审计](/cn/user-manual/common-config/builtin-algorithm/audit/)；
 - `ifNotExists` 子句用于避免出现 `Duplicate sharding rule` 错误。
 
 ### 示例

@@ -30,7 +30,7 @@ keyGeneratorName ::=
 
 ### Supplement
 
-- `ifExists` clause is used for avoid `Sharding key generator not exists` error.
+- `ifExists` clause is used to avoid `Sharding key generator not exists` error.
 
 ### Example
 

@@ -101,6 +101,12 @@ Runtime 与能力：
 - `shardingsphere://databases`
 - `shardingsphere://databases/{database}`
 - `shardingsphere://databases/{database}/capabilities`
+- `shardingsphere://databases/{database}/storage-units`
+- `shardingsphere://databases/{database}/storage-units/{storageUnit}`
+- `shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules`
+- `shardingsphere://databases/{database}/single-tables`
+- `shardingsphere://databases/{database}/single-tables/{table}`
+- `shardingsphere://databases/{database}/single-table/default-storage-unit`
 
 Metadata：
 
@@ -132,6 +138,7 @@ Feature resources：
 - `shardingsphere://features/mask/databases/{database}/rules`
 - `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
 - `shardingsphere://features/broadcast/databases/{database}/rules`
+- `shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule`
 - `shardingsphere://features/broadcast/databases/{database}/rule-count`
 - `shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins`
 - `shardingsphere://features/readwrite-splitting/databases/{database}/rules`

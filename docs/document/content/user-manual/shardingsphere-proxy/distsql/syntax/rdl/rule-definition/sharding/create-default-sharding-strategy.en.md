@@ -56,7 +56,7 @@ value ::=
 - When using the complex sharding algorithm, multiple sharding columns need to be specified using `SHARDING_COLUMNS`;
 - `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer
   to [Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/);
-- `ifNotExists` clause is used for avoid `Duplicate default sharding strategy` error.
+- `ifNotExists` clause is used to avoid `Duplicate default sharding strategy` error.
 
 ### Example
 
