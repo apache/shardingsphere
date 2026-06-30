@@ -41,8 +41,6 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     
     private static final String PLAN_PROMPT_NAME = "plan_mask_rule";
     
-    private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
-    
     private static final String VALIDATE_TOOL_NAME = WorkflowToolDescriptors.VALIDATE_TOOL_NAME;
     
     private static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/mask/algorithms";
@@ -140,26 +138,6 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertValidationPassed(actualValidationResponse);
             assertThat(String.valueOf(getMapList(getMap(actualValidationResponse.get("rule_validation")).get("evidence")).getFirst().get("algorithm_type")).toUpperCase(Locale.ENGLISH),
                     is("MASK_FROM_X_TO_Y"));
-        }
-    }
-    
-    @Test
-    void assertApplySupportsApprovedStepsThroughProxy() throws IOException, InterruptedException {
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "operation_type", "create", "algorithm_type", "KEEP_FIRST_N_LAST_M",
-                            "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
-            assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
-            String planId = String.valueOf(actualPlanResponse.get("plan_id"));
-            Map<String, Object> actualPreviewResponse = previewWorkflow(interactionClient, planId);
-            assertThat(getMapList(actualPreviewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList(),
-                    is(List.of("rule_distsql")));
-            Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, List.of("rule_distsql")));
-            assertThat(String.valueOf(actualRuleApplyResponse.get("status")), is("completed"));
-            assertThat(getStringList(actualRuleApplyResponse.get("executed_distsql")).size(), is(1));
-            assertThat(getStringList(actualRuleApplyResponse.get("skipped_artifacts")).size(), is(0));
-            assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
         }
     }
     

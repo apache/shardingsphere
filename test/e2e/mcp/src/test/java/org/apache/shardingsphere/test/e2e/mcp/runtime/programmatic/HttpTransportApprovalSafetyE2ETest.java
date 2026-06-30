@@ -72,6 +72,22 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractSharedHttpProgrammaticR
     }
     
     @Test
+    void assertRejectWorkflowReviewThenExecuteWithInvisibleApprovedStep() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        String planId = createMaskRulePlan(httpClient, sessionId);
+        Map<String, Object> previewPayload = callApplyWorkflow(httpClient, sessionId, planId, Map.of("execution_mode", "preview"));
+        assertThat(String.valueOf(previewPayload.get("status")), is("preview"));
+        Map<String, Object> executionPayload = callApplyWorkflow(httpClient, sessionId, planId,
+                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
+        assertThat(String.valueOf(executionPayload.get("status")), is("failed"));
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) executionPayload.get("issues")).getFirst();
+        assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertModelFacingPayloadContract(executionPayload);
+    }
+    
+    @Test
     void assertRejectWorkflowExecutionFromOtherSession() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
