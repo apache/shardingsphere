@@ -12679,7 +12679,7 @@
         <from>
             <simple-table name="Sales" start-index="54" stop-index="58" />
         </from>
-        <group-by>
+        <group-by contains-grouping-extension="true">
             <column-item name="Country" start-index="93" stop-index="99"/>
             <column-item name="Region" start-index="102" stop-index="107"/>
             <column-item name="Country" start-index="117" stop-index="123"/>
