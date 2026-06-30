@@ -15,11 +15,13 @@ private ShardingRuleConfiguration createShardingRuleConfiguration() {
     ShardingRuleConfiguration result = new ShardingRuleConfiguration();
     result.getTables().add(getOrderTableRuleConfiguration());
     result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
-    result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
+    result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
     Properties props = new Properties();
     props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
+    Properties tableShardingProps = new Properties();
+    tableShardingProps.setProperty("sharding-count", "2");
     result.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", props));
-    result.getShardingAlgorithms().put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
+    result.getShardingAlgorithms().put("hash_mod", new AlgorithmConfiguration("HASH_MOD", tableShardingProps));
     result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
     result.getKeyGenerateStrategies().put("t_order_order_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "order_id"));
     return result;
@@ -51,7 +53,7 @@ private static EncryptRuleConfiguration createEncryptRuleConfiguration() {
     EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
     Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
     encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
-    encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
+    encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("MD5", new Properties()));
     return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
 }
 ```

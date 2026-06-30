@@ -61,11 +61,10 @@ weight = 5
 
 可配置属性：
 
-| *名称*       | *数据类型*     | *说明*      |
-|------------|------------|-----------|
-| name       | String     | 加解密算法名称   |
-| type       | String     | 加解密算法类型   |
-| properties | Properties | 加解密算法属性配置 |
+| *名称* | *数据类型*     | *说明*      |
+|------|------------|-----------|
+| type | String     | 加解密算法类型   |
+| props | Properties | 加解密算法属性配置 |
 
 算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/common-config/builtin-algorithm/encrypt)。
 
@@ -90,7 +89,7 @@ public final class EncryptDatabasesConfiguration {
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
         encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
-        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
+        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("MD5", new Properties()));
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
         return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfig), props);
     }

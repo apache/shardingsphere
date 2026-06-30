@@ -30,7 +30,7 @@ migrationJobId ::=
 
 ### 示例
 
-- 停止指定的数据迁移作业
+- 开始指定的数据迁移作业
 
 ```sql
 START MIGRATION 'j010180026753ef0e25d3932d94d1673ba551';

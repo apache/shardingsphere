@@ -40,6 +40,7 @@ databaseName ::=
 |-------------------|---------------------------------------------------------|
 | table_name        | Single table name                                       |
 | storage_unit_name | The storage unit name where the single table is located |
+| schema_name       | Schema name, returned only when schema metadata exists  |
 
 
 ### Example

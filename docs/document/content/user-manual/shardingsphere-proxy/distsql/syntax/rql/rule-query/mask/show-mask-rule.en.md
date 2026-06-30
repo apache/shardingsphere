@@ -13,7 +13,7 @@ The `SHOW MASK RULES` syntax is used to query mask rules for specified database.
 {{% tab name="Grammar" %}}
 ```sql
 ShowMaskRule::=
-  'SHOW' 'MASK' ('RULES' | 'TABLE'? 'RULE' ruleName) ('FROM' databaseName)?
+  'SHOW' 'MASK' 'TABLE'? ('RULE' ruleName | 'RULES') ('FROM' databaseName)?
 
 ruleName ::=
   identifier

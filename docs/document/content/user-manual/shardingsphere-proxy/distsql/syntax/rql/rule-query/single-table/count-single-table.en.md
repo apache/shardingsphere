@@ -30,10 +30,11 @@ databaseName ::=
 
 ### Return Value Description
 
-| Column     | Description                                         |
-|------------|-----------------------------------------------------|
-| database   | The database name where the single table is located |
-| count      | The count of single table                           |
+| Column    | Description                                         |
+|-----------|-----------------------------------------------------|
+| rule_name | Single rule name                                    |
+| database  | The database name where the single table is located |
+| count     | The count of single table                           |
 
 ### Example
 
@@ -45,11 +46,11 @@ COUNT SINGLE TABLE
 
 ```sql
 mysql> COUNT SINGLE TABLE;
-+----------+--------+
-| database | count  |
-+----------+--------+
-| ds       | 2      |
-+----------+--------+
++-----------+-------------+-------+
+| rule_name | database    | count |
++-----------+-------------+-------+
+| single    | sharding_db | 2     |
++-----------+-------------+-------+
 1 row in set (0.02 sec)
 ```
 

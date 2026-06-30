@@ -5,7 +5,7 @@ weight = 3
 
 ### Description
 
-The `REGISTER MIGRATION SOURCE STORAGE UNIT` syntax is used to register migration source storage unit for the currently connection.
+The `REGISTER MIGRATION SOURCE STORAGE UNIT` syntax is used to register migration source storage unit for the current connection.
 
 ### Syntax
 
@@ -46,7 +46,7 @@ password ::=
   string
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' ( key  '=' value ) ( ',' key  '=' value )* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string

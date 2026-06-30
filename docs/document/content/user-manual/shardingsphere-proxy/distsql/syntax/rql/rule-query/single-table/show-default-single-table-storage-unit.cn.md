@@ -5,7 +5,7 @@ weight = 2
 
 ### 描述
 
-`SHOW DEFAULT SINGLE TABLE STORAGE UNIT` 语法用于查询指定逻辑库中的存储单元信息。
+`SHOW DEFAULT SINGLE TABLE STORAGE UNIT` 语法用于查询指定或当前逻辑库中的默认单表存储单元。
 
 ### 语法
 
@@ -36,7 +36,7 @@ databaseName ::=
 
 ### 示例
 
-- 查询当前逻辑库中的存储单元信息
+- 查询当前逻辑库中的默认单表存储单元
 
 ```sql
 SHOW DEFAULT SINGLE TABLE STORAGE UNIT
@@ -59,4 +59,3 @@ sql> SHOW DEFAULT SINGLE TABLE STORAGE UNIT;
 ### 相关链接
 
 - [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-

@@ -28,7 +28,7 @@ shadowTableRule ::=
   tableName '(' shadowAlgorithm (',' shadowAlgorithm)* ')'
     
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 ruleName ::=
   identifier
@@ -46,7 +46,7 @@ algorithmType ::=
   string
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string

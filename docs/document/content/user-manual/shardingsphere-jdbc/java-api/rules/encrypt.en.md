@@ -61,11 +61,10 @@ Class name: org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfi
 
 Attributes:
 
-| *Name*     | *DataType* | *Description*                |
-|------------|------------|------------------------------|
-| name       | String     | Encrypt algorithm name       |
-| type       | String     | Encrypt algorithm type       |
-| properties | Properties | Encrypt algorithm properties |
+| *Name* | *DataType* | *Description*                |
+|--------|------------|------------------------------|
+| type   | String     | Encrypt algorithm type       |
+| props  | Properties | Encrypt algorithm properties |
 
 Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/common-config/builtin-algorithm/encrypt) for more details about type of algorithm.
 
@@ -90,7 +89,7 @@ public final class EncryptDatabasesConfiguration {
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
         encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
-        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
+        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("MD5", new Properties()));
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
         return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfig), props);
     }

@@ -46,7 +46,7 @@ password ::=
   string
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' ( key  '=' value ) ( ',' key  '=' value )* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string

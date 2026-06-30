@@ -275,8 +275,7 @@ SUCCESS
 ## Explanation of incremental data push
 
 1. The CDC incremental push is currently transactional, and the transactions of the physical database will not be split. Therefore, if there are data changes in multiple tables in a transaction, these data changes will be pushed together.
-If you want to support XA transactions (currently only supports openGauss), both openGauss and Proxy need the GLT module.
-2. The conditions for push are met when a certain amount of data is met or a certain time interval is reached (currently 300ms). When processing XA transactions, if the received multiple physical database incremental events exceed 300ms, it may cause the XA transaction to be split and pushed.
+2. The conditions for push are met when a certain amount of data is met or a certain time interval is reached (currently 300ms).
 
 ## Handling of large transactions
 

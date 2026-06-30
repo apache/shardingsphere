@@ -52,9 +52,8 @@ mysql> SHOW RULES USED STORAGE UNIT ds_1 FROM sharding_db;
 | type                | name       |
 +---------------------+------------+
 | readwrite_splitting | ms_group_0 |
-| readwrite_splitting | ms_group_0 |
 +---------------------+------------+
-2 rows in set (0.01 sec)
+1 row in set (0.01 sec)
 ```
 
 - 查询当前逻辑库中使用指定存储单元的规则
@@ -69,9 +68,8 @@ mysql> SHOW RULES USED STORAGE UNIT ds_1;
 | type                | name       |
 +---------------------+------------+
 | readwrite_splitting | ms_group_0 |
-| readwrite_splitting | ms_group_0 |
 +---------------------+------------+
-2 rows in set (0.01 sec)
+1 row in set (0.01 sec)
 ```
 
 ### 保留字
