@@ -151,7 +151,7 @@ class DatabaseMetaDataManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(realDatabase);
         assertDoesNotThrow(() -> databaseMetaDataManager.dropSchema("foo_db", "foo_schema"));
     }
-
+    
     @Test
     void assertDropSchemaWithSingleTableRefreshRules() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
