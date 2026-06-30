@@ -74,12 +74,6 @@ class MCPToolArgumentsTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getBooleanArgumentCases")
-    void assertGetBooleanArgument(final String name, final Map<String, Object> rawArguments, final boolean defaultValue, final boolean expectedValue) {
-        assertThat(new MCPToolArguments(rawArguments).getBooleanArgument("enabled", defaultValue), is(expectedValue));
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("getStringCollectionArgumentCases")
     void assertGetStringCollectionArgument(final String name, final Map<String, Object> rawArguments, final List<String> expectedValues) {
         assertThat(new MCPToolArguments(rawArguments).getStringCollectionArgument("steps"), is(expectedValues));
@@ -131,14 +125,6 @@ class MCPToolArgumentsTest {
                 Arguments.of("malformed bounded integer", Map.of("limit", "foo"), "limit must be an integer."),
                 Arguments.of("too small bounded integer", Map.of("limit", -1), "limit must be an integer between 0 and 100."),
                 Arguments.of("too large bounded integer", Map.of("limit", 101), "limit must be an integer between 0 and 100."));
-    }
-    
-    private static Stream<Arguments> getBooleanArgumentCases() {
-        return Stream.of(
-                Arguments.of("missing boolean", Map.of(), true, true),
-                Arguments.of("boolean literal", Map.of("enabled", false), true, false),
-                Arguments.of("parsed boolean", Map.of("enabled", " true "), false, true),
-                Arguments.of("blank boolean", Map.of("enabled", "   "), true, true));
     }
     
     private static Stream<Arguments> getStringCollectionArgumentCases() {

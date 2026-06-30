@@ -46,25 +46,6 @@ public final class WorkflowPlanningArguments {
     }
     
     /**
-     * Get boolean argument.
-     *
-     * @param name argument name
-     * @param defaultValue default value
-     * @return argument value
-     */
-    public boolean getBooleanArgument(final String name, final boolean defaultValue) {
-        Object result = arguments.get(name);
-        if (null == result) {
-            return defaultValue;
-        }
-        if (result instanceof Boolean) {
-            return (Boolean) result;
-        }
-        String actualValue = result.toString().trim();
-        return actualValue.isEmpty() ? defaultValue : Boolean.parseBoolean(actualValue);
-    }
-    
-    /**
      * Get string map argument.
      *
      * @param name argument name

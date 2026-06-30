@@ -39,8 +39,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowSQLUtils {
     
-    private static final String SAFE_IDENTIFIER_PATTERN = "[A-Za-z0-9_$]+";
-    
     private static final String UNQUOTED_IDENTIFIER_PATTERN = "[A-Za-z_][A-Za-z0-9_$]*";
     
     private static final Set<String> DIST_SQL_RESERVED_IDENTIFIERS = Set.of(
@@ -52,16 +50,6 @@ public final class WorkflowSQLUtils {
     private static final char BACK_QUOTE = '`';
     
     private static final char DOUBLE_QUOTE = '"';
-    
-    /**
-     * Check whether an identifier can be used as an unquoted SQL identifier.
-     *
-     * @param identifier identifier to check
-     * @return whether the identifier is safe
-     */
-    public static boolean isSafeIdentifier(final String identifier) {
-        return null != identifier && identifier.matches(SAFE_IDENTIFIER_PATTERN);
-    }
     
     /**
      * Normalize a SQL identifier from user input.
@@ -232,13 +220,7 @@ public final class WorkflowSQLUtils {
                 .collect(Collectors.joining(", "));
     }
     
-    /**
-     * Parse property entries from a list of {@code key=value} or {@code key:value} strings.
-     *
-     * @param entries property entries
-     * @return parsed property map
-     */
-    public static Map<String, String> parsePropertyEntries(final List<String> entries) {
+    private static Map<String, String> parsePropertyEntries(final List<String> entries) {
         Map<String, String> result = new LinkedHashMap<>(entries.size(), 1F);
         for (String each : entries) {
             int separatorIndex = findPropertySeparatorIndex(each);

@@ -22,7 +22,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -35,11 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowSQLUtilsTest {
-    
-    @Test
-    void assertIsSafeIdentifier() {
-        assertTrue(WorkflowSQLUtils.isSafeIdentifier("orders_01"));
-    }
     
     @Test
     void assertCheckSafeIdentifierAllowsSafeIdentifier() {
@@ -245,14 +239,6 @@ class WorkflowSQLUtilsTest {
     void assertCreateAlgorithmFragmentReturnsEmptyForBlankType() {
         String actualFragment = WorkflowSQLUtils.createAlgorithmFragment(" ", Map.of("aes-key-value", "123456"));
         assertThat(actualFragment, is(""));
-    }
-    
-    @Test
-    void assertParsePropertyEntriesSkipsMalformedEntriesAndTrimsValues() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.parsePropertyEntries(List.of("aes-key-value = 123456 ", " malformed ", " iv = abc "));
-        assertThat(actualEntries.size(), is(2));
-        assertThat(actualEntries.get("aes-key-value"), is("123456"));
-        assertThat(actualEntries.get("iv"), is("abc"));
     }
     
     @Test
