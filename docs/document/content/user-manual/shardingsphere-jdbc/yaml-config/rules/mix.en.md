@@ -113,8 +113,6 @@ rules:
         digest-algorithm-name: SHA-1
     assisted_encryptor:
       type: MD5
-    like_encryptor:
-      type: MD5
   tables:
     t_encrypt:
       columns:
@@ -125,9 +123,6 @@ rules:
           assistedQuery:
             name: assisted_query_user
             encryptorName: assisted_encryptor
-          likeQuery:
-            name: like_query_user
-            encryptorName: like_encryptor
         order_id:
           cipher:
             name: order_cipher

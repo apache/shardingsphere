@@ -66,9 +66,6 @@ rules:
           assistedQuery:
             name: assisted_query_username
             encryptorName: assisted_encryptor
-          likeQuery:
-            name: like_query_username
-            encryptorName: like_encryptor
         pwd:
           cipher:
             name: pwd
@@ -83,8 +80,6 @@ rules:
         aes-key-value: 123456abc
         digest-algorithm-name: SHA-1
     assisted_encryptor:
-      type: MD5
-    like_encryptor:
       type: MD5
 ```
 
