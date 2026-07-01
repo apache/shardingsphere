@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -171,6 +172,43 @@ public final class WorkflowPlanningSupport {
     }
     
     /**
+     * Ensure workflow identifiers can be rendered into reviewable DistSQL.
+     *
+     * @param fieldName field name for issue details
+     * @param identifiers identifiers to check
+     * @param snapshot workflow snapshot
+     * @param issueStage issue stage
+     * @return whether all identifiers are supported
+     */
+    public boolean ensureSupportedIdentifiers(final String fieldName, final Collection<String> identifiers, final WorkflowContextSnapshot snapshot,
+                                              final String issueStage) {
+        return ensureIdentifiers(fieldName, identifiers, snapshot, issueStage, false);
+    }
+    
+    /**
+     * Ensure optional workflow identifiers can be rendered into reviewable DistSQL when present.
+     *
+     * @param fieldName field name for issue details
+     * @param identifiers identifiers to check
+     * @param snapshot workflow snapshot
+     * @param issueStage issue stage
+     * @return whether all present identifiers are supported
+     */
+    public boolean ensureOptionalSupportedIdentifiers(final String fieldName, final Collection<String> identifiers, final WorkflowContextSnapshot snapshot,
+                                                      final String issueStage) {
+        return ensureIdentifiers(fieldName, identifiers, snapshot, issueStage, true);
+    }
+    
+    private boolean ensureIdentifiers(final String fieldName, final Collection<String> identifiers, final WorkflowContextSnapshot snapshot, final String issueStage, final boolean allowEmpty) {
+        for (String each : identifiers) {
+            if (!ensureSupportedIdentifier(fieldName, each, snapshot, issueStage, allowEmpty)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
      * Ensure workflow planning context is complete and valid.
      *
      * @param metadataQueryFacade metadata query facade
@@ -188,16 +226,16 @@ public final class WorkflowPlanningSupport {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!ensureSupportedIdentifier(WorkflowFieldNames.DATABASE, request.getDatabase(), snapshot)
-                || !ensureSupportedIdentifier(WorkflowFieldNames.TABLE, request.getTable(), snapshot)
-                || !ensureSupportedIdentifier(WorkflowFieldNames.COLUMN, request.getColumn(), snapshot)) {
+        if (!ensureSupportedIdentifiers(WorkflowFieldNames.DATABASE, List.of(request.getDatabase()), snapshot, "discovering")
+                || !ensureSupportedIdentifiers(WorkflowFieldNames.TABLE, List.of(request.getTable()), snapshot, "discovering")
+                || !ensureSupportedIdentifiers(WorkflowFieldNames.COLUMN, List.of(request.getColumn()), snapshot, "discovering")) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
         Optional<MCPDatabaseMetadata> databaseMetadata = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()));
         String databaseType = databaseMetadata.map(MCPDatabaseMetadata::getDatabaseType).orElse("");
         request.setSchema(resolveSchema(databaseMetadata, request, clarifiedIntent, databaseType));
-        if (!ensureSupportedIdentifier(WorkflowFieldNames.SCHEMA, request.getSchema(), snapshot)) {
+        if (!ensureSupportedIdentifiers(WorkflowFieldNames.SCHEMA, List.of(request.getSchema()), snapshot, "discovering")) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -241,14 +279,29 @@ public final class WorkflowPlanningSupport {
         }
     }
     
-    private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
-        if (WorkflowSQLUtils.isSupportedIdentifier(identifier)) {
+    private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot, final String issueStage, final boolean allowEmpty) {
+        if (allowEmpty && identifier.isEmpty() || WorkflowSQLUtils.isSupportedIdentifier(identifier)) {
             return true;
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "discovering",
-                String.format("%s identifier `%s` contains unsupported characters.", fieldName, identifier),
-                "Use a reviewable logical identifier without NUL or line terminators.", false, Map.of("field", fieldName, "identifier", identifier)));
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", issueStage, createUnsupportedIdentifierMessage(fieldName, identifier),
+                createUnsupportedIdentifierAction(fieldName), false, createUnsupportedIdentifierDetails(fieldName, identifier)));
         return false;
+    }
+    
+    private String createUnsupportedIdentifierMessage(final String fieldName, final String identifier) {
+        return fieldName.isEmpty()
+                ? String.format("Identifier `%s` contains unsupported characters.", identifier)
+                : String.format("%s identifier `%s` contains unsupported characters.", fieldName, identifier);
+    }
+    
+    private String createUnsupportedIdentifierAction(final String fieldName) {
+        return fieldName.isEmpty()
+                ? "Use reviewable logical identifiers without NUL or line terminators."
+                : "Use a reviewable logical identifier without NUL or line terminators.";
+    }
+    
+    private Map<String, Object> createUnsupportedIdentifierDetails(final String fieldName, final String identifier) {
+        return fieldName.isEmpty() ? Map.of("identifier", identifier) : Map.of("field", fieldName, "identifier", identifier);
     }
     
     private String resolveSchema(final Optional<MCPDatabaseMetadata> databaseMetadata, final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final String databaseType) {

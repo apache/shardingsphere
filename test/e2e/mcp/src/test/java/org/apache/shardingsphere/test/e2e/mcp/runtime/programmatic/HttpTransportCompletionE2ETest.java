@@ -154,18 +154,4 @@ class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRunti
                 "completion-1", "completion/complete", params));
     }
     
-    private String createMaskRulePlan(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_mask_rule", Map.of(
-                "database", "logic_db",
-                "schema", "logic_db",
-                "table", "orders",
-                "column", "status",
-                "operation_type", "create",
-                "algorithm_type", "KEEP_FIRST_N_LAST_M",
-                "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("status")), is("planned"));
-        return String.valueOf(payload.get("plan_id"));
-    }
 }

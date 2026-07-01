@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -75,6 +76,37 @@ class WorkflowValidationSupportTest {
         interactionPlan.setCurrentStep("validated");
         snapshot.setInteractionPlan(interactionPlan);
         assertTrue(validationSupport.checkValidatePreconditions("session-1", snapshot).isEmpty());
+    }
+    
+    @Test
+    void assertValidateAndFinalize() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setSessionId("session-1");
+        snapshot.setStatus("executed");
+        ValidationReport validationReport = new ValidationReport();
+        validationReport.setOverallStatus("passed");
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        Map<String, Object> actualResult = validationSupport.validateAndFinalize(workflowSessionContext, "session-1", snapshot, () -> validationReport);
+        assertThat(actualResult.get("response_mode"), is("validation"));
+        assertThat(actualResult.get("status"), is("validated"));
+        assertThat(snapshot.getValidationReport(), is(validationReport));
+    }
+    
+    @Test
+    void assertValidateAndFinalizeRejectsInvalidPrecondition() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setSessionId("session-1");
+        snapshot.setStatus("clarifying");
+        AtomicBoolean reportCreated = new AtomicBoolean();
+        Map<String, Object> actualResult = validationSupport.validateAndFinalize(new TestWorkflowSessionContext(), "session-1", snapshot, () -> {
+            reportCreated.set(true);
+            return new ValidationReport();
+        });
+        assertThat(actualResult.get("response_mode"), is("terminal"));
+        assertFalse(reportCreated.get());
     }
     
     @Test

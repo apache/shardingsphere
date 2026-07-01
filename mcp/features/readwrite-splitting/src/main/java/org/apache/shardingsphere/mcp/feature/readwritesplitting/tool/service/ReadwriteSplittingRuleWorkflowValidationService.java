@@ -66,13 +66,7 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
                                         final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId,
                                         final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
-        if (!rejectedResponse.isEmpty()) {
-            return rejectedResponse;
-        }
-        ValidationReport validationReport = createValidationReport(snapshot, queryFacade);
-        snapshot.setValidationReport(validationReport);
-        return validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
+        return validationSupport.validateAndFinalize(workflowSessionContext, sessionId, snapshot, () -> createValidationReport(snapshot, queryFacade));
     }
     
     @Override

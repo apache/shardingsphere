@@ -36,6 +36,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -44,6 +45,26 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPErrorConverter {
     
+    private static final List<ErrorMapping> ERROR_MAPPINGS = List.of(
+            new ErrorMapping(UnsupportedToolException.class, "Unsupported tool."),
+            new ErrorMapping(UnsupportedResourceUriException.class, "Unsupported resource URI."),
+            new ErrorMapping(MCPInvalidRequestException.class, "Invalid request."),
+            new ErrorMapping(MCPNotFoundException.class, "MCP operation not found."),
+            new ErrorMapping(MCPUnsupportedException.class, "Unsupported MCP operation."),
+            new ErrorMapping(MCPTimeoutException.class, "MCP operation timeout."),
+            new ErrorMapping(MCPTransactionStateException.class, "MCP transaction operation failed."),
+            new ErrorMapping(MCPQueryFailedException.class, "MCP query failed."),
+            new ErrorMapping(MCPToolCallLimitExceededException.class, "MCP tool call limit exceeded."),
+            new ErrorMapping(MCPUnavailableException.class, "Service is temporarily unavailable."),
+            new ErrorMapping(RuntimeDatabaseConnectionException.class, "Runtime database connection failed."),
+            new ErrorMapping(SQLSyntaxErrorException.class, "Invalid request."),
+            new ErrorMapping(SQLTimeoutException.class, "MCP operation timeout."),
+            new ErrorMapping(SQLFeatureNotSupportedException.class, "Unsupported MCP operation."),
+            new ErrorMapping(UnsupportedOperationException.class, "Unsupported MCP operation."),
+            new ErrorMapping(SQLException.class, "MCP query failed."),
+            new ErrorMapping(IllegalArgumentException.class, "Invalid request."),
+            new ErrorMapping(IllegalStateException.class, "MCP operation failed."));
+    
     /**
      * Convert throwable to MCP error.
      *
@@ -51,59 +72,10 @@ public final class MCPErrorConverter {
      * @return MCP error
      */
     public static MCPErrorResponse convert(final Throwable cause) {
-        if (cause instanceof UnsupportedToolException) {
-            return createError(cause, "Unsupported tool.");
-        }
-        if (cause instanceof UnsupportedResourceUriException) {
-            return createError(cause, "Unsupported resource URI.");
-        }
-        if (cause instanceof MCPInvalidRequestException) {
-            return createError(cause, "Invalid request.");
-        }
-        if (cause instanceof MCPNotFoundException) {
-            return createError(cause, "MCP operation not found.");
-        }
-        if (cause instanceof MCPUnsupportedException) {
-            return createError(cause, "Unsupported MCP operation.");
-        }
-        if (cause instanceof MCPTimeoutException) {
-            return createError(cause, "MCP operation timeout.");
-        }
-        if (cause instanceof MCPTransactionStateException) {
-            return createError(cause, "MCP transaction operation failed.");
-        }
-        if (cause instanceof MCPQueryFailedException) {
-            return createError(cause, "MCP query failed.");
-        }
-        if (cause instanceof MCPToolCallLimitExceededException) {
-            return createError(cause, "MCP tool call limit exceeded.");
-        }
-        if (cause instanceof MCPUnavailableException) {
-            return createError(cause, "Service is temporarily unavailable.");
-        }
-        if (cause instanceof RuntimeDatabaseConnectionException) {
-            return createError(cause, "Runtime database connection failed.");
-        }
-        if (cause instanceof SQLSyntaxErrorException) {
-            return createError(cause, "Invalid request.");
-        }
-        if (cause instanceof SQLTimeoutException) {
-            return createError(cause, "MCP operation timeout.");
-        }
-        if (cause instanceof SQLFeatureNotSupportedException) {
-            return createError(cause, "Unsupported MCP operation.");
-        }
-        if (cause instanceof UnsupportedOperationException) {
-            return createError(cause, "Unsupported MCP operation.");
-        }
-        if (cause instanceof SQLException) {
-            return createError(cause, "MCP query failed.");
-        }
-        if (cause instanceof IllegalArgumentException) {
-            return createError(cause, "Invalid request.");
-        }
-        if (cause instanceof IllegalStateException) {
-            return createError(cause, "MCP operation failed.");
+        for (ErrorMapping each : ERROR_MAPPINGS) {
+            if (each.matches(cause)) {
+                return createError(cause, each.defaultMessage());
+            }
         }
         return createError(cause, "Service is temporarily unavailable.");
     }
@@ -111,5 +83,12 @@ public final class MCPErrorConverter {
     private static MCPErrorResponse createError(final Throwable cause, final String defaultMessage) {
         String message = MCPQueryRecoveryPayloadFactory.isQueryFailure(cause) ? defaultMessage : Objects.toString(cause.getMessage(), defaultMessage).trim();
         return new MCPErrorResponse(message, MCPRecoveryPayloadFactory.create(cause));
+    }
+    
+    private record ErrorMapping(Class<? extends Throwable> causeType, String defaultMessage) {
+        
+        private boolean matches(final Throwable cause) {
+            return causeType.isInstance(cause);
+        }
     }
 }
