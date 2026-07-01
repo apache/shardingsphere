@@ -267,7 +267,7 @@ sharding_db=> SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
 
 DROP STREAMING j0302p0000702a83116fcee83f70419ca5e2993791;
 
-The CDC task can only be deleted when there are no subscriptions. At this time, the replication slots on the openGauss physical database will also be deleted.
+After the CDC task is deleted, the replication slots on the openGauss physical database will also be deleted.
 
 ```
 sharding_db=> DROP STREAMING j0302p0000702a83116fcee83f70419ca5e2993791;

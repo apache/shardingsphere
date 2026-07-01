@@ -28,7 +28,6 @@ jobId ::=
 ### 补充说明
 
 - `jobId` 需要通过 [SHOW STREAMING LIST](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-list/) 语法查询获得。
-- 只有当 CDC Streaming 作业没有订阅时才可以删除。
 
 ### 示例
 

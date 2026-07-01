@@ -27,7 +27,6 @@ jobId ::=
 ### Supplement
 
 - `jobId` needs to be obtained through [SHOW STREAMING LIST](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-list/).
-- A CDC streaming job can only be dropped when it has no subscriptions.
 
 ### Example
 
