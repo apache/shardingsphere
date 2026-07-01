@@ -213,6 +213,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -1189,7 +1190,24 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         for (GroupByItemContext each : ctx.groupByList().groupByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
-        return new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items);
+        return new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items, false, containsGroupingExtension(ctx.groupByList().groupByItem()));
+    }
+    
+    private boolean containsGroupingExtension(final Collection<GroupByItemContext> groupByItems) {
+        for (GroupByItemContext each : groupByItems) {
+            if (null != each.emptyGroupingSet() || null != each.cubeClause() || null != each.rollupClause() || null != each.groupingSetsClause() || isRollupCubeExpression(each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isRollupCubeExpression(final GroupByItemContext groupByItem) {
+        if (null == groupByItem.aExpr()) {
+            return false;
+        }
+        String expression = getOriginalText(groupByItem.aExpr()).replaceAll("\\s+", "").toUpperCase(Locale.ROOT);
+        return (expression.startsWith("CUBE(") || expression.startsWith("ROLLUP(")) && expression.endsWith(")");
     }
     
     @Override
