@@ -65,11 +65,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN phone_mask VARCHAR(64)", 10));
         snapshot.getIndexPlans().add(new IndexPlan("idx_orders_phone_mask", "phone_mask", "mask lookup", "CREATE INDEX idx_orders_phone_mask ON orders(phone_mask)"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "manual-only");
+        Map<String, Object> actualResponse = apply(snapshot, List.of(), "manual-only");
         assertThat(actualResponse.get("status"), is("awaiting-manual-execution"));
         assertThat(actualResponse.get("response_mode"), is("manual_only"));
         assertThat(actualResponse.get("plan_id"), is("plan-1"));
@@ -99,11 +95,7 @@ class WorkflowExecutionServiceTest {
         snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "manual-only");
+        Map<String, Object> actualResponse = apply(snapshot, List.of(), "manual-only");
         assertFalse(actualResponse.containsKey("executed_ddl"));
         Map<?, ?> actualManualArtifactSummary = (Map<?, ?>) actualResponse.get("manual_artifact_summary");
         assertFalse(actualManualArtifactSummary.containsKey("ddl_artifact_count"));
@@ -133,13 +125,9 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyRejectsInvalidLifecycleStatus() {
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("clarifying");
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, List.of(), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualResponse.get("response_mode"), is("terminal"));
         assertThat(actualResponse.get("plan_id"), is("plan-1"));
@@ -179,13 +167,9 @@ class WorkflowExecutionServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("previewed");
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, List.of(), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         verify(executionFacade, never()).execute(any());
@@ -195,12 +179,8 @@ class WorkflowExecutionServiceTest {
     void assertApplyRejectsExecutionBeforePreview() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, List.of("ddl"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         verify(executionFacade, never()).execute(any());
@@ -211,12 +191,8 @@ class WorkflowExecutionServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("previewed");
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, List.of("ddl"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         verify(executionFacade, never()).execute(any());
@@ -227,13 +203,10 @@ class WorkflowExecutionServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, workflowApplySynchronizationHandler, "session-1", snapshot, List.of(), "preview");
+        Map<String, Object> actualResponse = apply(workflowSessionContext, snapshot, executionFacade, workflowApplySynchronizationHandler, List.of(), "preview");
         assertThat(actualResponse.get("status"), is("preview"));
         assertThat(actualResponse.get("response_mode"), is("preview"));
         assertFalse((boolean) actualResponse.get("would_apply"));
@@ -265,11 +238,7 @@ class WorkflowExecutionServiceTest {
     @Test
     void assertApplyPreviewWithoutArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
+        Map<String, Object> actualResponse = apply(snapshot, List.of(), "preview");
         assertThat(actualResponse.get("review_summary"), is("Previewed 0 workflow artifacts. Nothing has been applied."));
         assertFalse(actualResponse.containsKey("approval_question"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("next_actions")).getFirst()).get("type"), is("terminal"));
@@ -282,11 +251,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
         snapshot.getIndexPlans().add(new IndexPlan("idx_orders_order_id_cipher", "order_id_cipher", "assist lookup", "CREATE INDEX idx_orders_order_id_cipher ON orders(order_id_cipher)"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
+        Map<String, Object> actualResponse = apply(snapshot, List.of(), "preview");
         assertFalse(actualResponse.containsKey("executed_ddl"));
         assertThat(((List<?>) actualResponse.get("preview_artifacts")).size(), is(1));
         Map<?, ?> actualManualArtifactPackage = (Map<?, ?>) actualResponse.get("manual_artifact_package");
@@ -303,11 +268,7 @@ class WorkflowExecutionServiceTest {
         snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
+        Map<String, Object> actualResponse = apply(snapshot, List.of(), "preview");
         Map<?, ?> actualPreviewArtifact = (Map<?, ?>) ((List<?>) actualResponse.get("preview_artifacts")).getFirst();
         assertThat(actualPreviewArtifact.get("sql"), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
         assertFalse(String.valueOf(actualResponse).contains("123456"));
@@ -346,11 +307,7 @@ class WorkflowExecutionServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getRequest().setExecutionMode("manual-only");
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
+        Map<String, Object> actualResponse = apply(snapshot, List.of(), "preview");
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(actualNextActions.size(), is(1));
         Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.getFirst();
@@ -364,13 +321,11 @@ class WorkflowExecutionServiceTest {
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
         snapshot.getIndexPlans().add(new IndexPlan("idx_orders_order_id_cipher", "order_id_cipher", "assist lookup", "CREATE INDEX idx_orders_order_id_cipher ON orders(order_id_cipher)"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl", "index_ddl", "rule_distsql"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(workflowSessionContext, snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP,
+                List.of("ddl", "index_ddl", "rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(actualResponse.get("response_mode"), is("executed"));
         assertThat(((List<?>) actualResponse.get("applied_artifacts")).size(), is(3));
@@ -387,13 +342,9 @@ class WorkflowExecutionServiceTest {
         snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("rule_distsql"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, List.of("rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(((List<?>) actualResponse.get("executed_distsql")).getFirst(), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("step_results")).getFirst()).get("sql"),
@@ -405,12 +356,8 @@ class WorkflowExecutionServiceTest {
     @Test
     void assertApplyRequiresManualExecutionForSecretReference() {
         WorkflowContextSnapshot snapshot = createSecretReferenceSnapshot();
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("rule_distsql"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, List.of("rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualResponse.get("response_mode"), is("recovery"));
         assertThat(actualResponse.get("category"), is(MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
@@ -429,14 +376,11 @@ class WorkflowExecutionServiceTest {
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
         snapshot.getIndexPlans().add(new IndexPlan("idx_orders_order_id_cipher", "order_id_cipher", "assist lookup", "CREATE INDEX idx_orders_order_id_cipher ON orders(order_id_cipher)"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
         MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, workflowApplySynchronizationHandler, "session-1", snapshot, List.of("ddl"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(workflowSessionContext, snapshot, executionFacade, workflowApplySynchronizationHandler, List.of("ddl"), "review-then-execute");
         List<?> actualStepResults = (List<?>) actualResponse.get("step_results");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(((List<?>) actualResponse.get("skipped_artifacts")).size(), is(2));
@@ -449,19 +393,17 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyFailsWhenSynchronizationDoesNotConverge() {
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("previewed");
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "ALTER MASK RULE orders"));
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
         MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
         doThrow(new WorkflowSynchronizationException(WorkflowIssueCode.RULE_STATE_MISMATCH, "Mask rule is missing.",
                 List.of(Map.of("code", WorkflowIssueCode.RULE_STATE_MISMATCH)))).when(workflowApplySynchronizationHandler).synchronize(any(), any(), any(), any(), any());
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, workflowApplySynchronizationHandler, "session-1", snapshot, List.of("rule_distsql"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(workflowSessionContext, snapshot, executionFacade, workflowApplySynchronizationHandler,
+                List.of("rule_distsql"), "review-then-execute");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
@@ -470,16 +412,12 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyReturnsDdlExecutionFailureForDdlArtifact() {
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("previewed");
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("ddl failed"));
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, List.of("ddl"), "review-then-execute");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
         Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).getFirst();
         assertThat(actualResponse.get("status"), is("failed"));
@@ -489,16 +427,12 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyReturnsDdlExecutionFailureForIndexArtifact() {
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("previewed");
         snapshot.getIndexPlans().add(new IndexPlan("idx_orders_order_id_cipher", "order_id_cipher", "assist lookup", "CREATE INDEX idx_orders_order_id_cipher ON orders(order_id_cipher)"));
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("index failed"));
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("index_ddl"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, List.of("index_ddl"), "review-then-execute");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
         Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).getFirst();
         assertThat(actualResponse.get("status"), is("failed"));
@@ -513,18 +447,38 @@ class WorkflowExecutionServiceTest {
         snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
-        WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("Failed to execute CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("rule_distsql"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, List.of("rule_distsql"), "review-then-execute");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_EXECUTION_FAILED));
         assertThat(actualIssue.get("message"), is("Failed to execute CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
         assertFalse(String.valueOf(actualResponse).contains("123456"));
+    }
+    
+    private Map<String, Object> apply(final WorkflowContextSnapshot snapshot, final List<String> approvedSteps, final String executionMode) {
+        return apply(createWorkflowSessionContext(snapshot), snapshot, mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, approvedSteps, executionMode);
+    }
+    
+    private Map<String, Object> apply(final WorkflowContextSnapshot snapshot, final MCPFeatureExecutionFacade executionFacade,
+                                      final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler, final List<String> approvedSteps,
+                                      final String executionMode) {
+        return apply(createWorkflowSessionContext(snapshot), snapshot, executionFacade, workflowApplySynchronizationHandler, approvedSteps, executionMode);
+    }
+    
+    private Map<String, Object> apply(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot,
+                                      final MCPFeatureExecutionFacade executionFacade,
+                                      final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler, final List<String> approvedSteps,
+                                      final String executionMode) {
+        return new WorkflowExecutionService().apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+                executionFacade, workflowApplySynchronizationHandler, "session-1", snapshot, approvedSteps, executionMode);
+    }
+    
+    private WorkflowSessionContext createWorkflowSessionContext(final WorkflowContextSnapshot snapshot) {
+        WorkflowSessionContext result = new InMemoryWorkflowSessionContext();
+        result.save(snapshot);
+        return result;
     }
     
     private WorkflowContextSnapshot createSnapshot() {

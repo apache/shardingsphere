@@ -27,11 +27,13 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPToolDescriptorValidationUtilsTest {
     
@@ -69,6 +71,32 @@ class MCPToolDescriptorValidationUtilsTest {
     }
     
     @Test
+    void assertFindToolInputProperty() {
+        MCPToolDescriptor descriptor = createDescriptor(
+                Map.of("properties", Map.of("database", Map.of("type", "string"))), Map.of());
+        Optional<Map<?, ?>> actual = MCPToolDescriptorValidationUtils.findToolInputProperty(descriptor, "database");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().get("type"), is("string"));
+    }
+    
+    @Test
+    void assertFindToolOutputProperty() {
+        MCPToolDescriptor descriptor = createDescriptor(
+                Map.of(), Map.of("properties", Map.of("response_mode", Map.of("enum", List.of("validation")))));
+        Optional<Map<?, ?>> actual = MCPToolDescriptorValidationUtils.findToolOutputProperty(descriptor, "response_mode");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().get("enum"), is(List.of("validation")));
+    }
+    
+    @Test
+    void assertIsRequiredToolInput() {
+        MCPToolDescriptor descriptor = createDescriptor(
+                Map.of("required", List.of("database"), "properties", Map.of("database", Map.of("type", "string"))), Map.of());
+        boolean actual = MCPToolDescriptorValidationUtils.isRequiredToolInput(descriptor, "database");
+        assertTrue(actual);
+    }
+    
+    @Test
     void assertValidateRequiredWorkflowPlanMetaFields() {
         MCPToolDescriptor descriptor = createDescriptor(WORKFLOW_PLAN_OUTPUT_FIELDS, createWorkflowPlanMeta());
         assertDoesNotThrow(() -> MCPToolDescriptorValidationUtils.validateRequiredWorkflowPlanMetaFields(descriptor));
@@ -91,6 +119,10 @@ class MCPToolDescriptorValidationUtilsTest {
     private MCPToolDescriptor createDescriptor(final Collection<String> outputFields, final Map<String, Object> meta) {
         return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of(),
                 Map.of("type", "object", "properties", createOutputProperties(outputFields)), createAnnotations(), meta);
+    }
+    
+    private MCPToolDescriptor createDescriptor(final Map<String, Object> inputSchema, final Map<String, Object> outputSchema) {
+        return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", inputSchema, outputSchema, createAnnotations(), Map.of());
     }
     
     private MCPToolAnnotations createAnnotations() {

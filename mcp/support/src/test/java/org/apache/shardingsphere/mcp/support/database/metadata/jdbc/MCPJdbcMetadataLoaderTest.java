@@ -70,6 +70,15 @@ import static org.mockito.Mockito.when;
 
 class MCPJdbcMetadataLoaderTest {
     
+    private static final Map<String, String> METADATA_JDBC_URLS = Map.of(
+            "MySQL", "jdbc:mysql://metadata-loader/test",
+            "PostgreSQL", "jdbc:postgresql://metadata-loader/test",
+            "openGauss", "jdbc:opengauss://metadata-loader/test",
+            "SQLServer", "jdbc:sqlserver://metadata-loader",
+            "Oracle", "jdbc:oracle:thin:@metadata-loader",
+            "MariaDB", "jdbc:mariadb://metadata-loader/test",
+            "Firebird", "jdbc:firebirdsql://metadata-loader/test");
+    
     @Test
     void assertLoad() throws SQLException {
         LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration(createStandardPostgreSQLMetadataConnection())));
@@ -97,8 +106,7 @@ class MCPJdbcMetadataLoaderTest {
     @Test
     void assertLoadWithoutSchemaObjects() throws SQLException {
         Driver mockDriver = new MockDriver("jdbc:mock:no-schema", createConnectionWithoutSchema("MySQL"));
-        DriverManager.registerDriver(mockDriver);
-        try {
+        try (MockDriverRegistration registration = MockDriverRegistration.register(mockDriver)) {
             LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration("jdbc:mock:no-schema", "", "", MockDriver.class.getName())));
             MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
             assertThat(databaseMetadata.getSchemas().size(), is(1));
@@ -106,8 +114,6 @@ class MCPJdbcMetadataLoaderTest {
             assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.TABLE, "orders"));
             assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.COLUMN, "order_id"));
             assertThat(databaseMetadata.getDatabaseVersion(), is(""));
-        } finally {
-            DriverManager.deregisterDriver(mockDriver);
         }
     }
     
@@ -306,14 +312,11 @@ class MCPJdbcMetadataLoaderTest {
     @Test
     void assertLoadWithFailedSequenceMetadataQuery() throws SQLException {
         Driver mockDriver = new MockDriver("jdbc:mock:failed-sequence-query", createConnectionWithFailedSequenceMetadataQuery());
-        DriverManager.registerDriver(mockDriver);
-        try {
+        try (MockDriverRegistration registration = MockDriverRegistration.register(mockDriver)) {
             RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
                     () -> load(Map.of("logic_db", new RuntimeDatabaseConfiguration("jdbc:mock:failed-sequence-query", "", "", MockDriver.class.getName()))));
             assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: connection_failed."));
             assertThat(actual.getCause().getMessage(), is("sequence metadata query failed"));
-        } finally {
-            DriverManager.deregisterDriver(mockDriver);
         }
     }
     
@@ -323,12 +326,9 @@ class MCPJdbcMetadataLoaderTest {
                                                final String sequenceName, final String sequenceQuery) throws SQLException {
         String jdbcUrl = "jdbc:mock:sequence:" + databaseType.toLowerCase(Locale.ENGLISH);
         Driver mockDriver = new MockDriver(jdbcUrl, createConnectionWithSequenceMetadata(databaseType, sequenceSchema, sequenceName, sequenceQuery));
-        DriverManager.registerDriver(mockDriver);
-        try {
+        try (MockDriverRegistration registration = MockDriverRegistration.register(mockDriver)) {
             LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration(jdbcUrl, "", "", MockDriver.class.getName())));
             assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), SupportedMCPMetadataObjectType.SEQUENCE, sequenceName));
-        } finally {
-            DriverManager.deregisterDriver(mockDriver);
         }
     }
     
@@ -558,28 +558,7 @@ class MCPJdbcMetadataLoaderTest {
     }
     
     private String getMetadataJdbcUrl(final String databaseType) {
-        if ("MySQL".equals(databaseType)) {
-            return "jdbc:mysql://metadata-loader/test";
-        }
-        if ("PostgreSQL".equals(databaseType)) {
-            return "jdbc:postgresql://metadata-loader/test";
-        }
-        if ("openGauss".equals(databaseType)) {
-            return "jdbc:opengauss://metadata-loader/test";
-        }
-        if ("SQLServer".equals(databaseType)) {
-            return "jdbc:sqlserver://metadata-loader";
-        }
-        if ("Oracle".equals(databaseType)) {
-            return "jdbc:oracle:thin:@metadata-loader";
-        }
-        if ("MariaDB".equals(databaseType)) {
-            return "jdbc:mariadb://metadata-loader/test";
-        }
-        if ("Firebird".equals(databaseType)) {
-            return "jdbc:firebirdsql://metadata-loader/test";
-        }
-        return "jdbc:postgresql://metadata-loader/test";
+        return METADATA_JDBC_URLS.getOrDefault(databaseType, METADATA_JDBC_URLS.get("PostgreSQL"));
     }
     
     private int countMetadata(final MCPDatabaseMetadata databaseMetadata, final SupportedMCPMetadataObjectType objectType, final String objectName) {
@@ -637,6 +616,25 @@ class MCPJdbcMetadataLoaderTest {
         
         private Map<String, MCPDatabaseMetadata> getDatabaseMetadataMap() {
             return databaseMetadataMap;
+        }
+    }
+    
+    private static final class MockDriverRegistration implements AutoCloseable {
+        
+        private final Driver driver;
+        
+        private MockDriverRegistration(final Driver driver) throws SQLException {
+            this.driver = driver;
+            DriverManager.registerDriver(driver);
+        }
+        
+        private static MockDriverRegistration register(final Driver driver) throws SQLException {
+            return new MockDriverRegistration(driver);
+        }
+        
+        @Override
+        public void close() throws SQLException {
+            DriverManager.deregisterDriver(driver);
         }
     }
     

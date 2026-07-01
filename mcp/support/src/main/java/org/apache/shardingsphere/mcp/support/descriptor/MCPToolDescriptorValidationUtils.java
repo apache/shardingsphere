@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * MCP tool descriptor validation utilities.
@@ -83,6 +84,49 @@ public final class MCPToolDescriptorValidationUtils {
             Object description = ((Map<?, ?>) property).get("description");
             checkDescription(null == description ? "" : description.toString(), String.format("Tool output field `%s.%s` description", descriptor.getName(), each));
         }
+    }
+    
+    /**
+     * Find input schema property.
+     *
+     * @param descriptor tool descriptor
+     * @param fieldName field name
+     * @return found input schema property
+     */
+    public static Optional<Map<?, ?>> findToolInputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
+        return findToolSchemaProperty(descriptor.getInputSchema(), fieldName);
+    }
+    
+    /**
+     * Find output schema property.
+     *
+     * @param descriptor tool descriptor
+     * @param fieldName field name
+     * @return found output schema property
+     */
+    public static Optional<Map<?, ?>> findToolOutputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
+        return findToolSchemaProperty(descriptor.getOutputSchema(), fieldName);
+    }
+    
+    /**
+     * Check whether input schema property is required.
+     *
+     * @param descriptor tool descriptor
+     * @param fieldName field name
+     * @return whether input schema property is required
+     */
+    public static boolean isRequiredToolInput(final MCPToolDescriptor descriptor, final String fieldName) {
+        Object required = descriptor.getInputSchema().get("required");
+        return required instanceof Collection && ((Collection<?>) required).contains(fieldName);
+    }
+    
+    private static Optional<Map<?, ?>> findToolSchemaProperty(final Map<String, Object> schema, final String fieldName) {
+        Object properties = schema.get("properties");
+        if (!(properties instanceof Map)) {
+            return Optional.empty();
+        }
+        Object property = ((Map<?, ?>) properties).get(fieldName);
+        return property instanceof Map ? Optional.of((Map<?, ?>) property) : Optional.empty();
     }
     
     /**
