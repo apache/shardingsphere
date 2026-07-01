@@ -32,7 +32,7 @@ Apache ShardingSphere 提供了丰富的系统配置属性，用户可通过 `gl
 | proxy-frontend-ssl-version (?)                      | String  | 要启用的 SSL/TLS 协议。未配置时使用默认值 `TLSv1.2,TLSv1.3`。                                                                                 | TLSv1.2,TLSv1.3 | 否      |
 | proxy-frontend-ssl-cipher (?)                       | String  | 按偏好顺序启用的密码套件。多个密码套件用逗号分隔。空白表示使用默认密码套件。                                                                                | ""              | 否      |
 | agent-plugins-enabled (?)                           | boolean | 是否启用 agent 插件。                                                                                                             | true            | 是      |
-| metadata-identifier-case-sensitivity (?)            | String  | 元数据标识符大小写敏感策略。可选值为 `AUTO`、`SENSITIVE` 和 `INSENSITIVE`。                                                                      | AUTO            | 否      |
+| metadata-identifier-case-sensitivity (?)            | String  | 元数据标识符大小写敏感策略。可选值为 `DATABASE` 和 `INSENSITIVE`。`DATABASE` 表示使用数据库特定的标识符规则。                                            | DATABASE        | 否      |
 | groovy-inline-expression-parsing-cache-max-size (?) | long    | Groovy 行表达式解析缓存的最大容量。                                                                                                      | 1000            | 是      |
 
 属性配置可以通过 [DistSQL#RAL](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/) 在线修改。

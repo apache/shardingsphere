@@ -230,6 +230,10 @@ Bootstrap 会输出类似的日志
 
 CDC 任务的启动和停止目前只能通过 CDC Client 控制，可以通过在 proxy 中执行 DistSQL 查看 CDC 任务状态
 
+完整 DistSQL 语法请参考 [SHOW STREAMING LIST](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-list/)、
+[SHOW STREAMING STATUS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-status/)
+和 [DROP STREAMING](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/drop-streaming/)。
+
 1. 查看 CDC 任务列表
 
 SHOW STREAMING LIST;

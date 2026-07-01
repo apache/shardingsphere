@@ -230,6 +230,10 @@ Bootstrap will output a similar log.
 
 The start and stop of the CDC task can only be controlled by the CDC Client. You can view the status of the CDC task by executing DistSQL in the proxy
 
+For complete DistSQL syntax, refer to [SHOW STREAMING LIST](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-list/),
+[SHOW STREAMING STATUS](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-status/)
+and [DROP STREAMING](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/drop-streaming/).
+
 1. View the CDC task list
 
 SHOW STREAMING LIST;
