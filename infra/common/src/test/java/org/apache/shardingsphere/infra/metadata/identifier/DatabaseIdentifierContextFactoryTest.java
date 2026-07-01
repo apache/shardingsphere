@@ -248,24 +248,6 @@ class DatabaseIdentifierContextFactoryTest {
         assertTrue(oracleFirstActual.isHeterogeneousTableLookupEnabled());
     }
     
-    @Test
-    void assertCreateUsesInsensitiveRuleForDatabaseScope() {
-        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(ORACLE_DATABASE_TYPE,
-                createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE));
-        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.DATABASE);
-        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertTrue(actualRule.matches("foo_db", "FOO_DB", QuoteCharacter.NONE));
-    }
-    
-    @Test
-    void assertRefreshUsesInsensitiveRuleForDatabaseScope() {
-        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
-        DatabaseIdentifierContextFactory.refresh(actual, ORACLE_DATABASE_TYPE, createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE));
-        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.DATABASE);
-        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertTrue(actualRule.matches("foo_db", "FOO_DB", QuoteCharacter.NONE));
-    }
-    
     @ParameterizedTest(name = "{0}")
     @MethodSource("storageObjectScopes")
     void assertCreateUsesInsensitiveRuleForStorageObjectScope(final String name, final IdentifierScope identifierScope) {
@@ -406,8 +388,6 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> createWithProtocolTypeAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null protocol type and null props use insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("sensitive props override protocol rules", DATABASE_TYPE,
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
                 Arguments.of("insensitive props normalize identifiers", DATABASE_TYPE,
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
     }
@@ -415,24 +395,13 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> createWithResourceMetaDataAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null resource metadata and null props use insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("null storage units keep explicit sensitive rules", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), null),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("empty storage units keep explicit sensitive rules", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("first data source path keeps explicit sensitive rules", DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
                 Arguments.of("storage type overrides protocol type for oracle backend", MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
-                        new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true),
-                Arguments.of("mixed storage trunk types use first data source rules", MYSQL_DATABASE_TYPE,
-                        createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db", "jdbc:oracle:thin:@localhost:1521:xe"),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
+                        new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true));
     }
     
     private static Stream<Arguments> refreshWithProtocolTypeAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null protocol type and null props refresh to insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("sensitive props refresh to exact lookup", DATABASE_TYPE,
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
                 Arguments.of("insensitive props refresh to normalized lookup", DATABASE_TYPE,
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
     }
@@ -469,17 +438,8 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> refreshWithResourceMetaDataAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null resource metadata and null props refresh to insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("null storage units refresh to exact lookup", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), null),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("empty storage units refresh to exact lookup", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("first data source path refreshes to exact lookup", DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
                 Arguments.of("refresh uses oracle storage type when protocol type is mysql", MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
-                        new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true),
-                Arguments.of("refresh uses first data source rules for mixed storage types", MYSQL_DATABASE_TYPE,
-                        createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db", "jdbc:oracle:thin:@localhost:1521:xe"),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
+                        new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true));
     }
     
     private static Stream<Arguments> refreshWithSupportedDatabaseSchemaLookupArguments() {

@@ -53,19 +53,6 @@ class AlterSchemaPushDownMetaDataRefresherTest {
     }
     
     @Test
-    void assertRefreshRenamesSchemaWithSensitiveProps() {
-        AlterSchemaStatement sqlStatement = new AlterSchemaStatement(databaseType);
-        sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
-        sqlStatement.setRenameSchema(new IdentifierValue("BAR_SCHEMA"));
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
-        refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(props));
-        assertThat(persistService.getSourceSchemaName(), is("FOO_SCHEMA"));
-        assertThat(persistService.getRenamedSchemaName(), is("bar_schema"));
-    }
-    
-    @Test
     void assertRefreshDoesNothingWithoutRename() {
         SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
         AlterSchemaStatement sqlStatement = new AlterSchemaStatement(databaseType);

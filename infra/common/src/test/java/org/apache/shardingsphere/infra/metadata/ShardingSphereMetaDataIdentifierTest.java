@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.metadata;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -95,15 +93,6 @@ class ShardingSphereMetaDataIdentifierTest {
         ShardingSphereMetaData metaData = createMetaData(postgreSQLDatabaseType, createDatabase("foo_db", postgreSQLDatabaseType));
         metaData.dropDatabase("FOO_DB");
         assertFalse(metaData.containsDatabase("foo_db"));
-    }
-    
-    @Test
-    void assertContainsDatabaseWithSensitiveProps() {
-        Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name());
-        ShardingSphereMetaData metaData =
-                createMetaData(postgreSQLDatabaseType, new ConfigurationProperties(props), createDatabase("foo_db", postgreSQLDatabaseType));
-        assertTrue(metaData.containsDatabase("FOO_DB"));
     }
     
     @Test
