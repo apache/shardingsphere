@@ -207,23 +207,15 @@ class ShardingSphereDatabaseTest {
     }
     
     @Test
-    void assertConstructWithProps() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)), new ConfigurationProperties(
-                        PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name()))));
-        assertThat(getIdentifierContext(database).getRule(IdentifierScope.SCHEMA).getLookupMode(QuoteCharacter.NONE), is(LookupMode.EXACT));
-    }
-    
-    @Test
     void assertRefreshIdentifierContext() {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
                 new ConfigurationProperties(new Properties()));
         database.refreshIdentifierContext(new ConfigurationProperties(
-                PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name()))));
+                PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name()))));
         DatabaseIdentifierContext actualIdentifierContext = getIdentifierContext(database);
-        assertThat(actualIdentifierContext.getRule(IdentifierScope.SCHEMA).getLookupMode(QuoteCharacter.NONE), is(LookupMode.EXACT));
+        assertThat(actualIdentifierContext.getRule(IdentifierScope.SCHEMA).getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertThat(getIdentifierContext(schema), is(actualIdentifierContext));
     }
     

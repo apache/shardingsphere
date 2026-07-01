@@ -19,14 +19,11 @@ package org.apache.shardingsphere.infra.metadata.database;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingSphereDatabaseFactoryIdentifierTest {
@@ -37,13 +34,5 @@ class ShardingSphereDatabaseFactoryIdentifierTest {
     void assertCreateSystemDatabaseUsesProtocolAwareLookup() {
         ShardingSphereDatabase database = ShardingSphereDatabaseFactory.create("foo_db", postgreSQLDatabaseType, new ConfigurationProperties(new Properties()));
         assertTrue(database.containsSchema("PUBLIC"));
-    }
-    
-    @Test
-    void assertCreateSystemDatabaseUsesConfiguredSensitivity() {
-        Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name());
-        ShardingSphereDatabase database = ShardingSphereDatabaseFactory.create("foo_db", postgreSQLDatabaseType, new ConfigurationProperties(props));
-        assertFalse(database.containsSchema("PUBLIC"));
     }
 }

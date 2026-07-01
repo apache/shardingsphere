@@ -138,7 +138,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Metadata identifier case sensitivity.
      */
-    METADATA_IDENTIFIER_CASE_SENSITIVITY("metadata-identifier-case-sensitivity", MetadataIdentifierCaseSensitivity.AUTO.name(), MetadataIdentifierCaseSensitivity.class, true),
+    METADATA_IDENTIFIER_CASE_SENSITIVITY("metadata-identifier-case-sensitivity", MetadataIdentifierCaseSensitivity.DATABASE.name(), MetadataIdentifierCaseSensitivity.class, true),
     
     /**
      * Maximum size of Groovy inline expression parsing cache.

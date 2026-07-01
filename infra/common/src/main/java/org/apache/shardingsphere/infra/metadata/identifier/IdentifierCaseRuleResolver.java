@@ -47,9 +47,6 @@ public final class IdentifierCaseRuleResolver {
             return IdentifierCaseRuleSets.newInsensitiveRuleSet();
         }
         MetadataIdentifierCaseSensitivity configuredCaseSensitivity = props.getValue(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
-        if (MetadataIdentifierCaseSensitivity.SENSITIVE == configuredCaseSensitivity) {
-            return IdentifierCaseRuleSets.newSensitiveRuleSet();
-        }
         if (MetadataIdentifierCaseSensitivity.INSENSITIVE == configuredCaseSensitivity) {
             return IdentifierCaseRuleSets.newInsensitiveRuleSet();
         }

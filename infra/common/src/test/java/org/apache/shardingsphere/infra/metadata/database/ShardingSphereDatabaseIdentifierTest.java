@@ -106,15 +106,6 @@ class ShardingSphereDatabaseIdentifierTest {
     }
     
     @Test
-    void assertContainsSchemaWithSensitiveProps() {
-        Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name());
-        ShardingSphereDatabase database =
-                createDatabase(postgreSQLDatabaseType, new ConfigurationProperties(props), createSchema("foo_schema", postgreSQLDatabaseType));
-        assertFalse(database.containsSchema("FOO_SCHEMA"));
-    }
-    
-    @Test
     void assertDefaultPropsUseInsensitiveLookup() {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", postgreSQLDatabaseType, createResourceMetaData(),
                 new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema("foo_schema", postgreSQLDatabaseType)), new ConfigurationProperties(new Properties()));
@@ -128,10 +119,10 @@ class ShardingSphereDatabaseIdentifierTest {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
         ShardingSphereDatabase database = createDatabase(postgreSQLDatabaseType, schema);
         Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name());
+        props.setProperty(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name());
         database.refreshIdentifierContext(new ConfigurationProperties(props));
-        assertFalse(database.containsSchema("FOO_SCHEMA"));
-        assertFalse(database.getSchema("foo_schema").containsTable("FOO_TBL"));
+        assertTrue(database.containsSchema("FOO_SCHEMA"));
+        assertTrue(database.getSchema("foo_schema").containsTable("FOO_TBL"));
         assertTrue(database.getSchema("foo_schema").getTable("foo_tbl").containsColumn("FOO_COL"));
     }
     

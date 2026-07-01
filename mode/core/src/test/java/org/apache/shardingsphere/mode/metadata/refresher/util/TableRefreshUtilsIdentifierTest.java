@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.util;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -87,39 +86,15 @@ class TableRefreshUtilsIdentifierTest {
     }
     
     @Test
-    void assertGetActualTableNameWithSensitiveProps() {
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        assertThat(TableRefreshUtils.getActualTableName(createDatabase(), "Foo_Schema", new IdentifierValue("Foo_Tbl", QuoteCharacter.QUOTE),
-                new ConfigurationProperties(props)), is("Foo_Tbl"));
-    }
-    
-    @Test
     void assertGetTableLoadCandidateNameUsesNormalizedRule() {
         assertThat(TableRefreshUtils.getTableLoadCandidateName(createDatabase(), new IdentifierValue("Foo_Tbl"),
                 new ConfigurationProperties(new Properties())), is("foo_tbl"));
     }
     
     @Test
-    void assertGetTableLoadCandidateNameUsesSensitiveRule() {
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        assertThat(TableRefreshUtils.getTableLoadCandidateName(createDatabase(), new IdentifierValue("Foo_Tbl"),
-                new ConfigurationProperties(props)), is("foo_tbl"));
-    }
-    
-    @Test
     void assertGetViewLoadCandidateNameUsesNormalizedRule() {
         assertThat(TableRefreshUtils.getViewLoadCandidateName(createDatabase(), new IdentifierValue("Foo_View"),
                 new ConfigurationProperties(new Properties())), is("foo_view"));
-    }
-    
-    @Test
-    void assertGetViewLoadCandidateNameUsesSensitiveRule() {
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        assertThat(TableRefreshUtils.getViewLoadCandidateName(createDatabase(), new IdentifierValue("Foo_View"),
-                new ConfigurationProperties(props)), is("foo_view"));
     }
     
     private ShardingSphereDatabase createDatabase() {

@@ -41,14 +41,6 @@ class IdentifierCaseRuleResolverTest {
     private final IdentifierCaseRuleResolver resolver = new IdentifierCaseRuleResolver();
     
     @Test
-    void assertResolveWithSensitiveConfiguration() {
-        IdentifierCaseRule actual =
-                resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new ConfigurationProperties(createProperties("sensitive")), null)
-                        .getRule(IdentifierScope.TABLE);
-        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.EXACT));
-    }
-    
-    @Test
     void assertResolveWithInsensitiveConfiguration() {
         IdentifierCaseRule actual =
                 resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "Oracle"), new ConfigurationProperties(createProperties("insensitive")), null)
