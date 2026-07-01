@@ -37,7 +37,9 @@ import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospec
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * MCP recovery payload factory.
@@ -45,61 +47,55 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPRecoveryPayloadFactory {
     
+    private static final List<RecoveryMapping> RECOVERY_MAPPINGS = List.of(
+            new RecoveryMapping(SQLToolMismatchException.class, cause -> MCPSQLRecoveryPayloadFactory.createSQLToolMismatchRecovery((SQLToolMismatchException) cause)),
+            new RecoveryMapping(MetadataIntrospectionSQLStatementException.class,
+                    cause -> MCPSQLRecoveryPayloadFactory.createMetadataIntrospectionSQLRecovery((MetadataIntrospectionSQLStatementException) cause)),
+            new RecoveryMapping(MCPMultipleSQLStatementsException.class, cause -> MCPSQLRecoveryPayloadFactory.createMultipleStatementsRecovery()),
+            new RecoveryMapping(MCPUnsupportedSQLStatementException.class, cause -> MCPSQLRecoveryPayloadFactory.createUnsupportedStatementRecovery()),
+            new RecoveryMapping(MCPBannedSQLStatementException.class, cause -> MCPSQLRecoveryPayloadFactory.createBannedStatementRecovery()),
+            new RecoveryMapping(MCPExecutionModeRequiredException.class,
+                    cause -> MCPWorkflowRecoveryPayloadFactory.createMissingExecutionModeRecovery((MCPExecutionModeRequiredException) cause)),
+            new RecoveryMapping(MCPInvalidExecutionModeException.class,
+                    cause -> MCPWorkflowRecoveryPayloadFactory.createInvalidExecutionModeRecovery((MCPInvalidExecutionModeException) cause)),
+            new RecoveryMapping(MCPInvalidApprovedStepsException.class,
+                    cause -> MCPWorkflowRecoveryPayloadFactory.createInvalidApprovedStepsRecovery((MCPInvalidApprovedStepsException) cause)),
+            new RecoveryMapping(MCPWorkflowStateException.class, cause -> MCPWorkflowRecoveryPayloadFactory.createWorkflowStateRecovery((MCPWorkflowStateException) cause)),
+            new RecoveryMapping(UnsupportedToolException.class, cause -> MCPBasicRecoveryPayloadFactory.createUnsupportedToolRecovery(((UnsupportedToolException) cause).getToolName())),
+            new RecoveryMapping(UnsupportedResourceUriException.class,
+                    cause -> MCPBasicRecoveryPayloadFactory.createUnsupportedResourceRecovery(((UnsupportedResourceUriException) cause).getResourceUri())),
+            new RecoveryMapping(RuntimeDatabaseConnectionException.class,
+                    cause -> MCPBasicRecoveryPayloadFactory.createRuntimeDatabaseConnectionRecovery((RuntimeDatabaseConnectionException) cause)),
+            new RecoveryMapping(MCPToolCallLimitExceededException.class,
+                    cause -> MCPBasicRecoveryPayloadFactory.createToolCallLimitRecovery((MCPToolCallLimitExceededException) cause)),
+            new RecoveryMapping(MCPInvalidToolArgumentException.class, cause -> MCPBasicRecoveryPayloadFactory.createInvalidToolArgumentRecovery((MCPInvalidToolArgumentException) cause)),
+            new RecoveryMapping(MCPToolArgumentContractViolationException.class,
+                    cause -> MCPBasicRecoveryPayloadFactory.createToolArgumentContractViolationRecovery((MCPToolArgumentContractViolationException) cause)),
+            new RecoveryMapping(MCPMissingToolArgumentException.class,
+                    cause -> MCPBasicRecoveryPayloadFactory.createMissingArgumentRecovery(((MCPMissingToolArgumentException) cause).getArgumentName())),
+            new RecoveryMapping(MCPInvalidMetadataObjectTypesException.class,
+                    cause -> MCPBasicRecoveryPayloadFactory.createInvalidObjectTypesRecovery((MCPInvalidMetadataObjectTypesException) cause)));
+    
     static Map<String, Object> create(final Throwable cause) {
-        if (cause instanceof SQLToolMismatchException) {
-            return MCPSQLRecoveryPayloadFactory.createSQLToolMismatchRecovery((SQLToolMismatchException) cause);
-        }
-        if (cause instanceof MetadataIntrospectionSQLStatementException) {
-            return MCPSQLRecoveryPayloadFactory.createMetadataIntrospectionSQLRecovery((MetadataIntrospectionSQLStatementException) cause);
-        }
-        if (cause instanceof MCPMultipleSQLStatementsException) {
-            return MCPSQLRecoveryPayloadFactory.createMultipleStatementsRecovery();
-        }
-        if (cause instanceof MCPUnsupportedSQLStatementException) {
-            return MCPSQLRecoveryPayloadFactory.createUnsupportedStatementRecovery();
-        }
-        if (cause instanceof MCPBannedSQLStatementException) {
-            return MCPSQLRecoveryPayloadFactory.createBannedStatementRecovery();
-        }
-        if (cause instanceof MCPExecutionModeRequiredException) {
-            return MCPWorkflowRecoveryPayloadFactory.createMissingExecutionModeRecovery((MCPExecutionModeRequiredException) cause);
-        }
-        if (cause instanceof MCPInvalidExecutionModeException) {
-            return MCPWorkflowRecoveryPayloadFactory.createInvalidExecutionModeRecovery((MCPInvalidExecutionModeException) cause);
-        }
-        if (cause instanceof MCPInvalidApprovedStepsException) {
-            return MCPWorkflowRecoveryPayloadFactory.createInvalidApprovedStepsRecovery((MCPInvalidApprovedStepsException) cause);
-        }
-        if (cause instanceof MCPWorkflowStateException) {
-            return MCPWorkflowRecoveryPayloadFactory.createWorkflowStateRecovery((MCPWorkflowStateException) cause);
-        }
-        if (cause instanceof UnsupportedToolException) {
-            return MCPBasicRecoveryPayloadFactory.createUnsupportedToolRecovery(((UnsupportedToolException) cause).getToolName());
-        }
-        if (cause instanceof UnsupportedResourceUriException) {
-            return MCPBasicRecoveryPayloadFactory.createUnsupportedResourceRecovery(((UnsupportedResourceUriException) cause).getResourceUri());
-        }
-        if (cause instanceof RuntimeDatabaseConnectionException) {
-            return MCPBasicRecoveryPayloadFactory.createRuntimeDatabaseConnectionRecovery((RuntimeDatabaseConnectionException) cause);
-        }
-        if (cause instanceof MCPToolCallLimitExceededException) {
-            return MCPBasicRecoveryPayloadFactory.createToolCallLimitRecovery((MCPToolCallLimitExceededException) cause);
-        }
-        if (cause instanceof MCPInvalidToolArgumentException) {
-            return MCPBasicRecoveryPayloadFactory.createInvalidToolArgumentRecovery((MCPInvalidToolArgumentException) cause);
-        }
-        if (cause instanceof MCPToolArgumentContractViolationException) {
-            return MCPBasicRecoveryPayloadFactory.createToolArgumentContractViolationRecovery((MCPToolArgumentContractViolationException) cause);
-        }
-        if (cause instanceof MCPMissingToolArgumentException) {
-            return MCPBasicRecoveryPayloadFactory.createMissingArgumentRecovery(((MCPMissingToolArgumentException) cause).getArgumentName());
-        }
-        if (cause instanceof MCPInvalidMetadataObjectTypesException) {
-            return MCPBasicRecoveryPayloadFactory.createInvalidObjectTypesRecovery((MCPInvalidMetadataObjectTypesException) cause);
+        for (RecoveryMapping each : RECOVERY_MAPPINGS) {
+            if (each.matches(cause)) {
+                return each.create(cause);
+            }
         }
         if (MCPQueryRecoveryPayloadFactory.isQueryFailure(cause)) {
             return MCPQueryRecoveryPayloadFactory.create(cause);
         }
         return Map.of();
+    }
+    
+    private record RecoveryMapping(Class<? extends Throwable> causeType, Function<Throwable, Map<String, Object>> payloadFactory) {
+        
+        private boolean matches(final Throwable cause) {
+            return causeType.isInstance(cause);
+        }
+        
+        private Map<String, Object> create(final Throwable cause) {
+            return payloadFactory.apply(cause);
+        }
     }
 }

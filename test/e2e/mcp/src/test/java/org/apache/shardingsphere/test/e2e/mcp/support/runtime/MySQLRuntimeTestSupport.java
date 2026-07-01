@@ -203,14 +203,7 @@ public final class MySQLRuntimeTestSupport {
      * @throws SQLException SQL exception
      */
     public static void initializeDatabase(final GenericContainer<?> container) throws SQLException {
-        executeStatements(container, DATABASE_NAME,
-                "CREATE TABLE IF NOT EXISTS orders (order_id INT PRIMARY KEY, status VARCHAR(32), amount INT)",
-                "CREATE TABLE IF NOT EXISTS order_items (item_id INT PRIMARY KEY, order_id INT, sku VARCHAR(64))",
-                "INSERT INTO orders (order_id, status, amount) VALUES (1, 'NEW', 10) ON DUPLICATE KEY UPDATE status = VALUES(status), amount = VALUES(amount)",
-                "INSERT INTO orders (order_id, status, amount) VALUES (2, 'DONE', 20) ON DUPLICATE KEY UPDATE status = VALUES(status), amount = VALUES(amount)",
-                "INSERT INTO order_items (item_id, order_id, sku) VALUES (1, 1, 'sku-1') ON DUPLICATE KEY UPDATE order_id = VALUES(order_id), sku = VALUES(sku)",
-                "CREATE OR REPLACE VIEW active_orders AS SELECT order_id, status FROM orders WHERE status <> 'DONE'",
-                "CREATE INDEX idx_orders_status ON orders(status)");
+        initializeOrdersSchema(container, DATABASE_NAME);
     }
     
     private static void initializeProgrammaticDatabases(final GenericContainer<?> container) throws SQLException {
@@ -228,14 +221,7 @@ public final class MySQLRuntimeTestSupport {
                 "GRANT ALL PRIVILEGES ON analytics_db.* TO 'mcp_analytics'@'%'",
                 "GRANT ALL PRIVILEGES ON warehouse.* TO 'mcp_warehouse'@'%'",
                 "FLUSH PRIVILEGES");
-        executeStatements(container, "logic_db",
-                "CREATE TABLE IF NOT EXISTS orders (order_id INT PRIMARY KEY, status VARCHAR(32), amount INT)",
-                "CREATE TABLE IF NOT EXISTS order_items (item_id INT PRIMARY KEY, order_id INT, sku VARCHAR(64))",
-                "INSERT INTO orders (order_id, status, amount) VALUES (1, 'NEW', 10) ON DUPLICATE KEY UPDATE status = VALUES(status), amount = VALUES(amount)",
-                "INSERT INTO orders (order_id, status, amount) VALUES (2, 'DONE', 20) ON DUPLICATE KEY UPDATE status = VALUES(status), amount = VALUES(amount)",
-                "INSERT INTO order_items (item_id, order_id, sku) VALUES (1, 1, 'sku-1') ON DUPLICATE KEY UPDATE order_id = VALUES(order_id), sku = VALUES(sku)",
-                "CREATE OR REPLACE VIEW active_orders AS SELECT order_id, status FROM orders WHERE status <> 'DONE'",
-                "CREATE INDEX idx_orders_status ON orders(status)");
+        initializeOrdersSchema(container, "logic_db");
         executeStatements(container, "analytics_db",
                 "CREATE TABLE IF NOT EXISTS metrics (metric_id INT PRIMARY KEY, metric_name VARCHAR(32))",
                 "INSERT INTO metrics (metric_id, metric_name) VALUES (10, 'cpu') ON DUPLICATE KEY UPDATE metric_name = VALUES(metric_name)",
@@ -244,6 +230,17 @@ public final class MySQLRuntimeTestSupport {
                 "CREATE TABLE IF NOT EXISTS facts (fact_id INT PRIMARY KEY, total INT)",
                 "INSERT INTO facts (fact_id, total) VALUES (100, 1) ON DUPLICATE KEY UPDATE total = VALUES(total)",
                 "INSERT INTO facts (fact_id, total) VALUES (200, 2) ON DUPLICATE KEY UPDATE total = VALUES(total)");
+    }
+    
+    private static void initializeOrdersSchema(final GenericContainer<?> container, final String databaseName) throws SQLException {
+        executeStatements(container, databaseName,
+                "CREATE TABLE IF NOT EXISTS orders (order_id INT PRIMARY KEY, status VARCHAR(32), amount INT)",
+                "CREATE TABLE IF NOT EXISTS order_items (item_id INT PRIMARY KEY, order_id INT, sku VARCHAR(64))",
+                "INSERT INTO orders (order_id, status, amount) VALUES (1, 'NEW', 10) ON DUPLICATE KEY UPDATE status = VALUES(status), amount = VALUES(amount)",
+                "INSERT INTO orders (order_id, status, amount) VALUES (2, 'DONE', 20) ON DUPLICATE KEY UPDATE status = VALUES(status), amount = VALUES(amount)",
+                "INSERT INTO order_items (item_id, order_id, sku) VALUES (1, 1, 'sku-1') ON DUPLICATE KEY UPDATE order_id = VALUES(order_id), sku = VALUES(sku)",
+                "CREATE OR REPLACE VIEW active_orders AS SELECT order_id, status FROM orders WHERE status <> 'DONE'",
+                "CREATE INDEX idx_orders_status ON orders(status)");
     }
     
     /**

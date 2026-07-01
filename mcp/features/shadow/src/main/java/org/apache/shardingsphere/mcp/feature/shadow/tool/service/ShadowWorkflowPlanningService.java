@@ -73,6 +73,8 @@ public final class ShadowWorkflowPlanningService {
     
     private static final List<String> VALIDATION_LAYERS = List.of("rules", "algorithms");
     
+    private static final String ALGORITHM_ARTIFACT_READY_MESSAGE = "Please use a shadow algorithm visible in the current Proxy and provide required properties.";
+    
     private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
     private final ShadowInspectionService inspectionService;
@@ -112,15 +114,11 @@ public final class ShadowWorkflowPlanningService {
         ShadowRuleWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.RULE_WORKFLOW_KIND,
                 resolveIntent(request, "create"), "Shadow rule workflow plan.", RULE_INTERACTION_STEPS);
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());
-        if (!WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(result.getClarifiedIntent().getOperationType()) && !mergedRequest.getDatabase().isEmpty()) {
-            planAlgorithms(queryFacade, mergedRequest, result);
-        }
+        planAlgorithmsIfRequired(queryFacade, mergedRequest, result);
         if (!ensureRulePlanningContext(mergedRequest, result.getClarifiedIntent(), result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
-        if (!WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(result.getClarifiedIntent().getOperationType())
-                && !planningSupport.isReadyForArtifactPlanning(mergedRequest, result.getClarifiedIntent(), result, findPropertyRequirements(mergedRequest),
-                        "Please use a shadow algorithm visible in the current Proxy and provide required properties.")) {
+        if (!isReadyForAlgorithmArtifactPlanning(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
         String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
@@ -146,15 +144,11 @@ public final class ShadowWorkflowPlanningService {
         ShadowDefaultAlgorithmWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND,
                 resolveIntent(request, "create"), "Default shadow algorithm workflow plan.", DEFAULT_ALGORITHM_INTERACTION_STEPS);
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());
-        if (!WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(result.getClarifiedIntent().getOperationType()) && !mergedRequest.getDatabase().isEmpty()) {
-            planAlgorithms(queryFacade, mergedRequest, result);
-        }
+        planAlgorithmsIfRequired(queryFacade, mergedRequest, result);
         if (!ensureDefaultAlgorithmPlanningContext(mergedRequest, result.getClarifiedIntent(), result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
-        if (!WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(result.getClarifiedIntent().getOperationType())
-                && !planningSupport.isReadyForArtifactPlanning(mergedRequest, result.getClarifiedIntent(), result, findPropertyRequirements(mergedRequest),
-                        "Please use a shadow algorithm visible in the current Proxy and provide required properties.")) {
+        if (!isReadyForAlgorithmArtifactPlanning(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
         boolean exists = !inspectionService.queryDefaultAlgorithm(queryFacade, mergedRequest.getDatabase()).isEmpty();
@@ -270,16 +264,26 @@ public final class ShadowWorkflowPlanningService {
     }
     
     private boolean ensureSupportedIdentifiers(final WorkflowContextSnapshot snapshot, final String... identifiers) {
-        for (String each : identifiers) {
-            if (!each.isEmpty() && !WorkflowSQLUtils.isSupportedIdentifier(each)) {
-                snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "intaking",
-                        String.format("Identifier `%s` contains unsupported characters.", each),
-                        "Use reviewable logical identifiers without NUL or line terminators.", false, Map.of("identifier", each)));
-                snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
-                return false;
-            }
+        if (planningSupport.ensureOptionalSupportedIdentifiers("", List.of(identifiers), snapshot, "intaking")) {
+            return true;
         }
-        return true;
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        return false;
+    }
+    
+    private void planAlgorithmsIfRequired(final MCPFeatureQueryFacade queryFacade, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        if (!isDropWorkflow(snapshot.getClarifiedIntent()) && !request.getDatabase().isEmpty()) {
+            planAlgorithms(queryFacade, request, snapshot);
+        }
+    }
+    
+    private boolean isReadyForAlgorithmArtifactPlanning(final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        return isDropWorkflow(snapshot.getClarifiedIntent())
+                || planningSupport.isReadyForArtifactPlanning(request, snapshot.getClarifiedIntent(), snapshot, findPropertyRequirements(request), ALGORITHM_ARTIFACT_READY_MESSAGE);
+    }
+    
+    private boolean isDropWorkflow(final ClarifiedIntent clarifiedIntent) {
+        return WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(clarifiedIntent.getOperationType());
     }
     
     private void addMissingInput(final Collection<String> missingInputs, final String value, final String fieldName) {

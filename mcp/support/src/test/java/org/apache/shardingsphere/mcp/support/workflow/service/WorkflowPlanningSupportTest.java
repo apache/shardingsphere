@@ -228,6 +228,24 @@ class WorkflowPlanningSupportTest {
         assertThat(clarifiedIntent.getInferredValues().get("execution_mode"), is("manual-only"));
     }
     
+    @Test
+    void assertEnsureOptionalSupportedIdentifiersAllowsEmptyIdentifier() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        boolean actual = planningSupport.ensureOptionalSupportedIdentifiers("rule", List.of(""), snapshot, "intaking");
+        assertTrue(actual);
+        assertTrue(snapshot.getIssues().isEmpty());
+    }
+    
+    @Test
+    void assertEnsureSupportedIdentifiersRejectsUnsupportedIdentifier() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        boolean actual = planningSupport.ensureSupportedIdentifiers("", List.of("orders\ndrop"), snapshot, "intaking");
+        assertFalse(actual);
+        assertThat(snapshot.getIssues().getFirst().getMessage(), is("Identifier `orders\ndrop` contains unsupported characters."));
+        assertThat(snapshot.getIssues().getFirst().getUserAction(), is("Use reviewable logical identifiers without NUL or line terminators."));
+        assertThat(snapshot.getIssues().getFirst().getDetails(), is(Map.of("identifier", "orders\ndrop")));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getEnsureLifecycleStateCases")
     void assertEnsureLifecycleState(final String name, final String operationType, final boolean ruleExists, final boolean expectedResult, final String expectedIssueCode) {

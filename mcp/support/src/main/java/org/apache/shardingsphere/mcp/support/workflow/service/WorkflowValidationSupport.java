@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Workflow validation support.
@@ -56,6 +57,26 @@ public final class WorkflowValidationSupport {
                     "Execute the workflow first or continue from a validatable status.");
         }
         return Map.of();
+    }
+    
+    /**
+     * Validate workflow snapshot and persist validation response.
+     *
+     * @param workflowSessionContext workflow session context
+     * @param sessionId session identifier
+     * @param snapshot workflow snapshot
+     * @param validationReportSupplier validation report supplier
+     * @return validation response
+     */
+    public Map<String, Object> validateAndFinalize(final WorkflowSessionContext workflowSessionContext, final String sessionId, final WorkflowContextSnapshot snapshot,
+                                                   final Supplier<ValidationReport> validationReportSupplier) {
+        Map<String, Object> rejectedResponse = checkValidatePreconditions(sessionId, snapshot);
+        if (!rejectedResponse.isEmpty()) {
+            return rejectedResponse;
+        }
+        ValidationReport validationReport = validationReportSupplier.get();
+        snapshot.setValidationReport(validationReport);
+        return finalizeValidation(workflowSessionContext, snapshot, validationReport);
     }
     
     /**

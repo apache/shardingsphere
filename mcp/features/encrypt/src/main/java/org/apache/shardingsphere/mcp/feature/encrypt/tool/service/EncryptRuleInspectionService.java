@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
@@ -44,7 +44,7 @@ public final class EncryptRuleInspectionService {
      * @return encrypt rules
      */
     public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryRuleRows(queryFacade, databaseName, String.format("SHOW ENCRYPT RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return WorkflowDistSQLQueryUtils.queryRuleRows(queryFacade, databaseName, String.format("SHOW ENCRYPT RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -56,7 +56,7 @@ public final class EncryptRuleInspectionService {
      * @return encrypt rules
      */
     public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return queryRuleRows(
+        return WorkflowDistSQLQueryUtils.queryRuleRows(
                 queryFacade, databaseName,
                 String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
@@ -85,17 +85,6 @@ public final class EncryptRuleInspectionService {
             result.add(row);
         }
         return result;
-    }
-    
-    private List<Map<String, Object>> queryRuleRows(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String sql) {
-        try {
-            return queryFacade.query(databaseName, "", sql);
-        } catch (final MCPQueryFailedException ex) {
-            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return List.of();
-            }
-            throw ex;
-        }
     }
     
     private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {

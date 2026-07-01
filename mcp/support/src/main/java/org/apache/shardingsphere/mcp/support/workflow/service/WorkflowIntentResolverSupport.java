@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -33,6 +35,17 @@ import java.util.Locale;
 public final class WorkflowIntentResolverSupport {
     
     private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
+    
+    private static final List<FieldSemanticRule> FIELD_SEMANTIC_RULES = List.of(
+            new FieldSemanticRule("phone", List.of("phone number", "phone", "mobile", "tel", "手机号", "手机", "电话号码", "电话"), List.of("phone", "mobile", "tel")),
+            new FieldSemanticRule("id_card", List.of("identity card", "id card", "身份证", "证件"), List.of("id_card")),
+            new FieldSemanticRule("email", List.of("email", "邮箱", "邮件"), List.of("email")),
+            new FieldSemanticRule("bank_card", List.of("bank card", "银行卡", "银行卡号", "卡号"), List.of("bank_card", "card_no", "card_number")),
+            new FieldSemanticRule("passport", List.of("passport", "护照"), List.of("passport")),
+            new FieldSemanticRule("license_plate", List.of("license plate", "车牌", "车牌号"), List.of("license_plate", "plate_no", "plate_number")),
+            new FieldSemanticRule("birth_date", List.of("birth date", "birthday", "出生日期", "生日"), List.of("birth_date", "birthday", "date_of_birth")),
+            new FieldSemanticRule("address", List.of("address", "地址", "住址"), List.of("address", "addr")),
+            new FieldSemanticRule("name", List.of("real name", "full name", "姓名", "名字"), List.of("real_name", "full_name", "name")));
     
     /**
      * Resolve workflow operation type from explicit fields and heuristics.
@@ -90,37 +103,10 @@ public final class WorkflowIntentResolverSupport {
         }
         String naturalLanguageIntent = getNaturalLanguageIntent(request);
         String columnName = request.getColumn().toLowerCase(Locale.ENGLISH);
-        if (containsAny(naturalLanguageIntent, "phone number", "phone", "mobile", "tel", "手机号", "手机", "电话号码", "电话")
-                || containsAny(columnName, "phone", "mobile", "tel")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "phone");
-        }
-        if (containsAny(naturalLanguageIntent, "identity card", "id card", "身份证", "证件") || columnName.contains("id_card")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "id_card");
-        }
-        if (containsAny(naturalLanguageIntent, "email", "邮箱", "邮件") || columnName.contains("email")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "email");
-        }
-        if (containsAny(naturalLanguageIntent, "bank card", "银行卡", "银行卡号", "卡号")
-                || containsAny(columnName, "bank_card", "card_no", "card_number")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "bank_card");
-        }
-        if (containsAny(naturalLanguageIntent, "passport", "护照") || columnName.contains("passport")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "passport");
-        }
-        if (containsAny(naturalLanguageIntent, "license plate", "车牌", "车牌号")
-                || containsAny(columnName, "license_plate", "plate_no", "plate_number")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "license_plate");
-        }
-        if (containsAny(naturalLanguageIntent, "birth date", "birthday", "出生日期", "生日")
-                || containsAny(columnName, "birth_date", "birthday", "date_of_birth")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "birth_date");
-        }
-        if (containsAny(naturalLanguageIntent, "address", "地址", "住址") || containsAny(columnName, "address", "addr")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "address");
-        }
-        if (containsAny(naturalLanguageIntent, "real name", "full name", "姓名", "名字")
-                || containsAny(columnName, "real_name", "full_name", "name")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, "name");
+        for (FieldSemanticRule each : FIELD_SEMANTIC_RULES) {
+            if (each.matches(naturalLanguageIntent, columnName)) {
+                return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, each.semantics());
+            }
         }
         return recordInferredValue(clarifiedIntent, WorkflowFieldNames.FIELD_SEMANTICS, columnName);
     }
@@ -170,10 +156,26 @@ public final class WorkflowIntentResolverSupport {
         return false;
     }
     
+    private static boolean containsAny(final String value, final Collection<String> candidates) {
+        for (String each : candidates) {
+            if (value.contains(each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private static String recordInferredValue(final ClarifiedIntent clarifiedIntent, final String fieldName, final String value) {
         if (null != clarifiedIntent) {
             clarifiedIntent.getInferredValues().put(fieldName, value);
         }
         return value;
+    }
+    
+    private record FieldSemanticRule(String semantics, Collection<String> intentKeywords, Collection<String> columnKeywords) {
+        
+        private boolean matches(final String naturalLanguageIntent, final String columnName) {
+            return containsAny(naturalLanguageIntent, intentKeywords) || containsAny(columnName, columnKeywords);
+        }
     }
 }
