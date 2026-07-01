@@ -33,8 +33,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Proxy;
 import java.io.PrintWriter;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,19 +45,12 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MySQLIdentifierCaseRuleProviderTest {
     
     private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     private final IdentifierCaseRuleProvider provider = DatabaseTypedSPILoader.getService(IdentifierCaseRuleProvider.class, DATABASE_TYPE);
-    
-    @Test
-    void assertProvideWithNullContext() {
-        NullPointerException actual = assertThrows(NullPointerException.class, () -> provider.provide(null));
-        assertThat(actual.getMessage(), is("context cannot be null."));
-    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideArguments")

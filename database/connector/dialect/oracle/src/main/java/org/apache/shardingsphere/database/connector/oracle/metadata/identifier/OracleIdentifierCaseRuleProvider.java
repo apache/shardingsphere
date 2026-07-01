@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -32,7 +31,6 @@ public final class OracleIdentifierCaseRuleProvider implements IdentifierCaseRul
     
     @Override
     public Optional<IdentifierCaseRuleSet> provide(final IdentifierCaseRuleProviderContext context) {
-        Objects.requireNonNull(context, "context cannot be null.");
         return Optional.of(IdentifierCaseRuleSets.newUpperCaseRuleSet());
     }
     

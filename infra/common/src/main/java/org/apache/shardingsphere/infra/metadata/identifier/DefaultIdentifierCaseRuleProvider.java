@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -34,7 +33,6 @@ public final class DefaultIdentifierCaseRuleProvider implements IdentifierCaseRu
     
     @Override
     public Optional<IdentifierCaseRuleSet> provide(final IdentifierCaseRuleProviderContext context) {
-        Objects.requireNonNull(context, "context cannot be null.");
         DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, context.getDatabaseType());
         return Optional.of(IdentifierCaseRuleSets.newDialectDefaultRuleSet(dialectDatabaseMetaData.getIdentifierPatternType(), dialectDatabaseMetaData.isCaseSensitive()));
     }

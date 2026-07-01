@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.database.connector.mysql.metadata.identifier;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -30,7 +30,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -42,7 +41,6 @@ public final class MySQLIdentifierCaseRuleProvider implements IdentifierCaseRule
     
     @Override
     public Optional<IdentifierCaseRuleSet> provide(final IdentifierCaseRuleProviderContext context) {
-        Objects.requireNonNull(context, "context cannot be null.");
         if (null == context.getDataSource()) {
             return Optional.empty();
         }
