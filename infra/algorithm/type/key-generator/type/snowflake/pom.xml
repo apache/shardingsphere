@@ -26,6 +26,10 @@
     <artifactId>shardingsphere-infra-algorithm-key-generator-snowflake</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <argLine>-Duser.timezone=Asia/Shanghai</argLine>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -33,15 +37,4 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>${argLine} -Duser.timezone=Asia/Shanghai</argLine>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
