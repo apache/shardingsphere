@@ -19,8 +19,8 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class DefaultGeneratedKeyOptionTest {
