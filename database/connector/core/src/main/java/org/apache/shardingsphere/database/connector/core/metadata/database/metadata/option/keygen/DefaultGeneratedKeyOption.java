@@ -31,4 +31,9 @@ public final class DefaultGeneratedKeyOption implements DialectGeneratedKeyOptio
     public String getColumnName() {
         return columnName;
     }
+    
+    @Override
+    public boolean isGeneratedKeyTriggerValue(final Object value) {
+        return false;
+    }
 }

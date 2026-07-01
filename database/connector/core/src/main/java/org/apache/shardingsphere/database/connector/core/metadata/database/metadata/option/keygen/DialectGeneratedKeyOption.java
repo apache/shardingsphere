@@ -35,7 +35,5 @@ public interface DialectGeneratedKeyOption {
      * @param value explicit insert value
      * @return whether the value triggers generated key
      */
-    default boolean isGeneratedKeyTriggerValue(final Object value) {
-        return false;
-    }
+    boolean isGeneratedKeyTriggerValue(Object value);
 }

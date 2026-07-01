@@ -293,7 +293,15 @@ public final class ProxySQLExecutor {
     
     private static boolean isReturnGeneratedKeysForExplicit(final InsertStatementContext insertStatementContext, final List<Object> params,
                                                             final DialectGeneratedKeyOption generatedKeyOption, final String columnName) {
-        int columnIndex = insertStatementContext.getColumnNames().indexOf(columnName);
+        int columnIndex = -1;
+        int index = 0;
+        for (String each : insertStatementContext.getColumnNames()) {
+            if (each.equalsIgnoreCase(columnName)) {
+                columnIndex = index;
+                break;
+            }
+            index++;
+        }
         if (-1 != columnIndex) {
             for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
                 if (isReturnGeneratedKeysForExplicit(each, columnIndex, params, generatedKeyOption)) {
