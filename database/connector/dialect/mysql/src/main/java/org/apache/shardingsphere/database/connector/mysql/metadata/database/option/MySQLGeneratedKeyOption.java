@@ -22,10 +22,11 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 /**
  * Generated key option of MySQL.
  */
-public final class MySQLGeneratedKeyOption extends DialectGeneratedKeyOption {
+public final class MySQLGeneratedKeyOption implements DialectGeneratedKeyOption {
     
-    public MySQLGeneratedKeyOption() {
-        super("GENERATED_KEY");
+    @Override
+    public String getColumnName() {
+        return "GENERATED_KEY";
     }
     
     @Override
