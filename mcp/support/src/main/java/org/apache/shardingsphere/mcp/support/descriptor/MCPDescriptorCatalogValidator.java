@@ -577,9 +577,9 @@ final class MCPDescriptorCatalogValidator {
         if (!descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
-        Map<?, ?> executionMode = findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE).orElseThrow(
+        Map<?, ?> executionMode = MCPToolDescriptorValidationUtils.findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE).orElseThrow(
                 () -> new IllegalStateException(String.format("Destructive tool `%s` must declare execution_mode.", descriptor.getName())));
-        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, MCPPayloadFieldNames.EXECUTION_MODE),
+        ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.isRequiredToolInput(descriptor, MCPPayloadFieldNames.EXECUTION_MODE),
                 () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must be required.", descriptor.getName())));
         Collection<?> executionModes = executionMode.get("enum") instanceof Collection ? (Collection<?>) executionMode.get("enum") : List.of();
         ShardingSpherePreconditions.checkState(executionModes.contains("preview"),
@@ -594,7 +594,7 @@ final class MCPDescriptorCatalogValidator {
         if (descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
-        Optional<Map<?, ?>> executionMode = findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE);
+        Optional<Map<?, ?>> executionMode = MCPToolDescriptorValidationUtils.findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE);
         if (executionMode.isEmpty()) {
             return;
         }
@@ -603,20 +603,6 @@ final class MCPDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Planning tool `%s` execution_mode must not expose preview.", descriptor.getName())));
         ShardingSpherePreconditions.checkState(!executionModes.contains("auto-execute"),
                 () -> new IllegalStateException(String.format("Planning tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
-    }
-    
-    private static Optional<Map<?, ?>> findToolInputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
-        Object properties = descriptor.getInputSchema().get("properties");
-        if (!(properties instanceof Map)) {
-            return Optional.empty();
-        }
-        Object property = ((Map<?, ?>) properties).get(fieldName);
-        return property instanceof Map ? Optional.of((Map<?, ?>) property) : Optional.empty();
-    }
-    
-    private static boolean isRequiredToolInput(final MCPToolDescriptor descriptor, final String fieldName) {
-        Object required = descriptor.getInputSchema().get("required");
-        return required instanceof Collection && ((Collection<?>) required).contains(fieldName);
     }
     
     private static boolean isNonEmptyCollection(final Object value) {

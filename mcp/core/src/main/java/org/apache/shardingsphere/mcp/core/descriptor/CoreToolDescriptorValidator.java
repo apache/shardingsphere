@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -102,9 +101,9 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
     }
     
     private void validateExecuteUpdateDescriptor(final MCPToolDescriptor descriptor) {
-        Map<?, ?> executionMode = findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE).orElseThrow(
+        Map<?, ?> executionMode = MCPToolDescriptorValidationUtils.findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE).orElseThrow(
                 () -> new IllegalStateException("Tool `database_gateway_execute_update` must declare execution_mode."));
-        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, MCPPayloadFieldNames.EXECUTION_MODE),
+        ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.isRequiredToolInput(descriptor, MCPPayloadFieldNames.EXECUTION_MODE),
                 () -> new IllegalStateException("Tool `database_gateway_execute_update` execution_mode must be required."));
         Object executionModes = executionMode.get("enum");
         ShardingSpherePreconditions.checkState(executionModes instanceof Collection && ((Collection<?>) executionModes).containsAll(List.of("execute", "preview")),
@@ -112,17 +111,17 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
     }
     
     private void validateRuntimeDatabaseContract(final MCPToolDescriptor descriptor) {
-        Map<?, ?> responseMode = findToolOutputProperty(descriptor, "response_mode").orElseThrow(
+        Map<?, ?> responseMode = MCPToolDescriptorValidationUtils.findToolOutputProperty(descriptor, "response_mode").orElseThrow(
                 () -> new IllegalStateException("Tool `database_gateway_validate_runtime_database` must declare response_mode."));
         Object responseModes = responseMode.get("enum");
         ShardingSpherePreconditions.checkState(responseModes instanceof Collection && ((Collection<?>) responseModes).contains("validation"),
                 () -> new IllegalStateException("Tool `database_gateway_validate_runtime_database` response_mode must allow validation."));
-        ShardingSpherePreconditions.checkState(findToolInputProperty(descriptor, "database").isPresent(),
+        ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.findToolInputProperty(descriptor, "database").isPresent(),
                 () -> new IllegalStateException("Tool `database_gateway_validate_runtime_database` must declare `database`."));
-        ShardingSpherePreconditions.checkState(isRequiredToolInput(descriptor, "database"),
+        ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.isRequiredToolInput(descriptor, "database"),
                 () -> new IllegalStateException("Tool `database_gateway_validate_runtime_database` database must be required."));
         for (String each : List.of("databaseType", "jdbcUrl", "username", "password", "driverClassName")) {
-            ShardingSpherePreconditions.checkState(findToolInputProperty(descriptor, each).isEmpty(),
+            ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.findToolInputProperty(descriptor, each).isEmpty(),
                     () -> new IllegalStateException(String.format("Tool `database_gateway_validate_runtime_database` must not expose `%s`.", each)));
         }
     }
@@ -144,26 +143,4 @@ public final class CoreToolDescriptorValidator implements MCPToolDescriptorValid
         }
     }
     
-    private Optional<Map<?, ?>> findToolInputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
-        Object properties = descriptor.getInputSchema().get("properties");
-        if (!(properties instanceof Map)) {
-            return Optional.empty();
-        }
-        Object property = ((Map<?, ?>) properties).get(fieldName);
-        return property instanceof Map ? Optional.of((Map<?, ?>) property) : Optional.empty();
-    }
-    
-    private Optional<Map<?, ?>> findToolOutputProperty(final MCPToolDescriptor descriptor, final String fieldName) {
-        Object properties = descriptor.getOutputSchema().get("properties");
-        if (!(properties instanceof Map)) {
-            return Optional.empty();
-        }
-        Object property = ((Map<?, ?>) properties).get(fieldName);
-        return property instanceof Map ? Optional.of((Map<?, ?>) property) : Optional.empty();
-    }
-    
-    private boolean isRequiredToolInput(final MCPToolDescriptor descriptor, final String fieldName) {
-        Object required = descriptor.getInputSchema().get("required");
-        return required instanceof Collection && ((Collection<?>) required).contains(fieldName);
-    }
 }
