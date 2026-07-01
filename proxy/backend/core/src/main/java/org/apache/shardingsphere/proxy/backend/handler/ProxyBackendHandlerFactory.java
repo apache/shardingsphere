@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.authority.checker.AuthorityDistSQLExecutionChecker;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -125,6 +126,13 @@ public final class ProxyBackendHandlerFactory {
         }
         if (sqlStatement instanceof DistSQLStatement) {
             checkSupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
+            // The branch previously returned immediately after the transaction check,
+            // allowing any authenticated user to execute every administrative DistSQL
+            // operation regardless of admin flag or privilege provider configuration.
+            // See AuthorityDistSQLExecutionChecker for the full rationale, including how
+            // it resolves the actual execution-target database for database-scoped reads
+            // rather than trusting the session's current database alone.
+            checkDistSQLAuthority(sqlStatement, connectionSession, queryContext.getMetaData());
             return DistSQLProxyBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, queryContext, connectionSession);
         }
         handleAutoCommit(sqlStatement, connectionSession);
@@ -182,6 +190,12 @@ public final class ProxyBackendHandlerFactory {
     
     private static boolean isSupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement) {
         return sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof RULStatement;
+    }
+    
+    private static void checkDistSQLAuthority(final SQLStatement sqlStatement, final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
+        Grantee grantee = connectionSession.getConnectionContext().getGrantee();
+        String usedDatabaseName = connectionSession.getUsedDatabaseName();
+        new AuthorityDistSQLExecutionChecker().check(sqlStatement, grantee, metaData, usedDatabaseName);
     }
     
     private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
