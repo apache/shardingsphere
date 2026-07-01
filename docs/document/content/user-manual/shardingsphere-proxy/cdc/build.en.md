@@ -81,6 +81,9 @@ The startup will have been successful.
 
 6. Configure CDC on demand.
 
+For complete DistSQL syntax, refer to [SHOW STREAMING RULE](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-rule/)
+and [ALTER STREAMING RULE](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/alter-streaming-rule/).
+
 6.1. Query configuration.
 
 ```sql

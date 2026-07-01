@@ -19,7 +19,8 @@ Apache ShardingSphere 提供属性配置来设置系统级行为。
 | max-union-size-per-datasource (?)                   | int     | 每个数据源允许合并的最大 UNION ALL 数量。当路由到同一数据源的路由单元数量超过此值时，将分批合并以恢复并行执行能力。                                      | Integer.MAX_VALUE |
 | check-table-metadata-enabled (?)                    | boolean | 应用启动或元数据更新时，是否校验表元数据一致性。                                                                                                    | false           |
 | load-table-metadata-batch-size (?)                  | int     | 应用启动或刷新表元数据时，单个批次加载表元数据的数量。                                                                                                 | 1000            |
-| metadata-identifier-case-sensitivity (?)            | String  | 元数据标识符大小写敏感策略。可选值为 `AUTO`、`SENSITIVE` 和 `INSENSITIVE`。                                                                      | AUTO            |
+| agent-plugins-enabled (?)                           | boolean | 是否启用 Agent 插件。                                                                                                             | true            |
+| metadata-identifier-case-sensitivity (?)            | String  | 元数据标识符大小写敏感策略。可选值为 `DATABASE` 和 `INSENSITIVE`。`DATABASE` 表示使用数据库特定的标识符规则。                                            | DATABASE        |
 | groovy-inline-expression-parsing-cache-max-size (?) | long    | Groovy 行表达式解析缓存的最大容量。                                                                                                      | 1000            |
 
 ## 操作步骤

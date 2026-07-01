@@ -60,7 +60,7 @@ mysql> SHOW DIST VARIABLES;
 | load_table_metadata_batch_size                        | 1000            |
 | max_connections_size_per_query                        | 1               |
 | max_union_size_per_datasource                         | 2147483647      |
-| metadata_identifier_case_sensitivity                  | AUTO            |
+| metadata_identifier_case_sensitivity                  | DATABASE        |
 | proxy_backend_query_fetch_size                        | -1              |
 | proxy_default_port                                    | 3307            |
 | proxy_frontend_connection_idle_timeout                | 28800           |
