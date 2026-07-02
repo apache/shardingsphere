@@ -48,11 +48,12 @@ class LLMUsabilityScenarioCatalogTest {
         assertThat(actualScenarios.get("natural-workflow-manual-export-mysql").getLlmScenario().getUserPrompt(),
                 containsString("table `orders`, and column `status`"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getRequiredToolNames(),
-                is(List.of("database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query")));
+                is(List.of("database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_validate_workflow", "database_gateway_execute_query")));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("create a mask rule"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("table `orders`"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("MD5 mask algorithm"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("manual-only"));
+        assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("validate the workflow"));
         assertTrue(actual.stream().allMatch(each -> each.getTags().contains("natural")));
         assertTrue(actual.stream().allMatch(LLMUsabilityScenario::isNaturalTask));
         assertTrue(actual.stream().noneMatch(LLMUsabilityScenario::isProtocolContract));
