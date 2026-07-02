@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.database;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -119,7 +119,7 @@ class ShardingSphereDatabaseIdentifierTest {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
         ShardingSphereDatabase database = createDatabase(postgreSQLDatabaseType, schema);
         Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name());
+        props.setProperty(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name());
         database.refreshIdentifierContext(new ConfigurationProperties(props));
         assertTrue(database.containsSchema("FOO_SCHEMA"));
         assertTrue(database.getSchema("foo_schema").containsTable("FOO_TBL"));

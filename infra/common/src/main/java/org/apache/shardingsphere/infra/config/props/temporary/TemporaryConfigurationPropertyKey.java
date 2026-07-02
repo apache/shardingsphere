@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.props.temporary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 import java.util.Arrays;
@@ -50,7 +51,12 @@ public enum TemporaryConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Instance connection enabled.
      */
-    INSTANCE_CONNECTION_ENABLED("instance-connection-enabled", String.valueOf(Boolean.FALSE), boolean.class, false);
+    INSTANCE_CONNECTION_ENABLED("instance-connection-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
+    
+    /**
+     * Metadata identifier case sensitivity.
+     */
+    METADATA_IDENTIFIER_CASE_SENSITIVITY("metadata-identifier-case-sensitivity", MetadataIdentifierCaseSensitivity.DATABASE.name(), MetadataIdentifierCaseSensitivity.class, true);
     
     private final String key;
     
