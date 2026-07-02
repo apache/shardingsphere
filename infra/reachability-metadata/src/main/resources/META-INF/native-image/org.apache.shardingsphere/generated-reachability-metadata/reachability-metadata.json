@@ -626,7 +626,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.mysql.metadata.identifier.MySQLIdentifierCaseRuleProvider"
+        "typeReached": "org.apache.shardingsphere.database.connector.mysql.metadata.identifier.MySQLIdentifierCasePolicyProvider"
       },
       "type": "java.sql.Statement[]"
     },
@@ -1724,7 +1724,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.mysql.metadata.identifier.MySQLIdentifierCaseRuleProvider"
+        "typeReached": "org.apache.shardingsphere.database.connector.mysql.metadata.identifier.MySQLIdentifierCasePolicyProvider"
       },
       "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
     },
