@@ -24,6 +24,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
@@ -75,6 +76,19 @@ class AggregationProjectionConverterTest {
         assertTrue(starIdentifier.isStar());
         SqlIdentifier aliasIdentifier = (SqlIdentifier) asCall.getOperandList().get(1);
         assertThat(aliasIdentifier.names, is(Collections.singletonList("alias")));
+    }
+    
+    @Test
+    void assertConvertBuildsCountNullForDistinctAggregationWithNullParameter() {
+        AggregationDistinctProjectionSegment segment = new AggregationDistinctProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT 1, NULL)", "1, NULL");
+        segment.getParameters().addAll(Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, null)));
+        Optional<SqlNode> actual = AggregationProjectionConverter.convert(segment);
+        SqlBasicCall sqlBasicCall = (SqlBasicCall) actual.orElse(null);
+        assertNotNull(sqlBasicCall);
+        assertThat(sqlBasicCall.getOperator(), is(SqlStdOperatorTable.COUNT));
+        assertNull(sqlBasicCall.getFunctionQuantifier());
+        assertThat(sqlBasicCall.getOperandList().size(), is(1));
+        assertNull(((SqlLiteral) sqlBasicCall.getOperandList().get(0)).getValue());
     }
     
     @Test
