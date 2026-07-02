@@ -91,6 +91,15 @@ public final class LLMUsabilityScenarioCatalog {
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         workflowActions, workflowRequiredActions),
                 List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule"), List.of(), false, false));
+        result.add(createScenario("natural-mask-rule-md5-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
+                List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural", "workflow", "mask"),
+                new LLME2EScenario("natural-mask-rule-md5-" + runtimeKind, SYSTEM_PROMPT,
+                        "A user asks you to create a mask rule for logical database `" + databaseName + "`, schema `" + schemaName + "`, table `" + tableName
+                                + "`, and column `status` with the MD5 mask algorithm. Use the planning response plan_id for follow-up workflow calls, keep execution manual-only, "
+                                + "and finish by verifying `" + query + "`.",
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
+                        workflowActions, workflowRequiredActions),
+                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule"), List.of(), false, false));
         result.add(createScenario("natural-table-resource-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural", "resource"),
                 new LLME2EScenario("natural-table-resource-" + runtimeKind, SYSTEM_PROMPT,
