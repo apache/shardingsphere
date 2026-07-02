@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sqlfederation.compiler.compiler.it;
 
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
+import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
+import org.apache.calcite.adapter.enumerable.EnumerableRel;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.sql.SqlOperatorTable;
@@ -250,6 +252,15 @@ class SQLStatementCompilerIT {
                 .parse("SELECT o.order_id FROM t_order o WHERE o.user_id IN (SELECT o.user_id FROM t_order_item i)", false);
         String actual = assertDoesNotThrow(() -> sqlStatementCompiler.compile(sqlStatement, "MySQL").getPhysicalPlan().explain().replaceAll(System.lineSeparator(), " "));
         assertThat(actual, containsString("EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`]"));
+    }
+    
+    @Test
+    void assertCompileDistinctCountWithNullParameterToBindable() {
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL"))
+                .parse("SELECT o.order_id, COUNT(DISTINCT i.product_id), COUNT(DISTINCT 1, NULL) FROM t_order o "
+                        + "LEFT JOIN t_order_item i ON o.order_id = i.order_id GROUP BY o.order_id", false);
+        assertDoesNotThrow(() -> EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) sqlStatementCompiler.compile(sqlStatement, "MySQL").getPhysicalPlan(),
+                EnumerableRel.Prefer.ARRAY));
     }
     
     @ParameterizedTest(name = "{0}")
