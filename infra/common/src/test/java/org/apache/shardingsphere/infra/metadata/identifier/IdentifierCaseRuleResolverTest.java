@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
@@ -71,6 +71,6 @@ class IdentifierCaseRuleResolverTest {
     }
     
     private Properties createProperties(final String value) {
-        return PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), value));
+        return PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), value));
     }
 }

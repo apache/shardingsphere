@@ -136,11 +136,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     AGENT_PLUGINS_ENABLED("agent-plugins-enabled", String.valueOf(Boolean.TRUE), boolean.class, false),
     
     /**
-     * Metadata identifier case sensitivity.
-     */
-    METADATA_IDENTIFIER_CASE_SENSITIVITY("metadata-identifier-case-sensitivity", MetadataIdentifierCaseSensitivity.DATABASE.name(), MetadataIdentifierCaseSensitivity.class, true),
-    
-    /**
      * Maximum size of Groovy inline expression parsing cache.
      */
     GROOVY_INLINE_EXPRESSION_PARSING_CACHE_MAX_SIZE("groovy-inline-expression-parsing-cache-max-size", "1000", long.class, false);

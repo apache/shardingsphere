@@ -24,8 +24,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 
 import javax.sql.DataSource;
 
@@ -46,7 +47,8 @@ public final class IdentifierCaseRuleResolver {
         if (null == databaseType || null == databaseType.getType()) {
             return IdentifierCaseRuleSets.newInsensitiveRuleSet();
         }
-        MetadataIdentifierCaseSensitivity configuredCaseSensitivity = props.getValue(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
+        MetadataIdentifierCaseSensitivity configuredCaseSensitivity = new TemporaryConfigurationProperties(props.getProps())
+                .getValue(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
         if (MetadataIdentifierCaseSensitivity.INSENSITIVE == configuredCaseSensitivity) {
             return IdentifierCaseRuleSets.newInsensitiveRuleSet();
         }

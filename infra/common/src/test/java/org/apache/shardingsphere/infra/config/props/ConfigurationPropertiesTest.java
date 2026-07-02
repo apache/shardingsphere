@@ -55,7 +55,6 @@ class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION), is("TLSv1.3"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER), is("ECDHE"));
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED));
-        assertThat(actual.getValue(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY), is(MetadataIdentifierCaseSensitivity.INSENSITIVE));
     }
     
     private Properties createProperties() {
@@ -78,8 +77,7 @@ class ConfigurationPropertiesTest {
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED.getKey(), Boolean.TRUE.toString()),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION.getKey(), "TLSv1.3"),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER.getKey(), "ECDHE"),
-                new Property(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED.getKey(), Boolean.TRUE.toString()),
-                new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), "insensitive"));
+                new Property(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED.getKey(), Boolean.TRUE.toString()));
     }
     
     @Test
@@ -104,6 +102,5 @@ class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION), is("TLSv1.2,TLSv1.3"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER), is(""));
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED));
-        assertThat(actual.getValue(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY), is(MetadataIdentifierCaseSensitivity.DATABASE));
     }
 }
