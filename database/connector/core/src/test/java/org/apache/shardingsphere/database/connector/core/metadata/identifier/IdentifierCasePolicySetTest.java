@@ -26,25 +26,25 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class IdentifierCaseRuleSetTest {
+class IdentifierCasePolicySetTest {
     
     @Test
-    void assertGetRule() {
-        IdentifierCaseRule expectedRule = new StandardIdentifierCaseRule(LookupMode.EXACT, LookupMode.NORMALIZED,
+    void assertGetPolicy() {
+        IdentifierCasePolicy expectedRule = new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
                 each -> each.toLowerCase(Locale.ENGLISH), each -> true);
-        IdentifierCaseRule actualRule = new IdentifierCaseRuleSet(expectedRule).getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualRule = new IdentifierCasePolicySet(expectedRule).getPolicy(IdentifierScope.TABLE);
         assertThat(actualRule, is(expectedRule));
     }
     
     @Test
-    void assertGetRuleWithScopeOverride() {
-        IdentifierCaseRule defaultRule = new StandardIdentifierCaseRule(LookupMode.EXACT, LookupMode.NORMALIZED,
+    void assertGetPolicyWithScopeOverride() {
+        IdentifierCasePolicy defaultRule = new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
                 each -> each.toLowerCase(Locale.ENGLISH), each -> true);
-        IdentifierCaseRule schemaRule = new StandardIdentifierCaseRule(LookupMode.EXACT, LookupMode.EXACT, each -> each, each -> true);
-        Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
+        IdentifierCasePolicy schemaRule = new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.EXACT, each -> each, each -> true);
+        Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
         scopedRules.put(IdentifierScope.SCHEMA, schemaRule);
-        IdentifierCaseRuleSet actualRuleSet = new IdentifierCaseRuleSet(defaultRule, scopedRules);
-        assertThat(actualRuleSet.getRule(IdentifierScope.SCHEMA), is(schemaRule));
-        assertThat(actualRuleSet.getRule(IdentifierScope.TABLE), is(defaultRule));
+        IdentifierCasePolicySet actualPolicySet = new IdentifierCasePolicySet(defaultRule, scopedRules);
+        assertThat(actualPolicySet.getPolicy(IdentifierScope.SCHEMA), is(schemaRule));
+        assertThat(actualPolicySet.getPolicy(IdentifierScope.TABLE), is(defaultRule));
     }
 }

@@ -98,7 +98,7 @@ public final class SchemaMetaDataUtils {
         if (isSameProtocolAndStorageTypes) {
             return tableNames;
         }
-        return tableNames.stream().map(each -> identifierContext.getRule(IdentifierScope.TABLE).normalize(each)).collect(Collectors.toList());
+        return tableNames.stream().map(each -> identifierContext.getPolicy(IdentifierScope.TABLE).normalize(each)).collect(Collectors.toList());
     }
     
     private static DataSource getDataSource(final GenericSchemaBuilderMaterial material, final String dataSourceName) {

@@ -28,7 +28,7 @@ import java.util.function.UnaryOperator;
  * Standard implementation of identifier case rule.
  */
 @RequiredArgsConstructor
-public final class StandardIdentifierCaseRule implements IdentifierCaseRule {
+public final class StandardIdentifierCasePolicy implements IdentifierCasePolicy {
     
     private final LookupMode quotedLookupMode;
     

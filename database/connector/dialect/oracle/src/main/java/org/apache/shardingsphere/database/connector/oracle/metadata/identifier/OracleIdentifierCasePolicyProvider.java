@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.database.connector.oracle.metadata.identifier;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 
 import java.util.Optional;
 
 /**
  * Oracle provider of identifier case rules.
  */
-public final class OracleIdentifierCaseRuleProvider implements IdentifierCaseRuleProvider {
+public final class OracleIdentifierCasePolicyProvider implements IdentifierCasePolicyProvider {
     
     @Override
-    public Optional<IdentifierCaseRuleSet> provide(final IdentifierCaseRuleProviderContext context) {
-        return Optional.of(IdentifierCaseRuleSets.newUpperCaseRuleSet());
+    public Optional<IdentifierCasePolicySet> provide(final IdentifierCasePolicyProviderContext context) {
+        return Optional.of(IdentifierCasePolicyFactory.newUpperCasePolicySet());
     }
     
     @Override

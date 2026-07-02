@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -158,13 +158,13 @@ public final class ShardingSphereDatabase {
     }
     
     /**
-     * Get identifier case rule by scope.
+     * Get identifier case policy by scope.
      *
      * @param identifierScope identifier scope
-     * @return identifier case rule
+     * @return identifier case policy
      */
-    public IdentifierCaseRule getIdentifierCaseRule(final IdentifierScope identifierScope) {
-        return identifierContext.getRule(identifierScope);
+    public IdentifierCasePolicy getIdentifierCasePolicy(final IdentifierScope identifierScope) {
+        return identifierContext.getPolicy(identifierScope);
     }
     
     /**

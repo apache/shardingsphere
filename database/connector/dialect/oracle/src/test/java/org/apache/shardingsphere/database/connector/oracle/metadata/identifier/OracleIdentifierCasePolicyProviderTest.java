@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.database.connector.oracle.metadata.identifier;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -34,21 +34,21 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class OracleIdentifierCaseRuleProviderTest {
+class OracleIdentifierCasePolicyProviderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
     
-    private final IdentifierCaseRuleProvider provider = DatabaseTypedSPILoader.getService(IdentifierCaseRuleProvider.class, databaseType);
+    private final IdentifierCasePolicyProvider provider = DatabaseTypedSPILoader.getService(IdentifierCasePolicyProvider.class, databaseType);
     
     @Test
     void assertGetDatabaseType() {
-        assertThat(provider, isA(OracleIdentifierCaseRuleProvider.class));
+        assertThat(provider, isA(OracleIdentifierCasePolicyProvider.class));
         assertThat(provider.getDatabaseType(), is("Oracle"));
     }
     
     @Test
     void assertProvide() {
-        IdentifierCaseRule actual = provider.provide(new IdentifierCaseRuleProviderContext(databaseType, null)).orElseThrow(AssertionError::new).getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(databaseType, null)).orElseThrow(AssertionError::new).getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actual.matches("FOO", "foo", QuoteCharacter.NONE));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));

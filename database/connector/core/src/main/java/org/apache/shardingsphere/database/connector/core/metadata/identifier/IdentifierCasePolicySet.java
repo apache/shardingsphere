@@ -22,32 +22,32 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Identifier case rules for one database.
+ * Identifier case policies for one database.
  */
-public final class IdentifierCaseRuleSet {
+public final class IdentifierCasePolicySet {
     
-    private final IdentifierCaseRule defaultRule;
+    private final IdentifierCasePolicy defaultPolicy;
     
-    private final Map<IdentifierScope, IdentifierCaseRule> scopedRules;
+    private final Map<IdentifierScope, IdentifierCasePolicy> scopedPolicies;
     
-    public IdentifierCaseRuleSet(final IdentifierCaseRule defaultRule) {
-        this(defaultRule, Collections.emptyMap());
+    public IdentifierCasePolicySet(final IdentifierCasePolicy defaultPolicy) {
+        this(defaultPolicy, Collections.emptyMap());
     }
     
-    public IdentifierCaseRuleSet(final IdentifierCaseRule defaultRule, final Map<IdentifierScope, IdentifierCaseRule> scopedRules) {
-        this.defaultRule = defaultRule;
-        Map<IdentifierScope, IdentifierCaseRule> actualScopedRules = new EnumMap<>(IdentifierScope.class);
-        actualScopedRules.putAll(scopedRules);
-        this.scopedRules = Collections.unmodifiableMap(actualScopedRules);
+    public IdentifierCasePolicySet(final IdentifierCasePolicy defaultPolicy, final Map<IdentifierScope, IdentifierCasePolicy> scopedPolicies) {
+        this.defaultPolicy = defaultPolicy;
+        Map<IdentifierScope, IdentifierCasePolicy> actualScopedPolicies = new EnumMap<>(IdentifierScope.class);
+        actualScopedPolicies.putAll(scopedPolicies);
+        this.scopedPolicies = Collections.unmodifiableMap(actualScopedPolicies);
     }
     
     /**
-     * Get rule for identifier scope.
+     * Get policy for identifier scope.
      *
      * @param identifierScope identifier scope
-     * @return identifier case rule
+     * @return identifier case policy
      */
-    public IdentifierCaseRule getRule(final IdentifierScope identifierScope) {
-        return scopedRules.getOrDefault(identifierScope, defaultRule);
+    public IdentifierCasePolicy getPolicy(final IdentifierScope identifierScope) {
+        return scopedPolicies.getOrDefault(identifierScope, defaultPolicy);
     }
 }

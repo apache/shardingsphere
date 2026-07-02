@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -31,30 +31,30 @@ import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigura
 import javax.sql.DataSource;
 
 /**
- * Resolver of identifier case rules.
+ * Resolver of identifier case policy.
  */
-public final class IdentifierCaseRuleResolver {
+public final class IdentifierCasePolicyResolver {
     
     /**
-     * Resolve identifier case rules.
+     * Resolve identifier case policy.
      *
      * @param databaseType database type
      * @param props configuration properties
      * @param dataSource data source
-     * @return identifier case rules
+     * @return identifier case policy set
      */
-    public IdentifierCaseRuleSet resolve(final DatabaseType databaseType, final ConfigurationProperties props, final DataSource dataSource) {
+    public IdentifierCasePolicySet resolve(final DatabaseType databaseType, final ConfigurationProperties props, final DataSource dataSource) {
         if (null == databaseType || null == databaseType.getType()) {
-            return IdentifierCaseRuleSets.newInsensitiveRuleSet();
+            return IdentifierCasePolicyFactory.newInsensitivePolicySet();
         }
         MetadataIdentifierCaseSensitivity configuredCaseSensitivity = new TemporaryConfigurationProperties(props.getProps())
                 .getValue(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
         if (MetadataIdentifierCaseSensitivity.INSENSITIVE == configuredCaseSensitivity) {
-            return IdentifierCaseRuleSets.newInsensitiveRuleSet();
+            return IdentifierCasePolicyFactory.newInsensitivePolicySet();
         }
-        IdentifierCaseRuleProviderContext context = new IdentifierCaseRuleProviderContext(databaseType, dataSource);
-        return DatabaseTypedSPILoader.findService(IdentifierCaseRuleProvider.class, databaseType)
+        IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(databaseType, dataSource);
+        return DatabaseTypedSPILoader.findService(IdentifierCasePolicyProvider.class, databaseType)
                 .flatMap(each -> each.provide(context))
-                .orElseGet(IdentifierCaseRuleSets::newInsensitiveRuleSet);
+                .orElseGet(IdentifierCasePolicyFactory::newInsensitivePolicySet);
     }
 }

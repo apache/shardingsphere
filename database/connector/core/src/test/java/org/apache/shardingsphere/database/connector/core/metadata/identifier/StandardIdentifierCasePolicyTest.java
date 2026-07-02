@@ -31,34 +31,34 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StandardIdentifierCaseRuleTest {
+class StandardIdentifierCasePolicyTest {
     
-    private final StandardIdentifierCaseRule rule = new StandardIdentifierCaseRule(LookupMode.EXACT, LookupMode.NORMALIZED,
+    private final StandardIdentifierCasePolicy policy = new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
             each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
     
     @Test
     void assertGetLookupModeWithQuotedIdentifier() {
-        assertThat(rule.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.EXACT));
+        assertThat(policy.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.EXACT));
     }
     
     @Test
     void assertGetLookupModeWithUnquotedIdentifier() {
-        assertThat(rule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertThat(policy.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
     }
     
     @Test
     void assertNormalize() {
-        assertThat(rule.normalize("Foo"), is("foo"));
+        assertThat(policy.normalize("Foo"), is("foo"));
     }
     
     @Test
     void assertNormalizeWithNullValue() {
-        assertNull(rule.normalize(null));
+        assertNull(policy.normalize(null));
     }
     
     @Test
     void assertMatchesWithQuotedNormalizedLookup() {
-        StandardIdentifierCaseRule actual = new StandardIdentifierCaseRule(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
+        StandardIdentifierCasePolicy actual = new StandardIdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
                 each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
         assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
     }
@@ -66,7 +66,7 @@ class StandardIdentifierCaseRuleTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("matchesArguments")
     void assertMatches(final String name, final String storedName, final String actualIdentifier, final QuoteCharacter quoteCharacter, final boolean expected) {
-        assertThat(rule.matches(storedName, actualIdentifier, quoteCharacter), is(expected));
+        assertThat(policy.matches(storedName, actualIdentifier, quoteCharacter), is(expected));
     }
     
     private static Stream<Arguments> matchesArguments() {
