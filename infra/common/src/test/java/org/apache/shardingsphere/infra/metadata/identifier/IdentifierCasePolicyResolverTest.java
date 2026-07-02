@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.identifier;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -36,29 +36,30 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class IdentifierCaseRuleResolverTest {
+class IdentifierCasePolicyResolverTest {
     
-    private final IdentifierCaseRuleResolver resolver = new IdentifierCaseRuleResolver();
+    private final IdentifierCasePolicyResolver resolver = new IdentifierCasePolicyResolver();
     
     @Test
     void assertResolveWithInsensitiveConfiguration() {
-        IdentifierCaseRule actual =
+        IdentifierCasePolicy actual =
                 resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "Oracle"), new ConfigurationProperties(createProperties("insensitive")), null)
-                        .getRule(IdentifierScope.TABLE);
+                        .getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actual.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     
     @Test
     void assertResolveWithAutoPostgreSQLRule() {
-        IdentifierCaseRule actual = resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new ConfigurationProperties(new Properties()), null).getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actual = resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new ConfigurationProperties(new Properties()), null)
+                .getPolicy(IdentifierScope.TABLE);
         assertTrue(actual.matches("foo", "FOO", QuoteCharacter.NONE));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     
     @Test
     void assertResolveWithAutoOracleRule() {
-        IdentifierCaseRule actual = resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "Oracle"), new ConfigurationProperties(new Properties()), null).getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actual = resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "Oracle"), new ConfigurationProperties(new Properties()), null).getPolicy(IdentifierScope.TABLE);
         assertTrue(actual.matches("FOO", "foo", QuoteCharacter.NONE));
         // TODO FIXME
         // assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
@@ -66,7 +67,7 @@ class IdentifierCaseRuleResolverTest {
     
     @Test
     void assertResolveWithAutoMySQLRule() {
-        IdentifierCaseRule actual = resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new ConfigurationProperties(new Properties()), null).getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actual = resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new ConfigurationProperties(new Properties()), null).getPolicy(IdentifierScope.TABLE);
         assertTrue(actual.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.database.connector.postgresql.metadata.identifier;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import java.util.EnumMap;
 import java.util.Map;
@@ -30,14 +30,14 @@ import java.util.Optional;
 /**
  * PostgreSQL provider of identifier case rules.
  */
-public final class PostgreSQLIdentifierCaseRuleProvider implements IdentifierCaseRuleProvider {
+public final class PostgreSQLIdentifierCasePolicyProvider implements IdentifierCasePolicyProvider {
     
     @Override
-    public Optional<IdentifierCaseRuleSet> provide(final IdentifierCaseRuleProviderContext context) {
-        IdentifierCaseRuleSet lowerCaseRuleSet = IdentifierCaseRuleSets.newLowerCaseRuleSet();
-        Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
-        scopedRules.put(IdentifierScope.SCHEMA, IdentifierCaseRuleSets.newInsensitiveRuleSet().getRule(IdentifierScope.SCHEMA));
-        return Optional.of(new IdentifierCaseRuleSet(lowerCaseRuleSet.getRule(IdentifierScope.TABLE), scopedRules));
+    public Optional<IdentifierCasePolicySet> provide(final IdentifierCasePolicyProviderContext context) {
+        IdentifierCasePolicySet lowerCasePolicySet = IdentifierCasePolicyFactory.newLowerCasePolicySet();
+        Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
+        scopedRules.put(IdentifierScope.SCHEMA, IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.SCHEMA));
+        return Optional.of(new IdentifierCasePolicySet(lowerCasePolicySet.getPolicy(IdentifierScope.TABLE), scopedRules));
     }
     
     @Override

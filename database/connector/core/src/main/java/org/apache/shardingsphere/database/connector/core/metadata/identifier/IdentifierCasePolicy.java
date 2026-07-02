@@ -17,22 +17,36 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-
-import java.util.Optional;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 
 /**
- * Provider of identifier case rules.
+ * Policy of identifier case matching.
  */
-@SingletonSPI
-public interface IdentifierCaseRuleProvider extends DatabaseTypedSPI {
+public interface IdentifierCasePolicy {
     
     /**
-     * Provide identifier case rules.
+     * Get lookup mode for identifier.
      *
-     * @param context provider context
-     * @return identifier case rules
+     * @param quoteCharacter quote character
+     * @return lookup mode
      */
-    Optional<IdentifierCaseRuleSet> provide(IdentifierCaseRuleProviderContext context);
+    LookupMode getLookupMode(QuoteCharacter quoteCharacter);
+    
+    /**
+     * Normalize identifier value.
+     *
+     * @param value identifier value
+     * @return normalized identifier value
+     */
+    String normalize(String value);
+    
+    /**
+     * Judge whether stored identifier matches input identifier.
+     *
+     * @param storedName stored identifier name
+     * @param actualIdentifier input identifier value
+     * @param quoteCharacter quote character
+     * @return whether matched
+     */
+    boolean matches(String storedName, String actualIdentifier, QuoteCharacter quoteCharacter);
 }

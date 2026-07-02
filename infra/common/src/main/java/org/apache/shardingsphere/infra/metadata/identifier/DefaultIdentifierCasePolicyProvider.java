@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.infra.metadata.identifier;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 
 import java.util.Optional;
@@ -29,12 +29,12 @@ import java.util.Optional;
 /**
  * Default provider of identifier case rules.
  */
-public final class DefaultIdentifierCaseRuleProvider implements IdentifierCaseRuleProvider {
+public final class DefaultIdentifierCasePolicyProvider implements IdentifierCasePolicyProvider {
     
     @Override
-    public Optional<IdentifierCaseRuleSet> provide(final IdentifierCaseRuleProviderContext context) {
+    public Optional<IdentifierCasePolicySet> provide(final IdentifierCasePolicyProviderContext context) {
         DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, context.getDatabaseType());
-        return Optional.of(IdentifierCaseRuleSets.newDialectDefaultRuleSet(dialectDatabaseMetaData.getIdentifierPatternType(), dialectDatabaseMetaData.isCaseSensitive()));
+        return Optional.of(IdentifierCasePolicyFactory.newDialectDefaultPolicySet(dialectDatabaseMetaData.getIdentifierPatternType(), dialectDatabaseMetaData.isCaseSensitive()));
     }
     
     @Override

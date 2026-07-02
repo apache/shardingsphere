@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCasePolicy;
 import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
@@ -32,29 +32,29 @@ import static org.hamcrest.Matchers.is;
 class DatabaseIdentifierContextTest {
     
     @Test
-    void assertGetRule() {
-        IdentifierCaseRule expectedRule = createLowerRule();
-        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCaseRuleSet(expectedRule));
-        IdentifierCaseRule actualRule = context.getRule(IdentifierScope.TABLE);
+    void assertGetPolicy() {
+        IdentifierCasePolicy expectedRule = createLowerRule();
+        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCasePolicySet(expectedRule));
+        IdentifierCasePolicy actualRule = context.getPolicy(IdentifierScope.TABLE);
         assertThat(actualRule, is(expectedRule));
     }
     
     @Test
     void assertRefresh() {
-        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createLowerRule()));
-        IdentifierCaseRule expectedRule = createUpperRule();
-        context.refresh(new IdentifierCaseRuleSet(expectedRule));
-        IdentifierCaseRule actualRule = context.getRule(IdentifierScope.TABLE);
+        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCasePolicySet(createLowerRule()));
+        IdentifierCasePolicy expectedRule = createUpperRule();
+        context.refresh(new IdentifierCasePolicySet(expectedRule));
+        IdentifierCasePolicy actualRule = context.getPolicy(IdentifierScope.TABLE);
         assertThat(actualRule, is(expectedRule));
     }
     
-    private IdentifierCaseRule createLowerRule() {
-        return new StandardIdentifierCaseRule(LookupMode.EXACT, LookupMode.NORMALIZED,
+    private IdentifierCasePolicy createLowerRule() {
+        return new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
                 each -> each.toLowerCase(Locale.ENGLISH), each -> true);
     }
     
-    private IdentifierCaseRule createUpperRule() {
-        return new StandardIdentifierCaseRule(LookupMode.EXACT, LookupMode.NORMALIZED,
+    private IdentifierCasePolicy createUpperRule() {
+        return new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
                 each -> each.toUpperCase(Locale.ENGLISH), each -> true);
     }
 }

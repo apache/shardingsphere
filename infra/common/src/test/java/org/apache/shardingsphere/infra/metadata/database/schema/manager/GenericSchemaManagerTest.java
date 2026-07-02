@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -146,7 +146,7 @@ class GenericSchemaManagerTest {
     
     private static ShardingSphereSchema createLowerCaseSchema(final String name, final ShardingSphereTable... tables) {
         ShardingSphereSchema result = createSchema(name, tables);
-        result.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
+        result.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
         return result;
     }
     

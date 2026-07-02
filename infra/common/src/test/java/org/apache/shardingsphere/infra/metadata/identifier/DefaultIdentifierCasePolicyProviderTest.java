@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.metadata.identifier;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -32,23 +32,23 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DefaultIdentifierCaseRuleProviderTest {
+class DefaultIdentifierCasePolicyProviderTest {
     
     @Test
     void assertIsDefault() {
-        IdentifierCaseRuleProvider actual = TypedSPILoader.getService(IdentifierCaseRuleProvider.class, null);
-        assertThat(actual, isA(DefaultIdentifierCaseRuleProvider.class));
+        IdentifierCasePolicyProvider actual = TypedSPILoader.getService(IdentifierCasePolicyProvider.class, null);
+        assertThat(actual, isA(DefaultIdentifierCasePolicyProvider.class));
         assertTrue(actual.isDefault());
     }
     
     @Test
-    void assertProvideSQL92RuleSet() {
-        IdentifierCaseRuleProvider actual = TypedSPILoader.getService(IdentifierCaseRuleProvider.class, null);
-        IdentifierCaseRule actualRule =
-                actual.provide(new IdentifierCaseRuleProviderContext(TypedSPILoader.getService(DatabaseType.class, "SQL92"), null))
-                        .orElseThrow(AssertionError::new).getRule(IdentifierScope.TABLE);
-        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertTrue(actualRule.matches("foo", "FOO", QuoteCharacter.NONE));
-        assertThat(actualRule.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.EXACT));
+    void assertProvideSQL92PolicySet() {
+        IdentifierCasePolicyProvider actual = TypedSPILoader.getService(IdentifierCasePolicyProvider.class, null);
+        IdentifierCasePolicy actualPolicy =
+                actual.provide(new IdentifierCasePolicyProviderContext(TypedSPILoader.getService(DatabaseType.class, "SQL92"), null))
+                        .orElseThrow(AssertionError::new).getPolicy(IdentifierScope.TABLE);
+        assertThat(actualPolicy.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertTrue(actualPolicy.matches("foo", "FOO", QuoteCharacter.NONE));
+        assertThat(actualPolicy.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.EXACT));
     }
 }

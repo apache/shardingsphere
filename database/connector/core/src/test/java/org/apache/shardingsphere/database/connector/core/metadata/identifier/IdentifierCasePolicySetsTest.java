@@ -31,65 +31,65 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class IdentifierCaseRuleSetsTest {
+class IdentifierCasePolicySetsTest {
     
     @Test
-    void assertNewLowerCaseRuleSet() {
-        IdentifierCaseRule actual = IdentifierCaseRuleSets.newLowerCaseRuleSet().getRule(IdentifierScope.TABLE);
+    void assertNewLowerCasePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE);
         assertThat(actual.normalize("Foo"), is("foo"));
         assertFalse(actual.matches("Foo", "FOO", QuoteCharacter.NONE));
     }
     
     @Test
-    void assertNewUpperCaseRuleSet() {
-        IdentifierCaseRule actual = IdentifierCaseRuleSets.newUpperCaseRuleSet().getRule(IdentifierScope.TABLE);
+    void assertNewUpperCasePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newUpperCasePolicySet().getPolicy(IdentifierScope.TABLE);
         assertThat(actual.normalize("Foo"), is("FOO"));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     
     @Test
-    void assertNewSensitiveRuleSet() {
-        IdentifierCaseRule actual = IdentifierCaseRuleSets.newSensitiveRuleSet().getRule(IdentifierScope.TABLE);
+    void assertNewSensitivePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.EXACT));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     
     @Test
-    void assertNewInsensitiveRuleSet() {
-        IdentifierCaseRule actual = IdentifierCaseRuleSets.newInsensitiveRuleSet().getRule(IdentifierScope.TABLE);
+    void assertNewInsensitivePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.EXACT));
         assertTrue(actual.matches("Foo", "FOO", QuoteCharacter.NONE));
         assertFalse(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
     }
     
     @Test
-    void assertNewQuotedInsensitiveRuleSet() {
-        IdentifierCaseRule actual = IdentifierCaseRuleSets.newQuotedInsensitiveRuleSet().getRule(IdentifierScope.TABLE);
+    void assertNewQuotedInsensitivePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newQuotedInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.NORMALIZED));
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
     }
     
     @Test
-    void assertNewMySQLInsensitiveRuleSet() {
-        IdentifierCaseRule actual = IdentifierCaseRuleSets.newMySQLInsensitiveRuleSet().getRule(IdentifierScope.TABLE);
+    void assertNewMySQLInsensitivePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.NORMALIZED));
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("newDialectDefaultRuleSetArguments")
-    void assertNewDialectDefaultRuleSet(final String name, final IdentifierPatternType identifierPatternType, final boolean caseSensitive,
+    @MethodSource("newDialectDefaultPolicySetArguments")
+    void assertNewDialectDefaultPolicySet(final String name, final IdentifierPatternType identifierPatternType, final boolean caseSensitive,
                                         final LookupMode expectedQuotedLookupMode, final LookupMode expectedUnquotedLookupMode,
                                         final String storedName, final String actualIdentifier, final boolean expected) {
-        IdentifierCaseRule actual = IdentifierCaseRuleSets.newDialectDefaultRuleSet(identifierPatternType, caseSensitive).getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newDialectDefaultPolicySet(identifierPatternType, caseSensitive).getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(expectedQuotedLookupMode));
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
         assertThat(actual.matches(storedName, actualIdentifier, QuoteCharacter.NONE), is(expected));
     }
     
-    private static Stream<Arguments> newDialectDefaultRuleSetArguments() {
+    private static Stream<Arguments> newDialectDefaultPolicySetArguments() {
         return Stream.of(
                 Arguments.of("lower_case", IdentifierPatternType.LOWER_CASE, false, LookupMode.EXACT, LookupMode.NORMALIZED, "foo", "FOO", true),
                 Arguments.of("upper_case", IdentifierPatternType.UPPER_CASE, false, LookupMode.EXACT, LookupMode.NORMALIZED, "FOO", "foo", true),

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.opengauss.metadata.identifier;
+package org.apache.shardingsphere.database.connector.postgresql.metadata.identifier;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -34,26 +34,26 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class OpenGaussIdentifierCaseRuleProviderTest {
+class PostgreSQLIdentifierCasePolicyProviderTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
-    private final IdentifierCaseRuleProvider provider = DatabaseTypedSPILoader.getService(IdentifierCaseRuleProvider.class, databaseType);
+    private final IdentifierCasePolicyProvider provider = DatabaseTypedSPILoader.getService(IdentifierCasePolicyProvider.class, databaseType);
     
     @Test
     void assertGetDatabaseType() {
-        assertThat(provider, isA(OpenGaussIdentifierCaseRuleProvider.class));
-        assertThat(provider.getDatabaseType(), is("openGauss"));
+        assertThat(provider, isA(PostgreSQLIdentifierCasePolicyProvider.class));
+        assertThat(provider.getDatabaseType(), is("PostgreSQL"));
     }
     
     @Test
     void assertProvide() {
-        IdentifierCaseRuleProviderContext context = new IdentifierCaseRuleProviderContext(databaseType, null);
-        IdentifierCaseRule tableRule = provider.provide(context).orElseThrow(AssertionError::new).getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(databaseType, null);
+        IdentifierCasePolicy tableRule = provider.provide(context).orElseThrow(AssertionError::new).getPolicy(IdentifierScope.TABLE);
         assertThat(tableRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(tableRule.matches("foo", "FOO", QuoteCharacter.NONE));
         assertFalse(tableRule.matches("Foo", "foo", QuoteCharacter.NONE));
-        IdentifierCaseRule schemaRule = provider.provide(context).orElseThrow(AssertionError::new).getRule(IdentifierScope.SCHEMA);
+        IdentifierCasePolicy schemaRule = provider.provide(context).orElseThrow(AssertionError::new).getPolicy(IdentifierScope.SCHEMA);
         assertThat(schemaRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(schemaRule.matches("UPPER_SCHEMA", "upper_schema", QuoteCharacter.NONE));
         assertFalse(schemaRule.matches("UPPER_SCHEMA", "upper_schema", QuoteCharacter.QUOTE));

@@ -215,7 +215,7 @@ class ShardingSphereDatabaseTest {
         database.refreshIdentifierContext(new ConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name()))));
         DatabaseIdentifierContext actualIdentifierContext = getIdentifierContext(database);
-        assertThat(actualIdentifierContext.getRule(IdentifierScope.SCHEMA).getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertThat(actualIdentifierContext.getPolicy(IdentifierScope.SCHEMA).getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertThat(getIdentifierContext(schema), is(actualIdentifierContext));
     }
     

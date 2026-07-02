@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.database.connector.mysql.metadata.identifier;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 
 import java.sql.Connection;
@@ -33,14 +33,14 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * MySQL provider of identifier case rules.
+ * MySQL provider of identifier case policies.
  */
-public final class MySQLIdentifierCaseRuleProvider implements IdentifierCaseRuleProvider {
+public final class MySQLIdentifierCasePolicyProvider implements IdentifierCasePolicyProvider {
     
     private static final String QUERY_LOWER_CASE_TABLE_NAMES = "SELECT @@lower_case_table_names";
     
     @Override
-    public Optional<IdentifierCaseRuleSet> provide(final IdentifierCaseRuleProviderContext context) {
+    public Optional<IdentifierCasePolicySet> provide(final IdentifierCasePolicyProviderContext context) {
         if (null == context.getDataSource()) {
             return Optional.empty();
         }
@@ -51,23 +51,23 @@ public final class MySQLIdentifierCaseRuleProvider implements IdentifierCaseRule
             try (
                     PreparedStatement preparedStatement = connection.prepareStatement(QUERY_LOWER_CASE_TABLE_NAMES);
                     ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next() ? createRuleSet(resultSet.getInt(1)) : Optional.empty();
+                return resultSet.next() ? createPolicySet(resultSet.getInt(1)) : Optional.empty();
             }
         } catch (final SQLException ignored) {
             return Optional.empty();
         }
     }
     
-    private Optional<IdentifierCaseRuleSet> createRuleSet(final int lowerCaseTableNames) {
+    private Optional<IdentifierCasePolicySet> createPolicySet(final int lowerCaseTableNames) {
         if (1 == lowerCaseTableNames || 2 == lowerCaseTableNames) {
-            return Optional.of(IdentifierCaseRuleSets.newMySQLInsensitiveRuleSet());
+            return Optional.of(IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet());
         }
         if (0 == lowerCaseTableNames) {
-            Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
-            scopedRules.put(IdentifierScope.SCHEMA, IdentifierCaseRuleSets.newMySQLInsensitiveRuleSet().getRule(IdentifierScope.SCHEMA));
-            scopedRules.put(IdentifierScope.TABLE, IdentifierCaseRuleSets.newSensitiveRuleSet().getRule(IdentifierScope.TABLE));
-            scopedRules.put(IdentifierScope.VIEW, IdentifierCaseRuleSets.newSensitiveRuleSet().getRule(IdentifierScope.VIEW));
-            return Optional.of(new IdentifierCaseRuleSet(IdentifierCaseRuleSets.newInsensitiveRuleSet().getRule(IdentifierScope.TABLE), scopedRules));
+            Map<IdentifierScope, IdentifierCasePolicy> scopedPolicies = new EnumMap<>(IdentifierScope.class);
+            scopedPolicies.put(IdentifierScope.SCHEMA, IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet().getPolicy(IdentifierScope.SCHEMA));
+            scopedPolicies.put(IdentifierScope.TABLE, IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE));
+            scopedPolicies.put(IdentifierScope.VIEW, IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.VIEW));
+            return Optional.of(new IdentifierCasePolicySet(IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE), scopedPolicies));
         }
         return Optional.empty();
     }
