@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class IdentifierCasePolicySetsTest {
+class IdentifierCasePolicyFactoryTest {
     
     @Test
     void assertNewLowerCasePolicySet() {
@@ -81,8 +81,8 @@ class IdentifierCasePolicySetsTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("newDialectDefaultPolicySetArguments")
     void assertNewDialectDefaultPolicySet(final String name, final IdentifierPatternType identifierPatternType, final boolean caseSensitive,
-                                        final LookupMode expectedQuotedLookupMode, final LookupMode expectedUnquotedLookupMode,
-                                        final String storedName, final String actualIdentifier, final boolean expected) {
+                                          final LookupMode expectedQuotedLookupMode, final LookupMode expectedUnquotedLookupMode,
+                                          final String storedName, final String actualIdentifier, final boolean expected) {
         IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newDialectDefaultPolicySet(identifierPatternType, caseSensitive).getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(expectedQuotedLookupMode));
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
