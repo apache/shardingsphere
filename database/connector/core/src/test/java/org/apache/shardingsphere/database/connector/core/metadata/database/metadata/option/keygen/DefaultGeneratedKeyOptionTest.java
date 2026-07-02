@@ -17,23 +17,25 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen;
 
-/**
- * Dialect generated key option.
- */
-public interface DialectGeneratedKeyOption {
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+class DefaultGeneratedKeyOptionTest {
     
-    /**
-     * Get generated key column name.
-     *
-     * @return generated key column name
-     */
-    String getColumnName();
+    @Test
+    void assertGetColumnName() {
+        DefaultGeneratedKeyOption actual = new DefaultGeneratedKeyOption("GENERATED_KEY");
+        assertThat(actual.getColumnName(), is("GENERATED_KEY"));
+    }
     
-    /**
-     * Check if the explicit value triggers an auto-increment key generation.
-     *
-     * @param value explicit insert value
-     * @return whether the value triggers generated key
-     */
-    boolean isGeneratedKeyTriggerValue(Object value);
+    @Test
+    void assertIsGeneratedKeyTriggerValue() {
+        DefaultGeneratedKeyOption actual = new DefaultGeneratedKeyOption("GENERATED_KEY");
+        assertFalse(actual.isGeneratedKeyTriggerValue("DEFAULT"));
+        assertFalse(actual.isGeneratedKeyTriggerValue(null));
+        assertFalse(actual.isGeneratedKeyTriggerValue(0));
+    }
 }

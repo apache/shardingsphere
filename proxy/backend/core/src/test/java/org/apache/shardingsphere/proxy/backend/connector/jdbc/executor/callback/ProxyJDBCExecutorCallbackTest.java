@@ -72,6 +72,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -230,6 +231,35 @@ class ProxyJDBCExecutorCallbackTest {
             Optional<ExecuteResult> actual = callback.getSaneResult(sqlStatement, sqlException);
             assertFalse(actual.isPresent());
         }
+    }
+    
+    @Test
+    void assertExecuteInsertWithExplicitAutoIncrementValueDoesNotCallGetGeneratedKeys() throws ReflectiveOperationException, SQLException {
+        setContextManager(mock(ContextManager.class));
+        Statement statement = mock(Statement.class);
+        when(statement.getUpdateCount()).thenReturn(1);
+        ProxyJDBCExecutorCallback callback = mockCallback(false, false, false);
+        callback.executeSQL("insert_sql", statement, ConnectionMode.MEMORY_STRICTLY, databaseType);
+        verify(statement, never()).getGeneratedKeys();
+    }
+    
+    @Test
+    void assertExecuteInsertWithGeneratedKeysCallsGetGeneratedKeys() throws ReflectiveOperationException, SQLException {
+        setContextManager(mock(ContextManager.class));
+        Statement statement = mock(Statement.class);
+        when(statement.getUpdateCount()).thenReturn(1);
+        
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(statement.getGeneratedKeys()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(resultSet.getLong(1)).thenReturn(99L);
+        
+        ProxyJDBCExecutorCallback callback = mockCallback(true, false, false);
+        callback.executeSQL("insert_sql", statement, ConnectionMode.MEMORY_STRICTLY, databaseType);
+        verify(statement).getGeneratedKeys();
     }
     
     private void setContextManager(final ContextManager contextManager) throws ReflectiveOperationException {
