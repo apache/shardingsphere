@@ -20,11 +20,12 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
@@ -53,6 +54,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -106,7 +108,7 @@ class FirebirdBatchSendMessageCommandExecutorTest {
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(null);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
-            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchSendMessageCommandExecutor(packet, connectionSession).execute());
+            assertThrows(InvalidBatchHandleException.class, () -> new FirebirdBatchSendMessageCommandExecutor(packet, connectionSession).execute());
         }
     }
     
@@ -120,8 +122,9 @@ class FirebirdBatchSendMessageCommandExecutorTest {
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
-            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchSendMessageCommandExecutor(packet, connectionSession).execute());
+            assertThrows(BatchTooBigException.class, () -> new FirebirdBatchSendMessageCommandExecutor(packet, connectionSession).execute());
             verify(batchStatement, never()).addSize(9);
+            verify(batchStatement).reset();
         }
     }
     
@@ -140,10 +143,12 @@ class FirebirdBatchSendMessageCommandExecutorTest {
             new FirebirdPacketCodecEngine().decode(context, buildBatchMessages(), out);
             assertThat(out.size(), is(2));
             new FirebirdBatchSendMessageCommandExecutor(createBatchSendMessagePacket((ByteBuf) out.get(0)), connectionSession).execute();
-            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchSendMessageCommandExecutor(createBatchSendMessagePacket((ByteBuf) out.get(1)), connectionSession).execute());
             assertThat(batchStatement.getParameterValues().size(), is(1));
             assertThat(batchStatement.getParameterValues().get(0), is(Collections.singletonList(100)));
             assertThat(batchStatement.getAccumulatedSize(), is(8L));
+            assertThrows(BatchTooBigException.class, () -> new FirebirdBatchSendMessageCommandExecutor(createBatchSendMessagePacket((ByteBuf) out.get(1)), connectionSession).execute());
+            assertTrue(batchStatement.getParameterValues().isEmpty());
+            assertThat(batchStatement.getAccumulatedSize(), is(0L));
         } finally {
             FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
         }

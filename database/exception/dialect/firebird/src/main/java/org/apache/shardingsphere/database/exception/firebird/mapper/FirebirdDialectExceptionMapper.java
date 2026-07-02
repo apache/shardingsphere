@@ -19,8 +19,22 @@ package org.apache.shardingsphere.database.exception.firebird.mapper;
 
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobIdException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
@@ -37,8 +51,51 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         if (sqlDialectException instanceof UnknownDatabaseException) {
             return toSQLException(FirebirdVendorError.UNAVAILABLE_DATABASE, ((UnknownDatabaseException) sqlDialectException).getDatabaseName());
         }
+        if (sqlDialectException instanceof DatabaseCreateExistsException) {
+            return toSQLException(FirebirdVendorError.DATABASE_ALREADY_EXISTS, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName());
+        }
+        if (sqlDialectException instanceof DatabaseDropNotExistsException) {
+            return toSQLException(FirebirdVendorError.UNAVAILABLE_DATABASE, ((DatabaseDropNotExistsException) sqlDialectException).getDatabaseName());
+        }
         if (sqlDialectException instanceof AccessDeniedException) {
             return toSQLException(FirebirdVendorError.LOGIN_FAILED);
+        }
+        if (sqlDialectException instanceof InvalidBatchHandleException) {
+            return toSQLException(FirebirdVendorError.INVALID_BATCH_HANDLE);
+        }
+        if (sqlDialectException instanceof InvalidBlobHandleException) {
+            return toSQLException(FirebirdVendorError.INVALID_BLOB_HANDLE);
+        }
+        if (sqlDialectException instanceof BatchTooBigException) {
+            return toSQLException(FirebirdVendorError.BATCH_TOO_BIG);
+        }
+        if (sqlDialectException instanceof BatchAlreadyOpenedException) {
+            return toSQLException(FirebirdVendorError.BATCH_ALREADY_OPENED);
+        }
+        if (sqlDialectException instanceof InvalidBatchParameterVersionException) {
+            return toSQLException(FirebirdVendorError.INVALID_BATCH_PARAMETER_VERSION, ((InvalidBatchParameterVersionException) sqlDialectException).getVersion());
+        }
+        if (sqlDialectException instanceof InvalidBatchMessageFormatException) {
+            return toSQLException(FirebirdVendorError.SQLDA_ERROR);
+        }
+        if (sqlDialectException instanceof InvalidBlobIdException) {
+            return toSQLException(FirebirdVendorError.INVALID_BLOB_ID);
+        }
+        if (sqlDialectException instanceof InvalidStatementHandleException) {
+            return toSQLException(FirebirdVendorError.INVALID_STATEMENT_HANDLE);
+        }
+        if (sqlDialectException instanceof InvalidTransactionHandleException) {
+            return toSQLException(FirebirdVendorError.INVALID_TRANSACTION_HANDLE);
+        }
+        if (sqlDialectException instanceof DialectSQLParsingException) {
+            DialectSQLParsingException ex = (DialectSQLParsingException) sqlDialectException;
+            return toSQLException(FirebirdVendorError.DYNAMIC_SQL_ERROR, ex.getMessage());
+        }
+        if (sqlDialectException instanceof TableExistsException) {
+            return toSQLException(FirebirdVendorError.TABLE_ALREADY_EXISTS, ((TableExistsException) sqlDialectException).getTableName());
+        }
+        if (sqlDialectException instanceof InvalidParameterValueException) {
+            return toSQLException(FirebirdVendorError.CHARSET_NOT_FOUND, ((InvalidParameterValueException) sqlDialectException).getParameterValue());
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }

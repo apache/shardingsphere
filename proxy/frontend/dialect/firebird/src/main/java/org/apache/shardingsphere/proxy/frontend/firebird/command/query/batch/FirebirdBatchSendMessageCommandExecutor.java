@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
@@ -47,11 +48,12 @@ public final class FirebirdBatchSendMessageCommandExecutor implements CommandExe
         int connectionId = connectionSession.getConnectionId();
         FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, packet.getStatementHandle());
         if (null == batchStatement) {
-            throw new FirebirdProtocolException("Batch statement not found for connectionId: %d, statement handle: %d", connectionId, packet.getStatementHandle());
+            throw new InvalidBatchHandleException(packet.getStatementHandle());
         }
         if (batchStatement.getAccumulatedSize() + packet.getDataLength() > batchStatement.getBufferSize()) {
-            throw new FirebirdProtocolException("Batch is too big: accumulated %d + %d bytes exceeds buffer size limit %d bytes",
-                    batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
+            BatchTooBigException ex = new BatchTooBigException(packet.getStatementHandle(), batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
+            batchStatement.reset();
+            throw ex;
         }
         for (List<Object> each : packet.readParameterValues(batchStatement.getColumnDescriptors())) {
             batchStatement.addParameterValues(each);

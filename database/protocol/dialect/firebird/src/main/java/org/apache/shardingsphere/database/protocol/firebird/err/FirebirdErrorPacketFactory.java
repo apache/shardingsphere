@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.err;
+package org.apache.shardingsphere.database.protocol.firebird.err;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

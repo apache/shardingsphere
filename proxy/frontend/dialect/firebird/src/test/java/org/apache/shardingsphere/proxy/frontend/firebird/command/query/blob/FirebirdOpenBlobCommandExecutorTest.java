@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobIdException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -29,13 +31,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +58,6 @@ class FirebirdOpenBlobCommandExecutorTest {
     @BeforeEach
     void setup() {
         FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
-        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
     }
     
     @AfterEach
@@ -62,13 +67,27 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @Test
     void assertExecute() {
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getBlobId()).thenReturn(99L);
         FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession);
-        Collection<DatabasePacket> actual = executor.execute();
-        assertThat(actual.size(), is(1));
-        DatabasePacket response = actual.iterator().next();
-        assertThat(response, isA(FirebirdGenericResponsePacket.class));
-        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
-        assertThat(((FirebirdGenericResponsePacket) response).getId(), is(99L));
+        try (MockedStatic<FirebirdBlobBinaryProtocolValue> mocked = mockStatic(FirebirdBlobBinaryProtocolValue.class)) {
+            mocked.when(() -> FirebirdBlobBinaryProtocolValue.getBlobContent(99L)).thenReturn("blob content".getBytes(StandardCharsets.UTF_8));
+            Collection<DatabasePacket> actual = executor.execute();
+            assertThat(actual.size(), is(1));
+            DatabasePacket response = actual.iterator().next();
+            assertThat(response, isA(FirebirdGenericResponsePacket.class));
+            assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
+            assertThat(((FirebirdGenericResponsePacket) response).getId(), is(99L));
+        }
+    }
+    
+    @Test
+    void assertExecuteWithUnknownBlobId() {
+        when(packet.getBlobId()).thenReturn(99L);
+        FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession);
+        try (MockedStatic<FirebirdBlobBinaryProtocolValue> mocked = mockStatic(FirebirdBlobBinaryProtocolValue.class)) {
+            mocked.when(() -> FirebirdBlobBinaryProtocolValue.getBlobContent(99L)).thenReturn(null);
+            assertThrows(InvalidBlobIdException.class, executor::execute);
+        }
     }
 }

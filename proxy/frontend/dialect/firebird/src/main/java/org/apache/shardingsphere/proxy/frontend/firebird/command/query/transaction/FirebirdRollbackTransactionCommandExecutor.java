@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -41,10 +42,18 @@ public final class FirebirdRollbackTransactionCommandExecutor implements Command
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
+        validateTransactionHandle();
         if (!connectionSession.isAutoCommit()) {
             ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
             transactionManager.rollback();
         }
         return Collections.singleton(new FirebirdGenericResponsePacket());
+    }
+    
+    private void validateTransactionHandle() {
+        int transactionHandle = packet.getTransactionId();
+        if (transactionHandle <= 0 || transactionHandle > FirebirdTransactionIdGenerator.getInstance().getTransactionId(connectionSession.getConnectionId())) {
+            throw new InvalidTransactionHandleException(transactionHandle);
+        }
     }
 }

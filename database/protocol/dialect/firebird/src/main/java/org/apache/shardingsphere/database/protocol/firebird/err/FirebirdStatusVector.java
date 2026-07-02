@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.database.protocol.firebird.err;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.firebirdsql.gds.ISCConstants;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Firebird status vector for errors handling.
@@ -30,30 +32,53 @@ import java.sql.SQLException;
 @Getter
 public final class FirebirdStatusVector extends FirebirdPacket {
     
+    private static final String STATE_SUFFIX = " [SQLState:";
+    
     private final int gdsCode;
     
     private final String errorMessage;
     
+    private final List<Segment> segments;
+    
     public FirebirdStatusVector(final SQLException ex) {
-        gdsCode = ex.getErrorCode() >= ISCConstants.isc_arith_except ? ex.getErrorCode() : ISCConstants.isc_random;
-        String rawMessage = null == ex.getMessage() ? "" : ex.getMessage();
-        int idx = rawMessage.indexOf(';');
-        String message = idx >= 0 ? rawMessage.substring(idx + 1).trim() : rawMessage;
-        int stateIdx = message.indexOf(" [SQLState:");
-        if (stateIdx >= 0) {
-            message = message.substring(0, stateIdx).trim();
-        }
-        errorMessage = message;
+        errorMessage = stripStateSuffix(null == ex.getMessage() ? "" : ex.getMessage());
+        segments = FirebirdErrorSegmentResolver.resolve(ex.getErrorCode(), errorMessage, ex.getSQLState());
+        gdsCode = segments.get(0).gdsCode;
+    }
+    
+    private static String stripStateSuffix(final String message) {
+        int index = message.indexOf(STATE_SUFFIX);
+        return (index >= 0 ? message.substring(0, index) : message).trim();
     }
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        payload.writeInt4(ISCConstants.isc_arg_gds);
-        payload.writeInt4(gdsCode);
-        if (!errorMessage.isEmpty()) {
-            payload.writeInt4(ISCConstants.isc_arg_string);
-            payload.writeString(errorMessage);
+        for (Segment each : segments) {
+            payload.writeInt4(ISCConstants.isc_arg_gds);
+            payload.writeInt4(each.gdsCode);
+            for (String argument : each.arguments) {
+                payload.writeInt4(ISCConstants.isc_arg_string);
+                payload.writeString(argument);
+            }
+            if (null != each.sqlState) {
+                payload.writeInt4(ISCConstants.isc_arg_sql_state);
+                payload.writeString(each.sqlState);
+            }
         }
         payload.writeInt4(ISCConstants.isc_arg_end);
+    }
+    
+    /**
+     * Single segment of the status vector.
+     */
+    @RequiredArgsConstructor
+    @Getter
+    public static final class Segment {
+        
+        private final int gdsCode;
+        
+        private final List<String> arguments;
+        
+        private final String sqlState;
     }
 }
