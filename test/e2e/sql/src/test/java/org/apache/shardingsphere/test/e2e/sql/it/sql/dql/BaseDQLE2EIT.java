@@ -108,11 +108,15 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     }
     
     private DataSource getExpectedDataSource(final AssertionTestParameter testParam, final SQLE2EITContext context) {
-        if (null != context.getAssertion().getExpectedDataSourceName() && 1 != getEnvironmentEngine().getExpectedDataSourceMap().size()) {
-            return getEnvironmentEngine().getExpectedDataSourceMap().get(context.getAssertion().getExpectedDataSourceName());
+        Map<String, DataSource> expectedDataSourceMap = getEnvironmentEngine().getExpectedDataSourceMap();
+        if (null != context.getAssertion().getExpectedDataSourceName() && 1 != expectedDataSourceMap.size()) {
+            return expectedDataSourceMap.get(context.getAssertion().getExpectedDataSourceName());
         }
-        DataSource result = getEnvironmentEngine().getExpectedDataSourceMap().get(testParam.getScenario());
-        return null == result ? getFirstExpectedDataSource(getEnvironmentEngine().getExpectedDataSourceMap().values()) : result;
+        DataSource result = expectedDataSourceMap.get(testParam.getScenario());
+        if (null == result) {
+            result = expectedDataSourceMap.get(testParam.getScenario());
+        }
+        return null == result ? getFirstExpectedDataSource(expectedDataSourceMap.values()) : result;
     }
     
     private void fillDataOnlyOnce(final AssertionTestParameter testParam) throws IOException, JAXBException {
@@ -127,9 +131,8 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             new DataSetEnvironmentManager(
                     new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(),
                     testParam.getDatabaseType()).fillData(Collections.emptyList());
-            new DataSetEnvironmentManager(
-                    new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(), getEnvironmentEngine().getExpectedDataSourceMap(),
-                    testParam.getDatabaseType()).fillData(Collections.emptyList());
+            new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario(), Type.EXPECTED).getDataSetFile(),
+                    getEnvironmentEngine().getExpectedDataSourceMap(), testParam.getDatabaseType()).fillData(Collections.emptyList());
             FILLED_SUITES.add(cacheKey);
         }
     }

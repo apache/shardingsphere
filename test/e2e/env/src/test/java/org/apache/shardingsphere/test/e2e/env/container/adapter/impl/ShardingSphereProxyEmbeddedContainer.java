@@ -127,7 +127,8 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     
     @SneakyThrows({SQLException.class, IOException.class, InterruptedException.class})
     private void startProxy() {
-        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigurationDirectory().toString());
+        Path tempConfigurationDirectory = getTempConfigurationDirectory();
+        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(tempConfigurationDirectory.toString());
         new BootstrapInitializer().init(yamlConfig, proxyPort);
         ProxySSLContext.init();
         proxy = new ShardingSphereProxy();
