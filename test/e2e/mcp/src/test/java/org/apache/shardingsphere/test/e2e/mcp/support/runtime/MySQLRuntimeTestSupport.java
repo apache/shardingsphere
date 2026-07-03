@@ -22,8 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
-import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
@@ -75,7 +73,7 @@ public final class MySQLRuntimeTestSupport {
      * @return MySQL runtime container
      */
     public static GenericContainer<?> createContainer() {
-        return new GenericContainer<>(DockerImageName.parse(getMySQLImage()))
+        return new GenericContainer<>(DockerImageName.parse(MySQLRuntimeDockerSupport.getMySQLImage()))
                 .withEnv("MYSQL_ROOT_PASSWORD", ROOT_PASSWORD)
                 .withEnv("MYSQL_DATABASE", DATABASE_NAME)
                 .withEnv("MYSQL_USER", USERNAME)
@@ -85,16 +83,8 @@ public final class MySQLRuntimeTestSupport {
                 .withStartupTimeout(Duration.ofMinutes(2));
     }
     
-    private static String getMySQLImage() {
-        return getMySQLImage(EnvironmentPropertiesLoader.loadProperties());
-    }
-    
     static String getMySQLImage(final Properties props) {
-        String result = props.getProperty("mcp.e2e.mysql.image", "").trim();
-        if (result.isEmpty()) {
-            throw new IllegalStateException("MCP E2E MySQL image property `mcp.e2e.mysql.image` is required.");
-        }
-        return result;
+        return MySQLRuntimeDockerSupport.getMySQLImage(props);
     }
     
     /**
@@ -103,7 +93,7 @@ public final class MySQLRuntimeTestSupport {
      * @return whether Docker is available
      */
     public static boolean isDockerAvailable() {
-        return getDockerUnavailableReason().isEmpty();
+        return MySQLRuntimeDockerSupport.isDockerAvailable();
     }
     
     /**
@@ -112,13 +102,7 @@ public final class MySQLRuntimeTestSupport {
      * @return Docker unavailable reason
      */
     public static Optional<String> getDockerUnavailableReason() {
-        try {
-            return DockerClientFactory.instance().isDockerAvailable()
-                    ? Optional.empty()
-                    : Optional.of("Testcontainers Docker client reported Docker unavailable.");
-        } catch (final IllegalStateException ex) {
-            return Optional.of(createDockerUnavailableReason(ex));
-        }
+        return MySQLRuntimeDockerSupport.getDockerUnavailableReason();
     }
     
     /**
@@ -128,17 +112,11 @@ public final class MySQLRuntimeTestSupport {
      * @return Docker-required message
      */
     public static String createDockerRequiredMessage(final String scenarioMessage) {
-        return createDockerRequiredMessage(scenarioMessage, getDockerUnavailableReason().orElse(""));
+        return MySQLRuntimeDockerSupport.createDockerRequiredMessage(scenarioMessage);
     }
     
     static String createDockerRequiredMessage(final String scenarioMessage, final String unavailableReason) {
-        return unavailableReason.isEmpty() ? scenarioMessage : scenarioMessage + " Docker readiness diagnostic: " + unavailableReason;
-    }
-    
-    private static String createDockerUnavailableReason(final IllegalStateException ex) {
-        return null == ex.getMessage() || ex.getMessage().isBlank()
-                ? "Testcontainers Docker availability check failed without a message."
-                : ex.getMessage();
+        return MySQLRuntimeDockerSupport.createDockerRequiredMessage(scenarioMessage, unavailableReason);
     }
     
     /**
@@ -324,21 +302,7 @@ public final class MySQLRuntimeTestSupport {
     
     private static Connection getConnection(final GenericContainer<?> container, final String databaseName) throws SQLException {
         String jdbcUrl = createJdbcUrl(container.getHost(), container.getMappedPort(3306), databaseName);
-        String configuredJdbcReadyTimeoutSeconds = EnvironmentPropertiesLoader.loadProperties().getProperty("mcp.e2e.mysql.ready-timeout-seconds", "").trim();
-        long jdbcReadyTimeoutMillis;
-        try {
-            if (configuredJdbcReadyTimeoutSeconds.isEmpty()) {
-                jdbcReadyTimeoutMillis = DEFAULT_JDBC_READY_TIMEOUT.toMillis();
-            } else {
-                int parsedJdbcReadyTimeoutSeconds = Integer.parseInt(configuredJdbcReadyTimeoutSeconds);
-                if (0 >= parsedJdbcReadyTimeoutSeconds) {
-                    throw new IllegalArgumentException("MCP E2E MySQL JDBC readiness timeout must be positive.");
-                }
-                jdbcReadyTimeoutMillis = Duration.ofSeconds(parsedJdbcReadyTimeoutSeconds).toMillis();
-            }
-        } catch (final NumberFormatException ex) {
-            throw new IllegalArgumentException("MCP E2E MySQL JDBC readiness timeout must be an integer.", ex);
-        }
+        long jdbcReadyTimeoutMillis = MySQLRuntimeDockerSupport.getJdbcReadyTimeoutMillis(DEFAULT_JDBC_READY_TIMEOUT);
         try {
             return new ReadinessProbe(jdbcReadyTimeoutMillis, JDBC_READY_INITIAL_INTERVAL_MILLIS, JDBC_READY_MAX_INTERVAL_MILLIS)
                     .waitUntilReady(() -> getConnectionIfReady(jdbcUrl),
