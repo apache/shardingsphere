@@ -61,8 +61,7 @@ class IdentifierCasePolicyResolverTest {
     void assertResolveWithAutoOracleRule() {
         IdentifierCasePolicy actual = resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "Oracle"), new ConfigurationProperties(new Properties()), null).getPolicy(IdentifierScope.TABLE);
         assertTrue(actual.matches("FOO", "foo", QuoteCharacter.NONE));
-        // TODO FIXME
-        // assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
+        assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     
     @Test
