@@ -78,7 +78,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -261,7 +260,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     private ResponseHeader doExecuteFederation() throws SQLException {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData();
-        boolean isReturnGeneratedKeys = sqlStatement instanceof InsertStatement && dialectDatabaseMetaData.getGeneratedKeyOption().isPresent();
+        boolean isReturnGeneratedKeys = ProxySQLExecutor.isReturnGeneratedKeys(queryContext.getSqlStatementContext(), dialectDatabaseMetaData, queryContext.getParameters());
         DatabaseType protocolType = database.getProtocolType();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
                 sqlStatement, this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
@@ -331,7 +330,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
                 ? ((InsertStatementContext) queryContext.getSqlStatementContext()).getGeneratedKeyContext()
                 : Optional.empty();
         Collection<Comparable<?>> autoIncrementGeneratedValues = generatedKeyContext.filter(GeneratedKeyContext::isSupportAutoIncrement)
+                .filter(GeneratedKeyContext::isGenerated)
                 .map(GeneratedKeyContext::getGeneratedValues).orElseGet(Collections::emptyList);
+        
         UpdateResponseHeader result = new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement(), updateResults, autoIncrementGeneratedValues);
         if (isNeedAccumulate()) {
             result.mergeUpdateCount();
