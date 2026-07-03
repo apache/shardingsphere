@@ -38,7 +38,7 @@ class LLMUsabilityScenarioCatalogTest {
                 "SELECT COUNT(*) AS total_orders FROM orders", 2);
         Map<String, LLMUsabilityScenario> actualScenarios = actual.stream().collect(Collectors.toMap(LLMUsabilityScenario::getScenarioId, each -> each));
         assertThat(actualScenarios.keySet(), hasItems("natural-metadata-lookup-mysql", "natural-read-only-sql-mysql", "natural-side-effect-preview-mysql",
-                "natural-workflow-manual-export-mysql", "natural-mask-rule-md5-mysql", "natural-encrypt-rule-aes-mysql", "natural-table-resource-mysql"));
+                "natural-workflow-manual-export-mysql", "natural-mask-rule-md5-mysql", "natural-encrypt-rule-md5-mysql", "natural-table-resource-mysql"));
         assertThat(actualScenarios.get("natural-side-effect-preview-mysql").getLlmScenario().getRequiredToolNames(), is(List.of("database_gateway_execute_update", "database_gateway_execute_query")));
         assertThat(actualScenarios.get("natural-table-resource-mysql").getExpectedResourceUris(),
                 is(List.of("shardingsphere://databases/logic_db/schemas/logic_db/tables/orders")));
@@ -54,14 +54,15 @@ class LLMUsabilityScenarioCatalogTest {
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("MD5 mask algorithm"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("manual-only"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("validate the workflow"));
-        assertThat(actualScenarios.get("natural-encrypt-rule-aes-mysql").getLlmScenario().getRequiredToolNames(),
+        assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getRequiredToolNames(),
                 is(List.of("database_gateway_plan_encrypt_rule", "database_gateway_apply_workflow", "database_gateway_validate_workflow", "database_gateway_execute_query")));
-        assertThat(actualScenarios.get("natural-encrypt-rule-aes-mysql").getLlmScenario().getUserPrompt(), containsString("identify and create an encrypt rule now"));
-        assertThat(actualScenarios.get("natural-encrypt-rule-aes-mysql").getLlmScenario().getUserPrompt(), containsString("table `orders`"));
-        assertThat(actualScenarios.get("natural-encrypt-rule-aes-mysql").getLlmScenario().getUserPrompt(), containsString("cipher column `status_cipher`"));
-        assertThat(actualScenarios.get("natural-encrypt-rule-aes-mysql").getLlmScenario().getUserPrompt(), containsString("protected secret placeholder for `aes-key-value`"));
-        assertThat(actualScenarios.get("natural-encrypt-rule-aes-mysql").getLlmScenario().getUserPrompt(), containsString("manual-only"));
-        assertThat(actualScenarios.get("natural-encrypt-rule-aes-mysql").getLlmScenario().getUserPrompt(), containsString("validate the workflow"));
+        assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("identify and create an encrypt rule now"));
+        assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("table `orders`"));
+        assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("MD5 encrypt algorithm"));
+        assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("cipher column `status_cipher`"));
+        assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("does not need reversible decrypt or LIKE query"));
+        assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("manual-only"));
+        assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("validate the workflow"));
         assertTrue(actual.stream().allMatch(each -> each.getTags().contains("natural")));
         assertTrue(actual.stream().allMatch(LLMUsabilityScenario::isNaturalTask));
         assertTrue(actual.stream().noneMatch(LLMUsabilityScenario::isProtocolContract));
