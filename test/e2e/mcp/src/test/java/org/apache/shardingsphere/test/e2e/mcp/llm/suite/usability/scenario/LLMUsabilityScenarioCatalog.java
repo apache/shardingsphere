@@ -106,7 +106,7 @@ public final class LLMUsabilityScenarioCatalog {
                 List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural", "workflow", "encrypt"),
                 new LLME2EScenario("natural-encrypt-rule-md5-" + runtimeKind, SYSTEM_PROMPT,
                         "A user asks you to identify and create an encrypt rule now for logical database `" + databaseName + "`, schema `" + schemaName + "`, table `" + tableName
-                                + "`, and column `status` using the MD5 encrypt algorithm with cipher column `status_cipher`. The user does not need reversible decrypt or LIKE query. "
+                                + "`, and column `status` using the MD5 encrypt algorithm with cipher column `status_cipher`. The user wants irreversible hashing, no equality, and no like. "
                                 + "Use the planning response plan_id for follow-up workflow calls, keep execution manual-only, validate the workflow with the returned plan_id, "
                                 + "and finish by verifying `" + query + "`.",
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders),
