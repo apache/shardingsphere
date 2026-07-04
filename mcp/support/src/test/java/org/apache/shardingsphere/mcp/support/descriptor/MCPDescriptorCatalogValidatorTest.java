@@ -137,6 +137,15 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
+    void assertValidateRejectsMissingNextActionExampleField() {
+        assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
+                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                createOutputSchema(Map.of("next_actions", createNextActionsSchema()), List.of(Map.of("next_actions", List.of(
+                        Map.of("order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_test_tool")))))))),
+                "Tool `database_gateway_test_tool` next_actions example `tool_call` must contain `arguments`.");
+    }
+    
+    @Test
     void assertValidateAcceptsFeatureOwnedToolDescriptorWithoutExtensionMarker() {
         assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_extension_test_tool", new MCPToolAnnotations("Extension Tool", true, false, true, true), createOutputSchema())))));
