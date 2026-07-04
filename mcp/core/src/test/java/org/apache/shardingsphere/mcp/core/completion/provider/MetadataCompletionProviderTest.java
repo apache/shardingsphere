@@ -71,7 +71,7 @@ class MetadataCompletionProviderTest {
         when(metadataQueryFacade.queryDatabases()).thenReturn(List.of(createDatabaseMetadata()));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade), createRequestContext("database", Map.of()));
         assertCandidate(actual, "logic_db");
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases"));
         assertThat(actual.getMissingContextArguments(), is(List.of()));
     }
     
@@ -81,7 +81,7 @@ class MetadataCompletionProviderTest {
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata()));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade), createRequestContext("schema", Map.of("database", "logic_db")));
         assertCandidate(actual, "public");
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases/logic_db/schemas"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/schemas"));
     }
     
     @Test
@@ -136,7 +136,7 @@ class MetadataCompletionProviderTest {
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class)), createRequestContext("table", Map.of()));
         assertThat(actual.getCandidates(), is(List.of()));
         assertThat(actual.getMissingContextArguments(), is(List.of("database", "schema")));
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases"));
     }
     
     @Test
@@ -146,7 +146,7 @@ class MetadataCompletionProviderTest {
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("column", Map.of("database", "logic_db", "schema", "public", "table", "t_order")));
         assertCandidate(actual, "order_id");
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/tables/t_order/columns"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/tables/t_order/columns"));
     }
     
     @Test
@@ -156,7 +156,7 @@ class MetadataCompletionProviderTest {
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("index", Map.of("database", "logic_db", "schema", "public", "table", "t_order")));
         assertCandidate(actual, "idx_order_id");
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/tables/t_order/indexes"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/tables/t_order/indexes"));
     }
     
     @Test
@@ -166,7 +166,7 @@ class MetadataCompletionProviderTest {
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("sequence", Map.of("database", "logic_db", "schema", "public")));
         assertCandidate(actual, "order_seq");
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/sequences"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/sequences"));
     }
     
     private MCPCompletionRequestContext createRequestContext(final String argumentName, final Map<String, String> contextArguments) {
