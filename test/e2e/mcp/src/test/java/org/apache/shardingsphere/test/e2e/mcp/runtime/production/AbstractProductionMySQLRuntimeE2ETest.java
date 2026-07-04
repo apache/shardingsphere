@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import io.modelcontextprotocol.client.McpSyncClient;
+import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
@@ -293,7 +294,13 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests) throws IOException {
-        return ProductionMCPClientTransportFactory.createElicitationClient(transport, getHttpEndpointUri(), getConfigFile(), elicitationRequests, this::createElicitationResult);
+        return ProductionMCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, this::createElicitationResult);
+    }
+    
+    private McpClientTransport createClientTransport(final RuntimeTransport transport) throws IOException {
+        return RuntimeTransport.HTTP == transport
+                ? ProductionMCPClientTransportFactory.createHttpClientTransport(getHttpEndpointUri())
+                : ProductionMCPClientTransportFactory.createStdioClientTransport(getConfigFile());
     }
     
     protected McpSchema.ElicitResult createElicitationResult(final List<McpSchema.ElicitRequest> elicitationRequests,

@@ -43,6 +43,17 @@ class LLMMCPConversationTurnPlannerTest {
     }
     
     @Test
+    void assertCreateTurnToolNamesWithImmediateCompletionAction() {
+        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);
+        List<String> actual = planner.createTurnToolNames(createScenario(List.of("database_gateway_plan_mask_rule", "database_gateway_execute_query"),
+                List.of("database_gateway_plan_mask_rule", "database_gateway_execute_query")),
+                List.of(createTraceRecord("database_gateway_plan_mask_rule",
+                        Map.of("recovery", Map.of("next_actions", List.of(Map.of("type", "completion")))))));
+        assertThat(actual, is(List.of(MCPInteractionActionNames.COMPLETE)));
+    }
+    
+    @Test
     void assertCreateTurnToolNamesPrefersReadOnlyAfterSideEffectNextAction() {
         LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
         LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);

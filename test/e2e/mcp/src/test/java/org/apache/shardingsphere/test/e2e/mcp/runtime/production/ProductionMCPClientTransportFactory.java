@@ -28,7 +28,6 @@ import io.modelcontextprotocol.spec.ProtocolVersions;
 import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPStdioLogbackConfiguration;
 
 import java.io.IOException;
@@ -55,20 +54,15 @@ final class ProductionMCPClientTransportFactory {
     private ProductionMCPClientTransportFactory() {
     }
     
-    static McpSyncClient createElicitationClient(final RuntimeTransport transport, final URI endpointUri, final Path configFile,
-                                                 final List<McpSchema.ElicitRequest> elicitationRequests,
-                                                 final BiFunction<List<McpSchema.ElicitRequest>, McpSchema.ElicitRequest, McpSchema.ElicitResult> elicitationHandler) throws IOException {
-        return McpClient.sync(createClientTransport(transport, endpointUri, configFile))
+    static McpSyncClient createElicitationClient(final McpClientTransport clientTransport, final List<McpSchema.ElicitRequest> elicitationRequests,
+                                                 final BiFunction<List<McpSchema.ElicitRequest>, McpSchema.ElicitRequest, McpSchema.ElicitResult> elicitationHandler) {
+        return McpClient.sync(clientTransport)
                 .clientInfo(new McpSchema.Implementation("mcp-e2e-elicitation", "MCP E2E Elicitation", "1.0.0"))
                 .capabilities(McpSchema.ClientCapabilities.builder().elicitation().build())
                 .requestTimeout(Duration.ofSeconds(30L))
                 .initializationTimeout(Duration.ofSeconds(30L))
                 .elicitation(request -> elicitationHandler.apply(elicitationRequests, request))
                 .build();
-    }
-    
-    static McpClientTransport createClientTransport(final RuntimeTransport transport, final URI endpointUri, final Path configFile) throws IOException {
-        return RuntimeTransport.HTTP == transport ? createHttpClientTransport(endpointUri) : createStdioClientTransport(configFile);
     }
     
     static McpClientTransport createHttpClientTransport(final URI endpointUri) {

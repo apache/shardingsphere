@@ -190,9 +190,10 @@ public final class LLMMCPConversationRunner {
         }
         messages.add(LLMChatMessage.assistant(completion.getContent(), completion.getToolCalls()));
         for (LLMToolCall each : completion.getToolCalls()) {
-            List<String> availableToolNames = instructionFactory.hasSideEffectExecutionNextAction(artifacts.getInteractionTrace())
+            List<String> availableToolNames = turnPlanner.createImmediateNextActionToolNames(artifacts.getInteractionTrace());
+            availableToolNames = availableToolNames.isEmpty() && instructionFactory.hasSideEffectExecutionNextAction(artifacts.getInteractionTrace())
                     ? turnPlanner.createTurnToolNames(scenario, artifacts.getInteractionTrace())
-                    : List.of();
+                    : availableToolNames;
             if (!availableToolNames.isEmpty() && !availableToolNames.contains(each.getName())) {
                 Map<String, Object> toolResponse = new LinkedHashMap<>(4, 1F);
                 toolResponse.put("response_mode", "tool_call_rejected");
@@ -213,7 +214,7 @@ public final class LLMMCPConversationRunner {
                         each.getName(), String.join(", ", availableToolNames), expectedQueryInstruction)));
                 return Optional.empty();
             }
-            Optional<LLME2EArtifactBundle> result = processToolCall(scenario, each, messages, artifacts);
+            Optional<LLME2EArtifactBundle> result = processToolCall(scenario, each, messages, artifacts, availableToolNames);
             if (result.isPresent()) {
                 return result;
             }
@@ -226,8 +227,8 @@ public final class LLMMCPConversationRunner {
     }
     
     private Optional<LLME2EArtifactBundle> processToolCall(final LLME2EScenario scenario, final LLMToolCall toolCall, final List<LLMChatMessage> messages,
-                                                           final LLMMCPConversationArtifacts artifacts) throws InterruptedException {
-        if (!scenario.getAllowedToolNames().contains(toolCall.getName())) {
+                                                           final LLMMCPConversationArtifacts artifacts, final List<String> extraAllowedToolNames) throws InterruptedException {
+        if (!scenario.getAllowedToolNames().contains(toolCall.getName()) && !extraAllowedToolNames.contains(toolCall.getName())) {
             artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", toolCall.getName(),
                     Map.of("rawArgumentsJson", toolCall.getArgumentsJson()), "unexpected_tool_requested"));
             return Optional.of(createFailureBundle(scenario, artifacts, "unexpected_tool_requested", "Model requested an unsupported tool."));
