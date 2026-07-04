@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingAggregationDistinctTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingDistinctProjectionPrefixTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingProjectionsTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRemoveTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingTableTokenGenerator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -61,7 +62,7 @@ class ShardingTokenGenerateBuilderTest {
         when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes());
         ShardingTokenGenerateBuilder shardingTokenGenerateBuilder = new ShardingTokenGenerateBuilder(shardingRule, routeContext, sqlStatementContext);
         Collection<SQLTokenGenerator> sqlTokenGenerators = shardingTokenGenerateBuilder.getSQLTokenGenerators();
-        assertThat(sqlTokenGenerators.size(), is(4));
+        assertThat(sqlTokenGenerators.size(), is(5));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
         SQLTokenGenerator tableTokenGenerator = iterator.next();
         assertThat(tableTokenGenerator, isA(ShardingTableTokenGenerator.class));
@@ -69,6 +70,9 @@ class ShardingTokenGenerateBuilderTest {
         SQLTokenGenerator distinctProjectionPrefixTokenGenerator = iterator.next();
         assertThat(distinctProjectionPrefixTokenGenerator, isA(ShardingDistinctProjectionPrefixTokenGenerator.class));
         assertSqlTokenGenerator(distinctProjectionPrefixTokenGenerator);
+        SQLTokenGenerator projectionsTokenGenerator = iterator.next();
+        assertThat(projectionsTokenGenerator, isA(ShardingProjectionsTokenGenerator.class));
+        assertSqlTokenGenerator(projectionsTokenGenerator);
         SQLTokenGenerator aggregationDistinctTokenGenerator = iterator.next();
         assertThat(aggregationDistinctTokenGenerator, isA(ShardingAggregationDistinctTokenGenerator.class));
         assertSqlTokenGenerator(aggregationDistinctTokenGenerator);

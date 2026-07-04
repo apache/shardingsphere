@@ -84,6 +84,8 @@ class ShardingProjectionsTokenGeneratorTest {
     void assertIsNotGenerateSQLTokenWithNotContainsDerivedProjection() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singleton(mock()));
+        when(sqlStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()).thenReturn(true);
+        when(sqlStatementContext.getProjectionsContext().getExpressionDerivedAggregations().isEmpty()).thenReturn(true);
         assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
