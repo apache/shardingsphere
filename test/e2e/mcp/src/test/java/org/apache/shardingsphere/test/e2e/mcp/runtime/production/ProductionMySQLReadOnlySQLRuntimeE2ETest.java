@@ -185,7 +185,7 @@ class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRu
     void assertAiNativeDeterministicInteractionLoopWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            assertAiNativeCapabilities(interactionClient.readResource("shardingsphere://capabilities"));
+            assertAiNativeGuidance(interactionClient.readResource("shardingsphere://guidance"));
             assertAiNativeDiscovery(interactionClient);
             Map<String, Object> searchMetadataPayload = interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "orders", "object_types", List.of("table")));

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadat
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
+import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPBaselineContractAssertions;
 import org.junit.jupiter.api.Test;
@@ -58,26 +59,52 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
     }
     
     @Test
+    @EnabledIf("isEnabled")
+    void assertGuidanceBaselineContract() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://guidance");
+        assertThat(actual.statusCode(), is(200));
+        MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "guidance.yaml", createGuidanceContract(getFirstResourcePayload(actual.body())));
+    }
+    
+    @Test
     void assertCapabilitiesBaselineContractProjection() {
         Map<String, Object> actual = new ServerCapabilitiesHandler().handle(mock(MCPServiceHandlerContext.class), new MCPUriVariables(Map.of())).toPayload();
         MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "capabilities.yaml", createCapabilitiesContract(actual));
     }
     
+    @Test
+    void assertGuidanceBaselineContractProjection() {
+        Map<String, Object> actual = new ServerGuidanceHandler().handle(mock(MCPServiceHandlerContext.class), new MCPUriVariables(Map.of())).toPayload();
+        MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "guidance.yaml", createGuidanceContract(actual));
+    }
+    
     private Map<String, Object> createCapabilitiesContract(final Map<String, Object> payload) {
-        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("response_mode", payload.get("response_mode"));
-        result.put("model_first_summary", payload.get("model_first_summary"));
-        result.put("model_contract", payload.get("model_contract"));
-        result.put("surface_summary", payload.get("surface_summary"));
-        result.put("field_naming_contract", payload.get("field_naming_contract"));
-        result.put("next_action_contract", payload.get("next_action_contract"));
-        result.put("common_flows", payload.get("common_flows"));
+        result.put("guidanceResource", payload.get("guidanceResource"));
         result.put("protocolAvailability", payload.get("protocolAvailability"));
         result.put("resources", summarizeCapabilityResourceIdentities(castToMapList(payload.get("resources"))));
         result.put("resourceTemplates", summarizeCapabilityResourceTemplateIdentities(castToMapList(payload.get("resourceTemplates"))));
         result.put("tools", summarizeCapabilityTools(castToMapList(payload.get("tools"))));
         result.put("prompts", summarizePrompts(castToMapList(payload.get("prompts"))));
         result.put("completionTargets", payload.get("completionTargets"));
+        return result;
+    }
+    
+    private Map<String, Object> createGuidanceContract(final Map<String, Object> payload) {
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        result.put("response_mode", payload.get("response_mode"));
+        result.put("guidance_resource", payload.get("guidance_resource"));
+        result.put("model_first_summary", payload.get("model_first_summary"));
+        result.put("model_contract", payload.get("model_contract"));
+        result.put("surface_summary", payload.get("surface_summary"));
+        result.put("field_naming_contract", payload.get("field_naming_contract"));
+        result.put("next_action_contract", payload.get("next_action_contract"));
+        result.put("common_flows", payload.get("common_flows"));
+        result.put("security_hints", payload.get("security_hints"));
         return result;
     }
     

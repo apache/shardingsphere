@@ -225,23 +225,23 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertThat(String.valueOf(getMap(actual.get("recovery")).get("category")), is(expectedCategory));
     }
     
-    protected void assertAiNativeCapabilities(final Map<String, Object> capabilities) {
-        assertTrue(capabilities.containsKey("model_first_summary"));
-        assertTrue(capabilities.containsKey("model_contract"));
-        assertTrue(capabilities.containsKey("surface_summary"));
-        assertTrue(capabilities.containsKey("field_naming_contract"));
-        assertTrue(capabilities.containsKey("next_action_contract"));
-        assertTrue(capabilities.containsKey("common_flows"));
-        assertTrue(capabilities.containsKey("security_hints"));
-        assertFalse(capabilities.containsKey("fingerprints"));
-        assertFalse(((List<?>) capabilities.get("common_flows")).isEmpty());
-        Map<String, Object> modelFirstSummary = getMap(capabilities.get("model_first_summary"));
+    protected void assertAiNativeGuidance(final Map<String, Object> guidance) {
+        assertTrue(guidance.containsKey("model_first_summary"));
+        assertTrue(guidance.containsKey("model_contract"));
+        assertTrue(guidance.containsKey("surface_summary"));
+        assertTrue(guidance.containsKey("field_naming_contract"));
+        assertTrue(guidance.containsKey("next_action_contract"));
+        assertTrue(guidance.containsKey("common_flows"));
+        assertTrue(guidance.containsKey("security_hints"));
+        assertFalse(guidance.containsKey("fingerprints"));
+        assertFalse(((List<?>) guidance.get("common_flows")).isEmpty());
+        Map<String, Object> modelFirstSummary = getMap(guidance.get("model_first_summary"));
         assertThat(getMap(modelFirstSummary.get("official_discovery_methods")).get("tools"), is("tools/list"));
-        assertThat(modelFirstSummary.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertThat(modelFirstSummary.get("guidance_resource"), is("shardingsphere://guidance"));
         assertThat(getMap(modelFirstSummary.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
         assertThat(getMap(getMap(modelFirstSummary.get("sql_tool_selection")).get("read_only")).get("tool"), is("database_gateway_execute_query"));
         assertThat(getMap(getMap(modelFirstSummary.get("workflow_rule")).get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
-        Map<String, Object> surfaceSummary = getMap(capabilities.get("surface_summary"));
+        Map<String, Object> surfaceSummary = getMap(guidance.get("surface_summary"));
         assertThat(getMap(surfaceSummary.get("official_discovery_methods")).get("resources"), is("resources/list"));
         assertThat(surfaceSummary.get("preflight_validation_tool"), is("database_gateway_validate_runtime_database"));
         assertThat(surfaceSummary.get("read_only_sql_tool"), is("database_gateway_execute_query"));
