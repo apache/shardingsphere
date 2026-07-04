@@ -156,7 +156,45 @@
             <owner name="public" start-index="22" stop-index="27" />
         </view>
         <select>
-            <!-- FIXME support VALUES (1) projection parse -->
+            <projections start-index="47" stop-index="56">
+                <expression-projection text="1" start-index="55" stop-index="55" />
+            </projections>
+            <combine combine-type="UNION_ALL" start-index="47" stop-index="107">
+                <left>
+                    <projections start-index="47" stop-index="56">
+                        <expression-projection text="1" start-index="55" stop-index="55" />
+                    </projections>
+                </left>
+                <right>
+                    <projections start-index="75" stop-index="77">
+                        <expression-projection text="n+1" start-index="75" stop-index="77" />
+                    </projections>
+                    <from>
+                        <simple-table name="nums_1_100" start-index="84" stop-index="93" />
+                    </from>
+                    <where start-index="95" stop-index="107">
+                        <expr>
+                            <binary-operation-expression start-index="101" stop-index="107">
+                                <left>
+                                    <column name="n" start-index="101" stop-index="101" />
+                                </left>
+                                <right>
+                                    <literal-expression value="100" start-index="105" stop-index="107" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </expr>
+                    </where>
+                </right>
+            </combine>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_with_recursive_opengauss" view-definition="VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100">
+        <view name="nums_1_100" start-index="22" stop-index="38">
+            <owner name="public" start-index="22" stop-index="27" />
+        </view>
+        <select>
             <projections start-index="-1" stop-index="-1" />
             <combine combine-type="UNION_ALL" start-index="47" stop-index="107">
                 <left>
