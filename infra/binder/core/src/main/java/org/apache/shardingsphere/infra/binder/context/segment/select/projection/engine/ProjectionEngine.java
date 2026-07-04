@@ -137,7 +137,6 @@ public final class ProjectionEngine {
                 String aggrText = aggrSegment.getText();
                 
                 if (uniqueAggregations.containsKey(aggrText)) {
-                    derivedAggregations.add(uniqueAggregations.get(aggrText));
                     continue;
                 }
                 
