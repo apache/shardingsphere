@@ -121,6 +121,10 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
 - **Coverage Discipline**: follow the dedicated coverage & branch checklist before coding when coverage targets are stated.
 - **Dedicated and scoped tests**: each public production method must be covered by dedicated test methods; each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions), and different branches/inputs belong in separate test methods.
+- **No testing through layers**: a unit test must not appear to test the current class under test while its inputs, branch triggers, or assertions encode collaborator implementation rules such as SPI, registry, factory, parser, loader, metadata option, driver option, dialect defaults, exception classification, or message/SQLState parsing.
+  Unit tests must distinguish behavior owned by the class under test from behavior owned by collaborators.
+  If a collaborator implementation can change while the class under test contract stays unchanged, the current class test must not fail; mock the nearest stable collaborator boundary and cover the collaborator rule in that collaborator's own focused tests.
+  Cross-layer verification belongs only in explicitly scoped integration, contract, or E2E tests.
 - **No interface-only tests**: do not create unit tests for interfaces themselves; cover behavior through concrete implementations instead, and avoid dedicated test classes for pure contracts or SPI interfaces.
 - **Parameterized tests naming**: all parameterized tests must set an explicit `name` and use the `"{0}"` template for display names.
 - **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
