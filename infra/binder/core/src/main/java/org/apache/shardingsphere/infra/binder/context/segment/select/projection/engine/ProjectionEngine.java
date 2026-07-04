@@ -157,26 +157,6 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private void extractAggregationSegments(final ExpressionSegment segment, final List<AggregationProjectionSegment> extractedSegments) {
-        if (segment == null) {
-            return;
-        }
-        
-        if (segment instanceof AggregationProjectionSegment) {
-            extractedSegments.add((AggregationProjectionSegment) segment);
-            return;
-        }
-        
-        if (segment instanceof FunctionSegment) {
-            String functionName = ((FunctionSegment) segment).getFunctionName();
-            if ("IFNULL".equalsIgnoreCase(functionName) || "COALESCE".equalsIgnoreCase(functionName)) {
-                for (ExpressionSegment param : ((FunctionSegment) segment).getParameters()) {
-                    extractAggregationSegments(param, extractedSegments);
-                }
-            }
-        }
-    }
-    
     private Projection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {
         if (projectionSegment.getWindow().isPresent()) {
             return createExpressionProjection(projectionSegment);
@@ -204,6 +184,26 @@ public final class ProjectionEngine {
             // TODO replace avg to constant, avoid calculate useless avg
         }
         return result;
+    }
+    
+    private void extractAggregationSegments(final ExpressionSegment segment, final List<AggregationProjectionSegment> extractedSegments) {
+        if (segment == null) {
+            return;
+        }
+        
+        if (segment instanceof AggregationProjectionSegment) {
+            extractedSegments.add((AggregationProjectionSegment) segment);
+            return;
+        }
+        
+        if (segment instanceof FunctionSegment) {
+            String functionName = ((FunctionSegment) segment).getFunctionName();
+            if ("IFNULL".equalsIgnoreCase(functionName) || "COALESCE".equalsIgnoreCase(functionName)) {
+                for (ExpressionSegment param : ((FunctionSegment) segment).getParameters()) {
+                    extractAggregationSegments(param, extractedSegments);
+                }
+            }
+        }
     }
     
     private ExpressionProjection createExpressionProjection(final AggregationProjectionSegment projectionSegment) {

@@ -72,6 +72,7 @@
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
 1. Proxy Native: Support building Proxy Native via GraalVM CE for JDK 25 - [#38682](https://github.com/apache/shardingsphere/pull/38682)
 1. SQL Parser: Support SQLServer table variable declaration parse - [#38904](https://github.com/apache/shardingsphere/pull/38904)
+1. Support evaluation of IFNULL/COALESCE expressions over merged aggregation results - [#38990](https://github.com/apache/shardingsphere/pull/38990)
 
 ## Release 5.5.3
 

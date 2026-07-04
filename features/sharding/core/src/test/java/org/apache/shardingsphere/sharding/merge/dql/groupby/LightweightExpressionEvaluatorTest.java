@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
+import org.hamcrest.CoreMatchers;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,7 +50,7 @@ class LightweightExpressionEvaluatorTest {
         when(memoryRow.getCell(1)).thenReturn(null);
         
         Object actual = LightweightExpressionEvaluator.evaluate(functionSegment, Collections.singletonList(derivedAggr), memoryRow);
-        assertThat(actual, is(0));
+        assertThat(actual, CoreMatchers.is(0));
     }
     
     @Test
@@ -64,6 +64,6 @@ class LightweightExpressionEvaluatorTest {
         derivedAggr.setIndex(2);
         
         Object actual = LightweightExpressionEvaluator.evaluate(functionSegment, Collections.singletonList(derivedAggr), Arrays.asList("other", 50));
-        assertThat(actual, is(50));
+        assertThat(actual, CoreMatchers.is(50));
     }
 }

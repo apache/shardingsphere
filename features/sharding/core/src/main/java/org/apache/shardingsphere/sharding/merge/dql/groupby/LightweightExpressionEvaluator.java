@@ -32,11 +32,25 @@ import java.util.function.Function;
  * Lightweight expression evaluator for post-merge aggregations.
  */
 public final class LightweightExpressionEvaluator {
-    
+
+    /**
+     * Evaluate expression with memory query result row.
+     * @param expression expression segment to evaluate
+     * @param derivedAggregations derived aggregations
+     * @param row memory query result row
+     * @return evaluated result
+     */
     public static Object evaluate(final ExpressionSegment expression, final List<AggregationProjection> derivedAggregations, final MemoryQueryResultRow row) {
         return evaluate(expression, derivedAggregations, row::getCell);
     }
-    
+
+    /**
+     * Evaluate expression with current row data.
+     * @param expression expression segment to evaluate
+     * @param derivedAggregations derived aggregations
+     * @param currentRow current row data
+     * @return evaluated result
+     */
     public static Object evaluate(final ExpressionSegment expression, final List<AggregationProjection> derivedAggregations, final List<Object> currentRow) {
         return evaluate(expression, derivedAggregations, index -> currentRow.get(index - 1));
     }
