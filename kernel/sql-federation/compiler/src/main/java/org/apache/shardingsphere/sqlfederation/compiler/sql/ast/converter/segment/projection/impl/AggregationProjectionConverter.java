@@ -29,7 +29,9 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
@@ -78,6 +80,9 @@ public final class AggregationProjectionConverter {
         if (null == segment) {
             return Optional.empty();
         }
+        if (isCountDistinctContainingNullLiteral(segment)) {
+            return Optional.of(SqlLiteral.createExactNumeric("0", SqlParserPos.ZERO));
+        }
         SqlLiteral functionQuantifier = segment instanceof AggregationDistinctProjectionSegment ? SqlLiteral.createSymbol(SqlSelectKeyword.DISTINCT, SqlParserPos.ZERO) : null;
         SqlAggFunction operator = convertOperator(segment.getType().name());
         List<SqlNode> params = convertParameters(segment.getParameters(), segment.getExpression(), segment.getSeparator().orElse(null));
@@ -106,5 +111,19 @@ public final class AggregationProjectionConverter {
             result.add(SqlLiteral.createCharString(separator, SqlParserPos.ZERO));
         }
         return result;
+    }
+
+    private static boolean isCountDistinctContainingNullLiteral(final AggregationProjectionSegment segment) {
+        if (!(segment instanceof AggregationDistinctProjectionSegment)) {
+            return false;
+        }
+        if (AggregationType.COUNT != segment.getType()) {
+            return false;
+        }
+        return segment.getParameters().stream().anyMatch(AggregationProjectionConverter::isNullLiteral);
+    }
+
+    private static boolean isNullLiteral(final ExpressionSegment segment) {
+        return segment instanceof LiteralExpressionSegment && null == ((LiteralExpressionSegment) segment).getLiterals();
     }
 }
