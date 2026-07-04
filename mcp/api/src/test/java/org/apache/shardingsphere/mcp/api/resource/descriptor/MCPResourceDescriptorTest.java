@@ -33,7 +33,7 @@ class MCPResourceDescriptorTest {
     void assertGetUriTemplateForFixedResource() {
         MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases", "databases", "Databases", "List databases.", "application/json",
                 MCPResourceAnnotations.EMPTY, Collections.emptyMap());
-        assertThat(actual.getUriTemplate(), is("shardingsphere://databases"));
+        assertThat(actual.getUriOrTemplate(), is("shardingsphere://databases"));
         assertFalse(actual.isTemplated());
     }
     
@@ -41,7 +41,7 @@ class MCPResourceDescriptorTest {
     void assertGetUriTemplateForResourceTemplate() {
         MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database",
                 "Read one database.", "application/json", MCPResourceAnnotations.EMPTY, Collections.emptyMap());
-        assertThat(actual.getUriTemplate(), is("shardingsphere://databases/{database}"));
+        assertThat(actual.getUriOrTemplate(), is("shardingsphere://databases/{database}"));
         assertTrue(actual.isTemplated());
     }
     

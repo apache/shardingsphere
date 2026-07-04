@@ -37,8 +37,7 @@ class MCPDescriptorComponentValidatorsTest {
     
     @Test
     void assertResourceDescriptorValidator() {
-        MCPDescriptorCatalog catalog =
-                new MCPDescriptorCatalog(List.of(createResourceDescriptor()), List.of(createResourceDescriptor()), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        MCPDescriptorCatalog catalog = createCatalog(List.of(createResourceDescriptor()), List.of(createResourceDescriptor()), List.of());
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPResourceDescriptorValidator.validate(catalog));
         assertThat(actual.getMessage(), is("Resource template `shardingsphere://capabilities` must contain template variables."));
     }
@@ -47,9 +46,8 @@ class MCPDescriptorComponentValidatorsTest {
     void assertToolDescriptorCatalogValidator() {
         Map<String, Object> inputSchema = new LinkedHashMap<>(createInputSchema());
         inputSchema.put("oneOf", List.of(Map.of("required", List.of("query"))));
-        MCPDescriptorCatalog catalog = new MCPDescriptorCatalog(List.of(), List.of(), List.of(), List.of(new MCPToolDescriptor(
-                "database_gateway_test_tool", "Test Tool", "Run a test tool.", inputSchema, createOutputSchema(), createAnnotations(), Map.of())), List.of(), List.of(), List.of(), List.of(),
-                List.of());
+        MCPDescriptorCatalog catalog = createCatalog(List.of(), List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.", inputSchema, createOutputSchema(), createAnnotations(), Map.of())));
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPToolDescriptorCatalogValidator.validate(catalog));
         assertThat(actual.getMessage(), is("Tool `database_gateway_test_tool` inputSchema contains unsupported top-level field `oneOf`."));
     }
@@ -83,9 +81,15 @@ class MCPDescriptorComponentValidatorsTest {
     @Test
     void assertResourceNavigationDescriptorValidator() {
         MCPResourceNavigationDescriptor navigation = new MCPResourceNavigationDescriptor("missing", "database_gateway_test_tool", List.of(), List.of(), "Read test tool.");
-        MCPDescriptorCatalog catalog = new MCPDescriptorCatalog(List.of(), List.of(), List.of(), List.of(createToolDescriptor()), List.of(), List.of(), List.of(), List.of(), List.of());
+        MCPDescriptorCatalog catalog = createCatalog(List.of(), List.of(), List.of(createToolDescriptor()));
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPResourceNavigationDescriptorValidator.validate(List.of(navigation), catalog));
         assertThat(actual.getMessage(), is("Resource navigation references unknown source `missing`."));
+    }
+    
+    private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPResourceDescriptor> resourceTemplateDescriptors,
+                                               final List<MCPToolDescriptor> toolDescriptors) {
+        return new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, toolDescriptors, List.of()),
+                new MCPShardingSphereDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), List.of()));
     }
     
     private MCPResourceDescriptor createResourceDescriptor() {

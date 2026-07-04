@@ -20,7 +20,7 @@ resources:
     title: ShardingSphere MCP Capability Catalog
     description: >
       Generated ShardingSphere domain catalog for resources, resource templates, tools, prompts, completions, workflow relationships,
-      side-effect notes, and navigation hints. Use official MCP discovery methods for protocol surface discovery.
+      and navigation hints. Read shardingsphere://guidance for model-facing workflow and safety guidance.
     mimeType: application/json
     annotations:
       audience:
@@ -30,6 +30,23 @@ resources:
       resourceKind: capability-catalog
       useBefore:
         - inspecting ShardingSphere catalog metadata
+        - planning multi-step workflows
+  - uri: shardingsphere://guidance
+    name: server-guidance
+    title: ShardingSphere MCP Guidance
+    description: "Read model-facing ShardingSphere MCP guidance for discovery order, tool selection, workflow handling, side-effect review, and recovery behavior."
+    mimeType: application/json
+    annotations:
+      audience:
+        - assistant
+      priority: 0.95
+    shardingSphereMetadata:
+      resourceKind: guidance
+      relatedResources:
+        - shardingsphere://capabilities
+        - shardingsphere://databases
+      useBefore:
+        - choosing MCP tools
         - planning multi-step workflows
   - uri: shardingsphere://runtime
     name: runtime-status
@@ -707,6 +724,11 @@ completionTargets:
           - database
           - schema
 resourceNavigation:
+  - from: shardingsphere://capabilities
+    to: shardingsphere://guidance
+    requiredArguments: []
+    carriedArguments: []
+    description: "Read model-facing guidance before choosing multi-step workflows or side-effecting tools."
   - from: shardingsphere://capabilities
     to: shardingsphere://runtime
     requiredArguments: []

@@ -67,7 +67,7 @@ public final class MCPResourceSpecificationFactory {
     
     private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
         McpSchema.Resource.Builder result = McpSchema.Resource.builder()
-                .uri(descriptor.getUriTemplate())
+                .uri(descriptor.getUriOrTemplate())
                 .name(descriptor.getName())
                 .title(descriptor.getTitle())
                 .description(descriptor.getDescription())
@@ -94,7 +94,7 @@ public final class MCPResourceSpecificationFactory {
     
     private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {
         McpSchema.ResourceTemplate.Builder result = McpSchema.ResourceTemplate.builder()
-                .uriTemplate(descriptor.getUriTemplate())
+                .uriTemplate(descriptor.getUriOrTemplate())
                 .name(descriptor.getName())
                 .title(descriptor.getTitle())
                 .description(descriptor.getDescription())

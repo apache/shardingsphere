@@ -37,11 +37,8 @@ final class MCPDescriptorCatalogPayloadBuilder {
     
     private final MCPDescriptorCatalog catalog;
     
-    private final MCPModelFirstContractPayloadBuilder modelFirstContractPayloadBuilder;
-    
     private MCPDescriptorCatalogPayloadBuilder(final MCPDescriptorCatalog catalog) {
         this.catalog = catalog;
-        modelFirstContractPayloadBuilder = new MCPModelFirstContractPayloadBuilder(catalog);
     }
     
     static Map<String, Object> build(final MCPDescriptorCatalog catalog, final Collection<String> supportedResources, final Collection<String> supportedTools,
@@ -51,23 +48,17 @@ final class MCPDescriptorCatalogPayloadBuilder {
     
     private Map<String, Object> build(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
-        List<Map<String, Object>> resources = catalog.getResourceDescriptors().stream().map(this::toResourcePayload).toList();
-        List<Map<String, Object>> resourceTemplates = catalog.getResourceTemplateDescriptors().stream().map(this::toResourceTemplatePayload).toList();
-        List<Map<String, Object>> tools = catalog.getToolDescriptors().stream().map(this::toToolPayload).toList();
-        List<Map<String, Object>> prompts = catalog.getPromptDescriptors().stream().map(this::toPromptPayload).toList();
-        List<Map<String, Object>> completionTargets = catalog.getCompletionTargetDescriptors().stream().map(this::toCompletionTargetPayload).toList();
-        List<Map<String, Object>> resourceNavigation = catalog.getResourceNavigationDescriptors().stream().map(this::toResourceNavigationPayload).toList();
+        List<Map<String, Object>> resources = catalog.getProtocolDescriptors().getResourceDescriptors().stream().map(this::toResourcePayload).toList();
+        List<Map<String, Object>> resourceTemplates = catalog.getProtocolDescriptors().getResourceTemplateDescriptors().stream().map(this::toResourceTemplatePayload).toList();
+        List<Map<String, Object>> tools = catalog.getProtocolDescriptors().getToolDescriptors().stream().map(this::toToolPayload).toList();
+        List<Map<String, Object>> prompts = catalog.getProtocolDescriptors().getPromptDescriptors().stream().map(this::toPromptPayload).toList();
+        List<Map<String, Object>> completionTargets = catalog.getShardingSphereDescriptors().getCompletionTargetDescriptors().stream().map(this::toCompletionTargetPayload).toList();
+        List<Map<String, Object>> resourceNavigation = catalog.getShardingSphereDescriptors().getResourceNavigationDescriptors().stream().map(this::toResourceNavigationPayload).toList();
         result.put("response_mode", MCPResponseMode.CATALOG);
-        result.put("model_first_summary", modelFirstContractPayloadBuilder.createModelFirstSummary());
         result.put("supportedResources", supportedResources);
         result.put("supportedTools", supportedTools);
         result.put("supportedStatementClasses", supportedStatements);
-        result.put("model_contract", modelFirstContractPayloadBuilder.createModelContract());
-        result.put("surface_summary", modelFirstContractPayloadBuilder.createSurfaceSummary());
-        result.put("field_naming_contract", modelFirstContractPayloadBuilder.createFieldNamingContract());
-        result.put("next_action_contract", modelFirstContractPayloadBuilder.createNextActionContract());
-        result.put("common_flows", modelFirstContractPayloadBuilder.createCommonFlows());
-        result.put("security_hints", modelFirstContractPayloadBuilder.createSecurityHints());
+        result.put("guidanceResource", "shardingsphere://guidance");
         result.put("resources", resources);
         result.put("resourceTemplates", resourceTemplates);
         result.put("tools", tools);
@@ -88,7 +79,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
     
     private Map<String, Object> createResourcePayload(final MCPResourceDescriptor descriptor, final String uriFieldName) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put(uriFieldName, descriptor.getUriTemplate());
+        result.put(uriFieldName, descriptor.getUriOrTemplate());
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
@@ -166,7 +157,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
     }
     
     private Map<String, Object> createCompletionHint(final String argumentName) {
-        List<MCPCompletionTargetDescriptor> descriptors = catalog.getCompletionTargetDescriptors().stream()
+        List<MCPCompletionTargetDescriptor> descriptors = catalog.getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
                 .filter(each -> each.getArguments().contains(argumentName)).toList();
         List<Map<String, Object>> references = descriptors.stream().map(this::createCompletionReferenceHint).toList();
         if (references.isEmpty()) {
@@ -206,13 +197,13 @@ final class MCPDescriptorCatalogPayloadBuilder {
     }
     
     private String resolveReferenceType(final String reference) {
-        if (catalog.getAllResourceDescriptors().stream().anyMatch(each -> each.getUriTemplate().equals(reference))) {
+        if (catalog.getProtocolDescriptors().getAllResourceDescriptors().stream().anyMatch(each -> each.getUriOrTemplate().equals(reference))) {
             return reference.contains("{") ? "resource_template" : "resource";
         }
-        if (catalog.getToolDescriptors().stream().anyMatch(each -> each.getName().equals(reference))) {
+        if (catalog.getProtocolDescriptors().getToolDescriptors().stream().anyMatch(each -> each.getName().equals(reference))) {
             return "tool";
         }
-        if (catalog.getPromptDescriptors().stream().anyMatch(each -> each.getName().equals(reference))) {
+        if (catalog.getProtocolDescriptors().getPromptDescriptors().stream().anyMatch(each -> each.getName().equals(reference))) {
             return "prompt";
         }
         return "unknown";
@@ -255,8 +246,8 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("tools", true);
         result.put("toolAnnotations", true);
         result.put("toolOutputSchemas", true);
-        result.put("prompts", !catalog.getPromptDescriptors().isEmpty());
-        result.put("completions", !catalog.getCompletionTargetDescriptors().isEmpty());
+        result.put("prompts", !catalog.getProtocolDescriptors().getPromptDescriptors().isEmpty());
+        result.put("completions", !catalog.getShardingSphereDescriptors().getCompletionTargetDescriptors().isEmpty());
         result.put("resourceNavigation", hasResourceNavigation);
         return result;
     }

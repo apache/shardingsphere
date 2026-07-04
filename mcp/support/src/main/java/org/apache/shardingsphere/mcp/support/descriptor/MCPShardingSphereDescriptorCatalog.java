@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Fixture MCP tool descriptor validator.
+ * ShardingSphere MCP descriptor catalog.
  */
-public final class FixtureMCPToolDescriptorValidator implements MCPToolDescriptorValidator {
+@RequiredArgsConstructor
+@Getter
+public final class MCPShardingSphereDescriptorCatalog {
     
-    @Override
-    public boolean supports(final MCPToolDescriptor toolDescriptor) {
-        return "database_gateway_extension_test_tool".equals(toolDescriptor.getName());
-    }
+    private final Collection<ShardingSphereMCPResourceMetadata> resourceMetadata;
     
-    @Override
-    public void validate(final MCPToolDescriptor toolDescriptor) {
-        Object properties = toolDescriptor.getOutputSchema().get("properties");
-        if (!(properties instanceof Map) || !((Map<?, ?>) properties).containsKey("extension_marker")) {
-            throw new IllegalStateException("Tool `database_gateway_extension_test_tool` outputSchema must declare `extension_marker`.");
-        }
-    }
+    private final Collection<MCPPromptTemplateBinding> promptTemplateBindings;
+    
+    private final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors;
+    
+    private final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors;
+    
+    private final Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors;
 }

@@ -25,8 +25,9 @@ final class MCPDescriptorCatalogValidator {
     static void validate(final MCPDescriptorCatalog catalog) {
         MCPResourceDescriptorValidator.validate(catalog);
         MCPToolDescriptorCatalogValidator.validate(catalog);
-        MCPPromptDescriptorValidator.validate(catalog.getPromptDescriptors(), catalog.getPromptTemplateBindings());
-        MCPCompletionTargetDescriptorValidator.validate(catalog.getCompletionTargetDescriptors(), catalog.getPromptDescriptors(), catalog.getAllResourceDescriptors());
-        MCPResourceNavigationDescriptorValidator.validate(catalog.getResourceNavigationDescriptors(), catalog);
+        MCPPromptDescriptorValidator.validate(catalog.getProtocolDescriptors().getPromptDescriptors(), catalog.getShardingSphereDescriptors().getPromptTemplateBindings());
+        MCPCompletionTargetDescriptorValidator.validate(catalog.getShardingSphereDescriptors().getCompletionTargetDescriptors(),
+                catalog.getProtocolDescriptors().getPromptDescriptors(), catalog.getProtocolDescriptors().getAllResourceDescriptors());
+        MCPResourceNavigationDescriptorValidator.validate(catalog.getShardingSphereDescriptors().getResourceNavigationDescriptors(), catalog);
     }
 }

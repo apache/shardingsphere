@@ -35,7 +35,7 @@ class MaskMCPHandlerProviderTest {
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new MaskMCPHandlerProvider().getResourceHandlers();
-        assertThat(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList(), is(List.of(
+        assertThat(actual.stream().map(MCPResourceHandler::getResourceUriOrTemplate).toList(), is(List.of(
                 "shardingsphere://features/mask/algorithms",
                 "shardingsphere://features/mask/databases/{database}/rules",
                 "shardingsphere://features/mask/databases/{database}/tables/{table}/rules")));

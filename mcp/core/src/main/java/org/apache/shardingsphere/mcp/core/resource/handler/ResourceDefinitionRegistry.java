@@ -61,7 +61,7 @@ public final class ResourceDefinitionRegistry {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
-            String uriOrTemplate = each.getResourceUriTemplate();
+            String uriOrTemplate = each.getResourceUriOrTemplate();
             ShardingSpherePreconditions.checkState(null != uriOrTemplate && !uriOrTemplate.isBlank(),
                     () -> new IllegalArgumentException(String.format("Resource URI or URI template is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
@@ -96,19 +96,19 @@ public final class ResourceDefinitionRegistry {
     }
     
     private static MCPResourceDefinition createResourceDefinition(final MCPUriPattern uriPattern, final MCPResourceHandler<?> handler) {
-        return new MCPResourceDefinition(uriPattern, MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriTemplate()), handler);
+        return new MCPResourceDefinition(uriPattern, MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriOrTemplate()), handler);
     }
     
     private static void validateRegisteredResourceDescriptors() {
         for (MCPResourceDescriptor each : MCPDescriptorCatalogIndex.getResourceDescriptors()) {
             ShardingSpherePreconditions.checkState(isRegisteredResourceDescriptor(each),
-                    () -> new IllegalStateException(String.format("MCP resource descriptor `%s` has no registered handler.", each.getUriTemplate())));
+                    () -> new IllegalStateException(String.format("MCP resource descriptor `%s` has no registered handler.", each.getUriOrTemplate())));
         }
     }
     
     private static boolean isRegisteredResourceDescriptor(final MCPResourceDescriptor descriptor) {
         for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
-            if (descriptor.getUriTemplate().equals(each.getUriPattern().getPattern())) {
+            if (descriptor.getUriOrTemplate().equals(each.getUriPattern().getPattern())) {
                 return true;
             }
         }

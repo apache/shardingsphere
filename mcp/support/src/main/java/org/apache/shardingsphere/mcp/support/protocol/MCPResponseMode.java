@@ -32,6 +32,8 @@ public final class MCPResponseMode {
     
     public static final String RUNTIME = "runtime";
     
+    public static final String GUIDANCE = "guidance";
+    
     public static final String LIST = "list";
     
     public static final String DETAIL = "detail";
@@ -55,7 +57,7 @@ public final class MCPResponseMode {
     public static final String TERMINAL = "terminal";
     
     private static final List<String> ALLOWED_MODES = List.of(
-            CATALOG, RUNTIME, LIST, DETAIL, SEARCH, QUERY, PREVIEW, EXECUTED, PLANNING, MANUAL_ONLY, VALIDATION, RECOVERY, TERMINAL);
+            CATALOG, RUNTIME, GUIDANCE, LIST, DETAIL, SEARCH, QUERY, PREVIEW, EXECUTED, PLANNING, MANUAL_ONLY, VALIDATION, RECOVERY, TERMINAL);
     
     /**
      * Judge whether a response mode is in the public contract.

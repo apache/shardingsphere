@@ -60,7 +60,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     @Override
-    public String getResourceUriTemplate() {
+    public String getResourceUriOrTemplate() {
         return uriTemplate;
     }
     
@@ -68,7 +68,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
         MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
-        ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(descriptor.getUriTemplate());
+        ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(descriptor.getUriOrTemplate());
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
         if (isDetailResource(metadata)) {
             if (items.isEmpty()) {
@@ -271,7 +271,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        String uriOrTemplate = descriptor.getUriTemplate();
+        String uriOrTemplate = descriptor.getUriOrTemplate();
         Optional<String> selfUri = new MCPUriTemplate(uriOrTemplate).expandIfComplete(uriVariables);
         selfUri.ifPresent(optional -> result.put("self_uri", optional));
         String parentUri = createParentUri(selfUri.orElse(""));

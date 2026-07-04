@@ -43,8 +43,8 @@ class MetadataResourceHandlerTest {
     @Test
     void assertGetResourceDescriptor() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
-        MCPResourceDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriTemplate());
-        assertThat(actual.getUriTemplate(), is("shardingsphere://databases"));
+        MCPResourceDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriOrTemplate());
+        assertThat(actual.getUriOrTemplate(), is("shardingsphere://databases"));
         assertThat(actual.getTitle(), is("Logical Databases"));
     }
     

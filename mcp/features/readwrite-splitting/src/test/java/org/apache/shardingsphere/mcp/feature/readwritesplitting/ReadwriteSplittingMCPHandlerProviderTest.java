@@ -40,7 +40,7 @@ class ReadwriteSplittingMCPHandlerProviderTest {
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new ReadwriteSplittingMCPHandlerProvider().getResourceHandlers();
-        assertThat(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList(), containsInAnyOrder(
+        assertThat(actual.stream().map(MCPResourceHandler::getResourceUriOrTemplate).toList(), containsInAnyOrder(
                 ReadwriteSplittingFeatureDefinition.RULES_RESOURCE_URI,
                 ReadwriteSplittingFeatureDefinition.RULE_RESOURCE_URI,
                 ReadwriteSplittingFeatureDefinition.STATUS_RESOURCE_URI,

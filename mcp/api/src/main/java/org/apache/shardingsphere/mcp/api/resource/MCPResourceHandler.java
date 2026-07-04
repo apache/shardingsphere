@@ -35,11 +35,11 @@ public interface MCPResourceHandler<T extends MCPHandlerContext> {
     Class<T> getContextType();
     
     /**
-     * Get resource URI template.
+     * Get resource URI or resource template URI template.
      *
-     * @return resource URI template
+     * @return resource URI or resource template URI template
      */
-    String getResourceUriTemplate();
+    String getResourceUriOrTemplate();
     
     /**
      * Handle one resource request.

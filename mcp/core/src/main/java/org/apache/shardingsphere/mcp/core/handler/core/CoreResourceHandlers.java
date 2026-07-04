@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.RuntimeStatusHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
+import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.core.resource.handler.metadata.MetadataResourceHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.workflow.WorkflowPlanHandler;
@@ -53,6 +54,7 @@ final class CoreResourceHandlers {
     
     private static void addTopLevelHandlers(final Collection<MCPResourceHandler<?>> result) {
         result.add(new ServerCapabilitiesHandler());
+        result.add(new ServerGuidanceHandler());
         result.add(new RuntimeStatusHandler());
         result.add(new WorkflowPlanHandler());
         result.add(new DatabaseCapabilitiesHandler());

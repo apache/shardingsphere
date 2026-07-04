@@ -19,12 +19,6 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * MCP descriptor catalog.
@@ -33,33 +27,7 @@ import java.util.LinkedList;
 @Getter
 public final class MCPDescriptorCatalog {
     
-    private final Collection<MCPResourceDescriptor> resourceDescriptors;
+    private final MCPProtocolDescriptorCatalog protocolDescriptors;
     
-    private final Collection<MCPResourceDescriptor> resourceTemplateDescriptors;
-    
-    private final Collection<ShardingSphereMCPResourceMetadata> shardingSphereResourceMetadata;
-    
-    private final Collection<MCPToolDescriptor> toolDescriptors;
-    
-    private final Collection<MCPPromptDescriptor> promptDescriptors;
-    
-    private final Collection<MCPPromptTemplateBinding> promptTemplateBindings;
-    
-    private final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors;
-    
-    private final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors;
-    
-    private final Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors;
-    
-    /**
-     * Get all resource descriptors.
-     *
-     * @return all resource descriptors
-     */
-    public Collection<MCPResourceDescriptor> getAllResourceDescriptors() {
-        Collection<MCPResourceDescriptor> result = new LinkedList<>();
-        result.addAll(resourceDescriptors);
-        result.addAll(resourceTemplateDescriptors);
-        return result;
-    }
+    private final MCPShardingSphereDescriptorCatalog shardingSphereDescriptors;
 }

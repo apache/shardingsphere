@@ -48,7 +48,7 @@ public final class ReadwriteSplittingRuleHandler implements MCPResourceHandler<M
     }
     
     @Override
-    public String getResourceUriTemplate() {
+    public String getResourceUriOrTemplate() {
         return ReadwriteSplittingFeatureDefinition.RULE_RESOURCE_URI;
     }
     
@@ -56,6 +56,6 @@ public final class ReadwriteSplittingRuleHandler implements MCPResourceHandler<M
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(inspectionService.queryRule(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue("rule")),
                 MCPResourceNavigationPayloadBuilder.create(
-                        MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, ReadwriteSplittingFeatureDefinition.RULES_RESOURCE_URI));
+                        MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriOrTemplate()), uriVariables, ReadwriteSplittingFeatureDefinition.RULES_RESOURCE_URI));
     }
 }

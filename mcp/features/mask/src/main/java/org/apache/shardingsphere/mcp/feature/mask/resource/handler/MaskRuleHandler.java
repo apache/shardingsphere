@@ -40,13 +40,14 @@ public final class MaskRuleHandler implements MCPResourceHandler<MCPDatabaseHand
     }
     
     @Override
-    public String getResourceUriTemplate() {
+    public String getResourceUriOrTemplate() {
         return MaskFeatureDefinition.RULE_RESOURCE_URI;
     }
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryMaskRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue("table")),
-                MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, MaskFeatureDefinition.RULES_RESOURCE_URI));
+                MCPResourceNavigationPayloadBuilder.create(
+                        MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriOrTemplate()), uriVariables, MaskFeatureDefinition.RULES_RESOURCE_URI));
     }
 }

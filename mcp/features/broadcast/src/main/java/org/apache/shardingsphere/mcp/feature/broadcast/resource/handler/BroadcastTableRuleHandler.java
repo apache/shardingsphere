@@ -53,7 +53,7 @@ public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDa
     }
     
     @Override
-    public String getResourceUriTemplate() {
+    public String getResourceUriOrTemplate() {
         return BroadcastFeatureDefinition.TABLE_RULE_RESOURCE_URI;
     }
     
@@ -65,6 +65,6 @@ public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDa
         List<Map<String, Object>> items = ruleInspectionService.queryBroadcastRules(databaseContext.getQueryFacade(), database).stream()
                 .filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, table, WorkflowRuleValueUtils.getRuleValue(each, "broadcast_table"))).toList();
         return new MCPItemsResponse(items, MCPResourceNavigationPayloadBuilder.create(
-                MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, BroadcastFeatureDefinition.RULES_RESOURCE_URI));
+                MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriOrTemplate()), uriVariables, BroadcastFeatureDefinition.RULES_RESOURCE_URI));
     }
 }

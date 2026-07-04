@@ -45,9 +45,9 @@ public final class MCPDescriptorCatalogIndex {
     
     private static final Map<String, MCPToolDescriptor> TOOL_DESCRIPTORS = createToolDescriptors();
     
-    private static final Collection<MCPPromptDescriptor> PROMPT_DESCRIPTORS = CATALOG.getPromptDescriptors();
+    private static final Collection<MCPPromptDescriptor> PROMPT_DESCRIPTORS = CATALOG.getProtocolDescriptors().getPromptDescriptors();
     
-    private static final Collection<MCPCompletionTargetDescriptor> COMPLETION_TARGET_DESCRIPTORS = CATALOG.getCompletionTargetDescriptors();
+    private static final Collection<MCPCompletionTargetDescriptor> COMPLETION_TARGET_DESCRIPTORS = CATALOG.getShardingSphereDescriptors().getCompletionTargetDescriptors();
     
     private static final Map<String, Collection<MCPResourceNavigationDescriptor>> RESOURCE_NAVIGATION_DESCRIPTORS_BY_FROM = createResourceNavigationDescriptors();
     
@@ -58,45 +58,46 @@ public final class MCPDescriptorCatalogIndex {
     private static final Map<String, String> PLANNING_TOOL_NAMES_BY_WORKFLOW_KIND = createPlanningToolNamesByWorkflowKind();
     
     private static Map<String, MCPResourceDescriptor> createResourceDescriptors() {
-        Map<String, MCPResourceDescriptor> result = new LinkedHashMap<>(CATALOG.getResourceDescriptors().size() + CATALOG.getResourceTemplateDescriptors().size(), 1F);
-        for (MCPResourceDescriptor each : CATALOG.getResourceDescriptors()) {
-            result.put(each.getUriTemplate(), each);
+        int expectedSize = CATALOG.getProtocolDescriptors().getResourceDescriptors().size() + CATALOG.getProtocolDescriptors().getResourceTemplateDescriptors().size();
+        Map<String, MCPResourceDescriptor> result = new LinkedHashMap<>(expectedSize, 1F);
+        for (MCPResourceDescriptor each : CATALOG.getProtocolDescriptors().getResourceDescriptors()) {
+            result.put(each.getUriOrTemplate(), each);
         }
-        for (MCPResourceDescriptor each : CATALOG.getResourceTemplateDescriptors()) {
-            result.put(each.getUriTemplate(), each);
+        for (MCPResourceDescriptor each : CATALOG.getProtocolDescriptors().getResourceTemplateDescriptors()) {
+            result.put(each.getUriOrTemplate(), each);
         }
         return result;
     }
     
     private static Map<String, ShardingSphereMCPResourceMetadata> createShardingSphereResourceMetadata() {
-        return CATALOG.getShardingSphereResourceMetadata().stream()
+        return CATALOG.getShardingSphereDescriptors().getResourceMetadata().stream()
                 .collect(Collectors.toMap(ShardingSphereMCPResourceMetadata::getUriOrTemplate, each -> each));
     }
     
     private static Map<String, MCPToolDescriptor> createToolDescriptors() {
-        return CATALOG.getToolDescriptors().stream()
-                .collect(Collectors.toMap(MCPToolDescriptor::getName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getToolDescriptors().size(), 1F)));
+        return CATALOG.getProtocolDescriptors().getToolDescriptors().stream()
+                .collect(Collectors.toMap(MCPToolDescriptor::getName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getProtocolDescriptors().getToolDescriptors().size(), 1F)));
     }
     
     private static Map<String, Collection<MCPResourceNavigationDescriptor>> createResourceNavigationDescriptors() {
-        Map<String, Collection<MCPResourceNavigationDescriptor>> result = new LinkedHashMap<>(CATALOG.getResourceNavigationDescriptors().size(), 1F);
-        for (MCPResourceNavigationDescriptor each : CATALOG.getResourceNavigationDescriptors()) {
+        Map<String, Collection<MCPResourceNavigationDescriptor>> result = new LinkedHashMap<>(CATALOG.getShardingSphereDescriptors().getResourceNavigationDescriptors().size(), 1F);
+        for (MCPResourceNavigationDescriptor each : CATALOG.getShardingSphereDescriptors().getResourceNavigationDescriptors()) {
             result.computeIfAbsent(each.getFrom(), unused -> new LinkedList<>()).add(each);
         }
         return result;
     }
     
     private static Map<String, MCPPromptTemplateBinding> createPromptTemplateBindings() {
-        return CATALOG.getPromptTemplateBindings().stream().collect(Collectors.toMap(MCPPromptTemplateBinding::getPromptName, each -> each));
+        return CATALOG.getShardingSphereDescriptors().getPromptTemplateBindings().stream().collect(Collectors.toMap(MCPPromptTemplateBinding::getPromptName, each -> each));
     }
     
     private static Map<String, MCPToolRuntimeDescriptor> createToolRuntimeDescriptors() {
-        return CATALOG.getToolRuntimeDescriptors().stream().collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each));
+        return CATALOG.getShardingSphereDescriptors().getToolRuntimeDescriptors().stream().collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each));
     }
     
     private static Map<String, String> createPlanningToolNamesByWorkflowKind() {
-        Map<String, String> result = new LinkedHashMap<>(CATALOG.getToolRuntimeDescriptors().size(), 1F);
-        for (MCPToolRuntimeDescriptor each : CATALOG.getToolRuntimeDescriptors()) {
+        Map<String, String> result = new LinkedHashMap<>(CATALOG.getShardingSphereDescriptors().getToolRuntimeDescriptors().size(), 1F);
+        for (MCPToolRuntimeDescriptor each : CATALOG.getShardingSphereDescriptors().getToolRuntimeDescriptors()) {
             if (!"plan".equals(each.getWorkflowRole())) {
                 continue;
             }
@@ -226,14 +227,23 @@ public final class MCPDescriptorCatalogIndex {
     }
     
     /**
-     * Create model-facing capability payload.
+     * Create capability catalog payload.
      *
      * @param supportedResources supported resource URI templates
      * @param supportedTools supported tool names
      * @param supportedStatements supported statement classes
-     * @return capability payload
+     * @return capability catalog payload
      */
     public static Map<String, Object> createCapabilityPayload(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
         return MCPDescriptorCatalogPayloadBuilder.build(CATALOG, supportedResources, supportedTools, supportedStatements);
+    }
+    
+    /**
+     * Create model-facing guidance payload.
+     *
+     * @return guidance payload
+     */
+    public static Map<String, Object> createGuidancePayload() {
+        return MCPGuidancePayloadBuilder.build(CATALOG);
     }
 }
