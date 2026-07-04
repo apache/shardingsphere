@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.collect.Maps;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -33,6 +35,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,6 +51,8 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private List<?> currentGroupByValues;
     
+    private final Map<ExpressionProjection, Integer> expressionProjectionIndexMap;
+    
     public GroupByStreamMergedResult(final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults,
                                      final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
         super(queryResults, selectStatementContext, schema);
@@ -56,6 +61,14 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         currentGroupByValues = getOrderByValuesQueue().isEmpty()
                 ? Collections.emptyList()
                 : new GroupByValue(getCurrentQueryResult(), selectStatementContext.getGroupByContext().getItems()).getGroupValues();
+        
+        expressionProjectionIndexMap = new HashMap<>();
+        if (!selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations().isEmpty()) {
+            List<Projection> expandProjections = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
+            for (ExpressionProjection each : selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations().keySet()) {
+                expressionProjectionIndexMap.put(each, expandProjections.indexOf(each) + 1);
+            }
+        }
     }
     
     @Override
@@ -91,6 +104,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
             }
         }
         setAggregationValueToCurrentRow(aggregationUnitMap);
+        setExpressionValueToCurrentRow();
         return result;
     }
     
@@ -138,5 +152,27 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         Object result = currentRow.get(columnIndex - 1);
         setWasNull(null == result);
         return result;
+    }
+    
+    private void setExpressionValueToCurrentRow() {
+        Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations();
+        
+        if (expressionDerivedAggregations.isEmpty()) {
+            return;
+        }
+        
+        for (Entry<ExpressionProjection, List<AggregationProjection>> entry : expressionDerivedAggregations.entrySet()) {
+            ExpressionProjection expressionProjection = entry.getKey();
+            
+            Object evaluatedValue = LightweightExpressionEvaluator.evaluate(
+                    expressionProjection.getExpressionSegment().getExpr(),
+                    entry.getValue(),
+                    currentRow);
+            
+            if (null != evaluatedValue) {
+                int columnIndex = expressionProjectionIndexMap.get(expressionProjection);
+                currentRow.set(columnIndex - 1, evaluatedValue);
+            }
+        }
     }
 }

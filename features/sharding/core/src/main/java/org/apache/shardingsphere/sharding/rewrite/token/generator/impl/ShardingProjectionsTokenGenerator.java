@@ -69,7 +69,7 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
                 return true;
             }
         }
-        return false;
+        return !selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations().isEmpty();
     }
     
     @Override
@@ -99,6 +99,9 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
             } else if (each instanceof DerivedProjection) {
                 result.add(getDerivedProjectionText(each));
             }
+        }
+        for (Collection<AggregationProjection> derivedAggregations : selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations().values()) {
+            result.addAll(derivedAggregations.stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
         }
         return result;
     }

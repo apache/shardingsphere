@@ -64,6 +64,7 @@ public final class ProjectionsContextEngine {
         ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);
         result.getProjections().addAll(getDerivedGroupByColumns(groupByContext, projections));
         result.getProjections().addAll(getDerivedOrderByColumns(orderByContext, projections));
+        result.getExpressionDerivedAggregations().putAll(projectionEngine.getExpressionDerivedAggregations());
         return result;
     }
     

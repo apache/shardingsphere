@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.engine;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
@@ -30,6 +31,8 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.Paren;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -41,8 +44,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -56,6 +62,11 @@ public final class ProjectionEngine {
     private int aggregationAverageDerivedColumnCount;
     
     private int aggregationDistinctDerivedColumnCount;
+    
+    private int expressionDerivedColumnCount;
+    
+    @Getter
+    private final Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = new java.util.LinkedHashMap<>();
     
     /**
      * Create projection.
@@ -113,7 +124,57 @@ public final class ProjectionEngine {
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
-        return new ExpressionProjection(projectionSegment, projectionSegment.getAlias().orElse(null), databaseType);
+        ExpressionProjection result = new ExpressionProjection(projectionSegment, projectionSegment.getAlias().orElse(null), databaseType);
+        
+        List<AggregationProjectionSegment> extractedSegments = new ArrayList<>();
+        extractAggregationSegments(projectionSegment.getExpr(), extractedSegments);
+        
+        if (!extractedSegments.isEmpty()) {
+            List<AggregationProjection> derivedAggregations = new ArrayList<>();
+            Map<String, AggregationProjection> uniqueAggregations = new java.util.LinkedHashMap<>();
+            
+            for (AggregationProjectionSegment aggrSegment : extractedSegments) {
+                String aggrText = aggrSegment.getText();
+                
+                if (uniqueAggregations.containsKey(aggrText)) {
+                    derivedAggregations.add(uniqueAggregations.get(aggrText));
+                    continue;
+                }
+                
+                IdentifierValue alias = new IdentifierValue(DerivedColumn.EXPRESSION_DERIVED.getDerivedColumnAlias(expressionDerivedColumnCount++));
+                AggregationProjection derivedAggr = new AggregationProjection(aggrSegment.getType(), aggrSegment, alias, databaseType, aggrSegment.getSeparator().orElse(null));
+                
+                if (AggregationType.AVG == derivedAggr.getType()) {
+                    appendAverageDerivedProjection(derivedAggr);
+                }
+                
+                uniqueAggregations.put(aggrText, derivedAggr);
+                derivedAggregations.add(derivedAggr);
+            }
+            expressionDerivedAggregations.put(result, derivedAggregations);
+        }
+        
+        return result;
+    }
+    
+    private void extractAggregationSegments(final ExpressionSegment segment, final List<AggregationProjectionSegment> extractedSegments) {
+        if (segment == null) {
+            return;
+        }
+        
+        if (segment instanceof AggregationProjectionSegment) {
+            extractedSegments.add((AggregationProjectionSegment) segment);
+            return;
+        }
+        
+        if (segment instanceof FunctionSegment) {
+            String functionName = ((FunctionSegment) segment).getFunctionName();
+            if ("IFNULL".equalsIgnoreCase(functionName) || "COALESCE".equalsIgnoreCase(functionName)) {
+                for (ExpressionSegment param : ((FunctionSegment) segment).getParameters()) {
+                    extractAggregationSegments(param, extractedSegments);
+                }
+            }
+        }
     }
     
     private Projection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {

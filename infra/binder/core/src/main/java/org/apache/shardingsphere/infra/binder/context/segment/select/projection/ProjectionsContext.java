@@ -24,12 +24,14 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +61,9 @@ public final class ProjectionsContext {
     private final boolean containsLastInsertIdProjection;
     
     private final Map<String, Integer> columnLabelAndIndexMap;
+    
+    @Getter
+    private final Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = new LinkedHashMap<>();
     
     public ProjectionsContext(final int startIndex, final int stopIndex, final boolean distinctRow, final Collection<Projection> projections) {
         this.startIndex = startIndex;
@@ -162,6 +167,9 @@ public final class ProjectionsContext {
                 result.add(aggregationProjection);
                 result.addAll(aggregationProjection.getDerivedAggregationProjections());
             }
+        }
+        for (List<AggregationProjection> derivedAggregations : expressionDerivedAggregations.values()) {
+            result.addAll(derivedAggregations);
         }
         return result;
     }

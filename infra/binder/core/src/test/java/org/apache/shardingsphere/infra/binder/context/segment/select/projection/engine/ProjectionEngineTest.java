@@ -28,6 +28,9 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -40,6 +43,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -123,7 +129,7 @@ class ProjectionEngineTest {
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(ExpressionProjection.class));
-        assertThat(actual.get().getAlias().map(IdentifierValue::getValue).orElse(null), is("max_id"));
+        assertThat(Objects.requireNonNull(actual.get().getAlias().map(IdentifierValue::getValue).orElse(null)), is("max_id"));
     }
     
     @Test
@@ -133,6 +139,40 @@ class ProjectionEngineTest {
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(parameterMarkerExpressionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(ParameterMarkerProjection.class));
-        assertThat(actual.get().getAlias().map(IdentifierValue::getValue).orElse(null), is("alias"));
+        assertThat(Objects.requireNonNull(actual.get().getAlias().map(IdentifierValue::getValue).orElse(null)), is("alias"));
+    }
+    
+    @Test
+    void assertCreateProjectionWithDuplicateExpressionAggregations() {
+        FunctionSegment functionSegment = new FunctionSegment(0, 50, "IFNULL", "IFNULL(SUM(price), SUM(price))");
+        AggregationProjectionSegment sumSegment1 = new AggregationProjectionSegment(7, 16, AggregationType.SUM, "SUM(price)");
+        AggregationProjectionSegment sumSegment2 = new AggregationProjectionSegment(19, 28, AggregationType.SUM, "SUM(price)");
+        functionSegment.getParameters().add(sumSegment1);
+        functionSegment.getParameters().add(sumSegment2);
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 50, "IFNULL(SUM(price), SUM(price))", functionSegment);
+        
+        ProjectionEngine engine = new ProjectionEngine(databaseType);
+        Optional<Projection> actual = engine.createProjection(expressionSegment);
+        
+        assertTrue(actual.isPresent());
+        Map<ExpressionProjection, List<AggregationProjection>> derived = engine.getExpressionDerivedAggregations();
+        assertThat(derived.size(), is(1));
+        assertThat(derived.values().iterator().next().size(), is(1));
+    }
+    
+    @Test
+    void assertCreateProjectionWithUnsupportedExpression() {
+        AggregationProjectionSegment sumSegment = new AggregationProjectionSegment(0, 9, AggregationType.SUM, "SUM(price)");
+        LiteralExpressionSegment literalSegment = new LiteralExpressionSegment(13, 14, 1);
+        BinaryOperationExpression binaryExpr = new BinaryOperationExpression(0, 14, sumSegment, literalSegment, "+", "SUM(price) + 1");
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 14, "SUM(price) + 1", binaryExpr);
+        
+        ProjectionEngine engine = new ProjectionEngine(databaseType);
+        Optional<Projection> actual = engine.createProjection(expressionSegment);
+        
+        assertTrue(actual.isPresent());
+        assertTrue(engine.getExpressionDerivedAggregations().isEmpty());
     }
 }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.table.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -71,6 +72,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             }
         }
         setAggregationValueToMemoryRow(selectStatementContext, dataMap, aggregationMap);
+        setExpressionValueToMemoryRow(selectStatementContext, dataMap);
         List<Boolean> valueCaseSensitive = queryResults.isEmpty() ? Collections.emptyList() : getValueCaseSensitive(queryResults.iterator().next(), selectStatementContext, schema);
         return getMemoryResultSetRows(selectStatementContext, dataMap, valueCaseSensitive);
     }
@@ -165,5 +167,38 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             }
         }
         return result;
+    }
+    
+    private void setExpressionValueToMemoryRow(final SelectStatementContext selectStatementContext, final Map<GroupByValue, MemoryQueryResultRow> dataMap) {
+        Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations();
+        if (expressionDerivedAggregations.isEmpty()) {
+            return;
+        }
+        
+        List<Projection> expandProjections = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
+        Map<ExpressionProjection, Integer> projectionIndexMap = new HashMap<>();
+        for (ExpressionProjection exprProj : expressionDerivedAggregations.keySet()) {
+            int index = expandProjections.indexOf(exprProj);
+            if (index >= 0) {
+                projectionIndexMap.put(exprProj, index + 1);
+            }
+        }
+        
+        for (Entry<GroupByValue, MemoryQueryResultRow> entry : dataMap.entrySet()) {
+            MemoryQueryResultRow row = entry.getValue();
+            
+            for (Entry<ExpressionProjection, List<AggregationProjection>> exprEntry : expressionDerivedAggregations.entrySet()) {
+                Object evaluatedValue = LightweightExpressionEvaluator.evaluate(
+                        exprEntry.getKey().getExpressionSegment().getExpr(),
+                        exprEntry.getValue(),
+                        row);
+                
+                Integer columnIndex = projectionIndexMap.get(exprEntry.getKey());
+                
+                if (null != columnIndex && null != evaluatedValue) {
+                    row.setCell(columnIndex, evaluatedValue);
+                }
+            }
+        }
     }
 }

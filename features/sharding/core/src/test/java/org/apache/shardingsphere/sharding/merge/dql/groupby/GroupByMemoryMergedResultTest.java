@@ -32,8 +32,11 @@ import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
@@ -62,6 +65,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -361,6 +366,95 @@ class GroupByMemoryMergedResultTest {
         assertTrue(actual.next());
         assertThat((byte[]) actual.getValue(1, Object.class), is(new byte[]{(byte) 0x80}));
         assertFalse(actual.next());
+    }
+    
+    @Test
+    void assertMergeWithIfNullExpression() throws SQLException {
+        QueryResult queryResult = createIfNullQueryResult(null);
+        GroupByMemoryMergedResult actual = new GroupByMemoryMergedResult(
+                Collections.singletonList(queryResult), createIfNullSelectStatementContext(), createIfNullSchemaMock());
+        
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("0"));
+    }
+    
+    @Test
+    void assertMergeWithIfNullExpressionWhenSumIsNotNull() throws SQLException {
+        QueryResult queryResult = createIfNullQueryResult(15);
+        GroupByMemoryMergedResult actual = new GroupByMemoryMergedResult(
+                Collections.singletonList(queryResult), createIfNullSelectStatementContext(), createIfNullSchemaMock());
+        
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("15"));
+    }
+    
+    private SelectStatementContext createIfNullSelectStatementContext() {
+        FunctionSegment functionSegment = new FunctionSegment(0, 21, "IFNULL", "IFNULL(SUM(price), 0)");
+        AggregationProjectionSegment sumSegment = new AggregationProjectionSegment(7, 16, AggregationType.SUM, "SUM(price)");
+        LiteralExpressionSegment literalSegment = new LiteralExpressionSegment(19, 19, 0);
+        functionSegment.getParameters().add(sumSegment);
+        functionSegment.getParameters().add(literalSegment);
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 21, "IFNULL(SUM(price), 0)", functionSegment);
+        
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 21);
+        projectionsSegment.getProjections().add(expressionSegment);
+        
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(28, 34, new IdentifierValue("t_order")));
+        
+        GroupBySegment groupBySegment = new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST)));
+        OrderBySegment orderBySegment = new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST)));
+        
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(projectionsSegment)
+                .from(tableSegment)
+                .groupBy(groupBySegment)
+                .orderBy(orderBySegment)
+                .build();
+        
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        SelectStatementContext context = new SelectStatementContext(
+                selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+        
+        context.getProjectionsContext().getAggregationProjections().get(0).setIndex(2);
+        
+        return context;
+    }
+    
+    private ShardingSphereSchema createIfNullSchemaMock() {
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.containsTable("t_order")).thenReturn(true);
+        when(schema.containsTable(any(IdentifierValue.class))).thenReturn(true);
+        
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(schema.getTable("t_order")).thenReturn(table);
+        when(schema.getTable(any(IdentifierValue.class))).thenReturn(table);
+        when(table.containsColumn(anyString())).thenReturn(false);
+        
+        return schema;
+    }
+    
+    private QueryResult createIfNullQueryResult(final Integer sumValue) throws SQLException {
+        QueryResult queryResult = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(queryResult.getMetaData().getColumnCount()).thenReturn(3);
+        
+        when(queryResult.getMetaData().getColumnLabel(1)).thenReturn("IFNULL(SUM(price), 0)");
+        when(queryResult.getMetaData().getColumnName(1)).thenReturn("ifnull_col");
+        
+        when(queryResult.getMetaData().getColumnLabel(2)).thenReturn("EXPR_DERIVED_0");
+        when(queryResult.getMetaData().getColumnName(2)).thenReturn("expr_derived_0");
+        
+        when(queryResult.getMetaData().getColumnLabel(3)).thenReturn("user_id");
+        when(queryResult.getMetaData().getColumnName(3)).thenReturn("user_id");
+        
+        when(queryResult.next()).thenReturn(true, false);
+        when(queryResult.getValue(1, Object.class)).thenReturn(null);
+        when(queryResult.getValue(2, Object.class)).thenReturn(sumValue);
+        when(queryResult.getValue(3, Object.class)).thenReturn(100);
+        
+        return queryResult;
     }
     
     private QueryResult createDistinctVarBinaryQueryResult() throws SQLException {
