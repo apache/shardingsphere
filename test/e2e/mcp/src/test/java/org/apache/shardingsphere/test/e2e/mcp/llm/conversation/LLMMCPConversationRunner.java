@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatMod
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
@@ -57,6 +56,8 @@ public final class LLMMCPConversationRunner {
     private final LLMMCPFinalAnswerValidator finalAnswerValidator = new LLMMCPFinalAnswerValidator();
     
     private final LLMMCPSafetyValidator safetyValidator = new LLMMCPSafetyValidator();
+    
+    private final LLMMCPTraceRecordFactory traceRecordFactory = new LLMMCPTraceRecordFactory();
     
     private final String modelProvider;
     
@@ -189,9 +190,10 @@ public final class LLMMCPConversationRunner {
         }
         messages.add(LLMChatMessage.assistant(completion.getContent(), completion.getToolCalls()));
         for (LLMToolCall each : completion.getToolCalls()) {
-            List<String> availableToolNames = instructionFactory.hasSideEffectExecutionNextAction(artifacts.getInteractionTrace())
+            List<String> availableToolNames = turnPlanner.createImmediateNextActionToolNames(artifacts.getInteractionTrace());
+            availableToolNames = availableToolNames.isEmpty() && instructionFactory.hasSideEffectExecutionNextAction(artifacts.getInteractionTrace())
                     ? turnPlanner.createTurnToolNames(scenario, artifacts.getInteractionTrace())
-                    : List.of();
+                    : availableToolNames;
             if (!availableToolNames.isEmpty() && !availableToolNames.contains(each.getName())) {
                 Map<String, Object> toolResponse = new LinkedHashMap<>(4, 1F);
                 toolResponse.put("response_mode", "tool_call_rejected");
@@ -212,7 +214,7 @@ public final class LLMMCPConversationRunner {
                         each.getName(), String.join(", ", availableToolNames), expectedQueryInstruction)));
                 return Optional.empty();
             }
-            Optional<LLME2EArtifactBundle> result = processToolCall(scenario, each, messages, artifacts);
+            Optional<LLME2EArtifactBundle> result = processToolCall(scenario, each, messages, artifacts, availableToolNames);
             if (result.isPresent()) {
                 return result;
             }
@@ -225,8 +227,8 @@ public final class LLMMCPConversationRunner {
     }
     
     private Optional<LLME2EArtifactBundle> processToolCall(final LLME2EScenario scenario, final LLMToolCall toolCall, final List<LLMChatMessage> messages,
-                                                           final LLMMCPConversationArtifacts artifacts) throws InterruptedException {
-        if (!scenario.getAllowedToolNames().contains(toolCall.getName())) {
+                                                           final LLMMCPConversationArtifacts artifacts, final List<String> extraAllowedToolNames) throws InterruptedException {
+        if (!scenario.getAllowedToolNames().contains(toolCall.getName()) && !extraAllowedToolNames.contains(toolCall.getName())) {
             artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", toolCall.getName(),
                     Map.of("rawArgumentsJson", toolCall.getArgumentsJson()), "unexpected_tool_requested"));
             return Optional.of(createFailureBundle(scenario, artifacts, "unexpected_tool_requested", "Model requested an unsupported tool."));
@@ -260,7 +262,7 @@ public final class LLMMCPConversationRunner {
         artifacts.addRuntimeLogLine("action=" + toolName + " args=" + JsonUtils.toJsonString(arguments));
         artifacts.addRuntimeLogLine("response=" + JsonUtils.toJsonString(response));
         String actionOrigin = MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN;
-        artifacts.addInteractionTrace(createTraceRecord(artifacts.nextSequence(), toolName, actionOrigin, arguments, response, latencyMillis));
+        artifacts.addInteractionTrace(traceRecordFactory.createTraceRecord(artifacts.nextSequence(), toolName, actionOrigin, arguments, response, latencyMillis));
         messages.add(LLMChatMessage.tool(toolCall.getId(), LLMMCPModelFacingToolResponseFormatter.format(response)));
         return Optional.empty();
     }
@@ -304,33 +306,6 @@ public final class LLMMCPConversationRunner {
             Thread.currentThread().interrupt();
         } catch (final IOException ignored) {
         }
-    }
-    
-    private MCPInteractionTraceRecord createTraceRecord(final int sequence, final String actionName, final String actionOrigin, final Map<String, Object> arguments,
-                                                        final Map<String, Object> structuredContent, final long latencyMillis) {
-        String bridgeActionOrigin = MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN;
-        if (MCPInteractionActionNames.LIST_RESOURCES.equals(actionName)) {
-            return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_LIST_KIND, bridgeActionOrigin, MCPInteractionActionNames.LIST_RESOURCES,
-                    Map.of(), structuredContent, true, latencyMillis);
-        }
-        if (MCPInteractionActionNames.READ_RESOURCE.equals(actionName)) {
-            return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_READ_KIND, bridgeActionOrigin, MCPInteractionActionNames.READ_RESOURCE,
-                    Map.of("uri", Objects.toString(arguments.get("uri"), "").trim()), structuredContent, true, latencyMillis);
-        }
-        if (MCPInteractionActionNames.LIST_PROMPTS.equals(actionName)) {
-            return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.PROMPT_LIST_KIND, bridgeActionOrigin, MCPInteractionActionNames.LIST_PROMPTS,
-                    Map.of(), structuredContent, true, latencyMillis);
-        }
-        if (MCPInteractionActionNames.GET_PROMPT.equals(actionName)) {
-            return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.PROMPT_GET_KIND, bridgeActionOrigin, MCPInteractionActionNames.GET_PROMPT,
-                    Map.of("name", Objects.toString(arguments.get("name"), "").trim(), "arguments", LLMMCPJsonValues.castToMap(arguments.getOrDefault("arguments", Map.of()))),
-                    structuredContent, true, latencyMillis);
-        }
-        if (MCPInteractionActionNames.COMPLETE.equals(actionName)) {
-            return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.COMPLETION_KIND, bridgeActionOrigin, MCPInteractionActionNames.COMPLETE,
-                    arguments, structuredContent, true, latencyMillis);
-        }
-        return new MCPInteractionTraceRecord(sequence, "tool_call", actionOrigin, actionName, arguments, structuredContent, true, latencyMillis);
     }
     
 }

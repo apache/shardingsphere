@@ -34,11 +34,9 @@ final class LLMMCPConversationTurnPlanner {
     }
     
     List<String> createTurnToolNames(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
-        if (!interactionTrace.isEmpty()) {
-            String immediateActionName = instructionFactory.findImmediateNextActionName(interactionTrace.getLast());
-            if (!immediateActionName.isEmpty() && scenario.getAllowedToolNames().contains(immediateActionName)) {
-                return List.of(immediateActionName);
-            }
+        List<String> immediateActionToolNames = createImmediateNextActionToolNames(interactionTrace);
+        if (!immediateActionToolNames.isEmpty()) {
+            return immediateActionToolNames;
         }
         if (instructionFactory.hasSideEffectExecutionNextAction(interactionTrace)) {
             List<String> readOnlyToolNames = findMissingReadOnlyToolNames(scenario, interactionTrace);
@@ -48,6 +46,14 @@ final class LLMMCPConversationTurnPlanner {
         }
         List<String> missingToolNames = findMissingAllowedToolNames(scenario, interactionTrace);
         return missingToolNames.isEmpty() ? scenario.getAllowedToolNames() : List.of(missingToolNames.getFirst());
+    }
+    
+    List<String> createImmediateNextActionToolNames(final List<MCPInteractionTraceRecord> interactionTrace) {
+        if (interactionTrace.isEmpty()) {
+            return List.of();
+        }
+        String immediateActionName = instructionFactory.findImmediateNextActionName(interactionTrace.getLast());
+        return immediateActionName.isEmpty() ? List.of() : List.of(immediateActionName);
     }
     
     String createToolChoice(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace, final boolean finalAnswerRequested) {
