@@ -484,10 +484,6 @@ class MCPErrorConverterTest {
     }
     
     private Map<?, ?> getFirstResourceToRead(final Map<?, ?> recovery) {
-        return getResourceToRead(recovery, 0);
-    }
-    
-    private Map<?, ?> getResourceToRead(final Map<?, ?> recovery, final int index) {
-        return (Map<?, ?>) ((List<?>) recovery.get("resources_to_read")).get(index);
+        return (Map<?, ?>) ((List<?>) recovery.get("resources_to_read")).getFirst();
     }
 }
