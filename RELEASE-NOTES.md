@@ -6,6 +6,10 @@
 1. DistSQL: Add DistSQL to manage sharding key generators - [#38576](https://github.com/apache/shardingsphere/pull/38576)
 1. SHARDING: Adjustment sharding api to support column-level auto-increment and global auto-increment for key generate strategy -[#38528](https://github.com/apache/shardingsphere/pull/38528)
 
+### New Features
+
+1. MCP: Add standalone ShardingSphere-MCP Server - [#38541](https://github.com/apache/shardingsphere/pull/38541)
+
 ### Bug Fixes
 
 1. SQL Parser: Preserve unary NOT as NotExpression for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
