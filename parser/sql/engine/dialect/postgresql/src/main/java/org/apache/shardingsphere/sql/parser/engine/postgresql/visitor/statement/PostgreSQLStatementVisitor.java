@@ -1075,14 +1075,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitSimpleSelect(final SimpleSelectContext ctx) {
         SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(databaseType);
-        if (null == ctx.targetList()) {
-            selectStatementBuilder.projections(new ProjectionsSegment(-1, -1));
-        } else {
+        if (null != ctx.targetList()) {
             ProjectionsSegment projects = (ProjectionsSegment) visit(ctx.targetList());
             if (null != ctx.distinctClause()) {
                 projects.setDistinctRow(true);
             }
             selectStatementBuilder.projections(projects);
+        } else if (null != ctx.valuesClause()) {
+            selectStatementBuilder.projections(createValuesProjections(ctx.valuesClause()));
+        } else {
+            selectStatementBuilder.projections(new ProjectionsSegment(-1, -1));
         }
         if (null != ctx.intoClause()) {
             selectStatementBuilder.into((TableSegment) visit(ctx.intoClause()));
@@ -1103,6 +1105,18 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             selectStatementBuilder.window((WindowSegment) visit(ctx.windowClause()));
         }
         return selectStatementBuilder.build();
+    }
+    
+    private ProjectionsSegment createValuesProjections(final ValuesClauseContext ctx) {
+        ProjectionsSegment result = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        Collection<InsertValuesSegment> values = createInsertValuesSegments(ctx);
+        if (values.isEmpty()) {
+            return result;
+        }
+        for (ExpressionSegment each : values.iterator().next().getValues()) {
+            result.getProjections().add(new ExpressionProjectionSegment(each.getStartIndex(), each.getStopIndex(), each.getText(), each));
+        }
+        return result;
     }
     
     @Override
@@ -1422,13 +1436,22 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitAliasClause(final AliasClauseContext ctx) {
-        StringBuilder aliasName = new StringBuilder(ctx.colId().getText());
+        AliasSegment result = new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
         if (null != ctx.nameList()) {
-            aliasName.append(ctx.LP_().getText());
-            aliasName.append(ctx.nameList().getText());
-            aliasName.append(ctx.RP_().getText());
+            result.getColumnAliases().addAll(generateAliasColumns(ctx.nameList()));
         }
-        return new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(aliasName.toString()));
+        return result;
+    }
+    
+    private Collection<IdentifierValue> generateAliasColumns(final NameListContext ctx) {
+        Collection<IdentifierValue> result = new LinkedList<>();
+        if (null != ctx.nameList()) {
+            result.addAll(generateAliasColumns(ctx.nameList()));
+        }
+        if (null != ctx.name()) {
+            result.add(new IdentifierValue(ctx.name().getText()));
+        }
+        return result;
     }
     
     private OwnerSegment createTableOwner(final IndirectionContext ctx) {

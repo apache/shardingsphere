@@ -24,7 +24,8 @@
     <sql-case id="create_view_with_owner_doris" value="CREATE VIEW report.v_sales AS SELECT order_id, user_id FROM t_order" db-types="Doris" />
     <sql-case id="create_view_with_columns_doris" value="CREATE VIEW example_view (c1, c2) AS SELECT k1, k2 FROM example_table" db-types="Doris" />
     <sql-case id="create_view_with_check_option" value="CREATE VIEW universal_comedies AS SELECT * FROM comedies WHERE classification = 'U' WITH LOCAL CHECK OPTION" db-types="PostgreSQL,openGauss" />
-    <sql-case id="create_view_with_recursive" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_view_with_recursive" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="PostgreSQL" />
+    <sql-case id="create_view_with_recursive_opengauss" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="openGauss" />
     <sql-case id="create_view_with_option" value="CREATE OR REPLACE TEMP view order_view (order_id,user_id) WITH (security_barrier=TRUE) AS SELECT * FROM t_order" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_or_replace_view_with_select" value="create or replace view named_moons as select p.name planet, p.class, m.name moon, m.radius from planets p, moons m where p.name = m.planet_name(+) and m.name(+) not like 'S/%'" db-types="Oracle" />
     <sql-case id="create_view_as_simple_select1" value="CREATE VIEW laurel.employee AS SELECT * FROM laurel.emp" db-types="Oracle" />

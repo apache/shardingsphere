@@ -23,10 +23,16 @@ import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.DifferenceInColumnCountOfSelectListAndColumnNameListException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -46,17 +52,18 @@ import org.junit.jupiter.api.Test;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class SubqueryTableSegmentBinderTest {
     
@@ -64,12 +71,7 @@ class SubqueryTableSegmentBinderTest {
     
     @Test
     void assertBindWithSubqueryTableAlias() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
-        when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
-        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        SelectStatement selectStatement = createSelectStatement(new ShorthandProjectionSegment(0, 0));
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, ""));
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
         ShardingSphereMetaData metaData = createMetaData();
@@ -96,14 +98,9 @@ class SubqueryTableSegmentBinderTest {
     
     @Test
     void assertBindWithSubqueryProjectionAlias() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
-        when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id")));
         columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("order_id_alias")));
-        projectionsSegment.getProjections().add(columnProjectionSegment);
-        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        SelectStatement selectStatement = createSelectStatement(columnProjectionSegment);
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, ""));
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
         ShardingSphereMetaData metaData = createMetaData();
@@ -122,12 +119,7 @@ class SubqueryTableSegmentBinderTest {
     
     @Test
     void assertBindWithoutSubqueryTableAlias() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
-        when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
-        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        SelectStatement selectStatement = createSelectStatement(new ShorthandProjectionSegment(0, 0));
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, ""));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
@@ -139,13 +131,9 @@ class SubqueryTableSegmentBinderTest {
     
     @Test
     void assertBindWithSubqueryTableColumns() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
-        when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
-        projectionsSegment.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
-        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        SelectStatement selectStatement = createSelectStatement(
+                new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))),
+                new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, ""));
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("combined")));
         subqueryTableSegment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("id")));
@@ -187,23 +175,75 @@ class SubqueryTableSegmentBinderTest {
         assertThat(actualNameProjection.getColumn().getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
     }
     
+    @Test
+    void assertBindWithSubqueryAliasColumns() {
+        SelectStatement selectStatement = createSelectStatement(
+                new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))),
+                new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, ""));
+        AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue("combined"));
+        aliasSegment.getColumnAliases().add(new IdentifierValue("id"));
+        aliasSegment.getColumnAliases().add(new IdentifierValue("name"));
+        subqueryTableSegment.setAlias(aliasSegment);
+        ShardingSphereMetaData metaData = createMetaData();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment,
+                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement),
+                tableBinderContexts, LinkedHashMultimap.create(), false);
+        assertThat(actual.getColumns().size(), is(2));
+        List<ColumnSegment> actualColumns = new ArrayList<>(actual.getColumns());
+        assertFalse(actualColumns.get(0).getOwner().isPresent());
+        assertThat(actualColumns.get(0).getIdentifier().getValue(), is("id"));
+        assertThat(actualColumns.get(0).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualColumns.get(0).getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertFalse(actualColumns.get(1).getOwner().isPresent());
+        assertThat(actualColumns.get(1).getIdentifier().getValue(), is("name"));
+        assertThat(actualColumns.get(1).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualColumns.get(1).getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("combined")));
+        TableSegmentBinderContext tableSegmentBinderContext = tableBinderContexts.get(CaseInsensitiveString.of("combined")).iterator().next();
+        Optional<ProjectionSegment> idProjection = tableSegmentBinderContext.findProjectionSegmentByColumnLabel("id");
+        assertTrue(idProjection.isPresent());
+        assertThat(idProjection.get(), isA(ColumnProjectionSegment.class));
+        Optional<ProjectionSegment> nameProjection = tableSegmentBinderContext.findProjectionSegmentByColumnLabel("name");
+        assertTrue(nameProjection.isPresent());
+        assertThat(nameProjection.get(), isA(ColumnProjectionSegment.class));
+    }
+    
+    @Test
+    void assertBindWithSubqueryAliasColumnsAndDifferentColumnCount() {
+        SelectStatement selectStatement = createSelectStatement(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, ""));
+        AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue("combined"));
+        aliasSegment.getColumnAliases().add(new IdentifierValue("id"));
+        aliasSegment.getColumnAliases().add(new IdentifierValue("name"));
+        subqueryTableSegment.setAlias(aliasSegment);
+        ShardingSphereMetaData metaData = createMetaData();
+        assertThrows(DifferenceInColumnCountOfSelectListAndColumnNameListException.class,
+                () -> SubqueryTableSegmentBinder.bind(subqueryTableSegment,
+                        new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement),
+                        LinkedHashMultimap.create(), LinkedHashMultimap.create(), false));
+    }
+    
+    private SelectStatement createSelectStatement(final ProjectionSegment... projections) {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().addAll(Arrays.asList(projections));
+        return SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).build();
+    }
+    
     private ShardingSphereMetaData createMetaData() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
-        IdentifierValue tOrder = new IdentifierValue("t_order");
-        when(schema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
+        Collection<ShardingSphereColumn> columns = Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db").getSchema("foo_db")).thenReturn(schema);
-        when(result.getDatabase(fooDatabase).getSchema(fooDatabase)).thenReturn(schema);
-        when(result.containsDatabase(fooDatabase)).thenReturn(true);
-        when(result.getDatabase("foo_db").getDefaultSchemaName()).thenReturn("foo_db");
-        when(result.getDatabase(fooDatabase).getDefaultSchemaName()).thenReturn("foo_db");
-        when(result.getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
-        when(result.getDatabase(fooDatabase).containsSchema(fooDatabase)).thenReturn(true);
-        when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);
-        return result;
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false));
+        ShardingSphereTable table = new ShardingSphereTable("t_order", columns, Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singletonList(table), Collections.emptyList());
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        ResourceMetaData globalResourceMetaData = new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap());
+        RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType,
+                new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singletonList(schema), props);
+        return new ShardingSphereMetaData(Collections.singletonList(database), globalResourceMetaData, globalRuleMetaData, props);
     }
 }
