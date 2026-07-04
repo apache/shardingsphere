@@ -86,7 +86,7 @@ public final class MCPCompletionService {
         }
         List<MCPCompletionCandidate> returnedCandidates = filteredCandidates.stream().limit(maxValues).toList();
         Map<String, Object> meta = createMeta(descriptor, argumentName, prefix, matchStrategy, actualContextArguments, inferredContextArguments, providerResult.getMissingContextArguments(),
-                providerResult.getGuidanceResourceUri(), candidates, filteredCandidates, returnedCandidates);
+                providerResult.getNearestResourceUri(), candidates, filteredCandidates, returnedCandidates);
         return new MCPCompletionResult(returnedCandidates.stream().map(MCPCompletionCandidate::getValue).toList(), filteredCandidates.size(), filteredCandidates.size() > returnedCandidates.size(),
                 meta);
     }
@@ -150,7 +150,7 @@ public final class MCPCompletionService {
     
     private Map<String, Object> createMeta(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix, final String matchStrategy,
                                            final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments, final Collection<String> missingContextArguments,
-                                           final String guidanceResourceUri, final Collection<MCPCompletionCandidate> candidates, final Collection<MCPCompletionCandidate> filteredCandidates,
+                                           final String nearestResourceUri, final Collection<MCPCompletionCandidate> candidates, final Collection<MCPCompletionCandidate> filteredCandidates,
                                            final Collection<MCPCompletionCandidate> returnedCandidates) {
         Map<String, Object> result = new LinkedHashMap<>(14, 1F);
         result.put(MCPShardingSphereMetadataKeys.RESPONSE_MODE, MCPResponseMode.LIST);
@@ -168,9 +168,9 @@ public final class MCPCompletionService {
         String diagnostic = createDiagnostic(candidates, filteredCandidates, missingContextArguments);
         result.put(MCPShardingSphereMetadataKeys.DIAGNOSTIC, diagnostic);
         if (!"ok".equals(diagnostic)) {
-            result.put(MCPShardingSphereMetadataKeys.RECOVERY, createRecovery(prefix, diagnostic, missingContextArguments, guidanceResourceUri));
+            result.put(MCPShardingSphereMetadataKeys.RECOVERY, createRecovery(prefix, diagnostic, missingContextArguments, nearestResourceUri));
         }
-        List<Map<String, Object>> nextActions = createNextActions(descriptor, argumentName, prefix, contextArguments, diagnostic, missingContextArguments, guidanceResourceUri);
+        List<Map<String, Object>> nextActions = createNextActions(descriptor, argumentName, prefix, contextArguments, diagnostic, missingContextArguments, nearestResourceUri);
         if (!nextActions.isEmpty()) {
             result.put(MCPShardingSphereMetadataKeys.NEXT_ACTIONS, nextActions);
         }
@@ -196,24 +196,24 @@ public final class MCPCompletionService {
     
     private List<Map<String, Object>> createNextActions(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
                                                         final Map<String, String> contextArguments, final String diagnostic, final Collection<String> missingContextArguments,
-                                                        final String guidanceResourceUri) {
+                                                        final String nearestResourceUri) {
         if ("missing_context".equals(diagnostic)) {
-            return guidanceResourceUri.isEmpty()
+            return nearestResourceUri.isEmpty()
                     ? List.of(createCompletionAction(descriptor, missingContextArguments.iterator().next(), "", contextArguments, missingContextArguments,
                             "Complete or provide the missing context argument before retrying this completion."))
-                    : List.of(MCPNextActionUtils.readResource(guidanceResourceUri, "Read the nearest metadata resource before retrying this completion."));
+                    : List.of(MCPNextActionUtils.readResource(nearestResourceUri, "Read the nearest metadata resource before retrying this completion."));
         }
         if ("prefix_filtered_all_candidates".equals(diagnostic)) {
             return List.of(createCompletionAction(descriptor, argumentName, prefix, contextArguments, List.of(), "Retry completion with a shorter or empty prefix."));
         }
         if ("no_candidates".equals(diagnostic)) {
-            return List.of(MCPNextActionUtils.readResource(guidanceResourceUri.isEmpty() ? "shardingsphere://capabilities" : guidanceResourceUri,
+            return List.of(MCPNextActionUtils.readResource(nearestResourceUri.isEmpty() ? "shardingsphere://capabilities" : nearestResourceUri,
                     "Read the nearest metadata resource before choosing another argument source."));
         }
         return List.of();
     }
     
-    private Map<String, Object> createRecovery(final String prefix, final String diagnostic, final Collection<String> missingContextArguments, final String guidanceResourceUri) {
+    private Map<String, Object> createRecovery(final String prefix, final String diagnostic, final Collection<String> missingContextArguments, final String nearestResourceUri) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         String recoveryCategory = "missing_context".equals(diagnostic) ? "missing_context" : "empty_scope";
         result.put("response_mode", MCPResponseMode.RECOVERY);
@@ -226,8 +226,8 @@ public final class MCPCompletionService {
         if (!missingContextArguments.isEmpty()) {
             result.put("missing_fields", missingContextArguments);
         }
-        if (!guidanceResourceUri.isEmpty()) {
-            result.put("parent_resource_uri", guidanceResourceUri);
+        if (!nearestResourceUri.isEmpty()) {
+            result.put("parent_resource_uri", nearestResourceUri);
         }
         return result;
     }

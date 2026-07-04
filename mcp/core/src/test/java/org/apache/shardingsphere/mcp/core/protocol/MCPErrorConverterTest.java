@@ -362,8 +362,13 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("category"), is("authentication_failed"));
         assertThat(actualRecovery.get("recovery_category"), is("unavailable_runtime"));
         assertThat(actualRecovery.get("database"), is("logic_db"));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).getFirst()).get("order"), is(1));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("depends_on"), is(List.of(1)));
+        Map<?, ?> actualResourceToRead = getFirstResourceToRead(actualRecovery);
+        assertThat(actualResourceToRead.get("uri"), is("shardingsphere://runtime"));
+        assertThat(actualResourceToRead.get("resource_kind"), is("runtime"));
+        List<?> actualNextActions = (List<?>) actualRecovery.get("next_actions");
+        assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("resource_uri"), is("shardingsphere://runtime"));
+        assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("order"), is(1));
+        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("depends_on"), is(List.of(1)));
     }
     
     @Test
@@ -385,6 +390,15 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("recovery_category"), is("validation"));
         assertThat(actualRecovery.get("database"), is("logic_db"));
         assertThat(actualRecovery.get("model_action"), is("Connect to the intended logical database or update the expected database name before retrying."));
+        assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://runtime"));
+        Map<?, ?> actualDatabasesResourceToRead = getResourceToRead(actualRecovery, 1);
+        assertThat(actualDatabasesResourceToRead.get("uri"), is("shardingsphere://databases"));
+        assertThat(actualDatabasesResourceToRead.get("resource_kind"), is("logical-database"));
+        List<?> actualNextActions = (List<?>) actualRecovery.get("next_actions");
+        assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("resource_uri"), is("shardingsphere://runtime"));
+        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("resource_uri"), is("shardingsphere://databases"));
+        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("depends_on"), is(List.of(1)));
+        assertThat(((Map<?, ?>) actualNextActions.get(2)).get("depends_on"), is(List.of(2)));
     }
     
     @Test
@@ -409,7 +423,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("category"), is("invalid_configuration"));
         assertThat(actualRecovery.get("recovery_category"), is("unavailable_runtime"));
         assertThat(actualRecovery.get("model_action"), is("Fix the MCP runtime database configuration outside MCP, then retry."));
-        assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
+        assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://runtime"));
         assertTrue((Boolean) actualRecovery.get("ask_user_when_uncertain"));
     }
     
@@ -470,6 +484,10 @@ class MCPErrorConverterTest {
     }
     
     private Map<?, ?> getFirstResourceToRead(final Map<?, ?> recovery) {
-        return (Map<?, ?>) ((List<?>) recovery.get("resources_to_read")).getFirst();
+        return getResourceToRead(recovery, 0);
+    }
+    
+    private Map<?, ?> getResourceToRead(final Map<?, ?> recovery, final int index) {
+        return (Map<?, ?>) ((List<?>) recovery.get("resources_to_read")).get(index);
     }
 }
