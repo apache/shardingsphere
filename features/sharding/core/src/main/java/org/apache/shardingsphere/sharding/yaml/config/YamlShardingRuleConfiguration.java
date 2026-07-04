@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleEn
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField.Type;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleKeyListNameGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
@@ -84,9 +83,6 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     
     @RuleNodeTupleField(type = Type.OTHER)
     private String defaultShardingColumn;
-    
-    @RuleNodeTupleField(type = Type.OTHER)
-    private YamlShardingCacheConfiguration shardingCache;
     
     @Override
     public Class<ShardingRuleConfiguration> getRuleConfigurationType() {

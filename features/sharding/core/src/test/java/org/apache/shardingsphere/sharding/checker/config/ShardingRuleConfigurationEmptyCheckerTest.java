@@ -20,8 +20,6 @@ package org.apache.shardingsphere.sharding.checker.config;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
-import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -128,13 +126,6 @@ class ShardingRuleConfigurationEmptyCheckerTest {
     void assertIsNotEmptyWithAuditors() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getAuditors().put("foo_auditor", null);
-        assertFalse(checker.isEmpty(ruleConfig));
-    }
-    
-    @Test
-    void assertIsNotEmptyWithShardingCache() {
-        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.setShardingCache(new ShardingCacheConfiguration(1, new ShardingCacheOptionsConfiguration(false, 1, 1)));
         assertFalse(checker.isEmpty(ruleConfig));
     }
     
