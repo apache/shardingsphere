@@ -4655,12 +4655,6 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
       },
-      "type": "org.apache.shardingsphere.sharding.rule.changed.ShardingCacheChangedProcessor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
-      },
       "type": "org.apache.shardingsphere.sharding.rule.changed.ShardingTableChangedProcessor"
     },
     {
@@ -4715,9 +4709,6 @@
           "name": "shardingAlgorithms"
         },
         {
-          "name": "shardingCache"
-        },
-        {
           "name": "tables"
         }
       ]
@@ -4760,9 +4751,6 @@
         },
         {
           "name": "shardingAlgorithms"
-        },
-        {
-          "name": "shardingCache"
         },
         {
           "name": "tables"
