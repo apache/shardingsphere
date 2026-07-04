@@ -40,6 +40,8 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     
     private final Map<String, ContainerComposer> containerComposers = new HashMap<>(7, 1F);
     
+    private final Map<String, DataSource> targetDataSources = new HashMap<>(7, 1F);
+    
     /**
      * Get container composer.
      *
@@ -51,15 +53,28 @@ public final class ContainerComposerRegistry implements AutoCloseable {
      * @return composed container
      */
     public ContainerComposer getContainerComposer(final String key, final String scenario, final DatabaseType databaseType, final Mode mode, final Adapter adapter) {
-        if (containerComposers.containsKey(key)) {
-            return containerComposers.get(key);
-        }
         synchronized (containerComposers) {
             if (!containerComposers.containsKey(key)) {
                 close();
                 containerComposers.put(key, createContainerComposer(isClusterMode(mode, adapter), scenario, databaseType, adapter));
             }
             return containerComposers.get(key);
+        }
+    }
+    
+    /**
+     * Get target data source.
+     *
+     * @param key key
+     * @return target data source
+     */
+    public DataSource getTargetDataSource(final String key) {
+        synchronized (containerComposers) {
+            return targetDataSources.computeIfAbsent(key, unused -> {
+                ContainerComposer containerComposer = containerComposers.get(key);
+                Preconditions.checkNotNull(containerComposer, "Container composer `%s` does not exist.", key);
+                return containerComposer.getTargetDataSource();
+            });
         }
     }
     
@@ -74,11 +89,14 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     @Override
     public void close() {
         synchronized (containerComposers) {
+            for (DataSource each : targetDataSources.values()) {
+                closeTargetDataSource(each);
+            }
             for (ContainerComposer each : containerComposers.values()) {
-                closeTargetDataSource(each.getTargetDataSource());
                 closeActualDataSourceMap(each.getActualDataSourceMap());
                 closeContainer(each);
             }
+            targetDataSources.clear();
             containerComposers.clear();
         }
     }

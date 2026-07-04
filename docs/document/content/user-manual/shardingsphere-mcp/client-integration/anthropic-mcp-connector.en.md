@@ -9,7 +9,7 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 - Use this page when you want to attach a remote ShardingSphere-MCP server directly in the Anthropic Messages API without implementing a separate MCP client.
 - Use this integration when Claude API requests should expose ShardingSphere-MCP tools for metadata queries, controlled queries, rule planning, and preflight validation.
-- After integration, Claude can inspect logic databases, inspect table structures, or call `database_gateway_validate_proxy_connectivity` for preflight validation against configured runtime databases.
+- After integration, Claude can inspect logic databases, inspect table structures, or call `database_gateway_validate_runtime_database` for preflight validation against configured runtime databases.
 
 ## Prerequisites
 
@@ -79,7 +79,7 @@ To expose only a subset of tools, use `default_config` and `configs` in the `mcp
     "database_gateway_search_metadata": {
       "enabled": true
     },
-    "database_gateway_validate_proxy_connectivity": {
+    "database_gateway_validate_runtime_database": {
       "enabled": true
     }
   }
@@ -97,7 +97,7 @@ Invocation succeeds when:
 - In a Claude conversation, run a minimal validation task such as:
   - Show the tables in `<logic-database>`.
   - Show columns and indexes for the `orders` table.
-  - Call `database_gateway_validate_proxy_connectivity` for a configured runtime database.
+  - Call `database_gateway_validate_runtime_database` for a configured runtime database.
 - If Claude returns tool results from ShardingSphere-MCP, the integration is working.
 
 If the integration fails, check these items first:

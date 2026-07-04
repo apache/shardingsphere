@@ -24,6 +24,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.orderby.OrderByItemAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 /**
  * Group by clause assert.
  */
@@ -38,7 +41,8 @@ public final class GroupByClauseAssert {
      * @param expected expected group by clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final GroupBySegment actual, final ExpectedOrderByClause expected) {
-        org.hamcrest.MatcherAssert.assertThat(assertContext.getText("Group by with rollup assertion error: "), actual.isWithRollup(), org.hamcrest.Matchers.is(expected.isWithRollup()));
+        assertThat(assertContext.getText("Group by with rollup assertion error: "), actual.isWithRollup(), is(expected.isWithRollup()));
+        assertThat(assertContext.getText("Group by contains grouping extension assertion error: "), actual.isContainsGroupingExtension(), is(expected.isContainsGroupingExtension()));
         OrderByItemAssert.assertIs(assertContext, actual.getGroupByItems(), expected, "Group by");
     }
 }

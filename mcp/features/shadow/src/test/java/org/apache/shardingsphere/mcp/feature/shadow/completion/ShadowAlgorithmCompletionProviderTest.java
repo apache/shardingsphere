@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -76,11 +76,12 @@ class ShadowAlgorithmCompletionProviderTest {
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new ShadowAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext(ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME));
-        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
+        Collection<MCPCompletionCandidate> actualCandidates = actual.getCandidates();
         assertThat(actualCandidates.size(), is(1));
-        assertThat(actualCandidates.getFirst().getValue(), is("VALUE_MATCH"));
-        assertThat(actualCandidates.getFirst().getLabel(), is("Value match shadow algorithm"));
-        assertThat(actualCandidates.getFirst().getSource(), is("shadow-algorithm"));
+        MCPCompletionCandidate actualCandidate = actualCandidates.iterator().next();
+        assertThat(actualCandidate.getValue(), is("VALUE_MATCH"));
+        assertThat(actualCandidate.getLabel(), is("Value match shadow algorithm"));
+        assertThat(actualCandidate.getSource(), is("shadow-algorithm"));
     }
     
     @Test

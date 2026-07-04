@@ -37,7 +37,6 @@ cd distribution/mcp/target/apache-shardingsphere-mcp-${version}
 ```yaml
 runtimeDatabases:
   "<logic-database>":
-    databaseType: MySQL
     jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
     username: "<proxy-username>"
     password: "<proxy-password>"
@@ -45,6 +44,7 @@ runtimeDatabases:
 ```
 
 将 `<logic-database>`、`<proxy-host>`、`<proxy-port>`、`<proxy-username>` 和 `<proxy-password>` 替换为 ShardingSphere-Proxy 的实际连接信息。
+MCP Server 会从 `jdbcUrl` 解析数据库类型。
 如果目标数据库驱动没有随发行包提供，请在启动前把对应 JDBC 驱动 jar 放入 `plugins/`。
 
 ## 启动 HTTP MCP Server

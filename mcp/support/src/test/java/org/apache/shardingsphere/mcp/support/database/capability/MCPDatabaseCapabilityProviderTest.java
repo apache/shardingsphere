@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
+import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,10 +26,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -38,6 +40,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -98,17 +101,8 @@ class MCPDatabaseCapabilityProviderTest {
         assertTrue(actual.get().isSupportsExplainAnalyze());
     }
     
-    @Test
-    void assertProvideWithTypeAlias() {
-        Optional<MCPDatabaseCapability> actual = createCapabilityProvider("Apache Doris").provide("logic_db");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getDatabaseType(), is("Doris"));
-        assertThat(actual.get().getTransactionCapability(), is(TransactionCapability.LOCAL));
-        assertFalse(actual.get().isSupportsSavepoint());
-    }
-    
     private MCPDatabaseCapabilityProvider createCapabilityProvider() {
-        return new MCPDatabaseCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive")));
+        return SupportDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive")));
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType) {
@@ -116,7 +110,7 @@ class MCPDatabaseCapabilityProviderTest {
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType, final String databaseVersion) {
-        return new MCPDatabaseCapabilityProvider(Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", databaseType, databaseVersion)));
+        return SupportDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", databaseType, databaseVersion)));
     }
     
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final Map<String, String> databaseTypes) {
@@ -132,16 +126,46 @@ class MCPDatabaseCapabilityProviderTest {
         try {
             Connection connection = mock(Connection.class);
             DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-            when(result.getDatabaseType()).thenReturn(databaseType);
+            Statement statement = mock(Statement.class);
+            ResultSet scalarResultSet = mock(ResultSet.class);
             when(result.openConnection(databaseName)).thenReturn(connection);
             when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
+            when(connection.createStatement()).thenReturn(statement);
+            when(statement.executeQuery(anyString())).thenReturn(scalarResultSet);
+            when(scalarResultSet.next()).thenReturn(false);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseVersion);
-            when(databaseMetaData.getURL()).thenReturn(String.format("jdbc:%s:test", databaseType.toLowerCase(Locale.ENGLISH)));
+            when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseType));
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
         return result;
+    }
+    
+    private String getJdbcUrl(final String databaseType) {
+        switch (databaseType) {
+            case "MySQL":
+                return "jdbc:mysql:test";
+            case "PostgreSQL":
+                return "jdbc:postgresql:test";
+            case "openGauss":
+                return "jdbc:opengauss:test";
+            case "SQLServer":
+                return "jdbc:sqlserver:test";
+            case "MariaDB":
+                return "jdbc:mariadb:test";
+            case "Oracle":
+                return "jdbc:oracle:test";
+            case "ClickHouse":
+                return "jdbc:clickhouse:test";
+            case "Hive":
+                return "jdbc:hive2:test";
+            case "Presto":
+                return "jdbc:presto:test";
+            case "Firebird":
+                return "jdbc:firebirdsql:test";
+            default:
+                throw new IllegalArgumentException(databaseType);
+        }
     }
     
     private static Stream<Arguments> provideCapabilityMatrixArguments() {
@@ -153,7 +177,6 @@ class MCPDatabaseCapabilityProviderTest {
                 Arguments.of("mariadb", "MariaDB", true, true, true, true, SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Arguments.of("oracle", "Oracle", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT),
                 Arguments.of("clickhouse", "ClickHouse", false, false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
-                Arguments.of("doris", "Doris", true, false, true, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Arguments.of("hive", "Hive", false, false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Arguments.of("presto", "Presto", true, false, false, false, SchemaExecutionSemantics.BEST_EFFORT),
                 Arguments.of("firebird", "Firebird", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT));

@@ -165,7 +165,7 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
     }
     
     private Map<String, DataSource> createAccessDataSources(final Collection<String> databaseNames) {
-        return databaseNames.stream().distinct().collect(Collectors.toMap(Function.identity(), this::createAccessDataSource));
+        return databaseNames.stream().distinct().collect(Collectors.toMap(Function.identity(), this::createAccessDataSource, (previous, current) -> previous, LinkedHashMap::new));
     }
     
     /**

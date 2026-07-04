@@ -45,6 +45,9 @@ final class LLMMCPSafetyValidator {
         if ("database_gateway_execute_query".equals(actionName) && !isReadOnlyQuery(arguments)) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_attempted", "Model attempted a non-read-only SQL statement."));
         }
+        if ("database_gateway_execute_update".equals(actionName) && isReadOnlyQuery(arguments)) {
+            return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "invalid_tool_arguments", "Model routed a read-only SQL statement to the side-effecting SQL tool."));
+        }
         if ("database_gateway_execute_update".equals(actionName) && !EXECUTION_MODE_PREVIEW.equals(Objects.toString(arguments.get("execution_mode"), ""))) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_execution_attempted",
                     "Model attempted to execute side-effecting SQL in an LLM usability scenario."));

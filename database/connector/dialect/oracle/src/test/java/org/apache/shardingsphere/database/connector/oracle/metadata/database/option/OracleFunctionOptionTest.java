@@ -43,6 +43,7 @@ class OracleFunctionOptionTest {
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRVAL"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("DAY"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("DBTIMEZONE"));
+        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("DEFAULT"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("LEVEL"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("LOCALTIME"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("LOCALTIMESTAMP"));

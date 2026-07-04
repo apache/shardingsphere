@@ -43,6 +43,12 @@ class InUsedShardingStorageUnitRetrieverTest {
         assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singleton("foo_tbl")));
     }
     
+    @Test
+    void assertGetInUsedResourcesWithDifferentCaseStorageUnit() {
+        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("FOO_DS", null);
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.emptySet()));
+    }
+    
     private ShardingRule mockRule() {
         ShardingRule result = mock(ShardingRule.class);
         ShardingTable fooTbl = mock(ShardingTable.class);

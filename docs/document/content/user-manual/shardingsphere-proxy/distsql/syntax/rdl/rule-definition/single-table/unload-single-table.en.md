@@ -14,6 +14,8 @@ The `UNLOAD SINGLE TABLE` syntax is used to unload single table.
 ```sql
 unloadSingleTable ::=
   'UNLOAD' 'SINGLE' 'TABLE' tableNames
+  | 'UNLOAD' 'SINGLE' 'TABLE' '*'
+  | 'UNLOAD' 'ALL' 'SINGLE' 'TABLES'
 
 tableNames ::=
   tableName (',' tableName)*

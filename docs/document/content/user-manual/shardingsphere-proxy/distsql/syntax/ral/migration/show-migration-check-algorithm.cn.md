@@ -1,17 +1,18 @@
 +++
-title = "SHOW MIGRATION CHECK ALGORITHM"
+title = "SHOW MIGRATION CHECK ALGORITHMS"
 weight = 9
 +++
 
 ### 描述
 
-`SHOW MIGRATION CHECK ALGORITHM` 语法用于查询数据迁移一致性校验算法。
+`SHOW MIGRATION CHECK ALGORITHMS` 语法用于查询数据迁移一致性校验算法。
+
 ### 语法
 
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-ShowMigrationCheckAlgorithm ::=
+ShowMigrationCheckAlgorithms ::=
   'SHOW' 'MIGRATION' 'CHECK' 'ALGORITHMS'
 ```
 {{% /tab %}}
@@ -20,14 +21,15 @@ ShowMigrationCheckAlgorithm ::=
 {{% /tab %}}
 {{< /tabs >}}
 
-
 ### 返回值说明
 
 | 列                        | 说明        |
 |--------------------------|-----------|
 | type                     | 一致性校验算法类型 |
+| type_aliases             | 一致性校验算法类型别名 |
 | supported_database_types | 支持数据库类型   |
 | description              | 说明        |
+
 ### 示例
 
 - 查询数据迁移一致性校验算法
@@ -38,12 +40,12 @@ SHOW MIGRATION CHECK ALGORITHMS;
 
 ```sql
 mysql> SHOW MIGRATION CHECK ALGORITHMS;
-+-------------+--------------------------------------------------------------+----------------------------+
-| type        | supported_database_types                                     | description                |
-+-------------+--------------------------------------------------------------+----------------------------+
-| CRC32_MATCH | MySQL                                                        | Match CRC32 of records.    |
-| DATA_MATCH  | SQL92,MySQL,MariaDB,PostgreSQL,openGauss,Oracle,SQLServer,H2 | Match raw data of records. |
-+-------------+--------------------------------------------------------------+----------------------------+
++-------------+--------------+--------------------------------------------------------------+----------------------------+
+| type        | type_aliases | supported_database_types                                     | description                |
++-------------+--------------+--------------------------------------------------------------+----------------------------+
+| CRC32_MATCH |              | MySQL                                                        | Match CRC32 of records.    |
+| DATA_MATCH  |              | SQL92,MySQL,MariaDB,PostgreSQL,openGauss,Oracle,SQLServer,H2 | Match raw data of records. |
++-------------+--------------+--------------------------------------------------------------+----------------------------+
 2 rows in set (0.03 sec)
 ```
 

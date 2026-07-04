@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescr
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -75,6 +78,18 @@ class MaskToolDescriptorValidatorTest {
     
     @Test
     @SuppressWarnings("unchecked")
+    void assertOutputSchemaDeclaresPlanResponseFields() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> actual = (Map<String, Object>) descriptor.getOutputSchema().get("properties");
+        assertTrue(actual.keySet().containsAll(List.of(
+                "response_mode", "plan_id", "workflow_kind", "status", "issues", "global_steps", "current_step", "algorithm_recommendations",
+                "property_requirements", "validation_strategy", "delivery_mode", "execution_mode", "intent_inference", "argument_provenance", "review_focus",
+                "missing_required_inputs", "clarification_questions", "resources_to_read", "proxy_topology_hint", "next_actions", "distsql_artifacts", "masked_property_preview",
+                "secret_reference_summary")));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
     void assertStructuredIntentEvidenceIsMaskSpecific() {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
         Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
@@ -95,6 +110,14 @@ class MaskToolDescriptorValidatorTest {
     }
     
     @Test
+    void assertToolDeclaresRequiredMetadata() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
+        assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/workflow-kind"));
+        assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/related-resource-uris"));
+        assertTrue(descriptor.getMeta().containsKey("org.apache.shardingsphere/follow-up-tools"));
+    }
+    
+    @Test
     void assertPromptIsRuleDistSQLOnly() throws IOException {
         String prompt = readResource("META-INF/shardingsphere-mcp/prompts/plan-mask-rule.md");
         assertFalse(prompt.contains("column metadata"));
@@ -103,17 +126,49 @@ class MaskToolDescriptorValidatorTest {
         assertFalse(prompt.contains("completion/complete"));
     }
     
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("requiredOutputFields")
     @SuppressWarnings("unchecked")
-    void assertValidateRejectsMissingOutputField() {
+    void assertValidateRejectsMissingTemplateOutputField(final String fieldName) {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
         Map<String, Object> outputSchema = new LinkedHashMap<>(descriptor.getOutputSchema());
         Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) outputSchema.get("properties"));
-        properties.remove("resources_to_read");
+        properties.remove(fieldName);
         outputSchema.put("properties", properties);
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new MaskToolDescriptorValidator().validate(new MCPToolDescriptor(
                 descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), outputSchema, descriptor.getAnnotations(), descriptor.getMeta())));
-        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_mask_rule` outputSchema must declare `resources_to_read`."));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_mask_rule` outputSchema must declare `" + fieldName + "`."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("requiredMetadataFields")
+    void assertValidateRejectsMissingMetadataField(final String fieldName) {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> meta = new LinkedHashMap<>(descriptor.getMeta());
+        meta.remove(fieldName);
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new MaskToolDescriptorValidator().validate(new MCPToolDescriptor(
+                descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.getInputSchema(), descriptor.getOutputSchema(), descriptor.getAnnotations(), meta)));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_plan_mask_rule` metadata must declare `" + fieldName + "`."));
+    }
+    
+    private static Stream<String> requiredOutputFields() {
+        return Stream.of(
+                "response_mode", "plan_id", "workflow_kind", "status", "missing_required_inputs", "clarification_questions", "elicitation_support", "fallback_reason",
+                "issues", "global_steps", "current_step", "algorithm_recommendations", "property_requirements", "validation_strategy", "delivery_mode", "execution_mode",
+                "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint", "distsql_artifacts", "masked_property_preview", "resources_to_read",
+                "next_actions", "secret_reference_summary");
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertInputSchemaDeclaresSecretReferenceObjects() {
+        MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(MaskFeatureDefinition.PLAN_TOOL_NAME);
+        Map<String, Object> properties = (Map<String, Object>) descriptor.getInputSchema().get("properties");
+        assertTrue(String.valueOf(((Map<?, ?>) properties.get("primary_algorithm_properties")).get("description")).contains("protected placeholder objects"));
+    }
+    
+    private static Stream<String> requiredMetadataFields() {
+        return Stream.of("org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
     }
     
     private MCPPromptDescriptor findPrompt(final String promptName) {

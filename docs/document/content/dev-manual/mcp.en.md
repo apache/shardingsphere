@@ -45,6 +45,21 @@ If the feature should be shipped as an official default capability:
 
 If the feature is optional, place the built jar under the distribution `plugins/` directory.
 
+## Feature workflow template
+
+Features that plan, preview, apply, and validate rule changes should use the Data Encryption MCP feature's rule workflow as the template.
+The template implementation should satisfy:
+
+- Keep feature business logic under `mcp/features/<feature>`; `mcp/support` and `mcp/core` should only host generic workflow, execution, redaction, descriptor, and runtime contracts.
+- Handlers declare canonical tool names, context types, and workflow definitions; descriptors and prompts own the model-facing contract, and handlers should not duplicate descriptive fields.
+- Read feature-owned resources, such as algorithms, rules, or existing configuration resources, before planning reviewable DistSQL artifacts.
+- Expose only artifacts supported by the current feature in the output schema; do not keep unsupported fields as placeholders or make models depend on real physical table structure.
+- Side-effecting execution must run preview first, then execute only user-approved `approved_steps`.
+- Sensitive properties must be masked in model-facing plan, preview, execution, validation, recovery, and error outputs; the execution path uses original values from the controlled context.
+- Validation should read Proxy-visible rule state or feature state, and should not use physical operations outside the current feature as acceptance conditions.
+- Startup descriptor validation should cover tool/resource/prompt name uniqueness, schema fields, side-effect annotations, related resources,
+  follow-up tools, completion targets, and workflow recovery paths.
+
 ## Handler and Descriptor
 
 When adding a public tool:

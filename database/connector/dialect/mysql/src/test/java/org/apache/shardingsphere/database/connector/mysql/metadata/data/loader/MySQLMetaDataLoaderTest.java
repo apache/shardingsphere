@@ -50,6 +50,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MySQLMetaDataLoaderTest {
@@ -83,11 +84,22 @@ class MySQLMetaDataLoaderTest {
         assertTrue(actual.iterator().next().getTables().isEmpty());
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
+    @Test
+    void assertLoadWithNullCatalogAndNoRequestedTableNames() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        when(dataSource.getConnection().getCatalog()).thenReturn(null);
+        DataTypeRegistry.load(dataSource, "MySQL");
+        Collection<SchemaMetaData> actual = dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db"));
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.iterator().next().getTables().isEmpty());
+    }
+    
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadArguments")
     void assertLoad(final String name, final Collection<String> actualTableNames, final String tableMetaDataSQL,
-                    final boolean emptyCatalog, final boolean includeView, final boolean includeConstraints, final boolean includeCompositeIndex) throws SQLException {
+                    final String catalog, final String expectedDatabaseName, final boolean includeView, final boolean includeConstraints, final boolean includeCompositeIndex) throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(tableMetaDataSQL).executeQuery()).thenReturn(tableMetaDataResultSet);
@@ -105,10 +117,11 @@ class MySQLMetaDataLoaderTest {
         Map<String, String> cachedDatabaseTables = GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables();
         String previous = cachedDatabaseTables.put("tbl", "fallback_db");
         try {
-            when(dataSource.getConnection().getCatalog()).thenReturn(emptyCatalog ? "" : "sharding_db");
+            when(dataSource.getConnection().getCatalog()).thenReturn(catalog);
             DataTypeRegistry.load(dataSource, "MySQL");
             Collection<SchemaMetaData> actual = dialectMetaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db"));
             assertTableMetaData(actual, includeConstraints, includeCompositeIndex);
+            verify(dataSource.getConnection().prepareStatement(tableMetaDataSQL)).setString(1, expectedDatabaseName);
         } finally {
             if (null == previous) {
                 cachedDatabaseTables.remove("tbl");
@@ -237,8 +250,9 @@ class MySQLMetaDataLoaderTest {
     
     private static Stream<Arguments> loadArguments() {
         return Stream.of(
-                Arguments.of("load without requested table names", Collections.emptyList(), TABLE_METADATA_SQL, false, false, false, false),
-                Arguments.of("load with requested table names", Collections.singletonList("tbl"), TABLE_METADATA_SQL_WITH_TABLE, false, false, false, false),
-                Arguments.of("load with empty catalog fallback and view constraints", Collections.singletonList("tbl"), TABLE_METADATA_SQL_WITH_TABLE, true, true, true, true));
+                Arguments.of("load without requested table names", Collections.emptyList(), TABLE_METADATA_SQL, "sharding_db", "sharding_db", false, false, false),
+                Arguments.of("load with requested table names", Collections.singletonList("tbl"), TABLE_METADATA_SQL_WITH_TABLE, "sharding_db", "sharding_db", false, false, false),
+                Arguments.of("load with empty catalog fallback and view constraints", Collections.singletonList("tbl"), TABLE_METADATA_SQL_WITH_TABLE, "", "fallback_db", true, true, true),
+                Arguments.of("load with null catalog fallback", Collections.singletonList("tbl"), TABLE_METADATA_SQL_WITH_TABLE, null, "fallback_db", true, true, true));
     }
 }

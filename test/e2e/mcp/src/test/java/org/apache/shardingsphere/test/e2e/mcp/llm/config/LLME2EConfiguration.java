@@ -48,8 +48,6 @@ public final class LLME2EConfiguration {
     
     private static final String DEFAULT_API_KEY = "mcp-llm-score";
     
-    private static final String DEFAULT_SERVER_RUNTIME = "llama.cpp";
-    
     private static final String DEFAULT_SERVER_IMAGE = "apache/shardingsphere-mcp-llm-runtime:local";
     
     private final String baseUrl;
@@ -71,8 +69,6 @@ public final class LLME2EConfiguration {
     private final String runId;
     
     private final RuntimeMode runtimeMode;
-    
-    private final String serverRuntime;
     
     private final String serverImage;
     
@@ -102,7 +98,6 @@ public final class LLME2EConfiguration {
                 Paths.get(readString(props, "mcp.llm.artifact-root", "target/llm-e2e")),
                 readString(props, "mcp.llm.run-id", createDefaultRunId()),
                 runtimeMode,
-                readString(props, "mcp.llm.server-runtime", DEFAULT_SERVER_RUNTIME),
                 readString(props, "mcp.llm.server-image", DEFAULT_SERVER_IMAGE),
                 readString(props, "mcp.llm.base-server-image", ""),
                 readString(props, "mcp.llm.base-server-image-digest", ""),
@@ -130,7 +125,7 @@ public final class LLME2EConfiguration {
      */
     public LLME2EConfiguration withBaseUrl(final String baseUrl) {
         return new LLME2EConfiguration(normalizeBaseUrl(baseUrl), modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId,
-                runtimeMode, serverRuntime, serverImage, baseServerImage, baseServerImageDigest, modelMetadata);
+                runtimeMode, serverImage, baseServerImage, baseServerImageDigest, modelMetadata);
     }
     
     /**
@@ -142,7 +137,7 @@ public final class LLME2EConfiguration {
      */
     public LLME2EConfiguration withModelEndpoint(final String baseUrl, final String apiKey) {
         return new LLME2EConfiguration(normalizeBaseUrl(baseUrl), modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId,
-                runtimeMode, serverRuntime, serverImage, baseServerImage, baseServerImageDigest, modelMetadata);
+                runtimeMode, serverImage, baseServerImage, baseServerImageDigest, modelMetadata);
     }
     
     /**
@@ -154,7 +149,7 @@ public final class LLME2EConfiguration {
      */
     public LLME2EConfiguration withReadinessTimeouts(final int readyTimeoutSeconds, final int requestTimeoutSeconds) {
         return new LLME2EConfiguration(baseUrl, modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId, runtimeMode,
-                serverRuntime, serverImage, baseServerImage, baseServerImageDigest, modelMetadata);
+                serverImage, baseServerImage, baseServerImageDigest, modelMetadata);
     }
     
     /**

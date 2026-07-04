@@ -31,15 +31,15 @@ Please refer to the following links for other configuration items:
 
 3. Configure `conf/database-*.yaml`
 
-Modify files named with the prefix `database-` in the `conf` directory, such as `conf/database-sharding.yaml` file and configure sharding rules and read/write splitting rules. See [Confuguration Mannual](/en/user-manual/shardingsphere-proxy/yaml-config/) for configuration methods. The `*` part of the `database-*.yaml` file can be named whatever you want.
+Modify files named with the prefix `database-` in the `conf` directory, such as `conf/database-sharding.yaml` file and configure sharding rules and read/write splitting rules. See [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml-config/) for configuration methods. The `*` part of the `database-*.yaml` file can be named whatever you want.
 
 ShardingSphere-Proxy supports multiple logical data sources. Each YAML configuration file named with the prefix `database-` is a logical data source.
 
 4. Introduce database driver (Optional)
 
-If the backend is connected to a PostgreSQL or openGauss database, no additional dependencies need to be introduced.
+If the backend is connected to a PostgreSQL, openGauss or Firebird database, no additional dependencies need to be introduced.
 
-If the backend is connected to a MySQL database, please download [mysql-connector-java-5.1.49.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar) or [mysql-connector-java-8.0.11.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.11/mysql-connector-java-8.0.11.jar), and put it into the `ext-lib` directory.
+If the backend is connected to a MySQL database, please download [mysql-connector-j-8.4.0.jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.4.0/mysql-connector-j-8.4.0.jar), and put it into the `ext-lib` directory.
 
 5. Introduce dependencies required by the cluster mode (Optional)
 

@@ -36,7 +36,14 @@ class MaskAlgorithmPropertyTemplateServiceTest {
         List<AlgorithmPropertyRequirement> actual = service.findRequirements("MASK_FROM_X_TO_Y");
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0).getPropertyKey(), is("from-x"));
+        assertThat(actual.get(0).getDefaultValue(), is(""));
+        assertTrue(actual.get(0).isRequired());
+        assertThat(actual.get(1).getPropertyKey(), is("to-y"));
+        assertThat(actual.get(1).getDefaultValue(), is(""));
+        assertTrue(actual.get(1).isRequired());
+        assertThat(actual.get(2).getPropertyKey(), is("replace-char"));
         assertThat(actual.get(2).getDefaultValue(), is("*"));
+        assertTrue(actual.get(2).isRequired());
     }
     
     @Test

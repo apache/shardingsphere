@@ -72,7 +72,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         addSQLTokenGenerator(result, new EncryptInsertPredicateColumnTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptPredicateValueTokenGenerator(rule, database, encryptConditions));
         addSQLTokenGenerator(result, new EncryptInsertPredicateValueTokenGenerator(rule, database, encryptConditions));
-        addSQLTokenGenerator(result, new EncryptInsertValuesTokenGenerator(rule, database));
+        addSQLTokenGenerator(result, new EncryptInsertValuesTokenGenerator(rule, database, sqlRewriteContext));
         addSQLTokenGenerator(result, new EncryptInsertDefaultColumnsTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertCipherNameTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertDerivedColumnsTokenGenerator(rule));

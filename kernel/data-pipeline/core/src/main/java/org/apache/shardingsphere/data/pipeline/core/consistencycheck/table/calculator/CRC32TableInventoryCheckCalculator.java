@@ -97,7 +97,7 @@ public final class CRC32TableInventoryCheckCalculator extends AbstractTableInven
                 log.warn("RecordSingleTableInventoryCalculatedResult type not match, o.className={}", o.getClass().getName());
                 return false;
             }
-            final CalculatedResult that = (CalculatedResult) o;
+            CalculatedResult that = (CalculatedResult) o;
             if (recordsCount != that.recordsCount) {
                 log.info("recordsCount not match, recordsCount={}, that.recordsCount={}", recordsCount, that.recordsCount);
                 return false;

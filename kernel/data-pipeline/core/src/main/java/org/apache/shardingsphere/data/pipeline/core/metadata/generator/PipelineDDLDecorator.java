@@ -23,6 +23,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -40,12 +42,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.in
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Pipeline DDL decorator.
@@ -73,7 +77,7 @@ public final class PipelineDDLDecorator {
         if (Strings.isNullOrEmpty(sql)) {
             return Optional.empty();
         }
-        String result = decorateActualSQL(targetDatabaseName, targetTableName, parserEngine, sql.trim());
+        String result = decorateActualSQL(targetDatabaseName, schemaName, targetTableName, parserEngine, sql.trim());
         // TODO remove it after set search_path is supported.
         if ("openGauss".equals(databaseType.getType())) {
             return decorateOpenGauss(schemaName, result, parserEngine);
@@ -81,11 +85,11 @@ public final class PipelineDDLDecorator {
         return Optional.of(result);
     }
     
-    private String decorateActualSQL(final String databaseName, final String targetTableName, final SQLParserEngine parserEngine, final String sql) {
+    private String decorateActualSQL(final String databaseName, final String schemaName, final String targetTableName, final SQLParserEngine parserEngine, final String sql) {
         SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, sql);
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
         if (sqlStatementContext.getSqlStatement() instanceof CreateTableStatement) {
-            appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, databaseName, schemaName, targetTableName, sqlStatementContext);
             appendFromTable(replaceMap, targetTableName, sqlStatementContext);
         }
         if (sqlStatementContext.getSqlStatement() instanceof CommentStatement) {
@@ -93,10 +97,10 @@ public final class PipelineDDLDecorator {
         }
         if (sqlStatementContext.getSqlStatement() instanceof CreateIndexStatement) {
             appendFromTable(replaceMap, targetTableName, sqlStatementContext);
-            appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, databaseName, schemaName, targetTableName, sqlStatementContext);
         }
         if (sqlStatementContext.getSqlStatement() instanceof AlterTableStatement) {
-            appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, databaseName, schemaName, targetTableName, sqlStatementContext);
             appendFromTable(replaceMap, targetTableName, sqlStatementContext);
         }
         return doDecorateActualTable(replaceMap, sql);
@@ -106,15 +110,18 @@ public final class PipelineDDLDecorator {
         return SQLStatementContextFactory.newInstance(metaData, parserEngine.parse(sql, true), currentDatabaseName);
     }
     
-    private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext sqlStatementContext) {
+    private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String databaseName, final String schemaName,
+                                              final String targetTableName, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
             return;
         }
         TableNameSegment tableNameSegment = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName();
         if (!tableNameSegment.getIdentifier().getValue().equals(targetTableName)) {
             SQLStatementAttributes attributes = sqlStatementContext.getSqlStatement().getAttributes();
+            Collection<String> candidateLogicIndexNames = findCandidateLogicIndexNames(databaseName, schemaName, targetTableName);
             for (IndexSegment each : attributes.findAttribute(IndexSQLStatementAttribute.class).map(IndexSQLStatementAttribute::getIndexes).orElse(Collections.emptyList())) {
-                String logicIndexName = IndexMetaDataUtils.getLogicIndexName(each.getIndexName().getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue());
+                String logicIndexName = IndexMetaDataUtils.findGeneratedLogicIndexName(
+                        each.getIndexName().getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue(), candidateLogicIndexNames).orElse(each.getIndexName().getIdentifier().getValue());
                 replaceMap.put(each.getIndexName(), logicIndexName);
             }
             for (ConstraintSegment each : attributes.findAttribute(ConstraintSQLStatementAttribute.class).map(ConstraintSQLStatementAttribute::getConstraints).orElse(Collections.emptyList())) {
@@ -122,6 +129,24 @@ public final class PipelineDDLDecorator {
                 replaceMap.put(each, logicConstraint);
             }
         }
+    }
+    
+    private Collection<String> findCandidateLogicIndexNames(final String databaseName, final String schemaName, final String targetTableName) {
+        if (Strings.isNullOrEmpty(databaseName)) {
+            return Collections.emptyList();
+        }
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        if (null == database) {
+            return Collections.emptyList();
+        }
+        if (!Strings.isNullOrEmpty(schemaName)) {
+            return database.containsSchema(schemaName) && database.getSchema(schemaName).containsTable(targetTableName)
+                    ? database.getSchema(schemaName).getTable(targetTableName).getAllIndexes().stream().map(each -> each.getName()).collect(Collectors.toList())
+                    : Collections.emptyList();
+        }
+        Collection<ShardingSphereSchema> matchedSchemas = database.getAllSchemas().stream().filter(each -> each.containsTable(targetTableName)).collect(Collectors.toList());
+        return 1 == matchedSchemas.size() ? matchedSchemas.iterator().next().getTable(targetTableName).getAllIndexes().stream()
+                .map(each -> each.getName()).collect(Collectors.toList()) : Collections.emptyList();
     }
     
     private void appendFromTable(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext sqlStatementContext) {

@@ -98,7 +98,7 @@ public final class ShardingSphereTable {
     public ShardingSphereTable(final String name, final Collection<ShardingSphereColumn> columns,
                                final Collection<ShardingSphereIndex> indexes, final Collection<ShardingSphereConstraint> constraints, final TableType type) {
         this.name = name;
-        final DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.createDefault();
         columnIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.COLUMN);
         indexIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.INDEX);
         constraintIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.CONSTRAINT);
@@ -377,14 +377,14 @@ public final class ShardingSphereTable {
      * @param identifierContext database identifier context
      */
     public void refreshIdentifierContext(final DatabaseIdentifierContext identifierContext) {
-        final Collection<ShardingSphereColumn> columns = new LinkedList<>(columnIndex.getAll());
-        final Collection<ShardingSphereIndex> indexes = new LinkedList<>(indexIdentifierIndex.getAll());
-        final Collection<ShardingSphereConstraint> constraints = new LinkedList<>(constraintIdentifierIndex.getAll());
+        Collection<ShardingSphereColumn> columns = new LinkedList<>(columnIndex.getAll());
         columnIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.COLUMN);
-        indexIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.INDEX);
-        constraintIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.CONSTRAINT);
         columnIndex.rebuild(createColumnMap(columns));
+        Collection<ShardingSphereIndex> indexes = new LinkedList<>(indexIdentifierIndex.getAll());
+        indexIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.INDEX);
         indexIdentifierIndex.rebuild(createIndexes(indexes));
+        Collection<ShardingSphereConstraint> constraints = new LinkedList<>(constraintIdentifierIndex.getAll());
+        constraintIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.CONSTRAINT);
         constraintIdentifierIndex.rebuild(createConstraints(constraints));
     }
     

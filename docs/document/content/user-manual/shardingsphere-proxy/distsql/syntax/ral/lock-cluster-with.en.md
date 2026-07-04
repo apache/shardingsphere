@@ -16,7 +16,7 @@ The `LOCK CLUSTER WITH` syntax is utilized to apply a lock with a specific algor
 LockClusterWith ::=
   'LOCK' 'CLUSTER' 'WITH' lockStrategy ('TIMEOUT' timeoutMillis)?
 
-timeoutmillis ::=
+timeoutMillis ::=
   long
 ```
 
@@ -45,7 +45,7 @@ LOCK CLUSTER WITH WRITE;
 LOCK CLUSTER WITH READ_WRITE TIMEOUT 2000;
 ```
 
-### Reserved words
+### Reserved word
 
 `LOCK`,`CLUSTER`,`WITH`
 

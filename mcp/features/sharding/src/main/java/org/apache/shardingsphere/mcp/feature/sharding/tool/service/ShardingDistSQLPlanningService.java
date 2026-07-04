@@ -191,8 +191,7 @@ public final class ShardingDistSQLPlanningService {
     }
     
     private String createKeyGeneratorFragment(final ShardingWorkflowRequest request) {
-        String keyGeneratorType = request.getKeyGeneratorType().isEmpty() ? request.getAlgorithmType() : request.getKeyGeneratorType();
-        return createAlgorithmFragment(keyGeneratorType, request.getKeyGeneratorProperties());
+        return createAlgorithmFragment(request.getKeyGeneratorType(), request.getKeyGeneratorProperties());
     }
     
     private String createAlgorithmFragment(final String algorithmType, final Map<String, String> properties) {
@@ -227,6 +226,6 @@ public final class ShardingDistSQLPlanningService {
     }
     
     private String format(final String value) {
-        return WorkflowSQLUtils.formatDistSQLIdentifier(value);
+        return WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(value);
     }
 }

@@ -21,15 +21,19 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidator;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;
-import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Mask tool descriptor validator.
  */
 public final class MaskToolDescriptorValidator implements MCPToolDescriptorValidator {
+    
+    private static final Collection<String> REQUIRED_SECRET_WORKFLOW_OUTPUT_FIELDS = List.of("masked_property_preview", "secret_reference_summary");
+    
+    private static final Collection<String> REQUIRED_META_FIELDS = List.of(
+            "org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
     
     @Override
     public boolean supports(final MCPToolDescriptor toolDescriptor) {
@@ -38,8 +42,7 @@ public final class MaskToolDescriptorValidator implements MCPToolDescriptorValid
     
     @Override
     public void validate(final MCPToolDescriptor toolDescriptor) {
-        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
-                List.of("response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
-                        MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS));
+        MCPToolDescriptorValidationUtils.validateRequiredWorkflowPlanOutputFields(toolDescriptor, REQUIRED_SECRET_WORKFLOW_OUTPUT_FIELDS);
+        MCPToolDescriptorValidationUtils.validateRequiredMetaFields(toolDescriptor, REQUIRED_META_FIELDS);
     }
 }

@@ -120,11 +120,25 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     @Test
+    void assertPlanRejectsAlterWhenExistingColumnsMustBePreserved() {
+        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
+        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5"), Map.of("column", "email", "algorithm_type", "MD5")));
+        MaskWorkflowPlanningService service = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), createEmptyPropertyTemplateService(),
+                new MaskRuleDistSQLPlanningService());
+        WorkflowRequest request = createRequest("alter");
+        request.getPrimaryAlgorithmProperties().put("from-x", "1");
+        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        assertThat(actual.getStatus(), is("clarifying"));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
+    }
+    
+    @Test
     void assertPlanDropWorkflow() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
         MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planMaskDropRule(any())).thenReturn(new RuleArtifact("drop", "DROP MASK RULE orders"));
+        when(ruleDistSQLPlanningService.planMaskDropRule(any())).thenReturn(new RuleArtifact("drop", "DROP MASK RULE `orders`"));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), ruleDistSQLPlanningService)
                 .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("drop"));

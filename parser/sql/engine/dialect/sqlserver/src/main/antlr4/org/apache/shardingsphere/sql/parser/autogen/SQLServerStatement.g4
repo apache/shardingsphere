@@ -81,5 +81,6 @@ execute
     | revert
     | updateStatistics
     | merge
+    | declareVariable
     ) SEMI_? EOF
     ;

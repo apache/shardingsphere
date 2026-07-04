@@ -198,10 +198,7 @@ final class SQLStatementTargetResolver {
     
     private void collectCreateSourceObjectNames(final SQLStatementStructure statementStructure, final List<SQLStatementToken> tokens, final Collection<String> visitedAliases,
                                                 final Collection<String> objectNames) {
-        if (isStatementObjectType(tokens, "INDEX")) {
-            collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, objectNames);
-        }
-        if (isStatementObjectType(tokens, "TRIGGER", "POLICY")) {
+        if (isStatementObjectType(tokens, "INDEX", "TRIGGER", "POLICY")) {
             collectObjectNamesAfterKeyword(statementStructure, tokens, "ON", visitedAliases, objectNames);
         }
         if (isStatementObjectType(tokens, "TABLE")) {

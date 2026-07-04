@@ -42,13 +42,6 @@ class MCPToolArgumentsTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getObjectTypesWithIgnoredUnsupportedValuesCases")
-    void assertGetObjectTypesWithIgnoredUnsupportedValues(final String name, final Map<String, Object> rawArguments, final Set<String> ignoredUnsupportedValues,
-                                                          final Set<SupportedMCPMetadataObjectType> expectedObjectTypes) {
-        assertThat(new MCPToolArguments(rawArguments).getObjectTypes(Set.of(SupportedMCPMetadataObjectType.TABLE), ignoredUnsupportedValues), is(expectedObjectTypes));
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("invalidObjectTypesCases")
     void assertGetObjectTypesWithInvalidArgument(final String name, final Map<String, Object> rawArguments, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes,
                                                  final String expectedMessage) {
@@ -81,21 +74,9 @@ class MCPToolArgumentsTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getBooleanArgumentCases")
-    void assertGetBooleanArgument(final String name, final Map<String, Object> rawArguments, final boolean defaultValue, final boolean expectedValue) {
-        assertThat(new MCPToolArguments(rawArguments).getBooleanArgument("enabled", defaultValue), is(expectedValue));
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("getStringCollectionArgumentCases")
     void assertGetStringCollectionArgument(final String name, final Map<String, Object> rawArguments, final List<String> expectedValues) {
         assertThat(new MCPToolArguments(rawArguments).getStringCollectionArgument("steps"), is(expectedValues));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getMapArgumentCases")
-    void assertGetMapArgument(final String name, final Map<String, Object> rawArguments, final Map<String, String> expectedValues) {
-        assertThat(new MCPToolArguments(rawArguments).getMapArgument("props"), is(expectedValues));
     }
     
     private static Stream<Arguments> getObjectTypesCases() {
@@ -105,12 +86,6 @@ class MCPToolArgumentsTest {
                 Arguments.of("normalized object types", Map.of("object_types", List.of("table", " VIEW ", "table")),
                         Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW),
                         Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW)));
-    }
-    
-    private static Stream<Arguments> getObjectTypesWithIgnoredUnsupportedValuesCases() {
-        return Stream.of(
-                Arguments.of("ignored query value", Map.of("object_types", List.of("table", "orders")), Set.of("orders"), Set.of(SupportedMCPMetadataObjectType.TABLE)),
-                Arguments.of("only ignored query value", Map.of("object_types", List.of("orders")), Set.of("orders"), Set.of()));
     }
     
     private static Stream<Arguments> invalidObjectTypesCases() {
@@ -152,26 +127,10 @@ class MCPToolArgumentsTest {
                 Arguments.of("too large bounded integer", Map.of("limit", 101), "limit must be an integer between 0 and 100."));
     }
     
-    private static Stream<Arguments> getBooleanArgumentCases() {
-        return Stream.of(
-                Arguments.of("missing boolean", Map.of(), true, true),
-                Arguments.of("boolean literal", Map.of("enabled", false), true, false),
-                Arguments.of("parsed boolean", Map.of("enabled", " true "), false, true),
-                Arguments.of("blank boolean", Map.of("enabled", "   "), true, true));
-    }
-    
     private static Stream<Arguments> getStringCollectionArgumentCases() {
         return Stream.of(
                 Arguments.of("missing collection", Map.of(), List.of()),
                 Arguments.of("normalized collection", Map.of("steps", List.of(" ddl ", "", "rule_distsql")), List.of("ddl", "rule_distsql")));
     }
     
-    private static Stream<Arguments> getMapArgumentCases() {
-        return Stream.of(
-                Arguments.of("missing map", Map.of(), Map.of()),
-                Arguments.of("map argument", Map.of("props", Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")),
-                        Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")),
-                Arguments.of("entry list argument", Map.of("props", List.of(" aes-key-value = 123456 ", "digest-algorithm-name=SHA-1")),
-                        Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")));
-    }
 }

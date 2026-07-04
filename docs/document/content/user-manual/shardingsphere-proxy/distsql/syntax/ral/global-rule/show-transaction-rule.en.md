@@ -23,11 +23,11 @@ ShowTransactionRule ::=
 
 ### Return Value Description
 
-| Column   | Description             |
-|----------|-------------------------|
-| users    | users                   |
-| provider | privilege provider type |
-| props    | privilege properties    |
+| Column        | Description                       |
+|---------------|-----------------------------------|
+| default_type  | Default transaction type          |
+| provider_type | Transaction manager provider type |
+| props         | Transaction manager properties    |
 
 ### Example
 

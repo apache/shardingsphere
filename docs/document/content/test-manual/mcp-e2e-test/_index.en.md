@@ -19,6 +19,24 @@ This chapter describes ShardingSphere-MCP end-to-end contract validation and LLM
 - Real-model MCP usability.
 - Encrypt and Mask workflow usability validation.
 
+## Feature template acceptance
+
+When an MCP feature is used as a workflow template, E2E tests should cover protocol discoverability, model usability, and negative contracts.
+For the Encrypt workflow, template-level acceptance should include at least:
+
+- Completion returns feature-available algorithms or candidate values.
+- Plan output contains only DistSQL artifacts supported by the current feature.
+- Plan output does not contain unsupported physical DDL, index, migration, backfill, or cleanup artifacts.
+- `resources_to_read` points to feature-owned algorithm, rule, or configuration resources, not physical metadata resources outside the feature.
+- Descriptor output schema does not expose output fields unsupported by the current feature.
+- Plan, workflow resource, preview, apply, validate, recovery, and trace-visible outputs do not leak sensitive properties.
+- Custom algorithms or algorithms with unknown capabilities are marked as unconfirmed instead of being treated as known-capability algorithms.
+- Drop scenarios validate rule removal semantics and do not use physical cleanup as a success condition.
+- Unsupported alter expansion returns a clear limitation instead of generating an incomplete workflow.
+- Apply must be preceded by preview and must validate user-approved steps.
+
+Test reuse should stay in local helpers under `test/e2e/mcp`; do not add a test jar or a cross-module test-support module for template acceptance.
+
 ## Local preparation
 
 Install MCP E2E dependency modules into the local repository first:

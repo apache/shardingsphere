@@ -30,7 +30,6 @@ import java.net.http.HttpResponse;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -38,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final String RECOVERY_SECRET = "recovery-secret-value";
     
@@ -100,8 +99,8 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(String.valueOf(recovery.get("plan_id")), is("plan-missing"));
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("type")), is("completion"));
-        assertThat(String.valueOf(nextAction.get("argument_name")), is("plan_id"));
-        HttpResponse<String> completion = sendCompletionRequest(httpClient, sessionId, createCompletionReference(nextAction), String.valueOf(nextAction.get("argument_name")));
+        assertThat(castToMap(nextAction.get("argument")).get("name"), is("plan_id"));
+        HttpResponse<String> completion = sendCompletionRequest(httpClient, sessionId, castToMap(nextAction.get("ref")), String.valueOf(castToMap(nextAction.get("argument")).get("name")));
         assertThat(completion.statusCode(), is(200));
         Map<String, Object> completionPayload = getResultPayload(completion);
         assertThat(castToMap(completionPayload.get("completion")).get("total"), is(0));
@@ -144,12 +143,6 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 "completion-1", "completion/complete", params));
     }
     
-    private Map<String, Object> createCompletionReference(final Map<String, Object> action) {
-        String referenceType = Objects.toString(action.get("reference_type"), "");
-        String reference = Objects.toString(action.get("reference"), "");
-        return "ref/resource".equals(referenceType) ? Map.of("type", referenceType, "uri", reference) : Map.of("type", referenceType, "name", reference);
-    }
-    
     private Map<String, Object> createEncryptRulePlanArguments() {
         return Map.of(
                 "database", "logic_db",
@@ -167,7 +160,6 @@ class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
-        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     

@@ -57,8 +57,8 @@ class BroadcastToolHandlerTest {
         WorkflowContextFixture fixture = createWorkflowContextFixture();
         MCPResponse actual = new PlanBroadcastRuleToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
                 "database", "logic_db",
-                "structured_intent_evidence", Map.of("tables", "t_order_item"),
-                "user_overrides", Map.of("tables", "t_order"))));
+                "tables", "t_order",
+                "structured_intent_evidence", Map.of("tables", "t_order_item"))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<BroadcastWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(BroadcastWorkflowRequest.class);
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
@@ -74,12 +74,12 @@ class BroadcastToolHandlerTest {
         Map<String, Object> actualPayload = actual.toPayload();
         assertFalse(actualPayload.containsKey("ddl_artifacts"));
         assertFalse(actualPayload.containsKey("index_plan"));
-        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).get(0)).get("sql")).contains("CREATE BROADCAST TABLE RULE"));
+        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("CREATE BROADCAST TABLE RULE"));
         List<String> actualResourceUris = extractResourceUris((List<?>) actualPayload.get("resources_to_read"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/broadcast/databases/logic_db/rules"));
         assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/t_order/columns"));
         assertThat(((Map<?, ?>) actualPayload.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
     }
@@ -97,7 +97,7 @@ class BroadcastToolHandlerTest {
         clarifiedIntent.setOperationType("create");
         result.setClarifiedIntent(clarifiedIntent);
         result.setInteractionPlan(InteractionPlan.create("plan-1", request, "Broadcast workflow plan.", List.of("review"), List.of("rules")));
-        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE BROADCAST TABLE RULE t_order"));
+        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE BROADCAST TABLE RULE `t_order`"));
         return result;
     }
     

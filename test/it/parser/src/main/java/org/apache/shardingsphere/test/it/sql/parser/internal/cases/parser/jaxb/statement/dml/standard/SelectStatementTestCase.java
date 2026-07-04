@@ -34,6 +34,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.window.ExpectedWindowClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.with.ExpectedWithClause;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -45,6 +46,9 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElement
     private ExpectedTable from;
+    
+    @XmlAttribute(name = "subquery-type")
+    private String subqueryType;
     
     @XmlElement
     private final ExpectedProjections projections = new ExpectedProjections();

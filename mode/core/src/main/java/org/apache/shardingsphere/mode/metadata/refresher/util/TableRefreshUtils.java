@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -213,7 +213,7 @@ public final class TableRefreshUtils {
      */
     public static Optional<String> findActualTableNameByIndex(final ShardingSphereDatabase database, final String schemaName,
                                                               final IdentifierValue indexIdentifierValue, final ConfigurationProperties props) {
-        IdentifierCaseRule rule = database.getIdentifierContext().getRule(IdentifierScope.INDEX);
+        IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(IdentifierScope.INDEX);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null == schema) {
@@ -221,7 +221,7 @@ public final class TableRefreshUtils {
         }
         return schema.getAllTables().stream()
                 .filter(each -> each.getAllIndexes().stream().map(ShardingSphereIndex::getName)
-                        .anyMatch(indexName -> rule.matches(indexName, indexIdentifierValue.getValue(), indexIdentifierValue.getQuoteCharacter())))
+                        .anyMatch(indexName -> policy.matches(indexName, indexIdentifierValue.getValue(), indexIdentifierValue.getQuoteCharacter())))
                 .map(ShardingSphereTable::getName)
                 .findFirst();
     }
@@ -289,55 +289,55 @@ public final class TableRefreshUtils {
     }
     
     private static String getLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue identifierValue, final IdentifierScope scope, final ConfigurationProperties props) {
-        IdentifierCaseRule rule = database.getIdentifierContext().getRule(scope);
-        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter() && LookupMode.NORMALIZED == rule.getLookupMode(identifierValue.getQuoteCharacter())
-                ? rule.normalize(identifierValue.getValue())
+        IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(scope);
+        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter() && LookupMode.NORMALIZED == policy.getLookupMode(identifierValue.getQuoteCharacter())
+                ? policy.normalize(identifierValue.getValue())
                 : identifierValue.getValue();
     }
     
     private static String getActualObjectName(final ShardingSphereDatabase database, final String schemaName,
                                               final IdentifierValue objectIdentifierValue, final ConfigurationProperties props,
                                               final IdentifierScope scope, final Function<ShardingSphereSchema, java.util.stream.Stream<String>> actualNameStream) {
-        IdentifierCaseRule rule = database.getIdentifierContext().getRule(scope);
+        IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(scope);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null != schema) {
             Optional<String> matchedName = actualNameStream.apply(schema)
-                    .filter(each -> rule.matches(each, objectIdentifierValue.getValue(), objectIdentifierValue.getQuoteCharacter())).findFirst();
+                    .filter(each -> policy.matches(each, objectIdentifierValue.getValue(), objectIdentifierValue.getQuoteCharacter())).findFirst();
             if (matchedName.isPresent()) {
                 return matchedName.get();
             }
         }
-        return QuoteCharacter.NONE == objectIdentifierValue.getQuoteCharacter() && LookupMode.NORMALIZED == rule.getLookupMode(objectIdentifierValue.getQuoteCharacter())
-                ? rule.normalize(objectIdentifierValue.getValue())
+        return QuoteCharacter.NONE == objectIdentifierValue.getQuoteCharacter() && LookupMode.NORMALIZED == policy.getLookupMode(objectIdentifierValue.getQuoteCharacter())
+                ? policy.normalize(objectIdentifierValue.getValue())
                 : objectIdentifierValue.getValue();
     }
     
     private static <T> String getActualObjectName(final ShardingSphereDatabase database, final String schemaName, final String tableName,
                                                   final IdentifierValue objectIdentifierValue, final ConfigurationProperties props, final IdentifierScope scope,
                                                   final Function<ShardingSphereTable, Collection<T>> actualObjects, final Function<T, String> actualNameMapper) {
-        IdentifierCaseRule rule = database.getIdentifierContext().getRule(scope);
+        IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(scope);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null != schema) {
             String actualTableName = getActualTableName(database, actualSchemaName, new IdentifierValue(tableName), props);
             ShardingSphereTable table = schema.getTable(actualTableName);
-            Optional<String> matchedName = getMatchedObjectName(table, objectIdentifierValue, rule, actualObjects, actualNameMapper);
+            Optional<String> matchedName = getMatchedObjectName(table, objectIdentifierValue, policy, actualObjects, actualNameMapper);
             if (matchedName.isPresent()) {
                 return matchedName.get();
             }
         }
-        return QuoteCharacter.NONE == objectIdentifierValue.getQuoteCharacter() && LookupMode.NORMALIZED == rule.getLookupMode(objectIdentifierValue.getQuoteCharacter())
-                ? rule.normalize(objectIdentifierValue.getValue())
+        return QuoteCharacter.NONE == objectIdentifierValue.getQuoteCharacter() && LookupMode.NORMALIZED == policy.getLookupMode(objectIdentifierValue.getQuoteCharacter())
+                ? policy.normalize(objectIdentifierValue.getValue())
                 : objectIdentifierValue.getValue();
     }
     
-    private static <T> Optional<String> getMatchedObjectName(final ShardingSphereTable table, final IdentifierValue objectIdentifierValue, final IdentifierCaseRule rule,
+    private static <T> Optional<String> getMatchedObjectName(final ShardingSphereTable table, final IdentifierValue objectIdentifierValue, final IdentifierCasePolicy policy,
                                                              final Function<ShardingSphereTable, Collection<T>> actualObjects, final Function<T, String> actualNameMapper) {
         if (null == table) {
             return Optional.empty();
         }
         return actualObjects.apply(table).stream().map(actualNameMapper)
-                .filter(each -> rule.matches(each, objectIdentifierValue.getValue(), objectIdentifierValue.getQuoteCharacter())).findFirst();
+                .filter(each -> policy.matches(each, objectIdentifierValue.getValue(), objectIdentifierValue.getQuoteCharacter())).findFirst();
     }
 }

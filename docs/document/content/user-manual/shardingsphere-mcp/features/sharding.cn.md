@@ -22,8 +22,11 @@ weight = 7
 ## 审查重点
 
 - 确认表规则计划只使用分片规则 DistSQL 和逻辑对象名。
+- 审查分片 `algorithm_recommendations` 和 `property_requirements`；例如 inline 算法需要 `algorithm-expression`，MOD 类算法需要 `sharding-count`。
 - 确认键生成器和键生成策略计划不会把键生成器属性与分片算法属性混用。
+- 键生成器推荐需要和分片算法推荐分开审查；Snowflake 属性是可选项，除非部署要求固定值。
 - 确认清理计划包含 unused-state 和 used-by 检查。
+- 执行 workflow 前，确认返回的 `plan_id`、`resources_to_read`、`next_actions` 和 `distsql_artifacts`。
 - 执行前先预览 workflow，执行后校验 Proxy 可见规则状态。
 
 规则变更的通用审查流程见[规则变更流程](../plugin-workflow/)。

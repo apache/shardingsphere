@@ -99,12 +99,18 @@ class LLMMCPModelFacingToolResponseFormatterTest {
                         "recovery_category", "missing_context",
                         "model_action", "retry",
                         "suggested_arguments", Map.of("database", "logic_db"),
+                        "next_actions", List.of(
+                                Map.of("type", "tool_call", "tool_name", "database_gateway_execute_update", "arguments", Map.of("execution_mode", "execute")),
+                                Map.of("type", "resource_read", "resource_uri", "shardingsphere://databases")),
                         "ignored", "value")));
         assertThat(actual, is(Map.of(
                 "next_actions", List.of(
-                        Map.of("type", "tool_call", "title", "Execute", "reason", "approved"),
                         Map.of("type", "resource_read", "resource_uri", "shardingsphere://databases")),
-                "recovery", Map.of("recovery_category", "missing_context", "model_action", "retry", "suggested_arguments", Map.of("database", "logic_db")))));
+                "recovery", Map.of(
+                        "recovery_category", "missing_context",
+                        "model_action", "retry",
+                        "suggested_arguments", Map.of("database", "logic_db"),
+                        "next_actions", List.of(Map.of("type", "resource_read", "resource_uri", "shardingsphere://databases"))))));
     }
     
     @Test

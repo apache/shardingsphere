@@ -28,4 +28,6 @@ import lombok.RequiredArgsConstructor;
 public final class DialectIndexOption {
     
     private final boolean isSchemaUniquenessLevel;
+    
+    private final int indexNameMaxLength;
 }

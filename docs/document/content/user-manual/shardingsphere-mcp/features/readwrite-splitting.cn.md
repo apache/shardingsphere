@@ -23,6 +23,9 @@ weight = 5
 - 确认规则计划使用 `CREATE`、`ALTER` 或 `DROP READWRITE_SPLITTING RULE`。
 - 确认状态计划使用 `ALTER READWRITE_SPLITTING RULE ... ENABLE` 或 `DISABLE`。
 - 确认存储单元名是已有逻辑存储单元，workflow 不会创建它们。
+- 选择负载均衡算法前，审查 `algorithm_recommendations`。
+- `RANDOM` 和 `ROUND_ROBIN` 不需要负载均衡属性；`WEIGHT` 需要为每个读存储单元提供一个权重属性。
+- 执行 workflow 前，确认返回的 `plan_id`、`resources_to_read`、`next_actions` 和 `distsql_artifacts`。
 
 规则变更的通用审查流程见[规则变更流程](../plugin-workflow/)。
 

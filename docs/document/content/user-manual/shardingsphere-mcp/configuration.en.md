@@ -64,24 +64,23 @@ Enable this only when clients cannot forge these headers directly.
 
 `runtimeDatabases` defines the databases that the MCP Server can connect to and expose to users.
 Each entry key is the database name that users reference in natural-language tasks. It usually maps to a logical database exposed by ShardingSphere-Proxy.
+The MCP Server resolves the database type from `jdbcUrl`; use a JDBC driver class that matches the configured URL.
 
 ```yaml
 runtimeDatabases:
   "<logic-database>":
-    databaseType: MySQL
     jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
     username: "<proxy-username>"
     password: "<proxy-password>"
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-| *Name*                | *Description*                                                                                                                                                                                                                                                  |
-|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `databaseType` (+)    | Database protocol or dialect type of the connection endpoint, such as `MySQL` or `PostgreSQL`. It affects metadata recognition and SQL capability judgment; it does not mean the endpoint is necessarily a direct database connection or ShardingSphere-Proxy. |
-| `jdbcUrl` (+)         | JDBC URL used by the MCP Server to connect to the runtime database. Point it to a Proxy logical database when using ShardingSphere rule capabilities.                                                                                                          |
-| `username` (+)        | Username for the runtime database, usually the ShardingSphere-Proxy logical database username.                                                                                                                                                                 |
-| `password` (?)        | Password for the runtime database.                                                                                                                                                                                                                             |
-| `driverClassName` (+) | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver.                                                                                                                                                                               |
+| *Name*                | *Description*                                                                                                                                                         |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `jdbcUrl` (+)         | JDBC URL used by the MCP Server to connect to the runtime database and resolve the database type. Use a Proxy logical database for ShardingSphere rule capabilities. |
+| `username` (+)        | Username for the runtime database, usually the ShardingSphere-Proxy logical database username.                                                                        |
+| `password` (?)        | Password for the runtime database.                                                                                                                                    |
+| `driverClassName` (+) | JDBC driver class name, such as `com.mysql.cj.jdbc.Driver` for the MySQL driver.                                                                                      |
 
 Legend:
 
@@ -94,6 +93,32 @@ Notes:
 - With a direct database connection, users see metadata from the target database itself, not ShardingSphere rule state.
 - Schema, table, view, index, and sequence metadata depends on JDBC metadata from the connection target. Proxy-visible metadata and direct-connection metadata may differ.
 - If the target JDBC driver is not packaged, copy the driver jar under `plugins/`.
+
+## Secret Placeholders
+
+Rule-change tools may require sensitive algorithm parameters such as keys, tokens, or replacement characters.
+Do not put real sensitive values into model-visible tool input, ordinary documents, chat records, or logs.
+Tool input can pass a secret placeholder object inside algorithm properties. The MCP Server only plans, previews, and generates safe manual execution packages; it does not read or resolve real values.
+Planning, preview, and manual artifact packages return only neutral placeholders or `******`; they do not return `secret_ref` or real sensitive values.
+
+Example reference object in algorithm properties:
+
+```json
+{
+  "primary_algorithm_properties": {
+    "aes-key-value": {
+      "secret_ref": "placeholder://secret-value-1"
+    }
+  }
+}
+```
+
+Notes:
+
+- MCP Server only records the sensitive slot that requires manual replacement; it does not fetch real sensitive values from external systems.
+- Automatic execution with sensitive placeholders stops before side effects and returns `secret_reference_manual_execution_required`.
+- When using a manual execution package, operators replace neutral placeholders with real values outside MCP and the AI application, then execute the DistSQL or YAML.
+- Documentation and examples use neutral placeholders only to avoid exposing real keys, paths, or internal system details to model context.
 
 ## Choose a Connection Target
 

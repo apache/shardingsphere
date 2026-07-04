@@ -43,4 +43,10 @@ class MCPPromptTemplateLoaderTest {
     void assertRender() {
         assertThat(MCPPromptTemplateLoader.render("Hello {{ name }}{{ missing }}.", Map.of("name", "ShardingSphere")), is("Hello ShardingSphere."));
     }
+    
+    @Test
+    void assertRenderSupportedPlaceholders() {
+        assertThat(MCPPromptTemplateLoader.render("{{ database }} {{schema-name}} {{ arg.value }}",
+                Map.of("database", "logic_db", "schema-name", "public", "arg.value", "enabled")), is("logic_db public enabled"));
+    }
 }

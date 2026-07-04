@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
@@ -36,6 +37,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -47,7 +49,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     
     private static final Set<SupportedMCPMetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
-            SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX, SupportedMCPMetadataObjectType.SEQUENCE);
+            SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX,
+            SupportedMCPMetadataObjectType.STORAGE_UNIT, SupportedMCPMetadataObjectType.SEQUENCE);
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
@@ -65,17 +68,22 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         String query = toolArguments.getStringArgument("query");
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), query,
-                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES, query.isEmpty() ? Set.of() : Set.of(query)));
-        MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade()).execute(request);
-        return new MCPItemsResponse(searchResult.getItems(), "", createSearchPayloadMetadata(request, searchResult), MCPResponseMode.SEARCH);
+                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES));
+        MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade()).execute(request);
+        return new MCPItemsResponse(searchResult.getItems(), "", createSearchPayloadMetadata(databaseContext, request, searchResult), MCPResponseMode.SEARCH);
     }
     
-    private Map<String, Object> createSearchPayloadMetadata(final MetadataSearchRequest request, final MetadataSearchResult searchResult) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+    private Map<String, Object> createSearchPayloadMetadata(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request, final MetadataSearchResult searchResult) {
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("search_context", searchResult.getSearchContext());
         result.put("total_match_count", searchResult.getTotalMatchCount());
+        result.put("returned_count", searchResult.getReturnedCount());
+        result.put("truncated", searchResult.isTruncated());
+        if (searchResult.isTruncated()) {
+            result.put("large_result_guidance", createLargeResultGuidance(searchResult));
+        }
         if (searchResult.getItems().isEmpty()) {
-            result.put("empty_state", createEmptyState(request));
+            result.put("empty_state", createEmptyState(databaseContext, request));
             result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(createEmptySearchNextAction(request)));
             return result;
         }
@@ -90,11 +98,24 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         return result;
     }
     
+    private Map<String, Object> createLargeResultGuidance(final MetadataSearchResult searchResult) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("state", "metadata_search_result_truncated");
+        result.put("threshold", searchResult.getLargeResultThreshold());
+        result.put("narrowing_arguments", List.of("database", "schema", "query", "object_types"));
+        result.put(MCPPayloadFieldNames.REASON, "Search matched more metadata objects than returned; narrow the search before reading specific resources.");
+        return result;
+    }
+    
     private List<Map<String, Object>> createResultNextActions(final MetadataSearchResult searchResult, final List<String> duplicatedNames) {
         List<Map<String, Object>> result = new LinkedList<>();
         if (isBroadSearchGuarded(searchResult)) {
             result.add(MCPNextActionUtils.askUser("Blank cross-database metadata search listed databases only. Choose a database, query, or object type before searching deeper metadata.",
                     List.of("database", "query", "object_types")));
+        }
+        if (searchResult.isTruncated() && !isBroadSearchGuarded(searchResult)) {
+            result.add(MCPNextActionUtils.askUser("Metadata search results were truncated. Choose database, schema, query, or object type before reading specific resources.",
+                    List.of("database", "schema", "query", "object_types")));
         }
         if (!duplicatedNames.isEmpty()) {
             result.add(MCPNextActionUtils.askUser("Multiple metadata hits share the same name. Ask the user to choose database, schema, or object type before using a specific resource.",
@@ -189,12 +210,53 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         return result;
     }
     
-    private Map<String, Object> createEmptyState(final MetadataSearchRequest request) {
+    private Map<String, Object> createEmptyState(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request) {
+        String category = resolveEmptyStateCategory(databaseContext, request);
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("state", request.getQuery().isEmpty() ? "no_items" : "no_match");
-        result.put("category", request.getQuery().isEmpty() ? "empty_scope" : "not_found");
-        result.put(MCPPayloadFieldNames.REASON, request.getQuery().isEmpty() ? "No metadata is available in the requested scope." : "No metadata matched the query in the requested scope.");
+        result.put("category", category);
+        result.put(MCPPayloadFieldNames.REASON, createEmptyStateReason(category, request));
         return result;
+    }
+    
+    private String resolveEmptyStateCategory(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request) {
+        if (!hasRuntimeDatabase(databaseContext)) {
+            return MCPDiagnosticCategory.NO_RUNTIME_DATABASE;
+        }
+        if (!request.getDatabase().isEmpty() && !isKnownDatabase(databaseContext, request.getDatabase())) {
+            return MCPDiagnosticCategory.UNKNOWN_DATABASE;
+        }
+        if (!request.getSchema().isEmpty() && !isKnownSchema(databaseContext, request.getDatabase(), request.getSchema())) {
+            return MCPDiagnosticCategory.SCHEMA_NOT_VISIBLE;
+        }
+        return request.getQuery().isEmpty() ? MCPDiagnosticCategory.EMPTY_SCOPE : MCPDiagnosticCategory.OBJECT_NOT_VISIBLE;
+    }
+    
+    private boolean isKnownDatabase(final MCPDatabaseHandlerContext databaseContext, final String databaseName) {
+        return Optional.ofNullable(databaseContext.getCapabilityFacade()).flatMap(capabilityFacade -> capabilityFacade.findDatabaseProfile(databaseName)).isPresent();
+    }
+    
+    private boolean isKnownSchema(final MCPDatabaseHandlerContext databaseContext, final String databaseName, final String schemaName) {
+        return databaseContext.getMetadataQueryFacade().querySchema(databaseName, schemaName).isPresent();
+    }
+    
+    private boolean hasRuntimeDatabase(final MCPDatabaseHandlerContext databaseContext) {
+        return !databaseContext.getMetadataQueryFacade().queryDatabases().isEmpty();
+    }
+    
+    private String createEmptyStateReason(final String category, final MetadataSearchRequest request) {
+        switch (category) {
+            case MCPDiagnosticCategory.NO_RUNTIME_DATABASE:
+                return "No runtime database metadata is visible to MCP.";
+            case MCPDiagnosticCategory.UNKNOWN_DATABASE:
+                return "The requested logical database is not visible to MCP.";
+            case MCPDiagnosticCategory.SCHEMA_NOT_VISIBLE:
+                return "The requested schema is not visible in the current metadata scope.";
+            case MCPDiagnosticCategory.OBJECT_NOT_VISIBLE:
+                return "No visible metadata object matched the query in the requested scope.";
+            default:
+                return request.getQuery().isEmpty() ? "No metadata is available in the requested scope." : "No metadata matched the query in the requested scope.";
+        }
     }
     
     private Map<String, Object> createEmptySearchNextAction(final MetadataSearchRequest request) {

@@ -43,7 +43,7 @@ class WorkflowContextSnapshotTest {
         originalSnapshot.getClarifiedIntent().getUnresolvedFields().add("schema");
         originalSnapshot.getClarifiedIntent().getInferredValues().put("requires_decrypt", false);
         originalSnapshot.getFeatureData().getAlgorithmProperties("primary").put("mode", "changed");
-        originalSnapshot.getInteractionPlan().getValidationStrategy().put("layers", new LinkedList<>(List.of("rule")));
+        originalSnapshot.getInteractionPlan().getValidationStrategy().put("layers", List.of("rule"));
         getStringList(originalSnapshot.getIssues().get(0).getDetails(), "missing_fields").add("schema");
         getStringList(originalSnapshot.getValidationReport().getMismatches().get(0), "layers").add("rule");
         assertThat(actualSnapshot.getRequest().getTable(), is("orders"));
@@ -91,7 +91,7 @@ class WorkflowContextSnapshotTest {
         result.setFeatureData(featureData);
         InteractionPlan interactionPlan = new InteractionPlan();
         interactionPlan.setCurrentStep("review");
-        interactionPlan.getValidationStrategy().put("layers", new LinkedList<>(List.of("ddl")));
+        interactionPlan.getValidationStrategy().put("layers", List.of("ddl"));
         result.setInteractionPlan(interactionPlan);
         Map<String, Object> issueDetails = new LinkedHashMap<>(1, 1F);
         issueDetails.put("missing_fields", new LinkedList<>(List.of("column")));

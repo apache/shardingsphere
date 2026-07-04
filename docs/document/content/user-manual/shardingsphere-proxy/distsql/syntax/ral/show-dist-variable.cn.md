@@ -36,7 +36,7 @@ variableName ::=
 
 ### 补充说明
 
-- 未指定 `vairableName` 时，默认查询所有 `PROXY` 系统变量配置
+- 未指定 `variableName` 时，默认查询所有持久化 `PROXY` 系统变量配置和缓存连接数
 
 ### 示例
 
@@ -48,32 +48,34 @@ SHOW DIST VARIABLES;
 
 ```sql
 mysql> SHOW DIST VARIABLES;
-+-----------------------------------------+-----------------+
-| variable_name                           | variable_value  |
-+-----------------------------------------+-----------------+
-| agent_plugins_enabled                   | true            |
-| cached_connections                      | 0               |
-| cdc_server_port                         | 33071           |
-| check_table_metadata_enabled            | false           |
-| kernel_executor_size                    | 0               |
-| load_table_metadata_batch_size          | 1000            |
-| max_connections_size_per_query          | 1               |
-| proxy_backend_query_fetch_size          | -1              |
-| proxy_default_port                      | 3307            |
-| proxy_frontend_database_protocol_type   |                 |
-| proxy_frontend_executor_size            | 0               |
-| proxy_frontend_flush_threshold          | 128             |
-| proxy_frontend_max_connections          | 0               |
-| proxy_frontend_ssl_cipher               |                 |
-| proxy_frontend_ssl_enabled              | false           |
-| proxy_frontend_ssl_version              | TLSv1.2,TLSv1.3 |
-| proxy_meta_data_collector_enabled       | false           |
-| proxy_netty_backlog                     | 1024            |
-| sql_show                                | false           |
-| sql_simple                              | false           |
-| system_schema_metadata_assembly_enabled | true            |
-+-----------------------------------------+-----------------+
-21 rows in set (0.01 sec)
++-------------------------------------------------------+-----------------+
+| variable_name                                         | variable_value  |
++-------------------------------------------------------+-----------------+
+| agent_plugins_enabled                                 | true            |
+| cached_connections                                    | 0               |
+| cdc_server_port                                       | 33071           |
+| check_table_metadata_enabled                          | false           |
+| groovy_inline_expression_parsing_cache_max_size       | 1000            |
+| kernel_executor_size                                  | 0               |
+| load_table_metadata_batch_size                        | 1000            |
+| max_connections_size_per_query                        | 1               |
+| max_union_size_per_datasource                         | 2147483647      |
+| metadata_identifier_case_sensitivity                  | DATABASE        |
+| proxy_backend_query_fetch_size                        | -1              |
+| proxy_default_port                                    | 3307            |
+| proxy_frontend_connection_idle_timeout                | 28800           |
+| proxy_frontend_database_protocol_type                 |                 |
+| proxy_frontend_executor_size                          | 0               |
+| proxy_frontend_flush_threshold                        | 128             |
+| proxy_frontend_max_connections                        | 0               |
+| proxy_frontend_ssl_cipher                             |                 |
+| proxy_frontend_ssl_enabled                            | false           |
+| proxy_frontend_ssl_version                            | TLSv1.2,TLSv1.3 |
+| proxy_netty_backlog                                   | 1024            |
+| sql_show                                              | false           |
+| sql_simple                                            | false           |
++-------------------------------------------------------+-----------------+
+23 rows in set (0.01 sec)
 ```
 
 - 查询指定 `PROXY` 系统变量配置

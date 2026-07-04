@@ -84,7 +84,7 @@ helm uninstall shardingsphere-proxy
 |-------------------------------------|-----------------------------------|-------------------------------|
 | `compute.image.repository`          | ShardingSphere-Proxy 的镜像名         | `apache/shardingsphere-proxy` |
 | `compute.image.pullPolicy`          | ShardingSphere-Proxy 镜像拉取策略       | `IfNotPresent`                |
-| `compute.image.tag`                 | ShardingSphere-Proxy 镜像标签         | `5.1.2`                       |
+| `compute.image.tag`                 | ShardingSphere-Proxy 镜像标签         | `${latest.release.version}`   |
 | `compute.imagePullSecrets`          | 拉取私有仓库的凭证                         | `[]`                          |
 | `compute.resources.limits`          | ShardingSphere-Proxy 容器的资源限制      | `{}`                          |
 | `compute.resources.requests.memory` | ShardingSphere-Proxy 容器申请的内存      | `2Gi`                         |
@@ -92,7 +92,7 @@ helm uninstall shardingsphere-proxy
 | `compute.replicas`                  | ShardingSphere-Proxy 节点个数         | `3`                           |
 | `compute.service.type`              | ShardingSphere-Proxy 网络模式         | `ClusterIP`                   |
 | `compute.service.port`              | ShardingSphere-Proxy 暴露端口         | `3307`                        |
-| `compute.mysqlConnector.version`    | MySQL 驱动版本                        | `5.1.49`                      |
+| `compute.mysqlConnector.version`    | MySQL 驱动版本                        | `8.4.0`                       |
 | `compute.startPort`                 | ShardingSphere-Proxy 启动端口         | `3307`                        |
 | `compute.serverConfig`              | ShardingSphere-Proxy 模式配置文件       | `""`                          |
 
@@ -168,7 +168,7 @@ compute:
     pullPolicy: IfNotPresent
     ## Overrides the image tag whose default is the chart appVersion.
     ##
-    tag: "5.1.2"
+    tag: "${latest.release.version}"
   ## @param compute.imagePullSecrets Specify docker-registry secret names as an array
   ## e.g：
   ## imagePullSecrets:
@@ -203,7 +203,7 @@ compute:
   ## @param compute.mysqlConnector.version MySQL connector version
   ##
   mysqlConnector:
-    version: "5.1.49"
+    version: "8.4.0"
   ## @param compute.startPort ShardingSphere-Proxy start port
   ## ShardingSphere-Proxy start port
   ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/startup/docker/

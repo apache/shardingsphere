@@ -29,11 +29,6 @@ public final class MetadataIntrospectionSQLStatementException extends IllegalArg
     
     private final String statementType;
     
-    /**
-     * Create a metadata introspection SQL statement exception.
-     *
-     * @param statementType statement type
-     */
     public MetadataIntrospectionSQLStatementException(final String statementType) {
         super("Metadata introspection SQL should use MCP metadata resources.");
         this.statementType = statementType;

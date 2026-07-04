@@ -58,6 +58,25 @@ weight = 3
 - 是否会影响运行时规则或已有业务 SQL。
 - 是否确认不需要 ShardingSphere-MCP 生成额外 DDL、索引、数据处理或 SQL 可执行性探测。
 
+## 敏感参数处理
+
+部分脱敏算法参数可能需要由运维侧受控提供，例如替换字符或自定义算法参数。
+可以在算法属性中使用敏感值引用对象：
+
+```json
+{
+  "primary_algorithm_properties": {
+    "replace-char": {
+      "secret_ref": "placeholder://secret-value-1"
+    }
+  }
+}
+```
+
+占位符对象中的 `secret_ref` 只表示需要人工替换的敏感值槽位。
+规划、预览、执行结果和校验输出只显示中性占位符或 `******`，不会回显 `secret_ref` 或真实敏感值。
+如果规则变更仍包含敏感值占位符，自动执行会在产生副作用前返回 `secret_reference_manual_execution_required`；执行人员应在 MCP 和 AI 应用之外替换真实值后手工执行。
+
 ## 执行与校验
 
 建议先预览，确认待执行规则 DistSQL 和副作用范围后再执行。

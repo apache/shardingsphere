@@ -134,7 +134,6 @@ class MCPLaunchConfigurationTest {
     
     private Map<String, Map<String, Object>> createRuntimeDatabases() {
         return Collections.singletonMap("logic_db", Map.of(
-                "databaseType", "MySQL",
                 "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
                 "username", "demo",
                 "password", "",

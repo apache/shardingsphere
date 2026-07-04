@@ -41,7 +41,7 @@ class OnDuplicateUpdateContextTest {
     
     @Test
     void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(Collections.emptyList(), Collections.emptyList(), 0);
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(Collections.emptyList(), Collections.emptyList(), 0, Collections.emptyList());
         assertThat(onDuplicateUpdateContext.getValueExpressions(), is(Plugins.getMemberAccessor()
                 .invoke(OnDuplicateUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class), onDuplicateUpdateContext, Collections.emptyList())));
         assertThat(onDuplicateUpdateContext.getParameters(), is(Plugins.getMemberAccessor()
@@ -54,7 +54,7 @@ class OnDuplicateUpdateContextTest {
         String parameterValue1 = "test1";
         String parameterValue2 = "test2";
         List<Object> params = Arrays.asList(parameterValue1, parameterValue2);
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, params, 0);
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, params, 0, Collections.emptyList());
         Object valueFromInsertValueContext1 = onDuplicateUpdateContext.getValue(0);
         assertThat(valueFromInsertValueContext1, is(parameterValue1));
         Object valueFromInsertValueContext2 = onDuplicateUpdateContext.getValue(1);
@@ -73,7 +73,7 @@ class OnDuplicateUpdateContextTest {
     void assertGetValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
         Collection<ColumnAssignmentSegment> assignments = createLiteralExpressionSegment(literalObject);
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Collections.emptyList(), 0);
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Collections.emptyList(), 0, Collections.emptyList());
         Object valueFromInsertValueContext = onDuplicateUpdateContext.getValue(0);
         assertThat(valueFromInsertValueContext, is(literalObject));
     }
@@ -104,7 +104,7 @@ class OnDuplicateUpdateContextTest {
     void assertGetColumn() {
         Object literalObject = new Object();
         Collection<ColumnAssignmentSegment> assignments = createLiteralExpressionSegment(literalObject);
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Collections.emptyList(), 0);
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Collections.emptyList(), 0, Collections.emptyList());
         ColumnSegment column = onDuplicateUpdateContext.getColumn(0);
         assertThat(column, is(assignments.iterator().next().getColumns().get(0)));
     }
@@ -115,7 +115,7 @@ class OnDuplicateUpdateContextTest {
                 createAssignmentSegment(createBinaryOperationExpression()),
                 createAssignmentSegment(new ParameterMarkerExpressionSegment(0, 10, 5)),
                 createAssignmentSegment(new LiteralExpressionSegment(0, 10, new Object())));
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Arrays.asList("1", "2"), 0);
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Arrays.asList("1", "2"), 0, Collections.emptyList());
         assertThat(onDuplicateUpdateContext.getParameterCount(), is(2));
     }
 }

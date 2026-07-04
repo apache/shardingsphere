@@ -21,7 +21,7 @@ By default, ShardingSphere Proxy Native only contains,
 This section assumes one of the following system environments,
 
 1. Linux (amd64, aarch64)
-2. MacOS (amd64, aarch64/M1)
+2. MacOS (aarch64/M1)
 3. Windows (amd64)
 
 This section is still limited by the recorded content of [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image) on the ShardingSphere JDBC side.
@@ -183,13 +183,12 @@ OpenJDK 21 can be installed using `version-fox/vfox` in Powershell 7 using the f
 ```shell
 winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
-# At this time, you need to open a new Powershell 7 terminal
 vfox add java
 vfox install java@21.0.7-ms
 vfox use --global java@21.0.7-ms
 ```
 
-When Windows pops up a window asking you to allow an application with a path like `C:\users\lingh\.version-fox\cache\java\v-21.0.7-ms\java-21.0.7-ms\bin\java.exe` to pass through Windows Firewall,
+When Windows pops up a window asking you to allow an application with a path like `C:\users\shard\.version-fox\cache\java\v-21.0.7-ms\java-21.0.7-ms\bin\java.exe` to pass through Windows Firewall,
 you should approve it.
 Background reference https://support.microsoft.com/en-us/windows/risks-of-allowing-apps-through-windows-firewall-654559af-3f54-3dcf-349f-71ccd90bcc5c .
 
@@ -204,12 +203,12 @@ and configure `dockerd(moby)` to use the `Container Engine`.
 
 ```shell
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
-# Open a new PowerShell 7 terminal
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
   "min-api-version": "1.41",
+  "seccomp-profile": "/etc/rancher-desktop/seccomp.json",
   "features": {
     "containerd-snapshotter": true
   },
@@ -236,7 +235,7 @@ A possible Docker Compose example is,
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: apache/shardingsphere-proxy-native:5.5.3-SNAPSHOT
+    image: apache/shardingsphere-proxy-native:5.5.4-SNAPSHOT
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -250,7 +249,7 @@ You can execute the following command to build.
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-mostly" "-DskipTests" clean package
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.4-SNAPSHOT-mostly" "-DskipTests" clean package
 ```
 
 A possible Docker Compose example is,
@@ -258,7 +257,7 @@ A possible Docker Compose example is,
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: apache/shardingsphere-proxy-native:5.5.3-SNAPSHOT-mostly
+    image: apache/shardingsphere-proxy-native:5.5.4-SNAPSHOT-mostly
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -272,7 +271,7 @@ You can execute the following command to build.
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-static" "-DskipTests" clean package
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.4-SNAPSHOT-static" "-DskipTests" clean package
 ```
 
 A possible Docker Compose example is,
@@ -280,7 +279,7 @@ A possible Docker Compose example is,
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: apache/shardingsphere-proxy-native:5.5.3-SNAPSHOT-static
+    image: apache/shardingsphere-proxy-native:5.5.4-SNAPSHOT-static
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -293,7 +292,7 @@ services:
 
 Contributors must have installed on their devices,
 
-1. GraalVM CE 24.0.2, or a GraalVM downstream distribution compatible with GraalVM CE 24.0.2. Refer to [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image).
+1. GraalVM CE 25.0.2, or a GraalVM downstream distribution compatible with GraalVM CE 25.0.2. Refer to [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image).
 2. The native toolchain required to compile GraalVM Native Image. Refer to https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites .
 
 The possible required operations under Ubuntu and Windows are consistent with [Development and test](/en/user-manual/shardingsphere-jdbc/graalvm-native-image/development).
@@ -351,7 +350,7 @@ On Ubuntu, assuming that the `conf` folder containing `global.yaml` is `/tmp/con
 
 ```bash
 cd ./shardingsphere/
-cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.3-SNAPSHOT-shardingsphere-proxy-bin/bin
+cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.4-SNAPSHOT-shardingsphere-proxy-bin/bin
 ./proxy-native "3307" "/tmp/conf" "0.0.0.0"
 ```
 
@@ -359,7 +358,7 @@ On Windows, assuming that a `conf` folder containing `global.yaml` already exist
 
 ```bash
 cd ./shardingsphere/
-cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.3-SNAPSHOT-shardingsphere-proxy-bin/bin
+cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.4-SNAPSHOT-shardingsphere-proxy-bin/bin
 ./proxy-native.exe "3307" "C:\Users\shard\Downloads\conf" "0.0.0.0"
 ```
 

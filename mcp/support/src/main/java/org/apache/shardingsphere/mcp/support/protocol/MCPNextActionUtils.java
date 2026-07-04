@@ -97,21 +97,26 @@ public final class MCPNextActionUtils {
                                                        final Map<String, ?> contextArguments, final Collection<String> missingContextArguments, final String resumeTargetType,
                                                        final String resumeTarget, final Map<String, ?> resumeArguments, final String reason) {
         Map<String, Object> result = createBaseAction("completion", "Complete " + argumentName, reason);
-        result.put("reference_type", toCompletionReferenceType(referenceType));
-        result.put("reference", reference);
-        result.put("argument_name", argumentName);
-        result.put("argument_prefix", argumentPrefix);
-        result.put("context_arguments", contextArguments);
+        result.put("ref", createCompletionRef(referenceType, reference));
+        result.put("argument", Map.of("name", argumentName, "value", argumentPrefix));
+        if (!contextArguments.isEmpty()) {
+            result.put("context", Map.of("arguments", contextArguments));
+        }
         result.put("missing_context_arguments", missingContextArguments);
         if (!resumeTargetType.isEmpty()) {
-            result.put("resume_target_type", toCompletionReferenceType(resumeTargetType));
-        }
-        if (!resumeTarget.isEmpty()) {
-            result.put("resume_target", resumeTarget);
+            result.put("resume_ref", createCompletionRef(resumeTargetType, resumeTarget));
         }
         if (!resumeArguments.isEmpty()) {
             result.put("resume_arguments", resumeArguments);
         }
+        return result;
+    }
+    
+    private static Map<String, Object> createCompletionRef(final String referenceType, final String reference) {
+        String actualReferenceType = toCompletionReferenceType(referenceType);
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
+        result.put("type", actualReferenceType);
+        result.put("ref/resource".equals(actualReferenceType) ? "uri" : "name", reference);
         return result;
     }
     

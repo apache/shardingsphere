@@ -88,6 +88,109 @@ resourceTemplates:
       relatedTools:
         - database_gateway_execute_query
         - database_gateway_execute_update
+  - uriTemplate: shardingsphere://databases/{database}/storage-units
+    name: storage-units
+    title: Storage Units
+    description: "List Proxy-visible storage units in one ShardingSphere logical database. Use this before planning rules that require storage unit names."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose storage units should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: list
+      objectScope: storage_unit
+      relatedTools:
+        - database_gateway_search_metadata
+  - uriTemplate: shardingsphere://databases/{database}/storage-units/{storageUnit}
+    name: storage-unit-detail
+    title: Storage Unit Detail
+    description: "Read one Proxy-visible storage unit without exposing secret connection properties. Use this to confirm host, port, type, and pool settings."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database that owns the storage unit."
+          required: true
+          scope: logical-database
+        - name: storageUnit
+          title: Storage Unit
+          description: "Proxy storage unit name returned by SHOW STORAGE UNITS."
+          required: true
+          scope: storage_unit
+      resourceKind: detail
+      objectScope: storage_unit
+      relatedTools:
+        - database_gateway_search_metadata
+  - uriTemplate: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+    name: storage-unit-used-by-rules
+    title: Storage Unit Used By Rules
+    description: "List rule type and rule name rows that currently reference one storage unit."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database that owns the storage unit."
+          required: true
+          scope: logical-database
+        - name: storageUnit
+          title: Storage Unit
+          description: "Proxy storage unit name whose rule usage should be inspected."
+          required: true
+          scope: storage_unit
+      resourceKind: list
+      objectScope: storage_unit
+  - uriTemplate: shardingsphere://databases/{database}/single-tables
+    name: single-tables
+    title: Single Tables
+    description: "List single table to storage unit mappings in one ShardingSphere logical database."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose single table mappings should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: list
+      objectScope: single_table
+  - uriTemplate: shardingsphere://databases/{database}/single-tables/{table}
+    name: single-table-detail
+    title: Single Table Detail
+    description: "Read the storage unit mapping for one single table."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database that owns the single table."
+          required: true
+          scope: logical-database
+        - name: table
+          title: Single Table
+          description: "Single table name returned by SHOW SINGLE TABLES."
+          required: true
+          scope: single_table
+      resourceKind: detail
+      objectScope: single_table
+  - uriTemplate: shardingsphere://databases/{database}/single-table/default-storage-unit
+    name: default-single-table-storage-unit
+    title: Default Single Table Storage Unit
+    description: "Read the default storage unit used for new single tables in one ShardingSphere logical database."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose default single table storage unit should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: detail
+      objectScope: single_table
   - uriTemplate: shardingsphere://databases/{database}/schemas
     name: schemas
     title: Schemas
@@ -435,17 +538,70 @@ completionTargets:
       - database
     maxValues: 50
   - referenceType: resource
+    reference: shardingsphere://databases/{database}/storage-units
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/storage-units/{storageUnit}
+    arguments:
+      - database
+      - storageUnit
+    maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        storageUnit:
+          - database
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+    arguments:
+      - database
+      - storageUnit
+    maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        storageUnit:
+          - database
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/single-tables
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/single-tables/{table}
+    arguments:
+      - database
+      - table
+    maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        table:
+          - database
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/single-table/default-storage-unit
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
     arguments:
@@ -453,6 +609,13 @@ completionTargets:
       - schema
       - table
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
     arguments:
@@ -460,6 +623,13 @@ completionTargets:
       - schema
       - table
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
     arguments:
@@ -468,6 +638,17 @@ completionTargets:
       - table
       - column
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
+        column:
+          - database
+          - schema
+          - table
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
     arguments:
@@ -475,6 +656,13 @@ completionTargets:
       - schema
       - table
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
     arguments:
@@ -483,12 +671,27 @@ completionTargets:
       - table
       - index
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
+        index:
+          - database
+          - schema
+          - table
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/sequences
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
     arguments:
@@ -496,6 +699,13 @@ completionTargets:
       - schema
       - sequence
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        sequence:
+          - database
+          - schema
 resourceNavigation:
   - from: shardingsphere://capabilities
     to: shardingsphere://runtime
@@ -519,6 +729,36 @@ resourceNavigation:
     carriedArguments:
       - database
     description: "List schemas after choosing a logical database."
+  - from: shardingsphere://databases/{database}
+    to: shardingsphere://databases/{database}/storage-units
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "List storage units after choosing a logical database."
+  - from: shardingsphere://databases/{database}
+    to: shardingsphere://databases/{database}/single-tables
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "List single table mappings after choosing a logical database."
+  - from: shardingsphere://databases/{database}
+    to: shardingsphere://databases/{database}/single-table/default-storage-unit
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Read the default single table storage unit after choosing a logical database."
+  - from: shardingsphere://databases/{database}/storage-units/{storageUnit}
+    to: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+    requiredArguments:
+      - database
+      - storageUnit
+    carriedArguments:
+      - database
+      - storageUnit
+    description: "Read rule usage after choosing a storage unit."
   - from: shardingsphere://databases/{database}/schemas/{schema}
     to: shardingsphere://databases/{database}/schemas/{schema}/tables
     requiredArguments:
@@ -583,8 +823,8 @@ tools:
   - name: database_gateway_search_metadata
     title: Search Metadata
     description: >-
-      Search ShardingSphere logical metadata by name and object type. Use this to find databases, schemas, tables, columns, indexes, views,
-      or sequences before calling detail resources or planning tools.
+      Search ShardingSphere logical metadata and Proxy governance metadata by name and object type. Use this to find databases, schemas, tables,
+      columns, indexes, views, sequences, or storage units before calling detail resources or planning tools.
     inputSchema:
       type: object
       properties:
@@ -610,6 +850,7 @@ tools:
               - view
               - column
               - index
+              - storage_unit
               - sequence
       required: []
       additionalProperties: false
@@ -636,7 +877,7 @@ tools:
                 description: "Schema or namespace for schema-scoped metadata objects."
               objectType:
                 type: string
-                description: "Matched metadata object type: database, schema, table, view, column, index, or sequence."
+                description: "Matched metadata object type: database, schema, storage_unit, table, view, column, index, or sequence."
               table:
                 type: string
                 description: "Parent logical table for table, table column, and index hits."
@@ -691,6 +932,28 @@ tools:
         total_match_count:
           type: integer
           description: "Total matched metadata objects for this search scope."
+        returned_count:
+          type: integer
+          description: "Number of matched metadata objects returned after search result capping."
+        truncated:
+          type: boolean
+          description: "Whether search hits were capped by the large-result threshold."
+        large_result_guidance:
+          type: object
+          description: "Structured narrowing guidance when matched metadata results are truncated."
+          properties:
+            state:
+              type: string
+              description: "Large-result guidance state."
+            threshold:
+              type: integer
+              description: "Maximum number of metadata hits returned before truncation."
+            narrowing_arguments:
+              type: array
+              description: "Public database_gateway_search_metadata arguments the model can set to narrow the result."
+            reason:
+              type: string
+              description: "Why the model should narrow the search."
         empty_state:
           type: object
           description: "Structured empty state when no metadata hits were returned."
@@ -740,9 +1003,15 @@ tools:
               reason:
                 type: string
                 description: "Why the model should take this action."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
               required_inputs:
                 type: array
                 description: "User inputs needed before continuing."
+              depends_on:
+                type: array
+                description: "Action order values that must complete before this action."
       examples:
         - response_mode: search
           items:
@@ -794,11 +1063,12 @@ tools:
     meta:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://databases
+        - "shardingsphere://databases/{database}/storage-units"
         - "shardingsphere://databases/{database}/schemas"
-  - name: database_gateway_validate_proxy_connectivity
-    title: Validate Proxy Connectivity
+  - name: database_gateway_validate_runtime_database
+    title: Validate Runtime Database
     description: >-
-      Validate one configured ShardingSphere-MCP runtime database before formal onboarding. Use this to preflight the configured database type,
+      Validate one configured ShardingSphere-MCP runtime database before formal onboarding. Use this to preflight JDBC URL database type resolution,
       JDBC driver, JDBC connectivity, metadata readability, and database visibility without executing SQL tools.
     inputSchema:
       type: object
@@ -814,7 +1084,7 @@ tools:
       properties:
         response_mode:
           type: string
-          description: "Stable response mode marker for proxy preflight validation payloads."
+          description: "Stable response mode marker for runtime database validation payloads."
           enum:
             - validation
         status:
@@ -871,7 +1141,7 @@ tools:
             - name: jdbc_connectivity
               status: passed
               category: ready
-              message: Opened a JDBC connection and validated the configured database type.
+              message: Opened a JDBC connection and resolved the database type from the JDBC URL.
             - name: metadata_read
               status: passed
               category: ready
@@ -883,7 +1153,7 @@ tools:
           category: ready
           recovery: {}
     annotations:
-      title: Validate Proxy Connectivity
+      title: Validate Runtime Database
       readOnlyHint: true
       destructiveHint: false
       idempotentHint: true
@@ -1050,7 +1320,8 @@ tools:
     title: Execute Update SQL
     description: >-
       Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state.
-      Use execution_mode=preview first when the side-effect scope has not been reviewed.
+      Use execution_mode=preview first when the side-effect scope has not been reviewed. Preview is classification-only,
+      not a database dry run.
     inputSchema:
       type: object
       properties:
@@ -1065,7 +1336,7 @@ tools:
           description: "One SQL statement. The server contract rejects banned commands and multiple statements."
         execution_mode:
           type: string
-          description: "Required safety gate. Use preview to classify side effects without execution, or execute after reviewing the preview."
+          description: "Required safety gate. Use preview to classify side effects without execution; preview is not a database dry run. Use execute only after reviewing the preview."
           enum:
             - execute
             - preview
@@ -1125,7 +1396,9 @@ tools:
           description: "Execution mode used by the call; preview means the statement was not executed."
         preview_semantics:
           type: string
-          description: "Preview meaning. classification_only means the server classified SQL and side-effect scope without estimating affected rows."
+          description: >-
+            Preview meaning. classification_only means the server classified SQL and side-effect scope without parsing, rule validation,
+            algorithm initialization, affected-row estimation, runtime execution, or database dry-run guarantees.
           enum:
             - classification_only
         status:
@@ -1212,6 +1485,9 @@ tools:
               reason:
                 type: string
                 description: "Why the model should take this action."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
               required_inputs:
                 type: array
                 description: "User inputs needed before continuing."
@@ -1231,17 +1507,29 @@ tools:
           status: PREVIEWED
           would_execute: false
           affected_rows_estimated: false
+          review_guidance: >-
+            Review normalized_sql and side_effect_scope before execution. This preview is classification-only; it does not guarantee parsing,
+            rule validation, algorithm initialization, affected rows, or runtime success.
           review_summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
           suggested_arguments:
             execution_mode: execute
           next_actions:
             - order: 1
+              type: ask_user
+              title: Ask user
+              question: Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.
+              required_inputs:
+                - execution_approved
+              reason: Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.
+            - order: 2
               type: tool_call
               title: Call database_gateway_execute_update
               tool_name: database_gateway_execute_update
               arguments:
                 execution_mode: execute
-              reason: Execute after reviewing normalized_sql and side_effect_scope.
+              depends_on:
+                - 1
+              reason: Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.
     annotations:
       title: Execute Update SQL
       readOnlyHint: false

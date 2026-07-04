@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement;
 
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
-import org.firebirdsql.gds.BlrConstants;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,49 +41,9 @@ public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
     public FirebirdFetchStatementPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         statementId = payload.readInt4();
-        parameterTypes = parseBLR(payload.readBuffer());
+        parameterTypes = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer()).getColumnTypes();
         message = payload.readInt4();
         fetchSize = payload.readInt4();
-    }
-    
-    private List<FirebirdBinaryColumnType> parseBLR(final ByteBuf blrBuffer) {
-        if (!blrBuffer.isReadable()) {
-            return new ArrayList<>(0);
-        }
-        blrBuffer.skipBytes(4);
-        int length = blrBuffer.readUnsignedByte();
-        length += 256 * blrBuffer.readUnsignedByte();
-        List<FirebirdBinaryColumnType> result = new ArrayList<>(length / 2);
-        int blrType = blrBuffer.readUnsignedByte();
-        while (blrType != BlrConstants.blr_end) {
-            FirebirdBinaryColumnType type = FirebirdBinaryColumnType.valueOfBLRType(blrType);
-            result.add(type);
-            blrBuffer.skipBytes(getSkipCount(type) + 2);
-            blrType = blrBuffer.readUnsignedByte();
-        }
-        return result;
-    }
-    
-    private int getSkipCount(final FirebirdBinaryColumnType type) {
-        switch (type) {
-            case VARYING:
-            case TEXT:
-                return 4;
-            case NULL:
-            case LEGACY_TEXT:
-            case LEGACY_VARYING:
-                return 2;
-            case BLOB:
-            case ARRAY:
-            case LONG:
-            case SHORT:
-            case INT64:
-            case QUAD:
-            case INT128:
-                return 1;
-            default:
-                return 0;
-        }
     }
     
     /**

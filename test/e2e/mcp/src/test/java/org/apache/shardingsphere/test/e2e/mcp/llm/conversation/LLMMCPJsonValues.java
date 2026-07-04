@@ -59,8 +59,4 @@ final class LLMMCPJsonValues {
         });
     }
     
-    static Map<String, String> castToStringMap(final Object value) {
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
-    }
 }

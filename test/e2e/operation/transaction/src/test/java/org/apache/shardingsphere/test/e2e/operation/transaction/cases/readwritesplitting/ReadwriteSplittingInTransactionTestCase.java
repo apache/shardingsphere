@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, scenario = "readwrite-splitting", adapters = TransactionTestConstants.PROXY)
+@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, scenario = "readwrite_splitting", adapters = TransactionTestConstants.PROXY)
 public final class ReadwriteSplittingInTransactionTestCase extends BaseTransactionTestCase {
     
     public ReadwriteSplittingInTransactionTestCase(final TransactionTestCaseParameter testCaseParam) {

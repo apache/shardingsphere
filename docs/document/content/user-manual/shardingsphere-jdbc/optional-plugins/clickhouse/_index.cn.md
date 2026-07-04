@@ -24,7 +24,7 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
         <groupId>com.clickhouse</groupId>
         <artifactId>clickhouse-jdbc</artifactId>
         <classifier>all</classifier>
-        <version>0.9.5</version>
+        <version>0.9.8</version>
     </dependency>
 </dependencies>
 ```
@@ -38,7 +38,7 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:25.12.1.649
+    image: clickhouse/clickhouse-server:26.6.1.1193
     environment:
       CLICKHOUSE_SKIP_USER_SETUP: "1"
     ports:

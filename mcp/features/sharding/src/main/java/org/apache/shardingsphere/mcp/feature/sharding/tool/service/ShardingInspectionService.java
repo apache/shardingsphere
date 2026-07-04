@@ -54,7 +54,8 @@ public final class ShardingInspectionService {
     
     private List<Map<String, Object>> queryPluginRows(final MCPFeatureQueryFacade queryFacade, final String sql, final List<Map<String, Object>> fallbackRows) {
         try {
-            return queryFacade.queryWithAnyDatabase(sql);
+            List<Map<String, Object>> result = queryFacade.queryWithAnyDatabase(sql);
+            return null == result ? fallbackRows : result;
         } catch (final MCPQueryFailedException ex) {
             if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
                 return fallbackRows;

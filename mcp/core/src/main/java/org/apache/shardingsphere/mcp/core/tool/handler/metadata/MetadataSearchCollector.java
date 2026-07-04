@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.core.resource.handler.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
@@ -29,16 +30,23 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequence
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MetadataSearchCollector {
     
     private final MCPMetadataQueryFacade metadataQueryFacade;
+    
+    private final MCPFeatureQueryFacade queryFacade;
+    
+    private final GovernanceMetadataQueryService governanceMetadataQueryService;
     
     private final MetadataSearchResourceUriFactory resourceUriFactory;
     
@@ -53,6 +61,12 @@ final class MetadataSearchCollector {
         for (SupportedMCPMetadataObjectType each : searchObjectTypes) {
             if (SupportedMCPMetadataObjectType.DATABASE == each) {
                 metadataQueryFacade.queryDatabase(databaseName).ifPresent(optional -> result.add(createSearchHit(optional)));
+                continue;
+            }
+            if (SupportedMCPMetadataObjectType.STORAGE_UNIT == each) {
+                if (null != queryFacade) {
+                    result.addAll(queryStorageUnitSearchHits(databaseName));
+                }
                 continue;
             }
             if (metadataQueryFacade.isSupportedMetadataObjectType(databaseName, each)) {
@@ -139,6 +153,17 @@ final class MetadataSearchCollector {
         }
         return metadataQueryFacade.querySchemas(databaseName).stream()
                 .flatMap(each -> metadataQueryFacade.querySequences(databaseName, each.getSchema()).stream()).map(this::createSearchHit).toList();
+    }
+    
+    private List<MetadataSearchHit> queryStorageUnitSearchHits(final String databaseName) {
+        List<MetadataSearchHit> result = new LinkedList<>();
+        for (Map<String, Object> each : governanceMetadataQueryService.queryStorageUnits(queryFacade, databaseName)) {
+            String storageUnitName = Objects.toString(each.get("name"), "");
+            if (!storageUnitName.isEmpty()) {
+                result.add(createSearchHit(databaseName, "", "storage_unit", "", "", storageUnitName));
+            }
+        }
+        return result;
     }
     
     private MetadataSearchHit createSearchHit(final MCPDatabaseMetadata databaseMetadata) {

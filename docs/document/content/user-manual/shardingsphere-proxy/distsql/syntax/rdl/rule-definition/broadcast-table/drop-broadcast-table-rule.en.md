@@ -30,7 +30,7 @@ tableName ::=
 ### Supplement
 
 - `tableName` can use the table of existing broadcast rules;
-- `ifExists` clause is used for avoid `Broadcast rule not exists` error.
+- `ifExists` clause is used to avoid `Broadcast rule not exists` error.
 
 ### Example
 

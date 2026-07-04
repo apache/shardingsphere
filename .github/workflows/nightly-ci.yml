@@ -81,12 +81,10 @@ jobs:
         run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
       - name: Setup Rancher Desktop without GUI on Windows Server
         if: matrix.os == 'windows-latest'
-        run: |
-          ./test/native/src/test/resources/test-native/ps1/config-rdctl.ps1
-          "PATH=$env:PATH" >> $env:GITHUB_ENV
+        run: ./test/native/src/test/resources/test-native/ps1/config-rdctl.ps1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          java-version: '24.0.2'
+          java-version: '25.0.2'
           distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
@@ -97,4 +95,4 @@ jobs:
         run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
       - name: Run nativeTest with GraalVM CE
         if: matrix.os == 'ubuntu-latest'
-        run: ./mvnw -PnativeTestInShardingSphere -e "-DjvmArgs=-XX:MaxRAMPercentage=85.0" clean verify
+        run: ./mvnw -PnativeTestInShardingSphere -e clean verify

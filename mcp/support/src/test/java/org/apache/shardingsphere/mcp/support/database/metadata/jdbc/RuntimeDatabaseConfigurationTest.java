@@ -37,9 +37,18 @@ import static org.mockito.Mockito.mock;
 class RuntimeDatabaseConfigurationTest {
     
     @Test
+    void assertNewRuntimeDatabaseConfiguration() {
+        RuntimeDatabaseConfiguration actual = new RuntimeDatabaseConfiguration(RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName());
+        assertThat(actual.getJdbcUrl(), is(RecordingDriver.JDBC_URL));
+        assertThat(actual.getUsername(), is("sa"));
+        assertThat(actual.getPassword(), is("pwd"));
+        assertThat(actual.getDriverClassName(), is(RecordingDriver.class.getName()));
+    }
+    
+    @Test
     void assertOpenConnectionWithoutCredentials() throws SQLException {
         RecordingDriver.reset();
-        try (Connection actual = new RuntimeDatabaseConfiguration("MySQL", RecordingDriver.JDBC_URL, "", "", RecordingDriver.class.getName()).openConnection("logic_db")) {
+        try (Connection actual = new RuntimeDatabaseConfiguration(RecordingDriver.JDBC_URL, "", "", RecordingDriver.class.getName()).openConnection("logic_db")) {
             assertThat(actual, is(RecordingDriver.CONNECTION));
             assertThat(RecordingDriver.lastUrl, is(RecordingDriver.JDBC_URL));
             assertTrue(RecordingDriver.lastProperties.isEmpty());
@@ -49,7 +58,7 @@ class RuntimeDatabaseConfigurationTest {
     @Test
     void assertOpenConnectionWithDriverClassNameAndCredentials() throws SQLException {
         RecordingDriver.reset();
-        try (Connection actual = new RuntimeDatabaseConfiguration("MySQL", RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName()).openConnection("logic_db")) {
+        try (Connection actual = new RuntimeDatabaseConfiguration(RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName()).openConnection("logic_db")) {
             assertThat(actual, is(RecordingDriver.CONNECTION));
             assertThat(RecordingDriver.lastProperties.getProperty("user"), is("sa"));
             assertThat(RecordingDriver.lastProperties.getProperty("password"), is("pwd"));
@@ -60,7 +69,7 @@ class RuntimeDatabaseConfigurationTest {
     @Test
     void assertOpenConnectionWithBlankDriverClassName() {
         RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                () -> new RuntimeDatabaseConfiguration("MySQL", "jdbc:test:missing-driver", "", "", "").openConnection("logic_db"));
+                () -> new RuntimeDatabaseConfiguration("jdbc:test:missing-driver", "", "", "").openConnection("logic_db"));
         assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: missing_jdbc_driver."));
         assertThat(actual.getCategory(), is("missing_jdbc_driver"));
     }
@@ -69,7 +78,7 @@ class RuntimeDatabaseConfigurationTest {
     @Test
     void assertOpenConnectionWithUnavailableDriverClassName() {
         RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                () -> new RuntimeDatabaseConfiguration("MySQL", "jdbc:test:missing-driver", "", "", "org.example.MissingDriver").openConnection("logic_db"));
+                () -> new RuntimeDatabaseConfiguration("jdbc:test:missing-driver", "", "", "org.example.MissingDriver").openConnection("logic_db"));
         assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: missing_jdbc_driver."));
         assertThat(actual.getCategory(), is("missing_jdbc_driver"));
     }

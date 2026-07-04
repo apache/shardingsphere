@@ -19,8 +19,9 @@ package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
+import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingKeyGeneratorWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
+import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingKeyGeneratorWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
@@ -29,11 +30,16 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
  */
 public final class PlanShardingKeyGeneratorToolHandler extends AbstractShardingPlanningToolHandler {
     
+    private final ShardingPlanningRequestBinder requestBinder = new ShardingPlanningRequestBinder();
+    
+    private final ShardingKeyGeneratorWorkflowPlanningService planningService;
+    
     public PlanShardingKeyGeneratorToolHandler() {
+        planningService = new ShardingKeyGeneratorWorkflowPlanningService();
     }
     
-    PlanShardingKeyGeneratorToolHandler(final ShardingWorkflowPlanningService planningService) {
-        super(planningService);
+    PlanShardingKeyGeneratorToolHandler(final ShardingKeyGeneratorWorkflowPlanningService planningService) {
+        this.planningService = planningService;
     }
     
     @Override
@@ -42,8 +48,13 @@ public final class PlanShardingKeyGeneratorToolHandler extends AbstractShardingP
     }
     
     @Override
+    protected ShardingWorkflowRequest bindRequest(final MCPToolCall toolCall) {
+        return requestBinder.bindKeyGenerator(toolCall.getArguments()).toWorkflowRequest();
+    }
+    
+    @Override
     protected WorkflowContextSnapshot plan(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall, final ShardingWorkflowRequest request) {
-        return getPlanningService().planKeyGenerator(
-                workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
+        return planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(),
+                new ShardingKeyGeneratorWorkflowRequest(request));
     }
 }

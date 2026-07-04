@@ -168,7 +168,7 @@ class DataNodeTest {
     }
     
     private static Stream<Arguments> equalsArguments() {
-        final DataNode self = new DataNode("ds_0.tbl_0");
+        DataNode self = new DataNode("ds_0.tbl_0");
         return Stream.of(
                 Arguments.of("self", self, self, true),
                 Arguments.of("null_object", new DataNode("ds_0.tbl_0"), null, false),

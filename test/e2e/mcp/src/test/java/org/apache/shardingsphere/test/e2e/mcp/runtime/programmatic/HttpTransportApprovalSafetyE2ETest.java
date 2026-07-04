@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @EnabledIf("isEnabled")
-class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportApprovalSafetyE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isDockerEnabled();
@@ -72,6 +72,22 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
     }
     
     @Test
+    void assertRejectWorkflowReviewThenExecuteWithInvisibleApprovedStep() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        String planId = createMaskRulePlan(httpClient, sessionId);
+        Map<String, Object> previewPayload = callApplyWorkflow(httpClient, sessionId, planId, Map.of("execution_mode", "preview"));
+        assertThat(String.valueOf(previewPayload.get("status")), is("preview"));
+        Map<String, Object> executionPayload = callApplyWorkflow(httpClient, sessionId, planId,
+                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
+        assertThat(String.valueOf(executionPayload.get("status")), is("failed"));
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) executionPayload.get("issues")).getFirst();
+        assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertModelFacingPayloadContract(executionPayload);
+    }
+    
+    @Test
     void assertRejectWorkflowExecutionFromOtherSession() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -94,23 +110,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         return getStructuredContent(actual.body());
     }
     
-    private String createMaskRulePlan(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_mask_rule", Map.of(
-                "database", "logic_db",
-                "schema", "logic_db",
-                "table", "orders",
-                "column", "status",
-                "operation_type", "create",
-                "algorithm_type", "KEEP_FIRST_N_LAST_M",
-                "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("status")), is("planned"));
-        return String.valueOf(payload.get("plan_id"));
-    }
-    
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
-        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     

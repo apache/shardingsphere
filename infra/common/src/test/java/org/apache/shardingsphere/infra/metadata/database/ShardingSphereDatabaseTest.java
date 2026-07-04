@@ -24,8 +24,8 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Loo
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
@@ -58,8 +58,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -207,23 +207,15 @@ class ShardingSphereDatabaseTest {
     }
     
     @Test
-    void assertConstructWithProps() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)), new ConfigurationProperties(
-                        PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name()))));
-        assertThat(getIdentifierContext(database).getRule(IdentifierScope.SCHEMA).getLookupMode(QuoteCharacter.NONE), is(LookupMode.EXACT));
-    }
-    
-    @Test
     void assertRefreshIdentifierContext() {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
                 new ConfigurationProperties(new Properties()));
         database.refreshIdentifierContext(new ConfigurationProperties(
-                PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name()))));
+                PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name()))));
         DatabaseIdentifierContext actualIdentifierContext = getIdentifierContext(database);
-        assertThat(actualIdentifierContext.getRule(IdentifierScope.SCHEMA).getLookupMode(QuoteCharacter.NONE), is(LookupMode.EXACT));
+        assertThat(actualIdentifierContext.getPolicy(IdentifierScope.SCHEMA).getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertThat(getIdentifierContext(schema), is(actualIdentifierContext));
     }
     

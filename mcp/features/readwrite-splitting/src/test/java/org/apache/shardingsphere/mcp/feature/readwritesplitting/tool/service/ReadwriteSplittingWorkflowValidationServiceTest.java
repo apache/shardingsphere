@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
@@ -31,8 +33,13 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -41,13 +48,14 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ReadwriteSplittingWorkflowValidationServiceTest {
     
     @Test
-    void assertValidateRejectsDifferentSession() {
+    void assertValidateRejectsDifferentSession() throws ReflectiveOperationException {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(createRuleSnapshot("plan-1", "session-1", "executed", "create"));
         Map<String, Object> actual = createRuleService(mock(ReadwriteSplittingInspectionService.class))
@@ -58,7 +66,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateRuleHappyPath() {
+    void assertValidateRuleHappyPath() throws ReflectiveOperationException {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "create");
         workflowSessionContext.save(snapshot);
@@ -76,7 +84,35 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateRuleMismatch() {
+    void assertValidateApplyArtifactsRejectsUnavailableLoadBalancer() {
+        WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "create");
+        ReadwriteSplittingRuleWorkflowRequest request = (ReadwriteSplittingRuleWorkflowRequest) snapshot.getRequest();
+        request.setLoadBalancerType("RANDOM");
+        try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
+            mockedStatic.when(() -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, "RANDOM",
+                    WorkflowSQLUtils.createProperties(request.getLoadBalancerProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
+            List<Map<String, Object>> actual = new ReadwriteSplittingRuleWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact()));
+            assertThat(actual.size(), is(1));
+            assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+        }
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsRejectsInvalidWeightProperties() {
+        WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "create");
+        ReadwriteSplittingRuleWorkflowRequest request = (ReadwriteSplittingRuleWorkflowRequest) snapshot.getRequest();
+        request.setReadStorageUnits("read_ds_0,read_ds_1");
+        request.setLoadBalancerType("WEIGHT");
+        request.putLoadBalancerProperties(Map.of("read_ds_0", "2", "unknown_ds", "1"));
+        try (MockedStatic<TypedSPILoader> ignored = mockStatic(TypedSPILoader.class)) {
+            List<Map<String, Object>> actual = new ReadwriteSplittingRuleWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact()));
+            assertThat(actual.size(), is(2));
+            assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+        }
+    }
+    
+    @Test
+    void assertValidateRuleMismatch() throws ReflectiveOperationException {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "create");
         workflowSessionContext.save(snapshot);
@@ -89,7 +125,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateDropWorkflowAfterRuleRemoval() {
+    void assertValidateDropWorkflowAfterRuleRemoval() throws ReflectiveOperationException {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "drop");
         workflowSessionContext.save(snapshot);
@@ -101,7 +137,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateStatusHappyPath() {
+    void assertValidateStatusHappyPath() throws ReflectiveOperationException {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createStatusSnapshot("plan-1", "session-1", "executed", "enable");
         workflowSessionContext.save(snapshot);
@@ -116,7 +152,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertSynchronizeStatusWhenStateDoesNotConverge() {
+    void assertSynchronizeStatusWhenStateDoesNotConverge() throws ReflectiveOperationException {
         WorkflowContextSnapshot snapshot = createStatusSnapshot("plan-1", "session-1", "executed", "enable");
         ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
         when(inspectionService.queryRuleStatus(any(), any(), any())).thenReturn(List.of(createStatusRow("DISABLED")));
@@ -126,12 +162,23 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
         assertThat(actual.getIssueCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
     
-    private ReadwriteSplittingRuleWorkflowValidationService createRuleService(final ReadwriteSplittingInspectionService inspectionService) {
-        return new ReadwriteSplittingRuleWorkflowValidationService(inspectionService, new WorkflowSynchronizationSupport(1, 0L));
+    private ReadwriteSplittingRuleWorkflowValidationService createRuleService(final ReadwriteSplittingInspectionService inspectionService) throws ReflectiveOperationException {
+        ReadwriteSplittingRuleWorkflowValidationService result = new ReadwriteSplittingRuleWorkflowValidationService();
+        setField(result, "inspectionService", inspectionService);
+        setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
+        return result;
     }
     
-    private ReadwriteSplittingStatusWorkflowValidationService createStatusService(final ReadwriteSplittingInspectionService inspectionService) {
-        return new ReadwriteSplittingStatusWorkflowValidationService(inspectionService, new ReadwriteSplittingStatusDistSQLPlanningService(), new WorkflowSynchronizationSupport(1, 0L));
+    private ReadwriteSplittingStatusWorkflowValidationService createStatusService(final ReadwriteSplittingInspectionService inspectionService) throws ReflectiveOperationException {
+        ReadwriteSplittingStatusWorkflowValidationService result = new ReadwriteSplittingStatusWorkflowValidationService();
+        setField(result, "inspectionService", inspectionService);
+        setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
+        return result;
+    }
+    
+    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     private WorkflowContextSnapshot createRuleSnapshot(final String planId, final String sessionId, final String status, final String operationType) {
@@ -183,5 +230,10 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     
     private Map<String, Object> createStatusRow(final String status) {
         return Map.of("name", "readwrite_ds", "storage_unit", "read_ds_0", "status", status);
+    }
+    
+    private ExecutableWorkflowArtifact createRuleDistSQLArtifact() {
+        return new ExecutableWorkflowArtifact("review-rule-sql", "rule_dist_sql",
+                "CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')", true);
     }
 }

@@ -290,7 +290,7 @@ class PostgreSQLComDescribeExecutorTest {
     @Test
     void assertDescribePreparedStatementInsertWithCaseInsensitiveColumns() throws SQLException {
         when(packet.getType()).thenReturn('S');
-        final String statementId = "S_2";
+        String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
         String sql = "INSERT INTO t_order (iD, k, c, PaD) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
@@ -320,7 +320,7 @@ class PostgreSQLComDescribeExecutorTest {
     @Test
     void assertDescribePreparedStatementInsertWithUndefinedColumns() {
         when(packet.getType()).thenReturn('S');
-        final String statementId = "S_2";
+        String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
         String sql = "INSERT INTO t_order (undefined_column, k, c, pad) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);

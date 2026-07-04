@@ -21,12 +21,14 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Query header builder engine.
@@ -35,11 +37,6 @@ public final class QueryHeaderBuilderEngine {
     
     private final QueryHeaderBuilder queryHeaderBuilder;
     
-    /**
-     * Create query header builder engine.
-     *
-     * @param databaseType database type
-     */
     public QueryHeaderBuilderEngine(final DatabaseType databaseType) {
         queryHeaderBuilder = DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType);
     }
@@ -62,17 +59,34 @@ public final class QueryHeaderBuilderEngine {
     /**
      * Build query header builder.
      *
-     * @param projectionsContext projections context
+     * @param sqlStatementContext SQL statement context
      * @param resultSetMetaData result set meta data
-     * @param database database
+     * @param database current database
+     * @param databases available databases
      * @param columnIndex column index
      * @return query header
      * @throws SQLException SQL exception
      */
-    public QueryHeader build(final ProjectionsContext projectionsContext, final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database,
-                             final int columnIndex) throws SQLException {
-        ShardingSpherePreconditions.checkState(columnIndex <= projectionsContext.getExpandProjections().size(), () -> new ColumnIndexOutOfRangeException(columnIndex));
-        Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return queryHeaderBuilder.build(resultSetMetaData, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
+    public QueryHeader build(final SQLStatementContext sqlStatementContext, final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database,
+                             final Collection<ShardingSphereDatabase> databases, final int columnIndex) throws SQLException {
+        Projection projection = findProjection(sqlStatementContext, columnIndex);
+        return null == projection
+                ? build(resultSetMetaData, database, columnIndex)
+                : queryHeaderBuilder.build(resultSetMetaData, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
+    }
+    
+    private Projection findProjection(final SQLStatementContext sqlStatementContext, final int columnIndex) {
+        if (!(sqlStatementContext instanceof SelectStatementContext) || !((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+            return null;
+        }
+        checkColumnIndex(sqlStatementContext, columnIndex);
+        return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(columnIndex - 1);
+    }
+    
+    private void checkColumnIndex(final SQLStatementContext sqlStatementContext, final int columnIndex) {
+        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+            ShardingSpherePreconditions.checkState(columnIndex <= ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size(),
+                    () -> new ColumnIndexOutOfRangeException(columnIndex));
+        }
     }
 }

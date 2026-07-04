@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -69,11 +69,12 @@ class ShardingAlgorithmCompletionProviderTest {
                 Map.of("type", "")));
         MCPCompletionProviderResult actual = new ShardingAlgorithmCompletionProvider().complete(createHandlerContext(queryFacade),
                 createRequestContext(ShardingFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI, "algorithm_type"));
-        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
+        Collection<MCPCompletionCandidate> actualCandidates = actual.getCandidates();
         assertThat(actualCandidates.size(), is(1));
-        assertThat(actualCandidates.getFirst().getValue(), is("INLINE"));
-        assertThat(actualCandidates.getFirst().getLabel(), is("Inline sharding algorithm"));
-        assertThat(actualCandidates.getFirst().getSource(), is("sharding-algorithm"));
+        MCPCompletionCandidate actualCandidate = actualCandidates.iterator().next();
+        assertThat(actualCandidate.getValue(), is("INLINE"));
+        assertThat(actualCandidate.getLabel(), is("Inline sharding algorithm"));
+        assertThat(actualCandidate.getSource(), is("sharding-algorithm"));
     }
     
     @Test
@@ -83,10 +84,11 @@ class ShardingAlgorithmCompletionProviderTest {
                 Map.of("type", "SNOWFLAKE", "description", "Snowflake key generator")));
         MCPCompletionProviderResult actual = new ShardingAlgorithmCompletionProvider().complete(createHandlerContext(queryFacade),
                 createRequestContext(ShardingFeatureDefinition.KEY_GENERATE_ALGORITHM_PLUGINS_RESOURCE_URI, "key_generator_type"));
-        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
+        Collection<MCPCompletionCandidate> actualCandidates = actual.getCandidates();
         assertThat(actualCandidates.size(), is(1));
-        assertThat(actualCandidates.getFirst().getValue(), is("SNOWFLAKE"));
-        assertThat(actualCandidates.getFirst().getSource(), is("sharding-key-generate-algorithm"));
+        MCPCompletionCandidate actualCandidate = actualCandidates.iterator().next();
+        assertThat(actualCandidate.getValue(), is("SNOWFLAKE"));
+        assertThat(actualCandidate.getSource(), is("sharding-key-generate-algorithm"));
     }
     
     @Test

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.reviser.index;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 
 /**
  * Index revise engine.
- * 
+ *
  * @param <T> type of rule
  */
 @RequiredArgsConstructor
@@ -43,13 +44,18 @@ public final class IndexReviseEngine<T extends ShardingSphereRule> {
      *
      * @param tableName table name
      * @param originalMetaDataList original index meta data list
+     * @param originalTableMetaDataList original table meta data list
+     * @param indexNameRecoveryCandidateTables index name recovery candidate tables
      * @return revised index meta data
      */
-    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList) {
+    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList,
+                                            final Collection<TableMetaData> originalTableMetaDataList,
+                                            final Collection<TableMetaData> indexNameRecoveryCandidateTables) {
         Optional<? extends IndexReviser<T>> reviser = reviseEntry.getIndexReviser(rule, tableName);
         return reviser.isPresent()
                 ? originalMetaDataList.stream()
-                        .map(each -> reviser.get().revise(tableName, each, rule)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList())
+                        .map(each -> reviser.get().revise(tableName, each, originalTableMetaDataList, indexNameRecoveryCandidateTables, rule))
+                        .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList())
                 : originalMetaDataList;
     }
 }

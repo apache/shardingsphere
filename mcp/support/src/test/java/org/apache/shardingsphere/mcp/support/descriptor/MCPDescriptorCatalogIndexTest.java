@@ -98,6 +98,16 @@ class MCPDescriptorCatalogIndexTest {
     }
     
     @Test
+    void assertFindPlanningToolNameByWorkflowKind() {
+        assertThat(MCPDescriptorCatalogIndex.findPlanningToolNameByWorkflowKind("encrypt.rule").orElseThrow(), is("database_gateway_plan_encrypt_rule"));
+    }
+    
+    @Test
+    void assertFindPlanningToolNameByUnknownWorkflowKind() {
+        assertFalse(MCPDescriptorCatalogIndex.findPlanningToolNameByWorkflowKind("unknown.rule").isPresent());
+    }
+    
+    @Test
     void assertGetCompletionTargetDescriptors() {
         Collection<MCPCompletionTargetDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getCompletionTargetDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "prompt".equals(each.getReferenceType()) && "inspect_metadata".equals(each.getReference())));
@@ -131,10 +141,6 @@ class MCPDescriptorCatalogIndexTest {
         assertThat(actual.get("supportedResources"), is(List.of("shardingsphere://workflows/{plan_id}")));
         assertThat(actual.get("supportedTools"), is(List.of("database_gateway_apply_workflow")));
         assertThat(actual.get("supportedStatementClasses"), is(List.of("SELECT")));
-    }
-    
-    @Test
-    void assertGetDescriptorCatalogFingerprint() {
-        assertFalse(MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint().isEmpty());
+        assertFalse(actual.containsKey("fingerprints"));
     }
 }

@@ -35,4 +35,10 @@ public final class MetadataSearchResult {
     private final Map<String, Object> searchContext;
     
     private final int totalMatchCount;
+    
+    private final int returnedCount;
+    
+    private final boolean truncated;
+    
+    private final int largeResultThreshold;
 }

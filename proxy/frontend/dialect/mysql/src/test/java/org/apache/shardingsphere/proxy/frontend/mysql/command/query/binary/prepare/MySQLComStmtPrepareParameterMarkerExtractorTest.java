@@ -137,7 +137,7 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     @Test
     void assertResolveColumnsForParameterMarkersWithOnDuplicateKeyUpdate() {
-        final ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
         ColumnAssignmentSegment columnAssignmentSegment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 1));
         InsertStatementContext sqlStatementContext = createInsertStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))),
                 Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id"))),

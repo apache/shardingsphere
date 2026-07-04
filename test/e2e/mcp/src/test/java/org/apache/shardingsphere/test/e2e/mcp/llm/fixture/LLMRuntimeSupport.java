@@ -195,7 +195,7 @@ public final class LLMRuntimeSupport {
             result.put("runtimeMode", config.getRuntimeMode().getValue());
             result.put("dockerOwned", true);
             result.put("provider", config.getModelProvider());
-            result.put("serverRuntime", config.getServerRuntime());
+            result.put("serverRuntime", "llama.cpp");
             result.put("serverImage", config.getServerImage());
             result.put("serverImageId", serverImageId);
             result.put("baseServerImage", config.getBaseServerImage());
@@ -225,7 +225,6 @@ public final class LLMRuntimeSupport {
                     && configuration.getRuntimeMode() == config.getRuntimeMode()
                     && configuration.getModelName().equals(config.getModelName())
                     && configuration.getApiKey().equals(config.getApiKey())
-                    && configuration.getServerRuntime().equals(config.getServerRuntime())
                     && configuration.getServerImage().equals(config.getServerImage())
                     && configuration.getBaseServerImage().equals(config.getBaseServerImage())
                     && configuration.getBaseServerImageDigest().equals(config.getBaseServerImageDigest())

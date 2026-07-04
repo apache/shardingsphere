@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -52,6 +53,7 @@ class OriginHeaderConstraintTest {
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(true).validate("http://example.com:8080"));
         assertThat(actual.getStatusCode(), is(403));
         assertThat(actual.getMessage(), is("Origin is not allowed by MCP HTTP transport policy."));
+        assertThat(((MCPTransportSecurityException) actual).getCategory(), is("origin_not_allowed"));
     }
     
     @Test
@@ -59,6 +61,7 @@ class OriginHeaderConstraintTest {
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(false).validate("http://127.0.0.1:8080"));
         assertThat(actual.getStatusCode(), is(403));
         assertThat(actual.getMessage(), is("Origin is not allowed by MCP HTTP transport policy."));
+        assertThat(((MCPTransportSecurityException) actual).getCategory(), is("origin_not_allowed"));
     }
     
     @Test
@@ -66,5 +69,6 @@ class OriginHeaderConstraintTest {
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(true).validate("://bad-origin"));
         assertThat(actual.getStatusCode(), is(403));
         assertThat(actual.getMessage(), is("Origin is not allowed by MCP HTTP transport policy."));
+        assertThat(((MCPTransportSecurityException) actual).getCategory(), is("origin_not_allowed"));
     }
 }

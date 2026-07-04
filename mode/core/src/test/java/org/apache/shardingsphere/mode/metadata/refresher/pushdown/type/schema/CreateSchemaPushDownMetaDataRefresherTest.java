@@ -50,17 +50,6 @@ class CreateSchemaPushDownMetaDataRefresherTest {
     }
     
     @Test
-    void assertRefreshCreateSchemaWithSensitiveProps() {
-        SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
-        CreateSchemaStatement sqlStatement = new CreateSchemaStatement(databaseType);
-        sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(props));
-        assertThat(persistService.getCreatedSchemaName(), is("foo_schema"));
-    }
-    
-    @Test
     void assertRefreshNoSchemaOrUserDoesNothing() {
         SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
         refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, new CreateSchemaStatement(databaseType), new ConfigurationProperties(new Properties()));

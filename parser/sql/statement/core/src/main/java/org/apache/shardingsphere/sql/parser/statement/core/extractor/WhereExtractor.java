@@ -104,7 +104,7 @@ public final class WhereExtractor {
      * @return extracted hierarchical query where segments
      */
     public static Collection<WhereSegment> extractHierarchicalQueryWhereSegments(final SelectStatement selectStatement) {
-        final Optional<HierarchicalQuerySegment> hierarchicalQuery = selectStatement.getHierarchicalQuery();
+        Optional<HierarchicalQuerySegment> hierarchicalQuery = selectStatement.getHierarchicalQuery();
         return hierarchicalQuery.isPresent() ? extractHierarchicalQueryWhereSegments(hierarchicalQuery.get()) : Collections.emptyList();
     }
     

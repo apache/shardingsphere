@@ -56,7 +56,7 @@ public final class ShadowMCPHandlerProvider implements MCPHandlerProvider, MCPWo
     
     @Override
     public Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions() {
-        final ShadowWorkflowValidationService validationService = new ShadowWorkflowValidationService();
+        ShadowWorkflowValidationService validationService = new ShadowWorkflowValidationService();
         return List.of(
                 new WorkflowRuntimeDefinition(ShadowFeatureDefinition.RULE_WORKFLOW_KIND, validationService),
                 new WorkflowRuntimeDefinition(ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND, validationService),

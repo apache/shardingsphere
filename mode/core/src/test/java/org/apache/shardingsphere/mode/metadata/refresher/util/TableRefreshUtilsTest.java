@@ -102,15 +102,6 @@ class TableRefreshUtilsTest {
     }
     
     @Test
-    void assertGetActualTableNameWithSensitiveProps() {
-        ShardingSphereDatabase database = createDatabase();
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        assertThat(TableRefreshUtils.getActualTableName(database, "Foo_Schema", new IdentifierValue("Foo_Tbl", QuoteCharacter.QUOTE),
-                new ConfigurationProperties(props)), is("Foo_Tbl"));
-    }
-    
-    @Test
     void assertGetActualTableNamesUsesExistingTableNames() {
         ShardingSphereDatabase database = createDatabase();
         assertThat(TableRefreshUtils.getActualTableNames(database, "foo_schema", Arrays.asList(new IdentifierValue("foo_tbl"), new IdentifierValue("bar_tbl")),

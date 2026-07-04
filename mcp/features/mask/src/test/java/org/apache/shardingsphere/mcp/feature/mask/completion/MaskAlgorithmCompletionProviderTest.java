@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -69,10 +69,11 @@ class MaskAlgorithmCompletionProviderTest {
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new MaskAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext(MaskFeatureDefinition.PLAN_PROMPT_NAME));
-        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
+        Collection<MCPCompletionCandidate> actualCandidates = actual.getCandidates();
         assertThat(actualCandidates.size(), is(1));
-        assertThat(actualCandidates.get(0).getValue(), is("MASK_FROM_X_TO_Y"));
-        assertThat(actualCandidates.get(0).getLabel(), is("Range mask"));
+        MCPCompletionCandidate actualCandidate = actualCandidates.iterator().next();
+        assertThat(actualCandidate.getValue(), is("MASK_FROM_X_TO_Y"));
+        assertThat(actualCandidate.getLabel(), is("Range mask"));
     }
     
     private MCPCompletionRequestContext createRequestContext(final String reference) {

@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 
 import java.sql.SQLSyntaxErrorException;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -39,6 +42,25 @@ public final class WorkflowDistSQLQueryUtils {
      */
     public static boolean isUnsupportedDistSQLQueryFailure(final MCPQueryFailedException ex) {
         return hasSyntaxErrorCause(ex) || hasUnsupportedDistSQLMessage(ex);
+    }
+    
+    /**
+     * Query DistSQL rule rows, returning an empty list when the current backend does not support the rule DistSQL syntax.
+     *
+     * @param queryFacade query facade
+     * @param databaseName database name
+     * @param sql DistSQL to execute
+     * @return queried rows
+     */
+    public static List<Map<String, Object>> queryRuleRows(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String sql) {
+        try {
+            return queryFacade.query(databaseName, "", sql);
+        } catch (final MCPQueryFailedException ex) {
+            if (isUnsupportedDistSQLQueryFailure(ex)) {
+                return List.of();
+            }
+            throw ex;
+        }
     }
     
     private static boolean hasSyntaxErrorCause(final Throwable throwable) {

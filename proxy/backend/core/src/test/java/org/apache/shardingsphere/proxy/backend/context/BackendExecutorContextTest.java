@@ -84,7 +84,10 @@ class BackendExecutorContextTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         BackendExecutorContext.getInstance().init();
-        final ExecutorEngine actual = BackendExecutorContext.getInstance().getExecutorEngine();
+        assertExecutorEngineReinitialized(BackendExecutorContext.getInstance().getExecutorEngine());
+    }
+    
+    private void assertExecutorEngineReinitialized(final ExecutorEngine actual) {
         BackendExecutorContext.getInstance().shutdown();
         assertThrows(IllegalStateException.class, () -> BackendExecutorContext.getInstance().getExecutorEngine());
         BackendExecutorContext.getInstance().init();

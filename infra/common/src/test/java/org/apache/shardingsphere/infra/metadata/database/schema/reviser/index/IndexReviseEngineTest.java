@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.index;
 
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,7 +52,9 @@ class IndexReviseEngineTest {
     @Test
     void assertReviseWithoutIndexReviser() {
         when(metaDataReviseEntry.getIndexReviser(any(), eq("foo_tbl"))).thenReturn(Optional.empty());
-        Collection<IndexMetaData> actual = indexReviseEngine.revise("foo_tbl", Collections.singleton(new IndexMetaData("foo_idx")));
+        Collection<IndexMetaData> originalMetaDataList = Collections.singleton(new IndexMetaData("foo_idx"));
+        Collection<IndexMetaData> actual = indexReviseEngine.revise("foo_tbl",
+                originalMetaDataList, Collections.singleton(new TableMetaData("foo_tbl", Collections.emptyList(), originalMetaDataList, Collections.emptyList())), Collections.emptyList());
         assertThat(actual.size(), is(1));
         assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
     }
@@ -58,9 +62,39 @@ class IndexReviseEngineTest {
     @Test
     void assertReviseWithIndexReviser() {
         IndexReviser reviser = mock(IndexReviser.class);
-        when(reviser.revise(eq("foo_tbl"), any(), any())).thenReturn(Optional.of(new IndexMetaData("foo_idx")));
+        when(reviser.revise(eq("foo_tbl"), any(), any(), anyCollection(), any())).thenReturn(Optional.of(new IndexMetaData("foo_idx")));
         when(metaDataReviseEntry.getIndexReviser(any(), eq("foo_tbl"))).thenReturn(Optional.of(reviser));
-        Collection<IndexMetaData> actual = indexReviseEngine.revise("foo_tbl", Arrays.asList(new IndexMetaData("idx_0"), new IndexMetaData("idx_1")));
+        Collection<IndexMetaData> originalMetaDataList = Arrays.asList(new IndexMetaData("idx_0"), new IndexMetaData("idx_1"));
+        Collection<IndexMetaData> actual = indexReviseEngine.revise("foo_tbl",
+                originalMetaDataList, Collections.singleton(new TableMetaData("foo_tbl", Collections.emptyList(), originalMetaDataList, Collections.emptyList())), Collections.emptyList());
+        assertThat(actual.size(), is(2));
+        assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
+        assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
+    }
+    
+    @Test
+    void assertReviseWithOriginalTableMetaDataList() {
+        IndexReviser reviser = mock(IndexReviser.class);
+        Collection<IndexMetaData> originalIndexes = Arrays.asList(new IndexMetaData("idx_0"), new IndexMetaData("idx_1"));
+        Collection<TableMetaData> originalTables = Collections.singleton(new TableMetaData("foo_tbl", Collections.emptyList(), originalIndexes, Collections.emptyList()));
+        when(reviser.revise(eq("foo_tbl"), any(), eq(originalTables), anyCollection(), any())).thenReturn(Optional.of(new IndexMetaData("foo_idx")));
+        when(metaDataReviseEntry.getIndexReviser(any(), eq("foo_tbl"))).thenReturn(Optional.of(reviser));
+        Collection<IndexMetaData> actual = indexReviseEngine.revise("foo_tbl", originalIndexes, originalTables, Collections.emptyList());
+        assertThat(actual.size(), is(2));
+        assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
+        assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
+    }
+    
+    @Test
+    void assertReviseWithIndexNameRecoveryCandidateTables() {
+        IndexReviser reviser = mock(IndexReviser.class);
+        Collection<IndexMetaData> originalIndexes = Arrays.asList(new IndexMetaData("idx_0"), new IndexMetaData("idx_1"));
+        Collection<TableMetaData> originalTables = Collections.singleton(new TableMetaData("foo_tbl", Collections.emptyList(), originalIndexes, Collections.emptyList()));
+        Collection<TableMetaData> candidates =
+                Collections.singleton(new TableMetaData("logic_tbl", Collections.emptyList(), Collections.singleton(new IndexMetaData("logic_idx")), Collections.emptyList()));
+        when(reviser.revise(eq("foo_tbl"), any(), eq(originalTables), eq(candidates), any())).thenReturn(Optional.of(new IndexMetaData("foo_idx")));
+        when(metaDataReviseEntry.getIndexReviser(any(), eq("foo_tbl"))).thenReturn(Optional.of(reviser));
+        Collection<IndexMetaData> actual = indexReviseEngine.revise("foo_tbl", originalIndexes, originalTables, candidates);
         assertThat(actual.size(), is(2));
         assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
         assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));

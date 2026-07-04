@@ -28,8 +28,6 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlRuntimeDatabaseConfigurationProperties {
     
-    public static final String DATABASE_TYPE = "databaseType";
-    
     public static final String JDBC_URL = "jdbcUrl";
     
     public static final String USERNAME = "username";
@@ -38,5 +36,5 @@ public final class YamlRuntimeDatabaseConfigurationProperties {
     
     public static final String DRIVER_CLASS_NAME = "driverClassName";
     
-    public static final Set<String> SUPPORTED_PROPERTIES = Set.of(DATABASE_TYPE, JDBC_URL, USERNAME, PASSWORD, DRIVER_CLASS_NAME);
+    public static final Set<String> SUPPORTED_PROPERTIES = Set.of(JDBC_URL, USERNAME, PASSWORD, DRIVER_CLASS_NAME);
 }

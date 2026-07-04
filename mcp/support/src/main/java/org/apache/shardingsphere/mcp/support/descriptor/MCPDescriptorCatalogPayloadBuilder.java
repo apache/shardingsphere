@@ -26,16 +26,12 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 final class MCPDescriptorCatalogPayloadBuilder {
     
@@ -79,43 +75,20 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("completionTargets", completionTargets);
         result.put("resourceNavigation", resourceNavigation);
         result.put("protocolAvailability", createProtocolAvailability(!resourceNavigation.isEmpty()));
-        result.put("fingerprints", createFingerprints(resources, resourceTemplates, tools, prompts, completionTargets, resourceNavigation));
         return result;
-    }
-    
-    static String createDescriptorCatalogFingerprint(final MCPDescriptorCatalog catalog) {
-        return new MCPDescriptorCatalogPayloadBuilder(catalog).createDescriptorCatalogFingerprint();
-    }
-    
-    private String createDescriptorCatalogFingerprint() {
-        List<Map<String, Object>> resources = catalog.getResourceDescriptors().stream().map(this::toResourcePayload).toList();
-        List<Map<String, Object>> resourceTemplates = catalog.getResourceTemplateDescriptors().stream().map(this::toResourceTemplatePayload).toList();
-        List<Map<String, Object>> tools = catalog.getToolDescriptors().stream().map(this::toToolPayload).toList();
-        List<Map<String, Object>> prompts = catalog.getPromptDescriptors().stream().map(this::toPromptPayload).toList();
-        List<Map<String, Object>> completionTargets = catalog.getCompletionTargetDescriptors().stream().map(this::toCompletionTargetPayload).toList();
-        List<Map<String, Object>> resourceNavigation = catalog.getResourceNavigationDescriptors().stream().map(this::toResourceNavigationPayload).toList();
-        return String.valueOf(createFingerprints(resources, resourceTemplates, tools, prompts, completionTargets, resourceNavigation).get("descriptorCatalog"));
     }
     
     private Map<String, Object> toResourcePayload(final MCPResourceDescriptor descriptor) {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put(MCPPayloadFieldNames.URI, descriptor.getUriTemplate());
-        result.put("name", descriptor.getName());
-        result.put("title", descriptor.getTitle());
-        result.put("description", descriptor.getDescription());
-        result.put("mimeType", descriptor.getMimeType());
-        if (!descriptor.getAnnotations().isEmpty()) {
-            result.put("annotations", toResourceAnnotationsPayload(descriptor.getAnnotations()));
-        }
-        if (!descriptor.getMeta().isEmpty()) {
-            result.put("_meta", descriptor.getMeta());
-        }
-        return result;
+        return createResourcePayload(descriptor, MCPPayloadFieldNames.URI);
     }
     
     private Map<String, Object> toResourceTemplatePayload(final MCPResourceDescriptor descriptor) {
+        return createResourcePayload(descriptor, "uriTemplate");
+    }
+    
+    private Map<String, Object> createResourcePayload(final MCPResourceDescriptor descriptor, final String uriFieldName) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put("uriTemplate", descriptor.getUriTemplate());
+        result.put(uriFieldName, descriptor.getUriTemplate());
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
@@ -193,15 +166,16 @@ final class MCPDescriptorCatalogPayloadBuilder {
     }
     
     private Map<String, Object> createCompletionHint(final String argumentName) {
-        List<Map<String, Object>> references = catalog.getCompletionTargetDescriptors().stream()
-                .filter(each -> each.getArguments().contains(argumentName)).map(this::createCompletionReferenceHint).toList();
+        List<MCPCompletionTargetDescriptor> descriptors = catalog.getCompletionTargetDescriptors().stream()
+                .filter(each -> each.getArguments().contains(argumentName)).toList();
+        List<Map<String, Object>> references = descriptors.stream().map(this::createCompletionReferenceHint).toList();
         if (references.isEmpty()) {
             return Map.of();
         }
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("available", true);
         result.put("references", references);
-        List<String> requiredContextArguments = createCompletionRequiredContextArguments(argumentName);
+        List<String> requiredContextArguments = createCompletionRequiredContextArguments(descriptors, argumentName);
         if (!requiredContextArguments.isEmpty()) {
             result.put("required_context_arguments", requiredContextArguments);
         }
@@ -216,17 +190,19 @@ final class MCPDescriptorCatalogPayloadBuilder {
         return result;
     }
     
-    private List<String> createCompletionRequiredContextArguments(final String argumentName) {
-        if ("schema".equals(argumentName)) {
-            return List.of("database");
+    private List<String> createCompletionRequiredContextArguments(final Collection<MCPCompletionTargetDescriptor> descriptors, final String argumentName) {
+        Set<String> result = new LinkedHashSet<>();
+        for (MCPCompletionTargetDescriptor each : descriptors) {
+            Object requiredContextArguments = each.getMeta().get(MCPShardingSphereMetadataKeys.REQUIRED_CONTEXT_ARGUMENTS);
+            if (!(requiredContextArguments instanceof Map)) {
+                continue;
+            }
+            Object arguments = ((Map<?, ?>) requiredContextArguments).get(argumentName);
+            if (arguments instanceof Collection) {
+                ((Collection<?>) arguments).stream().map(String::valueOf).forEach(result::add);
+            }
         }
-        if ("table".equals(argumentName) || "sequence".equals(argumentName)) {
-            return List.of("database", "schema");
-        }
-        if ("column".equals(argumentName) || "index".equals(argumentName)) {
-            return List.of("database", "schema", "table");
-        }
-        return List.of();
+        return result.stream().toList();
     }
     
     private String resolveReferenceType(final String reference) {
@@ -283,108 +259,5 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("completions", !catalog.getCompletionTargetDescriptors().isEmpty());
         result.put("resourceNavigation", hasResourceNavigation);
         return result;
-    }
-    
-    private Map<String, Object> createFingerprints(final List<Map<String, Object>> resources, final List<Map<String, Object>> resourceTemplates,
-                                                   final List<Map<String, Object>> tools, final List<Map<String, Object>> prompts,
-                                                   final List<Map<String, Object>> completionTargets, final List<Map<String, Object>> resourceNavigation) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("algorithm", "sha256");
-        result.put("descriptorCatalog", createHash(Map.of(
-                "resources", resources,
-                "resourceTemplates", resourceTemplates,
-                "tools", tools,
-                "prompts", prompts,
-                "completionTargets", completionTargets,
-                "resourceNavigation", resourceNavigation)));
-        result.put("promptSet", createHash(prompts));
-        result.put("resourceNavigation", createHash(resourceNavigation));
-        result.put("modelFacingSchemas", createHash(createModelFacingSchemas(resources, resourceTemplates, tools)));
-        return result;
-    }
-    
-    private List<Map<String, Object>> createModelFacingSchemas(final List<Map<String, Object>> resources, final List<Map<String, Object>> resourceTemplates,
-                                                               final List<Map<String, Object>> tools) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        resources.stream().map(this::createResourceSchema).forEach(result::add);
-        resourceTemplates.stream().map(this::createResourceSchema).forEach(result::add);
-        tools.stream().map(this::createToolSchema).forEach(result::add);
-        return result;
-    }
-    
-    private Map<String, Object> createResourceSchema(final Map<String, Object> resource) {
-        return resource.containsKey("uriTemplate") ? Map.of("uriTemplate", resource.get("uriTemplate")) : Map.of(MCPPayloadFieldNames.URI, resource.get(MCPPayloadFieldNames.URI));
-    }
-    
-    private Map<String, Object> createToolSchema(final Map<String, Object> tool) {
-        return Map.of("name", tool.get("name"), "inputSchema", tool.get("inputSchema"), "outputSchema", tool.get("outputSchema"));
-    }
-    
-    private String createHash(final Object value) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] bytes = digest.digest(canonicalize(value).getBytes(StandardCharsets.UTF_8));
-            return toHex(bytes);
-        } catch (final NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("SHA-256 is not available.", ex);
-        }
-    }
-    
-    private String toHex(final byte[] bytes) {
-        StringBuilder result = new StringBuilder(bytes.length * 2);
-        for (byte each : bytes) {
-            int value = each & 0xFF;
-            if (value < 16) {
-                result.append('0');
-            }
-            result.append(Integer.toHexString(value));
-        }
-        return result.toString();
-    }
-    
-    private String canonicalize(final Object value) {
-        if (null == value) {
-            return "null";
-        }
-        if (value instanceof Map) {
-            return canonicalizeMap((Map<?, ?>) value);
-        }
-        if (value instanceof Collection) {
-            return canonicalizeCollection((Collection<?>) value);
-        }
-        if (value instanceof Number || value instanceof Boolean) {
-            return String.valueOf(value);
-        }
-        return "\"" + escape(String.valueOf(value)) + "\"";
-    }
-    
-    private String canonicalizeMap(final Map<?, ?> value) {
-        StringBuilder result = new StringBuilder("{");
-        List<? extends Entry<?, ?>> entries = value.entrySet().stream()
-                .sorted(Comparator.comparing(each -> String.valueOf(each.getKey()))).toList();
-        for (int index = 0; index < entries.size(); index++) {
-            if (0 < index) {
-                result.append(',');
-            }
-            Entry<?, ?> entry = entries.get(index);
-            result.append(canonicalize(String.valueOf(entry.getKey()))).append(':').append(canonicalize(entry.getValue()));
-        }
-        return result.append('}').toString();
-    }
-    
-    private String canonicalizeCollection(final Collection<?> value) {
-        StringBuilder result = new StringBuilder("[");
-        int index = 0;
-        for (Object each : value) {
-            if (0 < index++) {
-                result.append(',');
-            }
-            result.append(canonicalize(each));
-        }
-        return result.append(']').toString();
-    }
-    
-    private String escape(final String value) {
-        return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 }

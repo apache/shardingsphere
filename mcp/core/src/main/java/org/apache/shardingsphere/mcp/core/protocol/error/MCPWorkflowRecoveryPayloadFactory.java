@@ -25,8 +25,8 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecution
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArgumentConflictException;
 
 import java.util.List;
 import java.util.Map;
@@ -38,11 +38,11 @@ import java.util.Map;
 final class MCPWorkflowRecoveryPayloadFactory {
     
     static Map<String, Object> createMissingExecutionModeRecovery(final MCPExecutionModeRequiredException cause) {
-        return "database_gateway_apply_workflow".equals(cause.getToolName()) ? createMissingWorkflowExecutionModeRecovery(cause) : createMissingUpdateExecutionModeRecovery(cause);
+        return WorkflowToolDescriptors.APPLY_TOOL_NAME.equals(cause.getToolName()) ? createMissingWorkflowExecutionModeRecovery(cause) : createMissingUpdateExecutionModeRecovery(cause);
     }
     
     static Map<String, Object> createInvalidExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
-        return "database_gateway_apply_workflow".equals(cause.getToolName()) ? createInvalidWorkflowExecutionModeRecovery(cause) : createInvalidUpdateExecutionModeRecovery(cause);
+        return WorkflowToolDescriptors.APPLY_TOOL_NAME.equals(cause.getToolName()) ? createInvalidWorkflowExecutionModeRecovery(cause) : createInvalidUpdateExecutionModeRecovery(cause);
     }
     
     static Map<String, Object> createInvalidApprovedStepsRecovery(final MCPInvalidApprovedStepsException cause) {
@@ -54,18 +54,7 @@ final class MCPWorkflowRecoveryPayloadFactory {
         result.put(MCPPayloadFieldNames.ALLOWED_VALUES, cause.getAllowedValues());
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(
-                "database_gateway_apply_workflow", "Preview again, then copy only visible approval_step values into approved_steps.", suggestedArguments)));
-        result.put("ask_user_when_uncertain", true);
-        return result;
-    }
-    
-    static Map<String, Object> createWorkflowArgumentConflictRecovery(final WorkflowArgumentConflictException cause) {
-        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
-                "workflow_argument_conflict", "Ask the user which public workflow argument value to keep, then retry with only one value.");
-        List<String> argumentFields = createWorkflowArgumentConflictFields(cause.getConflictingArguments());
-        result.put("conflicting_arguments", cause.getConflictingArguments());
-        result.put(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS, createWorkflowArgumentConflictQuestions(cause.getConflictingArguments()));
-        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.askUser("Resolve conflicting workflow arguments before retrying the planning tool.", argumentFields)));
+                WorkflowToolDescriptors.APPLY_TOOL_NAME, "Preview again, then copy only visible approval_step values into approved_steps.", suggestedArguments)));
         result.put("ask_user_when_uncertain", true);
         return result;
     }
@@ -129,25 +118,4 @@ final class MCPWorkflowRecoveryPayloadFactory {
         return result;
     }
     
-    private static List<String> createWorkflowArgumentConflictFields(final List<String> conflictingArguments) {
-        return conflictingArguments.stream().map(MCPWorkflowRecoveryPayloadFactory::getWorkflowArgumentConflictField).distinct().toList();
-    }
-    
-    private static List<Map<String, Object>> createWorkflowArgumentConflictQuestions(final List<String> conflictingArguments) {
-        return conflictingArguments.stream().map(MCPWorkflowRecoveryPayloadFactory::createWorkflowArgumentConflictQuestion).toList();
-    }
-    
-    private static Map<String, Object> createWorkflowArgumentConflictQuestion(final String conflict) {
-        String field = getWorkflowArgumentConflictField(conflict);
-        return Map.of(
-                MCPPayloadFieldNames.FIELD, field,
-                "conflict", conflict,
-                MCPPayloadFieldNames.INPUT_TYPE, "string",
-                MCPPayloadFieldNames.DISPLAY_MESSAGE, String.format("Choose one value for `%s`, or remove the duplicate path.", field));
-    }
-    
-    private static String getWorkflowArgumentConflictField(final String conflict) {
-        int conflictSeparatorIndex = conflict.indexOf(" conflicts with ");
-        return 0 < conflictSeparatorIndex ? conflict.substring(0, conflictSeparatorIndex) : conflict;
-    }
 }

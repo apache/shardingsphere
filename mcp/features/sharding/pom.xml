@@ -37,5 +37,10 @@
             <artifactId>shardingsphere-sharding-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-algorithm-key-generator-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

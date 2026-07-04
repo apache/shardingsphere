@@ -129,8 +129,6 @@ public final class OrderedSPILoader {
         
         private final Map<Set<Class<?>>, Map<Class<?>, T>> multiTypeClassToServices = new ConcurrentHashMap<>();
         
-        private final Map<Collection<?>, Map<?, T>> multiObjectToServices = new ConcurrentHashMap<>();
-        
         @SuppressWarnings({"rawtypes", "unchecked"})
         CachedSingletonOrderedSPIRegistry(final Class<?> serviceInterface) {
             Map<Integer, T> orderServices = new TreeMap<>(Comparator.naturalOrder());
@@ -177,33 +175,26 @@ public final class OrderedSPILoader {
         }
         
         @Override
-        @SuppressWarnings("unchecked")
         public <K> Map<K, T> getServices(final Collection<K> types) {
             if (1 == types.size()) {
                 K type = types.iterator().next();
                 T service = singleTypeClassToService.get(type.getClass());
                 return null == service ? Collections.emptyMap() : Collections.singletonMap(type, service);
             }
-            Map<?, T> result = multiObjectToServices.get(types);
-            if (null == result) {
-                result = multiObjectToServices.computeIfAbsent(types, t -> computeServicesByObject((Collection<Object>) t));
-            }
-            return (Map<K, T>) result;
+            return computeServicesByObject(types);
         }
         
-        private Map<Object, T> computeServicesByObject(final Collection<Object> types) {
-            Map<Class<?>, List<Object>> classTypeMap = new HashMap<>(types.size(), 1F);
+        private <K> Map<K, T> computeServicesByObject(final Collection<K> types) {
+            Map<Class<?>, List<K>> classTypeMap = new HashMap<>(types.size(), 1F);
             Set<Class<?>> typeClasses = new HashSet<>(types.size(), 1F);
-            for (Object each : types) {
+            for (K each : types) {
                 classTypeMap.computeIfAbsent(each.getClass(), clazz -> new LinkedList<>()).add(each);
                 typeClasses.add(each.getClass());
             }
-            Map<Object, T> result = new LinkedHashMap<>(types.size(), 1F);
-            for (T each : orderedServices) {
-                if (typeClasses.contains(each.getTypeClass())) {
-                    for (Object type : classTypeMap.get(each.getTypeClass())) {
-                        result.put(type, each);
-                    }
+            Map<K, T> result = new LinkedHashMap<>(types.size(), 1F);
+            for (T each : getServicesByClass(typeClasses).values()) {
+                for (K type : classTypeMap.get(each.getTypeClass())) {
+                    result.put(type, each);
                 }
             }
             return result;

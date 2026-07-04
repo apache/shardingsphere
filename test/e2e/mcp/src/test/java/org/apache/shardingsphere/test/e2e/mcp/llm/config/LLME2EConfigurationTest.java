@@ -53,8 +53,6 @@ class LLME2EConfigurationTest {
     
     private String originalBaseServerImageDigest;
     
-    private String originalServerRuntime;
-    
     private String originalModelRepository;
     
     private String originalModelFileName;
@@ -74,7 +72,6 @@ class LLME2EConfigurationTest {
         originalServerImage = System.getProperty("mcp.llm.server-image");
         originalBaseServerImage = System.getProperty("mcp.llm.base-server-image");
         originalBaseServerImageDigest = System.getProperty("mcp.llm.base-server-image-digest");
-        originalServerRuntime = System.getProperty("mcp.llm.server-runtime");
         originalModelRepository = System.getProperty("mcp.llm.model-repository");
         originalModelFileName = System.getProperty("mcp.llm.model-file-name");
         originalModelQuantization = System.getProperty("mcp.llm.model-quantization");
@@ -86,7 +83,6 @@ class LLME2EConfigurationTest {
         System.clearProperty("mcp.llm.server-image");
         System.clearProperty("mcp.llm.base-server-image");
         System.clearProperty("mcp.llm.base-server-image-digest");
-        System.clearProperty("mcp.llm.server-runtime");
         System.clearProperty("mcp.llm.model-repository");
         System.clearProperty("mcp.llm.model-file-name");
         System.clearProperty("mcp.llm.model-quantization");
@@ -103,7 +99,6 @@ class LLME2EConfigurationTest {
         restoreProperty("mcp.llm.server-image", originalServerImage);
         restoreProperty("mcp.llm.base-server-image", originalBaseServerImage);
         restoreProperty("mcp.llm.base-server-image-digest", originalBaseServerImageDigest);
-        restoreProperty("mcp.llm.server-runtime", originalServerRuntime);
         restoreProperty("mcp.llm.model-repository", originalModelRepository);
         restoreProperty("mcp.llm.model-file-name", originalModelFileName);
         restoreProperty("mcp.llm.model-quantization", originalModelQuantization);
@@ -121,7 +116,6 @@ class LLME2EConfigurationTest {
         String expectedModelReference = expectedProps.getProperty("mcp.llm.model");
         assertThat(actual.getModelName(), is(expectedModelReference));
         assertThat(actual.getApiKey(), is("mcp-llm-score"));
-        assertThat(actual.getServerRuntime(), is(expectedProps.getProperty("mcp.llm.server-runtime")));
         assertThat(actual.getServerImage(), is("apache/shardingsphere-mcp-llm-runtime:local"));
         assertThat(actual.getBaseServerImage(), is("ghcr.io/ggml-org/llama.cpp:server-b9191"));
         assertThat(actual.getBaseServerImageDigest(), is(expectedProps.getProperty("mcp.llm.base-server-image-digest")));
@@ -167,14 +161,12 @@ class LLME2EConfigurationTest {
         System.setProperty("mcp.llm.server-image", "test/mcp-llm-runtime:test");
         System.setProperty("mcp.llm.base-server-image", "test/llama.cpp:test");
         System.setProperty("mcp.llm.base-server-image-digest", "test-base-server-image-digest");
-        System.setProperty("mcp.llm.server-runtime", "test-runtime");
         System.setProperty("mcp.llm.model-repository", "ggml-org/Qwen3-1.7B-GGUF");
         System.setProperty("mcp.llm.model-file-name", "Qwen3-1.7B-Q4_K_M.gguf");
         System.setProperty("mcp.llm.model-quantization", "Q4_K_M");
         System.setProperty("mcp.llm.model-revision", "daeb8e2d528a760970442092f6bf1e55c3b659eb");
         System.setProperty("mcp.llm.model-sha256", "configured-model-sha256");
         LLME2EConfiguration actual = LLME2EConfiguration.load();
-        assertThat(actual.getServerRuntime(), is("test-runtime"));
         assertThat(actual.getServerImage(), is("test/mcp-llm-runtime:test"));
         assertThat(actual.getBaseServerImage(), is("test/llama.cpp:test"));
         assertThat(actual.getBaseServerImageDigest(), is("test-base-server-image-digest"));
@@ -241,7 +233,7 @@ class LLME2EConfigurationTest {
     
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode, final Path artifactRoot) {
         return new LLME2EConfiguration("http://127.0.0.1:8080/v1", "openai-compatible", "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M", "mcp-llm-score", 600, 240, 10,
-                artifactRoot, "run-id", runtimeMode, "llama.cpp", "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server-b9191", "",
+                artifactRoot, "run-id", runtimeMode, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server-b9191", "",
                 new LLME2EConfiguration.ModelMetadata("ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb",
                         "configured-model-sha256"));
     }

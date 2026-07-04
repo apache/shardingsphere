@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -34,12 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("isEnabled")
-class HttpTransportProtocolContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
-    
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
+class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETest {
     
     @Test
     void assertInitializeSessionAndProtocolHeaders() throws IOException, InterruptedException {

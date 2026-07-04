@@ -48,6 +48,9 @@ final class MetadataSearchResourceUriFactory {
         if ("index".equals(objectType)) {
             return createIndexResourceUris(database, schema, table, name);
         }
+        if ("storage_unit".equals(objectType)) {
+            return createStorageUnitResourceUris(database, name);
+        }
         return "sequence".equals(objectType)
                 ? createSequenceResourceUris(database, schema, name)
                 : notSafe("Metadata hit object type is not backed by a descriptor resource pattern.");
@@ -115,6 +118,14 @@ final class MetadataSearchResourceUriFactory {
         return derived(createResourceUri(database, "schemas", schema, "sequences", sequence), createResourceUri(database, "schemas", schema, "sequences"), List.of());
     }
     
+    private MetadataResourceUris createStorageUnitResourceUris(final String database, final String storageUnit) {
+        if (!canUseInUri(database, storageUnit)) {
+            return notSafe("Metadata hit does not include database and storage unit names safe for resource URI derivation.");
+        }
+        String storageUnitUri = createResourceUri(database, "storage-units", storageUnit);
+        return derived(storageUnitUri, createResourceUri(database, "storage-units"), List.of(createResourceUri(database, "storage-units", storageUnit, "used-by-rules")));
+    }
+    
     private MetadataResourceUris derived(final String resourceUri, final String parentResourceUri, final List<String> nextResourceUris) {
         return new MetadataResourceUris(MCPResourceHintUtils.create(resourceUri, resolveResourceKind(resourceUri), "inspect_detail", "Read the matched metadata detail resource.",
                 MCPPayloadFieldNames.RESOURCE),
@@ -135,6 +146,9 @@ final class MetadataSearchResourceUriFactory {
         }
         if (uri.contains("/indexes")) {
             return "index";
+        }
+        if (uri.contains("/storage-units")) {
+            return "storage-unit";
         }
         if (uri.contains("/tables")) {
             return "table";

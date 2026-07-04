@@ -43,6 +43,54 @@
             SET @ISOweek=1;
             RETURN(@ISOweek);
         END" db-types="SQLServer" />
+    <sql-case id="create_function_with_declare" value="CREATE FUNCTION dbo.ufnGetName (@Id INT)
+        RETURNS NVARCHAR(100) AS
+        BEGIN
+            DECLARE @Name NVARCHAR(100);
+            SET @Name = N'test';
+            SELECT @Name;
+            RETURN 0;
+        END" db-types="SQLServer" />
+    <sql-case id="create_function_with_declare_table_variable" value="CREATE FUNCTION dbo.ufnTableVar (@Id INT)
+        RETURNS INT AS
+        BEGIN
+            DECLARE @T TABLE (Id INT);
+            UPDATE @T SET Id = @Id;
+            RETURN @Id;
+        END" db-types="SQLServer" />
+    <sql-case id="create_function_or_alter_with_declare" value="CREATE OR ALTER FUNCTION dbo.ufnRefresh (@Id INT)
+        RETURNS INT AS
+        BEGIN
+            DECLARE @Val INT = 0;
+            SET @Val = @Id;
+            RETURN @Val;
+        END" db-types="SQLServer" />
+    <sql-case id="create_function_with_declare_cursor" value="CREATE FUNCTION dbo.ufnCursor ()
+        RETURNS INT AS
+        BEGIN
+            DECLARE @cur CURSOR;
+            RETURN 0;
+        END" db-types="SQLServer" />
+    <sql-case id="create_function_with_declare_multiple_variables" value="CREATE FUNCTION dbo.ufnMulti ()
+        RETURNS INT AS
+        BEGIN
+            DECLARE @A INT, @B INT = 1;
+            SET @A = @B;
+            RETURN @A;
+        END" db-types="SQLServer" />
+    <sql-case id="create_function_with_schemabinding_and_declare" value="CREATE FUNCTION dbo.ufnSchema (@X INT)
+        RETURNS INT WITH SCHEMABINDING AS
+        BEGIN
+            DECLARE @Y INT = @X;
+            RETURN @Y;
+        END" db-types="SQLServer" />
+    <sql-case id="create_function_with_returns_null_on_null_input_and_declare" value="CREATE FUNCTION dbo.ufnNullOnNull (@X INT)
+        RETURNS INT
+        WITH RETURNS NULL ON NULL INPUT AS
+        BEGIN
+            DECLARE @Y INT = @X;
+            RETURN @Y;
+        END" db-types="SQLServer" />
     <sql-case id="create_function_inline_table" value="CREATE FUNCTION Sales.ufn_SalesByStore (@storeid int)
         RETURNS TABLE AS RETURN (
             SELECT P.ProductID, P.Name, SUM(SD.LineTotal) AS 'Total'
