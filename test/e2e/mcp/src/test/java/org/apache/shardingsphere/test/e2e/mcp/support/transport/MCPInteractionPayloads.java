@@ -96,6 +96,7 @@ public final class MCPInteractionPayloads {
      *
      * @param payload JSON-RPC payload
      * @return structured content or normalized error payload
+     * @throws IllegalStateException when tools/call response omits structuredContent
      */
     public static Map<String, Object> getStructuredContent(final Map<String, Object> payload) {
         if (hasJsonRpcError(payload)) {
@@ -105,8 +106,7 @@ public final class MCPInteractionPayloads {
         if (result.containsKey("structuredContent")) {
             return castToMap(result.get("structuredContent"));
         }
-        List<Map<String, Object>> contents = getResultContents(payload);
-        return contents.isEmpty() ? Map.of() : parseJsonText(contents.get(0).get("text"));
+        throw new IllegalStateException("MCP tools/call response must include structuredContent.");
     }
     
     /**
@@ -120,7 +120,7 @@ public final class MCPInteractionPayloads {
             return getJsonRpcErrorPayload(payload);
         }
         List<Map<String, Object>> contents = castToList(getJsonRpcResult(payload).get("contents"));
-        return null == contents || contents.isEmpty() ? Map.of() : parseJsonText(contents.get(0).get("text"));
+        return null == contents || contents.isEmpty() ? Map.of() : parseJsonText(contents.getFirst().get("text"));
     }
     
     /**

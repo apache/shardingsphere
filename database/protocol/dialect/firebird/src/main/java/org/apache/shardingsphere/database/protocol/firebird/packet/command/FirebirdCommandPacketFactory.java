@@ -21,6 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
@@ -54,9 +60,11 @@ public final class FirebirdCommandPacketFactory {
      * @param commandPacketType command packet type for Firebird
      * @param payload packet payload for Firebird
      * @param protocolVersion protocol version of Firebird
+     * @param connectionId connection ID
      * @return created instance
      */
-    public static FirebirdCommandPacket newInstance(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
+    public static FirebirdCommandPacket newInstance(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion,
+                                                    final int connectionId) {
         switch (commandPacketType) {
             case INFO_DATABASE:
                 return FirebirdDatabaseInfoPacketType.createPacket(payload);
@@ -97,6 +105,18 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdRollbackTransactionPacket(payload);
             case FREE_STATEMENT:
                 return new FirebirdFreeStatementPacket(payload);
+            case BATCH_CREATE:
+                return new FirebirdBatchCreateCommandPacket(payload);
+            case BATCH_MSG:
+                return new FirebirdBatchSendMessageCommandPacket(payload);
+            case BATCH_EXEC:
+                return new FirebirdBatchExecuteCommandPacket(payload);
+            case BATCH_RLS:
+                return new FirebirdBatchReleaseCommandPacket(payload);
+            case BATCH_CANCEL:
+                return new FirebirdBatchCancelCommandPacket(payload);
+            case BATCH_SYNC:
+                return new FirebirdBatchSyncCommandPacket(payload);
             default:
                 return new FirebirdUnsupportedCommandPacket(commandPacketType);
         }
@@ -108,14 +128,15 @@ public final class FirebirdCommandPacketFactory {
      * @param commandPacketType command packet type for Firebird
      * @param payload packet payload for Firebird
      * @param protocolVersion protocol version of Firebird
+     * @param connectionId connection ID
      * @return expected length of packet, or 0 if length is variable
      */
-    public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
-        return getLength(commandPacketType, payload, protocolVersion);
+    public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion, final int connectionId) {
+        return getLength(commandPacketType, payload, protocolVersion, connectionId);
     }
     
     private static int getLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload,
-                                 final FirebirdProtocolVersion protocolVersion) throws IndexOutOfBoundsException {
+                                 final FirebirdProtocolVersion protocolVersion, final int connectionId) throws IndexOutOfBoundsException {
         switch (commandPacketType) {
             case INFO_DATABASE:
             case INFO_SQL:
@@ -154,6 +175,18 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdRollbackTransactionPacket.getLength();
             case FREE_STATEMENT:
                 return FirebirdFreeStatementPacket.getLength();
+            case BATCH_CREATE:
+                return FirebirdBatchCreateCommandPacket.getLength(payload);
+            case BATCH_MSG:
+                return FirebirdBatchSendMessageCommandPacket.getLength(payload, connectionId);
+            case BATCH_EXEC:
+                return FirebirdBatchExecuteCommandPacket.getLength();
+            case BATCH_RLS:
+                return FirebirdBatchReleaseCommandPacket.getLength();
+            case BATCH_CANCEL:
+                return FirebirdBatchCancelCommandPacket.getLength();
+            case BATCH_SYNC:
+                return FirebirdBatchSyncCommandPacket.getLength(payload);
             default:
                 return 0;
         }

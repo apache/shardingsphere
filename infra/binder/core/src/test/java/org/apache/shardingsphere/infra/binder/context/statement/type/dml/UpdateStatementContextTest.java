@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,6 +75,38 @@ class UpdateStatementContextTest {
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("tbl_1", "tbl_2", "tbl_2")));
+    }
+    
+    @Test
+    void assertGetTableNamesWithSQLServerUpdateAliasTargetExcludesAlias() {
+        SimpleTableSegment scrapReason = new SimpleTableSegment(new TableNameSegment(50, 65, new IdentifierValue("ScrapReason")));
+        scrapReason.setAlias(new AliasSegment(67, 68, new IdentifierValue("sr")));
+        SimpleTableSegment workOrder = new SimpleTableSegment(new TableNameSegment(75, 83, new IdentifierValue("WorkOrder")));
+        workOrder.setAlias(new AliasSegment(85, 86, new IdentifierValue("wo")));
+        JoinTableSegment joinTable = new JoinTableSegment();
+        joinTable.setLeft(scrapReason);
+        joinTable.setRight(workOrder);
+        SimpleTableSegment aliasTarget = new SimpleTableSegment(new TableNameSegment(7, 8, new IdentifierValue("sr")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType).table(aliasTarget).from(joinTable).setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true).build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("ScrapReason", "WorkOrder"))));
+        assertFalse(actual.getTablesContext().getTableNames().contains("sr"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithPostgreSQLUpdateFromClauseIncludesTargetTable() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(7, 18, new IdentifierValue("ScrapReason")));
+        targetTable.setAlias(new AliasSegment(20, 21, new IdentifierValue("sr")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(50, 58, new IdentifierValue("WorkOrder")));
+        fromTable.setAlias(new AliasSegment(60, 61, new IdentifierValue("wo")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType).table(targetTable).from(fromTable).setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("ScrapReason", "WorkOrder"))));
+        assertFalse(actual.getTablesContext().getTableNames().contains("sr"));
     }
     
     private UpdateStatement createUpdateStatement(final TableNameSegment tableNameSegment1, final TableNameSegment tableNameSegment2) {

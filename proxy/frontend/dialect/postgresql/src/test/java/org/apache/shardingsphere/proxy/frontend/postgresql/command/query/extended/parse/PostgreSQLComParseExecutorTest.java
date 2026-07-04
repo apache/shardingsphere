@@ -95,8 +95,8 @@ class PostgreSQLComParseExecutorTest {
     
     @Test
     void assertExecuteWithEmptySQL() {
-        final String expectedSQL = "";
-        final String statementId = "S_1";
+        String expectedSQL = "";
+        String statementId = "S_1";
         when(parsePacket.getSQL()).thenReturn(expectedSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
@@ -114,9 +114,8 @@ class PostgreSQLComParseExecutorTest {
     
     @Test
     void assertExecuteWithParameterizedSQL() throws ReflectiveOperationException {
-        final String rawSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n($1, $2, 'apsbd$31a', '$99')/*$0*/ \n--$0";
-        final String expectedSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n(?, ?, 'apsbd$31a', '$99')/*$0*/ \n--$0";
-        final String statementId = "S_2";
+        String rawSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n($1, $2, 'apsbd$31a', '$99')/*$0*/ \n--$0";
+        String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLBinaryColumnType.INT4));
@@ -131,15 +130,15 @@ class PostgreSQLComParseExecutorTest {
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
         assertThat(actualPreparedStatement.getSqlStatementContext(), isA(InsertStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(InsertStatement.class));
+        String expectedSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n(?, ?, 'apsbd$31a', '$99')/*$0*/ \n--$0";
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED)));
     }
     
     @Test
     void assertExecuteWithNonOrderedParameterizedSQL() throws ReflectiveOperationException {
-        final String rawSQL = "UPDATE t_test SET name=$2 WHERE id=$1";
-        final String expectedSQL = "UPDATE t_test SET name=? WHERE id=?";
-        final String statementId = "S_2";
+        String rawSQL = "UPDATE t_test SET name=$2 WHERE id=$1";
+        String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
         when(parsePacket.getStatementId()).thenReturn(statementId);
@@ -149,6 +148,7 @@ class PostgreSQLComParseExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute();
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+        String expectedSQL = "UPDATE t_test SET name=? WHERE id=?";
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.JSON, PostgreSQLBinaryColumnType.INT4)));
         assertThat(actualPreparedStatement.getActualParameterMarkerIndexes(), is(Arrays.asList(1, 0)));
@@ -156,9 +156,8 @@ class PostgreSQLComParseExecutorTest {
     
     @Test
     void assertExecuteWithQuestionOperator() throws ReflectiveOperationException {
-        final String rawSQL = "UPDATE t_test SET enabled = $1 WHERE name ?& $2";
-        final String expectedSQL = "UPDATE t_test SET enabled = ? WHERE name ??& ?";
-        final String statementId = "S_2";
+        String rawSQL = "UPDATE t_test SET enabled = $1 WHERE name ?& $2";
+        String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
@@ -167,6 +166,7 @@ class PostgreSQLComParseExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute();
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+        String expectedSQL = "UPDATE t_test SET enabled = ? WHERE name ??& ?";
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
     }
     

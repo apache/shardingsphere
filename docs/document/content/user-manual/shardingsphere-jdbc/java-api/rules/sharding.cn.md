@@ -32,7 +32,7 @@ weight = 1
 
 ### 分片表配置
 
-类名称：org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration
 
 可配置属性：
 
@@ -46,7 +46,7 @@ weight = 1
 
 ### 自动分片表配置
 
-类名称：org.apache.shardingsphere.sharding.api.config.ShardingAutoTableRuleConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration
 
 可配置属性：
 
@@ -165,7 +165,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration())), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createBroadcastRuleConfiguration()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -174,11 +174,13 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
         result.getTables().add(getOrderItemTableRuleConfiguration());
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order, t_order_item"));
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
-        result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
+        result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
+        Properties tableShardingProps = new Properties();
+        tableShardingProps.setProperty("sharding-count", "2");
         result.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", props));
-        result.getShardingAlgorithms().put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
+        result.getShardingAlgorithms().put("hash_mod", new AlgorithmConfiguration("HASH_MOD", tableShardingProps));
         result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         result.getKeyGenerateStrategies().put("t_order_order_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "order_id"));
         result.getKeyGenerateStrategies().put("t_order_item_order_item_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order_item", "order_item_id"));
@@ -205,7 +207,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
     }
     
     private BroadcastRuleConfiguration createBroadcastRuleConfiguration() {
-        return new BroadcastRuleConfiguration(Collections.singletonList("t_address"));;
+        return new BroadcastRuleConfiguration(Collections.singletonList("t_address"));
     }
 }
 ```

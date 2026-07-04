@@ -16,7 +16,7 @@ ShardingSphere JDBC requires GraalVM Native Image to be built with GraalVM CE as
 JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as https://sdkman.io/jdks#graal ,
 https://sdkman.io/jdks#nik and https://sdkman.io/jdks#mandrel .
 
-- GraalVM CE For JDK 24.0.2, corresponding to `24.0.2-graalce` of SDKMAN!
+- GraalVM CE For JDK 25.0.2, corresponding to `25.0.2-graalce` of SDKMAN!
 
 Users can still use old versions of Oracle GraalVM such as `21.0.8-graal` on SDKMAN! to build ShardingSphere's GraalVM Native Image product.
 But this will cause the failure of building GraalVM Native Image when integrating some third-party dependencies.
@@ -51,7 +51,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.5</version>
+                <version>1.1.3</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
@@ -80,13 +80,14 @@ A more convenient configuration for testing third-party dependencies might look 
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.5</version>
+                <version>1.1.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
                         <buildArg>-H:+UnlockExperimentalVMOptions</buildArg>
                         <buildArg>-H:+AddAllCharsets</buildArg>
                         <buildArg>-H:+IncludeAllLocales</buildArg>
+                        <buildArg>-H:+TreatAllTypeReachableConditionsAsTypeReached</buildArg>
                     </buildArgs>
                 </configuration>
                 <executions>
@@ -118,7 +119,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.5'
+   id 'org.graalvm.buildtools.native' version '1.1.3'
 }
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-infra-reachability-metadata:${shardingsphere.version}'
@@ -129,12 +130,12 @@ A more convenient configuration for testing third-party dependencies might look 
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.11.5'
+   id 'org.graalvm.buildtools.native' version '1.1.3'
 }
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
    implementation 'org.apache.shardingsphere:shardingsphere-infra-reachability-metadata:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.5', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '1.1.3', classifier: 'repository', ext: 'zip')
 }
 graalvmNative {
    binaries {
@@ -302,7 +303,7 @@ For Maven, possible configurations are,
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.5</version>
+                <version>1.1.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -326,8 +327,8 @@ while ShardingSphere itself only provides the corresponding GraalVM Reachability
 GraalVM Reachability Metadata of other database drivers such as `com.mysql:mysql-connector-j` should be defined by themselves,
 or the corresponding JSON should be submitted to https://github.com/oracle/graalvm-reachability-metadata .
 
-For example, the `com.mysql.cj.jdbc.MysqlXADataSource` class in `com.mysql:mysql-connector-j:9.0.0` implements the `javax.sql.XADataSource` class of the MySQL JDBC Driver.
-Users need to define the following JSON in the `reachability-metadata.json` file in the `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` folder of their project's buildpath.
+For example, the `com.mysql.cj.jdbc.MysqlXADataSource` class in `com.mysql:mysql-connector-j:8.4.0` implements the `javax.sql.XADataSource` class of the MySQL JDBC Driver.
+Users need to define the following JSON in the `reachability-metadata.json` file in the `/META-INF/native-image/com.mysql/mysql-connector-j/8.4.0/` folder of their project's buildpath.
 
 ```json
 {
@@ -389,7 +390,7 @@ For Maven, possible configurations are,
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.5</version>
+                <version>1.1.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -412,3 +413,6 @@ For Maven, possible configurations are,
     and Etcd's Cluster mode will conflict with the GraalVM Tracing Agent.
     If developers need to use Etcd's Cluster mode on GraalVM Native Images compiled via Linux,
     they need to provide additional GraalVM Reachability Metadata related JSON themselves.
+
+11. Due to the issue at https://github.com/apache/shardingsphere/issues/38943 ,
+    compiling a GraalVM Native Image using GraalVM CE for JDK 25.0.2 always requires `-H:+TreatAllTypeReachableConditionsAsTypeReached` in the `buildArg`.

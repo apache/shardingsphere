@@ -26,7 +26,7 @@ PreviewSql ::=
 | Column           | Description                 |
 |------------------|-----------------------------|
 | data_source_name | storage unit name           |
-| actual_sql       | actual excute SQL statement |
+| actual_sql       | executed SQL statement |
 
 ### Example
 

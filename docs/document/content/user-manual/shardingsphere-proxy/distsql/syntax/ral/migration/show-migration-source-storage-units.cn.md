@@ -12,7 +12,7 @@ weight = 5
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-ShowStorageUnit ::=
+ShowMigrationSourceStorageUnits ::=
   'SHOW' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNITS'
 ```
 {{% /tab %}}
@@ -23,18 +23,24 @@ ShowStorageUnit ::=
 
 ### 返回值说明
 
-| 列         | 说明     |
-|-----------|--------|
-| name      | 存储单元名称 |
-| type      | 存储单元类型 |
-| host      | 存储单元地址 |
-| port      | 存储单元端口 |
-| db        | 数据库名称  |
-| attribute | 存储单元参数 |
+| 列                               | 说明             |
+|---------------------------------|----------------|
+| name                            | 存储单元名称         |
+| type                            | 存储单元类型         |
+| host                            | 存储单元地址         |
+| port                            | 存储单元端口         |
+| db                              | 数据库名称          |
+| connection_timeout_milliseconds | 连接超时时间，单位毫秒    |
+| idle_timeout_milliseconds       | 空闲超时时间，单位毫秒    |
+| max_lifetime_milliseconds       | 最大生命周期，单位毫秒    |
+| max_pool_size                   | 最大连接池大小        |
+| min_pool_size                   | 最小连接池大小        |
+| read_only                       | 存储单元是否只读       |
+| other_attributes                | 其他存储单元属性       |
 
 ### 示例
 
-- 查询指定逻辑库中未被使用的存储单元
+- 查询已注册的数据迁移源存储单元
 
 ```sql
 SHOW MIGRATION SOURCE STORAGE UNITS;

@@ -20,7 +20,10 @@ package org.apache.shardingsphere.mcp.feature.sharding;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingAlgorithmResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingGovernanceResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingStrategyResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingTableResourceHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.handler.PlanShardingDefaultStrategyToolHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.handler.PlanShardingKeyGenerateStrategyToolHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.handler.PlanShardingKeyGeneratorToolHandler;
@@ -42,28 +45,28 @@ public final class ShardingMCPHandlerProvider implements MCPHandlerProvider, MCP
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
         return List.of(
-                ShardingResourceHandler.algorithmPlugins(),
-                ShardingResourceHandler.keyGenerateAlgorithmPlugins(),
-                ShardingResourceHandler.algorithms(),
-                ShardingResourceHandler.tableRules(),
-                ShardingResourceHandler.tableRule(),
-                ShardingResourceHandler.tableNodes(),
-                ShardingResourceHandler.tableNode(),
-                ShardingResourceHandler.tableReferenceRules(),
-                ShardingResourceHandler.tableReferenceRule(),
-                ShardingResourceHandler.defaultStrategy(),
-                ShardingResourceHandler.keyGenerators(),
-                ShardingResourceHandler.keyGenerator(),
-                ShardingResourceHandler.keyGenerateStrategies(),
-                ShardingResourceHandler.keyGenerateStrategy(),
-                ShardingResourceHandler.auditors(),
-                ShardingResourceHandler.unusedAlgorithms(),
-                ShardingResourceHandler.unusedKeyGenerators(),
-                ShardingResourceHandler.unusedAuditors(),
-                ShardingResourceHandler.algorithmUsedTableRules(),
-                ShardingResourceHandler.keyGeneratorUsedTableRules(),
-                ShardingResourceHandler.auditorUsedTableRules(),
-                ShardingResourceHandler.ruleCount());
+                ShardingAlgorithmResourceHandler.algorithmPlugins(),
+                ShardingAlgorithmResourceHandler.keyGenerateAlgorithmPlugins(),
+                ShardingAlgorithmResourceHandler.algorithms(),
+                ShardingTableResourceHandler.tableRules(),
+                ShardingTableResourceHandler.tableRule(),
+                ShardingTableResourceHandler.tableNodes(),
+                ShardingTableResourceHandler.tableNode(),
+                ShardingTableResourceHandler.tableReferenceRules(),
+                ShardingTableResourceHandler.tableReferenceRule(),
+                ShardingStrategyResourceHandler.defaultStrategy(),
+                ShardingStrategyResourceHandler.keyGenerators(),
+                ShardingStrategyResourceHandler.keyGenerator(),
+                ShardingStrategyResourceHandler.keyGenerateStrategies(),
+                ShardingStrategyResourceHandler.keyGenerateStrategy(),
+                ShardingGovernanceResourceHandler.auditors(),
+                ShardingAlgorithmResourceHandler.unusedAlgorithms(),
+                ShardingStrategyResourceHandler.unusedKeyGenerators(),
+                ShardingGovernanceResourceHandler.unusedAuditors(),
+                ShardingAlgorithmResourceHandler.algorithmUsedTableRules(),
+                ShardingStrategyResourceHandler.keyGeneratorUsedTableRules(),
+                ShardingGovernanceResourceHandler.auditorUsedTableRules(),
+                ShardingGovernanceResourceHandler.ruleCount());
     }
     
     @Override

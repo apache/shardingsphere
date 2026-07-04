@@ -263,4 +263,46 @@
             <sql-statement start-index="651" stop-index="676" statement-class-simple-name="SetStatement" />
         </sql-statements>
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_declare">
+        <procedure-name name="MyProcedure" />
+        <sql-statements>
+            <sql-statement start-index="167" stop-index="191" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="205" stop-index="271" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="285" stop-index="325" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_declare_table_variable">
+        <procedure-name name="uspUpdateTableVar" />
+        <sql-statements>
+            <sql-statement start-index="158" stop-index="202" statement-class-simple-name="UpdateStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_or_alter_with_declare">
+        <procedure-name name="uspRefresh" />
+        <sql-statements>
+            <sql-statement start-index="126" stop-index="145" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="159" stop-index="171" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_declare_cursor">
+        <procedure-name name="uspCursor" />
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_declare_multiple_variables">
+        <procedure-name name="uspMulti" />
+        <sql-statements>
+            <sql-statement start-index="107" stop-index="118" statement-class-simple-name="SetStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_recompile_and_declare">
+        <procedure-name name="uspRecompile" />
+        <sql-statements>
+            <sql-statement start-index="134" stop-index="143" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_proc_with_declare">
+        <procedure-name name="uspShort" />
+        <sql-statements>
+            <sql-statement start-index="90" stop-index="100" statement-class-simple-name="SetStatement" />
+        </sql-statements>
+    </create-procedure>
 </sql-parser-test-cases>

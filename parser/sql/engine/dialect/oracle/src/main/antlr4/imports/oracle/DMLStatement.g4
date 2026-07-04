@@ -57,7 +57,11 @@ insertValuesClause
     ;
 
 returningClause
-    : (RETURN | RETURNING) exprs INTO dataItem (COMMA_ dataItem)*
+    : (RETURN | RETURNING) exprs INTO returningIntoItem (COMMA_ returningIntoItem)*
+    ;
+
+returningIntoItem
+    : dataItem | parameterMarker
     ;
 
 dmlTableExprClause

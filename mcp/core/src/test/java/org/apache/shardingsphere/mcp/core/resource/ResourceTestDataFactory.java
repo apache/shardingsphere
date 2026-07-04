@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.core.resource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.fixture.CoreDatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
@@ -40,7 +40,6 @@ import java.sql.Statement;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -99,7 +98,7 @@ public final class ResourceTestDataFactory {
         for (MCPDatabaseMetadata each : databaseMetadataList) {
             runtimeDatabases.put(each.getDatabase(), createRuntimeDatabaseConfiguration(each));
         }
-        return new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(runtimeDatabases), activeTransport);
+        return new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), CoreDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(runtimeDatabases), activeTransport);
     }
     
     /**
@@ -124,7 +123,6 @@ public final class ResourceTestDataFactory {
     private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final MCPDatabaseMetadata databaseMetadata) {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         try {
-            when(result.getDatabaseType()).thenReturn(databaseMetadata.getDatabaseType());
             when(result.openConnection(databaseMetadata.getDatabase())).thenAnswer(invocation -> createConnection(databaseMetadata));
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
@@ -138,9 +136,8 @@ public final class ResourceTestDataFactory {
         Statement statement = mock(Statement.class);
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseMetadata.getDatabaseType());
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseMetadata.getDatabaseVersion());
-        when(databaseMetaData.getURL()).thenReturn(String.format("jdbc:mock:%s", databaseMetadata.getDatabase().toLowerCase(Locale.ENGLISH)));
+        when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseMetadata));
         when(databaseMetaData.getTables(nullable(String.class), nullable(String.class), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3, String[].class);
             return createResultSet("TABLE".equals(tableTypes[0]) ? createTableRows(databaseMetadata) : createViewRows(databaseMetadata));
@@ -152,6 +149,19 @@ public final class ResourceTestDataFactory {
         ResultSet sequenceResultSet = createResultSet(createSequenceRows(databaseMetadata));
         when(statement.executeQuery(anyString())).thenReturn(sequenceResultSet);
         return result;
+    }
+    
+    private static String getJdbcUrl(final MCPDatabaseMetadata databaseMetadata) {
+        switch (databaseMetadata.getDatabaseType()) {
+            case "MySQL":
+                return String.format("jdbc:mysql://metadata-query/%s", databaseMetadata.getDatabase());
+            case "PostgreSQL":
+                return String.format("jdbc:postgresql://metadata-query/%s", databaseMetadata.getDatabase());
+            case "Hive":
+                return String.format("jdbc:hive2://metadata-query/%s", databaseMetadata.getDatabase());
+            default:
+                throw new IllegalArgumentException(databaseMetadata.getDatabaseType());
+        }
     }
     
     private static List<Map<String, String>> createTableRows(final MCPDatabaseMetadata databaseMetadata) {

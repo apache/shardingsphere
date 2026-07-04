@@ -41,10 +41,13 @@ class MCPModelFirstContractPayloadBuilderTest {
                 is("shardingsphere://capabilities complements MCP list methods with ShardingSphere domain capability guidance, workflow guidance, and side-effect notes."));
         assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertFalse(actual.containsKey("safe_first_resource"));
+        assertThat(((Map<?, ?>) actual.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
         assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("execution_mode=execute"));
         Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
         assertThat(actualWorkflowRule.get("planning_tools"), is(List.of("database_gateway_plan_encrypt_rule")));
         assertThat(castToMap(actualWorkflowRule.get("preview_tool")).get("execution_mode"), is("preview"));
+        assertThat(castToMap(actualWorkflowRule.get("execute_tool")).get("execute_requires"),
+                is("execution_mode=review-then-execute and explicit approved_steps copied from preview_artifacts.approval_step"));
         assertThat(actualWorkflowRule.get("validate_tool"), is("database_gateway_validate_workflow"));
     }
     
@@ -56,7 +59,10 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
         assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
+        assertTrue(String.valueOf(actual.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
+        assertThat(castToMap(actual.get("sql_tool_selection")).keySet().stream().toList(), is(List.of("read_only", "side_effecting")));
         assertThat(actual.get("side_effect_rule"), is("Preview before side effects and continue only when the requested side effect is still intended."));
+        assertThat(actual.get("detail_resource_rule"), is("Use resource descriptors, outputSchema, and returned payload keys before assuming detail fields."));
     }
     
     @Test
@@ -65,8 +71,11 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertThat(actual.size(), is(5));
         Map<?, ?> actualToolCall = findByType(actual, "tool_call");
         assertTrue(((Collection<?>) actualToolCall.get("required_fields")).contains("tool_name"));
-        assertFalse(((Collection<?>) actualToolCall.get("required_fields")).contains("requires_user_approval"));
-        assertTrue(((Collection<?>) findByType(actual, "completion").get("optional_fields")).contains("resume_arguments"));
+        Map<?, ?> actualCompletion = findByType(actual, "completion");
+        assertTrue(((Collection<?>) actualCompletion.get("required_fields")).contains("ref"));
+        assertTrue(((Collection<?>) actualCompletion.get("required_fields")).contains("argument"));
+        assertTrue(((Collection<?>) actualCompletion.get("optional_fields")).contains("resume_ref"));
+        assertTrue(((Collection<?>) actualCompletion.get("optional_fields")).contains("resume_arguments"));
     }
     
     @Test
@@ -75,8 +84,14 @@ class MCPModelFirstContractPayloadBuilderTest {
         Map<?, ?> actualInspectMetadata = findByKey(actual, "flow_id", "inspect_metadata");
         assertTrue(((Collection<?>) actualInspectMetadata.get("steps")).contains("resources/list"));
         Map<?, ?> actualSideEffectingSql = findByKey(actual, "flow_id", "side_effecting_sql");
+        Map<?, ?> actualValidateRuntimeDatabase = findByKey(actual, "flow_id", "validate_runtime_database");
+        assertTrue(((Collection<?>) actualValidateRuntimeDatabase.get("steps")).contains("call_tool database_gateway_validate_runtime_database"));
+        assertThat(actualValidateRuntimeDatabase.get("referenced_tools"), is(List.of("database_gateway_validate_runtime_database")));
         assertThat(actualSideEffectingSql.get("referenced_tools"), is(List.of("database_gateway_execute_update")));
         assertTrue(((Collection<?>) actualSideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=preview"));
+        Map<?, ?> actualWorkflow = findByKey(actual, "flow_id", "workflow_plan_apply_validate");
+        assertTrue(((Collection<?>) actualWorkflow.get("steps")).contains(
+                "call_tool database_gateway_apply_workflow execution_mode=review-then-execute approved_steps=<preview_artifacts.approval_step>"));
     }
     
     @Test

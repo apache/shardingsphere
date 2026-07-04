@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
@@ -47,12 +48,14 @@ public final class TableMetaDataRefresherLoader {
      * @param schemaName schema name
      * @param tableIdentifierValue table identifier value
      * @param props configuration properties
+     * @param revisionCandidateSchemas revision candidate schemas
      * @return loaded table meta data
      * @throws SQLException SQL exception
      */
-    public ShardingSphereTable loadCreatedTable(final ShardingSphereDatabase database, final String logicDataSourceName,
-                                                final String schemaName, final IdentifierValue tableIdentifierValue, final ConfigurationProperties props) throws SQLException {
-        return loadTable(database, logicDataSourceName, schemaName, tableIdentifierValue, props, false);
+    public ShardingSphereTable loadCreatedTable(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName,
+                                                final IdentifierValue tableIdentifierValue, final ConfigurationProperties props,
+                                                final Collection<ShardingSphereSchema> revisionCandidateSchemas) throws SQLException {
+        return loadTable(database, logicDataSourceName, schemaName, tableIdentifierValue, props, false, revisionCandidateSchemas);
     }
     
     /**
@@ -68,11 +71,12 @@ public final class TableMetaDataRefresherLoader {
      */
     public ShardingSphereTable loadAlteredTable(final ShardingSphereDatabase database, final String logicDataSourceName,
                                                 final String schemaName, final IdentifierValue tableIdentifierValue, final ConfigurationProperties props) throws SQLException {
-        return loadTable(database, logicDataSourceName, schemaName, tableIdentifierValue, props, true);
+        return loadTable(database, logicDataSourceName, schemaName, tableIdentifierValue, props, true, database.getAllSchemas());
     }
     
     private ShardingSphereTable loadTable(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName,
-                                          final IdentifierValue tableIdentifierValue, final ConfigurationProperties props, final boolean fallbackWhenMissing) throws SQLException {
+                                          final IdentifierValue tableIdentifierValue, final ConfigurationProperties props, final boolean fallbackWhenMissing,
+                                          final Collection<ShardingSphereSchema> revisionCandidateSchemas) throws SQLException {
         String candidateTableName = TableRefreshUtils.getTableLoadCandidateName(database, tableIdentifierValue, props);
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         boolean singleTable = TableRefreshUtils.isSingleTable(candidateTableName, database);
@@ -80,7 +84,7 @@ public final class TableMetaDataRefresherLoader {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, candidateTableName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName,
-                database.getIdentifierContext());
+                database.getIdentifierContext(), revisionCandidateSchemas);
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(candidateTableName), database.getProtocolType(), material);
         ShardingSphereTable result = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(candidateTableName))
                 .orElseGet(() -> fallbackWhenMissing ? new ShardingSphereTable(candidateTableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()) : null);

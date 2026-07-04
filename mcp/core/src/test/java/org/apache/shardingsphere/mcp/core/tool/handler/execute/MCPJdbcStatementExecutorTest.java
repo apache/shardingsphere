@@ -47,6 +47,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
+import java.sql.SQLTransientConnectionException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
@@ -445,6 +446,9 @@ class MCPJdbcStatementExecutorTest {
                 Arguments.of("timeout", new SQLTimeoutException("timeout"), MCPTimeoutException.class, "timeout"),
                 Arguments.of("unsupported feature", new SQLFeatureNotSupportedException("unsupported feature"), MCPUnsupportedException.class, "unsupported feature"),
                 Arguments.of("syntax error", new SQLSyntaxErrorException("syntax error"), MCPInvalidRequestException.class, "syntax error"),
+                Arguments.of("object not visible", new SQLException("missing table", "42P01"), MCPQueryFailedException.class, "missing table"),
+                Arguments.of("insufficient privileges", new SQLException("permission denied", "42501"), MCPQueryFailedException.class, "permission denied"),
+                Arguments.of("connection interrupted", new SQLTransientConnectionException("connection lost", "08006"), MCPQueryFailedException.class, "connection lost"),
                 Arguments.of("query failed", new SQLException("query failed"), MCPQueryFailedException.class, "query failed"));
     }
     

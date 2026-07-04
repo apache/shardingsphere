@@ -55,6 +55,8 @@ public final class MCPDescriptorCatalogIndex {
     
     private static final Map<String, MCPToolRuntimeDescriptor> TOOL_RUNTIME_DESCRIPTORS = createToolRuntimeDescriptors();
     
+    private static final Map<String, String> PLANNING_TOOL_NAMES_BY_WORKFLOW_KIND = createPlanningToolNamesByWorkflowKind();
+    
     private static Map<String, MCPResourceDescriptor> createResourceDescriptors() {
         Map<String, MCPResourceDescriptor> result = new LinkedHashMap<>(CATALOG.getResourceDescriptors().size() + CATALOG.getResourceTemplateDescriptors().size(), 1F);
         for (MCPResourceDescriptor each : CATALOG.getResourceDescriptors()) {
@@ -90,6 +92,20 @@ public final class MCPDescriptorCatalogIndex {
     
     private static Map<String, MCPToolRuntimeDescriptor> createToolRuntimeDescriptors() {
         return CATALOG.getToolRuntimeDescriptors().stream().collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each));
+    }
+    
+    private static Map<String, String> createPlanningToolNamesByWorkflowKind() {
+        Map<String, String> result = new LinkedHashMap<>(CATALOG.getToolRuntimeDescriptors().size(), 1F);
+        for (MCPToolRuntimeDescriptor each : CATALOG.getToolRuntimeDescriptors()) {
+            if (!"plan".equals(each.getWorkflowRole())) {
+                continue;
+            }
+            MCPToolDescriptor toolDescriptor = TOOL_DESCRIPTORS.get(each.getToolName());
+            if (null != toolDescriptor && toolDescriptor.getMeta().containsKey(MCPShardingSphereMetadataKeys.WORKFLOW_KIND)) {
+                result.put(String.valueOf(toolDescriptor.getMeta().get(MCPShardingSphereMetadataKeys.WORKFLOW_KIND)), each.getToolName());
+            }
+        }
+        return result;
     }
     
     /**
@@ -172,6 +188,16 @@ public final class MCPDescriptorCatalogIndex {
     }
     
     /**
+     * Find planning tool name by workflow kind.
+     *
+     * @param workflowKind workflow kind
+     * @return found planning tool name
+     */
+    public static Optional<String> findPlanningToolNameByWorkflowKind(final String workflowKind) {
+        return Optional.ofNullable(PLANNING_TOOL_NAMES_BY_WORKFLOW_KIND.get(workflowKind));
+    }
+    
+    /**
      * Get completion target descriptors.
      *
      * @return completion target descriptors
@@ -209,14 +235,5 @@ public final class MCPDescriptorCatalogIndex {
      */
     public static Map<String, Object> createCapabilityPayload(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
         return MCPDescriptorCatalogPayloadBuilder.build(CATALOG, supportedResources, supportedTools, supportedStatements);
-    }
-    
-    /**
-     * Get descriptor catalog fingerprint.
-     *
-     * @return descriptor catalog fingerprint
-     */
-    public static String getDescriptorCatalogFingerprint() {
-        return MCPDescriptorCatalogPayloadBuilder.createDescriptorCatalogFingerprint(CATALOG);
     }
 }

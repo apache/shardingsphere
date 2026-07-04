@@ -114,23 +114,28 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
         assertThat(actual.toPayload().get("side_effect_scope"), is(List.of("physical-data")));
         assertThat(actual.toPayload().get("review_summary"), is("Previewed UPDATE statement with side-effect scope physical-data. It has not been executed."));
-        assertFalse(actual.toPayload().containsKey("suggested_next_tool"));
+        assertThat(actual.toPayload().get("review_guidance"),
+                is("Review normalized_sql and side_effect_scope before execution. "
+                        + "This preview is classification-only; it does not guarantee parsing, rule validation, algorithm initialization, affected rows, or runtime success."));
         assertThat(((Map<?, ?>) actual.toPayload().get("suggested_arguments")).get("execution_mode"), is("execute"));
-        assertFalse(((Map<?, ?>) actual.toPayload().get("suggested_arguments")).containsKey("approved_by_user"));
         assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("sql"), is("server_generated"));
         assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("execution_mode"), is("server_defaulted"));
-        assertFalse(((Map<?, ?>) actual.toPayload().get("argument_provenance")).containsKey("approved_by_user"));
         List<?> actualNextActions = (List<?>) actual.toPayload().get("next_actions");
-        assertThat(actualNextActions.size(), is(1));
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("tool_call"));
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("order"), is(1));
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("tool_name"), is("database_gateway_execute_update"));
-        assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(0)).get("arguments")).get("execution_mode"), is("execute"));
-        assertFalse(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(0)).get("arguments")).containsKey("approved_by_user"));
-        assertFalse(((Map<?, ?>) actualNextActions.get(0)).containsKey("requires_user_approval"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("resources_to_read")).get(0)).get("uri"), is("shardingsphere://databases/logic_db/capabilities"));
+        assertThat(actualNextActions.size(), is(2));
+        Map<?, ?> actualAskUserAction = (Map<?, ?>) actualNextActions.getFirst();
+        assertThat(actualAskUserAction.get("type"), is("ask_user"));
+        assertThat(actualAskUserAction.get("order"), is(1));
+        assertThat(actualAskUserAction.get("required_inputs"), is(List.of("execution_approved")));
+        Map<?, ?> actualToolCallAction = (Map<?, ?>) actualNextActions.get(1);
+        assertThat(actualToolCallAction.get("type"), is("tool_call"));
+        assertThat(actualToolCallAction.get("order"), is(2));
+        assertThat(actualToolCallAction.get("tool_name"), is("database_gateway_execute_update"));
+        assertThat(actualToolCallAction.get("depends_on"), is(List.of(1)));
+        assertThat(actualToolCallAction.get("reason"),
+                is("Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability."));
+        assertThat(((Map<?, ?>) actualToolCallAction.get("arguments")).get("execution_mode"), is("execute"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("resources_to_read")).getFirst()).get("uri"), is("shardingsphere://databases/logic_db/capabilities"));
         assertFalse(actual.toPayload().containsKey("ask_user_when_uncertain"));
-        assertFalse(actual.toPayload().containsKey("recommended_next_call"));
         verifyNoInteractions(executionFacade);
     }
     

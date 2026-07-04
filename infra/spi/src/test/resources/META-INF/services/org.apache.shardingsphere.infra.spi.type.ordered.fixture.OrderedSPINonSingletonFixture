@@ -16,3 +16,5 @@
 #
 
 org.apache.shardingsphere.infra.spi.type.ordered.fixture.impl.OrderedSPINonSingletonFixtureImpl
+org.apache.shardingsphere.infra.spi.type.ordered.fixture.impl.ParentOrderedSPINonSingletonFixtureImpl
+org.apache.shardingsphere.infra.spi.type.ordered.fixture.impl.ComparableOrderedSPINonSingletonFixtureImpl

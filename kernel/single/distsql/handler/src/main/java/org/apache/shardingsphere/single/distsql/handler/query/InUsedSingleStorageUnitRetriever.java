@@ -39,7 +39,7 @@ public final class InUsedSingleStorageUnitRetriever implements InUsedStorageUnit
         Collection<String> result = new HashSet<>(dataNodes.size(), 1F);
         for (Collection<DataNode> each : dataNodes.values()) {
             String storageUnitName = each.iterator().next().getDataSourceName();
-            if (storageUnitName.equalsIgnoreCase(sqlStatement.getStorageUnitName())) {
+            if (sqlStatement.getStorageUnitName().equals(storageUnitName)) {
                 result.add(each.iterator().next().getTableName());
             }
         }

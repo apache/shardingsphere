@@ -37,13 +37,6 @@ public final class ReadinessProbe {
     
     private final Sleeper sleeper;
     
-    /**
-     * Construct readiness retry probe.
-     *
-     * @param timeoutMillis timeout milliseconds
-     * @param initialIntervalMillis initial retry interval milliseconds
-     * @param maxIntervalMillis maximum retry interval milliseconds
-     */
     public ReadinessProbe(final long timeoutMillis, final long initialIntervalMillis, final long maxIntervalMillis) {
         this(timeoutMillis, initialIntervalMillis, maxIntervalMillis, System::currentTimeMillis, Thread::sleep);
     }

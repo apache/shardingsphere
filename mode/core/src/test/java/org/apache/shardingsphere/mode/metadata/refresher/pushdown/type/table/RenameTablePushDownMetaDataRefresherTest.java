@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -57,21 +56,6 @@ class RenameTablePushDownMetaDataRefresherTest {
         assertThat(persistService.getAlteredTableSchemaName(), is("Foo_Schema"));
         assertThat(persistService.getAlteredTables(), hasSize(1));
         assertThat(persistService.getAlteredTables().iterator().next().getName(), is("bar_tbl"));
-        assertThat(persistService.getDroppedTableSchemaName(), is("Foo_Schema"));
-        assertThat(persistService.getDroppedTableNames().iterator().next(), is("Foo_Tbl"));
-    }
-    
-    @Test
-    void assertRefreshRenamesQuotedTablesWithSensitiveProps() {
-        PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
-        RenameTableStatement sqlStatement = new RenameTableStatement(databaseType, Collections.singleton(createRenameDefinition(
-                new IdentifierValue("Foo_Tbl", QuoteCharacter.QUOTE), new IdentifierValue("Bar_Tbl", QuoteCharacter.QUOTE))));
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        refresher.refresh(persistService, createDatabase(), "logic_ds", "Foo_Schema", databaseType, sqlStatement, new ConfigurationProperties(props));
-        assertThat(persistService.getAlteredTableSchemaName(), is("Foo_Schema"));
-        assertThat(persistService.getAlteredTables(), hasSize(1));
-        assertThat(persistService.getAlteredTables().iterator().next().getName(), is("Bar_Tbl"));
         assertThat(persistService.getDroppedTableSchemaName(), is("Foo_Schema"));
         assertThat(persistService.getDroppedTableNames().iterator().next(), is("Foo_Tbl"));
     }

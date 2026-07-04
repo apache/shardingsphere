@@ -55,7 +55,9 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Code that needs comments to explain should be extracted into small methods, using method names for explanation.
 - In `equals` and `==` conditional expressions, constants on the left, variables on the right; in conditional expressions like greater than or less than, variables on the left, constants on the right.
 - Avoid using `this` modifier except for assignment statements where constructor parameters have the same name as global variables.
-- Local variables should not be set as final.
+- For parameters, use `final` only on method parameters, constructor parameters and `catch` parameters.
+- Local variables should not be set as `final`, including ordinary local declarations, loop variables, enhanced `for` variables and try-with-resources resources.
+- Lambda parameters should not be marked as `final` unless required by surrounding code style or tooling.
 - Try to design classes as `final` except for abstract classes used for inheritance.
 - Nested loops should be extracted into methods.
 - The order of member variable definitions and parameter passing should remain consistent across all classes and methods.
@@ -83,6 +85,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
     - Logs and comments must be in English.
     - Comments can only contain JAVADOC, TODO and FIXME.
     - Public classes and methods must have JAVADOC. JAVADOC for user-facing APIs and SPIs needs to be clear and comprehensive. Other classes, methods, and methods overriding parent classes do not need JAVADOC.
+    - Constructor JAVADOC must not be added by default. It is allowed only when it documents non-obvious behavior, compatibility constraints, side effects, or public API semantics not expressed by the class contract.
 
 ## Unit Testing Standards
 

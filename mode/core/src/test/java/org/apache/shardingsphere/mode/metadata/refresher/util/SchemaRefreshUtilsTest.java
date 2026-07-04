@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.util;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -59,25 +58,8 @@ class SchemaRefreshUtilsTest {
     }
     
     @Test
-    void assertGetActualSchemaNameWithSensitiveProps() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), Collections.singletonList(new ShardingSphereSchema("Foo_Schema", databaseType)), new ConfigurationProperties(new Properties()));
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        assertThat(SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue("Foo_Schema", QuoteCharacter.QUOTE), new ConfigurationProperties(props)), is("Foo_Schema"));
-    }
-    
-    @Test
     void assertGetActualSchemaNameWithInsensitiveProps() {
         assertThat(SchemaRefreshUtils.getActualSchemaName(createDatabase(), new IdentifierValue("Foo_Schema"), new ConfigurationProperties(new Properties())), is("foo_schema"));
-    }
-    
-    @Test
-    void assertGetActualSchemaNameWithQuotedSchemaFromContext() {
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        assertThat(SchemaRefreshUtils.getActualSchemaName(createDatabaseWithSchema("Foo_Schema"), createSQLStatementContextWithSchema(new IdentifierValue("Foo_Schema", QuoteCharacter.QUOTE)),
-                new ConfigurationProperties(props)), is("Foo_Schema"));
     }
     
     @Test

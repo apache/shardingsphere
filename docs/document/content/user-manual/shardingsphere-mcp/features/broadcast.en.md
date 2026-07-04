@@ -22,6 +22,8 @@ It generates broadcast rule DistSQL only. It does not generate physical table DD
 
 - Confirm that the planned statement is `CREATE BROADCAST TABLE RULE` or `DROP BROADCAST TABLE RULE`.
 - Confirm that all table names are logical table names.
+- Confirm the returned `plan_id`, `resources_to_read`, `next_actions`, and `distsql_artifacts` before applying the workflow.
+- Broadcast planning does not require algorithm recommendations or property requirements.
 - Preview the workflow before execution and validate Proxy-visible rule state after execution.
 
 For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).

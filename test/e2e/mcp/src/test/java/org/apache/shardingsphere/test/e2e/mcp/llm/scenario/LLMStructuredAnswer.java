@@ -47,7 +47,7 @@ public final class LLMStructuredAnswer {
     private final List<String> interactionSequence;
     
     /**
-     * Grom json.
+     * From json.
      *
      * @param json json
      * @return LLM structured answer
@@ -90,25 +90,19 @@ public final class LLMStructuredAnswer {
     
     private static List<String> createInteractionSequence(final Map<String, Object> payload) {
         List<String> result = new LinkedList<>();
-        Object rawInteractionSequence = payload.containsKey("interactionSequence") ? payload.get("interactionSequence") : payload.get("toolSequence");
-        if (rawInteractionSequence instanceof Iterable) {
-            for (Object each : (Iterable<?>) rawInteractionSequence) {
-                result.add(extractInteractionName(each));
+        Object rawInteractionSequence = payload.get("interactionSequence");
+        if (null == rawInteractionSequence) {
+            return result;
+        }
+        if (!(rawInteractionSequence instanceof Iterable)) {
+            throw new IllegalArgumentException("interactionSequence must be an array.");
+        }
+        for (Object each : (Iterable<?>) rawInteractionSequence) {
+            if (!(each instanceof String)) {
+                throw new IllegalArgumentException("interactionSequence entries must be strings.");
             }
+            result.add(((String) each).trim());
         }
         return result;
-    }
-    
-    private static String extractInteractionName(final Object value) {
-        if (value instanceof Map) {
-            Map<?, ?> interaction = (Map<?, ?>) value;
-            for (String each : List.of("tool", "targetName", "name")) {
-                String result = Objects.toString(interaction.get(each), "").trim();
-                if (!result.isEmpty()) {
-                    return result;
-                }
-            }
-        }
-        return Objects.toString(value, "").trim();
     }
 }

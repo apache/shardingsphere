@@ -172,7 +172,8 @@ public final class MetaDataContextsFactory {
                                                                   final MetaDataContexts originalMetaDataContext) throws SQLException {
         ConfigurationProperties props = originalMetaDataContext.getMetaData().getProps();
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
-        return ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, instanceContext);
+        return ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(databaseName, protocolType, databaseConfig, props, instanceContext,
+                originalMetaDataContext.getMetaData().getDatabase(databaseName).getAllSchemas());
     }
     
     private ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource switchingResource) {
@@ -199,11 +200,12 @@ public final class MetaDataContextsFactory {
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
                 : switchingResource.getMergedDataSourcePoolPropertiesMap();
         boolean isInstanceConnectionEnabled = metaDataContexts.getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
-        return new DataSourceProvidedDatabaseConfiguration(getMergedStorageNodeDataSources(currentResourceMetaData, switchingResource), toBeCreatedRuleConfigs, propsMap, isInstanceConnectionEnabled);
+        Map<StorageNode, DataSource> storageNodeDataSources = getMergedStorageNodeDataSources(currentResourceMetaData, switchingResource);
+        return new DataSourceProvidedDatabaseConfiguration(storageNodeDataSources, toBeCreatedRuleConfigs, propsMap, isInstanceConnectionEnabled);
     }
     
     private Map<StorageNode, DataSource> getMergedStorageNodeDataSources(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {
-        Map<StorageNode, DataSource> result = currentResourceMetaData.getDataSources();
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(currentResourceMetaData.getDataSources());
         if (null != switchingResource && !switchingResource.getNewDataSources().isEmpty()) {
             result.putAll(switchingResource.getNewDataSources());
         }

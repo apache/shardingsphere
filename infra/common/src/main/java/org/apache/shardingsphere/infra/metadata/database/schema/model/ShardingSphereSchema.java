@@ -182,6 +182,12 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
+        if (null != tableIndex.remove(tableName)) {
+            if (null != logicalTableIndex) {
+                logicalTableIndex.remove(tableName);
+            }
+            return;
+        }
         Optional<ShardingSphereTable> table = findTable(new IdentifierValue(tableName, QuoteCharacter.NONE));
         if (table.isPresent()) {
             tableIndex.remove(table.get().getName());
@@ -265,6 +271,9 @@ public final class ShardingSphereSchema {
      * @param viewName view name
      */
     public void removeView(final String viewName) {
+        if (null != viewIndex.remove(viewName)) {
+            return;
+        }
         ShardingSphereView view = getView(viewName);
         if (null == view) {
             return;
@@ -278,18 +287,18 @@ public final class ShardingSphereSchema {
      * @param identifierContext database identifier context
      */
     public void refreshIdentifierContext(final DatabaseIdentifierContext identifierContext) {
-        final Collection<ShardingSphereTable> tables = new LinkedList<>(tableIndex.getAll());
-        final Collection<ShardingSphereView> views = new LinkedList<>(viewIndex.getAll());
         this.identifierContext = identifierContext;
+        Collection<ShardingSphereTable> tables = new LinkedList<>(tableIndex.getAll());
         tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
         logicalTableIndex = createLogicalTableIndex(identifierContext);
-        viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
         tables.forEach(this::refreshTableIdentifierContext);
         Map<String, ShardingSphereTable> tableMap = createTableMap(tables);
         tableIndex.rebuild(tableMap);
         if (null != logicalTableIndex) {
             logicalTableIndex.rebuild(tableMap);
         }
+        Collection<ShardingSphereView> views = new LinkedList<>(viewIndex.getAll());
+        viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
         viewIndex.rebuild(createViewMap(views));
     }
     

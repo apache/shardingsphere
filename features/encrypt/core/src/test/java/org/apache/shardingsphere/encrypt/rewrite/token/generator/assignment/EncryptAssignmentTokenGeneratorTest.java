@@ -19,11 +19,14 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -86,7 +89,6 @@ class EncryptAssignmentTokenGeneratorTest {
     
     @BeforeEach
     void setup() {
-        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), null, null);
         when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("columns"));
         columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("table"),
@@ -105,24 +107,32 @@ class EncryptAssignmentTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokenWithUpdateParameterMarkerExpressionSegment() {
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), mock(ShardingSphereDatabase.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(assignmentSegment.getValue()).thenReturn(mock(ParameterMarkerExpressionSegment.class));
         assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).size(), is(1));
     }
     
     @Test
     void assertGenerateSQLTokenWithUpdateLiteralExpressionSegment() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), database, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
         assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).size(), is(1));
     }
     
     @Test
     void assertGenerateSQLTokenWithUpdateEmpty() {
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), mock(ShardingSphereDatabase.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(assignmentSegment.getValue()).thenReturn(null);
         assertTrue(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).isEmpty());
     }
     
     @Test
     void assertGenerateSQLTokenWithInsertLiteralExpressionSegment() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), database, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
         assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).size(), is(1));
     }

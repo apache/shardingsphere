@@ -13,7 +13,7 @@ The `SHOW ENCRYPT RULES` syntax is used to query encryption rules for a specifie
 {{% tab name="Grammar" %}}
 ```sql
 ShowEncryptRule::=
-  'SHOW' 'ENCRYPT' ('RULES' | 'TABLE' 'RULE' ruleName) ('FROM' databaseName)?
+  'SHOW' 'ENCRYPT' ('RULES' | 'TABLE'? 'RULE' ruleName) ('FROM' databaseName)?
 
 ruleName ::=
   identifier

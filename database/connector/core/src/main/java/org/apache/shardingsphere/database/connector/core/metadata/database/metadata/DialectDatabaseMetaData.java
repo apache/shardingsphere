@@ -123,7 +123,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return index option
      */
     default DialectIndexOption getIndexOption() {
-        return new DialectIndexOption(false);
+        return new DialectIndexOption(false, Integer.MAX_VALUE);
     }
     
     /**

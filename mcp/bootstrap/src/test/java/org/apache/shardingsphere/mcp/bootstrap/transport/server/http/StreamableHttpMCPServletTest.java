@@ -26,7 +26,7 @@ import io.modelcontextprotocol.spec.ProtocolVersions;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
@@ -235,13 +235,13 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServicePostBindSessionAttribution() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServicePostBindSessionIdentity() throws ServletException, IOException, ReflectiveOperationException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
         when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
-        when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("X-Test-Subject", "X-Test-Source", "X-Test-ATTR-Region")));
+        when(request.getHeaderNames()).thenAnswer(ignored -> Collections.enumeration(List.of("X-Test-Subject", "X-Test-Source", "X-Test-ATTR-Region")));
         when(request.getHeader("X-Test-Subject")).thenReturn("subject");
         when(request.getHeader("X-Test-Source")).thenReturn("gateway");
         when(request.getHeader("X-Test-ATTR-Region")).thenReturn("ap-south");
@@ -255,7 +255,7 @@ class StreamableHttpMCPServletTest {
             return null;
         }).when(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
         actual.service(request, response);
-        verify(sessionManager).bindSessionAttribution("session-id", new MCPSessionAttribution("subject", "gateway", Map.of("region", "ap-south")));
+        verify(sessionManager).bindSessionIdentity("session-id", new MCPSessionIdentity("subject", "gateway", Map.of("region", "ap-south")));
     }
     
     @Test

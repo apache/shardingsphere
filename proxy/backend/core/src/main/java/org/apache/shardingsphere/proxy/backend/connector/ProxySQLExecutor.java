@@ -20,13 +20,17 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -60,6 +64,10 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
@@ -67,7 +75,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -186,7 +193,7 @@ public final class ProxySQLExecutor {
         int maxConnectionsSizePerQuery = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(executionContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
-        boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement && dialectDatabaseMetaData.getGeneratedKeyOption().isPresent();
+        boolean isReturnGeneratedKeys = isReturnGeneratedKeys(executionContext.getSqlStatementContext(), dialectDatabaseMetaData, executionContext.getQueryContext().getParameters());
         return hasRawExecutionRule(rules)
                 ? rawExecute(executionContext, rules, maxConnectionsSizePerQuery)
                 : useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
@@ -256,5 +263,79 @@ public final class ProxySQLExecutor {
         Optional<ExecuteResult> executeResult = DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, databaseType)
                 .flatMap(optional -> optional.getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement(), originalException));
         return executeResult.map(Collections::singletonList).orElseThrow(() -> originalException);
+    }
+    
+    /**
+     * Judge whether to return generated keys.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param dialectDatabaseMetaData dialect database meta data
+     * @param params SQL parameters
+     * @return whether to return generated keys
+     */
+    public static boolean isReturnGeneratedKeys(final SQLStatementContext sqlStatementContext, final DialectDatabaseMetaData dialectDatabaseMetaData, final List<Object> params) {
+        if (!(sqlStatementContext instanceof InsertStatementContext) || !dialectDatabaseMetaData.getGeneratedKeyOption().isPresent()) {
+            return false;
+        }
+        InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
+        if (!insertStatementContext.getGeneratedKeyContext().isPresent()) {
+            return false;
+        }
+        
+        GeneratedKeyContext generatedKeyContext = insertStatementContext.getGeneratedKeyContext().get();
+        if (generatedKeyContext.isGenerated()) {
+            return true;
+        }
+        
+        DialectGeneratedKeyOption generatedKeyOption = dialectDatabaseMetaData.getGeneratedKeyOption().get();
+        return isReturnGeneratedKeysForExplicit(insertStatementContext, params, generatedKeyOption, generatedKeyContext.getColumnName());
+    }
+    
+    private static boolean isReturnGeneratedKeysForExplicit(final InsertStatementContext insertStatementContext, final List<Object> params,
+                                                            final DialectGeneratedKeyOption generatedKeyOption, final String columnName) {
+        int columnIndex = -1;
+        int index = 0;
+        for (String each : insertStatementContext.getColumnNames()) {
+            if (each.equalsIgnoreCase(columnName)) {
+                columnIndex = index;
+                break;
+            }
+            index++;
+        }
+        if (-1 != columnIndex) {
+            for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
+                if (isReturnGeneratedKeysForExplicit(each, columnIndex, params, generatedKeyOption)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private static boolean isReturnGeneratedKeysForExplicit(final InsertValueContext insertValueContext, final int columnIndex, final List<Object> params,
+                                                            final DialectGeneratedKeyOption generatedKeyOption) {
+        List<ExpressionSegment> expressions = insertValueContext.getValueExpressions();
+        if (null != expressions && columnIndex < expressions.size()) {
+            ExpressionSegment expr = expressions.get(columnIndex);
+            return isReturnGeneratedKeysFromExpression(expr, params, generatedKeyOption);
+        }
+        return false;
+    }
+    
+    private static boolean isReturnGeneratedKeysFromExpression(final ExpressionSegment expr, final List<Object> params, final DialectGeneratedKeyOption generatedKeyOption) {
+        if (expr instanceof ParameterMarkerExpressionSegment) {
+            int markerIndex = ((ParameterMarkerExpressionSegment) expr).getParameterMarkerIndex();
+            if (params.size() > markerIndex) {
+                return generatedKeyOption.isGeneratedKeyTriggerValue(params.get(markerIndex));
+            }
+            return false;
+        }
+        if (expr instanceof LiteralExpressionSegment) {
+            return generatedKeyOption.isGeneratedKeyTriggerValue(((LiteralExpressionSegment) expr).getLiterals());
+        }
+        if (expr instanceof CommonExpressionSegment) {
+            return generatedKeyOption.isGeneratedKeyTriggerValue(expr.getText());
+        }
+        return false;
     }
 }

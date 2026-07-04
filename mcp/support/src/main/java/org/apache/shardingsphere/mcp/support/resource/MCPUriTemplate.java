@@ -36,11 +36,6 @@ public final class MCPUriTemplate {
     
     private final List<String> variableNames;
     
-    /**
-     * Create an MCP URI template.
-     *
-     * @param uriTemplate URI template
-     */
     public MCPUriTemplate(final String uriTemplate) {
         this.uriTemplate = uriTemplate;
         variableNames = extractVariableNames(uriTemplate);

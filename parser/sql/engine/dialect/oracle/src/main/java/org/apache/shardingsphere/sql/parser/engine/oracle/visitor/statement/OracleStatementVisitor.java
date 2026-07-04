@@ -254,6 +254,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             if (advanceInBlockComment(sql, state)) {
                 continue;
             }
+            if (advanceInAlternativeQuotedText(sql, state)) {
+                continue;
+            }
             if (advanceInOrToggleStringLiteral(sql, state)) {
                 continue;
             }
@@ -292,6 +295,55 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             state.index++;
         }
         return true;
+    }
+    
+    private boolean advanceInAlternativeQuotedText(final String sql, final ParameterMarkerScanState state) {
+        if (state.inStringLiteral) {
+            return false;
+        }
+        int quoteIndicatorIndex = isNationalOrUnicodeLiteralIndicator(sql.charAt(state.index)) ? state.index + 1 : state.index;
+        if (quoteIndicatorIndex + 2 >= sql.length() || !isAlternativeQuoteIndicator(sql.charAt(quoteIndicatorIndex)) || '\'' != sql.charAt(quoteIndicatorIndex + 1)) {
+            return false;
+        }
+        char quoteDelimiter = sql.charAt(quoteIndicatorIndex + 2);
+        if (isInvalidAlternativeQuoteDelimiter(quoteDelimiter)) {
+            return false;
+        }
+        char closeDelimiter = getAlternativeQuoteCloseDelimiter(quoteDelimiter);
+        for (int index = quoteIndicatorIndex + 3; index + 1 < sql.length(); index++) {
+            if (closeDelimiter == sql.charAt(index) && '\'' == sql.charAt(index + 1)) {
+                state.index = index + 2;
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isAlternativeQuoteIndicator(final char ch) {
+        return 'q' == ch || 'Q' == ch;
+    }
+    
+    private boolean isNationalOrUnicodeLiteralIndicator(final char ch) {
+        return 'n' == ch || 'N' == ch || 'u' == ch || 'U' == ch;
+    }
+    
+    private boolean isInvalidAlternativeQuoteDelimiter(final char quoteDelimiter) {
+        return ' ' == quoteDelimiter || '\t' == quoteDelimiter || '\r' == quoteDelimiter || '\n' == quoteDelimiter;
+    }
+    
+    private char getAlternativeQuoteCloseDelimiter(final char quoteDelimiter) {
+        switch (quoteDelimiter) {
+            case '[':
+                return ']';
+            case '{':
+                return '}';
+            case '(':
+                return ')';
+            case '<':
+                return '>';
+            default:
+                return quoteDelimiter;
+        }
     }
     
     private boolean advanceInOrToggleStringLiteral(final String sql, final ParameterMarkerScanState state) {
@@ -357,7 +409,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public ASTNode visitDateTimeLiterals(final DateTimeLiteralsContext ctx) {
         if (null != ctx.LBE_()) {
-            return new DateTimeLiteralValue(ctx.identifier().getText(), ((StringLiteralValue) visit(ctx.stringLiterals())).getValue(), true);
+            return new DateTimeLiteralValue(ctx.identifier().getText(), ctx.stringLiterals().getText(), true);
         }
         String dateTimeType;
         if (null != ctx.DATE()) {
@@ -367,16 +419,21 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         } else {
             dateTimeType = ctx.TIMESTAMP().getText();
         }
-        return new DateTimeLiteralValue(dateTimeType, ((StringLiteralValue) visit(ctx.stringLiterals())).getValue(), false);
+        return new DateTimeLiteralValue(dateTimeType, ctx.stringLiterals().getText(), false);
     }
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        if (null != ctx.STRING_()) {
-            return new StringLiteralValue(ctx.getText());
-        } else {
-            return new StringLiteralValue(ctx.getText().substring(1));
-        }
+        String text = null == ctx.STRING_() ? ctx.getText().substring(1) : ctx.getText();
+        return new StringLiteralValue(isAlternativeQuotedText(text) ? convertAlternativeQuotedText(text) : text);
+    }
+    
+    private boolean isAlternativeQuotedText(final String text) {
+        return text.length() > 4 && isAlternativeQuoteIndicator(text.charAt(0)) && '\'' == text.charAt(1);
+    }
+    
+    private String convertAlternativeQuotedText(final String text) {
+        return "'" + text.substring(3, text.length() - 2) + "'";
     }
     
     @Override
@@ -725,12 +782,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((BooleanLiteralValue) astNode).getValue());
         }
         if (astNode instanceof ParameterMarkerValue) {
-            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
-                    parameterMarker.getValue(), parameterMarker.getType());
-            globalParameterMarkerSegments.add(segment);
-            statementParameterMarkerSegments.add(segment);
-            return segment;
+            return createParameterMarkerExpressionSegment((ParameterMarkerValue) astNode, context.start.getStartIndex(), context.stop.getStopIndex());
         }
         if (astNode instanceof SubquerySegment) {
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
@@ -749,11 +801,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return new SubquerySegment(startIndex, stopIndex, (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
-            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
-            globalParameterMarkerSegments.add(segment);
-            statementParameterMarkerSegments.add(segment);
-            return segment;
+            return createParameterMarkerExpressionSegment(ctx.parameterMarker());
         }
         if (null != ctx.literals()) {
             return SQLUtils.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
@@ -780,6 +828,17 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             }
         }
         return visitRemainSimpleExpr(ctx, startIndex, stopIndex);
+    }
+    
+    protected ParameterMarkerExpressionSegment createParameterMarkerExpressionSegment(final ParameterMarkerContext ctx) {
+        return createParameterMarkerExpressionSegment((ParameterMarkerValue) visit(ctx), ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    }
+    
+    private ParameterMarkerExpressionSegment createParameterMarkerExpressionSegment(final ParameterMarkerValue parameterMarker, final int startIndex, final int stopIndex) {
+        ParameterMarkerExpressionSegment result = new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
+        globalParameterMarkerSegments.add(result);
+        statementParameterMarkerSegments.add(result);
+        return result;
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx, final int startIndex, final int stopIndex) {

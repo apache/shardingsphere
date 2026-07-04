@@ -81,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Na
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NullsOrderContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OptOnConflictContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OuterJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ParameterMarkerContext;
@@ -117,6 +118,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wh
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
@@ -463,7 +465,60 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        return visit(ctx.funcApplication());
+        ASTNode result = visit(ctx.funcApplication());
+        return null == ctx.overClause() ? result : appendWindow(ctx, result);
+    }
+    
+    private ASTNode appendWindow(final FuncExprContext ctx, final ASTNode node) {
+        WindowItemSegment window = (WindowItemSegment) visit(ctx.overClause());
+        if (node instanceof AggregationDistinctProjectionSegment) {
+            AggregationDistinctProjectionSegment result = createAggregationDistinctSegmentWithWindow(ctx, (AggregationDistinctProjectionSegment) node, window);
+            return result;
+        }
+        if (node instanceof AggregationProjectionSegment) {
+            AggregationProjectionSegment result = createAggregationSegmentWithWindow(ctx, (AggregationProjectionSegment) node, window);
+            return result;
+        }
+        if (node instanceof FunctionSegment) {
+            FunctionSegment result = createFunctionSegmentWithWindow(ctx, (FunctionSegment) node, window);
+            return result;
+        }
+        return node;
+    }
+    
+    private AggregationDistinctProjectionSegment createAggregationDistinctSegmentWithWindow(final FuncExprContext ctx, final AggregationDistinctProjectionSegment segment,
+                                                                                            final WindowItemSegment window) {
+        AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getType(), getOriginalText(ctx),
+                segment.getDistinctInnerExpression(), segment.getSeparator().orElse(null));
+        result.getParameters().addAll(segment.getParameters());
+        result.setWindow(window);
+        return result;
+    }
+    
+    private AggregationProjectionSegment createAggregationSegmentWithWindow(final FuncExprContext ctx, final AggregationProjectionSegment segment, final WindowItemSegment window) {
+        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getType(), getOriginalText(ctx),
+                segment.getSeparator().orElse(null));
+        result.getParameters().addAll(segment.getParameters());
+        result.setWindow(window);
+        return result;
+    }
+    
+    private FunctionSegment createFunctionSegmentWithWindow(final FuncExprContext ctx, final FunctionSegment segment, final WindowItemSegment window) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getFunctionName(), getOriginalText(ctx));
+        result.setOwner(segment.getOwner());
+        result.getParameters().addAll(segment.getParameters());
+        result.setWindow(window);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitOverClause(final OverClauseContext ctx) {
+        if (null != ctx.windowSpecification()) {
+            return createWindowItem(ctx.windowSpecification());
+        }
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        result.setWindowName(new IdentifierValue(ctx.colId().getText()));
+        return result;
     }
     
     @Override
@@ -1091,24 +1146,36 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         windowItems.add((WindowItemSegment) visit(ctx.windowDefinition()));
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitWindowDefinition(final WindowDefinitionContext ctx) {
         WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         result.setWindowName(new IdentifierValue(ctx.colId().getText()));
-        if (null != ctx.windowSpecification().partitionClause()) {
-            CollectionValue<ExpressionSegment> value = (CollectionValue<ExpressionSegment>) visit(ctx.windowSpecification().partitionClause().exprList());
+        setWindowSpecification(ctx.windowSpecification(), result);
+        return result;
+    }
+    
+    private WindowItemSegment createWindowItem(final WindowSpecificationContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.existingWindowName()) {
+            result.setWindowName(new IdentifierValue(ctx.existingWindowName().colId().getText()));
+        }
+        setWindowSpecification(ctx, result);
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void setWindowSpecification(final WindowSpecificationContext ctx, final WindowItemSegment result) {
+        if (null != ctx.partitionClause()) {
+            CollectionValue<ExpressionSegment> value = (CollectionValue<ExpressionSegment>) visit(ctx.partitionClause().exprList());
             result.setPartitionListSegments(value.getValue());
         }
-        if (null != ctx.windowSpecification().sortClause()) {
-            OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.windowSpecification().sortClause());
+        if (null != ctx.sortClause()) {
+            OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.sortClause());
             result.setOrderBySegment(orderBySegment);
         }
-        if (null != ctx.windowSpecification().frameClause()) {
-            result.setFrameClause(new CommonExpressionSegment(ctx.windowSpecification().frameClause().start.getStartIndex(), ctx.windowSpecification().frameClause().stop.getStopIndex(),
-                    ctx.windowSpecification().frameClause().getText()));
+        if (null != ctx.frameClause()) {
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
         }
-        return result;
     }
     
     @Override
@@ -1117,7 +1184,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         for (GroupByItemContext each : ctx.groupByList().groupByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
-        return new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items);
+        return new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items, false, containsGroupingExtension(ctx.groupByList().groupByItem()));
+    }
+    
+    private boolean containsGroupingExtension(final Collection<GroupByItemContext> groupByItems) {
+        for (GroupByItemContext each : groupByItems) {
+            if (null != each.emptyGroupingSet() || null != each.cubeClause() || null != each.rollupClause() || null != each.groupingSetsClause()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override

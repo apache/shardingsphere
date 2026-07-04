@@ -14,39 +14,16 @@ Users can introduce the CDC Client into their own projects to implement data con
 - Pure JAVA development, JDK recommended 1.8 or above.
 - CDC Server requires ShardingSphere-Proxy to use cluster mode, currently supports ZooKeeper as the registry center.
 - CDC only synchronizes data, does not synchronize table structure, and currently does not support DDL statement synchronization.
-- CDC incremental task will not split transaction data of the database shards. If you want to enable XA transaction compatibility, both openGauss and ShardingSphere-Proxy need the GLT module.
 
 ## CDC Server Deployment Steps
 
 Here, the openGauss database is used as an example to introduce the deployment steps of the CDC Server.
 
-Since the CDC Server is built into ShardingSphere-Proxy, you need to get ShardingSphere-Proxy. For details, please refer to the [proxy startup manual](/cn/user-manual/shardingsphere-proxy/startup/bin/).
-
-### Configure GLT Module (Optional)
-
-The official website's released binary package does not include the GLT module by default, if you are using the openGauss database with GLT functionality, you can additionally introduce the GLT module to ensure the integrity of XA transactions.
-
-There are currently two ways to introduce the GLT module, and corresponding configurations need to be made in global.yaml.
-
-#### 1. Source code compilation and installation
-
-1.1 Prepare the code environment, download in advance or use Git clone to download the [ShardingSphere](https://github.com/apache/shardingsphere.git) source code from Github.
-
-1.2 Delete the `<scope>provided</scope>` tag of the shardingsphere-global-clock-tso-provider-redis dependency in kernel/global-clock/type/tso/core/pom.xml and the `<scope>provided</scope>` tag of jedis in kernel/global-clock/type/tso/provider/redis/pom.xml
-
-1.3 Compile ShardingSphere-Proxy, for specific compilation steps, please refer to the [ShardingSphere Compilation Manual](https://github.com/apache/shardingsphere/wiki#build-apache-shardingsphere).
-
-#### 2. Directly introduce GLT dependencies
-
-Can be introduced from the maven repository
-
-2.1. [shardingsphere-global-clock-tso-provider-redis](https://repo1.maven.org/maven2/org/apache/shardingsphere/shardingsphere-global-clock-tso-provider-redis), download the same version as ShardingSphere-Proxy
-
-2.2. [jedis-4.3.1](https://repo1.maven.org/maven2/redis/clients/jedis/4.3.1/jedis-4.3.1.jar)
+Since the CDC Server is built into ShardingSphere-Proxy, you need to get ShardingSphere-Proxy. For details, please refer to the [proxy startup manual](/en/user-manual/shardingsphere-proxy/startup/bin/).
 
 ### CDC Server User Manual
 
-Modify the configuration file `conf/global.yaml` and turn on the CDC function. Currently, `mode` must be `Cluster`, and the corresponding registry center needs to be started in advance. If the GLT provider uses Redis, Redis needs to be started in advance.
+Modify the configuration file `conf/global.yaml` and turn on the CDC function. Currently, `mode` must be `Cluster`, and the corresponding registry center needs to be started in advance.
 
 Configuration example:
 
@@ -71,19 +48,6 @@ authority:
       password: root
   privilege:
     type: ALL_PERMITTED
-
-# When using GLT, you also need to enable distributed transactions, GLT is only supported by the openGauss database currently.
-#transaction:
-#  defaultType: XA
-#  providerType: Atomikos
-#
-#globalClock:
-#  enabled: true
-#  type: TSO
-#  provider: redis
-#  props:
-#    host: 127.0.0.1
-#    port: 6379
 
 props:
   proxy-default-port: 3307 # Proxy default port.
@@ -116,6 +80,9 @@ sh bin/start.sh
 The startup will have been successful.
 
 6. Configure CDC on demand.
+
+For complete DistSQL syntax, refer to [SHOW STREAMING RULE](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-rule/)
+and [ALTER STREAMING RULE](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/alter-streaming-rule/).
 
 6.1. Query configuration.
 
@@ -210,9 +177,9 @@ If necessary, users can also implement a CDC Client themselves to consume data a
 
 | Method Name                                                                                                                 | Return Value | Description                                                                                                                                                                                                    |
 |-----------------------------------------------------------------------------------------------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| connect(Consumer<List<Record>> dataConsumer, ExceptionHandler exceptionHandler, ServerErrorResultHandler errorResultHandler | void         | Connect with the server, when connecting, you need to specify <br/>1. Data consumption processing function <br/>2. Exception handling logic during consumption <br/>3. Server error exception handling function |
+| connect(Consumer<List<Record>> dataConsumer, ExceptionHandler exceptionHandler, ServerErrorResultHandler errorResultHandler) | void         | Connect with the server, when connecting, you need to specify <br/>1. Data consumption processing function <br/>2. Exception handling logic during consumption <br/>3. Server error exception handling function |
 | login(CDCLoginParameter parameter)                                                                                          | void         | CDC login, parameters <br/>username: username <br/>password: password                                                                                                                                          |
-| startStreaming(StartStreamingParameter parameter)                                                                           | streamingId  | Start CDC subscription<br/> StartStreamingParameter parameters <br/> database: logical database name <br/> schemaTables: subscribed table name <br/> full: whether to subscribe to full data                   |
+| startStreaming(StartStreamingParameter parameter)                                                                           | String       | Start CDC subscription and return the streaming ID<br/> StartStreamingParameter parameters <br/> database: logical database name <br/> schemaTables: subscribed table name <br/> full: whether to subscribe to full data |
 | restartStreaming(String streamingId)                                                                                        | void         | Restart subscription                                                                                                                                                                                           |
 | stopStreaming(String streamingId)                                                                                           | void         | Stop subscription                                                                                                                                                                                              |
 | dropStreaming(String streamingId)                                                                                           | void         | Delete subscription                                                                                                                                                                                            |

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewriter.engine.scenario;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -73,7 +74,40 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singleton(new ShardingSphereSchema(schemaName, mock(DatabaseType.class), tables, Collections.emptyList()));
+        tables.add(new ShardingSphereTable("ScrapReason", Arrays.asList(
+                new ShardingSphereColumn("ScrapReasonID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("Name", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("ModifiedDate", Types.TIMESTAMP, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("WorkOrder", Arrays.asList(
+                new ShardingSphereColumn("WorkOrderID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("ScrapReasonID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("ScrappedQty", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("StateRegion", Arrays.asList(
+                new ShardingSphereColumn("StateCode", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("CountryRegionName", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("vStateProvinceCountryRegion", Arrays.asList(
+                new ShardingSphereColumn("StateCode", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("CountryRegionName", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList(), TableType.VIEW));
+        tables.add(new ShardingSphereTable("SalesPerson", Arrays.asList(
+                new ShardingSphereColumn("BusinessEntityID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("SalesYTD", Types.DECIMAL, false, false, false, true, false, false),
+                new ShardingSphereColumn("Bonus", Types.DECIMAL, false, false, false, true, false, false),
+                new ShardingSphereColumn("CommissionPct", Types.DECIMAL, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("SalesOrderHeader", Arrays.asList(
+                new ShardingSphereColumn("SalesOrderID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("SalesPersonID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("OrderDate", Types.DATE, false, false, false, true, false, false),
+                new ShardingSphereColumn("SubTotal", Types.DECIMAL, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        Collection<ShardingSphereSchema> result = new LinkedList<>();
+        result.add(new ShardingSphereSchema(schemaName, mock(DatabaseType.class), tables, Collections.emptyList()));
+        Collection<ShardingSphereTable> salesSchemaTables = new LinkedList<>();
+        salesSchemaTables.add(new ShardingSphereTable("SalesPerson", Arrays.asList(
+                new ShardingSphereColumn("EmpID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("YearToDateAmt", Types.DECIMAL, false, false, false, true, false, false),
+                new ShardingSphereColumn("RegionCode", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        result.add(new ShardingSphereSchema("Sales", mock(DatabaseType.class), salesSchemaTables, Collections.emptyList()));
+        return result;
     }
     
     @Override
@@ -85,6 +119,13 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_account_detail");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_order");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_user");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "ScrapReason");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "WorkOrder");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "StateRegion");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "vStateProvinceCountryRegion");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "SalesPerson");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "SalesOrderHeader");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", "Sales", "SalesPerson");
         }
     }
 }

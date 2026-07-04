@@ -25,12 +25,18 @@ import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Database packet codec for Firebird.
@@ -45,6 +51,8 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     private final List<ByteBuf> pendingMessages = new LinkedList<>();
     
+    private final Map<Integer, List<FirebirdBatchColumnDescriptor>> deferredBatchFormats = new HashMap<>(1, 1F);
+    
     private FirebirdCommandPacketType pendingPacketType;
     
     @Override
@@ -54,18 +62,26 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
-        if (pendingMessages.isEmpty()) {
-            int type = in.getInt(in.readerIndex());
-            pendingPacketType = FirebirdCommandPacketType.valueOf(type);
-            if (pendingPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
-                handleMultiPacket(context, in, out, ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
-                return;
-            } else if (pendingPacketType == FirebirdCommandPacketType.FREE_STATEMENT) {
-                handleMultiPacket(context, in, out, FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
-                return;
+        try {
+            if (pendingMessages.isEmpty()) {
+                int type = in.getInt(in.readerIndex());
+                pendingPacketType = FirebirdCommandPacketType.valueOf(type);
+                if (pendingPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
+                    handleMultiPacket(context, in, out, ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
+                    return;
+                } else if (pendingPacketType == FirebirdCommandPacketType.FREE_STATEMENT) {
+                    handleMultiPacket(context, in, out, FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
+                    return;
+                }
             }
+            addToBuffer(context, in, out);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            // TODO replace with a proper Firebird error response packet; for now close the channel so the client fails fast instead of hanging.
+            context.close();
+            throw ex;
         }
-        addToBuffer(context, in, out);
     }
     
     private void handleMultiPacket(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int firstPacketLength) {
@@ -106,7 +122,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 return;
             }
             int readerIndex = buffer.readerIndex();
-            FirebirdCommandPacketType commandType = FirebirdCommandPacketType.valueOf(buffer.getInt(readerIndex));
+            FirebirdCommandPacketType commandType = (pendingPacketType != null) ? pendingPacketType : FirebirdCommandPacketType.valueOf(buffer.getInt(readerIndex));
             if (FirebirdCommandPacketType.VOID == commandType) {
                 buffer.skipBytes(MESSAGE_TYPE_LENGTH);
                 continue;
@@ -115,11 +131,18 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             if (packetLength < 0) {
                 pendingPacketType = commandType;
                 pendingMessages.add(buffer.readRetainedSlice(buffer.readableBytes()));
+                if (FirebirdCommandPacketType.BATCH_MSG != commandType) {
+                    deferredBatchFormats.clear();
+                }
                 return;
+            }
+            if (FirebirdCommandPacketType.BATCH_CREATE == commandType && buffer.readableBytes() > packetLength) {
+                rememberBatchFormat(buffer, packetLength, charset);
             }
             pendingPacketType = null;
             out.add(buffer.readRetainedSlice(packetLength));
         }
+        deferredBatchFormats.clear();
     }
     
     private int findPacketLength(final ChannelHandlerContext context, final ByteBuf buffer, final FirebirdCommandPacketType commandType, final Charset charset) {
@@ -128,17 +151,33 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         ByteBuf slice = buffer.retainedSlice(readerIndex, readableBytes);
         try {
             FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
-            int expectedLength = FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
-                    context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get());
-            if (expectedLength <= 0) {
-                return readableBytes;
+            List<FirebirdBatchColumnDescriptor> columnDescriptors = getDeferredBatchFormat(buffer, commandType);
+            int expectedLength = null == columnDescriptors
+                    ? FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
+                            context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get())
+                    : FirebirdBatchSendMessageCommandPacket.getLength(payload, columnDescriptors);
+            if (expectedLength < 0) {
+                return -1;
             }
-            return readableBytes >= expectedLength ? expectedLength : -1;
+            return 0 == expectedLength ? readableBytes : (readableBytes >= expectedLength ? expectedLength : -1);
         } catch (final IndexOutOfBoundsException ex) {
             return -1;
         } finally {
             slice.release();
         }
+    }
+    
+    private List<FirebirdBatchColumnDescriptor> getDeferredBatchFormat(final ByteBuf buffer, final FirebirdCommandPacketType commandType) {
+        return FirebirdCommandPacketType.BATCH_MSG == commandType && buffer.readableBytes() >= 8
+                ? deferredBatchFormats.get(buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH))
+                : null;
+    }
+    
+    private void rememberBatchFormat(final ByteBuf buffer, final int packetLength, final Charset charset) {
+        FirebirdBatchCreateCommandPacket packet = new FirebirdBatchCreateCommandPacket(
+                new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
+        ByteBuf batchBlr = packet.getBatchBlr();
+        deferredBatchFormats.put(packet.getStatementHandle(), FirebirdParseBatchBlr.parseForFraming(batchBlr, batchBlr.readableBytes()).getFields());
     }
     
     @Override
@@ -150,7 +189,9 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             payload.getByteBuf().resetWriterIndex();
-            // TODO send error packet
+            // TODO replace with a proper Firebird error response packet; for now close the channel so the client fails fast instead of hanging.
+            context.close();
+            throw ex;
         }
     }
     

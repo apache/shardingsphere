@@ -5,7 +5,7 @@ weight = 12
 
 ### Description
 
-The `START MIGRATION CHECK` syntax is used to stop migration check process.
+The `START MIGRATION CHECK` syntax is used to start migration check process.
 
 ### Syntax
 
@@ -16,7 +16,7 @@ StartMigrationCheck ::=
   'START' 'MIGRATION' 'CHECK' migrationJobId 
 
 migrationJobId ::=
-  string
+  integer | identifier | string
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -30,7 +30,7 @@ migrationJobId ::=
 
 ### Example
 
-- Stop migration check process
+- Start migration check process
 
 ```sql
 START MIGRATION CHECK 'j010180026753ef0e25d3932d94d1673ba551';

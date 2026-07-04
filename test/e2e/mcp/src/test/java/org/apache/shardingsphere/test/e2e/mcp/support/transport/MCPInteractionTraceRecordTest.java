@@ -43,12 +43,13 @@ class MCPInteractionTraceRecordTest {
     
     @Test
     void assertCreateCompletion() {
-        MCPInteractionTraceRecord actual = MCPInteractionTraceRecord.createCompletion(2, Map.of("argument_name", "schema"), Map.of("completion", "public"), 7L);
+        Map<String, Object> arguments = Map.of("ref", Map.of("type", "ref/prompt", "name", "inspect_metadata"), "argument", Map.of("name", "schema"));
+        MCPInteractionTraceRecord actual = MCPInteractionTraceRecord.createCompletion(2, arguments, Map.of("completion", "public"), 7L);
         assertThat(actual.getSequence(), is(2));
         assertThat(actual.getActionKind(), is(MCPInteractionActionNames.COMPLETION_KIND));
         assertThat(actual.getActionOrigin(), is(MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN));
         assertThat(actual.getTargetName(), is(MCPInteractionActionNames.COMPLETE));
-        assertThat(actual.getArguments(), is(Map.of("argument_name", "schema")));
+        assertThat(actual.getArguments(), is(arguments));
         assertThat(actual.getStructuredContent(), is(Map.of("completion", "public")));
         assertTrue(actual.isValid());
         assertThat(actual.getLatencyMillis(), is(7L));

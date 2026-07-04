@@ -57,6 +57,13 @@ class StatementClassifierTest {
         assertThat(actualException.getMessage(), is(expectedMessage));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertClassifyMetadataStatementTypeCases")
+    void assertClassifyMetadataStatementType(final String name, final String sql, final String expectedStatementType) {
+        MetadataIntrospectionSQLStatementException actual = assertThrows(MetadataIntrospectionSQLStatementException.class, () -> statementClassifier.classify(sql));
+        assertThat(actual.getStatementType(), is(expectedStatementType));
+    }
+    
     @Test
     void assertClassifyExplainAnalyzeInnerStatementClass() {
         ClassificationResult actualResult = statementClassifier.classify("EXPLAIN ANALYZE UPDATE foo_orders SET status = 'DONE'");
@@ -174,6 +181,8 @@ class StatementClassifierTest {
                         "RELEASE SAVEPOINT foo_sp_1", "", "foo_sp_1"),
                 Arguments.of("rollback to savepoint", "ROLLBACK TO SAVEPOINT foo_sp_1", SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO SAVEPOINT",
                         "ROLLBACK TO SAVEPOINT foo_sp_1", "", "foo_sp_1"),
+                Arguments.of("rollback to savepoint name without optional keyword", "ROLLBACK TO foo_sp_1", SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO",
+                        "ROLLBACK TO foo_sp_1", "", "foo_sp_1"),
                 Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM foo_orders", SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE",
                         "EXPLAIN ANALYZE SELECT * FROM foo_orders", "foo_orders", ""));
     }
@@ -240,13 +249,26 @@ class StatementClassifierTest {
                         new String[]{"other_db.foo_refresh_orders"}));
     }
     
+    private static Stream<Arguments> assertClassifyMetadataStatementTypeCases() {
+        return Stream.of(
+                Arguments.of("show storage units", "SHOW STORAGE UNITS FROM logic_db", "SHOW STORAGE UNITS"),
+                Arguments.of("show rules used storage unit", "SHOW RULES USED STORAGE UNIT write_ds FROM logic_db", "SHOW RULES USED STORAGE UNIT"),
+                Arguments.of("show single tables", "SHOW SINGLE TABLES FROM logic_db", "SHOW SINGLE TABLES"),
+                Arguments.of("show single table", "SHOW SINGLE TABLE t_user FROM logic_db", "SHOW SINGLE TABLE"),
+                Arguments.of("show default single table storage unit", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM logic_db", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT"));
+    }
+    
     private static Stream<Arguments> assertClassifyWithInvalidStatementCases() {
         return Stream.of(
                 Arguments.of("blank sql", "   ", IllegalArgumentException.class, "sql cannot be empty."),
                 Arguments.of("multiple statements", "SELECT 1; SELECT 2", MCPMultipleSQLStatementsException.class, "Only one SQL statement is allowed."),
                 Arguments.of("savepoint without name", "SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
+                Arguments.of("savepoint with extra token", "SAVEPOINT foo_sp_1 extra", IllegalArgumentException.class, "Savepoint name is required."),
                 Arguments.of("release savepoint without name", "RELEASE SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
+                Arguments.of("release savepoint with extra token", "RELEASE SAVEPOINT foo_sp_1 extra", IllegalArgumentException.class, "Savepoint name is required."),
+                Arguments.of("rollback to without name", "ROLLBACK TO", IllegalArgumentException.class, "Savepoint name is required."),
                 Arguments.of("rollback to savepoint without name", "ROLLBACK TO SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
+                Arguments.of("rollback to savepoint with extra token", "ROLLBACK TO SAVEPOINT foo_sp_1 extra", IllegalArgumentException.class, "Savepoint name is required."),
                 Arguments.of("banned use", "USE foo_db", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned set", "SET search_path public", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned copy", "COPY foo_orders FROM '/tmp/foo.csv'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),

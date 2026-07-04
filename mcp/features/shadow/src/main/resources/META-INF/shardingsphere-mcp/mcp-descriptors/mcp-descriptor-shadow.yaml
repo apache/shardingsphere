@@ -20,6 +20,8 @@ resources:
     title: Shadow Algorithm Plugins
     description: "List shadow algorithm plugins visible from the current ShardingSphere runtime with built-in property guidance."
     mimeType: application/json
+    meta:
+      org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
       feature: shadow
@@ -195,6 +197,10 @@ prompts:
         title: Algorithm Type
         description: "Shadow algorithm type, such as SQL_HINT, VALUE_MATCH, or REGEX_MATCH."
         required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a shadow rule plan."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_shadow_rule
@@ -228,6 +234,10 @@ prompts:
         title: Algorithm Type
         description: "Default shadow algorithm type."
         required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a default shadow algorithm plan."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_default_shadow_algorithm
@@ -256,6 +266,10 @@ prompts:
         title: Algorithm Name
         description: "Configured shadow algorithm name to clean up."
         required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue a shadow algorithm cleanup plan."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_shadow_algorithm_cleanup
@@ -271,6 +285,24 @@ prompts:
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask when database or algorithm name is unclear."
         - "Ask before applying generated shadow algorithm cleanup DistSQL that changes runtime state."
+completionTargets:
+  - referenceType: prompt
+    reference: plan_shadow_rule
+    arguments:
+      - database
+      - algorithm_type
+    maxValues: 50
+  - referenceType: prompt
+    reference: plan_default_shadow_algorithm
+    arguments:
+      - database
+      - algorithm_type
+    maxValues: 50
+  - referenceType: prompt
+    reference: plan_shadow_algorithm_cleanup
+    arguments:
+      - database
+    maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/shadow/databases/{database}/rules
     to: database_gateway_plan_shadow_rule
@@ -303,8 +335,15 @@ resourceNavigation:
   - from: shardingsphere://features/shadow/algorithm-plugins
     to: database_gateway_plan_shadow_rule
     requiredArguments: []
-    carriedArguments: []
+    carriedArguments:
+      - algorithm_type
     description: "Choose an available shadow algorithm before planning create or alter."
+  - from: shardingsphere://features/shadow/algorithm-plugins
+    to: database_gateway_plan_default_shadow_algorithm
+    requiredArguments: []
+    carriedArguments:
+      - algorithm_type
+    description: "Choose an available shadow algorithm before planning the default algorithm."
   - from: database_gateway_plan_shadow_rule
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -312,6 +351,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning shadow rule changes."
+  - from: database_gateway_plan_shadow_rule
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed shadow rule workflow after user approval."
   - from: database_gateway_plan_default_shadow_algorithm
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -319,6 +365,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning default shadow algorithm changes."
+  - from: database_gateway_plan_default_shadow_algorithm
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed default shadow algorithm workflow after user approval."
   - from: database_gateway_plan_shadow_algorithm_cleanup
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -326,6 +379,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning shadow algorithm cleanup."
+  - from: database_gateway_plan_shadow_algorithm_cleanup
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed shadow algorithm cleanup workflow after user approval."
 tools:
   - name: database_gateway_plan_shadow_rule
     title: Plan Shadow Rule
@@ -397,21 +457,6 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          properties:
-            rule:
-              type: string
-            source_storage_unit:
-              type: string
-            shadow_storage_unit:
-              type: string
-            table:
-              type: string
-            algorithm_type:
-              type: string
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema: &workflowPlanOutputSchema
@@ -442,6 +487,45 @@ tools:
           description: "Structured questions for missing workflow inputs."
           items:
             type: object
+        elicitation_support:
+          type: object
+          description: "Evaluated MCP elicitation capability and the selected interaction path when automatic form continuation cannot be used."
+        fallback_reason:
+          type: string
+          description: "Machine-readable reason explaining why the planner returned structured fallback instead of automatic form continuation."
+        issues:
+          type: array
+          description: "Warnings, conflicts, and validation issues found during planning."
+        global_steps:
+          type: array
+          description: "Workflow review and execution steps."
+        current_step:
+          type: string
+          description: "Current workflow step."
+        algorithm_recommendations:
+          type: array
+          description: "Recommended shadow algorithms and ranking reasons."
+        property_requirements:
+          type: array
+          description: "Required and optional algorithm properties for selected shadow algorithms."
+        validation_strategy:
+          type: object
+          description: "Validation strategy generated by the planner."
+        delivery_mode:
+          type: string
+          description: "Planner delivery mode used for user interaction."
+        execution_mode:
+          type: string
+          description: "Preferred later apply mode captured by the plan."
+        intent_inference:
+          type: object
+          description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+        argument_provenance:
+          type: object
+          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
+        review_focus:
+          type: object
+          description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
         distsql_artifacts:
           type: array
           description: "Generated shadow DistSQL artifacts for review."
@@ -509,6 +593,21 @@ tools:
       idempotentHint: false
       openWorldHint: false
       readOnlyHint: false
+    runtime:
+      workflowRole: plan
+    meta:
+      org.apache.shardingsphere/workflow-kind: shadow.rule
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/shadow/databases/{database}/rules
+        - shardingsphere://features/shadow/databases/{database}/table-rules
+        - shardingsphere://features/shadow/algorithm-plugins
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
   - name: database_gateway_plan_default_shadow_algorithm
     title: Plan Default Shadow Algorithm
     description: >-
@@ -552,13 +651,6 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          properties:
-            algorithm_type:
-              type: string
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema:
@@ -580,6 +672,21 @@ tools:
       idempotentHint: false
       openWorldHint: false
       readOnlyHint: false
+    runtime:
+      workflowRole: plan
+    meta:
+      org.apache.shardingsphere/workflow-kind: shadow.default
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/shadow/databases/{database}/default-algorithm
+        - shardingsphere://features/shadow/databases/{database}/algorithms
+        - shardingsphere://features/shadow/algorithm-plugins
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
   - name: database_gateway_plan_shadow_algorithm_cleanup
     title: Plan Shadow Algorithm Cleanup
     description: >-
@@ -613,13 +720,6 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          properties:
-            algorithm_name:
-              type: string
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema:
@@ -641,3 +741,18 @@ tools:
       idempotentHint: false
       openWorldHint: false
       readOnlyHint: false
+    runtime:
+      workflowRole: plan
+    meta:
+      org.apache.shardingsphere/workflow-kind: shadow.cleanup
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
+      org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/shadow/databases/{database}/algorithms
+        - shardingsphere://features/shadow/databases/{database}/table-rules
+        - shardingsphere://features/shadow/databases/{database}/default-algorithm
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow

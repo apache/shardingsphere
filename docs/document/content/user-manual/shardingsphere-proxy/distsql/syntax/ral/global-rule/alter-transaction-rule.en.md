@@ -13,10 +13,13 @@ The `ALTER TRANSACTION RULE` syntax is used to alter transaction rule configurat
 {{% tab name="Grammar" %}}
 ```sql
 AlterTransactionRule ::=
-  'ALTER' 'TRANSACTION' 'RULE' '(' 'DEFAULT' '=' defaultTransactionType ',' 'TYPE' '(' 'NAME' '=' transactionManager ',' propertiesDefinition ')' ')'
+  'ALTER' 'TRANSACTION' 'RULE' '(' 'DEFAULT' '=' defaultTransactionType (',' transactionProvider)? ')'
+
+transactionProvider ::=
+  'TYPE' '(' 'NAME' '=' transactionManager (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 defaultTransactionType ::=
   string
@@ -38,9 +41,9 @@ value ::=
 
 ### Supplement
 
-- `defaultTransactionType` support `LOCAL`, `XA`, `BASE`
+- `defaultTransactionType` supports `LOCAL`, `XA`, `BASE`
 
-- `transactionManager` support  `Atomikos` and `Narayana`
+- `transactionManager` supports `Atomikos` and `Narayana`
 
 ### Example
 

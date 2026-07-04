@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.database;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -106,15 +106,6 @@ class ShardingSphereDatabaseIdentifierTest {
     }
     
     @Test
-    void assertContainsSchemaWithSensitiveProps() {
-        Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name());
-        ShardingSphereDatabase database =
-                createDatabase(postgreSQLDatabaseType, new ConfigurationProperties(props), createSchema("foo_schema", postgreSQLDatabaseType));
-        assertFalse(database.containsSchema("FOO_SCHEMA"));
-    }
-    
-    @Test
     void assertDefaultPropsUseInsensitiveLookup() {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", postgreSQLDatabaseType, createResourceMetaData(),
                 new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema("foo_schema", postgreSQLDatabaseType)), new ConfigurationProperties(new Properties()));
@@ -128,11 +119,11 @@ class ShardingSphereDatabaseIdentifierTest {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
         ShardingSphereDatabase database = createDatabase(postgreSQLDatabaseType, schema);
         Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name());
+        props.setProperty(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name());
         database.refreshIdentifierContext(new ConfigurationProperties(props));
-        assertFalse(database.containsSchema("FOO_SCHEMA"));
-        assertFalse(database.getSchema("foo_schema").containsTable("FOO_TBL"));
-        assertFalse(database.getSchema("foo_schema").getTable("foo_tbl").containsColumn("FOO_COL"));
+        assertTrue(database.containsSchema("FOO_SCHEMA"));
+        assertTrue(database.getSchema("foo_schema").containsTable("FOO_TBL"));
+        assertTrue(database.getSchema("foo_schema").getTable("foo_tbl").containsColumn("FOO_COL"));
     }
     
     private ShardingSphereDatabase createDatabase(final DatabaseType databaseType, final String schemaName) {

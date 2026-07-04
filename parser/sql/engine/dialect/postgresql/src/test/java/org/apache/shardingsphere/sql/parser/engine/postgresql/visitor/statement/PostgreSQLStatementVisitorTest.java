@@ -26,6 +26,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -86,5 +89,21 @@ class PostgreSQLStatementVisitorTest {
         Collection<String> actualColumnAliases = subqueryTableSegment.getAliasSegment().get().getColumnAliases().stream().map(IdentifierValue::getValue).collect(Collectors.toList());
         assertThat(actualColumnAliases, contains("order_id", "status"));
         assertThat(subqueryTableSegment.getSubquery().getSelect().getProjections().getProjections().size(), is(2));
+    void assertVisitWindowAggregationProjection() {
+        String sql = "select pg_catalog.max(ref_0.c36) over (partition by ref_0.c39 order by ref_0.vkey desc) as c_5 from t24 as ref_0";
+        SelectStatement statement = parseSelectStatement(sql);
+        ProjectionSegment projection = statement.getProjections().getProjections().iterator().next();
+        assertThat(projection, isA(AggregationProjectionSegment.class));
+        AggregationProjectionSegment aggregationProjection = (AggregationProjectionSegment) projection;
+        assertThat(aggregationProjection.getExpression(), is("pg_catalog.max(ref_0.c36) over (partition by ref_0.c39 order by ref_0.vkey desc)"));
+        assertThat(aggregationProjection.getAliasName().orElse(null), is("c_5"));
+        assertTrue(aggregationProjection.getWindow().isPresent());
+        WindowItemSegment windowItem = aggregationProjection.getWindow().get();
+        assertThat(windowItem.getOrderBySegment().getOrderByItems().size(), is(1));
+    }
+    
+    private SelectStatement parseSelectStatement(final String sql) {
+        ParseASTNode parseASTNode = new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false);
+        return (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(parseASTNode);
     }
 }

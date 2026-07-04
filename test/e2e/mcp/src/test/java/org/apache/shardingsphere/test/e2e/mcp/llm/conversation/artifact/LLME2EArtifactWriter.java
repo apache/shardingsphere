@@ -70,7 +70,6 @@ public final class LLME2EArtifactWriter {
                 "modelProvider", artifactBundle.getModelProvider(),
                 "modelName", artifactBundle.getModelName(),
                 "runtime", runtimeEvidence,
-                "capabilityFingerprints", artifactBundle.getCapabilityFingerprints(),
                 "failureType", artifactBundle.getAssertionReport().getFailureType());
     }
     

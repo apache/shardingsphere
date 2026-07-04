@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountSQLResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
@@ -37,6 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +46,8 @@ import java.util.Map;
 public final class NativeStorageContainer implements StorageContainer {
     
     private static final Collection<String> INITIALIZED_DATABASES = new HashSet<>();
+    
+    private static final String SQL_RESOURCE_SUFFIX = ".sql";
     
     private final NativeDatabaseEnvironment env;
     
@@ -89,14 +91,40 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private void initDatabase(final String initDatabaseCacheKey) {
-        DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType)),
-                env.getUser(), env.getPassword(), 2);
-        new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
+        DataSource dataSource = createInitDataSource();
+        Map<String, String> mountedResources = generateMountedResources();
+        executeSQLScripts(dataSource, mountedResources.keySet());
         INITIALIZED_DATABASES.add(initDatabaseCacheKey);
     }
     
+    private Map<String, String> generateMountedResources() {
+        return new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(getDefaultMajorVersion(), scenario);
+    }
+    
+    private int getDefaultMajorVersion() {
+        List<Integer> supportedMajorVersions = option.getCreateOption().getSupportedMajorVersions();
+        return supportedMajorVersions.isEmpty() ? 0 : supportedMajorVersions.get(0);
+    }
+    
+    private void executeSQLScripts(final DataSource dataSource, final Collection<String> mountedResources) {
+        for (String each : mountedResources) {
+            if (each.endsWith(SQL_RESOURCE_SUFFIX)) {
+                SQLScriptUtils.execute(dataSource, each);
+            }
+        }
+    }
+    
+    private DataSource createInitDataSource() {
+        return StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType)),
+                getInitUser(), env.getPassword(), 2);
+    }
+    
+    private String getInitUser() {
+        return env.getUser();
+    }
+    
     private String getInitDatabaseCacheKey() {
-        return String.join(":", String.valueOf(scenario), databaseType.getType(), env.getHost(), String.valueOf(env.getPort(databaseType)));
+        return String.join(":", String.valueOf(scenario), databaseType.getType(), env.getHost(), String.valueOf(env.getPort(databaseType)), String.valueOf(getDefaultMajorVersion()));
     }
     
     private Map<String, DataSource> createDataSourceMap(final Type type) {
@@ -104,7 +132,7 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
-        Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
+        Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
             DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType), each),
                     env.getUser(), env.getPassword(), 2);
@@ -137,8 +165,6 @@ public final class NativeStorageContainer implements StorageContainer {
         for (String each : getNetworkAliases()) {
             result.put(each + ":" + getExposedPort(), env.getHost() + ":" + env.getPort(databaseType));
         }
-        result.put(StorageContainerConstants.OPERATION_USER, env.getUser());
-        result.put(StorageContainerConstants.OPERATION_PASSWORD, env.getPassword());
         return result;
     }
 }

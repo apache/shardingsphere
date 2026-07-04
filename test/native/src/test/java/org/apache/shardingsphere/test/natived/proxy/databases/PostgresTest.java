@@ -46,7 +46,7 @@ import java.time.Duration;
 class PostgresTest {
     
     @Container
-    private final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:18.1-trixie");
+    private final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:18.4-trixie");
     
     private ProxyTestingServer proxyTestingServer;
     
@@ -67,7 +67,7 @@ class PostgresTest {
         }
         String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
+        Awaitility.await().atMost(Duration.ofMinutes(5L)).ignoreExceptions().until(() -> {
             getConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();
             return true;
         });

@@ -41,7 +41,7 @@ databaseName ::=
 
 ### Example
 
-- Query sharding table rules for the specified sharding algorithm in spicified logical database
+- Query sharding table rules for the specified sharding algorithm in specified logical database
 
 ```sql
 SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM sharding_db;

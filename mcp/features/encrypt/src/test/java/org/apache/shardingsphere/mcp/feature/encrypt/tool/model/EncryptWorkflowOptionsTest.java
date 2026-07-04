@@ -31,12 +31,12 @@ class EncryptWorkflowOptionsTest {
         originalOptions.setRequiresDecrypt(true);
         originalOptions.setCipherColumnName("phone_cipher");
         originalOptions.getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
-        final EncryptWorkflowOptions actualOptions = originalOptions.copy();
+        EncryptWorkflowOptions actualOptions = originalOptions.copy();
         originalOptions.setRequiresDecrypt(false);
         originalOptions.setCipherColumnName("phone_cipher_v2");
-        originalOptions.getAssistedQueryAlgorithmProperties().put("salt", "abc");
         assertTrue(actualOptions.getRequiresDecrypt());
         assertThat(actualOptions.getCipherColumnName(), is("phone_cipher"));
+        originalOptions.getAssistedQueryAlgorithmProperties().put("salt", "abc");
         assertThat(actualOptions.getAssistedQueryAlgorithmProperties().size(), is(1));
     }
     

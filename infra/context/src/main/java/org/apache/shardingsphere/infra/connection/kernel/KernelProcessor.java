@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.checker.SupportedSQLCheckEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
@@ -31,6 +32,9 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 
 /**
  * Kernel processor.
@@ -56,11 +60,22 @@ public final class KernelProcessor {
     }
     
     private void check(final QueryContext queryContext) {
+        checkUnsupportedTemporaryTableDDL(queryContext);
         if (queryContext.getHintValueContext().isSkipMetadataValidate()) {
             return;
         }
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
         new SupportedSQLCheckEngine().checkSQL(database.getRuleMetaData().getRules(), queryContext.getSqlStatementContext(), database);
+    }
+    
+    private void checkUnsupportedTemporaryTableDDL(final QueryContext queryContext) {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        if (sqlStatement instanceof CreateTableStatement && ((CreateTableStatement) sqlStatement).isTemporary()) {
+            throw new UnsupportedSQLOperationException("CREATE TEMPORARY TABLE");
+        }
+        if (sqlStatement instanceof DropTableStatement && ((DropTableStatement) sqlStatement).isTemporary()) {
+            throw new UnsupportedSQLOperationException("DROP TEMPORARY TABLE");
+        }
     }
     
     private RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {

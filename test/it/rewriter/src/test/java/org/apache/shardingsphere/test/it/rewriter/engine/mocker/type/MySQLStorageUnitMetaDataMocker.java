@@ -42,11 +42,11 @@ public final class MySQLStorageUnitMetaDataMocker implements DialectStorageUnitM
     @Override
     @SneakyThrows(SQLException.class)
     public void mockStorageUnitMetaData(final Connection connection, final DatabaseMetaData databaseMetaData) {
-        mockIdentifierCaseRule(connection);
+        mockIdentifierCasePolicy(connection);
         mockDataTypeInfo(databaseMetaData);
     }
     
-    private void mockIdentifierCaseRule(final Connection connection) throws SQLException {
+    private void mockIdentifierCasePolicy(final Connection connection) throws SQLException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(connection.prepareStatement("SELECT @@lower_case_table_names")).thenReturn(preparedStatement);

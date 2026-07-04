@@ -82,7 +82,7 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
         ReadwriteSplittingStatusWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
-        planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
+        applyResolvedStatusIntent(mergedRequest, clarifiedIntent);
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
@@ -101,6 +101,14 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
                 intentResolver.resolveStatusIntent(result), "Readwrite-splitting status workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
     }
     
+    private void applyResolvedStatusIntent(final ReadwriteSplittingStatusWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+        request.setFieldSemantics(clarifiedIntent.getFieldSemantics());
+        Object targetStatus = clarifiedIntent.getInferredValues().get(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD);
+        if (request.getTargetStatus().isEmpty() && targetStatus instanceof String) {
+            request.setTargetStatus((String) targetStatus);
+        }
+    }
+    
     private boolean ensurePlanningContext(final ReadwriteSplittingStatusWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (request.getDatabase().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
@@ -109,8 +117,9 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!ensureSupportedIdentifier("database", request.getDatabase(), snapshot) || !ensureSupportedIdentifier(ReadwriteSplittingFeatureDefinition.RULE_FIELD, request.getRuleName(), snapshot)
-                || !ensureSupportedIdentifier(ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request.getStorageUnit(), snapshot)) {
+        if (!planningSupport.ensureOptionalSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, "intaking")
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.RULE_FIELD, List.of(request.getRuleName()), snapshot, "intaking")
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, List.of(request.getStorageUnit()), snapshot, "intaking")) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -133,16 +142,6 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         if (value.isEmpty()) {
             missingInputs.add(fieldName);
         }
-    }
-    
-    private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
-        if (identifier.isEmpty() || WorkflowSQLUtils.isSupportedIdentifier(identifier)) {
-            return true;
-        }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "intaking",
-                String.format("%s identifier `%s` contains unsupported characters.", fieldName, identifier),
-                "Use a reviewable logical identifier without NUL or line terminators.", false, Map.of("field", fieldName, "identifier", identifier)));
-        return false;
     }
     
     private boolean ensureTargetStatusRow(final ReadwriteSplittingStatusWorkflowRequest request, final List<Map<String, Object>> statuses,

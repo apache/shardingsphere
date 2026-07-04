@@ -3221,7 +3221,7 @@
         <projections start-index="7" stop-index="32">
             <expression-projection text="{ts '2020-01-01 10:00:00'}" start-index="7" stop-index="32">
                 <expr>
-                    <common-expression text="{ts '2020-01-01 10:00:00'}" start-index="7" stop-index="32" />
+                    <literal-expression value="2020-01-01 10:00:00" start-index="7" stop-index="32" />
                 </expr>
             </expression-projection>
         </projections>

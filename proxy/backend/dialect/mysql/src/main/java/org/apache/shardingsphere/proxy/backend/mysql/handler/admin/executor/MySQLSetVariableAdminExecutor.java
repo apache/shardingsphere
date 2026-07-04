@@ -34,6 +34,8 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysv
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableScope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment.VariableType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 
@@ -55,7 +57,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
-        validateSessionVariables(sessionVariables.keySet());
+        validateSessionVariables(extractSessionVariableSegments());
         CharsetSetExecutor charsetSetExecutor = new CharsetSetExecutor(sqlStatement.getDatabaseType(), connectionSession);
         sessionVariables.forEach(charsetSetExecutor::set);
         new SessionVariableRecordExecutor(sqlStatement.getDatabaseType(), connectionSession).recordVariable(sessionVariables);
@@ -67,9 +69,16 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
                 .collect(Collectors.toMap(each -> each.getVariable().getVariable(), VariableAssignSegment::getAssignValue));
     }
     
-    private void validateSessionVariables(final Collection<String> sessionVariables) {
-        for (String each : sessionVariables) {
-            MySQLSystemVariable systemVariable = MySQLSystemVariable.findSystemVariable(each).orElseThrow(() -> new UnknownSystemVariableException(each));
+    private Collection<VariableSegment> extractSessionVariableSegments() {
+        return sqlStatement.getVariableAssigns().stream().map(VariableAssignSegment::getVariable).filter(each -> !"global".equalsIgnoreCase(each.getScope().orElse(""))).collect(Collectors.toList());
+    }
+    
+    private void validateSessionVariables(final Collection<VariableSegment> sessionVariables) {
+        for (VariableSegment each : sessionVariables) {
+            if (VariableType.USER == each.getVariableType()) {
+                continue;
+            }
+            MySQLSystemVariable systemVariable = MySQLSystemVariable.findSystemVariable(each.getVariable()).orElseThrow(() -> new UnknownSystemVariableException(each.getVariable()));
             systemVariable.validateSetTargetScope(MySQLSystemVariableScope.SESSION);
         }
     }

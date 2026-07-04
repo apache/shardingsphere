@@ -21,10 +21,6 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidator;
-import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
-
-import java.util.List;
 
 /**
  * Sharding tool descriptor validator.
@@ -43,8 +39,7 @@ public final class ShardingToolDescriptorValidator implements MCPToolDescriptorV
     
     @Override
     public void validate(final MCPToolDescriptor toolDescriptor) {
-        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(toolDescriptor,
-                List.of("response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
-                        MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS));
+        MCPToolDescriptorValidationUtils.validateRequiredWorkflowPlanOutputFields(toolDescriptor);
+        MCPToolDescriptorValidationUtils.validateRequiredWorkflowPlanMetaFields(toolDescriptor);
     }
 }

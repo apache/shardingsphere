@@ -5,7 +5,7 @@ weight = 3
 
 ## Description
 
-The `DROP SHADOW RULE` syntax is used to drop shadow rule for specified database
+The `DROP SHADOW RULE` syntax is used to drop shadow rules from the current database.
 
 ### Syntax
 
@@ -13,7 +13,7 @@ The `DROP SHADOW RULE` syntax is used to drop shadow rule for specified database
 {{% tab name="Grammar" %}}
 ```sql
 DropShadowRule ::=
-  'DROP' 'SHADOW' 'RULE' ifExists? ruleName ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'RULE' ifExists? ruleName (',' ruleName)*
 
 ifExists ::=
   'IF' 'EXISTS'
@@ -21,8 +21,6 @@ ifExists ::=
 ruleName ::=
   identifier
 
-databaseName ::=
-  identifier
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -32,21 +30,20 @@ databaseName ::=
 
 ### Supplement
 
-- When databaseName is not specified, the default is the currently used DATABASE. If DATABASE is not used, No database selected will be prompted;
-- `ifExists` clause is used for avoid `Shadow rule not exists` error.
+- `ifExists` clause is used to avoid `Shadow rule not exists` error.
 
 ### Example
 
-- Drop shadow rule for specified database
-
-```sql
-DROP SHADOW RULE shadow_rule FROM shadow_db;
-```
-
-- Drop shadow rule for current database
+- Drop shadow rule
 
 ```sql
 DROP SHADOW RULE shadow_rule;
+```
+
+- Drop multiple shadow rules
+
+```sql
+DROP SHADOW RULE shadow_rule, shadow_rule_1;
 ```
 
 - Drop shadow rule with `ifExists` clause
@@ -57,7 +54,7 @@ DROP SHADOW RULE IF EXISTS shadow_rule;
 
 ### Reserved word
 
-`DROP`, `SHODOW`, `RULE`, `FROM`
+`DROP`, `SHADOW`, `RULE`, `IF`, `EXISTS`
 
 ### Related links
 

@@ -71,7 +71,7 @@ class MetadataResourceHandlerTest {
         assertThat(actualPayload.get("continuation_mode"), is("metadata_search"));
         assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("state"), is("broad_metadata_list"));
         assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("threshold"), is(100));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
         assertFalse(((Map<?, ?>) actualNextAction.get("arguments")).containsKey("page_size"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("object_types"), is(List.of("database")));
@@ -109,6 +109,29 @@ class MetadataResourceHandlerTest {
     }
     
     @Test
+    void assertHandleSchemaDetailResourceNotVisible() {
+        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}", (requestContext, uriVariables) -> List.of());
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0"))),
+                new MCPUriVariables(Map.of("database", "logic_db", "schema", "missing_schema")));
+        Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+        assertThat(actualEmptyState.get("category"), is("schema_not_visible"));
+        assertThat(actualEmptyState.get("reason"), is("The requested schema is not visible in the current metadata scope."));
+        assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("requested_token"), is("missing_schema"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).getFirst()).get("type"), is("resource_read"));
+    }
+    
+    @Test
+    void assertHandleObjectDetailResourceNotVisible() {
+        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}", (requestContext, uriVariables) -> List.of());
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0"))),
+                new MCPUriVariables(Map.of("database", "logic_db", "schema", "public", "table", "missing_table")));
+        Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+        assertThat(actualEmptyState.get("category"), is("object_not_visible"));
+        assertThat(actualEmptyState.get("reason"), is("The requested metadata object is not visible in the current metadata scope."));
+        assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("requested_token"), is("missing_table"));
+    }
+    
+    @Test
     void assertHandleDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}",
                 (requestContext, uriVariables) -> List.of(Map.of("database", uriVariables.getValue("database"))));
@@ -120,7 +143,14 @@ class MetadataResourceHandlerTest {
                 "parent_resource", Map.of("uri", "shardingsphere://databases", "resource_kind", "logical-database", "purpose", "inspect_parent",
                         "reason", "Read the parent metadata resource before broadening or correcting the request.", "source_field", "parent_resource"),
                 "next_resources", List.of(Map.of("uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F/schemas", "resource_kind", "schema", "purpose", "inspect_detail",
-                        "reason", "List schemas after choosing a logical database.", "source_field", "next_resources")))));
+                        "reason", "List schemas after choosing a logical database.", "source_field", "next_resources"),
+                        Map.of("uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F/storage-units", "resource_kind", "storage-unit",
+                                "purpose", "inspect_detail", "reason", "List storage units after choosing a logical database.", "source_field", "next_resources"),
+                        Map.of("uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F/single-tables", "resource_kind", "single-table",
+                                "purpose", "inspect_detail", "reason", "List single table mappings after choosing a logical database.", "source_field", "next_resources"),
+                        Map.of("uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F/single-table/default-storage-unit",
+                                "resource_kind", "single-table", "purpose", "inspect_detail",
+                                "reason", "Read the default single table storage unit after choosing a logical database.", "source_field", "next_resources")))));
     }
     
     @Test
@@ -131,7 +161,7 @@ class MetadataResourceHandlerTest {
         assertThat(((Map<?, ?>) actual.toPayload().get("empty_state")).get("reason"), is("logical-database detail resource was not found for this URI."));
         assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("recovery_category"), is("not_found"));
         assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("category"), is("not_found"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).get(0)).get("type"), is("terminal"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).getFirst()).get("type"), is("terminal"));
     }
     
     private MCPDatabaseHandlerContext createDatabaseContext(final Optional<RuntimeDatabaseProfile> databaseProfile) {

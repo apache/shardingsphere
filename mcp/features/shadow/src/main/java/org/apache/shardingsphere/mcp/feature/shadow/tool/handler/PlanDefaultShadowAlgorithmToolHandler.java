@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowWorkflowP
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
@@ -62,10 +63,10 @@ public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandl
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         ShadowDefaultAlgorithmWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowDefaultAlgorithmWorkflowRequest::new, toolCall.getArguments(),
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
+                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.planDefaultAlgorithm(
                 workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(new WorkflowToolResponseBuilder().buildPlanResponse(snapshot));
+        return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final ShadowDefaultAlgorithmWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
@@ -78,10 +79,6 @@ public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandl
         applyMapField(structuredIntentEvidence, request);
     }
     
-    private void applyUserOverrides(final ShadowDefaultAlgorithmWorkflowRequest request, final Map<String, Object> userOverrides) {
-        applyStructuredIntentEvidence(request, userOverrides);
-    }
-    
     private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
         Object value = values.get(fieldName);
         if (null != value) {
@@ -90,7 +87,7 @@ public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandl
     }
     
     private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        final String value = workflowPlanningArguments.getStringArgument(fieldName);
+        String value = workflowPlanningArguments.getStringArgument(fieldName);
         if (!value.isEmpty()) {
             consumer.accept(value);
         }

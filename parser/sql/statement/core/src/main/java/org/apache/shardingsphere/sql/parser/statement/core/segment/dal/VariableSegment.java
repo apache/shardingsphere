@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dal;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -28,11 +27,18 @@ import java.util.Optional;
 /**
  * Variable segment.
  */
-@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 @Setter
 public final class VariableSegment implements ExpressionSegment {
+    
+    /**
+     * Variable type.
+     */
+    public enum VariableType {
+        
+        USER, SYSTEM, INTERNAL
+    }
     
     private final int startIndex;
     
@@ -41,6 +47,26 @@ public final class VariableSegment implements ExpressionSegment {
     private final String variable;
     
     private String scope;
+    
+    private VariableType variableType = VariableType.SYSTEM;
+    
+    public VariableSegment(final int startIndex, final int stopIndex, final String variable, final String scope) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.variable = variable;
+        this.scope = scope;
+    }
+    
+    /**
+     * Set variable type.
+     *
+     * @param variableType variable type
+     * @return variable segment
+     */
+    public VariableSegment withVariableType(final VariableType variableType) {
+        this.variableType = variableType;
+        return this;
+    }
     
     /**
      * Get scope.

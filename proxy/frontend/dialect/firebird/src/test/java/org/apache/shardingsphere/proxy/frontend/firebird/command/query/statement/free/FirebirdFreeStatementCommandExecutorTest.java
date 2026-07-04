@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free;
 
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -44,6 +46,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -75,6 +78,8 @@ class FirebirdFreeStatementCommandExecutorTest {
     void setUp() {
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, new FirebirdBatchStatement(STATEMENT_ID));
         when(packet.getStatementId()).thenReturn(STATEMENT_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
@@ -84,6 +89,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     void tearDown() {
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @ParameterizedTest(name = "{0}")
@@ -96,6 +102,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         verify(registry).removePreparedStatement(STATEMENT_ID);
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
     }
     
     @Test
@@ -104,6 +111,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
         verify(connectionSession, never()).invalidatePreparedStatementCache(any());
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
+        assertNotNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
     }
     
     @ParameterizedTest(name = "{0}")

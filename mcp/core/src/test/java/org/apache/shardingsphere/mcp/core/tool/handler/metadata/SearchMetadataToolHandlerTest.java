@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -28,6 +29,9 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMet
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 import org.junit.jupiter.api.Test;
@@ -40,7 +44,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class SearchMetadataToolHandlerTest {
     
@@ -50,6 +57,9 @@ class SearchMetadataToolHandlerTest {
         assertThat(actual.getName(), is("database_gateway_search_metadata"));
         assertThat(((Map<?, ?>) actual.getInputSchema().get("properties")).size(), is(4));
         Map<?, ?> actualProperties = (Map<?, ?>) actual.getOutputSchema().get("properties");
+        Map<?, ?> actualInputProperties = (Map<?, ?>) actual.getInputSchema().get("properties");
+        Map<?, ?> actualObjectTypeItems = (Map<?, ?>) ((Map<?, ?>) actualInputProperties.get("object_types")).get("items");
+        assertTrue(((List<?>) actualObjectTypeItems.get("enum")).contains("storage_unit"));
         Map<?, ?> actualItems = (Map<?, ?>) ((Map<?, ?>) actualProperties.get("items")).get("items");
         Map<?, ?> actualItemProperties = (Map<?, ?>) actualItems.get("properties");
         assertTrue(actualItemProperties.containsKey("resource"));
@@ -61,6 +71,9 @@ class SearchMetadataToolHandlerTest {
         assertTrue(actualItemProperties.containsKey("matched_value"));
         assertTrue(actualProperties.containsKey("search_context"));
         assertTrue(actualProperties.containsKey("total_match_count"));
+        assertTrue(actualProperties.containsKey("returned_count"));
+        assertTrue(actualProperties.containsKey("truncated"));
+        assertTrue(actualProperties.containsKey("large_result_guidance"));
         assertTrue(actualProperties.containsKey("empty_state"));
         assertTrue(actualProperties.containsKey("ambiguity_state"));
         assertTrue(actualProperties.containsKey("next_actions"));
@@ -76,10 +89,12 @@ class SearchMetadataToolHandlerTest {
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
             assertThat(actualPayload.get("total_match_count"), is(1));
+            assertThat(actualPayload.get("returned_count"), is(1));
+            assertFalse((Boolean) actualPayload.get("truncated"));
             assertFalse(actualPayload.containsKey("next_page_token"));
             assertFalse((Boolean) actualPayload.get("has_more"));
             assertThat(actualPayload.get("continuation_mode"), is("none"));
-            assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_idx"));
+            assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).getFirst()).getName(), is("order_idx"));
             assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("index")));
         }
     }
@@ -92,19 +107,34 @@ class SearchMetadataToolHandlerTest {
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
-            assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_seq"));
+            assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).getFirst()).getName(), is("order_seq"));
         }
     }
     
     @Test
-    void assertHandleSearchMetadataIgnoresQueryInObjectTypes() {
+    void assertHandleSearchMetadataWithStorageUnit() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        when(databaseContext.getMetadataQueryFacade()).thenReturn(mock(MCPMetadataQueryFacade.class));
+        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+        MCPResponse actual = new SearchMetadataToolHandler().handle(databaseContext, new MCPToolCall("session-1",
+                Map.of("database", "logic_db", "query", "write", "object_types", List.of("storage_unit"))));
+        Map<String, Object> actualPayload = actual.toPayload();
+        assertThat(actual, isA(MCPItemsResponse.class));
+        MetadataSearchHit actualHit = (MetadataSearchHit) ((List<?>) actualPayload.get("items")).getFirst();
+        assertThat(actualHit.getObjectType(), is("storage_unit"));
+        assertThat(actualHit.getName(), is("write_ds"));
+        assertThat(actualHit.getResource().get("uri"), is("shardingsphere://databases/logic_db/storage-units/write_ds"));
+        assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("storage_unit")));
+    }
+    
+    @Test
+    void assertHandleSearchMetadataRejectsQueryInObjectTypes() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
-                    Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("table", "orders"))));
-            Map<String, Object> actualPayload = actual.toPayload();
-            assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
-            assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("orders"));
-            assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("table")));
+            MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("table", "orders")))));
+            assertThat(actual.getMessage(), is("Unsupported object_types value `orders`."));
         }
     }
     
@@ -120,8 +150,32 @@ class SearchMetadataToolHandlerTest {
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(actualNames.size(), is(9));
             assertThat(actualPayload.get("total_match_count"), is(9));
+            assertThat(actualPayload.get("returned_count"), is(9));
+            assertFalse((Boolean) actualPayload.get("truncated"));
             assertTrue(actualNames.contains("logic_db"));
             assertTrue(actualNames.contains("order_idx"));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithLargeResultGuidance() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext(createLargeDatabaseMetadata()))) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "large_db", "object_types", List.of(SupportedMCPMetadataObjectType.TABLE.name()))));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(((List<?>) actualPayload.get("items")).size(), is(100));
+            assertThat(actualPayload.get("total_match_count"), is(101));
+            assertThat(actualPayload.get("returned_count"), is(100));
+            assertTrue((Boolean) actualPayload.get("truncated"));
+            Map<?, ?> actualLargeResultGuidance = (Map<?, ?>) actualPayload.get("large_result_guidance");
+            assertThat(actualLargeResultGuidance.get("state"), is("metadata_search_result_truncated"));
+            assertThat(actualLargeResultGuidance.get("threshold"), is(100));
+            assertThat(actualLargeResultGuidance.get("narrowing_arguments"), is(List.of("database", "schema", "query", "object_types")));
+            List<?> actualNextActions = (List<?>) actualPayload.get("next_actions");
+            assertThat(actualNextActions.size(), is(1));
+            Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.getFirst();
+            assertThat(actualNextAction.get("type"), is("ask_user"));
+            assertThat(actualNextAction.get("required_inputs"), is(List.of("database", "schema", "query", "object_types")));
         }
     }
     
@@ -139,7 +193,7 @@ class SearchMetadataToolHandlerTest {
             Map<?, ?> actualSearchContext = (Map<?, ?>) actualPayload.get("search_context");
             assertThat(actualSearchContext.get("object_types"), is(List.of("database")));
             assertTrue((Boolean) actualSearchContext.get("broad_search_guarded"));
-            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
+            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
             assertThat(actualNextAction.get("type"), is("ask_user"));
             assertThat(actualNextAction.get("required_inputs"), is(List.of("database", "query", "object_types")));
         }
@@ -151,11 +205,54 @@ class SearchMetadataToolHandlerTest {
             MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "query", "missing")));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("state"), is("no_match"));
-            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
+            assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("category"), is("object_not_visible"));
+            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
             assertThat(actualNextAction.get("type"), is("tool_call"));
             assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
             assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("query"), is("missing"));
             assertFalse(((Map<?, ?>) actualNextAction.get("arguments")).containsKey("database"));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithObjectNotVisibleInKnownSchema() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "logic_db", "schema", "public", "query", "missing", "object_types", List.of("table"))));
+            Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+            assertThat(actualEmptyState.get("category"), is("object_not_visible"));
+            assertThat(actualEmptyState.get("reason"), is("No visible metadata object matched the query in the requested scope."));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithUnknownDatabase() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "missing_db", "query", "orders")));
+            Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+            assertThat(actualEmptyState.get("category"), is("unknown_database"));
+            assertThat(actualEmptyState.get("reason"), is("The requested logical database is not visible to MCP."));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithSchemaNotVisible() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "logic_db", "schema", "missing_schema", "object_types", List.of("table"))));
+            Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+            assertThat(actualEmptyState.get("category"), is("schema_not_visible"));
+            assertThat(actualEmptyState.get("reason"), is("The requested schema is not visible in the current metadata scope."));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithoutRuntimeDatabase() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of()))) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of()));
+            Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+            assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
+            assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).getFirst()).get("type"), is("resource_read"));
         }
     }
     
@@ -170,7 +267,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(actualAmbiguityState.get("candidate_count"), is(2));
             assertThat(actualAmbiguityState.get("duplicated_names"), is(List.of("orders")));
             assertThat(actualAmbiguityState.get("narrowing_arguments"), is(List.of("database", "schema", "object_types")));
-            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
+            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
             assertThat(actualNextAction.get("type"), is("ask_user"));
             assertThat(actualNextAction.get("required_inputs"), is(List.of("database", "schema", "object_types")));
             assertThat(actualNextAction.get("order"), is(1));
@@ -213,7 +310,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(actualAmbiguityState.get("duplicated_names"), is(List.of("orders")));
             List<?> actualNextActions = (List<?>) actualPayload.get("next_actions");
             assertThat(actualNextActions.size(), is(1));
-            assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("ask_user"));
+            assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("type"), is("ask_user"));
         }
     }
     
@@ -229,6 +326,14 @@ class SearchMetadataToolHandlerTest {
     
     private List<MCPDatabaseMetadata> createDuplicatedTableMetadata() {
         return List.of(createDatabaseMetadata("bar_db", "orders"), createDatabaseMetadata("baz_db", "orders"), createDatabaseMetadata("foo_db", "orders_archive"));
+    }
+    
+    private List<MCPDatabaseMetadata> createLargeDatabaseMetadata() {
+        List<MCPTableMetadata> tables = new LinkedList<>();
+        for (int index = 0; index < 101; index++) {
+            tables.add(new MCPTableMetadata("large_db", "public", "table_" + index, List.of(), List.of()));
+        }
+        return List.of(new MCPDatabaseMetadata("large_db", "MySQL", "", List.of(new MCPSchemaMetadata("large_db", "public", tables, List.of(), List.of()))));
     }
     
     private MCPDatabaseMetadata createDatabaseMetadata(final String databaseName, final String tableName) {

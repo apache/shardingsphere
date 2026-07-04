@@ -147,38 +147,43 @@
   </qa_pair>
   <qa_pair id="q08" category="encrypt" read_only="true">
     <question>
-      A user asks for an encrypt rule for a logical column that may need cipher, assisted query, and like query columns. Explain how the model
-      should build a reviewable plan without applying changes to the runtime database.
+      A user asks for reviewable feature-rule plans across encrypt, broadcast, readwrite-splitting, shadow, and sharding modules, but has not
+      approved runtime metadata changes. Explain how the model should discover feature resources, choose the right planning tools, and stop
+      before side effects.
     </question>
-    <answer>metadata|encrypt_algorithms|plan_encrypt_rule|no_apply_execute</answer>
+    <answer>feature_resources|plan_feature_workflows|no_apply_execute</answer>
     <expected_answer>
-      The model should inspect the table and column metadata first, use completion or descriptor information to choose supported encrypt
-      algorithms, and call database_gateway_plan_encrypt_rule with explicit logical, cipher, assisted query, and like query intent where needed.
-      The response should be treated as a reviewable workflow plan containing rule details, DistSQL, physical DDL where applicable, validation
-      layers, and next_actions. It must not call workflow apply in execute mode or perform data migration.
+      The model should first use tools/list, resources/templates/list, and resources/read to discover the feature resources for encrypt,
+      broadcast, readwrite-splitting, shadow, and sharding instead of guessing tool names. It should call the matching database_gateway_plan_*
+      workflow tool only after required logical database, rule, table, storage-unit, or algorithm inputs are known, then report plan_id,
+      reviewable DistSQL artifacts, resources_to_read, and next_actions. It must not call database_gateway_apply_workflow in execute mode,
+      execute SQL updates, create physical metadata, or perform migration while the request is still a read-only review.
     </expected_answer>
     <verification>
-      <step>Confirm the answer starts from table and column metadata rather than guessed columns.</step>
-      <step>Confirm the answer uses database_gateway_plan_encrypt_rule for the encrypt workflow plan.</step>
-      <step>Confirm the answer covers cipher, assisted query, like query, validation, and no data migration.</step>
+      <step>Confirm the answer discovers feature resources and tool schemas before selecting a planning workflow.</step>
+      <step>Confirm the answer mentions representative planning tools for encrypt, broadcast, readwrite-splitting, shadow, and sharding.</step>
+      <step>Confirm the answer preserves plan_id, resources_to_read, next_actions, and forbids workflow execution mode.</step>
     </verification>
   </qa_pair>
   <qa_pair id="q09" category="mask" read_only="true">
     <question>
-      A user asks for a mask rule on a column but gives an algorithm name that may be unsupported and a field semantic that may be incomplete.
-      Describe how the model should recover while staying read-only.
+      A user asks for mask, readwrite-splitting, shadow, and sharding planning but supplies uncertain algorithm or plugin type names. Describe
+      how the model should use completion, resources/read, and shardingsphere:// plugin resources to recover without leaking configuration
+      details or mutating metadata.
     </question>
-    <answer>mask_descriptors_or_completion|plan_mask_rule_when_complete|return_recovery_next_actions</answer>
+    <answer>completion_or_plugin_resources|bounded_candidates|return_next_actions</answer>
     <expected_answer>
-      The model should inspect mask descriptors and algorithm completion data before planning, then call database_gateway_plan_mask_rule only
-      when the table, column, algorithm, and field semantics are specific enough. If the algorithm or semantic details are missing, it should
-      return the recovery message and next_actions from the planning response or ask for the missing information. It must not invent an
-      algorithm, apply a workflow, or alter runtime metadata while recovering.
+      The model should use completion/complete or resources/read against the nearest shardingsphere:// plugin resource before choosing
+      uncertain algorithm fields: mask algorithms, readwrite-splitting load-balance algorithms, shadow algorithm plugins, sharding algorithm
+      plugins, and sharding key-generate algorithm plugins. It should treat returned values as bounded candidates, keep context arguments such
+      as database or resource reference explicit, and avoid exposing secret property values as completion suggestions. If completion has no safe
+      candidate, it should use the recovery message, resources_to_read, and next_actions from the planning response instead of inventing an
+      algorithm or applying a workflow.
     </expected_answer>
     <verification>
-      <step>Confirm the answer uses descriptor or completion evidence before planning a mask rule.</step>
-      <step>Confirm the answer uses database_gateway_plan_mask_rule only after required inputs are specific.</step>
-      <step>Confirm the answer preserves recovery next_actions and forbids invented algorithms or metadata changes.</step>
+      <step>Confirm the answer uses completion/complete or resources/read plugin resources before selecting uncertain algorithm names.</step>
+      <step>Confirm the answer covers mask, readwrite-splitting, shadow, and sharding plugin completion sources.</step>
+      <step>Confirm the answer keeps completion bounded, secret-safe, and uses recovery next_actions instead of mutation.</step>
     </verification>
   </qa_pair>
   <qa_pair id="q10" category="transport_security" read_only="true">

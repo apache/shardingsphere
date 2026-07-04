@@ -76,4 +76,50 @@
     <sql-case id="create_procedure_p1_select_set" value="CREATE PROCEDURE p1(x int) BEGIN SELECT count(*) FROM t1; SELECT * FROM t1; SET @x = x; END;" db-types="MySQL" />
     <sql-case id="create_procedure_test_if_commit" value="CREATE PROCEDURE test_if_commit() BEGIN ROLLBACK; SELECT IF (COUNT(*) &gt; 0, &quot;YES&quot;, &quot;NO&quot;) AS &quot;IMPLICIT COMMIT&quot; FROM trans; DELETE FROM trans; COMMIT; END;" db-types="MySQL" />
     <sql-case id="create_procedure_p1_repeat_handlers" value="create procedure p1() begin declare counter integer default 0; declare continue handler for sqlexception begin set counter = counter + 10;end; repeat if rand()&gt;0.5 then start transaction; end if; if rand()&gt;0.5 then select var_samp(1), exists(select 1 from t1 lock in share mode) from t1 into @a,@b; end if; if rand()&gt;0.5 then select var_samp(1), exists(select 1 from t1 for update) from t1 into @a,@b; end if; if rand()&gt;0.5 then insert ignore into t1 values (); end if; if rand()&gt;0.5 then insert ignore into t2 values (); end if; if rand()&gt;0.5 then delete from t1; end if; if rand()&gt;0.5 then delete from t2; end if; if rand()&gt;0.5 then commit; end if; set counter = counter + 1; until counter &gt;= 100 end repeat; end" db-types="MySQL" />
+    <sql-case id="create_procedure_with_declare" value="CREATE PROCEDURE dbo.MyProcedure @InputParam INT
+        AS
+        BEGIN
+            DECLARE @LocalVar NVARCHAR(100);
+            DECLARE @Count INT = 0;
+            SET @LocalVar = N'Hello';
+            SELECT @Count = COUNT(*) FROM dbo.SomeTable WHERE ID = @InputParam;
+            SELECT @LocalVar AS Msg, @Count AS Total;
+        END;" db-types="SQLServer" />
+    <sql-case id="create_procedure_with_declare_table_variable" value="CREATE PROCEDURE dbo.uspUpdateTableVar
+        AS
+        BEGIN
+            DECLARE @MyTableVar TABLE (EmpID INT NOT NULL, NewVacationHours INT);
+            UPDATE @MyTableVar SET NewVacationHours = 40;
+        END" db-types="SQLServer" />
+    <sql-case id="create_procedure_or_alter_with_declare" value="CREATE OR ALTER PROCEDURE dbo.uspRefresh @Id INT
+        AS
+        BEGIN
+            DECLARE @Name NVARCHAR(50);
+            SET @Name = N'test';
+            SELECT @Name;
+        END" db-types="SQLServer" />
+    <sql-case id="create_procedure_with_declare_cursor" value="CREATE PROCEDURE dbo.uspCursor
+        AS
+        BEGIN
+            DECLARE @cur CURSOR;
+        END" db-types="SQLServer" />
+    <sql-case id="create_procedure_with_declare_multiple_variables" value="CREATE PROCEDURE dbo.uspMulti
+        AS
+        BEGIN
+            DECLARE @A INT, @B INT = 1;
+            SET @A = @B;
+        END" db-types="SQLServer" />
+    <sql-case id="create_procedure_with_recompile_and_declare" value="CREATE PROCEDURE dbo.uspRecompile @X INT
+        WITH RECOMPILE
+        AS
+        BEGIN
+            DECLARE @Y INT = @X;
+            SELECT @Y;
+        END" db-types="SQLServer" />
+    <sql-case id="create_procedure_proc_with_declare" value="CREATE PROC dbo.uspShort
+        AS
+        BEGIN
+            DECLARE @V INT;
+            SET @V = 1;
+        END" db-types="SQLServer" />
 </sql-cases>

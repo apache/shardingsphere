@@ -124,6 +124,13 @@ class WorkflowRuntimeDefinitionRegistryTest {
     }
     
     @Test
+    void assertCreateRegistryWithNullApplyArtifactValidator() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new WorkflowRuntimeDefinitionRegistry(
+                List.of(new WorkflowRuntimeDefinition(WorkflowKind.valueOf("encrypt.rule"), mock(MCPWorkflowValidationHandler.class), mock(MCPWorkflowApplySynchronizationHandler.class), null))));
+        assertThat(actual.getMessage(), is("Workflow apply artifact validator is required for `encrypt.rule`."));
+    }
+    
+    @Test
     void assertCreateRegistryWithDuplicateWorkflowKind() {
         WorkflowRuntimeDefinition firstDefinition = createDefinition("encrypt.rule");
         WorkflowRuntimeDefinition secondDefinition = createDefinition("encrypt.rule");

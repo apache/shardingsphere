@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
@@ -174,15 +175,24 @@ public final class PipelineJobManager {
      * @param contextKey context key
      * @return jobs info
      */
-    @SuppressWarnings("unchecked")
     public List<PipelineJobInfo> getJobInfos(final PipelineContextKey contextKey) {
         try {
             return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream().filter(this::isValidJob)
-                    .map(each -> new PipelineJobInfo(new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(each.getJobName())),
-                            jobType.getJobTarget(new PipelineJobConfigurationManager(jobType.getOption()).getJobConfiguration(each.getJobName()))))
+                    .map(this::createJobInfo).filter(Optional::isPresent).map(Optional::get)
                     .collect(Collectors.toList());
         } catch (final UnsupportedOperationException ex) {
             return Collections.emptyList();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Optional<PipelineJobInfo> createJobInfo(final JobBriefInfo jobInfo) {
+        try {
+            JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobInfo.getJobName());
+            PipelineJobConfiguration jobConfig = jobType.getOption().getYamlJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
+            return Optional.of(new PipelineJobInfo(new PipelineJobMetaData(jobConfigPOJO), jobType.getJobTarget(jobConfig)));
+        } catch (final PipelineJobNotFoundException ignored) {
+            return Optional.empty();
         }
     }
     

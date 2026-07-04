@@ -40,14 +40,6 @@ Map<String, AlgorithmConfiguration> algorithmConfigs = new HashMap<>();
 algorithmConfigs.put("shadowAlgorithmName", new AlgorithmConfiguration("xxx", new Properties()));
 ```
 
-## High Availability
-
-```
-// discoveryTypeName is specified by users, and its property has to be consistent with that of discoveryTypeName in database discovery rules.
-Map<String, AlgorithmConfiguration> algorithmConfigs = new HashMap<>();
-algorithmConfigs.put("discoveryTypeName", new AlgorithmConfiguration("xxx", new Properties()));
-```
-
 ## Data Masking
 
 ```java

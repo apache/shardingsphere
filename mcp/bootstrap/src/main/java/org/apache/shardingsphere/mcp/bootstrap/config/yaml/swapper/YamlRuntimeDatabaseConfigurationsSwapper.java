@@ -72,7 +72,6 @@ public final class YamlRuntimeDatabaseConfigurationsSwapper {
             return null;
         }
         YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
-        result.setDatabaseType(getYamlText(yamlProperties, YamlRuntimeDatabaseConfigurationProperties.DATABASE_TYPE));
         result.setJdbcUrl(getYamlText(yamlProperties, YamlRuntimeDatabaseConfigurationProperties.JDBC_URL));
         result.setUsername(getYamlText(yamlProperties, YamlRuntimeDatabaseConfigurationProperties.USERNAME));
         result.setPassword(getYamlText(yamlProperties, YamlRuntimeDatabaseConfigurationProperties.PASSWORD));
@@ -82,7 +81,6 @@ public final class YamlRuntimeDatabaseConfigurationsSwapper {
     
     private Map<String, Object> createYamlRuntimeDatabaseConfiguration(final YamlRuntimeDatabaseConfiguration yamlRuntimeDatabaseConfig) {
         Map<String, Object> result = new LinkedHashMap<>(YamlRuntimeDatabaseConfigurationProperties.SUPPORTED_PROPERTIES.size(), 1F);
-        result.put(YamlRuntimeDatabaseConfigurationProperties.DATABASE_TYPE, yamlRuntimeDatabaseConfig.getDatabaseType());
         result.put(YamlRuntimeDatabaseConfigurationProperties.JDBC_URL, yamlRuntimeDatabaseConfig.getJdbcUrl());
         result.put(YamlRuntimeDatabaseConfigurationProperties.USERNAME, yamlRuntimeDatabaseConfig.getUsername());
         result.put(YamlRuntimeDatabaseConfigurationProperties.PASSWORD, yamlRuntimeDatabaseConfig.getPassword());

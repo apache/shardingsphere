@@ -70,6 +70,7 @@ public final class WorkflowPlanPayloadBuilder {
         result.put("intent_inference", createIntentInference(snapshot.getClarifiedIntent()));
         result.put("argument_provenance", createArgumentProvenance(snapshot));
         result.put("review_focus", createReviewFocus(snapshot));
+        appendSecretReferenceSummary(result, snapshot);
         WorkflowGuidancePayloadBuilder.appendPlanningGuidance(result, snapshot);
         return result;
     }
@@ -89,6 +90,17 @@ public final class WorkflowPlanPayloadBuilder {
     
     private static String resolveResponseMode(final WorkflowContextSnapshot snapshot) {
         return WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus()) ? "terminal" : "planning";
+    }
+    
+    private static void appendSecretReferenceSummary(final Map<String, Object> result, final WorkflowContextSnapshot snapshot) {
+        WorkflowPropertySource propertySource = null == snapshot.getRequest() ? snapshot.getFeatureData() : snapshot.getRequest();
+        if (null == propertySource) {
+            return;
+        }
+        Map<String, Object> summary = WorkflowArtifactMaskUtils.createSecretReferenceSummary(propertySource);
+        if ((Boolean) summary.get("required")) {
+            result.put("secret_reference_summary", summary);
+        }
     }
     
     private static Map<String, Object> createIntentInference(final ClarifiedIntent clarifiedIntent) {

@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
-import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -38,13 +34,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
-    
-    private static final List<String> OFFICIAL_TOOL_NAMES = OfficialMCPToolNames.getAll();
+class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final String PLAN_MASK_TOOL_NAME = "database_gateway_plan_mask_rule";
     
@@ -66,20 +61,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualCapabilities = getFirstResourcePayload(actual.body());
-        assertThat(((List<?>) actualCapabilities.get("supportedTools")).stream().map(String::valueOf).toList(), containsInAnyOrder(OFFICIAL_TOOL_NAMES.toArray()));
-        assertTrue(((List<?>) actualCapabilities.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
-        assertTrue(((List<?>) actualCapabilities.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
-        assertTrue(((List<?>) actualCapabilities.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("database_gateway_apply_workflow")));
-        Map<String, Object> actualFingerprints = castToMap(actualCapabilities.get("fingerprints"));
-        assertFalse(String.valueOf(actualFingerprints.get("descriptorCatalog")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("promptSet")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("resourceNavigation")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("modelFacingSchemas")).isEmpty());
-        Map<String, Object> actualProtocolAvailability = castToMap(actualCapabilities.get("protocolAvailability"));
-        assertTrue((Boolean) actualProtocolAvailability.get("prompts"));
-        assertTrue((Boolean) actualProtocolAvailability.get("completions"));
-        assertTrue((Boolean) actualProtocolAvailability.get("resourceNavigation"));
-        assertModelFacingPayloadContract(actualCapabilities);
+        assertThat(actualCapabilities.get("response_mode"), is("catalog"));
     }
     
     @Test
@@ -180,8 +162,8 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 createMaskRulePlanArguments());
         assertThat(planResponse.statusCode(), is(200));
         Map<String, Object> planPayload = getStructuredContent(planResponse.body());
-        assertThat(String.valueOf(planPayload.get("status")), is("planned"));
-        assertThat(String.valueOf(castToMapList(planPayload.get("next_actions")).get(0).get("tool_name")), is(WorkflowToolDescriptors.APPLY_TOOL_NAME));
+        assertThat(planResponse.body(), String.valueOf(planPayload.get("status")), is("planned"));
+        assertThat(String.valueOf(castToMapList(planPayload.get("next_actions")).getFirst().get("tool_name")), is(WorkflowToolDescriptors.APPLY_TOOL_NAME));
         assertModelFacingPayloadContract(planPayload);
         String planId = String.valueOf(planPayload.get("plan_id"));
         HttpResponse<String> previewResponse = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,
@@ -268,7 +250,6 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
-        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     

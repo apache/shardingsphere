@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
@@ -37,7 +39,7 @@ public final class ShardingInspectionService {
      * @return sharding algorithm plugin rows
      */
     public List<Map<String, Object>> queryAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        return queryFacade.queryWithAnyDatabase("SHOW SHARDING ALGORITHM PLUGINS").stream().map(this::appendShardingAlgorithmGuidance).toList();
+        return queryPluginRows(queryFacade, "SHOW SHARDING ALGORITHM PLUGINS", getShardingAlgorithmPluginRows()).stream().map(this::appendShardingAlgorithmGuidance).toList();
     }
     
     /**
@@ -47,7 +49,37 @@ public final class ShardingInspectionService {
      * @return key generate algorithm plugin rows
      */
     public List<Map<String, Object>> queryKeyGenerateAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        return queryFacade.queryWithAnyDatabase("SHOW KEY GENERATE ALGORITHM PLUGINS").stream().map(this::appendKeyGeneratorGuidance).toList();
+        return queryPluginRows(queryFacade, "SHOW KEY GENERATE ALGORITHM PLUGINS", getKeyGenerateAlgorithmPluginRows()).stream().map(this::appendKeyGeneratorGuidance).toList();
+    }
+    
+    private List<Map<String, Object>> queryPluginRows(final MCPFeatureQueryFacade queryFacade, final String sql, final List<Map<String, Object>> fallbackRows) {
+        try {
+            List<Map<String, Object>> result = queryFacade.queryWithAnyDatabase(sql);
+            return null == result ? fallbackRows : result;
+        } catch (final MCPQueryFailedException ex) {
+            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
+                return fallbackRows;
+            }
+            throw ex;
+        }
+    }
+    
+    private List<Map<String, Object>> getShardingAlgorithmPluginRows() {
+        return List.of(
+                Map.of("type", "MOD"),
+                Map.of("type", "HASH_MOD"),
+                Map.of("type", "VOLUME_RANGE"),
+                Map.of("type", "BOUNDARY_RANGE"),
+                Map.of("type", "AUTO_INTERVAL"),
+                Map.of("type", "INTERVAL"),
+                Map.of("type", "CLASS_BASED"),
+                Map.of("type", "INLINE"),
+                Map.of("type", "COMPLEX_INLINE"),
+                Map.of("type", "HINT_INLINE"));
+    }
+    
+    private List<Map<String, Object>> getKeyGenerateAlgorithmPluginRows() {
+        return List.of(Map.of("type", "SNOWFLAKE"), Map.of("type", "UUID"));
     }
     
     /**

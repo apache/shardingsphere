@@ -82,7 +82,7 @@ class MCPPerformanceBudgetSmokeTest {
         try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
             ServerCapabilitiesHandler handler = new ServerCapabilitiesHandler();
             Map<String, Object> actual = handler.handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
-            assertTrue(actual.containsKey("fingerprints"));
+            assertFalse(actual.containsKey("fingerprints"));
             long elapsedMillis = measureElapsedMillis(() -> {
                 for (int i = 0; i < DESCRIPTOR_ITERATIONS; i++) {
                     handler.handle(requestScope, new MCPUriVariables(Map.of())).toPayload();

@@ -50,16 +50,6 @@ shadowAlgorithms:
       xxx: xxx
 ```
 
-## High Availability
-
-```yaml
-discoveryTypes:
-  # discoveryTypeName is specified by users, and its property has to be consistent with that of discoveryTypeName in the database discovery rules.
-    type: xxx
-    props:
-      xxx: xxx
-```
-
 ## Data Masking
 
 ```yaml

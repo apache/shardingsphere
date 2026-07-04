@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.infra.connection.kernel;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLCheckEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -39,7 +40,13 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.jupiter.api.Test;
@@ -52,8 +59,9 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -96,6 +104,33 @@ class KernelProcessorTest {
         }
     }
     
+    @Test
+    void assertGenerateExecutionContextWithTemporaryCreateTable() {
+        QueryContext queryContext = createQueryContext(createTemporaryCreateTableStatement(databaseType), false, databaseType);
+        assertThrows(UnsupportedSQLOperationException.class,
+                () -> new KernelProcessor().generateExecutionContext(queryContext, new RuleMetaData(Arrays.asList(mockSQLTranslatorRule(), mockAggregatedDataSourceRule())), createProps(false)));
+    }
+    
+    @Test
+    void assertGenerateExecutionContextWithTemporaryDropTable() {
+        QueryContext queryContext = createQueryContext(createTemporaryDropTableStatement(databaseType), false, databaseType);
+        assertThrows(UnsupportedSQLOperationException.class,
+                () -> new KernelProcessor().generateExecutionContext(queryContext, new RuleMetaData(Arrays.asList(mockSQLTranslatorRule(), mockAggregatedDataSourceRule())), createProps(false)));
+    }
+    
+    @Test
+    void assertGenerateExecutionContextWithTemporaryCreateTableWhenSkipMetadataValidate() {
+        QueryContext queryContext = createQueryContext(createTemporaryCreateTableStatement(databaseType), true, databaseType);
+        try (
+                MockedConstruction<SupportedSQLCheckEngine> mockedCheckEngines = mockConstruction(SupportedSQLCheckEngine.class);
+                MockedStatic<SQLLogger> mockedSQLLogger = mockStatic(SQLLogger.class)) {
+            assertThrows(UnsupportedSQLOperationException.class,
+                    () -> new KernelProcessor().generateExecutionContext(queryContext, new RuleMetaData(Arrays.asList(mockSQLTranslatorRule(), mockAggregatedDataSourceRule())), createProps(false)));
+            assertTrue(mockedCheckEngines.constructed().isEmpty());
+            mockedSQLLogger.verifyNoInteractions();
+        }
+    }
+    
     private SQLTranslatorRule mockSQLTranslatorRule() {
         SQLTranslatorRule result = mock(SQLTranslatorRule.class);
         when(result.getAttributes()).thenReturn(new RuleAttributes());
@@ -112,6 +147,10 @@ class KernelProcessorTest {
     }
     
     private QueryContext createQueryContext(final boolean skipMetadataValidate) {
+        return createQueryContext(SelectStatement.builder().databaseType(databaseType).build(), skipMetadataValidate, databaseType);
+    }
+    
+    private QueryContext createQueryContext(final SQLStatement sqlStatement, final boolean skipMetadataValidate, final DatabaseType databaseType) {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(skipMetadataValidate);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
@@ -125,11 +164,24 @@ class KernelProcessorTest {
                 new ConfigurationProperties(new Properties()));
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(SelectStatement.builder().databaseType(databaseType).build());
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         return new QueryContext(sqlStatementContext, "SELECT * FROM tbl", Collections.emptyList(), hintValueContext, connectionContext, metaData);
     }
     
     private ConfigurationProperties createProps(final boolean sqlShow) {
         return new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.toString(sqlShow))));
+    }
+    
+    private CreateTableStatement createTemporaryCreateTableStatement(final DatabaseType databaseType) {
+        return CreateTableStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
+                .temporary(true)
+                .build();
+    }
+    
+    private DropTableStatement createTemporaryDropTableStatement(final DatabaseType databaseType) {
+        return new DropTableStatement(databaseType,
+                Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))), false, true, false);
     }
 }

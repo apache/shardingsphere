@@ -20,8 +20,10 @@ package org.apache.shardingsphere.sharding.merge.dql.pagination.builder.dialect;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
+import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.builder.PaginationDecoratorMergedResultBuilder;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.RowNumberValueSegment;
 
 import java.sql.SQLException;
 
@@ -32,7 +34,10 @@ public final class SQLServerPaginationDecoratorMergedResultBuilder implements Pa
     
     @Override
     public DecoratorMergedResult build(final MergedResult mergedResult, final PaginationContext paginationContext) throws SQLException {
-        return new TopAndRowNumberDecoratorMergedResult(mergedResult, paginationContext);
+        return paginationContext.getOffsetSegment().filter(RowNumberValueSegment.class::isInstance).isPresent()
+                || paginationContext.getRowCountSegment().filter(RowNumberValueSegment.class::isInstance).isPresent()
+                        ? new TopAndRowNumberDecoratorMergedResult(mergedResult, paginationContext)
+                        : new LimitDecoratorMergedResult(mergedResult, paginationContext);
     }
     
     @Override

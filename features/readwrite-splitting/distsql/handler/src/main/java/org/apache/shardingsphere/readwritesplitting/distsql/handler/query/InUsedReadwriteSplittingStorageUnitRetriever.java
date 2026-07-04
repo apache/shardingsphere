@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
@@ -35,10 +34,10 @@ public final class InUsedReadwriteSplittingStorageUnitRetriever implements InUse
     public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ReadwriteSplittingRule rule) {
         Collection<String> result = new HashSet<>(1, 1F);
         for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : rule.getConfiguration().getDataSourceGroups()) {
-            if (each.getWriteDataSourceName().equalsIgnoreCase(sqlStatement.getStorageUnitName())) {
+            if (sqlStatement.getStorageUnitName().equals(each.getWriteDataSourceName())) {
                 result.add(each.getName());
             }
-            if (new CaseInsensitiveSet<>(each.getReadDataSourceNames()).contains(sqlStatement.getStorageUnitName())) {
+            if (each.getReadDataSourceNames().contains(sqlStatement.getStorageUnitName())) {
                 result.add(each.getName());
             }
         }

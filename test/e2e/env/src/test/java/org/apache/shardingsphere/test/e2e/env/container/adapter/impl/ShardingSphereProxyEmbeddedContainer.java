@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 
+import io.netty.channel.ChannelFuture;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -51,6 +52,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,6 +61,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -89,6 +92,8 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     @Getter
     private final Set<Startable> dependencies = new HashSet<>();
     
+    private int actualProxyPort;
+    
     private ShardingSphereProxy proxy;
     
     public ShardingSphereProxyEmbeddedContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
@@ -104,6 +109,15 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
         Collections.addAll(this.dependencies, dependencies);
     }
     
+    /**
+     * Get proxy port.
+     *
+     * @return proxy port
+     */
+    public int getProxyPort() {
+        return 0 == actualProxyPort ? proxyPort : actualProxyPort;
+    }
+    
     @Override
     public void start() {
         dependencies.forEach(Startable::start);
@@ -113,12 +127,18 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     
     @SneakyThrows({SQLException.class, IOException.class, InterruptedException.class})
     private void startProxy() {
-        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigurationDirectory().toString());
+        Path tempConfigurationDirectory = getTempConfigurationDirectory();
+        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(tempConfigurationDirectory.toString());
         new BootstrapInitializer().init(yamlConfig, proxyPort);
         ProxySSLContext.init();
         proxy = new ShardingSphereProxy();
-        proxy.startInternal(proxyPort, Collections.singletonList("0.0.0.0"));
+        List<ChannelFuture> channelFutures = proxy.startInternal(proxyPort, Collections.singletonList("0.0.0.0"));
+        actualProxyPort = getBoundPort(channelFutures);
         log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeConfiguration().getType());
+    }
+    
+    private int getBoundPort(final List<ChannelFuture> channelFutures) {
+        return ((InetSocketAddress) channelFutures.iterator().next().channel().localAddress()).getPort();
     }
     
     private Path getTempConfigurationDirectory() throws IOException {
@@ -218,7 +238,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
         if (null == dataSource) {
             StorageContainerConnectOption storageContainerConnectOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption();
             targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(storageContainerConnectOption.getURL(
-                    "127.0.0.1", proxyPort, config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
+                    "127.0.0.1", getProxyPort(), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
         }
         return targetDataSourceProvider.get();
     }
@@ -230,6 +250,8 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     
     @Override
     public void stop() {
-        proxy.close();
+        if (null != proxy) {
+            proxy.close();
+        }
     }
 }

@@ -70,10 +70,36 @@ read_optional_property() {
   read_property "$1" || true
 }
 
+normalize_arch() {
+  case "$1" in
+    x86_64)
+      echo "amd64"
+      ;;
+    aarch64)
+      echo "arm64"
+      ;;
+    *)
+      echo "$1"
+      ;;
+  esac
+}
+
+detect_target_platform() {
+  DOCKER_PLATFORM="$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}' 2>/dev/null || true)"
+  if [ -n "${DOCKER_PLATFORM}" ]; then
+    echo "${DOCKER_PLATFORM}"
+    return
+  fi
+  echo "$(uname -s | tr '[:upper:]' '[:lower:]')/$(normalize_arch "$(uname -m)")"
+}
+
 IMAGE_TAG="${MCP_LLM_SERVER_IMAGE:-$(read_required_property "mcp.llm.server-image")}"
+TARGET_PLATFORM="${MCP_LLM_TARGET_PLATFORM:-$(read_optional_property "mcp.llm.target-platform")}"
+if [ -z "${TARGET_PLATFORM}" ]; then
+  TARGET_PLATFORM="$(detect_target_platform)"
+fi
 BASE_IMAGE="${MCP_LLM_BASE_SERVER_IMAGE:-$(read_required_property "mcp.llm.base-server-image")}"
 BASE_DIGEST="${MCP_LLM_BASE_SERVER_IMAGE_DIGEST:-$(read_optional_property "mcp.llm.base-server-image-digest")}"
-SERVER_RUNTIME="${MCP_LLM_SERVER_RUNTIME:-$(read_required_property "mcp.llm.server-runtime")}"
 MODEL_REPOSITORY="${MCP_LLM_MODEL_REPOSITORY:-$(read_required_property "mcp.llm.model-repository")}"
 MODEL_QUANTIZATION="${MCP_LLM_MODEL_QUANTIZATION:-$(read_required_property "mcp.llm.model-quantization")}"
 MODEL_REFERENCE="${MCP_LLM_MODEL:-$(read_required_property "mcp.llm.model")}"
@@ -92,8 +118,8 @@ case "${BASE_IMAGE}" in
 esac
 
 if [ "--dry-run" = "${MODE}" ] || [ "--print" = "${MODE}" ]; then
+  echo "target_platform=${TARGET_PLATFORM}"
   echo "base_image=${BASE_IMAGE}"
-  echo "server_runtime=${SERVER_RUNTIME}"
   echo "model_repository=${MODEL_REPOSITORY}"
   echo "model_quantization=${MODEL_QUANTIZATION}"
   echo "model_reference=${MODEL_REFERENCE}"
@@ -112,8 +138,8 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 docker build \
+  --platform "${TARGET_PLATFORM}" \
   --build-arg "BASE_IMAGE=${BASE_IMAGE}" \
-  --build-arg "SERVER_RUNTIME=${SERVER_RUNTIME}" \
   --build-arg "MODEL_REPOSITORY=${MODEL_REPOSITORY}" \
   --build-arg "MODEL_QUANTIZATION=${MODEL_QUANTIZATION}" \
   --build-arg "MODEL_REFERENCE=${MODEL_REFERENCE}" \

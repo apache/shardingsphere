@@ -51,6 +51,13 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     
     private static final String RESULT_KIND_PREVIEW = "preview";
     
+    private static final String PREVIEW_REVIEW_GUIDANCE = "Review normalized_sql and side_effect_scope before execution. "
+            + "This preview is classification-only; it does not guarantee parsing, rule validation, algorithm initialization, affected rows, or runtime success.";
+    
+    private static final String PREVIEW_CONFIRMATION_REASON = "Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.";
+    
+    private static final String PREVIEW_EXECUTION_REASON = "Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.";
+    
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
@@ -110,15 +117,20 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("side_effect_scope", createSideEffectScope(classificationResult));
         classificationResult.getTargetObjectName().ifPresent(optional -> result.put("target_object", optional));
         classificationResult.getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
-        result.put("review_guidance", "Review normalized_sql and side_effect_scope before calling database_gateway_execute_update with execution_mode=execute.");
+        result.put("review_guidance", PREVIEW_REVIEW_GUIDANCE);
         result.put("review_summary", createReviewSummary(classificationResult));
         Map<String, Object> suggestedArguments = createSuggestedArguments(toolArguments, classificationResult);
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(toolArguments));
         result.put("argument_provenance", createArgumentProvenance(suggestedArguments));
-        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(TOOL_NAME,
-                "Execute after reviewing normalized_sql and side_effect_scope.", suggestedArguments)));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createPreviewNextActions(suggestedArguments));
         return new MCPMapResponse(result);
+    }
+    
+    private List<Map<String, Object>> createPreviewNextActions(final Map<String, Object> suggestedArguments) {
+        return MCPNextActionUtils.ordered(
+                MCPNextActionUtils.askUser(PREVIEW_CONFIRMATION_REASON, List.of("execution_approved")),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(TOOL_NAME, PREVIEW_EXECUTION_REASON, suggestedArguments), 1));
     }
     
     private String createReviewSummary(final ClassificationResult classificationResult) {

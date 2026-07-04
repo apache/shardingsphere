@@ -44,7 +44,6 @@ transport:
 
 runtimeDatabases:
   "<logic-database>":
-    databaseType: MySQL
     jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
     username: "<proxy-username>"
     password: "<proxy-password>"
@@ -78,12 +77,14 @@ docker run --rm -i \
 
 ## 安全部署建议
 
-内置 HTTP Server 不提供认证和授权。
+内置 HTTP Server 不提供认证、授权、限流或审计日志。
+不支持把内置 HTTP Server 直接暴露到公网作为生产部署边界。
 如果需要远程访问，应放在受信网络、反向代理或网关后面，由外层组件处理：
 
 - TLS 终止。
 - 身份认证。
 - 授权策略。
+- 限流。
 - 网络访问控制。
 - 审计日志。
 
@@ -91,7 +92,7 @@ HTTP 绑定建议：
 
 - 本地调试使用 `127.0.0.1`。
 - 容器或内网部署使用受控网络接口。
-- 面向远程客户端暴露时，避免直接裸露 MCP Server。
+- 面向远程客户端暴露时，避免直接裸露 MCP Server，应通过受信网关转发。
 - 需要把会话和外部用户或调用来源关联时，由受信网关注入会话归属请求头；不要允许客户端直接伪造这些请求头。
 
 ### 受信网关与 TLS 终止样例
@@ -203,7 +204,7 @@ location /mcp {
 3. 运行时数据库已就绪
 
    - 读取 `shardingsphere://runtime`，确认 transport、runtime 数据库摘要和运行状态可见。
-   - 调用 `database_gateway_validate_proxy_connectivity`，或在 AI 应用中执行“查看 `<logic-database>` 中有哪些表”这类最小任务，确认当前 `runtimeDatabases` 对应的逻辑库可用。
+   - 调用 `database_gateway_validate_runtime_database`，或在 AI 应用中执行“查看 `<logic-database>` 中有哪些表”这类最小任务，确认当前 `runtimeDatabases` 对应的逻辑库可用。
    - 仅有 MCP Server 进程启动并不表示目标运行时数据库已经可用；连接失败、权限不足或逻辑库不可见仍会阻断后续任务。
 
 ## 基础可观测入口

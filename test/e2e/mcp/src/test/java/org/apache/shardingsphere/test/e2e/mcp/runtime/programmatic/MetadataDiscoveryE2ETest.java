@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
-class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class MetadataDiscoveryE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isDockerEnabled();
@@ -48,11 +48,11 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
                 Map.of("database", "logic_db", "schema", "logic_db", "query", "order", "object_types", List.of("table", "view")));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
-        final List<Map<String, Object>> actualItems = getItems(actualPayload);
         assertThat(String.valueOf(actualPayload.get("response_mode")), is("search"));
         assertThat(actualPayload.get("count"), is(3));
         assertThat(actualPayload.get("total_match_count"), is(3));
         assertThat(getItemNames(actualPayload), is(List.of("order_items", "orders", "active_orders")));
+        List<Map<String, Object>> actualItems = getItems(actualPayload);
         Map<String, Object> actualResource = MCPInteractionPayloads.castToMap(actualItems.get(1).get("resource"));
         assertThat(String.valueOf(actualResource.get("uri")), is("shardingsphere://databases/logic_db/schemas/logic_db/tables/orders"));
         assertThat(MCPInteractionPayloads.castToList(actualItems.get(1).get("next_resources")).stream()
@@ -61,7 +61,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
                         "shardingsphere://databases/logic_db/schemas/logic_db/tables/orders/indexes")));
         HttpResponse<String> tableResource = sendResourceReadRequest(httpClient, sessionId, String.valueOf(actualResource.get("uri")));
         assertThat(tableResource.statusCode(), is(200));
-        assertThat(String.valueOf(MCPInteractionPayloads.castToList(getFirstResourcePayload(tableResource.body()).get("items")).get(0).get("table")), is("orders"));
+        assertThat(String.valueOf(MCPInteractionPayloads.castToList(getFirstResourcePayload(tableResource.body()).get("items")).getFirst().get("table")), is("orders"));
     }
     
     @Test
@@ -96,8 +96,8 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(actual.statusCode(), is(200));
         List<Map<String, Object>> actualItems = MCPInteractionPayloads.castToList(getFirstResourcePayload(actual.body()).get("items"));
         assertThat(actualItems.size(), is(1));
-        assertThat(String.valueOf(actualItems.get(0).get("table")), is("facts"));
-        assertThat(String.valueOf(actualItems.get(0).get("index")), is("PRIMARY"));
+        assertThat(String.valueOf(actualItems.getFirst().get("table")), is("facts"));
+        assertThat(String.valueOf(actualItems.getFirst().get("index")), is("PRIMARY"));
     }
     
     @Test

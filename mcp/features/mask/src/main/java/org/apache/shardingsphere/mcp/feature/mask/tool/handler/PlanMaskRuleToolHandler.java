@@ -54,27 +54,22 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflow
     
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(toolCall.getArguments(), this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
-        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
+        WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(toolCall.getArguments(), this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getMetadataQueryFacade(),
+                workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
+        return new MCPMapResponse(new MaskWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     
     private void bindFeatureArguments(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
         request.setAlgorithmType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ALGORITHM_TYPE));
-        request.getPrimaryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument(WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES));
+        request.getPrimaryAlgorithmProperties().putAll(workflowPlanningArguments.getAlgorithmPropertyMapArgument(WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES, "primary"));
+        request.getPrimaryAlgorithmSecretReferences().putAll(workflowPlanningArguments.getSecretReferenceMapArgument(WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES));
     }
     
     private void applyStructuredIntentEvidence(final WorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
         Object fieldSemantics = structuredIntentEvidence.get(WorkflowFieldNames.FIELD_SEMANTICS);
         if (null != fieldSemantics) {
             request.setFieldSemantics(String.valueOf(fieldSemantics).trim());
-        }
-    }
-    
-    private void applyUserOverrides(final WorkflowRequest request, final Map<String, Object> userOverrides) {
-        Object algorithmType = userOverrides.get(WorkflowFieldNames.ALGORITHM_TYPE);
-        if (null != algorithmType && !String.valueOf(algorithmType).trim().isEmpty()) {
-            request.setAlgorithmType(String.valueOf(algorithmType).trim());
         }
     }
 }

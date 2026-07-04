@@ -50,16 +50,6 @@ public final class WorkflowLifecycleUtils {
     }
     
     /**
-     * Resolve the workflow operation type from the snapshot.
-     *
-     * @param snapshot workflow snapshot
-     * @return workflow operation type
-     */
-    public static String resolveOperationType(final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getClarifiedIntent() ? "" : snapshot.getClarifiedIntent().getOperationType();
-    }
-    
-    /**
      * Check whether the workflow is a drop operation.
      *
      * @param snapshot workflow snapshot
@@ -67,5 +57,9 @@ public final class WorkflowLifecycleUtils {
      */
     public static boolean isDropWorkflow(final WorkflowContextSnapshot snapshot) {
         return WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(resolveOperationType(snapshot));
+    }
+    
+    private static String resolveOperationType(final WorkflowContextSnapshot snapshot) {
+        return null == snapshot.getClarifiedIntent() ? "" : snapshot.getClarifiedIntent().getOperationType();
     }
 }

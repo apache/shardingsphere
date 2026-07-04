@@ -35,10 +35,10 @@ public final class ShadowDistSQLPlanningService {
      */
     public RuleArtifact planCreateRule(final ShadowRuleWorkflowRequest request) {
         return new RuleArtifact("create", String.format("CREATE SHADOW RULE %s(SOURCE=%s, SHADOW=%s, %s(%s))",
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getRuleName()),
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getSourceStorageUnit()),
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getShadowStorageUnit()),
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getTableName()),
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getRuleName()),
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getSourceStorageUnit()),
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getShadowStorageUnit()),
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getTableName()),
                 WorkflowSQLUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getAlgorithmProperties())));
     }
     
@@ -50,10 +50,10 @@ public final class ShadowDistSQLPlanningService {
      */
     public RuleArtifact planAlterRule(final ShadowRuleWorkflowRequest request) {
         return new RuleArtifact("alter", String.format("ALTER SHADOW RULE %s(SOURCE=%s, SHADOW=%s, %s(%s))",
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getRuleName()),
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getSourceStorageUnit()),
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getShadowStorageUnit()),
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getTableName()),
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getRuleName()),
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getSourceStorageUnit()),
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getShadowStorageUnit()),
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getTableName()),
                 WorkflowSQLUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getAlgorithmProperties())));
     }
     
@@ -64,7 +64,7 @@ public final class ShadowDistSQLPlanningService {
      * @return rule artifact
      */
     public RuleArtifact planDropRule(final String ruleName) {
-        return new RuleArtifact("drop", String.format("DROP SHADOW RULE %s", WorkflowSQLUtils.formatDistSQLIdentifier(ruleName)));
+        return new RuleArtifact("drop", String.format("DROP SHADOW RULE %s", WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(ruleName)));
     }
     
     /**
@@ -105,6 +105,6 @@ public final class ShadowDistSQLPlanningService {
      * @return rule artifact
      */
     public RuleArtifact planDropAlgorithm(final String algorithmName) {
-        return new RuleArtifact("drop", String.format("DROP SHADOW ALGORITHM %s", WorkflowSQLUtils.formatDistSQLIdentifier(algorithmName)));
+        return new RuleArtifact("drop", String.format("DROP SHADOW ALGORITHM %s", WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(algorithmName)));
     }
 }

@@ -22,15 +22,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -41,16 +37,6 @@ class EncryptAlgorithmRecommendationServiceTest {
     
     private final EncryptAlgorithmRecommendationService service = new EncryptAlgorithmRecommendationService();
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertFindEncryptCapabilityArguments")
-    void assertFindEncryptCapability(final String name, final String algorithmType, final Boolean expectedDecrypt,
-                                     final Boolean expectedEquivalentFilter, final Boolean expectedLike) {
-        Map<String, Boolean> actual = EncryptAlgorithmRecommendationService.findEncryptCapability(algorithmType);
-        assertThat(actual.get("supports_decrypt"), is(expectedDecrypt));
-        assertThat(actual.get("supports_equivalent_filter"), is(expectedEquivalentFilter));
-        assertThat(actual.get("supports_like"), is(expectedLike));
-    }
-    
     @Test
     void assertRecommendEncryptAlgorithmsWithSpecifiedPrimary() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
@@ -59,9 +45,20 @@ class EncryptAlgorithmRecommendationServiceTest {
         List<WorkflowIssue> issues = new LinkedList<>();
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("AES", true, true, false)), issues);
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getAlgorithmRole(), is("primary"));
-        assertThat(actual.get(0).getAlgorithmType(), is("AES"));
+        assertThat(actual.getFirst().getAlgorithmRole(), is("primary"));
+        assertThat(actual.getFirst().getAlgorithmType(), is("AES"));
         assertTrue(issues.isEmpty());
+    }
+    
+    @Test
+    void assertRecommendEncryptAlgorithmsRejectsDecryptUnsupportedPrimary() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.getOptions().setRequiresDecrypt(true);
+        request.setAlgorithmType("MD5");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("MD5", false, true, false)), issues);
+        assertTrue(actual.isEmpty());
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
     }
     
     @Test
@@ -71,7 +68,7 @@ class EncryptAlgorithmRecommendationServiceTest {
         List<WorkflowIssue> issues = new LinkedList<>();
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("AES", true, true, false)), issues);
         assertTrue(actual.isEmpty());
-        assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
     }
     
     @Test
@@ -81,8 +78,8 @@ class EncryptAlgorithmRecommendationServiceTest {
         List<WorkflowIssue> issues = new LinkedList<>();
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("AES", true, true, false)), issues);
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getAlgorithmType(), is("AES"));
-        assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
+        assertThat(actual.getFirst().getAlgorithmType(), is("AES"));
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
     }
     
     @Test
@@ -92,7 +89,7 @@ class EncryptAlgorithmRecommendationServiceTest {
         List<WorkflowIssue> issues = new LinkedList<>();
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("FPE", null, null, null)), issues);
         assertThat(actual.size(), is(1));
-        assertFalse(actual.get(0).getRiskNotes().isEmpty());
+        assertFalse(actual.getFirst().getRiskNotes().isEmpty());
         assertTrue(issues.isEmpty());
     }
     
@@ -105,17 +102,21 @@ class EncryptAlgorithmRecommendationServiceTest {
                 createAlgorithmRow("AES", true, true, false),
                 createAlgorithmRow("FPE", null, null, true)), issues);
         assertThat(actual.size(), is(2));
-        assertThat(actual.get(0).getAlgorithmType(), is("FPE"));
+        assertThat(actual.getFirst().getAlgorithmType(), is("FPE"));
         assertThat(actual.get(1).getAlgorithmRole(), is("like_query"));
         assertThat(actual.get(1).getAlgorithmType(), is("FPE"));
         assertTrue(issues.isEmpty());
     }
     
-    private static Stream<Arguments> assertFindEncryptCapabilityArguments() {
-        return Stream.of(
-                Arguments.of("aes capability", "AES", true, true, false),
-                Arguments.of("md5 capability", "MD5", false, true, false),
-                Arguments.of("unknown capability", "CUSTOM", null, null, null));
+    @Test
+    void assertRecommendEncryptAlgorithmsRejectsKnownUnsupportedLikeAlgorithm() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.getOptions().setRequiresLikeQuery(true);
+        request.getOptions().setLikeQueryAlgorithmType("AES");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("AES", true, true, false)), issues);
+        assertThat(actual.size(), is(1));
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
     }
     
     private Map<String, Object> createAlgorithmRow(final String type, final Boolean decrypt, final Boolean equivalentFilter, final Boolean like) {

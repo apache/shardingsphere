@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
@@ -91,7 +90,7 @@ public final class GlobalConfigurationManager {
         ShardingSphereMetaData newMetaData = new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
                 metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
                 newProps, metaDataContexts.getMetaData().getProtocolType());
-        if (isMetadataIdentifierCaseSensitivityChanged(newProps)) {
+        if (isMetadataIdentifierCaseSensitivityChanged(props)) {
             newMetaData.getAllDatabases().forEach(each -> each.refreshIdentifierContext(newProps));
         }
         metaDataContexts.update(newMetaData, metaDataPersistFacade);
@@ -102,9 +101,9 @@ public final class GlobalConfigurationManager {
         }
     }
     
-    private boolean isMetadataIdentifierCaseSensitivityChanged(final ConfigurationProperties newProps) {
-        MetadataIdentifierCaseSensitivity currentValue = metaDataContexts.getMetaData().getProps().getValue(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
-        MetadataIdentifierCaseSensitivity newValue = newProps.getValue(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
+    private boolean isMetadataIdentifierCaseSensitivityChanged(final Properties props) {
+        MetadataIdentifierCaseSensitivity currentValue = metaDataContexts.getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
+        MetadataIdentifierCaseSensitivity newValue = new TemporaryConfigurationProperties(props).getValue(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
         return currentValue != newValue;
     }
     

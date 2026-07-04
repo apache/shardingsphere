@@ -19,10 +19,11 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
-import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
-import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -47,77 +47,9 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowGuidancePayloadBuilder {
     
-    private static final String APPLY_WORKFLOW = "database_gateway_apply_workflow";
-    
-    private static final String VALIDATE_WORKFLOW = "database_gateway_validate_workflow";
-    
     private static final String EXECUTION_MODE_PREVIEW = "preview";
     
     private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
-    
-    private static final String ENCRYPT_RULE_WORKFLOW_KIND = "encrypt.rule";
-    
-    private static final String MASK_RULE_WORKFLOW_KIND = "mask.rule";
-    
-    private static final String BROADCAST_RULE_WORKFLOW_KIND = "broadcast.rule";
-    
-    private static final String READWRITE_RULE_WORKFLOW_KIND = "readwrite.rule";
-    
-    private static final String READWRITE_STATUS_WORKFLOW_KIND = "readwrite.status";
-    
-    private static final String SHADOW_RULE_WORKFLOW_KIND = "shadow.rule";
-    
-    private static final String SHADOW_DEFAULT_ALGORITHM_WORKFLOW_KIND = "shadow.default";
-    
-    private static final String SHADOW_ALGORITHM_CLEANUP_WORKFLOW_KIND = "shadow.cleanup";
-    
-    private static final String SHARDING_TABLE_RULE_WORKFLOW_KIND = "sharding.table.rule";
-    
-    private static final String SHARDING_TABLE_REFERENCE_WORKFLOW_KIND = "sharding.table.reference";
-    
-    private static final String SHARDING_DEFAULT_STRATEGY_WORKFLOW_KIND = "sharding.default.strategy";
-    
-    private static final String SHARDING_KEY_GENERATOR_WORKFLOW_KIND = "sharding.key.generator";
-    
-    private static final String SHARDING_KEY_GENERATE_STRATEGY_WORKFLOW_KIND = "sharding.key.generate.strategy";
-    
-    private static final String SHARDING_COMPONENT_CLEANUP_WORKFLOW_KIND = "sharding.component.cleanup";
-    
-    private static final String PLAN_ENCRYPT_RULE = "database_gateway_plan_encrypt_rule";
-    
-    private static final String PLAN_MASK_RULE = "database_gateway_plan_mask_rule";
-    
-    private static final String PLAN_BROADCAST_RULE = "database_gateway_plan_broadcast_rule";
-    
-    private static final String PLAN_READWRITE_RULE = "database_gateway_plan_readwrite_splitting_rule";
-    
-    private static final String PLAN_READWRITE_STATUS = "database_gateway_plan_readwrite_splitting_status";
-    
-    private static final String PLAN_SHADOW_RULE = "database_gateway_plan_shadow_rule";
-    
-    private static final String PLAN_DEFAULT_SHADOW_ALGORITHM = "database_gateway_plan_default_shadow_algorithm";
-    
-    private static final String PLAN_SHADOW_ALGORITHM_CLEANUP = "database_gateway_plan_shadow_algorithm_cleanup";
-    
-    private static final String PLAN_SHARDING_TABLE_RULE = "database_gateway_plan_sharding_table_rule";
-    
-    private static final String PLAN_SHARDING_TABLE_REFERENCE_RULE = "database_gateway_plan_sharding_table_reference_rule";
-    
-    private static final String PLAN_SHARDING_DEFAULT_STRATEGY = "database_gateway_plan_sharding_default_strategy";
-    
-    private static final String PLAN_SHARDING_KEY_GENERATOR = "database_gateway_plan_sharding_key_generator";
-    
-    private static final String PLAN_SHARDING_KEY_GENERATE_STRATEGY = "database_gateway_plan_sharding_key_generate_strategy";
-    
-    private static final String PLAN_SHARDING_COMPONENT_CLEANUP = "database_gateway_plan_sharding_rule_component_cleanup";
-    
-    private static final Map<String, String> PLANNING_TOOLS = Map.ofEntries(Map.entry(ENCRYPT_RULE_WORKFLOW_KIND, PLAN_ENCRYPT_RULE), Map.entry(MASK_RULE_WORKFLOW_KIND, PLAN_MASK_RULE),
-            Map.entry(BROADCAST_RULE_WORKFLOW_KIND, PLAN_BROADCAST_RULE), Map.entry(READWRITE_RULE_WORKFLOW_KIND, PLAN_READWRITE_RULE),
-            Map.entry(READWRITE_STATUS_WORKFLOW_KIND, PLAN_READWRITE_STATUS), Map.entry(SHADOW_RULE_WORKFLOW_KIND, PLAN_SHADOW_RULE),
-            Map.entry(SHADOW_DEFAULT_ALGORITHM_WORKFLOW_KIND, PLAN_DEFAULT_SHADOW_ALGORITHM), Map.entry(SHADOW_ALGORITHM_CLEANUP_WORKFLOW_KIND, PLAN_SHADOW_ALGORITHM_CLEANUP),
-            Map.entry(SHARDING_TABLE_RULE_WORKFLOW_KIND, PLAN_SHARDING_TABLE_RULE), Map.entry(SHARDING_TABLE_REFERENCE_WORKFLOW_KIND, PLAN_SHARDING_TABLE_REFERENCE_RULE),
-            Map.entry(SHARDING_DEFAULT_STRATEGY_WORKFLOW_KIND, PLAN_SHARDING_DEFAULT_STRATEGY), Map.entry(SHARDING_KEY_GENERATOR_WORKFLOW_KIND, PLAN_SHARDING_KEY_GENERATOR),
-            Map.entry(SHARDING_KEY_GENERATE_STRATEGY_WORKFLOW_KIND, PLAN_SHARDING_KEY_GENERATE_STRATEGY), Map.entry(SHARDING_COMPONENT_CLEANUP_WORKFLOW_KIND, PLAN_SHARDING_COMPONENT_CLEANUP));
     
     /**
      * Append model-facing next action guidance to a planning response.
@@ -130,7 +62,7 @@ public final class WorkflowGuidancePayloadBuilder {
         List<Map<String, Object>> clarificationQuestions = createClarificationQuestions(snapshot, missingRequiredInputs);
         payload.put("missing_required_inputs", missingRequiredInputs);
         payload.put(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS, clarificationQuestions);
-        payload.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(snapshot));
+        payload.put(MCPPayloadFieldNames.RESOURCES_TO_READ, new WorkflowGuidanceResourceHintProvider().createResourcesToRead(snapshot));
         payload.put("proxy_topology_hint", createProxyTopologyHint(snapshot));
         payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, createPlanningNextActions(snapshot, missingRequiredInputs));
     }
@@ -158,16 +90,26 @@ public final class WorkflowGuidancePayloadBuilder {
     public static void appendApplyGuidance(final Map<String, Object> payload, final String status) {
         List<Map<String, Object>> nextActions = new LinkedList<>();
         if (WorkflowLifecycle.STATUS_COMPLETED.equals(status)) {
-            nextActions.add(createToolAction(VALIDATE_WORKFLOW, "Validate the runtime state after workflow artifacts are applied or exported.",
+            nextActions.add(createToolAction(WorkflowToolDescriptors.VALIDATE_TOOL_NAME, "Validate the runtime state after workflow artifacts are applied or exported.",
                     Map.of(WorkflowFieldNames.PLAN_ID, Objects.toString(payload.get(WorkflowFieldNames.PLAN_ID), ""))));
         }
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
             nextActions.add(createUserAction("Confirm the manual artifacts were executed outside MCP before validation.", List.of("manual_artifacts_executed")));
         }
-        if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
+        if (WorkflowLifecycle.STATUS_FAILED.equals(status) && isSecretReferenceRecovery(payload)) {
+            nextActions.add(createUserAction("Review the manual artifacts, replace neutral secret placeholders outside MCP, and execute them through the normal operational channel.",
+                    List.of("manual_artifacts")));
+        } else if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
             nextActions.add(createUserAction("Inspect issues and retry database_gateway_apply_workflow only after the failed artifact is corrected.", List.of("issues")));
         }
         payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, addSequencing(nextActions));
+    }
+    
+    private static boolean isSecretReferenceRecovery(final Map<String, Object> payload) {
+        Object category = payload.get("category");
+        return MCPDiagnosticCategory.SECRET_REFERENCE_MALFORMED.equals(category)
+                || MCPDiagnosticCategory.SECRET_REFERENCE_MISSING.equals(category)
+                || MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED.equals(category);
     }
     
     /**
@@ -206,7 +148,7 @@ public final class WorkflowGuidancePayloadBuilder {
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
-        for (final String each : clarifiedIntent.getUnresolvedFields()) {
+        for (String each : clarifiedIntent.getUnresolvedFields()) {
             String missingInput = normalizeMissingInput(snapshot, each);
             if (!result.contains(missingInput)) {
                 result.add(missingInput);
@@ -333,158 +275,12 @@ public final class WorkflowGuidancePayloadBuilder {
         return "";
     }
     
-    private static List<Map<String, Object>> createResourcesToRead(final WorkflowContextSnapshot snapshot) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        addFeatureResources(result, snapshot);
-        WorkflowRequest request = snapshot.getRequest();
-        if (!request.getDatabase().isEmpty()) {
-            addRuleResources(result, snapshot, request);
-            if (WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot) && !request.getTable().isEmpty()) {
-                addFeatureTableRuleResources(result, snapshot, request);
-            } else if (!request.getSchema().isEmpty() && !request.getTable().isEmpty()) {
-                addTableResources(result, request);
-            }
-        }
-        return result;
-    }
-    
-    private static void addFeatureResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot) {
-        switch (resolveWorkflowKind(snapshot)) {
-            case ENCRYPT_RULE_WORKFLOW_KIND -> addResourceHint(resourcesToRead, "shardingsphere://features/encrypt/algorithms", "algorithm", "read_first",
-                    "Read encrypt algorithm metadata before choosing algorithm arguments.");
-            case MASK_RULE_WORKFLOW_KIND -> addResourceHint(resourcesToRead, "shardingsphere://features/mask/algorithms", "algorithm", "read_first",
-                    "Read mask algorithm metadata before choosing algorithm arguments.");
-            case READWRITE_RULE_WORKFLOW_KIND -> addResourceHint(resourcesToRead, "shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins", "algorithm", "read_first",
-                    "Read load-balance algorithm plugin metadata before choosing algorithm arguments.");
-            case SHADOW_RULE_WORKFLOW_KIND, SHADOW_DEFAULT_ALGORITHM_WORKFLOW_KIND -> addResourceHint(resourcesToRead, "shardingsphere://features/shadow/algorithm-plugins", "algorithm",
-                    "read_first", "Read shadow algorithm plugin metadata before choosing algorithm arguments.");
-            case SHARDING_TABLE_RULE_WORKFLOW_KIND, SHARDING_DEFAULT_STRATEGY_WORKFLOW_KIND -> addResourceHint(resourcesToRead, "shardingsphere://features/sharding/algorithm-plugins",
-                    "algorithm", "read_first", "Read sharding algorithm plugin metadata before choosing algorithm arguments.");
-            case SHARDING_KEY_GENERATOR_WORKFLOW_KIND, SHARDING_KEY_GENERATE_STRATEGY_WORKFLOW_KIND -> addResourceHint(resourcesToRead,
-                    "shardingsphere://features/sharding/key-generate-algorithm-plugins", "algorithm", "read_first",
-                    "Read key-generate algorithm plugin metadata before choosing generator arguments.");
-            default -> {
-            }
-        }
-    }
-    
-    private static void addFeatureTableRuleResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
-        switch (resolveWorkflowKind(snapshot)) {
-            case ENCRYPT_RULE_WORKFLOW_KIND -> addTableResourceHint(resourcesToRead, request, "shardingsphere://features/encrypt/databases/%s/tables/%s/rules",
-                    "Inspect current encrypt table rule DistSQL state before planning changes.");
-            case MASK_RULE_WORKFLOW_KIND -> addTableResourceHint(resourcesToRead, request, "shardingsphere://features/mask/databases/%s/tables/%s/rules",
-                    "Inspect current mask table rule DistSQL state before planning changes.");
-            case SHADOW_RULE_WORKFLOW_KIND -> addTableResourceHint(resourcesToRead, request, "shardingsphere://features/shadow/databases/%s/tables/%s/rules",
-                    "Inspect current shadow table rule DistSQL state before planning changes.");
-            case SHARDING_TABLE_RULE_WORKFLOW_KIND -> {
-                addTableResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/tables/%s/table-rule",
-                        "Inspect current sharding table rule DistSQL state before planning changes.");
-                addTableResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/tables/%s/nodes",
-                        "Inspect current sharding table nodes before planning changes.");
-            }
-            default -> {
-            }
-        }
-    }
-    
-    private static void addRuleResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
-        switch (resolveWorkflowKind(snapshot)) {
-            case ENCRYPT_RULE_WORKFLOW_KIND -> addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/encrypt/databases/%s/rules",
-                    "Inspect current encrypt rules before planning changes.");
-            case MASK_RULE_WORKFLOW_KIND -> addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/mask/databases/%s/rules",
-                    "Inspect current mask rules before planning changes.");
-            case BROADCAST_RULE_WORKFLOW_KIND -> addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/broadcast/databases/%s/rules",
-                    "Inspect current broadcast rules before planning changes.");
-            case READWRITE_RULE_WORKFLOW_KIND -> addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/readwrite-splitting/databases/%s/rules",
-                    "Inspect current readwrite-splitting rules before planning changes.");
-            case READWRITE_STATUS_WORKFLOW_KIND -> addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/readwrite-splitting/databases/%s/status",
-                    "Inspect current readwrite-splitting status before planning changes.");
-            case SHADOW_RULE_WORKFLOW_KIND -> addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/shadow/databases/%s/rules",
-                    "Inspect current shadow rules before planning changes.");
-            case SHADOW_DEFAULT_ALGORITHM_WORKFLOW_KIND -> addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/shadow/databases/%s/default-algorithm",
-                    "Inspect current default shadow algorithm before planning changes.");
-            case SHADOW_ALGORITHM_CLEANUP_WORKFLOW_KIND -> {
-                addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/shadow/databases/%s/algorithms",
-                        "Inspect configured shadow algorithms before planning cleanup.");
-                addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/shadow/databases/%s/table-rules",
-                        "Inspect shadow table rule references before planning cleanup.");
-                addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/shadow/databases/%s/default-algorithm",
-                        "Inspect default shadow algorithm references before planning cleanup.");
-            }
-            case SHARDING_TABLE_RULE_WORKFLOW_KIND -> addShardingTableRuleResources(resourcesToRead, request);
-            case SHARDING_TABLE_REFERENCE_WORKFLOW_KIND -> addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/table-reference-rules",
-                    "Inspect current sharding table reference rules before planning changes.");
-            case SHARDING_DEFAULT_STRATEGY_WORKFLOW_KIND -> addShardingDefaultStrategyResources(resourcesToRead, request);
-            case SHARDING_KEY_GENERATOR_WORKFLOW_KIND -> addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/key-generators",
-                    "Inspect current sharding key generators before planning changes.");
-            case SHARDING_KEY_GENERATE_STRATEGY_WORKFLOW_KIND -> addShardingKeyGenerateStrategyResources(resourcesToRead, request);
-            case SHARDING_COMPONENT_CLEANUP_WORKFLOW_KIND -> addShardingComponentCleanupResources(resourcesToRead, request);
-            default -> {
-            }
-        }
-    }
-    
-    private static void addDatabaseResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request, final String uriTemplate, final String reason) {
-        addResourceHint(resourcesToRead, String.format(uriTemplate, MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail", reason);
-    }
-    
-    private static void addTableResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request, final String uriTemplate, final String reason) {
-        addResourceHint(resourcesToRead, String.format(uriTemplate, MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
-                "rule", "inspect_detail", reason);
-    }
-    
-    private static void addResourceHint(final Collection<Map<String, Object>> resourcesToRead, final String uri, final String resourceKind, final String action, final String reason) {
-        resourcesToRead.add(MCPResourceHintUtils.create(uri, resourceKind, action, reason, MCPPayloadFieldNames.RESOURCES_TO_READ));
-    }
-    
-    private static void addShardingTableRuleResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/table-rules",
-                "Inspect current sharding table rules before planning changes.");
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/table-nodes",
-                "Inspect current sharding table nodes before planning changes.");
-    }
-    
-    private static void addShardingDefaultStrategyResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/default-strategy",
-                "Inspect current default sharding strategy before planning changes.");
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/algorithms",
-                "Inspect configured sharding algorithms before planning default strategy changes.");
-    }
-    
-    private static void addShardingKeyGenerateStrategyResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/key-generate-strategies",
-                "Inspect current sharding key generate strategies before planning changes.");
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/key-generators",
-                "Inspect current sharding key generators before planning key generate strategy changes.");
-    }
-    
-    private static void addShardingComponentCleanupResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/algorithms",
-                "Inspect configured sharding algorithms before planning cleanup.");
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/key-generators",
-                "Inspect configured sharding key generators before planning cleanup.");
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/auditors",
-                "Inspect configured sharding auditors before planning cleanup.");
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/unused-algorithms",
-                "Inspect unused sharding algorithms before planning cleanup.");
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/unused-key-generators",
-                "Inspect unused sharding key generators before planning cleanup.");
-        addDatabaseResourceHint(resourcesToRead, request, "shardingsphere://features/sharding/databases/%s/unused-auditors",
-                "Inspect unused sharding auditors before planning cleanup.");
-    }
-    
-    private static void addTableResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
-        resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
-                MCPUriPathSegmentUtils.encodePathSegment(request.getSchema()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
-                "column", "validate_scope", "Read table columns before planning column-level workflow changes.", MCPPayloadFieldNames.RESOURCES_TO_READ));
-    }
-    
     private static List<Map<String, Object>> createPlanningNextActions(final WorkflowContextSnapshot snapshot, final List<String> missingRequiredInputs) {
         if (WorkflowLifecycle.STATUS_CLARIFYING.equals(snapshot.getStatus())) {
             return List.of(createUserAction("Ask for the missing inputs, then call the same planning tool with the existing plan_id.", missingRequiredInputs));
         }
         if (WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus())) {
-            return List.of(createToolAction(APPLY_WORKFLOW, "Preview workflow artifacts before execution.",
+            return List.of(createToolAction(WorkflowToolDescriptors.APPLY_TOOL_NAME, "Preview workflow artifacts before execution.",
                     Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW)));
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus())) {
@@ -513,18 +309,17 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static List<Map<String, Object>> addSequencing(final List<Map<String, Object>> nextActions) {
-        List<Map<String, Object>> result = new LinkedList<>(nextActions);
-        for (int index = 0; index < result.size(); index++) {
-            result.get(index).put("order", index + 1);
-            if (0 < index && "ask_user".equals(result.get(index - 1).get("type"))) {
-                result.get(index).put("depends_on", List.of(index));
+        for (int index = 0; index < nextActions.size(); index++) {
+            nextActions.get(index).put("order", index + 1);
+            if (0 < index && "ask_user".equals(nextActions.get(index - 1).get("type"))) {
+                nextActions.get(index).put("depends_on", List.of(index));
             }
         }
-        return result;
+        return nextActions;
     }
     
     private static String resolvePlanningTool(final WorkflowContextSnapshot snapshot) {
-        return PLANNING_TOOLS.getOrDefault(resolveWorkflowKind(snapshot), "");
+        return MCPDescriptorCatalogIndex.findPlanningToolNameByWorkflowKind(resolveWorkflowKind(snapshot)).orElse("");
     }
     
     private static String resolveWorkflowKind(final WorkflowContextSnapshot snapshot) {

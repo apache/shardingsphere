@@ -17,7 +17,7 @@ Configurable Properties:
 
 | *Name*            | *DataType*                                                  | *Description*                                                          |
 |-------------------|-------------------------------------------------------------|------------------------------------------------------------------------|
-| dataSources (+)   | Collection\<ReadwriteSplittingDataSourceRuleConfiguration\> | Data sources of write and reads                                        |
+| dataSourceGroups (+) | Collection\<ReadwriteSplittingDataSourceGroupRuleConfiguration\> | Data source groups of write and reads                                  |
 | loadBalancers (*) | Map\<String, AlgorithmConfiguration\>                       | Load balance algorithm name and configurations of replica data sources |
 
 ### Primary-secondary Data Source Configuration
@@ -46,7 +46,7 @@ Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/common-co
 
 ```java
 public DataSource getDataSource() throws SQLException {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
+        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "demo_read_query_ds", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), "demo_weight_lb");
         Properties algorithmProps = new Properties();
         algorithmProps.setProperty("demo_read_ds_0", "2");
