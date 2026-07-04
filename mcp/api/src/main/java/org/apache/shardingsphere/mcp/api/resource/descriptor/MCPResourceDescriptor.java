@@ -29,7 +29,7 @@ import java.util.Map;
 @Getter
 public final class MCPResourceDescriptor {
     
-    private final String uriTemplate;
+    private final String uriOrTemplate;
     
     private final String name;
     
@@ -49,6 +49,6 @@ public final class MCPResourceDescriptor {
      * @return true if the resource is a URI template
      */
     public boolean isTemplated() {
-        return null != uriTemplate && uriTemplate.contains("{");
+        return null != uriOrTemplate && uriOrTemplate.contains("{");
     }
 }

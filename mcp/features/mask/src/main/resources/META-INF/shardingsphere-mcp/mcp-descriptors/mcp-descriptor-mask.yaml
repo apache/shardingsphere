@@ -398,6 +398,10 @@ tools:
       workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: mask.rule
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/mask/algorithms
         - "shardingsphere://features/mask/databases/{database}/rules"

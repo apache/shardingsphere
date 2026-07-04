@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
+import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.metadata.MetadataResourceHandler;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
@@ -67,8 +68,8 @@ class CoreResourceHandlerSurfaceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertGetResourceDescriptor(final HandlerCase handlerCase) {
-        MCPResourceDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handlerCase.getHandler().getResourceUriTemplate());
-        assertThat(actual.getUriTemplate(), is(handlerCase.getExpectedUriOrTemplate()));
+        MCPResourceDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handlerCase.getHandler().getResourceUriOrTemplate());
+        assertThat(actual.getUriOrTemplate(), is(handlerCase.getExpectedUriOrTemplate()));
         assertFalse(actual.getDescription().isBlank());
     }
     
@@ -86,11 +87,20 @@ class CoreResourceHandlerSurfaceTest {
             if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
                 assertThat(actual, isA(MCPMapResponse.class));
                 assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
+                assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://guidance"));
                 assertTrue(((List<?>) actualPayload.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
                 assertTrue(((List<?>) actualPayload.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
                 assertTrue(((List<?>) actualPayload.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("database_gateway_apply_workflow")));
                 assertFalse(actualPayload.containsKey("fingerprints"));
                 assertTrue((Boolean) ((Map<?, ?>) actualPayload.get("protocolAvailability")).get("resourceNavigation"));
+                return;
+            }
+            if (HandlerResultType.SERVICE_GUIDANCE == handlerCase.getExpectedType()) {
+                assertThat(actual, isA(MCPMapResponse.class));
+                assertThat(actualPayload.get("response_mode"), is("guidance"));
+                assertThat(actualPayload.get("guidance_resource"), is("shardingsphere://guidance"));
+                assertTrue(actualPayload.containsKey("model_contract"));
+                assertTrue(actualPayload.containsKey("common_flows"));
                 return;
             }
             assertMetadataResponse(handlerCase, actual, actualPayload);
@@ -251,6 +261,8 @@ class CoreResourceHandlerSurfaceTest {
         return Stream.of(
                 new HandlerCase("server capabilities", new ServerCapabilitiesHandler(), "shardingsphere://capabilities",
                         "shardingsphere://capabilities", HandlerResultType.SERVICE_CAPABILITY, "", List.of()),
+                new HandlerCase("server guidance", new ServerGuidanceHandler(), "shardingsphere://guidance",
+                        "shardingsphere://guidance", HandlerResultType.SERVICE_GUIDANCE, "", List.of()),
                 new HandlerCase("databases", new MetadataResourceHandler("shardingsphere://databases",
                         (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryDatabases()), "shardingsphere://databases",
                         "shardingsphere://databases", HandlerResultType.METADATA, "", List.of("logic_db", "runtime_db", "warehouse")),
@@ -425,6 +437,8 @@ class CoreResourceHandlerSurfaceTest {
     private enum HandlerResultType {
         
         SERVICE_CAPABILITY,
+        
+        SERVICE_GUIDANCE,
         
         DATABASE_CAPABILITY,
         

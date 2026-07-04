@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class MCPDescriptorCatalogPayloadBuilderTest {
     
     @Test
-    @SuppressWarnings("unchecked")
     void assertBuildCatalogMetadataContractPayload() {
         List<MCPResourceDescriptor> resourceDescriptors = List.of(
                 createResourceDescriptor("shardingsphere://capabilities", MCPResourceAnnotations.EMPTY),
@@ -43,17 +42,12 @@ class MCPDescriptorCatalogPayloadBuilderTest {
         Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(
                 createCatalog(resourceDescriptors, List.of(createToolDescriptor(new MCPToolAnnotations(null, false, true, false, true)))),
                 List.of("shardingsphere://capabilities"), List.of("database_gateway_test_tool"), List.of("SelectStatement"));
-        Map<String, Object> actualModelFirstSummary = (Map<String, Object>) payload.get("model_first_summary");
-        assertThat((Map<String, Object>) actualModelFirstSummary.get("official_discovery_methods"), is(createOfficialDiscoveryMethods()));
-        assertThat(actualModelFirstSummary.get("argument_completion_method"), is("completion/complete"));
-        assertThat(actualModelFirstSummary.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
-        assertFalse(actualModelFirstSummary.containsKey("safe_first_resource"));
-        Map<String, Object> actualFieldNamingContract = (Map<String, Object>) payload.get("field_naming_contract");
-        assertThat((List<String>) actualFieldNamingContract.get("official_discovery_methods"), is(createOfficialDiscoveryMethodNames()));
-        assertThat(actualFieldNamingContract.get("argument_completion_method"), is("completion/complete"));
-        assertThat((List<String>) actualFieldNamingContract.get("catalog_fields"), is(List.of(
-                "supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability")));
-        assertFalse(payload.containsKey("protocol_fields"));
+        assertThat(payload.get("response_mode"), is("catalog"));
+        assertThat(payload.get("guidanceResource"), is("shardingsphere://guidance"));
+        assertFalse(payload.containsKey("model_first_summary"));
+        assertFalse(payload.containsKey("model_contract"));
+        assertFalse(payload.containsKey("common_flows"));
+        assertFalse(payload.containsKey("security_hints"));
     }
     
     @Test
@@ -74,7 +68,7 @@ class MCPDescriptorCatalogPayloadBuilderTest {
         Map<String, Object> meta = Map.of(MCPShardingSphereMetadataKeys.RESOURCE_KIND, "detail");
         MCPResourceDescriptor resource = createResourceDescriptor("shardingsphere://runtime", MCPResourceAnnotations.EMPTY, meta);
         MCPResourceDescriptor resourceTemplate = createResourceDescriptor("shardingsphere://databases/{database}", MCPResourceAnnotations.EMPTY, meta);
-        MCPDescriptorCatalog catalog = new MCPDescriptorCatalog(List.of(resource), List.of(resourceTemplate), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        MCPDescriptorCatalog catalog = createCatalog(List.of(resource), List.of(resourceTemplate), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
         Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(catalog, List.of(), List.of(), List.of());
         Map<String, Object> actualResource = ((List<Map<String, Object>>) payload.get("resources")).get(0);
         Map<String, Object> actualResourceTemplate = ((List<Map<String, Object>>) payload.get("resourceTemplates")).get(0);
@@ -105,7 +99,7 @@ class MCPDescriptorCatalogPayloadBuilderTest {
                 new MCPPromptArgumentDescriptor("schema", "Schema", "Schema.", false)), Map.of());
         MCPCompletionTargetDescriptor completionTarget = new MCPCompletionTargetDescriptor("prompt", "test_prompt", List.of("database", "schema"), 50,
                 Map.of(MCPShardingSphereMetadataKeys.REQUIRED_CONTEXT_ARGUMENTS, Map.of("schema", List.of("database"))));
-        MCPDescriptorCatalog catalog = new MCPDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), List.of(prompt), List.of(), List.of(completionTarget), List.of(), List.of());
+        MCPDescriptorCatalog catalog = createCatalog(List.of(), List.of(), List.of(), List.of(), List.of(prompt), List.of(), List.of(completionTarget), List.of(), List.of());
         Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(catalog, List.of(), List.of(), List.of());
         Map<String, Object> actualPrompt = ((List<Map<String, Object>>) payload.get("prompts")).get(0);
         Map<String, Object> actualSchemaArgument = ((List<Map<String, Object>>) actualPrompt.get("arguments")).get(1);
@@ -113,7 +107,16 @@ class MCPDescriptorCatalogPayloadBuilderTest {
     }
     
     private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPToolDescriptor> toolDescriptors) {
-        return new MCPDescriptorCatalog(resourceDescriptors, List.of(), List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), List.of());
+        return createCatalog(resourceDescriptors, List.of(), List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), List.of());
+    }
+    
+    private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPResourceDescriptor> resourceTemplateDescriptors,
+                                               final List<ShardingSphereMCPResourceMetadata> resourceMetadata, final List<MCPToolDescriptor> toolDescriptors,
+                                               final List<MCPPromptDescriptor> promptDescriptors, final List<MCPPromptTemplateBinding> promptTemplateBindings,
+                                               final List<MCPCompletionTargetDescriptor> completionTargetDescriptors,
+                                               final List<MCPResourceNavigationDescriptor> resourceNavigationDescriptors, final List<MCPToolRuntimeDescriptor> toolRuntimeDescriptors) {
+        return new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, toolDescriptors, promptDescriptors),
+                new MCPShardingSphereDescriptorCatalog(resourceMetadata, promptTemplateBindings, completionTargetDescriptors, resourceNavigationDescriptors, toolRuntimeDescriptors));
     }
     
     private MCPResourceDescriptor createResourceDescriptor(final String uri, final MCPResourceAnnotations annotations) {
@@ -128,11 +131,4 @@ class MCPDescriptorCatalogPayloadBuilderTest {
         return new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.", Map.of(), Map.of(), annotations, Map.of());
     }
     
-    private Map<String, Object> createOfficialDiscoveryMethods() {
-        return Map.of("tools", "tools/list", "resources", "resources/list", "resource_templates", "resources/templates/list", "prompts", "prompts/list");
-    }
-    
-    private List<String> createOfficialDiscoveryMethodNames() {
-        return List.of("tools/list", "resources/list", "resources/templates/list", "prompts/list");
-    }
 }

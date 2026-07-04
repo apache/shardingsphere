@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
+package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class PluginFixtureStatusResourceHandlerTest {
+class MCPDescriptorCatalogTest {
     
     @Test
-    void assertGetContextType() {
-        assertThat(new PluginFixtureStatusResourceHandler().getContextType(), is(MCPServiceHandlerContext.class));
+    void assertGetProtocolDescriptors() {
+        MCPProtocolDescriptorCatalog protocolDescriptors = new MCPProtocolDescriptorCatalog(List.of(), List.of(), List.of(), List.of());
+        MCPDescriptorCatalog actual = new MCPDescriptorCatalog(protocolDescriptors, new MCPShardingSphereDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), List.of()));
+        assertThat(actual.getProtocolDescriptors(), is(protocolDescriptors));
     }
     
     @Test
-    void assertGetResourceUriOrTemplate() {
-        assertThat(new PluginFixtureStatusResourceHandler().getResourceUriOrTemplate(), is("shardingsphere://features/test-fixture/status"));
-    }
-    
-    @Test
-    void assertHandle() {
-        assertThat(new PluginFixtureStatusResourceHandler().handle(null, new MCPUriVariables(Map.of())).toPayload(),
-                is(Map.of("items", List.of(Map.of("feature", "test-fixture", "status", "ready")))));
+    void assertGetShardingSphereDescriptors() {
+        MCPShardingSphereDescriptorCatalog shardingSphereDescriptors = new MCPShardingSphereDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), List.of());
+        MCPDescriptorCatalog actual = new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(List.of(), List.of(), List.of(), List.of()), shardingSphereDescriptors);
+        assertThat(actual.getShardingSphereDescriptors(), is(shardingSphereDescriptors));
     }
 }

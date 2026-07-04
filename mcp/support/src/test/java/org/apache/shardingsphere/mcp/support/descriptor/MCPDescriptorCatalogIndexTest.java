@@ -37,7 +37,7 @@ class MCPDescriptorCatalogIndexTest {
     @Test
     void assertGetResourceDescriptors() {
         Collection<MCPResourceDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getResourceDescriptors();
-        assertTrue(actualDescriptors.stream().anyMatch(each -> "shardingsphere://workflows/{plan_id}".equals(each.getUriTemplate())));
+        assertTrue(actualDescriptors.stream().anyMatch(each -> "shardingsphere://workflows/{plan_id}".equals(each.getUriOrTemplate())));
     }
     
     @Test
@@ -142,5 +142,13 @@ class MCPDescriptorCatalogIndexTest {
         assertThat(actual.get("supportedTools"), is(List.of("database_gateway_apply_workflow")));
         assertThat(actual.get("supportedStatementClasses"), is(List.of("SELECT")));
         assertFalse(actual.containsKey("fingerprints"));
+    }
+    
+    @Test
+    void assertCreateGuidancePayload() {
+        Map<String, Object> actual = MCPDescriptorCatalogIndex.createGuidancePayload();
+        assertThat(actual.get("response_mode"), is("guidance"));
+        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
+        assertTrue(actual.containsKey("model_contract"));
     }
 }

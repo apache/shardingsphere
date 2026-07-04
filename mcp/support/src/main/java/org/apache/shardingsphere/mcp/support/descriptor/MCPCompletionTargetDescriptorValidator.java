@@ -51,7 +51,7 @@ public final class MCPCompletionTargetDescriptorValidator {
         Map<String, Set<String>> promptArguments = prompts.stream().collect(Collectors.toMap(MCPPromptDescriptor::getName,
                 each -> each.getArguments().stream().map(MCPPromptArgumentDescriptor::getName).collect(Collectors.toSet())));
         Set<String> promptNames = promptArguments.keySet();
-        Map<String, MCPResourceDescriptor> resourceDescriptors = resources.stream().collect(Collectors.toMap(MCPResourceDescriptor::getUriTemplate, each -> each));
+        Map<String, MCPResourceDescriptor> resourceDescriptors = resources.stream().collect(Collectors.toMap(MCPResourceDescriptor::getUriOrTemplate, each -> each));
         Map<String, MCPCompletionTargetDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         for (MCPCompletionTargetDescriptor each : descriptors) {
             validateCompletionReference(each, promptNames, resourceDescriptors.keySet());
@@ -106,7 +106,7 @@ public final class MCPCompletionTargetDescriptorValidator {
         MCPResourceDescriptor resource = resources.get(descriptor.getReference());
         ShardingSpherePreconditions.checkState(resource.isTemplated(),
                 () -> new IllegalStateException(String.format("Completion target `resource:%s` must reference a resource template.", descriptor.getReference())));
-        Collection<String> templateVariables = new MCPUriTemplate(resource.getUriTemplate()).getVariableNames();
+        Collection<String> templateVariables = new MCPUriTemplate(resource.getUriOrTemplate()).getVariableNames();
         for (String each : descriptor.getArguments()) {
             ShardingSpherePreconditions.checkState(templateVariables.contains(each), () -> new IllegalStateException(
                     String.format("Completion target `resource:%s` argument `%s` is not a URI template variable.", descriptor.getReference(), each)));

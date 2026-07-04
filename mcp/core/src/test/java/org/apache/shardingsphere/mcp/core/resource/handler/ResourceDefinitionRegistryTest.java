@@ -87,6 +87,7 @@ class ResourceDefinitionRegistryTest {
         Collection<String> actual = ResourceDefinitionRegistry.getSupportedResources();
         assertThat(actual, is(List.of(
                 "shardingsphere://capabilities",
+                "shardingsphere://guidance",
                 "shardingsphere://runtime",
                 "shardingsphere://workflows/{plan_id}",
                 "shardingsphere://databases/{database}/capabilities",
@@ -116,7 +117,7 @@ class ResourceDefinitionRegistryTest {
     
     @Test
     void assertGetSupportedResourceDescriptors() {
-        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).toList();
+        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors().stream().map(MCPResourceDescriptor::getUriOrTemplate).toList();
         assertThat(actual, is(ResourceDefinitionRegistry.getSupportedResources()));
     }
     
@@ -149,14 +150,14 @@ class ResourceDefinitionRegistryTest {
     private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
         MCPResourceHandler<MCPServiceHandlerContext> result = mock(MCPResourceHandler.class);
         when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
-        when(result.getResourceUriTemplate()).thenReturn(uriTemplate);
+        when(result.getResourceUriOrTemplate()).thenReturn(uriTemplate);
         return result;
     }
     
     private static MCPResourceHandler<?> createUnsupportedResourceHandler() {
         MCPResourceHandler<MCPHandlerContext> result = mock(MCPResourceHandler.class);
         when(result.getContextType()).thenReturn(MCPHandlerContext.class);
-        when(result.getResourceUriTemplate()).thenReturn("shardingsphere://unsupported");
+        when(result.getResourceUriOrTemplate()).thenReturn("shardingsphere://unsupported");
         return result;
     }
     

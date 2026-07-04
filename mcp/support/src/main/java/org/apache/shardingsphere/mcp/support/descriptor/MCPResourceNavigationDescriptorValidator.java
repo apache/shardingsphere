@@ -55,9 +55,9 @@ public final class MCPResourceNavigationDescriptorValidator {
     
     private static Set<String> createPublicIdentifiers(final MCPDescriptorCatalog catalog) {
         Set<String> result = new HashSet<>();
-        catalog.getAllResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).forEach(result::add);
-        catalog.getToolDescriptors().stream().map(MCPToolDescriptor::getName).forEach(result::add);
-        catalog.getPromptDescriptors().stream().map(MCPPromptDescriptor::getName).forEach(result::add);
+        catalog.getProtocolDescriptors().getAllResourceDescriptors().stream().map(MCPResourceDescriptor::getUriOrTemplate).forEach(result::add);
+        catalog.getProtocolDescriptors().getToolDescriptors().stream().map(MCPToolDescriptor::getName).forEach(result::add);
+        catalog.getProtocolDescriptors().getPromptDescriptors().stream().map(MCPPromptDescriptor::getName).forEach(result::add);
         return result;
     }
 }

@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
-import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
-import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-
-import java.util.Set;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 
 /**
- * Handler for server capabilities resource URI.
+ * Handler for server guidance resource URI.
  */
-public final class ServerCapabilitiesHandler implements MCPResourceHandler<MCPServiceHandlerContext> {
+public final class ServerGuidanceHandler implements MCPResourceHandler<MCPServiceHandlerContext> {
     
-    private static final String URI_PATTERN = "shardingsphere://capabilities";
+    private static final String URI_PATTERN = "shardingsphere://guidance";
     
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {
@@ -48,7 +43,6 @@ public final class ServerCapabilitiesHandler implements MCPResourceHandler<MCPSe
     
     @Override
     public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPUriVariables uriVariables) {
-        return new MCPMapResponse(MCPDescriptorCatalogIndex.createCapabilityPayload(
-                ResourceDefinitionRegistry.getSupportedResources(), ToolDefinitionRegistry.getSupportedTools(), Set.of(SupportedMCPStatement.values())));
+        return new MCPMapResponse(MCPDescriptorCatalogIndex.createGuidancePayload());
     }
 }

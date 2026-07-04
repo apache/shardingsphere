@@ -28,18 +28,28 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MCPModelFirstContractPayloadBuilderTest {
+class MCPGuidancePayloadBuilderTest {
     
-    private final MCPModelFirstContractPayloadBuilder builder = new MCPModelFirstContractPayloadBuilder(MCPDescriptorCatalogLoader.load());
+    private final MCPGuidancePayloadBuilder builder = new MCPGuidancePayloadBuilder(MCPDescriptorCatalogLoader.load());
+    
+    @Test
+    void assertBuild() {
+        Map<String, Object> actual = MCPGuidancePayloadBuilder.build(MCPDescriptorCatalogLoader.load());
+        assertThat(actual.get("response_mode"), is("guidance"));
+        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
+        assertTrue(actual.containsKey("model_first_summary"));
+        assertTrue(actual.containsKey("model_contract"));
+        assertTrue(actual.containsKey("security_hints"));
+    }
     
     @Test
     void assertCreateModelFirstSummary() {
         Map<String, Object> actual = builder.createModelFirstSummary();
         assertThat(castToMap(actual.get("official_discovery_methods")), is(createOfficialDiscoveryMethods()));
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
-        assertThat(actual.get("catalog_resource_role"),
-                is("shardingsphere://capabilities complements MCP list methods with ShardingSphere domain capability guidance, workflow guidance, and side-effect notes."));
-        assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertThat(actual.get("guidance_resource_role"),
+                is("shardingsphere://guidance complements MCP list methods with ShardingSphere domain guidance, workflow guidance, and side-effect notes."));
+        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
         assertFalse(actual.containsKey("safe_first_resource"));
         assertThat(((Map<?, ?>) actual.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
         assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("execution_mode=execute"));
@@ -57,7 +67,7 @@ class MCPModelFirstContractPayloadBuilderTest {
         assertThat(actual.get("public_surface_source"), is("MCP list methods expose the protocol surface: tools/list, resources/list, resources/templates/list, prompts/list."));
         assertThat(castToMap(actual.get("official_discovery_methods")), is(createOfficialDiscoveryMethods()));
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
-        assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(String.valueOf(actual.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
         assertThat(castToMap(actual.get("sql_tool_selection")).keySet().stream().toList(), is(List.of("read_only", "side_effecting")));

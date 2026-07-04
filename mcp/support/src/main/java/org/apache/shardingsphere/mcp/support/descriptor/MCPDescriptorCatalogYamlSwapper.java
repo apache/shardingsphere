@@ -69,8 +69,8 @@ final class MCPDescriptorCatalogYamlSwapper {
             resourceNavigationDescriptors.addAll(swapResourceNavigationDescriptors(each.getResourceNavigation()));
             toolRuntimeDescriptors.addAll(swapToolRuntimeDescriptors(each.getTools()));
         }
-        return new MCPDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, shardingSphereResourceMetadata, toolDescriptors, promptDescriptors, promptTemplateBindings,
-                completionTargetDescriptors, resourceNavigationDescriptors, toolRuntimeDescriptors);
+        return new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, toolDescriptors, promptDescriptors),
+                new MCPShardingSphereDescriptorCatalog(shardingSphereResourceMetadata, promptTemplateBindings, completionTargetDescriptors, resourceNavigationDescriptors, toolRuntimeDescriptors));
     }
     
     private static void swapFixedResourceDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors, final Collection<MCPResourceDescriptor> resources,

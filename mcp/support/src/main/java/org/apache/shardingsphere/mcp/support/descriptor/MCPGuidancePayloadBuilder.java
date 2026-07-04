@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 
@@ -29,16 +30,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Model-first contract payload builder.
+ * MCP guidance payload builder.
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class MCPModelFirstContractPayloadBuilder {
+final class MCPGuidancePayloadBuilder {
     
     private static final String PLANNING_TOOL_NAME_PREFIX = "database_gateway_plan_";
     
     private static final String PREFLIGHT_TOOL_NAME = "database_gateway_validate_runtime_database";
     
-    private static final String CATALOG_RESOURCE_URI = "shardingsphere://capabilities";
+    private static final String GUIDANCE_RESOURCE_URI = "shardingsphere://guidance";
     
     private static final String ARGUMENT_COMPLETION_METHOD = "completion/complete";
     
@@ -46,13 +47,30 @@ final class MCPModelFirstContractPayloadBuilder {
     
     private final MCPDescriptorCatalog catalog;
     
+    static Map<String, Object> build(final MCPDescriptorCatalog catalog) {
+        return new MCPGuidancePayloadBuilder(catalog).build();
+    }
+    
+    private Map<String, Object> build() {
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        result.put("response_mode", MCPResponseMode.GUIDANCE);
+        result.put("guidance_resource", GUIDANCE_RESOURCE_URI);
+        result.put("model_first_summary", createModelFirstSummary());
+        result.put("model_contract", createModelContract());
+        result.put("surface_summary", createSurfaceSummary());
+        result.put("field_naming_contract", createFieldNamingContract());
+        result.put("next_action_contract", createNextActionContract());
+        result.put("common_flows", createCommonFlows());
+        result.put("security_hints", createSecurityHints());
+        return result;
+    }
+    
     Map<String, Object> createModelFirstSummary() {
         Map<String, Object> result = new LinkedHashMap<>(11, 1F);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
-        result.put("catalog_resource_role", CATALOG_RESOURCE_URI
-                + " complements MCP list methods with ShardingSphere domain capability guidance, workflow guidance, and side-effect notes.");
-        result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
+        result.put("guidance_resource_role", GUIDANCE_RESOURCE_URI + " complements MCP list methods with ShardingSphere domain guidance, workflow guidance, and side-effect notes.");
+        result.put("guidance_resource", GUIDANCE_RESOURCE_URI);
         result.put("metadata_rule", createMetadataRule());
         result.put("preflight_rule", createPreflightRule());
         result.put("sql_tool_selection", createSqlToolSelection());
@@ -68,7 +86,7 @@ final class MCPModelFirstContractPayloadBuilder {
         result.put("public_surface_source", MCP_LIST_METHODS_SOURCE);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
-        result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
+        result.put("guidance_resource", GUIDANCE_RESOURCE_URI);
         result.put("metadata_first_resource", "shardingsphere://databases");
         result.put("preflight_rule", "Use database_gateway_validate_runtime_database with a configured database name before onboarding or troubleshooting runtime connectivity.");
         Map<String, Object> sqlToolSelection = new LinkedHashMap<>(2, 1F);
@@ -87,7 +105,7 @@ final class MCPModelFirstContractPayloadBuilder {
         Map<String, Object> result = new LinkedHashMap<>(11, 1F);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
-        result.put("optional_catalog_resource", CATALOG_RESOURCE_URI);
+        result.put("guidance_resource", GUIDANCE_RESOURCE_URI);
         result.put("metadata_resource", "shardingsphere://databases");
         result.put("metadata_search_tool", "database_gateway_search_metadata");
         result.put("preflight_validation_tool", PREFLIGHT_TOOL_NAME);
@@ -103,7 +121,8 @@ final class MCPModelFirstContractPayloadBuilder {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("official_discovery_methods", List.of("tools/list", "resources/list", "resources/templates/list", "prompts/list"));
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
-        result.put("catalog_fields", List.of("supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability"));
+        result.put("catalog_fields", List.of("supportedResources", "supportedTools", "supportedStatementClasses", "guidanceResource", "resourceTemplates", "completionTargets",
+                "resourceNavigation", "protocolAvailability"));
         result.put("payload_fields", "ShardingSphere-owned structured payload fields use snake_case.");
         result.put("descriptor_fields", "Descriptor-derived MCP schema fields keep the protocol or JSON Schema field names required by MCP clients.");
         return result;
@@ -146,8 +165,8 @@ final class MCPModelFirstContractPayloadBuilder {
                         "Reuse the same current-session plan_id and stop after validation succeeds.",
                         List.of(WorkflowToolDescriptors.APPLY_TOOL_NAME, WorkflowToolDescriptors.VALIDATE_TOOL_NAME), List.of()),
                 createCommonFlow("recover_from_error", List.of("follow recovery.next_actions", "prefer official list discovery methods when surface information is needed",
-                        "read_resource shardingsphere://capabilities only when the server suggests the catalog resource", "ask_user only when uncertain"),
-                        "Do not invent replacement calls while structured recovery actions are present.", List.of(), List.of(CATALOG_RESOURCE_URI)));
+                        "read_resource shardingsphere://guidance only when the server suggests the guidance resource", "ask_user only when uncertain"),
+                        "Do not invent replacement calls while structured recovery actions are present.", List.of(), List.of(GUIDANCE_RESOURCE_URI)));
     }
     
     Map<String, Object> createSecurityHints() {
@@ -209,7 +228,8 @@ final class MCPModelFirstContractPayloadBuilder {
     
     private Map<String, Object> createWorkflowRule() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("planning_tools", catalog.getToolDescriptors().stream().map(MCPToolDescriptor::getName).filter(each -> each.startsWith(PLANNING_TOOL_NAME_PREFIX)).toList());
+        result.put("planning_tools", catalog.getProtocolDescriptors().getToolDescriptors().stream()
+                .map(MCPToolDescriptor::getName).filter(each -> each.startsWith(PLANNING_TOOL_NAME_PREFIX)).toList());
         Map<String, Object> previewTool = new LinkedHashMap<>(2, 1F);
         previewTool.put("tool", WorkflowToolDescriptors.APPLY_TOOL_NAME);
         previewTool.put(MCPPayloadFieldNames.EXECUTION_MODE, "preview");

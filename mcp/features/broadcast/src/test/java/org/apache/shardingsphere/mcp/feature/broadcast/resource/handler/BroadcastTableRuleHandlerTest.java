@@ -43,7 +43,7 @@ class BroadcastTableRuleHandlerTest {
     
     @Test
     void assertGetResourceUriTemplate() {
-        assertThat(new BroadcastTableRuleHandler().getResourceUriTemplate(), is(BroadcastFeatureDefinition.TABLE_RULE_RESOURCE_URI));
+        assertThat(new BroadcastTableRuleHandler().getResourceUriOrTemplate(), is(BroadcastFeatureDefinition.TABLE_RULE_RESOURCE_URI));
     }
     
     @Test

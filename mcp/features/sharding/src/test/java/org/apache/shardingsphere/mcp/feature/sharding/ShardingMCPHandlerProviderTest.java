@@ -41,8 +41,8 @@ class ShardingMCPHandlerProviderTest {
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new ShardingMCPHandlerProvider().getResourceHandlers();
         assertThat(actual.size(), is(22));
-        assertTrue(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList().contains(ShardingFeatureDefinition.TABLE_RULES_RESOURCE_URI));
-        assertTrue(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList().contains(ShardingFeatureDefinition.UNUSED_AUDITORS_RESOURCE_URI));
+        assertTrue(actual.stream().map(MCPResourceHandler::getResourceUriOrTemplate).toList().contains(ShardingFeatureDefinition.TABLE_RULES_RESOURCE_URI));
+        assertTrue(actual.stream().map(MCPResourceHandler::getResourceUriOrTemplate).toList().contains(ShardingFeatureDefinition.UNUSED_AUDITORS_RESOURCE_URI));
         assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingAlgorithmResourceHandler));
         assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingTableResourceHandler));
         assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingStrategyResourceHandler));

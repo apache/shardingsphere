@@ -23,7 +23,9 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotati
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -99,17 +101,18 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsPlanningRuntimeWithoutWorkflowKind() {
         String toolName = "database_gateway_test_plan_rule";
-        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", true, false, true, true), createOutputSchema())),
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", true, false, true, true),
+                createWorkflowPlanOutputSchema(), createPlanningToolMetaWithoutWorkflowKind())),
                 List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
-                "Planning tool `database_gateway_test_plan_rule` metadata must declare `org.apache.shardingsphere/workflow-kind`.");
+                "Tool `database_gateway_test_plan_rule` metadata must declare `org.apache.shardingsphere/workflow-kind`.");
     }
     
     @Test
     void assertValidateRejectsDuplicatePlanningWorkflowKind() {
-        MCPToolDescriptor firstTool = createToolDescriptor("database_gateway_test_plan_rule", new MCPToolAnnotations("Test Tool", true, false, true, true), createOutputSchema(),
-                Map.of(MCPShardingSphereMetadataKeys.WORKFLOW_KIND, "test.rule"));
-        MCPToolDescriptor secondTool = createToolDescriptor("database_gateway_test_plan_rule_again", new MCPToolAnnotations("Test Tool", true, false, true, true), createOutputSchema(),
-                Map.of(MCPShardingSphereMetadataKeys.WORKFLOW_KIND, "test.rule"));
+        MCPToolDescriptor firstTool = createToolDescriptor("database_gateway_test_plan_rule", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"));
+        MCPToolDescriptor secondTool = createToolDescriptor("database_gateway_test_plan_rule_again", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"));
         assertValidationError(createToolRuntimeCatalog(List.of(), List.of(firstTool, secondTool), List.of(
                 new MCPToolRuntimeDescriptor(firstTool.getName(), "plan", List.of()),
                 new MCPToolRuntimeDescriptor(secondTool.getName(), "plan", List.of()))),
@@ -134,16 +137,16 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
-    void assertValidateRejectsFeatureOwnedToolDescriptor() {
-        assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_extension_test_tool", new MCPToolAnnotations("Extension Tool", true, false, true, true), createOutputSchema()))),
-                "Tool `database_gateway_extension_test_tool` outputSchema must declare `extension_marker`.");
+    void assertValidateAcceptsFeatureOwnedToolDescriptorWithoutExtensionMarker() {
+        assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(List.of(), List.of(createToolDescriptor(
+                "database_gateway_extension_test_tool", new MCPToolAnnotations("Extension Tool", true, false, true, true), createOutputSchema())))));
     }
     
     @Test
-    void assertValidateDoesNotHardcodeCoreToolDescriptor() {
-        assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_search_metadata", new MCPToolAnnotations("Search Metadata", true, false, true, true), createOutputSchema())))));
+    void assertValidateRejectsIncompleteCoreToolDescriptor() {
+        assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
+                "database_gateway_search_metadata", new MCPToolAnnotations("Search Metadata", true, false, true, true), createOutputSchema()))),
+                "Tool `database_gateway_search_metadata` outputSchema must declare `response_mode`.");
     }
     
     @Test
@@ -201,9 +204,8 @@ class MCPDescriptorCatalogValidatorTest {
                 Map.of("org.apache.shardingsphere/client-form-only-arguments", List.of("database", "schema")));
         MCPCompletionTargetDescriptor completion = new MCPCompletionTargetDescriptor("prompt", "test_prompt", List.of("database", "schema"), 50,
                 Map.of(MCPShardingSphereMetadataKeys.REQUIRED_CONTEXT_ARGUMENTS, Map.of("schema", List.of("tenant"))));
-        assertValidationError(new MCPDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), List.of(prompt),
-                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md")),
-                List.of(completion), List.of(), List.of()),
+        assertValidationError(createPromptCatalog(List.of(prompt),
+                List.of(new MCPPromptTemplateBinding("test_prompt", "META-INF/shardingsphere-mcp/prompts/fixture-uri-template.md")), List.of(completion)),
                 "Completion target `prompt:test_prompt` context argument `tenant` for `schema` is not declared by the target.");
     }
     
@@ -218,16 +220,24 @@ class MCPDescriptorCatalogValidatorTest {
     
     private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPResourceDescriptor> resourceTemplateDescriptors,
                                                final List<MCPToolDescriptor> toolDescriptors) {
-        return new MCPDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), List.of());
+        return new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(resourceDescriptors, resourceTemplateDescriptors, toolDescriptors, List.of()),
+                new MCPShardingSphereDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), List.of()));
     }
     
     private MCPDescriptorCatalog createToolRuntimeCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPToolDescriptor> toolDescriptors,
                                                           final List<MCPToolRuntimeDescriptor> runtimeDescriptors) {
-        return new MCPDescriptorCatalog(resourceDescriptors, List.of(), List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), runtimeDescriptors);
+        return new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(resourceDescriptors, List.of(), toolDescriptors, List.of()),
+                new MCPShardingSphereDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), runtimeDescriptors));
     }
     
     private MCPDescriptorCatalog createPromptCatalog(final List<MCPPromptDescriptor> promptDescriptors, final List<MCPPromptTemplateBinding> promptTemplateBindings) {
-        return new MCPDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), promptDescriptors, promptTemplateBindings, List.of(), List.of(), List.of());
+        return createPromptCatalog(promptDescriptors, promptTemplateBindings, List.of());
+    }
+    
+    private MCPDescriptorCatalog createPromptCatalog(final List<MCPPromptDescriptor> promptDescriptors, final List<MCPPromptTemplateBinding> promptTemplateBindings,
+                                                     final List<MCPCompletionTargetDescriptor> completionTargetDescriptors) {
+        return new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(List.of(), List.of(), List.of(), promptDescriptors),
+                new MCPShardingSphereDescriptorCatalog(List.of(), promptTemplateBindings, completionTargetDescriptors, List.of(), List.of()));
     }
     
     private MCPResourceDescriptor createResourceDescriptor(final MCPResourceAnnotations annotations) {
@@ -277,6 +287,33 @@ class MCPDescriptorCatalogValidatorTest {
     
     private Map<String, Object> createOutputSchema(final Map<String, Object> properties, final List<Map<String, Object>> examples) {
         return Map.of("type", "object", "properties", properties, "examples", examples);
+    }
+    
+    private Map<String, Object> createWorkflowPlanOutputSchema() {
+        Map<String, Object> properties = new LinkedHashMap<>();
+        for (String each : List.of(
+                "response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs", "clarification_questions", "elicitation_support",
+                "fallback_reason", "issues", "global_steps", "current_step", "algorithm_recommendations", "property_requirements", "validation_strategy", "delivery_mode",
+                "execution_mode", "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint", "distsql_artifacts", MCPPayloadFieldNames.RESOURCES_TO_READ)) {
+            properties.put(each, Map.of("type", "object", "description", "Workflow plan field."));
+        }
+        properties.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActionsSchema());
+        return createOutputSchema(properties, List.of(Map.of("response_mode", "planning")));
+    }
+    
+    private Map<String, Object> createPlanningToolMeta(final String workflowKind) {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.putAll(createPlanningToolMetaWithoutWorkflowKind());
+        result.put(MCPShardingSphereMetadataKeys.WORKFLOW_KIND, workflowKind);
+        return result;
+    }
+    
+    private Map<String, Object> createPlanningToolMetaWithoutWorkflowKind() {
+        return Map.of(
+                "org.apache.shardingsphere/artifact-categories", List.of("rule_distsql"),
+                "org.apache.shardingsphere/side-effect-scope", List.of("rule-metadata"),
+                "org.apache.shardingsphere/related-resource-uris", List.of(),
+                "org.apache.shardingsphere/follow-up-tools", List.of("database_gateway_apply_workflow"));
     }
     
     private Map<String, Object> createNextActionsSchema() {
