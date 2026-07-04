@@ -69,14 +69,56 @@ final class MCPBasicRecoveryPayloadFactory {
     static Map<String, Object> createRuntimeDatabaseConnectionRecovery(final RuntimeDatabaseConnectionException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(cause.getCategory(), createRuntimeDatabaseConnectionModelAction(cause));
         result.put(WorkflowFieldNames.DATABASE, cause.getDatabaseName());
-        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
-                "shardingsphere://capabilities", "capability", "Read configured MCP runtime capabilities before retrying."));
-        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(
-                MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP runtime capabilities and configured database names."),
-                MCPNextActionUtils.dependsOn(MCPNextActionUtils.askUser(
-                        "Ask the operator to fix the MCP runtime database configuration before retrying.", List.of("runtime_database_configuration")), 1)));
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createRuntimeDatabaseConnectionResourcesToRead(cause));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createRuntimeDatabaseConnectionNextActions(cause));
         result.put("ask_user_when_uncertain", true);
         return result;
+    }
+    
+    private static String createRuntimeDatabaseConnectionModelAction(final RuntimeDatabaseConnectionException cause) {
+        if (RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER.equals(cause.getCategory())) {
+            return "Install or configure the JDBC driver for the MCP runtime database, then retry.";
+        }
+        if (RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED.equals(cause.getCategory())) {
+            return "Check the runtime database credentials outside MCP, then retry.";
+        }
+        if (RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED.equals(cause.getCategory())) {
+            return "Check runtime database account privileges outside MCP, then retry.";
+        }
+        if (RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT.equals(cause.getCategory())) {
+            return "Check database reachability and timeout settings, then retry.";
+        }
+        if (RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION.equals(cause.getCategory())) {
+            return "Fix the MCP runtime database configuration outside MCP, then retry.";
+        }
+        if (RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE.equals(cause.getCategory())) {
+            return "Connect to the intended logical database or update the expected database name before retrying.";
+        }
+        return "Check the runtime database availability and configuration, then retry.";
+    }
+    
+    private static List<Map<String, Object>> createRuntimeDatabaseConnectionResourcesToRead(final RuntimeDatabaseConnectionException cause) {
+        Map<String, Object> runtimeResource = MCPResourceHintUtils.create(
+                "shardingsphere://runtime", "runtime", "read_first", "Read current MCP runtime status before retrying.", MCPPayloadFieldNames.RESOURCES_TO_READ);
+        if (!RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE.equals(cause.getCategory())) {
+            return List.of(runtimeResource);
+        }
+        return List.of(runtimeResource, MCPResourceHintUtils.create(
+                "shardingsphere://databases", "logical-database", "read_first", "Read visible logical databases before retrying.", MCPPayloadFieldNames.RESOURCES_TO_READ));
+    }
+    
+    private static List<Map<String, Object>> createRuntimeDatabaseConnectionNextActions(final RuntimeDatabaseConnectionException cause) {
+        Map<String, Object> readRuntime = MCPNextActionUtils.readResource("shardingsphere://runtime", "Read current MCP runtime status and configured database visibility.");
+        if (!RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE.equals(cause.getCategory())) {
+            return MCPNextActionUtils.ordered(readRuntime,
+                    MCPNextActionUtils.dependsOn(MCPNextActionUtils.askUser(
+                            "Ask the operator to fix the MCP runtime database configuration before retrying.", List.of("runtime_database_configuration")), 1));
+        }
+        return MCPNextActionUtils.ordered(readRuntime,
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.readResource("shardingsphere://databases", "Read visible logical databases before retrying."), 1),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.askUser(
+                        "Ask the operator to choose a visible logical database or update runtimeDatabases before retrying.",
+                        List.of(WorkflowFieldNames.DATABASE, "runtimeDatabases")), 2));
     }
     
     static Map<String, Object> createToolCallLimitRecovery(final MCPToolCallLimitExceededException cause) {
@@ -209,25 +251,4 @@ final class MCPBasicRecoveryPayloadFactory {
                 MCPNextActionUtils.readResource(Objects.toString(resources.iterator().next().get(MCPPayloadFieldNames.URI), ""), "Read a safe resource before retrying with the missing argument."));
     }
     
-    private static String createRuntimeDatabaseConnectionModelAction(final RuntimeDatabaseConnectionException cause) {
-        if (RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER.equals(cause.getCategory())) {
-            return "Install or configure the JDBC driver for the MCP runtime database, then retry.";
-        }
-        if (RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED.equals(cause.getCategory())) {
-            return "Check the runtime database credentials outside MCP, then retry.";
-        }
-        if (RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED.equals(cause.getCategory())) {
-            return "Check runtime database account privileges outside MCP, then retry.";
-        }
-        if (RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT.equals(cause.getCategory())) {
-            return "Check database reachability and timeout settings, then retry.";
-        }
-        if (RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION.equals(cause.getCategory())) {
-            return "Fix the MCP runtime database configuration outside MCP, then retry.";
-        }
-        if (RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE.equals(cause.getCategory())) {
-            return "Connect to the intended logical database or update the expected database name before retrying.";
-        }
-        return "Check the runtime database availability and configuration, then retry.";
-    }
 }

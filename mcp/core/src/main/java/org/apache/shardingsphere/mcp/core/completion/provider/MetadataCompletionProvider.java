@@ -62,10 +62,10 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         Map<String, String> contextArguments = new LinkedHashMap<>(requestContext.getContextArguments());
         Map<String, Object> inferredContextArguments = applyContextDefaults(handlerContext, requestContext.getArgumentName(), contextArguments);
         Collection<String> missingContextArguments = createMissingContextArguments(requestContext.getArgumentName(), contextArguments);
-        String guidanceResourceUri = createNearestResourceUri(
+        String nearestResourceUri = createNearestResourceUri(
                 missingContextArguments.isEmpty() ? requestContext.getArgumentName() : missingContextArguments.iterator().next(), contextArguments);
         return new MCPCompletionProviderResult(
-                completeMetadata(handlerContext, requestContext.getArgumentName(), contextArguments), inferredContextArguments, missingContextArguments, guidanceResourceUri);
+                completeMetadata(handlerContext, requestContext.getArgumentName(), contextArguments), inferredContextArguments, missingContextArguments, nearestResourceUri);
     }
     
     private Map<String, Object> applyContextDefaults(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
