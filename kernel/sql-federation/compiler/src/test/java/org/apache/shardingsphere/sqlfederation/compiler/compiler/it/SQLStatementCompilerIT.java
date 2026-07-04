@@ -20,8 +20,16 @@ package org.apache.shardingsphere.sqlfederation.compiler.compiler.it;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
+import org.apache.calcite.adapter.enumerable.EnumerableRel.Prefer;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.jdbc.CalciteSchema;
+import org.apache.calcite.linq4j.Enumerable;
+import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.linq4j.Linq4j;
+import org.apache.calcite.DataContext;
+import org.apache.calcite.runtime.Bindable;
+import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.schema.Table;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
@@ -33,9 +41,12 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.implementor.ScanImplementor;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,8 +70,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class SQLStatementCompilerIT {
     
@@ -69,6 +81,8 @@ class SQLStatementCompilerIT {
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     private SQLStatementCompiler sqlStatementCompiler;
+    
+    private CalciteSchema calciteSchema;
     
     @BeforeEach
     void init() {
@@ -85,7 +99,7 @@ class SQLStatementCompilerIT {
         tables.add(createTProductDetailMetaData());
         tables.add(createMultiTypesFirstTableMetaData());
         tables.add(createMultiTypesSecondTableMetaData());
-        CalciteSchema calciteSchema = CalciteSchema.createRootSchema(true);
+        calciteSchema = CalciteSchema.createRootSchema(true);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
         calciteSchema.add(SCHEMA_NAME, new SQLFederationSchema(SCHEMA_NAME, new ShardingSphereSchema("foo_db", databaseType, tables, Collections.emptyList()), databaseType));
         sqlStatementCompiler = new SQLStatementCompiler(
@@ -255,12 +269,34 @@ class SQLStatementCompilerIT {
     }
     
     @Test
-    void assertCompileDistinctCountWithNullParameterToBindable() {
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL"))
-                .parse("SELECT o.order_id, COUNT(DISTINCT i.product_id), COUNT(DISTINCT 1, NULL) FROM t_order o "
-                        + "LEFT JOIN t_order_item i ON o.order_id = i.order_id GROUP BY o.order_id", false);
-        assertDoesNotThrow(() -> EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) sqlStatementCompiler.compile(sqlStatement, "MySQL").getPhysicalPlan(),
-                EnumerableRel.Prefer.ARRAY));
+    void assertBindAndEnumerateCountDistinctWithNullLiteral() {
+        String sql = "SELECT o.order_id, COUNT(DISTINCT i.product_id), COUNT(DISTINCT 1, NULL) FROM t_order o "
+                + "LEFT JOIN t_order_item i ON o.order_id = i.order_id GROUP BY o.order_id";
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
+        SQLFederationExecutionPlan executionPlan = sqlStatementCompiler.compile(sqlStatement, "MySQL");
+        EnumerableRel enumerableRel = (EnumerableRel) executionPlan.getPhysicalPlan();
+        Bindable<Object> bindable = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, enumerableRel, Prefer.ARRAY);
+        SchemaPlus schemaPlus = calciteSchema.plus();
+        SchemaPlus federateJdbcSchema = schemaPlus.getSubSchema(SCHEMA_NAME);
+        SQLFederationTable orderTable = (SQLFederationTable) federateJdbcSchema.getTable("t_order");
+        SQLFederationTable orderItemTable = (SQLFederationTable) federateJdbcSchema.getTable("t_order_item");
+        orderTable.setScanImplementor((table, ctx) -> (Enumerable<Object>) (Enumerable<?>) Linq4j.asEnumerable(
+                Collections.singletonList(new Object[]{1L, 1, "OK", 1, "", null})));
+        orderItemTable.setScanImplementor((table, ctx) -> (Enumerable<Object>) (Enumerable<?>) Linq4j.asEnumerable(
+                Arrays.asList(new Object[]{1L, 1L, 1, 1, 100, null}, new Object[]{2L, 1L, 1, 2, 200, null})));
+        DataContext dataContext = mock(DataContext.class);
+        when(dataContext.getRootSchema()).thenReturn(schemaPlus);
+        try (Enumerator<Object> enumerator = bindable.bind(dataContext).enumerator()) {
+            assertTrue(enumerator.moveNext());
+            Object[] row = (Object[]) enumerator.current();
+            assertThat(((Number) row[0]).longValue(), is(1L));
+            assertThat(((Number) row[1]).longValue(), is(2L));
+            assertThat(((Number) row[2]).longValue(), is(0L));
+            assertFalse(enumerator.moveNext());
+        } finally {
+            orderTable.clearScanImplementor();
+            orderItemTable.clearScanImplementor();
+        }
     }
     
     @ParameterizedTest(name = "{0}")

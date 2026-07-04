@@ -80,33 +80,18 @@ public final class AggregationProjectionConverter {
         if (null == segment) {
             return Optional.empty();
         }
-        boolean alwaysNullCountDistinct = isAlwaysNullCountDistinct(segment);
-        SqlLiteral functionQuantifier = alwaysNullCountDistinct || !(segment instanceof AggregationDistinctProjectionSegment)
-                ? null
-                : SqlLiteral.createSymbol(SqlSelectKeyword.DISTINCT, SqlParserPos.ZERO);
+        if (isCountDistinctContainingNullLiteral(segment)) {
+            return Optional.of(SqlLiteral.createExactNumeric("0", SqlParserPos.ZERO));
+        }
+        SqlLiteral functionQuantifier = segment instanceof AggregationDistinctProjectionSegment ? SqlLiteral.createSymbol(SqlSelectKeyword.DISTINCT, SqlParserPos.ZERO) : null;
         SqlAggFunction operator = convertOperator(segment.getType().name());
-        List<SqlNode> params = alwaysNullCountDistinct ? Collections.singletonList(SqlLiteral.createNull(SqlParserPos.ZERO))
-                : convertParameters(segment.getParameters(), segment.getExpression(),
-                        segment.getSeparator().orElse(null));
+        List<SqlNode> params = convertParameters(segment.getParameters(), segment.getExpression(), segment.getSeparator().orElse(null));
         SqlBasicCall sqlBasicCall = new SqlBasicCall(operator, params, SqlParserPos.ZERO, functionQuantifier);
         if (segment.getAliasName().isPresent()) {
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(sqlBasicCall,
                     SqlIdentifier.star(Collections.singletonList(segment.getAliasName().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))), SqlParserPos.ZERO));
         }
         return Optional.of(sqlBasicCall);
-    }
-    
-    private static boolean isAlwaysNullCountDistinct(final AggregationProjectionSegment segment) {
-        return AggregationType.COUNT == segment.getType() && segment instanceof AggregationDistinctProjectionSegment && hasNullParameter(segment.getParameters());
-    }
-    
-    private static boolean hasNullParameter(final Collection<ExpressionSegment> params) {
-        for (ExpressionSegment each : params) {
-            if (each instanceof LiteralExpressionSegment && null == ((LiteralExpressionSegment) each).getLiterals()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private static SqlAggFunction convertOperator(final String operator) {
@@ -126,5 +111,19 @@ public final class AggregationProjectionConverter {
             result.add(SqlLiteral.createCharString(separator, SqlParserPos.ZERO));
         }
         return result;
+    }
+
+    private static boolean isCountDistinctContainingNullLiteral(final AggregationProjectionSegment segment) {
+        if (!(segment instanceof AggregationDistinctProjectionSegment)) {
+            return false;
+        }
+        if (AggregationType.COUNT != segment.getType()) {
+            return false;
+        }
+        return segment.getParameters().stream().anyMatch(AggregationProjectionConverter::isNullLiteral);
+    }
+
+    private static boolean isNullLiteral(final ExpressionSegment segment) {
+        return segment instanceof LiteralExpressionSegment && null == ((LiteralExpressionSegment) segment).getLiterals();
     }
 }
