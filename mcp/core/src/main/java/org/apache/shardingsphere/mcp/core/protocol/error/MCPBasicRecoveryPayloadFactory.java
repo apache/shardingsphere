@@ -87,8 +87,8 @@ final class MCPBasicRecoveryPayloadFactory {
         result.put("tool_name", cause.getToolName());
         result.put("max_tool_calls_per_session", cause.getMaxToolCallsPerSession());
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
-                "shardingsphere://capabilities", "capability", "Read the current MCP safety policy before retrying."));
-        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP safety policy and tool call limits.")));
+                "shardingsphere://guidance", "guidance", "Read the current MCP safety policy before retrying."));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://guidance", "Read current MCP safety policy and tool call limits.")));
         result.put("ask_user_when_uncertain", true);
         return result;
     }

@@ -395,7 +395,10 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("identity_scope"), is("mcp_session"));
         assertThat(actualRecovery.get("tool_name"), is("database_gateway_search_metadata"));
         assertThat(actualRecovery.get("max_tool_calls_per_session"), is(1));
-        assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
+        Map<?, ?> actualResourceToRead = getFirstResourceToRead(actualRecovery);
+        assertThat(actualResourceToRead.get("uri"), is("shardingsphere://guidance"));
+        assertThat(actualResourceToRead.get("resource_kind"), is("guidance"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).getFirst()).get("resource_uri"), is("shardingsphere://guidance"));
     }
     
     @Test
@@ -463,6 +466,10 @@ class MCPErrorConverterTest {
     }
     
     private String getFirstResourceToReadUri(final Map<?, ?> recovery) {
-        return (String) ((Map<?, ?>) ((List<?>) recovery.get("resources_to_read")).getFirst()).get("uri");
+        return (String) getFirstResourceToRead(recovery).get("uri");
+    }
+    
+    private Map<?, ?> getFirstResourceToRead(final Map<?, ?> recovery) {
+        return (Map<?, ?>) ((List<?>) recovery.get("resources_to_read")).getFirst();
     }
 }
