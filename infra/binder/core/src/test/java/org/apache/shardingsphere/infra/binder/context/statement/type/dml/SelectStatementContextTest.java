@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -41,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
@@ -72,6 +75,8 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -443,6 +448,72 @@ class SelectStatementContextTest {
                 Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         SelectStatementContext actual = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
         assertTrue(actual.containsTableSubquery());
+    }
+    
+    @Test
+    void assertSetIndexForExpressionWithDerivedAggregationProjections() {
+        AggregationProjectionSegment avgSegment = new AggregationProjectionSegment(0, 0, AggregationType.AVG, "AVG(price)");
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "IFNULL", "IFNULL(AVG(price), 0)");
+        functionSegment.getParameters().add(avgSegment);
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 0, "IFNULL(AVG(price), 0)", functionSegment);
+        
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(expressionSegment);
+        
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(projectionsSegment)
+                .build();
+        
+        Map<String, Integer> columnLabelIndexMap = new LinkedHashMap<>();
+        columnLabelIndexMap.put("IFNULL(AVG(price), 0)", 1);
+        columnLabelIndexMap.put("EXPR_DERIVED_0", 2);
+        columnLabelIndexMap.put("AVG_DERIVED_COUNT_0", 3);
+        columnLabelIndexMap.put("AVG_DERIVED_SUM_0", 4);
+        
+        ShardingSphereDatabase database = mockDatabase();
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        selectStatementContext.setIndexes(columnLabelIndexMap);
+        
+        AggregationProjection actualAvgProjection = selectStatementContext.getProjectionsContext().getAggregationProjections().get(0);
+        assertThat(actualAvgProjection.getIndex(), is(2));
+        assertThat(actualAvgProjection.getDerivedAggregationProjections().get(0).getIndex(), is(3));
+        assertThat(actualAvgProjection.getDerivedAggregationProjections().get(1).getIndex(), is(4));
+    }
+    
+    @Test
+    void assertSetIndexForCoalesceExpressionWithDerivedAggregationProjections() {
+        AggregationProjectionSegment avgSegment = new AggregationProjectionSegment(0, 0, AggregationType.AVG, "AVG(price)");
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "COALESCE", "COALESCE(AVG(price), 0)");
+        functionSegment.getParameters().add(avgSegment);
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 0, "COALESCE(AVG(price), 0)", functionSegment);
+        
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(expressionSegment);
+        
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(projectionsSegment)
+                .build();
+        
+        Map<String, Integer> columnLabelIndexMap = new LinkedHashMap<>();
+        columnLabelIndexMap.put("COALESCE(AVG(price), 0)", 1);
+        columnLabelIndexMap.put("EXPR_DERIVED_0", 2);
+        columnLabelIndexMap.put("AVG_DERIVED_COUNT_0", 3);
+        columnLabelIndexMap.put("AVG_DERIVED_SUM_0", 4);
+        
+        ShardingSphereDatabase database = mockDatabase();
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        selectStatementContext.setIndexes(columnLabelIndexMap);
+        
+        AggregationProjection actualAvgProjection = selectStatementContext.getProjectionsContext().getAggregationProjections().get(0);
+        assertThat(actualAvgProjection.getIndex(), is(2));
+        assertThat(actualAvgProjection.getDerivedAggregationProjections().get(0).getIndex(), is(3));
+        assertThat(actualAvgProjection.getDerivedAggregationProjections().get(1).getIndex(), is(4));
     }
     
     private SelectStatement createSubSelectStatement() {

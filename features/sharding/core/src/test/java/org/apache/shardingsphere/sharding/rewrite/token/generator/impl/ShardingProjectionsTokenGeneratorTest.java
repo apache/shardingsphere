@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -44,6 +45,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -115,6 +119,38 @@ class ShardingProjectionsTokenGeneratorTest {
         ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
         assertThat(actual.toString(routeUnit),
                 is(", foo_agg_expr AS foo_agg_alias , foo_tbl_0.foo_derived_col AS foo_derived_alias , bar_derived_col AS bar_derived_alias , other_expr AS other_alias "));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithExpressionDerivedAvgAggregation() {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.emptyList());
+        when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(2);
+        when(selectStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(databaseType).build());
+        
+        AggregationProjection avgProjection = mock(AggregationProjection.class, RETURNS_DEEP_STUBS);
+        when(avgProjection.getExpression()).thenReturn("AVG(price)");
+        when(avgProjection.getAlias()).thenReturn(Optional.of(new IdentifierValue("avg_alias")));
+        
+        AggregationProjection countProjection = mock(AggregationProjection.class, RETURNS_DEEP_STUBS);
+        when(countProjection.getExpression()).thenReturn("COUNT(price)");
+        when(countProjection.getAlias()).thenReturn(Optional.of(new IdentifierValue("AVG_DERIVED_COUNT_0")));
+        
+        AggregationProjection sumProjection = mock(AggregationProjection.class, RETURNS_DEEP_STUBS);
+        when(sumProjection.getExpression()).thenReturn("SUM(price)");
+        when(sumProjection.getAlias()).thenReturn(Optional.of(new IdentifierValue("AVG_DERIVED_SUM_0")));
+        
+        when(avgProjection.getDerivedAggregationProjections()).thenReturn(Arrays.asList(countProjection, sumProjection));
+        
+        Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = new java.util.LinkedHashMap<>();
+        expressionDerivedAggregations.put(mock(org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection.class),
+                Collections.singletonList(avgProjection));
+        
+        when(selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations()).thenReturn(expressionDerivedAggregations);
+        
+        ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
+        assertThat(actual.toString(routeUnit),
+                is(", AVG(price) AS avg_alias , COUNT(price) AS AVG_DERIVED_COUNT_0 , SUM(price) AS AVG_DERIVED_SUM_0 "));
     }
     
     private AggregationProjection createAggregationProjection() {

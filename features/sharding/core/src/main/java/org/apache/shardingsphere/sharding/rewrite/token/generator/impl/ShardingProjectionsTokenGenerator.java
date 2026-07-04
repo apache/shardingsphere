@@ -101,7 +101,10 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
             }
         }
         for (Collection<AggregationProjection> derivedAggregations : selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations().values()) {
-            result.addAll(derivedAggregations.stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
+            for (AggregationProjection each : derivedAggregations) {
+                result.add(getDerivedProjectionText(each));
+                result.addAll(each.getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
+            }
         }
         return result;
     }
