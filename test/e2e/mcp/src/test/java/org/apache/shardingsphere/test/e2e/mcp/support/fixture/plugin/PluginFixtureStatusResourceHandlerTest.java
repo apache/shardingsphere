@@ -35,8 +35,8 @@ class PluginFixtureStatusResourceHandlerTest {
     }
     
     @Test
-    void assertGetResourceUriTemplate() {
-        assertThat(new PluginFixtureStatusResourceHandler().getResourceUriTemplate(), is("shardingsphere://features/test-fixture/status"));
+    void assertGetResourceUriOrTemplate() {
+        assertThat(new PluginFixtureStatusResourceHandler().getResourceUriOrTemplate(), is("shardingsphere://features/test-fixture/status"));
     }
     
     @Test

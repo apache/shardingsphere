@@ -39,7 +39,7 @@ public final class PluginFixtureStatusResourceHandler implements MCPResourceHand
     }
     
     @Override
-    public String getResourceUriTemplate() {
+    public String getResourceUriOrTemplate() {
         return URI_PATTERN;
     }
     
