@@ -479,7 +479,8 @@ and contain exactly one bold `Review Result: ...` line under `### Summary`.
 Use stable English labels, repo-relative file references with line numbers, public anchors, and sanitized verification summaries.
 Do not wrap posted GitHub text in fences, blockquotes, XML/HTML, or transcripts.
 Do not include internal drafts, self-review notes, private context, local absolute paths, temp paths, tokens, or raw long logs.
-When returning copy-ready text in Codex chat, wrap only the GitHub-facing body in a fenced `markdown` block.
+In Codex chat, Formal Review Mode final output MUST be exactly one fenced `markdown` block containing the entire GitHub-facing review body, with no prose before or after the block.
+Before final output, verify the first non-empty line is ```markdown and the last non-empty line is ```.
 
 Use these required structures:
 
