@@ -42,7 +42,7 @@ public final class ServerCapabilitiesHandler implements MCPResourceHandler<MCPSe
     }
     
     @Override
-    public String getResourceUriOrTemplate() {
+    public String getResourceUriTemplate() {
         return URI_PATTERN;
     }
     

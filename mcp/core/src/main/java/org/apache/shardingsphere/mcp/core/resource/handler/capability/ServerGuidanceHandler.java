@@ -37,7 +37,7 @@ public final class ServerGuidanceHandler implements MCPResourceHandler<MCPServic
     }
     
     @Override
-    public String getResourceUriOrTemplate() {
+    public String getResourceUriTemplate() {
         return URI_PATTERN;
     }
     

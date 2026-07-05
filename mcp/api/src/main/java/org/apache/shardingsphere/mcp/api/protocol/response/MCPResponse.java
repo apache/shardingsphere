@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.response;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
+
 import java.util.Map;
 
 /**
  * MCP response.
+ *
+ * <p>Tool and resource handlers return this type for successful calls. Controlled failures should be reported by throwing
+ * {@link ShardingSphereMCPException}; runtime converts those failures to the protocol-specific MCP error surface.</p>
  */
 @FunctionalInterface
 public interface MCPResponse {

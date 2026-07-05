@@ -68,8 +68,8 @@ class CoreResourceHandlerSurfaceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertGetResourceDescriptor(final HandlerCase handlerCase) {
-        MCPResourceDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handlerCase.getHandler().getResourceUriOrTemplate());
-        assertThat(actual.getUriOrTemplate(), is(handlerCase.getExpectedUriOrTemplate()));
+        MCPResourceDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handlerCase.getHandler().getResourceUriTemplate());
+        assertThat(actual.getUriTemplate(), is(handlerCase.getExpectedUriTemplate()));
         assertFalse(actual.getDescription().isBlank());
     }
     
@@ -77,7 +77,7 @@ class CoreResourceHandlerSurfaceTest {
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
         try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
-            MCPResponse actual = handle(handlerCase.getHandler(), requestContext, parseUriVariables(handlerCase.getExpectedUriOrTemplate(), handlerCase.getResourceUri()));
+            MCPResponse actual = handle(handlerCase.getHandler(), requestContext, parseUriVariables(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri()));
             Map<String, Object> actualPayload = actual.toPayload();
             if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
                 assertThat(actual, isA(MCPDatabaseCapabilityResponse.class));
@@ -148,8 +148,8 @@ class CoreResourceHandlerSurfaceTest {
         }
     }
     
-    private MCPUriVariables parseUriVariables(final String uriOrTemplate, final String resourceUri) {
-        return new MCPUriPattern(uriOrTemplate).parse(resourceUri).orElseThrow();
+    private MCPUriVariables parseUriVariables(final String uriTemplate, final String resourceUri) {
+        return new MCPUriPattern(uriTemplate).parse(resourceUri).orElseThrow();
     }
     
     private <T extends MCPHandlerContext> MCPResponse handle(final MCPResourceHandler<T> handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
@@ -394,7 +394,7 @@ class CoreResourceHandlerSurfaceTest {
         
         private final MCPResourceHandler<?> handler;
         
-        private final String expectedUriOrTemplate;
+        private final String expectedUriTemplate;
         
         private final String resourceUri;
         
@@ -408,8 +408,8 @@ class CoreResourceHandlerSurfaceTest {
             return handler;
         }
         
-        private String getExpectedUriOrTemplate() {
-            return expectedUriOrTemplate;
+        private String getExpectedUriTemplate() {
+            return expectedUriTemplate;
         }
         
         private String getResourceUri() {

@@ -25,22 +25,32 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPResourceSpecificationFactoryTest {
@@ -51,7 +61,7 @@ class MCPResourceSpecificationFactoryTest {
         SyncResourceSpecification actualSpecification = findResourceSpecification(actual, "shardingsphere://capabilities");
         assertThat(actualSpecification.resource().name(), is("server-capability-catalog"));
         assertThat(actualSpecification.resource().title(), is("ShardingSphere MCP Capability Catalog"));
-        assertTrue(!actualSpecification.resource().description().isBlank());
+        assertFalse(actualSpecification.resource().description().isBlank());
         assertThat(actualSpecification.resource().mimeType(), is("application/json"));
         assertThat(actualSpecification.resource().meta().get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("capability-catalog"));
         assertNotNull(actualSpecification.readHandler());
@@ -88,6 +98,22 @@ class MCPResourceSpecificationFactoryTest {
         @SuppressWarnings("unchecked")
         Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
         assertThat(actualData.get("message"), is("Unsupported resource URI `shardingsphere://unknown`."));
+    }
+    
+    @Test
+    void assertReadResourceConvertsRuntimeFailure() {
+        MCPResourceDescriptor descriptor = new MCPResourceDescriptor("shardingsphere://runtime-error", "runtime-error", "Runtime Error", "Read runtime error.", "application/json",
+                MCPResourceAnnotations.EMPTY, Map.of());
+        try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
+            mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://runtime-error"))).thenThrow(new RuntimeException("runtime failure"));
+            SyncResourceSpecification actualSpecification = findResourceSpecification(
+                    new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications(), "shardingsphere://runtime-error");
+            McpError actual = assertThrows(McpError.class,
+                    () -> actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://runtime-error")));
+            assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
+            assertThat(actual.getJsonRpcError().message(), is("runtime failure"));
+        }
     }
     
     @Test

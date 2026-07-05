@@ -37,7 +37,7 @@ class MCPDescriptorCatalogIndexTest {
     @Test
     void assertGetResourceDescriptors() {
         Collection<MCPResourceDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getResourceDescriptors();
-        assertTrue(actualDescriptors.stream().anyMatch(each -> "shardingsphere://workflows/{plan_id}".equals(each.getUriOrTemplate())));
+        assertTrue(actualDescriptors.stream().anyMatch(each -> "shardingsphere://workflows/{plan_id}".equals(each.getUriTemplate())));
     }
     
     @Test

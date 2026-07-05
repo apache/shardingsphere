@@ -67,13 +67,15 @@ When adding a public tool:
 - Implement `MCPToolHandler<T extends MCPHandlerContext>`.
 - Declare the context type.
 - Declare the canonical tool name.
+- `handle(...)` returns only a successful `MCPResponse`. For controlled failures such as invalid arguments, missing resources, query failure, timeout, or unsupported operations, throw a `ShardingSphereMCPException` subclass or a clear runtime exception and let runtime convert it to an MCP tool error result.
 - Maintain input schema, output schema, annotations, related resources, follow-up tools, and side-effect notes in the descriptor.
 
 When adding a public resource:
 
 - Implement `MCPResourceHandler<T extends MCPHandlerContext>`.
 - Declare the context type.
-- Declare the canonical URI template.
+- Declare the canonical resource URI template. A fixed URI is also a URI template without variables.
+- `handle(...)` returns only a successful `MCPResponse`. Do not build error responses in handlers; runtime converts failures to MCP resource read errors.
 - Maintain URI parameter meaning, object scope, MIME type, title, description, annotations, and relationship metadata in the descriptor.
 
 When runtime code needs the descriptor for a handler, resolve it from `MCPDescriptorCatalogIndex` by canonical tool name or resource URI template.

@@ -50,7 +50,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     }
     
     @Override
-    public String getResourceUriOrTemplate() {
+    public String getResourceUriTemplate() {
         return URI_PATTERN;
     }
     

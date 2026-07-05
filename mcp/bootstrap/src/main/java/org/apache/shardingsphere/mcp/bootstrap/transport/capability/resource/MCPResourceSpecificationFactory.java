@@ -23,14 +23,12 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -67,7 +65,7 @@ public final class MCPResourceSpecificationFactory {
     
     private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
         McpSchema.Resource.Builder result = McpSchema.Resource.builder()
-                .uri(descriptor.getUriOrTemplate())
+                .uri(descriptor.getUriTemplate())
                 .name(descriptor.getName())
                 .title(descriptor.getTitle())
                 .description(descriptor.getDescription())
@@ -94,7 +92,7 @@ public final class MCPResourceSpecificationFactory {
     
     private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {
         McpSchema.ResourceTemplate.Builder result = McpSchema.ResourceTemplate.builder()
-                .uriTemplate(descriptor.getUriOrTemplate())
+                .uriTemplate(descriptor.getUriTemplate())
                 .name(descriptor.getName())
                 .title(descriptor.getTitle())
                 .description(descriptor.getDescription())
@@ -117,7 +115,9 @@ public final class MCPResourceSpecificationFactory {
         try {
             Map<String, Object> payload = controller.handle(request.uri()).toPayload();
             return new ReadResourceResult(Collections.singletonList(new TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
-        } catch (final ShardingSphereMCPException | RuntimeDatabaseConnectionException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             throw MCPTransportErrorFactory.createError(ex);
         }
     }

@@ -39,7 +39,7 @@ public final class WorkflowPlanHandler implements MCPResourceHandler<MCPWorkflow
     }
     
     @Override
-    public String getResourceUriOrTemplate() {
+    public String getResourceUriTemplate() {
         return URI_PATTERN;
     }
     

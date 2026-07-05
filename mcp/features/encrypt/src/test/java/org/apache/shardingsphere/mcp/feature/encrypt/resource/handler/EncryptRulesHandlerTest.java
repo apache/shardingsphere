@@ -45,7 +45,7 @@ class EncryptRulesHandlerTest {
     
     @Test
     void assertGetResourceUriTemplate() {
-        assertThat(new EncryptRulesHandler().getResourceUriOrTemplate(), is(EncryptFeatureDefinition.RULES_RESOURCE_URI));
+        assertThat(new EncryptRulesHandler().getResourceUriTemplate(), is(EncryptFeatureDefinition.RULES_RESOURCE_URI));
     }
     
     @Test

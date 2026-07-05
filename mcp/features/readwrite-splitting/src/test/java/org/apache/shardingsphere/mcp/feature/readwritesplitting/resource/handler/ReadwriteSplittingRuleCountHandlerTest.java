@@ -44,7 +44,7 @@ class ReadwriteSplittingRuleCountHandlerTest {
     
     @Test
     void assertGetResourceUriTemplate() {
-        assertThat(new ReadwriteSplittingRuleCountHandler().getResourceUriOrTemplate(), is(ReadwriteSplittingFeatureDefinition.RULE_COUNT_RESOURCE_URI));
+        assertThat(new ReadwriteSplittingRuleCountHandler().getResourceUriTemplate(), is(ReadwriteSplittingFeatureDefinition.RULE_COUNT_RESOURCE_URI));
     }
     
     @Test

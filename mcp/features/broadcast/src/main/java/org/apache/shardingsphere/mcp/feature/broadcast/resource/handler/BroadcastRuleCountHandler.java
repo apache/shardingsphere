@@ -48,7 +48,7 @@ public final class BroadcastRuleCountHandler implements MCPResourceHandler<MCPDa
     }
     
     @Override
-    public String getResourceUriOrTemplate() {
+    public String getResourceUriTemplate() {
         return BroadcastFeatureDefinition.RULE_COUNT_RESOURCE_URI;
     }
     
@@ -56,6 +56,6 @@ public final class BroadcastRuleCountHandler implements MCPResourceHandler<MCPDa
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryBroadcastRuleCount(databaseContext.getQueryFacade(), uriVariables.getValue("database")),
                 MCPResourceNavigationPayloadBuilder.create(
-                        MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriOrTemplate()), uriVariables, BroadcastFeatureDefinition.RULES_RESOURCE_URI));
+                        MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, BroadcastFeatureDefinition.RULES_RESOURCE_URI));
     }
 }

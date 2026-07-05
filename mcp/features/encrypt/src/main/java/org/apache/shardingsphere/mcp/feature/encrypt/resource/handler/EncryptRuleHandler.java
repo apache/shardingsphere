@@ -40,7 +40,7 @@ public final class EncryptRuleHandler implements MCPResourceHandler<MCPDatabaseH
     }
     
     @Override
-    public String getResourceUriOrTemplate() {
+    public String getResourceUriTemplate() {
         return EncryptFeatureDefinition.RULE_RESOURCE_URI;
     }
     
@@ -48,6 +48,6 @@ public final class EncryptRuleHandler implements MCPResourceHandler<MCPDatabaseH
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue("table")),
                 MCPResourceNavigationPayloadBuilder.create(
-                        MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriOrTemplate()), uriVariables, EncryptFeatureDefinition.RULES_RESOURCE_URI));
+                        MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, EncryptFeatureDefinition.RULES_RESOURCE_URI));
     }
 }

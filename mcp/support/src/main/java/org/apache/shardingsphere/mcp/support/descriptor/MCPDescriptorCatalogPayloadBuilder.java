@@ -79,7 +79,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
     
     private Map<String, Object> createResourcePayload(final MCPResourceDescriptor descriptor, final String uriFieldName) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put(uriFieldName, descriptor.getUriOrTemplate());
+        result.put(uriFieldName, descriptor.getUriTemplate());
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
         result.put("description", descriptor.getDescription());
@@ -197,7 +197,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
     }
     
     private String resolveReferenceType(final String reference) {
-        if (catalog.getProtocolDescriptors().getAllResourceDescriptors().stream().anyMatch(each -> each.getUriOrTemplate().equals(reference))) {
+        if (catalog.getProtocolDescriptors().getAllResourceDescriptors().stream().anyMatch(each -> each.getUriTemplate().equals(reference))) {
             return reference.contains("{") ? "resource_template" : "resource";
         }
         if (catalog.getProtocolDescriptors().getToolDescriptors().stream().anyMatch(each -> each.getName().equals(reference))) {

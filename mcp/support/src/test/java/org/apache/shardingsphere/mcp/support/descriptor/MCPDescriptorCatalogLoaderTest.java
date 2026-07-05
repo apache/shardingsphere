@@ -106,7 +106,7 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     private MCPResourceDescriptor findResource(final MCPDescriptorCatalog catalog, final String uriTemplate) {
-        return catalog.getProtocolDescriptors().getAllResourceDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriOrTemplate())).findFirst().orElseThrow();
+        return catalog.getProtocolDescriptors().getAllResourceDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
     }
     
     private MCPResourceDescriptor createResourceTemplateDescriptor() {
@@ -131,7 +131,7 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     private ShardingSphereMCPResourceMetadata findShardingSphereResourceMetadata(final MCPDescriptorCatalog catalog, final String uriTemplate) {
-        return catalog.getShardingSphereDescriptors().getResourceMetadata().stream().filter(each -> uriTemplate.equals(each.getUriOrTemplate())).findFirst().orElseThrow();
+        return catalog.getShardingSphereDescriptors().getResourceMetadata().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
     }
     
     private Map<?, ?> findInputProperty(final MCPToolDescriptor toolDescriptor, final String fieldName) {

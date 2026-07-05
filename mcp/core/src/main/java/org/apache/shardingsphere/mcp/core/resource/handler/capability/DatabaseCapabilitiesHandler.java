@@ -37,7 +37,7 @@ public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCP
     }
     
     @Override
-    public String getResourceUriOrTemplate() {
+    public String getResourceUriTemplate() {
         return URI_PATTERN;
     }
     

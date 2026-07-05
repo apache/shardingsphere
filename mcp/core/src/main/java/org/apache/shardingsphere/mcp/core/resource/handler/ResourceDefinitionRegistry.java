@@ -61,11 +61,11 @@ public final class ResourceDefinitionRegistry {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
-            String uriOrTemplate = each.getResourceUriOrTemplate();
-            ShardingSpherePreconditions.checkState(null != uriOrTemplate && !uriOrTemplate.isBlank(),
-                    () -> new IllegalArgumentException(String.format("Resource URI or URI template is required for `%s`.", each.getClass().getName())));
+            String uriTemplate = each.getResourceUriTemplate();
+            ShardingSpherePreconditions.checkState(null != uriTemplate && !uriTemplate.isBlank(),
+                    () -> new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
-            result.put(new MCPUriPattern(uriOrTemplate), each);
+            result.put(new MCPUriPattern(uriTemplate), each);
         }
         return result;
     }
@@ -96,19 +96,19 @@ public final class ResourceDefinitionRegistry {
     }
     
     private static MCPResourceDefinition createResourceDefinition(final MCPUriPattern uriPattern, final MCPResourceHandler<?> handler) {
-        return new MCPResourceDefinition(uriPattern, MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriOrTemplate()), handler);
+        return new MCPResourceDefinition(uriPattern, MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriTemplate()), handler);
     }
     
     private static void validateRegisteredResourceDescriptors() {
         for (MCPResourceDescriptor each : MCPDescriptorCatalogIndex.getResourceDescriptors()) {
             ShardingSpherePreconditions.checkState(isRegisteredResourceDescriptor(each),
-                    () -> new IllegalStateException(String.format("MCP resource descriptor `%s` has no registered handler.", each.getUriOrTemplate())));
+                    () -> new IllegalStateException(String.format("MCP resource descriptor `%s` has no registered handler.", each.getUriTemplate())));
         }
     }
     
     private static boolean isRegisteredResourceDescriptor(final MCPResourceDescriptor descriptor) {
         for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
-            if (descriptor.getUriOrTemplate().equals(each.getUriPattern().getPattern())) {
+            if (descriptor.getUriTemplate().equals(each.getUriPattern().getPattern())) {
                 return true;
             }
         }
