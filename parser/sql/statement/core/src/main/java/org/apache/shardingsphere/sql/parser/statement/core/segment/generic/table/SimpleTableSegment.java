@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
@@ -44,6 +46,10 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     
     @Setter
     private AliasSegment alias;
+    
+    @Getter(AccessLevel.NONE)
+    @Setter
+    private ExpressionSegment tableSampleExpression;
     
     private final Collection<IndexHintSegment> indexHintSegments = new LinkedList<>();
     
@@ -99,6 +105,15 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
      */
     public Optional<AliasSegment> getAliasSegment() {
         return Optional.ofNullable(alias);
+    }
+    
+    /**
+     * Get table sample expression.
+     *
+     * @return table sample expression
+     */
+    public Optional<ExpressionSegment> getTableSampleExpression() {
+        return Optional.ofNullable(tableSampleExpression);
     }
     
     /**

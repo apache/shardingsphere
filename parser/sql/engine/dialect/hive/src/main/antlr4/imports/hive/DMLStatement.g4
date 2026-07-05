@@ -131,6 +131,7 @@ queryExpressionBody
 
 combineClause
     : UNION combineOption? (queryPrimary | queryExpressionParens)
+    | INTERSECT combineOption? (queryPrimary | queryExpressionParens)
     | EXCEPT combineOption? (queryPrimary | queryExpressionParens)
     ;
 
@@ -140,12 +141,17 @@ queryExpressionParens
 
 queryPrimary
     : querySpecification
+    | transformMapReduceQuerySpecification
     | tableValueConstructor
     | tableStatement
     ;
 
 querySpecification
-    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause?
+    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause? hiveSelectTailClause?
+    ;
+
+transformMapReduceQuerySpecification
+    : fromClause mapReduceClause
     ;
 
 tableStatement
@@ -177,7 +183,8 @@ duplicateSpecification
     ;
 
 projections
-    : (unqualifiedShorthand | projection) (COMMA_ projection)*
+    : transformClause
+    | (unqualifiedShorthand | projection) (COMMA_ projection)*
     ;
 
 projection
@@ -196,6 +203,44 @@ fromClause
     : FROM (DUAL | tableReferences)
     ;
 
+transformClause
+    : TRANSFORM LP_ (expr (COMMA_ expr)*)? RP_ rowFormat? USING string_ transformOutput? rowFormat? recordReaderClause?
+    ;
+
+mapReduceClause
+    : (MAP | REDUCE) expr (COMMA_ expr)* rowFormat? USING string_ transformOutput? rowFormat? recordReaderClause? clusterByClause?
+    ;
+
+transformOutput
+    : AS (LP_ transformOutputColumn (COMMA_ transformOutputColumn)* RP_ | transformOutputColumn (COMMA_ transformOutputColumn)*)
+    ;
+
+transformOutputColumn
+    : identifier dataType?
+    ;
+
+recordReaderClause
+    : RECORDREADER string_
+    ;
+
+clusterByClause
+    : CLUSTER BY orderByItem (COMMA_ orderByItem)*
+    ;
+
+hiveSelectTailClause
+    : clusterByClause
+    | distributeByClause sortByClause?
+    | sortByClause
+    ;
+
+distributeByClause
+    : DISTRIBUTE BY orderByItem (COMMA_ orderByItem)*
+    ;
+
+sortByClause
+    : SORT BY orderByItem (COMMA_ orderByItem)*
+    ;
+
 tableReferences
     : tableReference (COMMA_ tableReference)*
     ;
@@ -205,11 +250,28 @@ escapedTableReference
     ;
 
 tableReference
-    : (tableFactor | LBE_ OJ escapedTableReference RBE_) joinedTable*
+    : (tableFactor lateralView* | LBE_ OJ escapedTableReference RBE_) joinedTable*
+    ;
+
+lateralView
+    : LATERAL VIEW OUTER? functionCall alias AS columnNames
     ;
 
 tableFactor
-    : tableName partitionNames? (forSystemTimeClause | forSystemVersionClause)? (AS? alias)? indexHintList? | subquery AS? alias (LP_ columnNames RP_)? | LP_ tableReferences RP_
+    : tableName partitionNames? tableSample? (forSystemTimeClause | forSystemVersionClause)? (AS? alias)? indexHintList?
+    | subquery AS? alias (LP_ columnNames RP_)?
+    | LP_ tableReferences RP_
+    ;
+
+tableSample
+    : TABLESAMPLE LP_ tableSampleClause RP_
+    ;
+
+tableSampleClause
+    : BUCKET numberLiterals OUT OF numberLiterals ON expr
+    | numberLiterals PERCENT
+    | numberLiterals ROWS
+    | FILESIZE_LITERAL
     ;
 
 forSystemTimeClause
@@ -235,6 +297,7 @@ indexHint
 joinedTable
     : innerJoinType tableReference joinSpecification?
     | outerJoinType tableReference joinSpecification
+    | semiJoinType tableReference joinSpecification
     | naturalJoinType tableFactor
     ;
 
@@ -244,12 +307,16 @@ innerJoinType
     ;
 
 outerJoinType
-    : (LEFT | RIGHT) OUTER? JOIN
+    : (LEFT | RIGHT | FULL) OUTER? JOIN
+    ;
+
+semiJoinType
+    : LEFT SEMI JOIN
     ;
 
 naturalJoinType
     : NATURAL INNER? JOIN
-    | NATURAL (LEFT | RIGHT) OUTER? JOIN
+    | NATURAL (LEFT | RIGHT | FULL) OUTER? JOIN
     ;
 
 joinSpecification
@@ -261,7 +328,16 @@ whereClause
     ;
 
 groupByClause
-    : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
+    : GROUP BY orderByItem (COMMA_ orderByItem)* groupByModifier?
+    ;
+
+groupByModifier
+    : WITH (ROLLUP | CUBE)
+    | GROUPING SETS LP_ groupingSet (COMMA_ groupingSet)* RP_
+    ;
+
+groupingSet
+    : LP_ (orderByItem (COMMA_ orderByItem)*)? RP_
     ;
 
 havingClause
