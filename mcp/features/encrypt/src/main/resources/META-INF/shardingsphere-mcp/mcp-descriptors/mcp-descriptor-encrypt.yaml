@@ -304,7 +304,6 @@ tools:
               description: "Fallback interaction selected by the server."
               enum:
                 - structured_fallback
-                - url_fallback
         fallback_reason:
           type: string
           description: "Machine-readable reason explaining why the planner returned structured fallback instead of automatic form continuation."

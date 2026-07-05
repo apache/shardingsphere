@@ -155,12 +155,14 @@ public final class LLMUsabilityScenarioCatalog {
         result.add(createScenario("extended-resource-list-discovery-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "resource-discovery"),
                 new LLME2EScenario("extended-resource-list-discovery-" + runtimeKind, SYSTEM_PROMPT,
-                        "Discover the available metadata resources, read exact table resource `" + tableResourceUri
+                        "Discover the available MCP tools, resource templates, and metadata resources, read exact table resource `" + tableResourceUri
                                 + "`, and verify `" + query + "`. Do not read placeholder URI text from tool schema descriptions." + toolContext,
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders),
-                        List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
-                        List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
-                List.of(MCPInteractionActionNames.LIST_RESOURCES), List.of(tableResourceUri), true, false));
+                        List.of(MCPInteractionActionNames.LIST_TOOLS, MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
+                                MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
+                        List.of(MCPInteractionActionNames.LIST_TOOLS, MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
+                                MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
+                List.of(MCPInteractionActionNames.LIST_TOOLS), List.of(tableResourceUri), true, false));
         result.add(createScenario("extended-runtime-status-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "runtime-diagnostics"),
                 new LLME2EScenario("extended-runtime-status-" + runtimeKind, SYSTEM_PROMPT,

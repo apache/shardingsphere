@@ -38,8 +38,14 @@ final class LLMMCPToolDefinitionFactory {
     }
     
     private Map<String, Object> createToolDefinition(final String toolName) {
+        if (MCPInteractionActionNames.LIST_TOOLS.equals(toolName)) {
+            return createListToolsToolDefinition();
+        }
         if (MCPInteractionActionNames.LIST_RESOURCES.equals(toolName)) {
             return createListResourcesToolDefinition();
+        }
+        if (MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES.equals(toolName)) {
+            return createListResourceTemplatesToolDefinition();
         }
         if (MCPInteractionActionNames.READ_RESOURCE.equals(toolName)) {
             return createReadResourceToolDefinition();
@@ -53,10 +59,24 @@ final class LLMMCPToolDefinitionFactory {
         return MCPInteractionActionNames.COMPLETE.equals(toolName) ? createCompleteToolDefinition() : createOfficialToolDefinition(toolName);
     }
     
+    private Map<String, Object> createListToolsToolDefinition() {
+        return Map.of("type", "function", "function", Map.of(
+                "name", MCPInteractionActionNames.LIST_TOOLS,
+                "description", "Bridge to MCP tools/list for application-driven tool discovery.",
+                "parameters", createEmptyObjectSchema()));
+    }
+    
     private Map<String, Object> createListResourcesToolDefinition() {
         return Map.of("type", "function", "function", Map.of(
                 "name", MCPInteractionActionNames.LIST_RESOURCES,
                 "description", "Bridge to MCP resources/list for application-driven context discovery.",
+                "parameters", createEmptyObjectSchema()));
+    }
+    
+    private Map<String, Object> createListResourceTemplatesToolDefinition() {
+        return Map.of("type", "function", "function", Map.of(
+                "name", MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
+                "description", "Bridge to MCP resources/templates/list for parameterized resource discovery.",
                 "parameters", createEmptyObjectSchema()));
     }
     

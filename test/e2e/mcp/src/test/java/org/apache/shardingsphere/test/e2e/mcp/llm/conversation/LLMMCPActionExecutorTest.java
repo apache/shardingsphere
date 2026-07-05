@@ -33,9 +33,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class LLMMCPActionExecutorTest {
     
     @Test
+    void assertExecuteSafelyWithListTools() throws InterruptedException {
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient();
+        assertThat(new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.LIST_TOOLS, Map.of()),
+                is(Map.of("tools", List.of(Map.of("name", "fixture_ping")))));
+    }
+    
+    @Test
     void assertExecuteSafelyWithListResources() throws InterruptedException {
         FakeMCPInteractionClient client = new FakeMCPInteractionClient();
         assertThat(new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.LIST_RESOURCES, Map.of()), is(Map.of("resources", List.of())));
+    }
+    
+    @Test
+    void assertExecuteSafelyWithListResourceTemplates() throws InterruptedException {
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient();
+        assertThat(new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES, Map.of()),
+                is(Map.of("resourceTemplates", List.of(Map.of("uriTemplate", "shardingsphere://databases/{database}")))));
     }
     
     @Test
@@ -180,7 +194,7 @@ class LLMMCPActionExecutorTest {
         
         @Override
         public List<Map<String, Object>> listTools() {
-            throw new UnsupportedOperationException("tools/list is not supported.");
+            return List.of(Map.of("name", "fixture_ping"));
         }
         
         @Override
@@ -193,7 +207,7 @@ class LLMMCPActionExecutorTest {
         
         @Override
         public Map<String, Object> listResourceTemplates() {
-            throw new UnsupportedOperationException("resources/templates/list is not supported.");
+            return Map.of("resourceTemplates", List.of(Map.of("uriTemplate", "shardingsphere://databases/{database}")));
         }
         
         @Override

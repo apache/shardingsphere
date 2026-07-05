@@ -77,6 +77,17 @@ class LLMMCPConversationTurnPlannerTest {
     }
     
     @Test
+    void assertCreateTurnToolNamesPrefersDiscoveryBridgeAfterSideEffectNextAction() {
+        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);
+        Map<String, Object> nextAction = Map.of("type", "tool_call", "tool_name", "database_gateway_execute_update", "arguments", Map.of("execution_mode", "execute"));
+        List<String> actual = planner.createTurnToolNames(createScenario(List.of("database_gateway_execute_update", MCPInteractionActionNames.LIST_TOOLS),
+                List.of("database_gateway_execute_update", MCPInteractionActionNames.LIST_TOOLS)),
+                List.of(createTraceRecord("database_gateway_execute_update", Map.of("next_actions", List.of(nextAction)))));
+        assertThat(actual, is(List.of(MCPInteractionActionNames.LIST_TOOLS)));
+    }
+    
+    @Test
     void assertCreateToolChoiceWithMissingCoverage() {
         LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
         LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
