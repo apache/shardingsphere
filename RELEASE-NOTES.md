@@ -58,6 +58,7 @@
 1. SQL Parser: Support Oracle model, pivot, XML and hierarchical query parsing and binding - [#38689](https://github.com/apache/shardingsphere/pull/38689)
 1. SQL Parser: Preserve temporal literal text and raw value for MySQL and Oracle date-time literal parsing - [#38886](https://github.com/apache/shardingsphere/pull/38886)
 1. SQL Parser: Support oracle insert into returning into item statement parse - [#38902](https://github.com/apache/shardingsphere/pull/38902)
+1. SQL Parser: Enhance Hive SQL parser to support CTE, lateral view, table sampling, transform and set operations - [#39008](https://github.com/apache/shardingsphere/pull/39008)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. Metadata: Support parsing query properties from Oracle JDBC URLs - [#38901](https://github.com/apache/shardingsphere/pull/38901)
