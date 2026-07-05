@@ -53,6 +53,7 @@ class RuntimeDatabaseValidationResultTest {
                 List.of(RuntimeDatabaseValidationCheckResult.failed("metadata_read", "connection_failed", "Failed to read metadata.")),
                 "connection_failed", Map.of("category", "connection_failed")).toPayload();
         assertThat(actual.get("response_mode"), is("validation"));
+        assertThat(actual.get("summary"), is("Runtime database `logic_db` failed validation with category `connection_failed`."));
         assertThat(actual.get("status"), is("failed"));
         assertThat(actual.get("database"), is("logic_db"));
         assertThat(actual.get("category"), is("connection_failed"));
@@ -62,5 +63,14 @@ class RuntimeDatabaseValidationResultTest {
                 "status", "failed",
                 "category", "connection_failed",
                 "message", "Failed to read metadata."))));
+    }
+    
+    @Test
+    void assertToPayloadWithTopLevelNextActions() {
+        Map<String, Object> recovery = Map.of("category", "connection_failed", "next_actions", List.of(Map.of("order", 1, "type", "resource_read", "title", "Read resource",
+                "resource_uri", "shardingsphere://runtime")));
+        Map<String, Object> actual = RuntimeDatabaseValidationResult.failed("logic_db",
+                List.of(RuntimeDatabaseValidationCheckResult.failed("metadata_read", "connection_failed", "Failed to read metadata.")), "connection_failed", recovery).toPayload();
+        assertThat(actual.get("next_actions"), is(recovery.get("next_actions")));
     }
 }

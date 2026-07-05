@@ -50,9 +50,9 @@ public final class MCPModelFacingPayloadContract {
     private static final Collection<String> NEXT_ACTION_SCHEMA_ALLOWED_FIELDS = createNextActionSchemaAllowedFields();
     
     private static final Collection<String> MODEL_CRITICAL_FIELD_NAMES = List.of(
-            MCPPayloadFieldNames.NEXT_ACTIONS, MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE,
-            MCPPayloadFieldNames.NEXT_RESOURCES, "manual_artifact_summary", "manual_follow_up", "empty_state", "ambiguity_state", MCPPayloadFieldNames.RECOVERY, "recovery_guidance",
-            "remediation");
+            MCPPayloadFieldNames.SUMMARY, MCPPayloadFieldNames.NEXT_ACTIONS, MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.RESOURCE,
+            MCPPayloadFieldNames.SELF_RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE, MCPPayloadFieldNames.NEXT_RESOURCES, "manual_artifact_summary", "manual_follow_up",
+            "empty_state", "ambiguity_state", MCPPayloadFieldNames.RECOVERY, "recovery_guidance", "remediation");
     
     private MCPModelFacingPayloadContract() {
     }

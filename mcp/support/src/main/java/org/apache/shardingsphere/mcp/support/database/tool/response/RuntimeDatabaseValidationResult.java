@@ -73,14 +73,24 @@ public final class RuntimeDatabaseValidationResult implements MCPResponse {
     
     @Override
     public Map<String, Object> toPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("response_mode", MCPResponseMode.VALIDATION);
+        result.put(MCPPayloadFieldNames.SUMMARY, createSummary());
         result.put("status", status);
         result.put("database", database);
         result.put("checks", createChecksPayload());
         result.put("category", category);
         result.put(MCPPayloadFieldNames.RECOVERY, recovery);
+        if (recovery.containsKey(MCPPayloadFieldNames.NEXT_ACTIONS)) {
+            result.put(MCPPayloadFieldNames.NEXT_ACTIONS, recovery.get(MCPPayloadFieldNames.NEXT_ACTIONS));
+        }
         return result;
+    }
+    
+    private String createSummary() {
+        return "ready".equals(status)
+                ? String.format("Runtime database `%s` passed validation.", database)
+                : String.format("Runtime database `%s` failed validation with category `%s`.", database, category);
     }
     
     private List<Map<String, Object>> createChecksPayload() {

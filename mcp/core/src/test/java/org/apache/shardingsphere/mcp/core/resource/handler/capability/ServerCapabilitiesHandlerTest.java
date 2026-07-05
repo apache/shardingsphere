@@ -122,6 +122,10 @@ class ServerCapabilitiesHandlerTest {
                 is("shardingsphere://guidance complements MCP list methods with ShardingSphere domain guidance, workflow guidance, and side-effect notes."));
         assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
         assertFalse(actual.containsKey("safe_first_resource"));
+        Map<?, ?> firstRoute = findByKey((List<?>) actual.get("first_call_routes"), "intent", "inspect_metadata");
+        assertThat(firstRoute.get("first_action"), is("read_resource shardingsphere://databases"));
+        Map<?, ?> recoveryRoute = findByKey((List<?>) actual.get("first_call_routes"), "intent", "recover_error");
+        assertThat(recoveryRoute.get("first_action"), is("follow top-level next_actions"));
         Map<?, ?> metadataRule = (Map<?, ?>) actual.get("metadata_rule");
         assertThat(metadataRule.get("first_resource"), is("shardingsphere://databases"));
         assertThat(metadataRule.get("search_tool"), is("database_gateway_search_metadata"));
@@ -247,6 +251,7 @@ class ServerCapabilitiesHandlerTest {
     private void assertCoreToolSchemas(final Map<String, Object> capabilities) {
         Map<?, ?> searchMetadataTool = findTool(capabilities, "database_gateway_search_metadata");
         Map<?, ?> searchMetadataOutputProperties = (Map<?, ?>) ((Map<?, ?>) searchMetadataTool.get("outputSchema")).get("properties");
+        assertTrue(searchMetadataOutputProperties.containsKey("summary"));
         assertTrue(searchMetadataOutputProperties.containsKey("total_match_count"));
         assertTrue(searchMetadataOutputProperties.containsKey("returned_count"));
         assertTrue(searchMetadataOutputProperties.containsKey("truncated"));
@@ -256,13 +261,16 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> validateRuntimeDatabaseTool = findTool(capabilities, "database_gateway_validate_runtime_database");
         Map<?, ?> validateRuntimeDatabaseOutputProperties = (Map<?, ?>) ((Map<?, ?>) validateRuntimeDatabaseTool.get("outputSchema")).get("properties");
         assertThat(getInputFieldNames(validateRuntimeDatabaseTool), is(List.of("database")));
+        assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("summary"));
         assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("status"));
         assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("checks"));
         assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("category"));
         assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("recovery"));
+        assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("next_actions"));
         Map<?, ?> executeUpdateTool = findTool(capabilities, "database_gateway_execute_update");
         Map<?, ?> executeUpdateOutputProperties = (Map<?, ?>) ((Map<?, ?>) executeUpdateTool.get("outputSchema")).get("properties");
         assertTrue(executeUpdateOutputProperties.containsKey("response_mode"));
+        assertTrue(executeUpdateOutputProperties.containsKey("summary"));
         assertTrue(((List<?>) ((Map<?, ?>) executeUpdateOutputProperties.get("result_kind")).get("enum")).containsAll(List.of("preview", "result_set", "update_count", "statement_ack")));
         assertTrue(executeUpdateOutputProperties.containsKey("preview_semantics"));
         assertTrue(executeUpdateOutputProperties.containsKey("review_summary"));

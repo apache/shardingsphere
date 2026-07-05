@@ -74,7 +74,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     }
     
     private Map<String, Object> createSearchPayloadMetadata(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request, final MetadataSearchResult searchResult) {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        result.put(MCPPayloadFieldNames.SUMMARY, createSummary(searchResult));
         result.put("search_context", searchResult.getSearchContext());
         result.put("total_match_count", searchResult.getTotalMatchCount());
         result.put("returned_count", searchResult.getReturnedCount());
@@ -96,6 +97,10 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
             result.put("ambiguity_state", createAmbiguityState(searchResult.getItems(), duplicatedNames));
         }
         return result;
+    }
+    
+    private String createSummary(final MetadataSearchResult searchResult) {
+        return String.format("Metadata search returned %d of %d matches.", searchResult.getReturnedCount(), searchResult.getTotalMatchCount());
     }
     
     private Map<String, Object> createLargeResultGuidance(final MetadataSearchResult searchResult) {

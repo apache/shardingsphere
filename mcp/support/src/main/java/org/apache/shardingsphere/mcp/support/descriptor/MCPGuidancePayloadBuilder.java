@@ -66,11 +66,12 @@ final class MCPGuidancePayloadBuilder {
     }
     
     Map<String, Object> createModelFirstSummary() {
-        Map<String, Object> result = new LinkedHashMap<>(11, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("official_discovery_methods", createOfficialDiscoveryMethods());
         result.put("argument_completion_method", ARGUMENT_COMPLETION_METHOD);
         result.put("guidance_resource_role", GUIDANCE_RESOURCE_URI + " complements MCP list methods with ShardingSphere domain guidance, workflow guidance, and side-effect notes.");
         result.put("guidance_resource", GUIDANCE_RESOURCE_URI);
+        result.put("first_call_routes", createFirstCallRoutes());
         result.put("metadata_rule", createMetadataRule());
         result.put("preflight_rule", createPreflightRule());
         result.put("sql_tool_selection", createSqlToolSelection());
@@ -78,6 +79,29 @@ final class MCPGuidancePayloadBuilder {
         result.put("workflow_rule", createWorkflowRule());
         result.put("completion_rule", "Use MCP completion for missing database, schema, table, column, index, sequence, or storage unit values before guessing identifiers.");
         result.put("recovery_rule", "Follow structured recovery.next_actions before inventing a replacement call.");
+        return result;
+    }
+    
+    private List<Map<String, Object>> createFirstCallRoutes() {
+        return List.of(
+                createFirstCallRoute("inspect_metadata", "read_resource shardingsphere://databases", "call_tool database_gateway_search_metadata or read returned resource.uri",
+                        "Stop after the requested detail resource is read."),
+                createFirstCallRoute("validate_runtime", "read_resource shardingsphere://runtime", "call_tool database_gateway_validate_runtime_database with a configured database",
+                        "Follow top-level next_actions when validation fails."),
+                createFirstCallRoute("read_only_sql", "read_resource shardingsphere://databases/{database}/capabilities", "call_tool database_gateway_execute_query",
+                        "Stop after reporting the result rows."),
+                createFirstCallRoute("side_effect_sql", "call_tool database_gateway_execute_update execution_mode=preview", "call_tool database_gateway_execute_update execution_mode=execute",
+                        "Execute only after preview review confirms the intended side effect."),
+                createFirstCallRoute("recover_error", "follow top-level next_actions", "fallback to recovery.next_actions when top-level actions are absent",
+                        "Ask the user only when no deterministic resource, completion, or tool action is available."));
+    }
+    
+    private Map<String, Object> createFirstCallRoute(final String intent, final String firstAction, final String nextStep, final String stopRule) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("intent", intent);
+        result.put("first_action", firstAction);
+        result.put("next_step", nextStep);
+        result.put("stop_rule", stopRule);
         return result;
     }
     

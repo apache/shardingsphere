@@ -70,6 +70,7 @@ class SearchMetadataToolHandlerTest {
         assertTrue(actualItemProperties.containsKey("matched_fields"));
         assertTrue(actualItemProperties.containsKey("matched_value"));
         assertTrue(actualProperties.containsKey("search_context"));
+        assertTrue(actualProperties.containsKey("summary"));
         assertTrue(actualProperties.containsKey("total_match_count"));
         assertTrue(actualProperties.containsKey("returned_count"));
         assertTrue(actualProperties.containsKey("truncated"));
@@ -88,6 +89,7 @@ class SearchMetadataToolHandlerTest {
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
+            assertThat(actualPayload.get("summary"), is("Metadata search returned 1 of 1 matches."));
             assertThat(actualPayload.get("total_match_count"), is(1));
             assertThat(actualPayload.get("returned_count"), is(1));
             assertFalse((Boolean) actualPayload.get("truncated"));
@@ -164,6 +166,7 @@ class SearchMetadataToolHandlerTest {
                     Map.of("database", "large_db", "object_types", List.of(SupportedMCPMetadataObjectType.TABLE.name()))));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((List<?>) actualPayload.get("items")).size(), is(100));
+            assertThat(actualPayload.get("summary"), is("Metadata search returned 100 of 101 matches."));
             assertThat(actualPayload.get("total_match_count"), is(101));
             assertThat(actualPayload.get("returned_count"), is(100));
             assertTrue((Boolean) actualPayload.get("truncated"));
@@ -204,6 +207,7 @@ class SearchMetadataToolHandlerTest {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
             MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "query", "missing")));
             Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(actualPayload.get("summary"), is("Metadata search returned 0 of 0 matches."));
             assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("state"), is("no_match"));
             assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("category"), is("object_not_visible"));
             Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();

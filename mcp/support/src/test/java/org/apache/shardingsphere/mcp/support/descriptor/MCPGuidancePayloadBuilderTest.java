@@ -51,6 +51,10 @@ class MCPGuidancePayloadBuilderTest {
                 is("shardingsphere://guidance complements MCP list methods with ShardingSphere domain guidance, workflow guidance, and side-effect notes."));
         assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
         assertFalse(actual.containsKey("safe_first_resource"));
+        Map<?, ?> actualMetadataRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "inspect_metadata");
+        assertThat(actualMetadataRoute.get("first_action"), is("read_resource shardingsphere://databases"));
+        Map<?, ?> actualRecoveryRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "recover_error");
+        assertThat(actualRecoveryRoute.get("first_action"), is("follow top-level next_actions"));
         assertThat(((Map<?, ?>) actual.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
         assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("execution_mode=execute"));
         Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
@@ -127,6 +131,11 @@ class MCPGuidancePayloadBuilderTest {
     
     private Map<?, ?> castToMap(final Object value) {
         return (Map<?, ?>) value;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> castToRouteList(final Object value) {
+        return (List<Map<String, Object>>) value;
     }
     
     private Map<String, Object> createOfficialDiscoveryMethods() {

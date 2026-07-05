@@ -90,27 +90,31 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     
     @Test
     void assertFormatWithModelCriticalFields() {
-        Map<String, Object> actual = format(Map.of(
-                "resources_to_read", List.of(Map.of("uri", "shardingsphere://capabilities")),
-                "resource", Map.of("uri", "shardingsphere://databases"),
-                "parent_resource", Map.of("uri", "shardingsphere://databases"),
-                "next_resources", List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas")),
-                "manual_artifact_summary", "Review DistSQL.",
-                "manual_follow_up", "Validate runtime state.",
-                "empty_state", Map.of("state", "no_match"),
-                "recovery_guidance", "Read metadata before retrying.",
-                "remediation", "Fix the mismatch.",
-                "ignored", "value"));
-        assertThat(actual, is(Map.of(
-                "resources_to_read", List.of(Map.of("uri", "shardingsphere://capabilities")),
-                "resource", Map.of("uri", "shardingsphere://databases"),
-                "parent_resource", Map.of("uri", "shardingsphere://databases"),
-                "next_resources", List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas")),
-                "manual_artifact_summary", "Review DistSQL.",
-                "manual_follow_up", "Validate runtime state.",
-                "empty_state", Map.of("state", "no_match"),
-                "recovery_guidance", "Read metadata before retrying.",
-                "remediation", "Fix the mismatch.")));
+        Map<String, Object> actual = format(Map.ofEntries(
+                Map.entry("summary", "Read logical databases first."),
+                Map.entry("resources_to_read", List.of(Map.of("uri", "shardingsphere://capabilities"))),
+                Map.entry("resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("self_resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("parent_resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("next_resources", List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas"))),
+                Map.entry("manual_artifact_summary", "Review DistSQL."),
+                Map.entry("manual_follow_up", "Validate runtime state."),
+                Map.entry("empty_state", Map.of("state", "no_match")),
+                Map.entry("recovery_guidance", "Read metadata before retrying."),
+                Map.entry("remediation", "Fix the mismatch."),
+                Map.entry("ignored", "value")));
+        assertThat(actual, is(Map.ofEntries(
+                Map.entry("summary", "Read logical databases first."),
+                Map.entry("resources_to_read", List.of(Map.of("uri", "shardingsphere://capabilities"))),
+                Map.entry("resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("self_resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("parent_resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("next_resources", List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas"))),
+                Map.entry("manual_artifact_summary", "Review DistSQL."),
+                Map.entry("manual_follow_up", "Validate runtime state."),
+                Map.entry("empty_state", Map.of("state", "no_match")),
+                Map.entry("recovery_guidance", "Read metadata before retrying."),
+                Map.entry("remediation", "Fix the mismatch."))));
     }
     
     @Test
