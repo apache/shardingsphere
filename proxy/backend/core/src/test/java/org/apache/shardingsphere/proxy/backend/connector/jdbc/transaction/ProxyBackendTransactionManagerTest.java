@@ -118,7 +118,7 @@ class ProxyBackendTransactionManagerTest {
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(connectionContext.getTransactionContext()).thenReturn(transactionContext);
         when(databaseConnectionManager.getConnectionPostProcessors()).thenReturn(connectionPostProcessors);
-        when(databaseConnectionManager.getCachedConnections()).thenReturn(mockCachedConnections(connection));
+        mockCachedConnections(connection);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -319,11 +319,11 @@ class ProxyBackendTransactionManagerTest {
         transactionContext.setExceptionOccur(initialExceptionFlag);
         if (exceptionCount == 2) {
             Connection anotherConnection = mock(Connection.class);
-            when(databaseConnectionManager.getCachedConnections()).thenReturn(mockCachedConnections(connection, anotherConnection));
+            mockCachedConnections(connection, anotherConnection);
             doThrow(new SQLException("first")).when(savepointManager).rollbackToSavepoint(connection, "sp");
             doThrow(new SQLException("second")).when(savepointManager).rollbackToSavepoint(anotherConnection, "sp");
         } else {
-            when(databaseConnectionManager.getCachedConnections()).thenReturn(mockCachedConnections(connection));
+            mockCachedConnections(connection);
         }
         mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
         ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
@@ -346,7 +346,7 @@ class ProxyBackendTransactionManagerTest {
     @Test
     void assertReleaseSavepointThrowsCombinedSQLException() throws SQLException {
         Connection anotherConnection = mock(Connection.class);
-        when(databaseConnectionManager.getCachedConnections()).thenReturn(mockCachedConnections(connection, anotherConnection));
+        mockCachedConnections(connection, anotherConnection);
         ConnectionSavepointManager savepointManager = mock(ConnectionSavepointManager.class);
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
         doThrow(new SQLException("first")).when(savepointManager).releaseSavepoint(connection, "sp");
@@ -366,12 +366,12 @@ class ProxyBackendTransactionManagerTest {
         verify(savepointManager).releaseSavepoint(connection, "sp");
     }
     
-    private Multimap<String, Connection> mockCachedConnections(final Connection... connections) {
-        Multimap<String, Connection> result = LinkedHashMultimap.create();
+    private void mockCachedConnections(final Connection... connections) {
+        Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
         for (Connection each : connections) {
-            result.put("ds1", each);
+            cachedConnections.put("ds1", each);
         }
-        return result;
+        when(databaseConnectionManager.getCachedConnections()).thenReturn(cachedConnections);
     }
     
     private void mockProxyContext(final TransactionType defaultType, final ShardingSphereTransactionManagerEngine engine, final Map<ShardingSphereRule, TransactionHook> transactionHooks) {
