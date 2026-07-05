@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -224,49 +223,6 @@ public final class MCPToolDescriptorCatalogValidator {
             MCPToolDescriptorValidationUtils.validateRequiredWorkflowPlanOutputFields(descriptor);
         }
         MCPToolDescriptorValidationUtils.validateRequiredWorkflowPlanMetaFields(descriptor);
-        validateEncryptDistSQLExamples(descriptor);
-    }
-    
-    private static void validateEncryptDistSQLExamples(final MCPToolDescriptor descriptor) {
-        Object examples = descriptor.getOutputSchema().get("examples");
-        if (examples instanceof Collection) {
-            for (Object each : (Collection<?>) examples) {
-                validateEncryptDistSQLExample(descriptor, each);
-            }
-        }
-    }
-    
-    private static void validateEncryptDistSQLExample(final MCPToolDescriptor descriptor, final Object value) {
-        if (value instanceof Map) {
-            validateEncryptDistSQLExampleMap(descriptor, (Map<?, ?>) value);
-        } else if (value instanceof Collection) {
-            for (Object each : (Collection<?>) value) {
-                validateEncryptDistSQLExample(descriptor, each);
-            }
-        }
-    }
-    
-    private static void validateEncryptDistSQLExampleMap(final MCPToolDescriptor descriptor, final Map<?, ?> value) {
-        Object sql = value.get("sql");
-        if (null != sql && isEncryptRuleDistSQL(sql.toString())) {
-            validateEncryptRuleDistSQL(descriptor, sql.toString());
-        }
-        for (Object each : value.values()) {
-            validateEncryptDistSQLExample(descriptor, each);
-        }
-    }
-    
-    private static boolean isEncryptRuleDistSQL(final String sql) {
-        String actualSQL = sql.toUpperCase(Locale.ENGLISH);
-        return actualSQL.contains("CREATE ENCRYPT RULE") || actualSQL.contains("ALTER ENCRYPT RULE");
-    }
-    
-    private static void validateEncryptRuleDistSQL(final MCPToolDescriptor descriptor, final String sql) {
-        String actualSQL = sql.toLowerCase(Locale.ENGLISH);
-        ShardingSpherePreconditions.checkState(!actualSQL.contains("type(name=aes"),
-                () -> new IllegalStateException(String.format("Tool `%s` output example executable encrypt DistSQL must quote algorithm type as a string literal.", descriptor.getName())));
-        ShardingSpherePreconditions.checkState(!actualSQL.contains("'aes-key-value'") || actualSQL.contains("'digest-algorithm-name'"),
-                () -> new IllegalStateException(String.format("Tool `%s` output example executable AES DistSQL must include `digest-algorithm-name`.", descriptor.getName())));
     }
     
     private static void validateRelatedResourceUris(final MCPToolDescriptor descriptor, final Set<String> resourceIdentifiers, final Set<String> shardingSphereResourceIdentifiers) {

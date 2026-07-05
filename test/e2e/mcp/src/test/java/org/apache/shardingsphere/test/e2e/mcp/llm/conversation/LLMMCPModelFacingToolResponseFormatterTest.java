@@ -89,6 +89,31 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     }
     
     @Test
+    void assertFormatWithModelCriticalFields() {
+        Map<String, Object> actual = format(Map.of(
+                "resources_to_read", List.of(Map.of("uri", "shardingsphere://capabilities")),
+                "resource", Map.of("uri", "shardingsphere://databases"),
+                "parent_resource", Map.of("uri", "shardingsphere://databases"),
+                "next_resources", List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas")),
+                "manual_artifact_summary", "Review DistSQL.",
+                "manual_follow_up", "Validate runtime state.",
+                "empty_state", Map.of("state", "no_match"),
+                "recovery_guidance", "Read metadata before retrying.",
+                "remediation", "Fix the mismatch.",
+                "ignored", "value"));
+        assertThat(actual, is(Map.of(
+                "resources_to_read", List.of(Map.of("uri", "shardingsphere://capabilities")),
+                "resource", Map.of("uri", "shardingsphere://databases"),
+                "parent_resource", Map.of("uri", "shardingsphere://databases"),
+                "next_resources", List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas")),
+                "manual_artifact_summary", "Review DistSQL.",
+                "manual_follow_up", "Validate runtime state.",
+                "empty_state", Map.of("state", "no_match"),
+                "recovery_guidance", "Read metadata before retrying.",
+                "remediation", "Fix the mismatch.")));
+    }
+    
+    @Test
     void assertFormatWithRecoveryAndNextActions() {
         Map<String, Object> actual = format(Map.of(
                 "next_actions", List.of(
@@ -102,6 +127,9 @@ class LLMMCPModelFacingToolResponseFormatterTest {
                         "next_actions", List.of(
                                 Map.of("type", "tool_call", "tool_name", "database_gateway_execute_update", "arguments", Map.of("execution_mode", "execute")),
                                 Map.of("type", "resource_read", "resource_uri", "shardingsphere://databases")),
+                        "resources_to_read", List.of(Map.of("uri", "shardingsphere://databases")),
+                        "recovery_guidance", "Read metadata.",
+                        "remediation", "Fix the request.",
                         "ignored", "value")));
         assertThat(actual, is(Map.of(
                 "next_actions", List.of(
@@ -110,6 +138,9 @@ class LLMMCPModelFacingToolResponseFormatterTest {
                         "recovery_category", "missing_context",
                         "model_action", "retry",
                         "suggested_arguments", Map.of("database", "logic_db"),
+                        "resources_to_read", List.of(Map.of("uri", "shardingsphere://databases")),
+                        "recovery_guidance", "Read metadata.",
+                        "remediation", "Fix the request.",
                         "next_actions", List.of(Map.of("type", "resource_read", "resource_uri", "shardingsphere://databases"))))));
     }
     

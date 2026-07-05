@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -33,17 +35,17 @@ final class LLMMCPModelFacingToolResponseFormatter {
     
     private static final List<String> GENERAL_FIELD_NAMES = List.of(
             "response_mode", "error_code", "message", "recovery_category", "result_kind", "status", "statement_type", "normalized_sql", "rows", "row_objects",
-            "returned_row_count", "plan_id", "workflow_resource", "manual_artifact_summary", "manual_follow_up");
+            "returned_row_count", "plan_id", "workflow_resource");
     
     private static final List<String> POST_ACTION_FIELD_NAMES = List.of(
-            "completion", "count", "has_more", "total_match_count", "returned_count", "truncated", "large_result_guidance", "search_context", "ambiguity_state");
+            "completion", "count", "has_more", "total_match_count", "returned_count", "truncated", "large_result_guidance", "search_context");
     
     static String format(final Map<String, Object> response) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         copyFields(response, result, GENERAL_FIELD_NAMES);
         copyCompactArtifactList(response, result, "manual_artifacts");
         copyCompactArtifactList(response, result, "exported_artifacts");
-        copyIfPresent(response, result, "resources_to_read");
+        copyModelCriticalFields(response, result);
         copyModelFacingNextActions(response, result);
         copyFields(response, result, POST_ACTION_FIELD_NAMES);
         List<Map<String, Object>> resources = LLMMCPJsonValues.castToList(response.get("resources"));
@@ -75,6 +77,14 @@ final class LLMMCPModelFacingToolResponseFormatter {
     private static void copyIfPresent(final Map<String, Object> source, final Map<String, Object> target, final String fieldName) {
         if (source.containsKey(fieldName)) {
             target.put(fieldName, source.get(fieldName));
+        }
+    }
+    
+    private static void copyModelCriticalFields(final Map<String, Object> source, final Map<String, Object> target) {
+        for (String each : MCPModelFacingPayloadContract.getModelCriticalFieldNames()) {
+            if (!MCPPayloadFieldNames.NEXT_ACTIONS.equals(each) && !MCPPayloadFieldNames.RECOVERY.equals(each)) {
+                copyIfPresent(source, target, each);
+            }
         }
     }
     
@@ -164,13 +174,13 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyIfPresent(recovery, compactRecovery, "plan_id");
         copyIfPresent(recovery, compactRecovery, "completion_first");
         copyIfPresent(recovery, compactRecovery, "suggested_arguments");
-        copyIfPresent(recovery, compactRecovery, "resources_to_read");
+        copyModelCriticalFields(recovery, compactRecovery);
         copyModelFacingNextActions(recovery, compactRecovery);
         target.put("recovery", compactRecovery);
     }
     
     private static void copyModelFacingNextActions(final Map<String, Object> source, final Map<String, Object> target) {
-        List<Map<String, Object>> nextActions = LLMMCPJsonValues.castToList(source.get("next_actions"));
+        List<Map<String, Object>> nextActions = LLMMCPJsonValues.castToList(source.get(MCPPayloadFieldNames.NEXT_ACTIONS));
         if (nextActions.isEmpty()) {
             return;
         }
@@ -181,7 +191,7 @@ final class LLMMCPModelFacingToolResponseFormatter {
             }
         }
         if (!result.isEmpty()) {
-            target.put("next_actions", result);
+            target.put(MCPPayloadFieldNames.NEXT_ACTIONS, result);
         }
     }
 }
