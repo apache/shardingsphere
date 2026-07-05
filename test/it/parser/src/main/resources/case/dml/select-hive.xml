@@ -1187,22 +1187,22 @@
         </projections>
     </select>
 
-    <select sql-case-id="hive_select_map_function_placeholder" parameters="4">
+    <select sql-case-id="hive_select_map_function_placeholder" parameters="1, 1, 1, 1">
         <projections start-index="7" stop-index="21">
             <expression-projection text="map(?, ?, ?, ?)" start-index="7" stop-index="21">
                 <expr>
                     <function function-name="map" start-index="7" stop-index="21" text="map(?, ?, ?, ?)">
                         <parameter>
-                            <parameter-marker index="0" start-index="11" stop-index="11" />
+                            <parameter-marker-expression parameter-index="0" start-index="11" stop-index="11" />
                         </parameter>
                         <parameter>
-                            <parameter-marker index="1" start-index="14" stop-index="14" />
+                            <parameter-marker-expression parameter-index="1" start-index="14" stop-index="14" />
                         </parameter>
                         <parameter>
-                            <parameter-marker index="2" start-index="17" stop-index="17" />
+                            <parameter-marker-expression parameter-index="2" start-index="17" stop-index="17" />
                         </parameter>
                         <parameter>
-                            <parameter-marker index="3" start-index="20" stop-index="20" />
+                            <parameter-marker-expression parameter-index="3" start-index="20" stop-index="20" />
                         </parameter>
                     </function>
                 </expr>
@@ -1213,16 +1213,16 @@
         </from>
     </select>
 
-    <select sql-case-id="hive_select_struct_function_placeholder" parameters="2">
+    <select sql-case-id="hive_select_struct_function_placeholder" parameters="1, 1">
         <projections start-index="7" stop-index="18">
             <expression-projection text="struct(?, ?)" start-index="7" stop-index="18">
                 <expr>
                     <function function-name="struct" start-index="7" stop-index="18" text="struct(?, ?)">
                         <parameter>
-                            <parameter-marker index="0" start-index="14" stop-index="14" />
+                            <parameter-marker-expression parameter-index="0" start-index="14" stop-index="14" />
                         </parameter>
                         <parameter>
-                            <parameter-marker index="1" start-index="17" stop-index="17" />
+                            <parameter-marker-expression parameter-index="1" start-index="17" stop-index="17" />
                         </parameter>
                     </function>
                 </expr>
@@ -1294,7 +1294,7 @@
                 <expr>
                     <function function-name="CAST" text="CAST(? AS TIMESTAMP)" start-index="7" stop-index="26">
                         <parameter>
-                            <parameter-marker index="0" start-index="12" stop-index="12" />
+                            <parameter-marker-expression parameter-index="0" start-index="12" stop-index="12" />
                         </parameter>
                         <parameter>
                             <data-type value="TIMESTAMP" start-index="17" stop-index="25" />
@@ -1314,7 +1314,7 @@
                 <expr>
                     <function function-name="CAST" text="CAST(? AS TIMESTAMP WITH LOCAL TIME ZONE)" start-index="7" stop-index="47">
                         <parameter>
-                            <parameter-marker index="0" start-index="12" stop-index="12" />
+                            <parameter-marker-expression parameter-index="0" start-index="12" stop-index="12" />
                         </parameter>
                         <parameter>
                             <data-type value="TIMESTAMP" start-index="17" stop-index="46" />
@@ -1334,7 +1334,7 @@
                 <expr>
                     <function function-name="CAST" text="CAST(? AS STRING)" start-index="7" stop-index="23">
                         <parameter>
-                            <parameter-marker index="0" start-index="12" stop-index="12" />
+                            <parameter-marker-expression parameter-index="0" start-index="12" stop-index="12" />
                         </parameter>
                         <parameter>
                             <data-type value="STRING" start-index="17" stop-index="22" />

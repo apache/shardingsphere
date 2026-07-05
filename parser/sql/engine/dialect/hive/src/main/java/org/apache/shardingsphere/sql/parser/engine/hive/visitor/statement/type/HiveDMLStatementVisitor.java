@@ -663,10 +663,8 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
         for (ExprContext each : ctx.expr()) {
             ASTNode expr = visit(each);
-            if (expr instanceof ColumnSegment) {
-                result.getParameters().add((ColumnSegment) expr);
-            } else if (expr instanceof LiteralExpressionSegment) {
-                result.getParameters().add((LiteralExpressionSegment) expr);
+            if (expr instanceof ExpressionSegment) {
+                result.getParameters().add((ExpressionSegment) expr);
             }
         }
         if (null != ctx.castType()) {
