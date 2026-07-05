@@ -40,11 +40,6 @@
     <sql-case id="alter-compute-node-xa-recovery-nodes" value="ALTER COMPUTE NODE instance_xa_recovery SET XA_RECOVERY_NODES='instance_1'" db-types="ShardingSphere" />
     <sql-case id="alter-compute-node-xa-recovery-nodes-with-multiple-values" value="ALTER COMPUTE NODE instance_xa_recovery_multiple SET XA_RECOVERY_NODES='instance_1,instance_2'" db-types="ShardingSphere" />
     
-    <sql-case id="label-compute-node" value="LABEL COMPUTE NODE instance_label WITH OLAP_1,OLAP_2" db-types="ShardingSphere" />
-    <sql-case id="relabel-compute-node" value="RELABEL COMPUTE NODE instance_relabel WITH OLAP_1,OLAP_2" db-types="ShardingSphere" />
-    <sql-case id="unlabel-compute-node" value="UNLABEL COMPUTE NODE instance_unlabel WITH OLAP_1" db-types="ShardingSphere" />
-    <sql-case id="unlabel-compute-node-without-label" value="UNLABEL COMPUTE NODE instance_unlabel_2" db-types="ShardingSphere" />
-    
     <sql-case id="import-database-config" value="IMPORT DATABASE CONFIGURATION FROM FILE '/yaml/database-sharding.yaml'" db-types="ShardingSphere" />
     <sql-case id="import-metadata" value="IMPORT METADATA FROM FILE '/json/exported-metadata.json'" db-types="ShardingSphere" />
     

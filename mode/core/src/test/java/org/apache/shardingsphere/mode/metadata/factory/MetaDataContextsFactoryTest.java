@@ -257,7 +257,7 @@ class MetaDataContextsFactoryTest {
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo", new MockedDataSource()), Collections.emptyList());
         return new ContextManagerBuilderParameter(null, Collections.singletonMap("foo_db", databaseConfig), Collections.emptyMap(),
-                Collections.emptyList(), new Properties(), Collections.emptyList(), null);
+                Collections.emptyList(), new Properties(), null);
     }
     
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final String... storageUnitNames) {

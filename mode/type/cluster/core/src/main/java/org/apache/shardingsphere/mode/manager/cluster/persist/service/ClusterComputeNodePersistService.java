@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.global.node.compute.label.LabelNodePath;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.OnlineNodePath;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.StatusNodePath;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.workerid.ComputeNodeWorkerIDNodePath;
@@ -39,7 +38,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,7 +60,6 @@ public final class ClusterComputeNodePersistService implements ComputeNodePersis
     public void registerOnline(final ComputeNodeInstance computeNodeInstance) {
         persistOnline(computeNodeInstance);
         updateState(computeNodeInstance.getMetaData().getId(), computeNodeInstance.getState().getCurrentState());
-        persistLabels(computeNodeInstance.getMetaData().getId(), computeNodeInstance.getLabels());
     }
     
     private void persistOnline(final ComputeNodeInstance computeNodeInstance) {
@@ -90,19 +87,12 @@ public final class ClusterComputeNodePersistService implements ComputeNodePersis
     public ComputeNodeInstance loadInstance(final InstanceMetaData instanceMetaData) {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
         InstanceState.get(loadState(instanceMetaData.getId())).ifPresent(result::switchState);
-        result.getLabels().addAll(loadLabels(instanceMetaData.getId()));
         loadWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
         return result;
     }
     
     private String loadState(final String instanceId) {
         return repository.query(NodePathGenerator.toPath(new StatusNodePath(instanceId)));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Collection<String> loadLabels(final String instanceId) {
-        String yamlContent = repository.query(NodePathGenerator.toPath(new LabelNodePath(instanceId)));
-        return Strings.isNullOrEmpty(yamlContent) ? Collections.emptyList() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
     /**
@@ -113,16 +103,6 @@ public final class ClusterComputeNodePersistService implements ComputeNodePersis
      */
     public void updateState(final String instanceId, final InstanceState instanceState) {
         repository.persistEphemeral(NodePathGenerator.toPath(new StatusNodePath(instanceId)), instanceState.name());
-    }
-    
-    /**
-     * Persist labels.
-     *
-     * @param instanceId instance ID
-     * @param labels instance labels
-     */
-    public void persistLabels(final String instanceId, final Collection<String> labels) {
-        repository.persistEphemeral(NodePathGenerator.toPath(new LabelNodePath(instanceId)), YamlEngine.marshal(labels));
     }
     
     /**

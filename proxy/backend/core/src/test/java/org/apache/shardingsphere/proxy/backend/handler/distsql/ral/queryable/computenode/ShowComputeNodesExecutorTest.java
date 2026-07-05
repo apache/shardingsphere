@@ -54,7 +54,7 @@ class ShowComputeNodesExecutorTest {
     @Test
     void assertGetColumnNames() {
         assertThat(executor.getColumnNames(mock(ShowComputeNodesStatement.class)),
-                is(Arrays.asList("instance_id", "instance_type", "host", "port", "status", "mode_type", "worker_id", "labels", "version", "database_name")));
+                is(Arrays.asList("instance_id", "instance_type", "host", "port", "status", "mode_type", "worker_id", "version", "database_name")));
     }
     
     @Test
@@ -76,7 +76,6 @@ class ShowComputeNodesExecutorTest {
         assertThat(row.getCell(5), is("OK"));
         assertThat(row.getCell(6), is("Standalone"));
         assertThat(row.getCell(7), is("0"));
-        assertThat(row.getCell(8), is(""));
         assertThat(row.getCell(9), is("foo_version"));
         assertThat(row.getCell(10), is(""));
     }
@@ -105,9 +104,8 @@ class ShowComputeNodesExecutorTest {
         assertThat(row.getCell(5), is("OK"));
         assertThat(row.getCell(6), is("Cluster"));
         assertThat(row.getCell(7), is("1"));
-        assertThat(row.getCell(8), is(""));
-        assertThat(row.getCell(9), is("foo_version"));
-        assertThat(row.getCell(10), is(""));
+        assertThat(row.getCell(8), is("foo_version"));
+        assertThat(row.getCell(9), is(""));
     }
     
     private ComputeNodeInstanceContext createClusterInstanceContext(final ContextManager contextManager) {
@@ -129,7 +127,6 @@ class ShowComputeNodesExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData("jdbc_instance", "192.168.0.1", "jdbc_version", "logic_db"));
         computeNodeInstance.setWorkerId(2);
-        computeNodeInstance.getLabels().add("prod");
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(computeNodeInstance, new ModeConfiguration("Cluster", mock()), new EventBusContext());
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         when(contextManager.getPersistServiceFacade().getModeFacade().getComputeNodeService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));

@@ -20,10 +20,8 @@ package org.apache.shardingsphere.infra.instance;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 class ComputeNodeInstanceTest {
@@ -37,7 +35,7 @@ class ComputeNodeInstanceTest {
     
     @Test
     void assertSwitchToOtherState() {
-        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(mock(), Collections.emptyList());
+        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(mock());
         computeNodeInstance.switchState(InstanceState.OK);
         assertThat(computeNodeInstance.getState().getCurrentState(), is(InstanceState.OK));
     }

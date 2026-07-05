@@ -100,7 +100,6 @@ class BootstrapInitializerTest {
         assertTrue(actualParameter.getGlobalDataSources().isEmpty());
         assertTrue(actualParameter.getGlobalRuleConfigs().isEmpty());
         assertTrue(actualParameter.getProps().isEmpty());
-        assertTrue(actualParameter.getLabels().isEmpty());
         assertThat(actualParameter.getInstanceMetaData(), is(instanceMetaData));
     }
     
@@ -128,7 +127,6 @@ class BootstrapInitializerTest {
         assertTrue(actualParameter.getGlobalDataSources().isEmpty());
         assertTrue(actualParameter.getGlobalRuleConfigs().isEmpty());
         assertTrue(actualParameter.getProps().isEmpty());
-        assertTrue(actualParameter.getLabels().isEmpty());
         assertThat(actualParameter.getInstanceMetaData(), is(instanceMetaData));
     }
     
