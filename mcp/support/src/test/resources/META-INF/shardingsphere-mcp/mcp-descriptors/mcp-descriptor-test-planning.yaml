@@ -195,6 +195,8 @@ tools:
             - order: 1
               type: tool_call
               title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments: {}
               reason: Preview generated workflow artifacts.
     annotations:
       title: Plan Encrypt Rule

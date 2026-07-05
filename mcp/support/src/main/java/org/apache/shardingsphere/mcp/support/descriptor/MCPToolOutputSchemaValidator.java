@@ -40,6 +40,8 @@ public final class MCPToolOutputSchemaValidator {
     
     private static final Map<String, Collection<String>> NEXT_ACTION_ALLOWED_FIELDS = createNextActionAllowedFields();
     
+    private static final Map<String, Collection<String>> NEXT_ACTION_REQUIRED_FIELDS = createNextActionRequiredFields();
+    
     private static final Collection<String> NEXT_ACTION_SCHEMA_ALLOWED_FIELDS = createNextActionSchemaAllowedFields();
     
     private static final Collection<String> MODEL_CRITICAL_HINT_FIELDS = List.of(
@@ -62,6 +64,15 @@ public final class MCPToolOutputSchemaValidator {
                 "completion", Set.of("order", "type", "title", "ref", "argument", "context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on"),
                 "ask_user", Set.of("order", "type", "title", "question", "required_inputs", "reason", "depends_on"),
                 "terminal", Set.of("order", "type", "title", "reason", "depends_on"));
+    }
+    
+    private static Map<String, Collection<String>> createNextActionRequiredFields() {
+        return Map.of(
+                "resource_read", Set.of("order", "type", "title", "resource_uri"),
+                "tool_call", Set.of("order", "type", "title", "tool_name", "arguments"),
+                "completion", Set.of("order", "type", "title", "ref", "argument"),
+                "ask_user", Set.of("order", "type", "title", "question"),
+                "terminal", Set.of("order", "type", "title"));
     }
     
     private static Collection<String> createNextActionSchemaAllowedFields() {
@@ -199,6 +210,10 @@ public final class MCPToolOutputSchemaValidator {
         Collection<String> allowedFields = NEXT_ACTION_ALLOWED_FIELDS.get(type);
         ShardingSpherePreconditions.checkState(null != allowedFields,
                 () -> new IllegalStateException(String.format("Tool `%s` next_actions example uses unknown type `%s`.", descriptor.getName(), type)));
+        for (String each : NEXT_ACTION_REQUIRED_FIELDS.get(type)) {
+            ShardingSpherePreconditions.checkState(action.containsKey(each),
+                    () -> new IllegalStateException(String.format("Tool `%s` next_actions example `%s` must contain `%s`.", descriptor.getName(), type, each)));
+        }
         for (Object each : action.keySet()) {
             String fieldName = String.valueOf(each);
             ShardingSpherePreconditions.checkState(allowedFields.contains(fieldName),
