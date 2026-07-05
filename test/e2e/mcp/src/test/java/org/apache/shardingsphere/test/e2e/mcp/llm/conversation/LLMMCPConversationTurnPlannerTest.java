@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -34,7 +35,7 @@ class LLMMCPConversationTurnPlannerTest {
     @Test
     void assertCreateTurnToolNamesWithImmediateResourceAction() {
         LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
         List<String> actual = planner.createTurnToolNames(createScenario(List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
                 List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
                 List.of(createTraceRecord("database_gateway_plan_mask_rule",
@@ -45,7 +46,7 @@ class LLMMCPConversationTurnPlannerTest {
     @Test
     void assertCreateTurnToolNamesWithImmediateCompletionAction() {
         LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
         List<String> actual = planner.createTurnToolNames(createScenario(List.of("database_gateway_plan_mask_rule", "database_gateway_execute_query"),
                 List.of("database_gateway_plan_mask_rule", "database_gateway_execute_query")),
                 List.of(createTraceRecord("database_gateway_plan_mask_rule",
@@ -56,7 +57,7 @@ class LLMMCPConversationTurnPlannerTest {
     @Test
     void assertCreateTurnToolNamesPrefersReadOnlyAfterSideEffectNextAction() {
         LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of("database_gateway_execute_query"));
         Map<String, Object> nextAction = Map.of("type", "tool_call", "tool_name", "database_gateway_execute_update", "arguments", Map.of("execution_mode", "execute"));
         List<String> actual = planner.createTurnToolNames(createScenario(List.of("database_gateway_execute_update", "database_gateway_execute_query"),
                 List.of("database_gateway_execute_update", "database_gateway_execute_query")),
@@ -65,16 +66,27 @@ class LLMMCPConversationTurnPlannerTest {
     }
     
     @Test
-    void assertCreateToolChoiceWithMissingCoverage() {
+    void assertCreateTurnToolNamesPrefersDescriptorReadOnlyToolAfterSideEffectNextAction() {
         LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
         LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);
+        Map<String, Object> nextAction = Map.of("type", "tool_call", "tool_name", "database_gateway_execute_update", "arguments", Map.of("execution_mode", "execute"));
+        List<String> actual = planner.createTurnToolNames(createScenario(List.of("database_gateway_execute_update", "database_gateway_validate_runtime_database"),
+                List.of("database_gateway_execute_update", "database_gateway_validate_runtime_database")),
+                List.of(createTraceRecord("database_gateway_execute_update", Map.of("next_actions", List.of(nextAction)))));
+        assertThat(actual, is(List.of("database_gateway_validate_runtime_database")));
+    }
+    
+    @Test
+    void assertCreateToolChoiceWithMissingCoverage() {
+        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
         assertThat(planner.createToolChoice(createScenario(List.of("database_gateway_execute_query"), List.of("database_gateway_execute_query")), List.of(), false), is("required"));
     }
     
     @Test
     void assertCreateToolChoiceWithCoveredRequiredTools() {
         LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
         assertThat(planner.createToolChoice(createScenario(List.of("database_gateway_execute_query"), List.of("database_gateway_execute_query")),
                 List.of(createTraceRecord("database_gateway_execute_query", Map.of("row_objects", List.of()))), false), is("auto"));
     }
@@ -82,7 +94,7 @@ class LLMMCPConversationTurnPlannerTest {
     @Test
     void assertCreateToolChoiceWithFinalAnswer() {
         LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
         assertThat(planner.createToolChoice(createScenario(List.of("database_gateway_execute_query"), List.of("database_gateway_execute_query")), List.of(), true), is("none"));
     }
     

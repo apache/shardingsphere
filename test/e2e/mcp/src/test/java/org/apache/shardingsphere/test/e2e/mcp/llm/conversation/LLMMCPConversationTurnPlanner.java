@@ -17,20 +17,46 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 final class LLMMCPConversationTurnPlanner {
     
     private final LLMMCPConversationInstructionFactory instructionFactory;
     
+    private final Set<String> readOnlyToolNames;
+    
     LLMMCPConversationTurnPlanner(final LLMMCPConversationInstructionFactory instructionFactory) {
+        this(instructionFactory, createReadOnlyToolNames());
+    }
+    
+    LLMMCPConversationTurnPlanner(final LLMMCPConversationInstructionFactory instructionFactory, final Set<String> readOnlyToolNames) {
         this.instructionFactory = instructionFactory;
+        this.readOnlyToolNames = readOnlyToolNames;
+    }
+    
+    private static Set<String> createReadOnlyToolNames() {
+        Set<String> result = new LinkedHashSet<>();
+        result.add(MCPInteractionActionNames.LIST_RESOURCES);
+        result.add(MCPInteractionActionNames.READ_RESOURCE);
+        result.add(MCPInteractionActionNames.LIST_PROMPTS);
+        result.add(MCPInteractionActionNames.GET_PROMPT);
+        result.add(MCPInteractionActionNames.COMPLETE);
+        for (MCPToolDescriptor each : ToolDefinitionRegistry.getSupportedToolDescriptors()) {
+            if (each.getAnnotations().isReadOnlyHint()) {
+                result.add(each.getName());
+            }
+        }
+        return result;
     }
     
     List<String> createTurnToolNames(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
@@ -39,9 +65,9 @@ final class LLMMCPConversationTurnPlanner {
             return immediateActionToolNames;
         }
         if (instructionFactory.hasSideEffectExecutionNextAction(interactionTrace)) {
-            List<String> readOnlyToolNames = findMissingReadOnlyToolNames(scenario, interactionTrace);
-            if (!readOnlyToolNames.isEmpty()) {
-                return List.of(readOnlyToolNames.getFirst());
+            List<String> missingReadOnlyToolNames = findMissingReadOnlyToolNames(scenario, interactionTrace);
+            if (!missingReadOnlyToolNames.isEmpty()) {
+                return List.of(missingReadOnlyToolNames.getFirst());
             }
         }
         List<String> missingToolNames = findMissingAllowedToolNames(scenario, interactionTrace);
@@ -79,12 +105,6 @@ final class LLMMCPConversationTurnPlanner {
     }
     
     private boolean isReadOnlyToolName(final String toolName) {
-        return MCPInteractionActionNames.LIST_RESOURCES.equals(toolName)
-                || MCPInteractionActionNames.READ_RESOURCE.equals(toolName)
-                || MCPInteractionActionNames.LIST_PROMPTS.equals(toolName)
-                || MCPInteractionActionNames.GET_PROMPT.equals(toolName)
-                || MCPInteractionActionNames.COMPLETE.equals(toolName)
-                || "database_gateway_search_metadata".equals(toolName)
-                || "database_gateway_execute_query".equals(toolName);
+        return readOnlyToolNames.contains(toolName);
     }
 }

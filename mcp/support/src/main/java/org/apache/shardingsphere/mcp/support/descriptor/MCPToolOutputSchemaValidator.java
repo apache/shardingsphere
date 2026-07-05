@@ -19,35 +19,19 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Validator for model-facing MCP tool output schema contracts.
  */
 public final class MCPToolOutputSchemaValidator {
-    
-    private static final Collection<String> REMOVED_MODEL_FACING_FIELDS = Set.of(
-            "target_tool", "target_resource", "required_arguments", "action_kind", "suggested_next_tool", "suggested_next_tools", "recommended_next_tool",
-            "recommended_recovery", "suggested_next_action", "approved_by_user", "requires_user_approval", "approval_required", "user_overrides");
-    
-    private static final Map<String, Collection<String>> NEXT_ACTION_ALLOWED_FIELDS = createNextActionAllowedFields();
-    
-    private static final Map<String, Collection<String>> NEXT_ACTION_REQUIRED_FIELDS = createNextActionRequiredFields();
-    
-    private static final Collection<String> NEXT_ACTION_SCHEMA_ALLOWED_FIELDS = createNextActionSchemaAllowedFields();
-    
-    private static final Collection<String> MODEL_CRITICAL_HINT_FIELDS = List.of(
-            MCPPayloadFieldNames.NEXT_ACTIONS, MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE,
-            MCPPayloadFieldNames.NEXT_RESOURCES, "manual_artifact_summary", "manual_follow_up", "empty_state", "ambiguity_state", MCPPayloadFieldNames.RECOVERY, "recovery_guidance",
-            "remediation");
     
     private static final Collection<String> CONTINUATION_MODES = List.of("none", "pagination", "metadata_search");
     
@@ -55,32 +39,6 @@ public final class MCPToolOutputSchemaValidator {
             "unsupported_target", "invalid_enum", "unsafe_sql", "stale_workflow", "unavailable_runtime", "terminal_operator_action");
     
     private MCPToolOutputSchemaValidator() {
-    }
-    
-    private static Map<String, Collection<String>> createNextActionAllowedFields() {
-        return Map.of(
-                "resource_read", Set.of("order", "type", "title", "resource_uri", "reason", "depends_on"),
-                "tool_call", Set.of("order", "type", "title", "tool_name", "arguments", "reason", "depends_on"),
-                "completion", Set.of("order", "type", "title", "ref", "argument", "context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on"),
-                "ask_user", Set.of("order", "type", "title", "question", "required_inputs", "reason", "depends_on"),
-                "terminal", Set.of("order", "type", "title", "reason", "depends_on"));
-    }
-    
-    private static Map<String, Collection<String>> createNextActionRequiredFields() {
-        return Map.of(
-                "resource_read", Set.of("order", "type", "title", "resource_uri"),
-                "tool_call", Set.of("order", "type", "title", "tool_name", "arguments"),
-                "completion", Set.of("order", "type", "title", "ref", "argument"),
-                "ask_user", Set.of("order", "type", "title", "question"),
-                "terminal", Set.of("order", "type", "title"));
-    }
-    
-    private static Collection<String> createNextActionSchemaAllowedFields() {
-        Set<String> result = new HashSet<>();
-        for (Collection<String> each : NEXT_ACTION_ALLOWED_FIELDS.values()) {
-            result.addAll(each);
-        }
-        return result;
     }
     
     /**
@@ -191,7 +149,7 @@ public final class MCPToolOutputSchemaValidator {
     }
     
     private static void validateNoRemovedModelFacingField(final MCPToolDescriptor descriptor, final String fieldName) {
-        ShardingSpherePreconditions.checkState(!REMOVED_MODEL_FACING_FIELDS.contains(fieldName),
+        ShardingSpherePreconditions.checkState(!MCPModelFacingPayloadContract.isRemovedFieldName(fieldName),
                 () -> new IllegalStateException(String.format("Tool `%s` model-facing contract must use canonical fields instead of removed `%s`.", descriptor.getName(), fieldName)));
     }
     
@@ -207,10 +165,10 @@ public final class MCPToolOutputSchemaValidator {
     
     private static void validateConcreteNextAction(final MCPToolDescriptor descriptor, final Map<?, ?> action) {
         String type = String.valueOf(action.get("type"));
-        Collection<String> allowedFields = NEXT_ACTION_ALLOWED_FIELDS.get(type);
-        ShardingSpherePreconditions.checkState(null != allowedFields,
+        Collection<String> allowedFields = MCPModelFacingPayloadContract.getNextActionAllowedFields(type);
+        ShardingSpherePreconditions.checkState(!allowedFields.isEmpty(),
                 () -> new IllegalStateException(String.format("Tool `%s` next_actions example uses unknown type `%s`.", descriptor.getName(), type)));
-        for (String each : NEXT_ACTION_REQUIRED_FIELDS.get(type)) {
+        for (String each : MCPModelFacingPayloadContract.getNextActionRequiredFields(type)) {
             ShardingSpherePreconditions.checkState(action.containsKey(each),
                     () -> new IllegalStateException(String.format("Tool `%s` next_actions example `%s` must contain `%s`.", descriptor.getName(), type, each)));
         }
@@ -224,7 +182,7 @@ public final class MCPToolOutputSchemaValidator {
     private static void validateModelCriticalOutputHints(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
         for (Entry<?, ?> entry : properties.entrySet()) {
             String fieldName = String.valueOf(entry.getKey());
-            if (MODEL_CRITICAL_HINT_FIELDS.contains(fieldName)) {
+            if (MCPModelFacingPayloadContract.getModelCriticalFieldNames().contains(fieldName)) {
                 validateModelCriticalOutputHint(descriptor, fieldName, entry.getValue());
             }
             validateNestedModelCriticalOutputHints(descriptor, entry.getValue());
@@ -273,7 +231,7 @@ public final class MCPToolOutputSchemaValidator {
         }
         for (Object each : ((Map<?, ?>) properties).keySet()) {
             String fieldName = String.valueOf(each);
-            ShardingSpherePreconditions.checkState(NEXT_ACTION_SCHEMA_ALLOWED_FIELDS.contains(fieldName),
+            ShardingSpherePreconditions.checkState(MCPModelFacingPayloadContract.getNextActionSchemaAllowedFields().contains(fieldName),
                     () -> new IllegalStateException(String.format("Tool `%s` next_actions item contains unsupported field `%s`.", descriptor.getName(), fieldName)));
         }
     }
