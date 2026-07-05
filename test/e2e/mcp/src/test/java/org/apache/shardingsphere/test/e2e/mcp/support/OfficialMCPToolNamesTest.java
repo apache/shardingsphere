@@ -19,25 +19,15 @@ package org.apache.shardingsphere.test.e2e.mcp.support;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
+import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-/**
- * Official MCP tool names packaged by default.
- */
-public final class OfficialMCPToolNames {
+class OfficialMCPToolNamesTest {
     
-    private static final List<String> ALL = ToolDefinitionRegistry.getSupportedToolDescriptors().stream().map(MCPToolDescriptor::getName).toList();
-    
-    private OfficialMCPToolNames() {
-    }
-    
-    /**
-     * Get official MCP tool names.
-     *
-     * @return official MCP tool names
-     */
-    public static List<String> getAll() {
-        return ALL;
+    @Test
+    void assertGetAll() {
+        assertThat(OfficialMCPToolNames.getAll(), is(ToolDefinitionRegistry.getSupportedToolDescriptors().stream().map(MCPToolDescriptor::getName).toList()));
     }
 }
