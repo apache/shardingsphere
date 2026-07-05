@@ -76,8 +76,8 @@ class ShowComputeNodesExecutorTest {
         assertThat(row.getCell(5), is("OK"));
         assertThat(row.getCell(6), is("Standalone"));
         assertThat(row.getCell(7), is("0"));
-        assertThat(row.getCell(9), is("foo_version"));
-        assertThat(row.getCell(10), is(""));
+        assertThat(row.getCell(8), is("foo_version"));
+        assertThat(row.getCell(9), is(""));
     }
     
     private ComputeNodeInstanceContext createStandaloneInstanceContext() {
@@ -139,8 +139,7 @@ class ShowComputeNodesExecutorTest {
         assertThat(row.getCell(5), is("OK"));
         assertThat(row.getCell(6), is("Cluster"));
         assertThat(row.getCell(7), is("2"));
-        assertThat(row.getCell(8), is("prod"));
-        assertThat(row.getCell(9), is("jdbc_version"));
-        assertThat(row.getCell(10), is("logic_db"));
+        assertThat(row.getCell(8), is("jdbc_version"));
+        assertThat(row.getCell(9), is("logic_db"));
     }
 }
