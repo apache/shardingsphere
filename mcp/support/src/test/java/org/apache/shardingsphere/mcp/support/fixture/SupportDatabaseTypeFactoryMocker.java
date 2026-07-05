@@ -25,10 +25,12 @@ import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapa
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.mockito.MockedStatic;
 
+import java.sql.DatabaseMetaData;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
@@ -49,6 +51,8 @@ public final class SupportDatabaseTypeFactoryMocker {
     public static MockedStatic<DatabaseTypeFactory> mockByConnectionMetadata() {
         MockedStatic<DatabaseTypeFactory> result = mockStatic(DatabaseTypeFactory.class, CALLS_REAL_METHODS);
         result.when(() -> DatabaseTypeFactory.get(anyString())).thenAnswer(invocation -> createDatabaseType(invocation.getArgument(0, String.class)));
+        result.when(() -> DatabaseTypeFactory.get(any(DatabaseMetaData.class)))
+                .thenAnswer(invocation -> createDatabaseType(invocation.getArgument(0, DatabaseMetaData.class).getURL()));
         return result;
     }
     

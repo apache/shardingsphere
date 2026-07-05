@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -51,7 +52,7 @@ class MCPJdbcDatabaseProfileLoaderTest {
     void assertLoadWithInvalidJdbcUrl() {
         try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
             ShardingSphereExternalException expectedCause = mock(ShardingSphereExternalException.class);
-            mocked.when(() -> DatabaseTypeFactory.get("jdbc:unknown:test")).thenThrow(expectedCause);
+            mocked.when(() -> DatabaseTypeFactory.get(any(DatabaseMetaData.class))).thenThrow(expectedCause);
             RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
                     () -> new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration("jdbc:unknown:test", "8.0.32")));
             assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
