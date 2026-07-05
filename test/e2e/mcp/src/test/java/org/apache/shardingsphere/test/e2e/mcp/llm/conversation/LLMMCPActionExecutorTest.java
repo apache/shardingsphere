@@ -174,11 +174,26 @@ class LLMMCPActionExecutorTest {
         }
         
         @Override
+        public Map<String, Object> getInitializePayload() {
+            throw new UnsupportedOperationException("initialize payload is not available.");
+        }
+        
+        @Override
+        public List<Map<String, Object>> listTools() {
+            throw new UnsupportedOperationException("tools/list is not supported.");
+        }
+        
+        @Override
         public Map<String, Object> listResources() throws IOException {
             if (failWithIOException) {
                 throw new IOException("unavailable");
             }
             return Map.of("resources", List.of());
+        }
+        
+        @Override
+        public Map<String, Object> listResourceTemplates() {
+            throw new UnsupportedOperationException("resources/templates/list is not supported.");
         }
         
         @Override
@@ -206,6 +221,11 @@ class LLMMCPActionExecutorTest {
             completionArgumentValue = argumentValue;
             this.contextArguments = contextArguments;
             return Map.of("completion", "public");
+        }
+        
+        @Override
+        public Map<String, Object> sendRawRequest(final String requestId, final String method, final Map<String, Object> params) {
+            throw new UnsupportedOperationException("Raw JSON-RPC request is not supported.");
         }
         
         @Override

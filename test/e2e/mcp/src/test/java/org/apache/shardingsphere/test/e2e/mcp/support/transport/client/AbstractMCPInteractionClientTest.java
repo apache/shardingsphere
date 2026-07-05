@@ -140,6 +140,11 @@ class AbstractMCPInteractionClientTest {
         }
         
         @Override
+        public Map<String, Object> getInitializePayload() {
+            throw new UnsupportedOperationException("initialize payload is not available.");
+        }
+        
+        @Override
         public void close() {
         }
         
