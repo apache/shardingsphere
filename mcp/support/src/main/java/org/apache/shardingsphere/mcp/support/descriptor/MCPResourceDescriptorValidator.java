@@ -46,48 +46,48 @@ public final class MCPResourceDescriptorValidator {
         int expectedSize = catalog.getProtocolDescriptors().getResourceDescriptors().size() + catalog.getProtocolDescriptors().getResourceTemplateDescriptors().size();
         Map<String, MCPResourceDescriptor> registered = new LinkedHashMap<>(expectedSize, 1F);
         for (MCPResourceDescriptor each : catalog.getProtocolDescriptors().getResourceDescriptors()) {
-            checkNotBlank(each.getUriOrTemplate(), "Resource URI");
+            checkNotBlank(each.getUriTemplate(), "Resource URI");
             ShardingSpherePreconditions.checkState(!each.isTemplated(),
-                    () -> new IllegalStateException(String.format("Fixed resource `%s` must not contain template variables.", each.getUriOrTemplate())));
+                    () -> new IllegalStateException(String.format("Fixed resource `%s` must not contain template variables.", each.getUriTemplate())));
             validateResourceDescriptor(each, registered);
         }
         for (MCPResourceDescriptor each : catalog.getProtocolDescriptors().getResourceTemplateDescriptors()) {
-            checkNotBlank(each.getUriOrTemplate(), "Resource template URI template");
+            checkNotBlank(each.getUriTemplate(), "Resource template URI");
             ShardingSpherePreconditions.checkState(each.isTemplated(),
-                    () -> new IllegalStateException(String.format("Resource template `%s` must contain template variables.", each.getUriOrTemplate())));
+                    () -> new IllegalStateException(String.format("Resource template `%s` must contain template variables.", each.getUriTemplate())));
             validateResourceDescriptor(each, registered);
-            validateResourceVariables(each, findShardingSphereResourceMetadata(catalog, each.getUriOrTemplate()).map(ShardingSphereMCPResourceMetadata::getUriVariables).orElse(List.of()));
+            validateResourceVariables(each, findShardingSphereResourceMetadata(catalog, each.getUriTemplate()).map(ShardingSphereMCPResourceMetadata::getUriVariables).orElse(List.of()));
         }
     }
     
     private static void validateResourceDescriptor(final MCPResourceDescriptor descriptor, final Map<String, MCPResourceDescriptor> registered) {
-        ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(descriptor.getUriOrTemplate(), descriptor),
-                () -> new IllegalStateException(String.format("Duplicate MCP resource descriptor `%s`.", descriptor.getUriOrTemplate())));
+        ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(descriptor.getUriTemplate(), descriptor),
+                () -> new IllegalStateException(String.format("Duplicate MCP resource descriptor `%s`.", descriptor.getUriTemplate())));
     }
     
-    private static Optional<ShardingSphereMCPResourceMetadata> findShardingSphereResourceMetadata(final MCPDescriptorCatalog catalog, final String uriOrTemplate) {
-        return catalog.getShardingSphereDescriptors().getResourceMetadata().stream().filter(each -> uriOrTemplate.equals(each.getUriOrTemplate())).findFirst();
+    private static Optional<ShardingSphereMCPResourceMetadata> findShardingSphereResourceMetadata(final MCPDescriptorCatalog catalog, final String uriTemplate) {
+        return catalog.getShardingSphereDescriptors().getResourceMetadata().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst();
     }
     
     private static void validateResourceVariables(final MCPResourceDescriptor descriptor, final Collection<MCPUriVariableDescriptor> uriVariables) {
-        List<String> templateVariables = new MCPUriTemplate(descriptor.getUriOrTemplate()).getVariableNames();
+        List<String> templateVariables = new MCPUriTemplate(descriptor.getUriTemplate()).getVariableNames();
         Set<String> registeredTemplateVariables = new HashSet<>();
         for (String each : templateVariables) {
             ShardingSpherePreconditions.checkState(registeredTemplateVariables.add(each),
-                    () -> new IllegalStateException(String.format("Duplicate URI template variable `%s` in resource descriptor `%s`.", each, descriptor.getUriOrTemplate())));
+                    () -> new IllegalStateException(String.format("Duplicate URI template variable `%s` in resource descriptor `%s`.", each, descriptor.getUriTemplate())));
         }
         Map<String, MCPUriVariableDescriptor> declaredParameters = new LinkedHashMap<>(uriVariables.size(), 1F);
         for (MCPUriVariableDescriptor each : uriVariables) {
             ShardingSpherePreconditions.checkState(each.isRequired(), () -> new IllegalStateException(
-                    String.format("Resource parameter `%s.%s` must be required because URI template variables are required.", descriptor.getUriOrTemplate(), each.getName())));
+                    String.format("Resource parameter `%s.%s` must be required because URI template variables are required.", descriptor.getUriTemplate(), each.getName())));
             ShardingSpherePreconditions.checkState(registeredTemplateVariables.contains(each.getName()),
-                    () -> new IllegalStateException(String.format("Resource descriptor `%s` declares non-template parameter `%s`.", descriptor.getUriOrTemplate(), each.getName())));
+                    () -> new IllegalStateException(String.format("Resource descriptor `%s` declares non-template parameter `%s`.", descriptor.getUriTemplate(), each.getName())));
             ShardingSpherePreconditions.checkState(null == declaredParameters.putIfAbsent(each.getName(), each),
-                    () -> new IllegalStateException(String.format("Duplicate MCP resource parameter `%s.%s`.", descriptor.getUriOrTemplate(), each.getName())));
+                    () -> new IllegalStateException(String.format("Duplicate MCP resource parameter `%s.%s`.", descriptor.getUriTemplate(), each.getName())));
         }
         for (String variableName : templateVariables) {
             ShardingSpherePreconditions.checkState(declaredParameters.containsKey(variableName),
-                    () -> new IllegalStateException(String.format("Resource descriptor `%s` must describe URI template variable `%s`.", descriptor.getUriOrTemplate(), variableName)));
+                    () -> new IllegalStateException(String.format("Resource descriptor `%s` must describe URI template variable `%s`.", descriptor.getUriTemplate(), variableName)));
         }
     }
     

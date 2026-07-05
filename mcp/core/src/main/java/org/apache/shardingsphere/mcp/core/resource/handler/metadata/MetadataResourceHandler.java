@@ -60,7 +60,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     @Override
-    public String getResourceUriOrTemplate() {
+    public String getResourceUriTemplate() {
         return uriTemplate;
     }
     
@@ -68,7 +68,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
         MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
-        ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(descriptor.getUriOrTemplate());
+        ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(descriptor.getUriTemplate());
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
         if (isDetailResource(metadata)) {
             if (items.isEmpty()) {
@@ -271,15 +271,15 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        String uriOrTemplate = descriptor.getUriOrTemplate();
-        Optional<String> selfUri = new MCPUriTemplate(uriOrTemplate).expandIfComplete(uriVariables);
+        String uriTemplate = descriptor.getUriTemplate();
+        Optional<String> selfUri = new MCPUriTemplate(uriTemplate).expandIfComplete(uriVariables);
         selfUri.ifPresent(optional -> result.put("self_uri", optional));
         String parentUri = createParentUri(selfUri.orElse(""));
         if (!parentUri.isEmpty()) {
             result.put(MCPPayloadFieldNames.PARENT_RESOURCE, MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
                     "Read the parent metadata resource before broadening or correcting the request.", MCPPayloadFieldNames.PARENT_RESOURCE));
         }
-        List<Map<String, Object>> nextResources = MCPDescriptorCatalogIndex.getResourceNavigationDescriptors(uriOrTemplate).stream()
+        List<Map<String, Object>> nextResources = MCPDescriptorCatalogIndex.getResourceNavigationDescriptors(uriTemplate).stream()
                 .filter(each -> each.getTo().startsWith("shardingsphere://"))
                 .map(each -> createNextResourceHint(each.getTo(), each.getDescription(), uriVariables)).flatMap(Optional::stream).toList();
         if (!nextResources.isEmpty()) {

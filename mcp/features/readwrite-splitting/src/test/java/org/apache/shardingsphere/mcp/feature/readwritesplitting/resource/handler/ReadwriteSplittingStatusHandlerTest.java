@@ -44,7 +44,7 @@ class ReadwriteSplittingStatusHandlerTest {
     
     @Test
     void assertGetResourceUriTemplate() {
-        assertThat(new ReadwriteSplittingStatusHandler().getResourceUriOrTemplate(), is(ReadwriteSplittingFeatureDefinition.STATUS_RESOURCE_URI));
+        assertThat(new ReadwriteSplittingStatusHandler().getResourceUriTemplate(), is(ReadwriteSplittingFeatureDefinition.STATUS_RESOURCE_URI));
     }
     
     @Test

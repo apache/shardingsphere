@@ -93,26 +93,26 @@ final class MCPDescriptorCatalogYamlSwapper {
         }
     }
     
-    private static ShardingSphereMCPResourceMetadata swapShardingSphereResourceMetadata(final String uriOrTemplate, final YamlShardingSphereMCPResourceMetadata yamlMetadata) {
+    private static ShardingSphereMCPResourceMetadata swapShardingSphereResourceMetadata(final String uriTemplate, final YamlShardingSphereMCPResourceMetadata yamlMetadata) {
         if (null == yamlMetadata) {
-            return new ShardingSphereMCPResourceMetadata(uriOrTemplate, List.of(), null, null, null, List.of(), List.of(), List.of());
+            return new ShardingSphereMCPResourceMetadata(uriTemplate, List.of(), null, null, null, List.of(), List.of(), List.of());
         }
-        return new ShardingSphereMCPResourceMetadata(uriOrTemplate, swapUriVariables(yamlMetadata.getUriVariables()), yamlMetadata.getResourceKind(), yamlMetadata.getObjectScope(),
+        return new ShardingSphereMCPResourceMetadata(uriTemplate, swapUriVariables(yamlMetadata.getUriVariables()), yamlMetadata.getResourceKind(), yamlMetadata.getObjectScope(),
                 yamlMetadata.getFeature(), emptyIfNull(yamlMetadata.getRelatedTools()), emptyIfNull(yamlMetadata.getRelatedResources()), emptyIfNull(yamlMetadata.getUseBefore()));
     }
     
-    private static Map<String, Object> createResourceMeta(final String uriOrTemplate, final Map<String, Object> rawMeta, final ShardingSphereMCPResourceMetadata metadata) {
-        validateNoTypedResourceMetadataKeys(uriOrTemplate, rawMeta);
+    private static Map<String, Object> createResourceMeta(final String uriTemplate, final Map<String, Object> rawMeta, final ShardingSphereMCPResourceMetadata metadata) {
+        validateNoTypedResourceMetadataKeys(uriTemplate, rawMeta);
         Map<String, Object> result = new LinkedHashMap<>(rawMeta.size() + MCPShardingSphereMetadataKeys.TYPED_RESOURCE_METADATA_KEYS.size(), 1F);
         result.putAll(rawMeta);
         result.putAll(metadata.toMeta());
         return result;
     }
     
-    private static void validateNoTypedResourceMetadataKeys(final String uriOrTemplate, final Map<String, Object> rawMeta) {
+    private static void validateNoTypedResourceMetadataKeys(final String uriTemplate, final Map<String, Object> rawMeta) {
         for (String each : MCPShardingSphereMetadataKeys.TYPED_RESOURCE_METADATA_KEYS) {
             if (rawMeta.containsKey(each)) {
-                throw new IllegalStateException(String.format("MCP resource descriptor `%s` raw meta must not define typed ShardingSphere resource metadata key `%s`.", uriOrTemplate, each));
+                throw new IllegalStateException(String.format("MCP resource descriptor `%s` raw meta must not define typed ShardingSphere resource metadata key `%s`.", uriTemplate, each));
             }
         }
     }

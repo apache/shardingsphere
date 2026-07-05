@@ -45,7 +45,7 @@ class EncryptAlgorithmsHandlerTest {
     
     @Test
     void assertGetResourceUriTemplate() {
-        assertThat(new EncryptAlgorithmsHandler().getResourceUriOrTemplate(), is(EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI));
+        assertThat(new EncryptAlgorithmsHandler().getResourceUriTemplate(), is(EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI));
     }
     
     @Test

@@ -64,9 +64,9 @@ public final class MCPToolDescriptorCatalogValidator {
         Map<String, MCPToolDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         Map<String, MCPToolRuntimeDescriptor> runtimes = runtimeDescriptors.stream()
                 .collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each));
-        Set<String> resourceIdentifiers = catalog.getProtocolDescriptors().getAllResourceDescriptors().stream().map(MCPResourceDescriptor::getUriOrTemplate).collect(Collectors.toSet());
+        Set<String> resourceIdentifiers = catalog.getProtocolDescriptors().getAllResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).collect(Collectors.toSet());
         Set<String> shardingSphereResourceIdentifiers = catalog.getShardingSphereDescriptors().getResourceMetadata().stream()
-                .map(ShardingSphereMCPResourceMetadata::getUriOrTemplate).collect(Collectors.toSet());
+                .map(ShardingSphereMCPResourceMetadata::getUriTemplate).collect(Collectors.toSet());
         for (MCPToolDescriptor each : descriptors) {
             ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(each.getName(), each),
                     () -> new IllegalStateException(String.format("Duplicate MCP tool descriptor `%s`.", each.getName())));

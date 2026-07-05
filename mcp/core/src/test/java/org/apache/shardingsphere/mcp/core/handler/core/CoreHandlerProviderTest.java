@@ -42,7 +42,7 @@ class CoreHandlerProviderTest {
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new CoreHandlerProvider().getResourceHandlers();
         assertThat(actual.size(), is(27));
-        List<String> actualUris = actual.stream().map(MCPResourceHandler::getResourceUriOrTemplate).toList();
+        List<String> actualUris = actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList();
         assertTrue(actualUris.contains("shardingsphere://capabilities"));
         assertTrue(actualUris.contains("shardingsphere://guidance"));
         assertTrue(actualUris.contains("shardingsphere://runtime"));

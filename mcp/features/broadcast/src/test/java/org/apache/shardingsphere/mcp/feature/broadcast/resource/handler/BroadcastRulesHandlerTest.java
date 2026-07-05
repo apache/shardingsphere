@@ -44,7 +44,7 @@ class BroadcastRulesHandlerTest {
     
     @Test
     void assertGetResourceUriTemplate() {
-        assertThat(new BroadcastRulesHandler().getResourceUriOrTemplate(), is(BroadcastFeatureDefinition.RULES_RESOURCE_URI));
+        assertThat(new BroadcastRulesHandler().getResourceUriTemplate(), is(BroadcastFeatureDefinition.RULES_RESOURCE_URI));
     }
     
     @Test

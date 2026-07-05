@@ -61,17 +61,17 @@ public final class MCPDescriptorCatalogIndex {
         int expectedSize = CATALOG.getProtocolDescriptors().getResourceDescriptors().size() + CATALOG.getProtocolDescriptors().getResourceTemplateDescriptors().size();
         Map<String, MCPResourceDescriptor> result = new LinkedHashMap<>(expectedSize, 1F);
         for (MCPResourceDescriptor each : CATALOG.getProtocolDescriptors().getResourceDescriptors()) {
-            result.put(each.getUriOrTemplate(), each);
+            result.put(each.getUriTemplate(), each);
         }
         for (MCPResourceDescriptor each : CATALOG.getProtocolDescriptors().getResourceTemplateDescriptors()) {
-            result.put(each.getUriOrTemplate(), each);
+            result.put(each.getUriTemplate(), each);
         }
         return result;
     }
     
     private static Map<String, ShardingSphereMCPResourceMetadata> createShardingSphereResourceMetadata() {
         return CATALOG.getShardingSphereDescriptors().getResourceMetadata().stream()
-                .collect(Collectors.toMap(ShardingSphereMCPResourceMetadata::getUriOrTemplate, each -> each));
+                .collect(Collectors.toMap(ShardingSphereMCPResourceMetadata::getUriTemplate, each -> each));
     }
     
     private static Map<String, MCPToolDescriptor> createToolDescriptors() {
@@ -121,22 +121,22 @@ public final class MCPDescriptorCatalogIndex {
     /**
      * Get required resource descriptor.
      *
-     * @param uriOrTemplate resource URI or resource template URI template
+     * @param uriTemplate resource URI template
      * @return resource descriptor
      */
-    public static MCPResourceDescriptor getRequiredResourceDescriptor(final String uriOrTemplate) {
-        return Optional.ofNullable(RESOURCE_DESCRIPTORS.get(uriOrTemplate)).orElseThrow(() -> new IllegalStateException(String.format("MCP resource descriptor is required for `%s`.", uriOrTemplate)));
+    public static MCPResourceDescriptor getRequiredResourceDescriptor(final String uriTemplate) {
+        return Optional.ofNullable(RESOURCE_DESCRIPTORS.get(uriTemplate)).orElseThrow(() -> new IllegalStateException(String.format("MCP resource descriptor is required for `%s`.", uriTemplate)));
     }
     
     /**
      * Get required ShardingSphere MCP resource metadata descriptor.
      *
-     * @param uriOrTemplate resource URI or resource template URI template
+     * @param uriTemplate resource URI template
      * @return ShardingSphere MCP resource metadata descriptor
      */
-    public static ShardingSphereMCPResourceMetadata getRequiredShardingSphereResourceMetadata(final String uriOrTemplate) {
-        return Optional.ofNullable(SHARDINGSPHERE_RESOURCE_METADATA.get(uriOrTemplate)).orElseThrow(
-                () -> new IllegalStateException(String.format("ShardingSphere MCP resource metadata descriptor is required for `%s`.", uriOrTemplate)));
+    public static ShardingSphereMCPResourceMetadata getRequiredShardingSphereResourceMetadata(final String uriTemplate) {
+        return Optional.ofNullable(SHARDINGSPHERE_RESOURCE_METADATA.get(uriTemplate)).orElseThrow(
+                () -> new IllegalStateException(String.format("ShardingSphere MCP resource metadata descriptor is required for `%s`.", uriTemplate)));
     }
     
     /**

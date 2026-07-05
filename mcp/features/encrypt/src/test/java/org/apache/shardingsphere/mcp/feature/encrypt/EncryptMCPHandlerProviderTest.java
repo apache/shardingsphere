@@ -38,7 +38,7 @@ class EncryptMCPHandlerProviderTest {
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new EncryptMCPHandlerProvider().getResourceHandlers();
-        assertThat(actual.stream().map(MCPResourceHandler::getResourceUriOrTemplate).toList(), is(List.of(
+        assertThat(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList(), is(List.of(
                 "shardingsphere://features/encrypt/algorithms",
                 "shardingsphere://features/encrypt/databases/{database}/rules",
                 "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules")));

@@ -44,7 +44,7 @@ class LoadBalanceAlgorithmPluginsHandlerTest {
     
     @Test
     void assertGetResourceUriTemplate() {
-        assertThat(new LoadBalanceAlgorithmPluginsHandler().getResourceUriOrTemplate(), is(ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI));
+        assertThat(new LoadBalanceAlgorithmPluginsHandler().getResourceUriTemplate(), is(ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI));
     }
     
     @Test

@@ -117,7 +117,7 @@ class ResourceDefinitionRegistryTest {
     
     @Test
     void assertGetSupportedResourceDescriptors() {
-        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors().stream().map(MCPResourceDescriptor::getUriOrTemplate).toList();
+        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).toList();
         assertThat(actual, is(ResourceDefinitionRegistry.getSupportedResources()));
     }
     
@@ -150,14 +150,14 @@ class ResourceDefinitionRegistryTest {
     private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
         MCPResourceHandler<MCPServiceHandlerContext> result = mock(MCPResourceHandler.class);
         when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
-        when(result.getResourceUriOrTemplate()).thenReturn(uriTemplate);
+        when(result.getResourceUriTemplate()).thenReturn(uriTemplate);
         return result;
     }
     
     private static MCPResourceHandler<?> createUnsupportedResourceHandler() {
         MCPResourceHandler<MCPHandlerContext> result = mock(MCPResourceHandler.class);
         when(result.getContextType()).thenReturn(MCPHandlerContext.class);
-        when(result.getResourceUriOrTemplate()).thenReturn("shardingsphere://unsupported");
+        when(result.getResourceUriTemplate()).thenReturn("shardingsphere://unsupported");
         return result;
     }
     
@@ -204,7 +204,7 @@ class ResourceDefinitionRegistryTest {
     
     private static String getRequiredUriMessage() {
         MCPResourceHandler<?> handler = createResourceHandler(null);
-        return String.format("Resource URI or URI template is required for `%s`.", handler.getClass().getName());
+        return String.format("Resource URI template is required for `%s`.", handler.getClass().getName());
     }
     
     private static String getDuplicateUriTemplateMessage() {

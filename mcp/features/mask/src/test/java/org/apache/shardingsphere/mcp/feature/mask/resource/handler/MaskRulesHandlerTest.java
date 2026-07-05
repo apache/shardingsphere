@@ -45,7 +45,7 @@ class MaskRulesHandlerTest {
     
     @Test
     void assertGetResourceUriTemplate() {
-        assertThat(new MaskRulesHandler().getResourceUriOrTemplate(), is(MaskFeatureDefinition.RULES_RESOURCE_URI));
+        assertThat(new MaskRulesHandler().getResourceUriTemplate(), is(MaskFeatureDefinition.RULES_RESOURCE_URI));
     }
     
     @Test

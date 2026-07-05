@@ -31,7 +31,7 @@ import java.util.Map;
 @Getter
 public final class ShardingSphereMCPResourceMetadata {
     
-    private final String uriOrTemplate;
+    private final String uriTemplate;
     
     private final Collection<MCPUriVariableDescriptor> uriVariables;
     

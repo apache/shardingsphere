@@ -69,8 +69,8 @@ class MCPProtocolDescriptorCatalogTest {
         assertThat(actual.getAllResourceDescriptors(), is(List.of(resourceDescriptor, resourceTemplateDescriptor)));
     }
     
-    private MCPResourceDescriptor createResourceDescriptor(final String uriOrTemplate) {
-        return new MCPResourceDescriptor(uriOrTemplate, "test-resource", "Test Resource", "Read a test resource.", "application/json", MCPResourceAnnotations.EMPTY, Map.of());
+    private MCPResourceDescriptor createResourceDescriptor(final String uriTemplate) {
+        return new MCPResourceDescriptor(uriTemplate, "test-resource", "Test Resource", "Read a test resource.", "application/json", MCPResourceAnnotations.EMPTY, Map.of());
     }
     
     private MCPToolDescriptor createToolDescriptor() {
