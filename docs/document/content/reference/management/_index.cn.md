@@ -85,9 +85,6 @@ namespace
    ├    ├     ├──show_process_list_trigger
    ├    ├     ├     ├──process_id:UUID
    ├    ├     ├     ├──....
-   ├    ├     ├──labels                      
-   ├    ├     ├     ├──UUID
-   ├    ├     ├     ├──....               
    ├    ├──qualified_data_sources                       
    ├    ├     ├──${databaseName.groupName.dataSourceName} 
    ├    ├     ├──${databaseName.groupName.dataSourceName}
