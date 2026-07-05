@@ -33,9 +33,9 @@ public enum MCPToolElicitationFallbackReason {
     
     MISSING_PLAN_ID("missing_plan_id", "structured_fallback"),
     
-    SENSITIVE_FORM_BLOCKED("sensitive_form_blocked", "url_fallback"),
+    SENSITIVE_FORM_BLOCKED("sensitive_form_blocked", "structured_fallback"),
     
-    URL_MODE_NOT_IMPLEMENTED("url_mode_not_implemented", "url_fallback"),
+    URL_MODE_NOT_IMPLEMENTED("url_mode_not_implemented", "structured_fallback"),
     
     AMBIGUOUS_FIELD_BINDING("ambiguous_field_binding", "structured_fallback"),
     

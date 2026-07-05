@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario;
 
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -74,8 +75,14 @@ class LLMUsabilityScenarioCatalogTest {
         List<LLMUsabilityScenario> actual = new LLMUsabilityScenarioCatalog().createExtendedScore("mysql", "logic_db", "logic_db", "orders",
                 "SELECT COUNT(*) AS total_orders FROM orders", 2);
         Map<String, LLMUsabilityScenario> actualScenarios = actual.stream().collect(Collectors.toMap(LLMUsabilityScenario::getScenarioId, each -> each));
-        assertThat(actualScenarios.keySet(), hasItems("extended-prompt-completion-inspect-mysql", "extended-runtime-status-mysql", "extended-recovery-missing-database-mysql",
-                "extended-recovery-bad-resource-mysql"));
+        assertThat(actualScenarios.keySet(), hasItems("extended-prompt-completion-inspect-mysql", "extended-resource-list-discovery-mysql", "extended-runtime-status-mysql",
+                "extended-recovery-missing-database-mysql", "extended-recovery-bad-resource-mysql"));
+        assertThat(actualScenarios.get("extended-resource-list-discovery-mysql").getExpectedFirstActionNames(), is(List.of(MCPInteractionActionNames.LIST_TOOLS)));
+        List<String> expectedDiscoveryToolNames = List.of(
+                MCPInteractionActionNames.LIST_TOOLS, MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
+                MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query");
+        assertThat(actualScenarios.get("extended-resource-list-discovery-mysql").getLlmScenario().getAllowedToolNames(), is(expectedDiscoveryToolNames));
+        assertThat(actualScenarios.get("extended-resource-list-discovery-mysql").getLlmScenario().getRequiredToolNames(), is(expectedDiscoveryToolNames));
         assertThat(actualScenarios.get("extended-runtime-status-mysql").getExpectedResourceUris(), is(List.of("shardingsphere://runtime")));
         assertFalse(actualScenarios.get("extended-recovery-missing-database-mysql").isRecoveryExpected());
         assertTrue(actualScenarios.get("extended-recovery-bad-resource-mysql").isRecoveryExpected());

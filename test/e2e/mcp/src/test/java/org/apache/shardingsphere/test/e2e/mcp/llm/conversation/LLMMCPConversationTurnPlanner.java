@@ -46,7 +46,9 @@ final class LLMMCPConversationTurnPlanner {
     
     private static Set<String> createReadOnlyToolNames() {
         Set<String> result = new LinkedHashSet<>();
+        result.add(MCPInteractionActionNames.LIST_TOOLS);
         result.add(MCPInteractionActionNames.LIST_RESOURCES);
+        result.add(MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES);
         result.add(MCPInteractionActionNames.READ_RESOURCE);
         result.add(MCPInteractionActionNames.LIST_PROMPTS);
         result.add(MCPInteractionActionNames.GET_PROMPT);

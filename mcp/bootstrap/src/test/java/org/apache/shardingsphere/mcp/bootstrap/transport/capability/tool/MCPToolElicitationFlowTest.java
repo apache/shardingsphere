@@ -113,7 +113,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of()), createFormAndUrlClientCapabilities());
             CallToolResult actual = callTool(createToolSpecification("stdio"), exchange, toolName, Map.of());
-            assertStructuredFallback(actual, "url_mode_not_implemented", true, true, "url_fallback");
+            assertStructuredFallback(actual, "url_mode_not_implemented", true, true, "structured_fallback");
             assertSanitizedSensitiveFallback(actual);
             verify(exchange, never()).createElicitation(any());
         }
@@ -133,7 +133,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
                         "field", "primary_algorithm_properties.props",
                         "input_type", "string",
                         "display_message", "Provide props."))),
-                "sensitive_form_blocked", "url_fallback");
+                "sensitive_form_blocked", "structured_fallback");
     }
     
     @Test
@@ -189,7 +189,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("custom_properties.display-name", "foo_display")));
             CallToolResult actual = callTool(createToolSpecification("stdio"), exchange, toolName, Map.of());
-            assertStructuredFallback(actual, "sensitive_form_blocked", true, false, "url_fallback");
+            assertStructuredFallback(actual, "sensitive_form_blocked", true, false, "structured_fallback");
             assertSanitizedSensitiveFallback(actual);
             verify(exchange, never()).createElicitation(any());
         }
@@ -205,7 +205,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("field_1", "foo_display")));
             CallToolResult actual = callTool(createToolSpecification("stdio"), exchange, toolName, Map.of());
             assertStructuredFallback(actual, expectedReason, true, false, expectedInteraction);
-            if ("url_fallback".equals(expectedInteraction)) {
+            if ("sensitive_form_blocked".equals(expectedReason) || "url_mode_not_implemented".equals(expectedReason)) {
                 assertSanitizedSensitiveFallback(actual);
             }
             verify(exchange, never()).createElicitation(any());

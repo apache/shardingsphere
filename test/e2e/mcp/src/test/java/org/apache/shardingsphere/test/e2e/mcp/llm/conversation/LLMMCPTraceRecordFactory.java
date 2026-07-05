@@ -28,8 +28,16 @@ final class LLMMCPTraceRecordFactory {
     MCPInteractionTraceRecord createTraceRecord(final int sequence, final String actionName, final String actionOrigin, final Map<String, Object> args,
                                                 final Map<String, Object> structuredContent, final long latencyMillis) {
         String bridgeActionOrigin = MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN;
+        if (MCPInteractionActionNames.LIST_TOOLS.equals(actionName)) {
+            return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.TOOL_LIST_KIND, bridgeActionOrigin, MCPInteractionActionNames.LIST_TOOLS,
+                    Map.of(), structuredContent, true, latencyMillis);
+        }
         if (MCPInteractionActionNames.LIST_RESOURCES.equals(actionName)) {
             return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_LIST_KIND, bridgeActionOrigin, MCPInteractionActionNames.LIST_RESOURCES,
+                    Map.of(), structuredContent, true, latencyMillis);
+        }
+        if (MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES.equals(actionName)) {
+            return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_TEMPLATE_LIST_KIND, bridgeActionOrigin, MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
                     Map.of(), structuredContent, true, latencyMillis);
         }
         if (MCPInteractionActionNames.READ_RESOURCE.equals(actionName)) {

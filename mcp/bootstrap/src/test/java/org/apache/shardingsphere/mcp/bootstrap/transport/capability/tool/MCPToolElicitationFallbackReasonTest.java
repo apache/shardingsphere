@@ -42,7 +42,7 @@ class MCPToolElicitationFallbackReasonTest {
     }
     
     @Test
-    void assertWithClientCapabilitiesUseUrlFallback() {
+    void assertWithClientCapabilitiesUseUrlModeNotImplementedFallback() {
         MCPToolElicitationFallbackReason actual = MCPToolElicitationFallbackReason.SENSITIVE_FORM_BLOCKED.withClientCapabilities(createClientCapabilities(createFormAndUrlClientCapabilities()));
         assertThat(actual, is(MCPToolElicitationFallbackReason.URL_MODE_NOT_IMPLEMENTED));
     }
@@ -65,8 +65,8 @@ class MCPToolElicitationFallbackReasonTest {
                 Arguments.of(MCPToolElicitationFallbackReason.CLIENT_UNSUPPORTED, "client_unsupported", "structured_fallback"),
                 Arguments.of(MCPToolElicitationFallbackReason.REMOTE_IDENTITY_REQUIRED, "remote_identity_required", "structured_fallback"),
                 Arguments.of(MCPToolElicitationFallbackReason.MISSING_PLAN_ID, "missing_plan_id", "structured_fallback"),
-                Arguments.of(MCPToolElicitationFallbackReason.SENSITIVE_FORM_BLOCKED, "sensitive_form_blocked", "url_fallback"),
-                Arguments.of(MCPToolElicitationFallbackReason.URL_MODE_NOT_IMPLEMENTED, "url_mode_not_implemented", "url_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.SENSITIVE_FORM_BLOCKED, "sensitive_form_blocked", "structured_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.URL_MODE_NOT_IMPLEMENTED, "url_mode_not_implemented", "structured_fallback"),
                 Arguments.of(MCPToolElicitationFallbackReason.AMBIGUOUS_FIELD_BINDING, "ambiguous_field_binding", "structured_fallback"),
                 Arguments.of(MCPToolElicitationFallbackReason.ELICITATION_FAILED, "elicitation_failed", "structured_fallback"),
                 Arguments.of(MCPToolElicitationFallbackReason.MALFORMED_ELICITATION_RESULT, "malformed_elicitation_result", "structured_fallback"),

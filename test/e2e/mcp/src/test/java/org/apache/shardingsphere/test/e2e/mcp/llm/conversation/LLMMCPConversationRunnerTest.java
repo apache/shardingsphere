@@ -174,17 +174,26 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
     
     @Test
     void assertRunWithResourceBridgeSequence() throws IOException, InterruptedException {
-        List<String> actualToolNames = List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query");
+        List<String> actualToolNames = List.of(
+                MCPInteractionActionNames.LIST_TOOLS,
+                MCPInteractionActionNames.LIST_RESOURCES,
+                MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
+                MCPInteractionActionNames.READ_RESOURCE,
+                "database_gateway_execute_query");
         LLME2EScenario actualScenario = createScenario(actualToolNames);
         LLMMCPConversationRunner actualRunner = createRunner(3);
         Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(new LLMChatCompletion("",
                 List.of(
-                        new LLMToolCall("tool-1", MCPInteractionActionNames.LIST_RESOURCES, "{}"),
-                        new LLMToolCall("tool-2", MCPInteractionActionNames.READ_RESOURCE, JsonUtils.toJsonString(Map.of("uri", RESOURCE_URI))),
-                        new LLMToolCall("tool-3", "database_gateway_execute_query", JsonUtils.toJsonString(executeQueryArguments))),
+                        new LLMToolCall("tool-1", MCPInteractionActionNames.LIST_TOOLS, "{}"),
+                        new LLMToolCall("tool-2", MCPInteractionActionNames.LIST_RESOURCES, "{}"),
+                        new LLMToolCall("tool-3", MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES, "{}"),
+                        new LLMToolCall("tool-4", MCPInteractionActionNames.READ_RESOURCE, JsonUtils.toJsonString(Map.of("uri", RESOURCE_URI))),
+                        new LLMToolCall("tool-5", "database_gateway_execute_query", JsonUtils.toJsonString(executeQueryArguments))),
                 "tool-call-response"));
+        when(getMCPInteractionClient().listTools()).thenReturn(List.of(Map.of("name", "database_gateway_execute_query")));
         when(getMCPInteractionClient().listResources()).thenReturn(Map.of("resources", List.of(Map.of("uri", RESOURCE_URI))));
+        when(getMCPInteractionClient().listResourceTemplates()).thenReturn(Map.of("resourceTemplates", List.of(Map.of("uriTemplate", "shardingsphere://databases/{database}"))));
         when(getMCPInteractionClient().readResource(RESOURCE_URI)).thenReturn(Map.of("supportedTools", List.of("database_gateway_search_metadata", "database_gateway_execute_query")));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload("2"));
         when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
@@ -193,13 +202,17 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertTrue(actual.getAssertionReport().isSuccess());
-        assertThat(actual.getInteractionTrace().size(), is(3));
-        assertThat(actual.getInteractionTrace().getFirst().getActionKind(), is(MCPInteractionActionNames.RESOURCE_LIST_KIND));
+        assertThat(actual.getInteractionTrace().size(), is(5));
+        assertThat(actual.getInteractionTrace().getFirst().getActionKind(), is(MCPInteractionActionNames.TOOL_LIST_KIND));
         assertThat(actual.getInteractionTrace().getFirst().getActionOrigin(), is(MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN));
-        assertThat(actual.getInteractionTrace().get(1).getActionKind(), is(MCPInteractionActionNames.RESOURCE_READ_KIND));
-        assertThat(actual.getInteractionTrace().get(2).getTargetName(), is("database_gateway_execute_query"));
-        assertThat(actual.getInteractionTrace().get(2).getActionOrigin(), is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
+        assertThat(actual.getInteractionTrace().get(1).getActionKind(), is(MCPInteractionActionNames.RESOURCE_LIST_KIND));
+        assertThat(actual.getInteractionTrace().get(2).getActionKind(), is(MCPInteractionActionNames.RESOURCE_TEMPLATE_LIST_KIND));
+        assertThat(actual.getInteractionTrace().get(3).getActionKind(), is(MCPInteractionActionNames.RESOURCE_READ_KIND));
+        assertThat(actual.getInteractionTrace().get(4).getTargetName(), is("database_gateway_execute_query"));
+        assertThat(actual.getInteractionTrace().get(4).getActionOrigin(), is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
+        verify(getMCPInteractionClient()).listTools();
         verify(getMCPInteractionClient()).listResources();
+        verify(getMCPInteractionClient()).listResourceTemplates();
         verify(getMCPInteractionClient()).readResource(RESOURCE_URI);
         verify(getMCPInteractionClient()).call("database_gateway_execute_query", executeQueryArguments);
     }
