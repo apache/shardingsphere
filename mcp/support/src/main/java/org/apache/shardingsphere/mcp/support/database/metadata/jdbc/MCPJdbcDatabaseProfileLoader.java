@@ -60,7 +60,7 @@ public final class MCPJdbcDatabaseProfileLoader {
     public RuntimeDatabaseProfile load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            DatabaseType databaseType = loadDatabaseType(databaseName, databaseMetaData.getURL());
+            DatabaseType databaseType = loadDatabaseType(databaseName, databaseMetaData);
             String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
             return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion);
         } catch (final SQLException ex) {
@@ -68,9 +68,9 @@ public final class MCPJdbcDatabaseProfileLoader {
         }
     }
     
-    private DatabaseType loadDatabaseType(final String databaseName, final String jdbcUrl) {
+    private DatabaseType loadDatabaseType(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
         try {
-            return DatabaseTypeFactory.get(jdbcUrl);
+            return DatabaseTypeFactory.get(databaseMetaData);
         } catch (final ShardingSphereExternalException ex) {
             throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName, ex);
         }
