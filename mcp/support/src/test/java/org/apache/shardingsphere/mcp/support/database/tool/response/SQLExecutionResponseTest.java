@@ -127,26 +127,27 @@ class SQLExecutionResponseTest {
                 Arguments.of("result set with rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(columns, rows, true).withExecutionHints(10, 5000),
                         Map.ofEntries(
                                 Map.entry("result_kind", "result_set"), Map.entry("statement_class", "query"), Map.entry("statement_type", "SELECT"), Map.entry("status", "OK"),
-                                Map.entry("response_mode", "query"),
+                                Map.entry("response_mode", "query"), Map.entry("summary", "Executed SELECT statement and returned 1 row(s). Result was truncated."),
                                 Map.entry("columns", columns), Map.entry("rows", rows), Map.entry("row_object_status", "available"), Map.entry("row_objects", rowObjects),
                                 Map.entry("returned_row_count", 1), Map.entry("applied_max_rows", 10), Map.entry("applied_timeout_ms", 5000), Map.entry("truncated", true),
                                 Map.entry("next_actions", truncatedResultSetNextActions))),
                 Arguments.of("result set with null rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(List.of(), null, false),
                         Map.ofEntries(
                                 Map.entry("result_kind", "result_set"), Map.entry("statement_class", "query"), Map.entry("statement_type", "SELECT"), Map.entry("status", "OK"),
-                                Map.entry("response_mode", "query"),
+                                Map.entry("response_mode", "query"), Map.entry("summary", "Executed SELECT statement and returned 0 row(s)."),
                                 Map.entry("columns", List.of()), Map.entry("rows", List.of()), Map.entry("row_object_status", "available"), Map.entry("row_objects", List.of()),
                                 Map.entry("returned_row_count", 0), Map.entry("applied_max_rows", 0), Map.entry("applied_timeout_ms", 0), Map.entry("truncated", false),
                                 Map.entry("next_actions", resultSetNextActions))),
                 Arguments.of("update count", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.updateCount("UPDATE", 2),
                         Map.ofEntries(Map.entry("response_mode", "executed"), Map.entry("result_kind", "update_count"), Map.entry("statement_class", "dml"),
-                                Map.entry("statement_type", "UPDATE"), Map.entry("status", "OK"), Map.entry("affected_rows", 2), Map.entry("truncated", false),
+                                Map.entry("statement_type", "UPDATE"), Map.entry("status", "OK"), Map.entry("summary", "Executed UPDATE statement and affected 2 row(s)."),
+                                Map.entry("affected_rows", 2), Map.entry("truncated", false),
                                 Map.entry("applied_max_rows", 0), Map.entry("applied_timeout_ms", 0), Map.entry("next_actions", executionNextActions))),
                 Arguments.of("statement acknowledgement",
                         (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.statementAck(SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "Transaction committed."),
                         Map.ofEntries(Map.entry("response_mode", "executed"), Map.entry("result_kind", "statement_ack"), Map.entry("statement_class", "transaction_control"),
-                                Map.entry("statement_type", "COMMIT"), Map.entry("status", "OK"), Map.entry("message", "Transaction committed."), Map.entry("truncated", false),
-                                Map.entry("applied_max_rows", 0), Map.entry("applied_timeout_ms", 0), Map.entry("next_actions", executionNextActions))));
+                                Map.entry("statement_type", "COMMIT"), Map.entry("status", "OK"), Map.entry("summary", "Transaction committed."), Map.entry("message", "Transaction committed."),
+                                Map.entry("truncated", false), Map.entry("applied_max_rows", 0), Map.entry("applied_timeout_ms", 0), Map.entry("next_actions", executionNextActions))));
     }
     
     private static List<Map<String, Object>> createNextActions(final String reason) {

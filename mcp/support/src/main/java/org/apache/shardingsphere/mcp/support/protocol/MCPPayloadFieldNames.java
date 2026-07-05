@@ -58,7 +58,11 @@ public final class MCPPayloadFieldNames {
     
     public static final String SECRET = "secret";
     
+    public static final String SELF_RESOURCE = "self_resource";
+    
     public static final String SOURCE_FIELD = "source_field";
+    
+    public static final String SUMMARY = "summary";
     
     public static final String URI = "uri";
     

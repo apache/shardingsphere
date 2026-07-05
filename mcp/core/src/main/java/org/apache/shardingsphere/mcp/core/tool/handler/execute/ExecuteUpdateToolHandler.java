@@ -103,7 +103,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     }
     
     private MCPResponse createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
-        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(17, 1F);
         result.put("response_mode", MCPResponseMode.PREVIEW);
         result.put("result_kind", RESULT_KIND_PREVIEW);
         result.put(MCPPayloadFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW);
@@ -118,7 +118,9 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         classificationResult.getTargetObjectName().ifPresent(optional -> result.put("target_object", optional));
         classificationResult.getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
         result.put("review_guidance", PREVIEW_REVIEW_GUIDANCE);
-        result.put("review_summary", createReviewSummary(classificationResult));
+        String reviewSummary = createReviewSummary(classificationResult);
+        result.put(MCPPayloadFieldNames.SUMMARY, reviewSummary);
+        result.put("review_summary", reviewSummary);
         Map<String, Object> suggestedArguments = createSuggestedArguments(toolArguments, classificationResult);
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(toolArguments));

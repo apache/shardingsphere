@@ -24,6 +24,23 @@ model_first_summary:
   guidance_resource_role: shardingsphere://guidance complements MCP list methods with
     ShardingSphere domain guidance, workflow guidance, and side-effect notes.
   guidance_resource: shardingsphere://guidance
+  first_call_routes:
+  - {intent: inspect_metadata, first_action: read_resource shardingsphere://databases,
+    next_step: call_tool database_gateway_search_metadata or read returned resource.uri,
+    stop_rule: Stop after the requested detail resource is read.}
+  - {intent: validate_runtime, first_action: read_resource shardingsphere://runtime,
+    next_step: call_tool database_gateway_validate_runtime_database with a configured
+      database, stop_rule: Follow top-level next_actions when validation fails.}
+  - {intent: read_only_sql, first_action: 'read_resource shardingsphere://databases/{database}/capabilities',
+    next_step: call_tool database_gateway_execute_query, stop_rule: Stop after reporting
+      the result rows.}
+  - {intent: side_effect_sql, first_action: call_tool database_gateway_execute_update
+      execution_mode=preview, next_step: call_tool database_gateway_execute_update
+      execution_mode=execute, stop_rule: Execute only after preview review confirms
+      the intended side effect.}
+  - {intent: recover_error, first_action: follow top-level next_actions, next_step: fallback
+      to recovery.next_actions when top-level actions are absent, stop_rule: 'Ask the
+      user only when no deterministic resource, completion, or tool action is available.'}
   metadata_rule: {first_resource: 'shardingsphere://databases', search_tool: database_gateway_search_metadata,
     detail_rule: Read the returned resource.uri when the list or search response points
       to a detail resource.}

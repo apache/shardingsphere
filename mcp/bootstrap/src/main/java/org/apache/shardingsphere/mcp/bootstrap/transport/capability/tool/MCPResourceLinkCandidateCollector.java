@@ -50,6 +50,7 @@ final class MCPResourceLinkCandidateCollector {
     
     private void collectResourceLinkFields(final Map<?, ?> value, final List<OrderedResourceLinkCandidate> candidates) {
         collectResourceLinkValue(value.get(MCPPayloadFieldNames.RESOURCES_TO_READ), MCPPayloadFieldNames.RESOURCES_TO_READ, candidates);
+        collectResourceLinkValue(value.get(MCPPayloadFieldNames.SELF_RESOURCE), MCPPayloadFieldNames.SELF_RESOURCE, candidates);
         collectResourceLinkValue(value.get(MCPPayloadFieldNames.RESOURCE), MCPPayloadFieldNames.RESOURCE, candidates);
         collectResourceLinkValue(value.get(MCPPayloadFieldNames.PARENT_RESOURCE), MCPPayloadFieldNames.PARENT_RESOURCE, candidates);
         collectResourceLinkValue(value.get(MCPPayloadFieldNames.NEXT_RESOURCES), MCPPayloadFieldNames.NEXT_RESOURCES, candidates);
@@ -125,13 +126,16 @@ final class MCPResourceLinkCandidateCollector {
         if (MCPPayloadFieldNames.RESOURCES_TO_READ.equals(sourceField)) {
             return 0;
         }
-        if (MCPPayloadFieldNames.RESOURCE.equals(sourceField)) {
+        if (MCPPayloadFieldNames.SELF_RESOURCE.equals(sourceField)) {
             return 1;
         }
-        if (MCPPayloadFieldNames.PARENT_RESOURCE.equals(sourceField)) {
+        if (MCPPayloadFieldNames.RESOURCE.equals(sourceField)) {
             return 2;
         }
-        return MCPPayloadFieldNames.NEXT_RESOURCES.equals(sourceField) ? 3 : 4;
+        if (MCPPayloadFieldNames.PARENT_RESOURCE.equals(sourceField)) {
+            return 3;
+        }
+        return MCPPayloadFieldNames.NEXT_RESOURCES.equals(sourceField) ? 4 : 5;
     }
     
     private Map<String, OrderedResourceLinkCandidate> deduplicateCandidates(final List<OrderedResourceLinkCandidate> candidates) {
