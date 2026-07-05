@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.is;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -131,7 +133,7 @@ class PackagedDistributionTestSupportTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("prepareCases")
+    @MethodSource("transportCases")
     void assertPrepareWithTransport(final String caseName, final RuntimeTransport transport, final MCPTransportType expectedTransportType) throws IOException {
         Path distributionHome = createDistributionHome(tempDir.resolve(caseName));
         String actualOriginalHome = System.getProperty("mcp.distribution.home");
@@ -161,7 +163,28 @@ class PackagedDistributionTestSupportTest {
         }
     }
     
-    private static Stream<Arguments> prepareCases() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transportCases")
+    void assertCreateDockerConfigurationFile(final String caseName, final RuntimeTransport transport, final MCPTransportType expectedTransportType) throws IOException {
+        Path targetFile = tempDir.resolve(caseName + ".yaml");
+        RuntimeDatabaseConfiguration expectedRuntimeDatabase = new RuntimeDatabaseConfiguration("jdbc:mysql://127.0.0.1:3306/orders", "mcp", "mcp", "com.mysql.cj.jdbc.Driver");
+        Path actual = PackagedDistributionTestSupport.createDockerConfigurationFile(targetFile, transport, Map.of("logic_db", expectedRuntimeDatabase));
+        assertThat(actual, is(targetFile));
+        MCPLaunchConfiguration actualConfig = MCPConfigurationLoader.load(actual.toString());
+        assertThat(actualConfig.getTransportType(), is(expectedTransportType));
+        if (RuntimeTransport.HTTP == transport) {
+            assertThat(actualConfig.getHttpTransport().getBindHost(), is("0.0.0.0"));
+            assertThat(actualConfig.getHttpTransport().getPort(), is(18088));
+            assertThat(actualConfig.getHttpTransport().getEndpointPath(), is("/mcp"));
+        }
+        RuntimeDatabaseConfiguration actualRuntimeDatabase = actualConfig.getDatabases().get("logic_db");
+        assertThat(actualRuntimeDatabase.getJdbcUrl(), is(expectedRuntimeDatabase.getJdbcUrl()));
+        assertThat(actualRuntimeDatabase.getUsername(), is(expectedRuntimeDatabase.getUsername()));
+        assertThat(actualRuntimeDatabase.getPassword(), is(expectedRuntimeDatabase.getPassword()));
+        assertThat(actualRuntimeDatabase.getDriverClassName(), is(expectedRuntimeDatabase.getDriverClassName()));
+    }
+    
+    private static Stream<Arguments> transportCases() {
         return Stream.of(
                 Arguments.of("http transport", RuntimeTransport.HTTP, MCPTransportType.STREAMABLE_HTTP),
                 Arguments.of("stdio transport", RuntimeTransport.STDIO, MCPTransportType.STDIO));

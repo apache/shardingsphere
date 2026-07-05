@@ -84,9 +84,7 @@ public final class PackagedDistributionTestSupport {
     public static PreparedPackagedDistribution prepare(final Path tempDir, final RuntimeTransport transport,
                                                        final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
         Path workingHome = prepareWorkingHome(tempDir);
-        int httpPort = resolveHttpPort(transport);
-        Path configFile = rewriteConfiguration(workingHome, transport, httpPort, runtimeDatabases);
-        return new PreparedPackagedDistribution(workingHome, configFile, transport, httpPort);
+        return createPreparedDistribution(workingHome, transport, runtimeDatabases);
     }
     
     /**
@@ -101,9 +99,14 @@ public final class PackagedDistributionTestSupport {
     public static PreparedPackagedDistribution prepareReusable(final Path workingHome, final RuntimeTransport transport,
                                                                final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
         Path actualWorkingHome = prepareReusableWorkingHome(workingHome);
+        return createPreparedDistribution(actualWorkingHome, transport, runtimeDatabases);
+    }
+    
+    private static PreparedPackagedDistribution createPreparedDistribution(final Path workingHome, final RuntimeTransport transport,
+                                                                           final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
         int httpPort = resolveHttpPort(transport);
-        Path configFile = rewriteConfiguration(actualWorkingHome, transport, httpPort, runtimeDatabases);
-        return new PreparedPackagedDistribution(actualWorkingHome, configFile, transport, httpPort);
+        Path configFile = rewriteConfiguration(workingHome, transport, httpPort, runtimeDatabases);
+        return new PreparedPackagedDistribution(workingHome, configFile, transport, httpPort);
     }
     
     /**
@@ -117,10 +120,12 @@ public final class PackagedDistributionTestSupport {
      */
     public static Path createDockerConfigurationFile(final Path targetFile, final RuntimeTransport transport,
                                                      final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
-        HttpTransportConfiguration httpTransport = new HttpTransportConfiguration(DOCKER_BIND_HOST, DOCKER_HTTP_PORT, DEFAULT_ENDPOINT_PATH);
-        MCPTransportType transportType = RuntimeTransport.HTTP == transport ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO;
-        Files.writeString(targetFile, YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(
-                new MCPLaunchConfiguration(transportType, httpTransport, runtimeDatabases))));
+        return writeConfiguration(targetFile, new MCPLaunchConfiguration(resolveTransportType(transport),
+                new HttpTransportConfiguration(DOCKER_BIND_HOST, DOCKER_HTTP_PORT, DEFAULT_ENDPOINT_PATH), runtimeDatabases));
+    }
+    
+    private static Path writeConfiguration(final Path targetFile, final MCPLaunchConfiguration config) throws IOException {
+        Files.writeString(targetFile, YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(config)));
         return targetFile;
     }
     
@@ -270,9 +275,7 @@ public final class PackagedDistributionTestSupport {
                                              final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
         Path result = resolveConfigFile(workingHome, transport);
         MCPLaunchConfiguration sourceConfig = MCPConfigurationLoader.load(result.toString());
-        MCPLaunchConfiguration actualConfig = createRuntimeConfiguration(sourceConfig, transport, httpPort, runtimeDatabases);
-        Files.writeString(result, YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(actualConfig)));
-        return result;
+        return writeConfiguration(result, createRuntimeConfiguration(sourceConfig, transport, httpPort, runtimeDatabases));
     }
     
     private static Path resolveConfigFile(final Path workingHome, final RuntimeTransport transport) {
@@ -283,8 +286,11 @@ public final class PackagedDistributionTestSupport {
                                                                      final int httpPort, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         HttpTransportConfiguration actualHttpTransport = new HttpTransportConfiguration(sourceConfig.getHttpTransport().getBindHost(),
                 RuntimeTransport.HTTP == transport ? httpPort : sourceConfig.getHttpTransport().getPort(), sourceConfig.getHttpTransport().getEndpointPath());
-        MCPTransportType transportType = RuntimeTransport.HTTP == transport ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO;
-        return new MCPLaunchConfiguration(transportType, actualHttpTransport, runtimeDatabases.isEmpty() ? sourceConfig.getDatabases() : runtimeDatabases);
+        return new MCPLaunchConfiguration(resolveTransportType(transport), actualHttpTransport, runtimeDatabases.isEmpty() ? sourceConfig.getDatabases() : runtimeDatabases);
+    }
+    
+    private static MCPTransportType resolveTransportType(final RuntimeTransport transport) {
+        return RuntimeTransport.HTTP == transport ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO;
     }
     
     public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport, int httpPort) {
