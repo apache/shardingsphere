@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -65,7 +64,7 @@ public final class DatabaseTypeFactory {
     public static DatabaseType get(final DatabaseMetaData metaData) throws SQLException {
         try {
             return get(metaData.getURL());
-        } catch (final SQLFeatureNotSupportedException ex) {
+        } catch (final SQLException ex) {
             return findByDialectJdbcUrlFetcher(metaData.getConnection()).orElseThrow(() -> ex);
         }
     }

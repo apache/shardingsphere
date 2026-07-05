@@ -92,6 +92,22 @@ class DatabaseTypeFactoryTest {
     }
     
     @Test
+    void assertGetWithSQLExceptionMetadataURLAndDialectJdbcUrlFetcher() throws SQLException {
+        DatabaseType databaseType = mockDatabaseType("jdbc:trunk:", null);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        Connection connection = mock(Connection.class);
+        DialectJdbcUrlFetcher jdbcUrlFetcher = mock(DialectJdbcUrlFetcher.class);
+        when(metaData.getURL()).thenThrow(new SQLException("unsupported"));
+        when(metaData.getConnection()).thenReturn(connection);
+        doReturn(Connection.class).when(jdbcUrlFetcher).getConnectionClass();
+        when(connection.isWrapperFor(Connection.class)).thenReturn(true);
+        when(jdbcUrlFetcher.fetch(connection)).thenReturn("jdbc:trunk://localhost:3306/test");
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)).thenReturn(Collections.singleton(jdbcUrlFetcher));
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(Collections.singleton(databaseType));
+        assertThat(DatabaseTypeFactory.get(metaData), is(databaseType));
+    }
+    
+    @Test
     void assertGetWithUnsupportedMetadataURLAndNoDialectJdbcUrlFetcher() throws SQLException {
         SQLFeatureNotSupportedException expectedException = new SQLFeatureNotSupportedException("unsupported");
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
@@ -103,6 +119,21 @@ class DatabaseTypeFactoryTest {
         when(connection.isWrapperFor(Connection.class)).thenReturn(false);
         when(ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)).thenReturn(Collections.singleton(jdbcUrlFetcher));
         SQLFeatureNotSupportedException actualException = assertThrows(SQLFeatureNotSupportedException.class, () -> DatabaseTypeFactory.get(metaData));
+        assertThat(actualException, is(expectedException));
+    }
+    
+    @Test
+    void assertGetWithSQLExceptionMetadataURLAndNoDialectJdbcUrlFetcher() throws SQLException {
+        SQLException expectedException = new SQLException("unsupported");
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        Connection connection = mock(Connection.class);
+        DialectJdbcUrlFetcher jdbcUrlFetcher = mock(DialectJdbcUrlFetcher.class);
+        when(metaData.getURL()).thenThrow(expectedException);
+        when(metaData.getConnection()).thenReturn(connection);
+        doReturn(Connection.class).when(jdbcUrlFetcher).getConnectionClass();
+        when(connection.isWrapperFor(Connection.class)).thenReturn(false);
+        when(ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)).thenReturn(Collections.singleton(jdbcUrlFetcher));
+        SQLException actualException = assertThrows(SQLException.class, () -> DatabaseTypeFactory.get(metaData));
         assertThat(actualException, is(expectedException));
     }
     
