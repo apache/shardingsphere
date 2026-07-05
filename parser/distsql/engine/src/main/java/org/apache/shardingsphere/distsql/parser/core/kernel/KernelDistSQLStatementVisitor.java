@@ -39,7 +39,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ImportDatabaseConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ImportMetaDataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InstanceIdContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LockClusterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertyContext;
@@ -61,7 +60,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StorageUnitDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StorageUnitsDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlockClusterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnregisterStorageUnitContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
@@ -82,13 +80,11 @@ import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowT
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.AlterComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportMetaDataStatement;
-import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetComputeNodeStateStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetDistVariableStatement;
-import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.AlterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.RegisterStorageUnitStatement;
@@ -176,18 +172,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitDisableComputeNode(final DisableComputeNodeContext ctx) {
         return buildSetComputeNodeStateStatement(ctx.DISABLE().getText().toUpperCase(), ctx.instanceId());
-    }
-    
-    @Override
-    public ASTNode visitLabelComputeNode(final LabelComputeNodeContext ctx) {
-        Collection<String> labels = ctx.label().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toList());
-        return new LabelComputeNodeStatement(null != ctx.RELABEL(), IdentifierValueUtils.getValue(ctx.instanceId()), labels);
-    }
-    
-    @Override
-    public ASTNode visitUnlabelComputeNode(final UnlabelComputeNodeContext ctx) {
-        Collection<String> labels = ctx.label().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toList());
-        return new UnlabelComputeNodeStatement(IdentifierValueUtils.getValue(ctx.instanceId()), labels);
     }
     
     private SetComputeNodeStateStatement buildSetComputeNodeStateStatement(final String status, final InstanceIdContext instanceIdContext) {

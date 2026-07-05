@@ -38,6 +38,4 @@ public final class ProxyGlobalConfiguration {
     private final Collection<RuleConfiguration> rules;
     
     private final Properties properties;
-    
-    private final Collection<String> labels;
 }

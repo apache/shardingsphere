@@ -733,13 +733,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.node.path.engine.generator.NodePathSegment"
-      },
-      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.label.LabelNodePath",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstructor"
       },
       "type": "org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData",

@@ -117,7 +117,7 @@ class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getDatabase("bar_db")).thenReturn(null);
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
-        when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new ProxyInstanceMetaData("foo_id", 3307), Collections.emptyList()));
+        when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new ProxyInstanceMetaData("foo_id", 3307)));
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(new ModeConfiguration("FIXTURE", mock()));
         contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(), mock());
     }
@@ -326,7 +326,7 @@ class ContextManagerTest {
     
     @Test
     void assertGetPreSelectedDatabaseNameWithJDBC() {
-        when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new JDBCInstanceMetaData("foo_id", "foo_db"), Collections.emptyList()));
+        when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new JDBCInstanceMetaData("foo_id", "foo_db")));
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));

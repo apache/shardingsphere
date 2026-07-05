@@ -75,20 +75,6 @@
     <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes" instance-id="instance_xa_recovery" key="XA_RECOVERY_NODES" value="instance_1" />
     <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes-with-multiple-values" instance-id="instance_xa_recovery_multiple" key="XA_RECOVERY_NODES" value="instance_1,instance_2" />
     
-    <label-compute-node sql-case-id="label-compute-node" instance-id="instance_label" overwrite="false">
-        <label>OLAP_1</label>
-        <label>OLAP_2</label>
-    </label-compute-node>
-    <label-compute-node sql-case-id="relabel-compute-node" instance-id="instance_relabel" overwrite="true">
-        <label>OLAP_1</label>
-        <label>OLAP_2</label>
-    </label-compute-node>
-    <unlabel-compute-node sql-case-id="unlabel-compute-node" instance-id="instance_unlabel">
-        <label>OLAP_1</label>
-    </unlabel-compute-node>
-    <unlabel-compute-node sql-case-id="unlabel-compute-node-without-label" instance-id="instance_unlabel_2">
-    </unlabel-compute-node>
-    
     <import-database-config sql-case-id="import-database-config">
         <file-path>/yaml/database-sharding.yaml</file-path>
     </import-database-config>

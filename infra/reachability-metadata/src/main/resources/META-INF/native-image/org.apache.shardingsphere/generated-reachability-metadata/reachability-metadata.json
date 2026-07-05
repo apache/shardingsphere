@@ -2700,12 +2700,6 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"
       },
-      "type": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeLabelChangedHandler"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"
-      },
       "type": "org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeOnlineHandler"
     },
     {
@@ -3108,18 +3102,6 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"
       },
-      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.label.LabelNodePath"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService"
-      },
-      "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.label.LabelNodePath"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"
-      },
       "type": "org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.KillProcessTriggerNodePath"
     },
     {
@@ -3416,30 +3398,6 @@
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
       "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.imports.ImportMetaDataExecutor",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
-      },
-      "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.label.LabelComputeNodeExecutor",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
-      },
-      "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.label.UnlabelComputeNodeExecutor",
       "methods": [
         {
           "name": "<init>",

@@ -22,11 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.AlterComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportMetaDataStatement;
-import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetDistVariableStatement;
-import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
@@ -34,21 +32,17 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.r
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.AlterReadwriteSplittingStorageUnitStatusStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.ImportDatabaseConfigurationStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.ImportMetaDataStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.LabelComputeNodeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.LockClusterStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.RefreshTableMetaDataStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.SetDistVariableStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.UnlabelComputeNodeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterComputeNodeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterReadwriteSplittingStorageUnitStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ImportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ImportMetaDataStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.LabelComputeNodeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.LockClusterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.RefreshTableMetaDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.SetDistVariableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.UnlabelComputeNodeStatementTestCase;
 
 /**
  * Updatable RAL statement assert.
@@ -64,11 +58,7 @@ public final class UpdatableRALStatementAssert {
      * @param expected expected updatable RAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UpdatableRALStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof LabelComputeNodeStatement) {
-            LabelComputeNodeStatementAssert.assertIs(assertContext, (LabelComputeNodeStatement) actual, (LabelComputeNodeStatementTestCase) expected);
-        } else if (actual instanceof UnlabelComputeNodeStatement) {
-            UnlabelComputeNodeStatementAssert.assertIs(assertContext, (UnlabelComputeNodeStatement) actual, (UnlabelComputeNodeStatementTestCase) expected);
-        } else if (actual instanceof AlterComputeNodeStatement) {
+        if (actual instanceof AlterComputeNodeStatement) {
             AlterComputeNodeStatementAssert.assertIs(assertContext, (AlterComputeNodeStatement) actual, (AlterComputeNodeStatementTestCase) expected);
         } else if (actual instanceof SetDistVariableStatement) {
             SetDistVariableStatementAssert.assertIs(assertContext, (SetDistVariableStatement) actual, (SetDistVariableStatementTestCase) expected);
