@@ -150,7 +150,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         Map<String, Object> initializeRequestParams = new LinkedHashMap<>(MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
-        initializeRequestParams.put("protocolVersion", "2024-11-05");
+        initializeRequestParams.put("protocolVersion", "2025-06-18");
         HttpResponse<String> actual = sendInitializeRequest(httpClient, initializeRequestParams);
         assertThat(actual.statusCode(), is(200));
         assertThat(actual.headers().firstValue("MCP-Protocol-Version").orElse(""), is(getProtocolVersion()));
@@ -163,7 +163,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", sessionId, "MCP-Protocol-Version", "2024-11-05"));
+        HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", sessionId, "MCP-Protocol-Version", "2025-06-18"));
         assertThat(actual.statusCode(), is(400));
     }
     
