@@ -48,7 +48,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamableServerTransportProvider {
@@ -75,8 +74,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final SessionAttributionResolver sessionAttributionResolver;
     
-    private final Map<String, String> sessionProtocolVersions;
-    
     private final AtomicBoolean closed;
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final HttpTransportConfiguration config) {
@@ -86,8 +83,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         this.jsonMapper = jsonMapper;
         this.sessionManager = sessionManager;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
-        sessionProtocolVersions = new ConcurrentHashMap<>();
-        sessionManager.addSessionCloseListener(sessionProtocolVersions::remove);
         closed = new AtomicBoolean();
     }
     
@@ -109,7 +104,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(actualInitializeRequest);
             String sessionId = result.session().getId();
             sessionManager.createSession(sessionId);
-            sessionProtocolVersions.put(sessionId, actualInitializeRequest.protocolVersion());
             return result;
         });
     }
@@ -281,12 +275,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     private void addNegotiatedProtocolHeader(final SessionAwareHttpServletResponse response, final String name, final String sessionId) {
         if (SESSION_HEADER.equalsIgnoreCase(name)) {
             response.setSessionId(sessionId);
-            response.setHeader(PROTOCOL_HEADER, findNegotiatedProtocolVersion(sessionId));
+            response.setHeader(PROTOCOL_HEADER, MCPTransportConstants.PROTOCOL_VERSION);
         }
-    }
-    
-    private String findNegotiatedProtocolVersion(final String sessionId) {
-        return sessionProtocolVersions.getOrDefault(Objects.toString(sessionId, ""), MCPTransportConstants.PROTOCOL_VERSION);
     }
     
     private abstract static class SessionAwareHttpServletResponse extends HttpServletResponseWrapper {
