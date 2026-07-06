@@ -140,12 +140,7 @@ public final class ProjectionEngine {
                     continue;
                 }
                 
-                IdentifierValue alias = new IdentifierValue(DerivedColumn.EXPRESSION_DERIVED.getDerivedColumnAlias(expressionDerivedColumnCount++));
-                AggregationProjection derivedAggr = new AggregationProjection(aggrSegment.getType(), aggrSegment, alias, databaseType, aggrSegment.getSeparator().orElse(null));
-                
-                if (AggregationType.AVG == derivedAggr.getType()) {
-                    appendAverageDerivedProjection(derivedAggr);
-                }
+                AggregationProjection derivedAggr = createDerivedAggregationProjection(aggrSegment);
                 
                 uniqueAggregations.put(aggrText, derivedAggr);
                 derivedAggregations.add(derivedAggr);
@@ -185,13 +180,37 @@ public final class ProjectionEngine {
         return result;
     }
     
+    private AggregationProjection createDerivedAggregationProjection(final AggregationProjectionSegment aggrSegment) {
+        IdentifierValue alias = new IdentifierValue(DerivedColumn.EXPRESSION_DERIVED.getDerivedColumnAlias(expressionDerivedColumnCount++));
+        if (aggrSegment instanceof AggregationDistinctProjectionSegment) {
+            return createDerivedDistinctAggregationProjection((AggregationDistinctProjectionSegment) aggrSegment, alias);
+        }
+        AggregationProjection result = new AggregationProjection(aggrSegment.getType(), aggrSegment, alias, databaseType, aggrSegment.getSeparator().orElse(null));
+        if (AggregationType.AVG == result.getType()) {
+            appendAverageDerivedProjection(result);
+        }
+        return result;
+    }
+    
+    private AggregationDistinctProjection createDerivedDistinctAggregationProjection(final AggregationDistinctProjectionSegment distinctSegment, final IdentifierValue alias) {
+        AggregationDistinctProjection result = new AggregationDistinctProjection(
+                distinctSegment.getStartIndex(), distinctSegment.getStopIndex(), distinctSegment.getType(),
+                distinctSegment, alias, distinctSegment.getDistinctInnerExpression(), databaseType, distinctSegment.getSeparator().orElse(null));
+        if (AggregationType.AVG == result.getType()) {
+            appendAverageDistinctDerivedProjection(result);
+        }
+        return result;
+    }
+    
     private void extractAggregationSegments(final ExpressionSegment segment, final List<AggregationProjectionSegment> extractedSegments) {
         if (segment == null) {
             return;
         }
         
         if (segment instanceof AggregationProjectionSegment) {
-            extractedSegments.add((AggregationProjectionSegment) segment);
+            if (!((AggregationProjectionSegment) segment).getWindow().isPresent()) {
+                extractedSegments.add((AggregationProjectionSegment) segment);
+            }
             return;
         }
         

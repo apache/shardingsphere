@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
@@ -463,6 +464,171 @@ class GroupByMemoryMergedResultTest {
         
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("5.0000"));
+    }
+    
+    @Test
+    void assertMergeWithCoalesceAvgExpression() throws SQLException {
+        FunctionSegment functionSegment = new FunctionSegment(0, 23, "COALESCE", "COALESCE(AVG(price), 0)");
+        AggregationProjectionSegment avgSegment = new AggregationProjectionSegment(9, 18, AggregationType.AVG, "AVG(price)");
+        LiteralExpressionSegment literalSegment = new LiteralExpressionSegment(21, 21, 0);
+        functionSegment.getParameters().add(avgSegment);
+        functionSegment.getParameters().add(literalSegment);
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 23, "COALESCE(AVG(price), 0)", functionSegment);
+        
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 23);
+        projectionsSegment.getProjections().add(expressionSegment);
+        
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(30, 36, new IdentifierValue("t_order")));
+        
+        GroupBySegment groupBySegment = new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 5, OrderDirection.ASC, NullsOrderType.FIRST)));
+        OrderBySegment orderBySegment = new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 5, OrderDirection.ASC, NullsOrderType.FIRST)));
+        
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(projectionsSegment)
+                .from(tableSegment)
+                .groupBy(groupBySegment)
+                .orderBy(orderBySegment)
+                .build();
+        
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+        
+        org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection avgProjection =
+                selectStatementContext.getProjectionsContext().getAggregationProjections().get(0);
+        avgProjection.setIndex(2);
+        avgProjection.getDerivedAggregationProjections().get(0).setIndex(3);
+        avgProjection.getDerivedAggregationProjections().get(1).setIndex(4);
+        
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.containsTable("t_order")).thenReturn(true);
+        when(schema.containsTable(any(IdentifierValue.class))).thenReturn(true);
+        
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(schema.getTable("t_order")).thenReturn(table);
+        when(schema.getTable(any(IdentifierValue.class))).thenReturn(table);
+        when(table.containsColumn(anyString())).thenReturn(false);
+        
+        QueryResult queryResult1 = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(queryResult1.getMetaData().getColumnCount()).thenReturn(5);
+        when(queryResult1.getMetaData().getColumnLabel(1)).thenReturn("COALESCE(AVG(price), 0)");
+        when(queryResult1.getMetaData().getColumnName(1)).thenReturn("coalesce_col");
+        when(queryResult1.getMetaData().getColumnLabel(2)).thenReturn("AVG(price)");
+        when(queryResult1.getMetaData().getColumnName(2)).thenReturn("avg_col");
+        when(queryResult1.getMetaData().getColumnLabel(3)).thenReturn("AVG_DERIVED_COUNT_0");
+        when(queryResult1.getMetaData().getColumnName(3)).thenReturn("avg_derived_count_0");
+        when(queryResult1.getMetaData().getColumnLabel(4)).thenReturn("AVG_DERIVED_SUM_0");
+        when(queryResult1.getMetaData().getColumnName(4)).thenReturn("avg_derived_sum_0");
+        when(queryResult1.getMetaData().getColumnLabel(5)).thenReturn("user_id");
+        when(queryResult1.getMetaData().getColumnName(5)).thenReturn("user_id");
+        when(queryResult1.next()).thenReturn(true, false);
+        when(queryResult1.getValue(1, Object.class)).thenReturn(null);
+        when(queryResult1.getValue(2, Object.class)).thenReturn(new BigDecimal("5"));
+        when(queryResult1.getValue(3, Object.class)).thenReturn(2);
+        when(queryResult1.getValue(4, Object.class)).thenReturn(10);
+        when(queryResult1.getValue(5, Object.class)).thenReturn(100);
+        
+        QueryResult queryResult2 = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(queryResult2.getMetaData().getColumnCount()).thenReturn(5);
+        when(queryResult2.getMetaData().getColumnLabel(1)).thenReturn("COALESCE(AVG(price), 0)");
+        when(queryResult2.getMetaData().getColumnName(1)).thenReturn("coalesce_col");
+        when(queryResult2.getMetaData().getColumnLabel(2)).thenReturn("AVG(price)");
+        when(queryResult2.getMetaData().getColumnName(2)).thenReturn("avg_col");
+        when(queryResult2.getMetaData().getColumnLabel(3)).thenReturn("AVG_DERIVED_COUNT_0");
+        when(queryResult2.getMetaData().getColumnName(3)).thenReturn("avg_derived_count_0");
+        when(queryResult2.getMetaData().getColumnLabel(4)).thenReturn("AVG_DERIVED_SUM_0");
+        when(queryResult2.getMetaData().getColumnName(4)).thenReturn("avg_derived_sum_0");
+        when(queryResult2.getMetaData().getColumnLabel(5)).thenReturn("user_id");
+        when(queryResult2.getMetaData().getColumnName(5)).thenReturn("user_id");
+        when(queryResult2.next()).thenReturn(true, false);
+        when(queryResult2.getValue(1, Object.class)).thenReturn(null);
+        when(queryResult2.getValue(2, Object.class)).thenReturn(new BigDecimal("10"));
+        when(queryResult2.getValue(3, Object.class)).thenReturn(3);
+        when(queryResult2.getValue(4, Object.class)).thenReturn(30);
+        when(queryResult2.getValue(5, Object.class)).thenReturn(100);
+        
+        GroupByMemoryMergedResult actual = new GroupByMemoryMergedResult(Arrays.asList(queryResult1, queryResult2), selectStatementContext, schema);
+        
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("8.0000"));
+    }
+    
+    @Test
+    void assertMergeWithIfNullDistinctExpression() throws SQLException {
+        FunctionSegment functionSegment = new FunctionSegment(0, 30, "IFNULL", "IFNULL(SUM(DISTINCT price), 0)");
+        AggregationDistinctProjectionSegment sumSegment = new AggregationDistinctProjectionSegment(7, 25, AggregationType.SUM, "SUM(DISTINCT price)", "price");
+        LiteralExpressionSegment literalSegment = new LiteralExpressionSegment(29, 29, 0);
+        functionSegment.getParameters().add(sumSegment);
+        functionSegment.getParameters().add(literalSegment);
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 30, "IFNULL(SUM(DISTINCT price), 0)", functionSegment);
+        
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 30);
+        projectionsSegment.getProjections().add(expressionSegment);
+        
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(37, 43, new IdentifierValue("t_order")));
+        
+        GroupBySegment groupBySegment = new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST)));
+        OrderBySegment orderBySegment = new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST)));
+        
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(projectionsSegment)
+                .from(tableSegment)
+                .groupBy(groupBySegment)
+                .orderBy(orderBySegment)
+                .build();
+        
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+        
+        selectStatementContext.getProjectionsContext().getAggregationProjections().get(0).setIndex(2);
+        
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.containsTable("t_order")).thenReturn(true);
+        when(schema.containsTable(any(IdentifierValue.class))).thenReturn(true);
+        
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(schema.getTable("t_order")).thenReturn(table);
+        when(schema.getTable(any(IdentifierValue.class))).thenReturn(table);
+        when(table.containsColumn(anyString())).thenReturn(false);
+        
+        QueryResult queryResult1 = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(queryResult1.getMetaData().getColumnCount()).thenReturn(3);
+        when(queryResult1.getMetaData().getColumnLabel(1)).thenReturn("IFNULL(SUM(DISTINCT price), 0)");
+        when(queryResult1.getMetaData().getColumnName(1)).thenReturn("ifnull_col");
+        when(queryResult1.getMetaData().getColumnLabel(2)).thenReturn("price");
+        when(queryResult1.getMetaData().getColumnName(2)).thenReturn("price");
+        when(queryResult1.getMetaData().getColumnLabel(3)).thenReturn("user_id");
+        when(queryResult1.getMetaData().getColumnName(3)).thenReturn("user_id");
+        
+        when(queryResult1.next()).thenReturn(true, false);
+        when(queryResult1.getValue(1, Object.class)).thenReturn(null);
+        when(queryResult1.getValue(2, Object.class)).thenReturn(10);
+        when(queryResult1.getValue(3, Object.class)).thenReturn(100);
+        
+        QueryResult queryResult2 = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(queryResult2.getMetaData().getColumnCount()).thenReturn(3);
+        when(queryResult2.getMetaData().getColumnLabel(1)).thenReturn("IFNULL(SUM(DISTINCT price), 0)");
+        when(queryResult2.getMetaData().getColumnName(1)).thenReturn("ifnull_col");
+        when(queryResult2.getMetaData().getColumnLabel(2)).thenReturn("price");
+        when(queryResult2.getMetaData().getColumnName(2)).thenReturn("price");
+        when(queryResult2.getMetaData().getColumnLabel(3)).thenReturn("user_id");
+        when(queryResult2.getMetaData().getColumnName(3)).thenReturn("user_id");
+        when(queryResult2.next()).thenReturn(true, false);
+        when(queryResult2.getValue(1, Object.class)).thenReturn(null);
+        when(queryResult2.getValue(2, Object.class)).thenReturn(10);
+        when(queryResult2.getValue(3, Object.class)).thenReturn(100);
+        
+        GroupByMemoryMergedResult actual = new GroupByMemoryMergedResult(Arrays.asList(queryResult1, queryResult2), selectStatementContext, schema);
+        
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("10"));
     }
     
     private SelectStatementContext createIfNullSelectStatementContext() {
