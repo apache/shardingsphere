@@ -256,8 +256,9 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(searchMetadataOutputProperties.containsKey("returned_count"));
         assertTrue(searchMetadataOutputProperties.containsKey("truncated"));
         assertTrue(searchMetadataOutputProperties.containsKey("large_result_guidance"));
+        assertThat(getInputFieldNames(searchMetadataTool), is(List.of("database", "schema", "query", "object_types")));
         Map<?, ?> objectTypesSchema = findInputSchema(searchMetadataTool, "object_types");
-        assertTrue(((List<?>) ((Map<?, ?>) objectTypesSchema.get("items")).get("enum")).containsAll(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
+        assertTrue(((List<?>) ((Map<?, ?>) objectTypesSchema.get("items")).get("enum")).containsAll(List.of("database", "schema", "table", "view", "column", "index", "storage_unit", "sequence")));
         Map<?, ?> validateRuntimeDatabaseTool = findTool(capabilities, "database_gateway_validate_runtime_database");
         Map<?, ?> validateRuntimeDatabaseOutputProperties = (Map<?, ?>) ((Map<?, ?>) validateRuntimeDatabaseTool.get("outputSchema")).get("properties");
         assertThat(getInputFieldNames(validateRuntimeDatabaseTool), is(List.of("database")));
@@ -275,6 +276,7 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(executeUpdateOutputProperties.containsKey("preview_semantics"));
         assertTrue(executeUpdateOutputProperties.containsKey("review_summary"));
         assertFalse(executeUpdateOutputProperties.containsKey("approval_summary"));
+        assertThat(executeUpdateTool.get("title"), is("Preview or Execute Side-Effecting SQL"));
         assertTrue(((String) executeUpdateTool.get("description")).contains("Preview is classification-only, not a database dry run."));
         assertThat(findInputSchema(executeUpdateTool, "execution_mode").get("description"),
                 is("Required safety gate. Use preview to classify side effects without execution; preview is not a database dry run. Use execute only after reviewing the preview."));

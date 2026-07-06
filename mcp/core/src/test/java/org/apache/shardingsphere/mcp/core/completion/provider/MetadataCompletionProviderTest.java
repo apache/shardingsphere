@@ -67,6 +67,15 @@ class MetadataCompletionProviderTest {
     }
     
     @Test
+    void assertSupportsStorageUnitAliases() {
+        MetadataCompletionProvider provider = new MetadataCompletionProvider();
+        assertTrue(provider.supports(createRequestContext("storage_unit", Map.of())));
+        assertTrue(provider.supports(createRequestContext("write_storage_unit", Map.of())));
+        assertTrue(provider.supports(createRequestContext("source_storage_unit", Map.of())));
+        assertTrue(provider.supports(createRequestContext("shadow_storage_unit", Map.of())));
+    }
+    
+    @Test
     void assertSupportsWithUnknownArgument() {
         assertFalse(new MetadataCompletionProvider().supports(createRequestContext("foo_value", Map.of())));
     }
@@ -181,6 +190,17 @@ class MetadataCompletionProviderTest {
         when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade),
                 createRequestContext("storageUnit", Map.of("database", "logic_db")));
+        assertCandidate(actual, "write_ds");
+        assertThat(actual.getMissingContextArguments(), is(List.of()));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/storage-units"));
+    }
+    
+    @Test
+    void assertCompleteStorageUnitAlias() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade),
+                createRequestContext("write_storage_unit", Map.of("database", "logic_db")));
         assertCandidate(actual, "write_ds");
         assertThat(actual.getMissingContextArguments(), is(List.of()));
         assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/storage-units"));

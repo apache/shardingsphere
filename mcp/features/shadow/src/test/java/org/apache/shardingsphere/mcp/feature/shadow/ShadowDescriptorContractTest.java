@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.mcp.feature.shadow;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShadowDescriptorContractTest {
     
@@ -41,7 +44,21 @@ class ShadowDescriptorContractTest {
         }
     }
     
+    @Test
+    void assertPromptCompletionArguments() {
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        assertCompletionTargetArguments(catalog, ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME, "database", "source_storage_unit", "shadow_storage_unit", "plan_id");
+        assertCompletionTargetArguments(catalog, ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME, "database", "algorithm_type", "plan_id");
+        assertCompletionTargetArguments(catalog, ShadowFeatureDefinition.PLAN_ALGORITHM_CLEANUP_PROMPT_NAME, "database", "plan_id");
+    }
+    
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getProtocolDescriptors().getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private void assertCompletionTargetArguments(final MCPDescriptorCatalog catalog, final String promptName, final String... expectedArguments) {
+        MCPCompletionTargetDescriptor actual = catalog.getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
+                .filter(each -> "prompt".equals(each.getReferenceType()) && promptName.equals(each.getReference())).findFirst().orElseThrow();
+        assertTrue(actual.getArguments().containsAll(List.of(expectedArguments)));
     }
 }

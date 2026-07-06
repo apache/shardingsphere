@@ -530,34 +530,40 @@ completionTargets:
     arguments:
       - database
       - algorithm_type
+      - plan_id
     maxValues: 50
   - referenceType: prompt
     reference: plan_sharding_table_reference_rule
     arguments:
       - database
+      - plan_id
     maxValues: 50
   - referenceType: prompt
     reference: plan_sharding_default_strategy
     arguments:
       - database
       - algorithm_type
+      - plan_id
     maxValues: 50
   - referenceType: prompt
     reference: plan_sharding_key_generator
     arguments:
       - database
       - key_generator_type
+      - plan_id
     maxValues: 50
   - referenceType: prompt
     reference: plan_sharding_key_generate_strategy
     arguments:
       - database
       - key_generator_type
+      - plan_id
     maxValues: 50
   - referenceType: prompt
     reference: plan_sharding_rule_component_cleanup
     arguments:
       - database
+      - plan_id
     maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/sharding/algorithm-plugins

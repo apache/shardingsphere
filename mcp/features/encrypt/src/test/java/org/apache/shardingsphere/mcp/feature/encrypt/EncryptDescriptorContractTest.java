@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -43,10 +45,21 @@ class EncryptDescriptorContractTest {
         assertTrue(actualProperties.containsKey("summary"));
     }
     
+    @Test
+    void assertPromptCompletionArguments() {
+        assertCompletionTargetArguments(EncryptFeatureDefinition.PLAN_PROMPT_NAME, "database", "schema", "table", "column", "plan_id");
+    }
+    
     private MCPToolDescriptor findToolDescriptor() {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
         return catalog.getProtocolDescriptors().getToolDescriptors().stream()
                 .filter(each -> EncryptFeatureDefinition.PLAN_TOOL_NAME.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private void assertCompletionTargetArguments(final String promptName, final String... expectedArguments) {
+        MCPCompletionTargetDescriptor actual = MCPDescriptorCatalogLoader.load().getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
+                .filter(each -> "prompt".equals(each.getReferenceType()) && promptName.equals(each.getReference())).findFirst().orElseThrow();
+        assertTrue(actual.getArguments().containsAll(List.of(expectedArguments)));
     }
     
     private void assertEncryptDistSQLExampleValue(final Object value) {

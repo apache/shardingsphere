@@ -47,6 +47,8 @@ import java.util.stream.Stream;
  */
 public final class MetadataCompletionProvider implements MCPCompletionProvider<MCPDatabaseHandlerContext> {
     
+    private static final Set<String> STORAGE_UNIT_ARGUMENTS = Set.of("storageUnit", "storage_unit", "write_storage_unit", "source_storage_unit", "shadow_storage_unit");
+    
     private static final Set<String> SUPPORTED_ARGUMENTS = Set.of("database", "schema", "table", "column", "index", "sequence", "storageUnit");
     
     private final GovernanceMetadataQueryService governanceMetadataQueryService = new GovernanceMetadataQueryService();
@@ -58,18 +60,23 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
     
     @Override
     public boolean supports(final MCPCompletionRequestContext requestContext) {
-        return SUPPORTED_ARGUMENTS.contains(requestContext.getArgumentName());
+        return SUPPORTED_ARGUMENTS.contains(canonicalizeArgumentName(requestContext.getArgumentName()));
     }
     
     @Override
     public MCPCompletionProviderResult complete(final MCPDatabaseHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
+        String argumentName = canonicalizeArgumentName(requestContext.getArgumentName());
         Map<String, String> contextArguments = new LinkedHashMap<>(requestContext.getContextArguments());
-        Map<String, Object> inferredContextArguments = applyContextDefaults(handlerContext, requestContext.getArgumentName(), contextArguments);
-        Collection<String> missingContextArguments = createMissingContextArguments(requestContext.getArgumentName(), contextArguments);
+        Map<String, Object> inferredContextArguments = applyContextDefaults(handlerContext, argumentName, contextArguments);
+        Collection<String> missingContextArguments = createMissingContextArguments(argumentName, contextArguments);
         String nearestResourceUri = createNearestResourceUri(
-                missingContextArguments.isEmpty() ? requestContext.getArgumentName() : missingContextArguments.iterator().next(), contextArguments);
+                missingContextArguments.isEmpty() ? argumentName : missingContextArguments.iterator().next(), contextArguments);
         return new MCPCompletionProviderResult(
-                completeMetadata(handlerContext, requestContext.getArgumentName(), contextArguments), inferredContextArguments, missingContextArguments, nearestResourceUri);
+                completeMetadata(handlerContext, argumentName, contextArguments), inferredContextArguments, missingContextArguments, nearestResourceUri);
+    }
+    
+    private String canonicalizeArgumentName(final String argumentName) {
+        return STORAGE_UNIT_ARGUMENTS.contains(argumentName) ? "storageUnit" : argumentName;
     }
     
     private Map<String, Object> applyContextDefaults(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
