@@ -29,7 +29,6 @@ import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShadowDescriptorContractTest {
     
@@ -47,7 +46,7 @@ class ShadowDescriptorContractTest {
     @Test
     void assertPromptCompletionArguments() {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
-        assertCompletionTargetArguments(catalog, ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME, "database", "source_storage_unit", "shadow_storage_unit", "plan_id");
+        assertCompletionTargetArguments(catalog, ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME, "database", "source_storage_unit", "shadow_storage_unit", "table", "algorithm_type", "plan_id");
         assertCompletionTargetArguments(catalog, ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME, "database", "algorithm_type", "plan_id");
         assertCompletionTargetArguments(catalog, ShadowFeatureDefinition.PLAN_ALGORITHM_CLEANUP_PROMPT_NAME, "database", "plan_id");
     }
@@ -59,6 +58,6 @@ class ShadowDescriptorContractTest {
     private void assertCompletionTargetArguments(final MCPDescriptorCatalog catalog, final String promptName, final String... expectedArguments) {
         MCPCompletionTargetDescriptor actual = catalog.getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
                 .filter(each -> "prompt".equals(each.getReferenceType()) && promptName.equals(each.getReference())).findFirst().orElseThrow();
-        assertTrue(actual.getArguments().containsAll(List.of(expectedArguments)));
+        assertThat(actual.getArguments(), is(List.of(expectedArguments)));
     }
 }

@@ -597,7 +597,15 @@ tools:
           distsql_artifacts: []
           resources_to_read: []
           proxy_topology_hint: {}
-          next_actions: []
+          next_actions:
+            - order: 1
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments:
+                plan_id: shadow-rule-20260606-001
+                execution_mode: preview
+              reason: Preview generated shadow DistSQL artifacts.
     annotations:
       title: Plan Shadow Rule
       destructiveHint: false
@@ -678,7 +686,15 @@ tools:
           distsql_artifacts: []
           resources_to_read: []
           proxy_topology_hint: {}
-          next_actions: []
+          next_actions:
+            - order: 1
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments:
+                plan_id: default-shadow-algorithm-20260606-001
+                execution_mode: preview
+              reason: Preview generated default shadow algorithm DistSQL artifacts.
     annotations:
       title: Plan Default Shadow Algorithm
       destructiveHint: false
@@ -749,7 +765,15 @@ tools:
           distsql_artifacts: []
           resources_to_read: []
           proxy_topology_hint: {}
-          next_actions: []
+          next_actions:
+            - order: 1
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments:
+                plan_id: shadow-algorithm-cleanup-20260606-001
+                execution_mode: preview
+              reason: Preview generated shadow algorithm cleanup DistSQL artifacts.
     annotations:
       title: Plan Shadow Algorithm Cleanup
       destructiveHint: false
