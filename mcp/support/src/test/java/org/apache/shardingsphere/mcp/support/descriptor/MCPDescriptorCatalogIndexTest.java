@@ -108,6 +108,18 @@ class MCPDescriptorCatalogIndexTest {
     }
     
     @Test
+    void assertFindWorkflowKindsByGenericPromptCompletionTarget() {
+        MCPCompletionTargetDescriptor descriptor = new MCPCompletionTargetDescriptor("prompt", "recover_workflow", List.of("plan_id"), 50, Map.of());
+        assertTrue(MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(descriptor).isEmpty());
+    }
+    
+    @Test
+    void assertFindWorkflowKindsByResourceCompletionTarget() {
+        MCPCompletionTargetDescriptor descriptor = new MCPCompletionTargetDescriptor("resource", "shardingsphere://workflows/{plan_id}", List.of("plan_id"), 50, Map.of());
+        assertTrue(MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(descriptor).isEmpty());
+    }
+    
+    @Test
     void assertGetCompletionTargetDescriptors() {
         Collection<MCPCompletionTargetDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getCompletionTargetDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "prompt".equals(each.getReferenceType()) && "inspect_metadata".equals(each.getReference())));

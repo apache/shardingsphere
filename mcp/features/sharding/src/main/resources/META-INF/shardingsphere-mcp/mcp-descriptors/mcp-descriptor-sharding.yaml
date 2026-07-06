@@ -855,7 +855,15 @@ tools:
           status: planned
           missing_required_inputs: []
           resources_to_read: []
-          next_actions: []
+          next_actions:
+            - order: 1
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments:
+                plan_id: sharding-table-rule-20260606-001
+                execution_mode: preview
+              reason: Preview generated sharding DistSQL artifacts.
     annotations:
       title: Plan Sharding Table Rule
       destructiveHint: false

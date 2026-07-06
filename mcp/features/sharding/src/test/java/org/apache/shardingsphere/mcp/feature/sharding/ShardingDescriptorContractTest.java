@@ -29,7 +29,6 @@ import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingDescriptorContractTest {
     
@@ -65,6 +64,6 @@ class ShardingDescriptorContractTest {
     private void assertCompletionTargetArguments(final MCPDescriptorCatalog catalog, final String promptName, final String... expectedArguments) {
         MCPCompletionTargetDescriptor actual = catalog.getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
                 .filter(each -> "prompt".equals(each.getReferenceType()) && promptName.equals(each.getReference())).findFirst().orElseThrow();
-        assertTrue(actual.getArguments().containsAll(List.of(expectedArguments)));
+        assertThat(actual.getArguments(), is(List.of(expectedArguments)));
     }
 }
