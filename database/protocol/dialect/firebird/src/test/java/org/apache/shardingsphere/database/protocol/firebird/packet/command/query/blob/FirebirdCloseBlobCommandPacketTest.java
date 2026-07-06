@@ -32,10 +32,10 @@ class FirebirdCloseBlobCommandPacketTest {
     @Test
     void assertCloseBlobPacket() {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        when(payload.readObjectHandle()).thenReturn(99);
+        when(payload.readBlobHandle()).thenReturn(99);
         FirebirdCloseBlobCommandPacket packet = new FirebirdCloseBlobCommandPacket(payload);
         verify(payload).skipReserved(4);
-        verify(payload).readObjectHandle();
+        verify(payload).readBlobHandle();
         assertThat(packet.getBlobHandle(), is(99));
         packet.write(payload);
         verifyNoMoreInteractions(payload);

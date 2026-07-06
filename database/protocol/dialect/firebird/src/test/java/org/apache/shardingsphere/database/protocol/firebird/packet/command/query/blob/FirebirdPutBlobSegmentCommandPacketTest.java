@@ -46,7 +46,7 @@ class FirebirdPutBlobSegmentCommandPacketTest {
     
     @Test
     void assertPutBlobSegmentPacket() {
-        when(payload.readObjectHandle()).thenReturn(15);
+        when(payload.readBlobHandle()).thenReturn(15);
         when(payload.readInt4()).thenReturn(3);
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{5, 6, 7}));
         FirebirdPutBlobSegmentCommandPacket packet = new FirebirdPutBlobSegmentCommandPacket(payload);
@@ -55,7 +55,7 @@ class FirebirdPutBlobSegmentCommandPacketTest {
         assertThat(packet.getSegment(), is(new byte[]{5, 6, 7}));
         assertThat(FirebirdBlobRegistry.getSegment(), is(new byte[]{5, 6, 7}));
         verify(payload).skipReserved(4);
-        verify(payload).readObjectHandle();
+        verify(payload).readBlobHandle();
         verify(payload).readInt4();
         verify(payload).readBuffer();
         packet.write(payload);
@@ -65,7 +65,7 @@ class FirebirdPutBlobSegmentCommandPacketTest {
     @Test
     void assertPutBlobSegmentPacketWithMismatchLength() {
         FirebirdBlobRegistry.setSegment(new byte[]{9, 9});
-        when(payload.readObjectHandle()).thenReturn(15);
+        when(payload.readBlobHandle()).thenReturn(15);
         when(payload.readInt4()).thenReturn(2);
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{5, 6, 7}));
         assertThrows(IllegalArgumentException.class, () -> new FirebirdPutBlobSegmentCommandPacket(payload));

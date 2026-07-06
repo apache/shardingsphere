@@ -31,7 +31,7 @@ public final class FirebirdCloseBlobCommandPacket extends FirebirdCommandPacket 
     
     public FirebirdCloseBlobCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        blobHandle = payload.readObjectHandle();
+        blobHandle = payload.readBlobHandle();
     }
     
     @Override

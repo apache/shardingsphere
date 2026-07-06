@@ -92,9 +92,9 @@ class FirebirdPacketPayloadTest {
     }
     
     @Test
-    void assertReadObjectHandle() {
+    void assertReadBlobHandle() {
         when(byteBuf.readInt()).thenReturn(0xFFFFFFFF);
-        assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readObjectHandle(), is(0xFFFF));
+        assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readBlobHandle(), is(0xFFFF));
     }
     
     @Test

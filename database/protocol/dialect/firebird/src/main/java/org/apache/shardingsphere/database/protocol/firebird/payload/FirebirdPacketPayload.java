@@ -110,6 +110,18 @@ public final class FirebirdPacketPayload implements PacketPayload {
     }
     
     /**
+     * Read BLOB handle from byte buffers.
+     *
+     * <p>A Firebird BLOB handle may arrive either as {@code 0xFFFF} or sign-extended as {@code 0xFFFFFFFF}
+     * (the INVALID_OBJECT placeholder), so the low 16 bits are masked to normalize it into the range 0-65535.</p>
+     *
+     * @return BLOB handle in range 0-65535
+     */
+    public int readBlobHandle() {
+        return byteBuf.readInt() & 0xFFFF;
+    }
+    
+    /**
      * Read 4 byte unsigned fixed length integer from byte buffers.
      *
      * @return 4 byte fixed length integer

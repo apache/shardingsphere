@@ -38,7 +38,7 @@ class FirebirdGetBlobSegmentCommandPacketTest {
     
     @Test
     void assertGetBlobSegmentPacket() {
-        when(payload.readObjectHandle()).thenReturn(11);
+        when(payload.readBlobHandle()).thenReturn(11);
         when(payload.readInt4()).thenReturn(3);
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 2, 3}));
         FirebirdGetBlobSegmentCommandPacket packet = new FirebirdGetBlobSegmentCommandPacket(payload);
@@ -46,7 +46,7 @@ class FirebirdGetBlobSegmentCommandPacketTest {
         assertThat(packet.getSegmentLength(), is(3));
         assertThat(packet.getSegment(), is(new byte[]{1, 2, 3}));
         verify(payload).skipReserved(4);
-        verify(payload).readObjectHandle();
+        verify(payload).readBlobHandle();
         verify(payload).readInt4();
         verify(payload).readBuffer();
         packet.write(payload);
