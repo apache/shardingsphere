@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.core.protocol.response;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,6 +36,7 @@ class MCPErrorResponseTest {
         assertNotNull(actual.get("request_id"));
         assertFalse(actual.containsKey("recovery"));
         assertThat(actual.get("response_mode"), is("recovery"));
+        assertThat(actual.get("summary"), is("foo_message"));
         assertThat(actual.get("message"), is("foo_message"));
     }
     
@@ -47,5 +49,12 @@ class MCPErrorResponseTest {
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertTrue((Boolean) actualRecovery.get("recoverable"));
         assertThat(actualRecovery.get("request_id"), is(actual.get("request_id")));
+    }
+    
+    @Test
+    void assertToPayloadWithTopLevelNextActions() {
+        Map<String, Object> actual = new MCPErrorResponse("", Map.of("next_actions", List.of(Map.of("order", 1, "type", "terminal", "title", "Stop")))).toPayload();
+        assertThat(actual.get("summary"), is("Recovery guidance is available."));
+        assertThat(actual.get("next_actions"), is(List.of(Map.of("order", 1, "type", "terminal", "title", "Stop"))));
     }
 }

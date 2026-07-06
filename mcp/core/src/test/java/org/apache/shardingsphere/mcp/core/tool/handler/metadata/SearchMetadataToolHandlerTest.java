@@ -56,10 +56,10 @@ class SearchMetadataToolHandlerTest {
         MCPToolDescriptor actual = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(new SearchMetadataToolHandler().getToolName());
         assertThat(actual.getName(), is("database_gateway_search_metadata"));
         assertThat(((Map<?, ?>) actual.getInputSchema().get("properties")).size(), is(4));
-        Map<?, ?> actualProperties = (Map<?, ?>) actual.getOutputSchema().get("properties");
         Map<?, ?> actualInputProperties = (Map<?, ?>) actual.getInputSchema().get("properties");
         Map<?, ?> actualObjectTypeItems = (Map<?, ?>) ((Map<?, ?>) actualInputProperties.get("object_types")).get("items");
         assertTrue(((List<?>) actualObjectTypeItems.get("enum")).contains("storage_unit"));
+        Map<?, ?> actualProperties = (Map<?, ?>) actual.getOutputSchema().get("properties");
         Map<?, ?> actualItems = (Map<?, ?>) ((Map<?, ?>) actualProperties.get("items")).get("items");
         Map<?, ?> actualItemProperties = (Map<?, ?>) actualItems.get("properties");
         assertTrue(actualItemProperties.containsKey("resource"));
@@ -70,6 +70,7 @@ class SearchMetadataToolHandlerTest {
         assertTrue(actualItemProperties.containsKey("matched_fields"));
         assertTrue(actualItemProperties.containsKey("matched_value"));
         assertTrue(actualProperties.containsKey("search_context"));
+        assertTrue(actualProperties.containsKey("summary"));
         assertTrue(actualProperties.containsKey("total_match_count"));
         assertTrue(actualProperties.containsKey("returned_count"));
         assertTrue(actualProperties.containsKey("truncated"));
@@ -88,6 +89,7 @@ class SearchMetadataToolHandlerTest {
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
+            assertThat(actualPayload.get("summary"), is("Metadata search returned 1 of 1 matches."));
             assertThat(actualPayload.get("total_match_count"), is(1));
             assertThat(actualPayload.get("returned_count"), is(1));
             assertFalse((Boolean) actualPayload.get("truncated"));
@@ -164,9 +166,12 @@ class SearchMetadataToolHandlerTest {
                     Map.of("database", "large_db", "object_types", List.of(SupportedMCPMetadataObjectType.TABLE.name()))));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((List<?>) actualPayload.get("items")).size(), is(100));
+            assertThat(actualPayload.get("summary"), is("Metadata search returned 100 of 101 matches."));
             assertThat(actualPayload.get("total_match_count"), is(101));
             assertThat(actualPayload.get("returned_count"), is(100));
             assertTrue((Boolean) actualPayload.get("truncated"));
+            assertFalse((Boolean) actualPayload.get("has_more"));
+            assertThat(actualPayload.get("continuation_mode"), is("none"));
             Map<?, ?> actualLargeResultGuidance = (Map<?, ?>) actualPayload.get("large_result_guidance");
             assertThat(actualLargeResultGuidance.get("state"), is("metadata_search_result_truncated"));
             assertThat(actualLargeResultGuidance.get("threshold"), is(100));
@@ -204,6 +209,7 @@ class SearchMetadataToolHandlerTest {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
             MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "query", "missing")));
             Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(actualPayload.get("summary"), is("Metadata search returned 0 of 0 matches."));
             assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("state"), is("no_match"));
             assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("category"), is("object_not_visible"));
             Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();

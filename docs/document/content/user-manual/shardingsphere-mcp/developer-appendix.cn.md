@@ -49,6 +49,9 @@ STDIO 示例：
 | `shardingsphere://capabilities`                      | 运行时数据库、连接目标、功能插件和副作用边界。      | 判断当前 MCP Server 可用于哪些数据库任务。 |
 | `shardingsphere://databases/{database}/capabilities` | 指定运行时数据库的 SQL、事务、模式和元数据对象能力。 | 判断某个数据库的可用操作和限制。            |
 
+当 client 无法确定 database、schema、table、column、algorithm、storage unit 或 workflow `plan_id` 时，应一次只针对一个参数调用 `completion/complete`。
+如果 completion 返回缺少上下文或没有候选值，应遵循返回 meta 中的 `next_actions`；这些动作通常会指向重试补全前需要读取的最近 resource 或 resource template。
+
 ## 资源
 
 | 资源 URI 或模板                                                                               | 用途                                                           |
@@ -73,6 +76,8 @@ STDIO 示例：
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns`            | 列出一个视图的列。                                                    |
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}`   | 读取一个视图列的详情。                                                  |
 | `shardingsphere://workflows/{plan_id}`                                                   | 查看当前治理变更计划、补问信息、变更产物和下一步动作。                                  |
+
+Workflow resources 和 workflow tools 会包含简短的 `summary` 以及结构化 `next_actions`，让 client 不必先读取所有嵌套字段，也能继续预览、执行、人工执行、校验或恢复。
 
 ## 工具
 

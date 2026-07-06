@@ -51,6 +51,12 @@ class MCPGuidancePayloadBuilderTest {
                 is("shardingsphere://guidance complements MCP list methods with ShardingSphere domain guidance, workflow guidance, and side-effect notes."));
         assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
         assertFalse(actual.containsKey("safe_first_resource"));
+        Map<?, ?> actualMetadataRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "inspect_metadata");
+        assertThat(actualMetadataRoute.get("first_action"), is("read_resource shardingsphere://databases"));
+        Map<?, ?> actualCompletionRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "complete_uncertain_argument");
+        assertThat(actualCompletionRoute.get("first_action"), is("call completion/complete for one uncertain argument"));
+        Map<?, ?> actualRecoveryRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "recover_error");
+        assertThat(actualRecoveryRoute.get("first_action"), is("follow top-level next_actions"));
         assertThat(((Map<?, ?>) actual.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
         assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("execution_mode=execute"));
         Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
@@ -72,6 +78,10 @@ class MCPGuidancePayloadBuilderTest {
         assertTrue(String.valueOf(actual.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
         assertThat(castToMap(actual.get("sql_tool_selection")).keySet().stream().toList(), is(List.of("read_only", "side_effecting")));
         assertThat(actual.get("side_effect_rule"), is("Preview before side effects and continue only when the requested side effect is still intended."));
+        assertThat(actual.get("completion_rule"),
+                is("Use completion/complete for one uncertain argument at a time; when completion reports missing context, follow meta.next_actions before guessing."));
+        assertThat(actual.get("resource_template_rule"),
+                is("Use resources/templates/list to discover URI variables, then read the nearest concrete resource before filling dependent completion context."));
         assertThat(actual.get("detail_resource_rule"), is("Use resource descriptors, outputSchema, and returned payload keys before assuming detail fields."));
     }
     
@@ -93,10 +103,12 @@ class MCPGuidancePayloadBuilderTest {
         List<Map<String, Object>> actual = builder.createCommonFlows();
         Map<?, ?> actualInspectMetadata = findByKey(actual, "flow_id", "inspect_metadata");
         assertTrue(((Collection<?>) actualInspectMetadata.get("steps")).contains("resources/list"));
-        Map<?, ?> actualSideEffectingSql = findByKey(actual, "flow_id", "side_effecting_sql");
         Map<?, ?> actualValidateRuntimeDatabase = findByKey(actual, "flow_id", "validate_runtime_database");
         assertTrue(((Collection<?>) actualValidateRuntimeDatabase.get("steps")).contains("call_tool database_gateway_validate_runtime_database"));
         assertThat(actualValidateRuntimeDatabase.get("referenced_tools"), is(List.of("database_gateway_validate_runtime_database")));
+        Map<?, ?> actualCompleteArgument = findByKey(actual, "flow_id", "complete_uncertain_argument");
+        assertTrue(((Collection<?>) actualCompleteArgument.get("steps")).contains("call completion/complete for one argument"));
+        Map<?, ?> actualSideEffectingSql = findByKey(actual, "flow_id", "side_effecting_sql");
         assertThat(actualSideEffectingSql.get("referenced_tools"), is(List.of("database_gateway_execute_update")));
         assertTrue(((Collection<?>) actualSideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=preview"));
         Map<?, ?> actualWorkflow = findByKey(actual, "flow_id", "workflow_plan_apply_validate");
@@ -127,6 +139,11 @@ class MCPGuidancePayloadBuilderTest {
     
     private Map<?, ?> castToMap(final Object value) {
         return (Map<?, ?>) value;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> castToRouteList(final Object value) {
+        return (List<Map<String, Object>>) value;
     }
     
     private Map<String, Object> createOfficialDiscoveryMethods() {

@@ -136,6 +136,16 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
     }
     
     @Test
+    void assertCreateToolSpecificationsHandleSelfResourceLink() {
+        Map<String, Object> payload = Map.of("self_resource",
+                MCPResourceHintUtils.create("shardingsphere://databases/logic_db", "logical-database", "inspect_self", "Read logical database.", "self_resource"));
+        CallToolResult actual = createCallToolResult("fixture_ping", new MCPMapResponse(payload));
+        assertThat(actual.content().get(1), isA(ResourceLink.class));
+        assertThat(((ResourceLink) actual.content().get(1)).uri(), is("shardingsphere://databases/logic_db"));
+        assertThat(((Map<?, ?>) actual.content().get(1).meta()).get(MCPShardingSphereMetadataKeys.SOURCE_FIELD), is("self_resource"));
+    }
+    
+    @Test
     void assertCreateToolSpecificationsHandleItemResourceLinks() {
         Map<String, Object> payload = Map.of("items", List.of(Map.of(
                 "resource", MCPResourceHintUtils.create("shardingsphere://databases/logic_db/tables/t_order", "table", "inspect_detail", "Read table.", "resource"),

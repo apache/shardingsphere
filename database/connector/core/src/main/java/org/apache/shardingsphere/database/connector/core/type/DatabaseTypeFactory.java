@@ -20,13 +20,15 @@ package org.apache.shardingsphere.database.connector.core.type;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.DialectJdbcUrlFetcher;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +62,20 @@ public final class DatabaseTypeFactory {
      * @throws SQLException SQL exception
      */
     public static DatabaseType get(final DatabaseMetaData metaData) throws SQLException {
-        return metaData.getDatabaseProductName().contains("Hive") ? TypedSPILoader.getService(DatabaseType.class, "Hive") : get(metaData.getURL());
+        try {
+            return get(metaData.getURL());
+        } catch (final SQLException ex) {
+            return findByDialectJdbcUrlFetcher(metaData.getConnection()).orElseThrow(() -> ex);
+        }
+    }
+    
+    private static Optional<DatabaseType> findByDialectJdbcUrlFetcher(final Connection connection) throws SQLException {
+        for (DialectJdbcUrlFetcher each : ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)) {
+            if (connection.isWrapperFor(each.getConnectionClass())) {
+                return Optional.of(get(each.fetch(connection)));
+            }
+        }
+        return Optional.empty();
     }
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {

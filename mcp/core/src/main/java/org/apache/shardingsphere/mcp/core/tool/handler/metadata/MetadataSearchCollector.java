@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.core.resource.handler.metadata.GovernanceMetadataQueryService;
+import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;

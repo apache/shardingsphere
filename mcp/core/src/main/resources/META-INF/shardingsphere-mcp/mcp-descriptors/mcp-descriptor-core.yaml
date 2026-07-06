@@ -884,6 +884,9 @@ tools:
           description: "Stable response mode marker for metadata search payloads."
           enum:
             - search
+        summary:
+          type: string
+          description: "Short model-facing metadata search result summary."
         items:
           type: array
           description: "Matched metadata objects with logical path fields, object type, and direct resource navigation hints when derivable."
@@ -1036,6 +1039,7 @@ tools:
                 description: "Action order values that must complete before this action."
       examples:
         - response_mode: search
+          summary: Metadata search returned 1 of 1 matches.
           items:
             - database: logic_db
               schema: public
@@ -1069,6 +1073,8 @@ tools:
           has_more: false
           continuation_mode: none
           total_match_count: 1
+          returned_count: 1
+          truncated: false
           search_context:
             query: orders
             database: logic_db
@@ -1109,6 +1115,9 @@ tools:
           description: "Stable response mode marker for runtime database validation payloads."
           enum:
             - validation
+        summary:
+          type: string
+          description: "Short model-facing runtime database validation summary."
         status:
           type: string
           description: "Overall preflight status: ready when all required checks passed, failed otherwise."
@@ -1147,8 +1156,39 @@ tools:
         recovery:
           type: object
           description: "Structured runtime recovery payload. Empty when status is ready."
+        next_actions:
+          type: array
+          description: "Top-level structured follow-up actions copied from recovery when validation fails."
+          items:
+            type: object
+            properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              resource_uri:
+                type: string
+                description: "Canonical resource URI when type is resource_read."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
+              required_inputs:
+                type: array
+                description: "User inputs needed before continuing."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              depends_on:
+                type: array
+                description: "Action order values that must complete before this action."
       examples:
         - response_mode: validation
+          summary: Runtime database `logic_db` passed validation.
           status: ready
           database: logic_db
           checks:
@@ -1229,6 +1269,9 @@ tools:
           description: "Stable response mode marker for read-only SQL results."
           enum:
             - query
+        summary:
+          type: string
+          description: "Short model-facing SQL execution result summary."
         result_kind:
           type: string
           description: "Result kind. database_gateway_execute_query returns result_set for row results."
@@ -1305,6 +1348,7 @@ tools:
                 description: "User inputs needed before continuing."
       examples:
         - response_mode: query
+          summary: Executed SELECT statement and returned 0 row(s).
           result_kind: result_set
           statement_class: query
           statement_type: SELECT
@@ -1339,7 +1383,7 @@ tools:
         - TRANSACTION_CONTROL
         - SAVEPOINT
   - name: database_gateway_execute_update
-    title: Execute Update SQL
+    title: Preview or Execute Side-Effecting SQL
     description: >-
       Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state.
       Use execution_mode=preview first when the side-effect scope has not been reviewed. Preview is classification-only,
@@ -1392,6 +1436,9 @@ tools:
           enum:
             - preview
             - executed
+        summary:
+          type: string
+          description: "Short model-facing SQL preview or execution result summary."
         result_kind:
           type: string
           description: "Result kind: preview, result_set, update_count, or statement_ack."
@@ -1521,6 +1568,7 @@ tools:
           description: "Whether returned rows were truncated."
       examples:
         - response_mode: preview
+          summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
           result_kind: preview
           execution_mode: preview
           preview_semantics: classification_only
@@ -1553,7 +1601,7 @@ tools:
                 - 1
               reason: Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.
     annotations:
-      title: Execute Update SQL
+      title: Preview or Execute Side-Effecting SQL
       readOnlyHint: false
       destructiveHint: true
       idempotentHint: false

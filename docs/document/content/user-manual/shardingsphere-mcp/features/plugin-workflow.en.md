@@ -32,10 +32,14 @@ Use preview before execution when the user needs one more confirmation step.
 
 Model-facing planning responses may include:
 
+- `summary`: a short model-facing status line that tells whether the plan needs clarification, is ready for preview, or failed.
 - `algorithm_recommendations`: candidate algorithms selected from Proxy-visible plugin catalogs or explicit user input.
 - `property_requirements`: required or optional properties for the selected algorithms. Missing required properties keep the workflow in clarification instead of generating unsafe artifacts.
 - `resources_to_read` and `next_actions`: resource and tool navigation hints for continuing the workflow.
 - `distsql_artifacts`: reviewable rule DistSQL generated inside the current feature plugin boundary.
+
+Preview, apply, manual-only export, and validation responses also return `summary` and `next_actions`.
+Clients should follow these fields before inventing a replacement call or asking the user for information already present in the payload.
 
 ## Change Execution Choices
 

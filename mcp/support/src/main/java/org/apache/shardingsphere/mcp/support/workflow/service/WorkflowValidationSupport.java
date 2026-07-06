@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
@@ -131,6 +132,7 @@ public final class WorkflowValidationSupport {
         workflowSessionContext.persist(snapshot, WorkflowLifecycle.STEP_VALIDATED, validationStatus);
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("response_mode", "validation");
+        result.put(MCPPayloadFieldNames.SUMMARY, createValidationSummary(snapshot, validationReport));
         result.put(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId());
         result.put("status", validationStatus);
         result.put("issues", createValidationIssues(validationReport));
@@ -194,6 +196,13 @@ public final class WorkflowValidationSupport {
         return WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus()) ? WorkflowLifecycle.STATUS_FAILED : WorkflowLifecycle.STATUS_VALIDATED;
     }
     
+    private String createValidationSummary(final WorkflowContextSnapshot snapshot, final ValidationReport validationReport) {
+        if (WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus())) {
+            return String.format("Workflow validation failed for plan `%s` with %d mismatch(es).", snapshot.getPlanId(), validationReport.getMismatches().size());
+        }
+        return String.format("Workflow validation passed for plan `%s`.", snapshot.getPlanId());
+    }
+    
     private boolean isValidatableStatus(final WorkflowContextSnapshot snapshot) {
         String actualStatus = null == snapshot.getStatus() ? "" : snapshot.getStatus();
         if (WorkflowLifecycle.STATUS_VALIDATED.equalsIgnoreCase(actualStatus)
@@ -211,16 +220,25 @@ public final class WorkflowValidationSupport {
     }
     
     private Map<String, Object> createRejectedResponse(final WorkflowContextSnapshot snapshot, final String issueCode, final String message, final String userAction) {
-        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("response_mode", "terminal");
+        result.put(MCPPayloadFieldNames.SUMMARY, String.format("Workflow validation cannot run for plan `%s`.", snapshot.getPlanId()));
         result.put(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId());
         result.put("status", WorkflowLifecycle.STATUS_FAILED);
         result.put("issues", List.of(new WorkflowIssue(issueCode, "error", "validating", message, userAction, false, Map.of()).toMap()));
         result.put("overall_status", WorkflowLifecycle.STATUS_FAILED);
         result.put("mismatches", List.of());
         result.put("recovery_guidance", userAction);
-        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of());
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createRejectedNextActions(issueCode, userAction));
         return result;
+    }
+    
+    private List<Map<String, Object>> createRejectedNextActions(final String issueCode, final String userAction) {
+        return MCPNextActionUtils.ordered(MCPNextActionUtils.askUser(userAction, List.of(resolveRejectedRequiredInput(issueCode))));
+    }
+    
+    private String resolveRejectedRequiredInput(final String issueCode) {
+        return WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH.equals(issueCode) ? "same_mcp_session" : "validatable_workflow_state";
     }
     
     /**
