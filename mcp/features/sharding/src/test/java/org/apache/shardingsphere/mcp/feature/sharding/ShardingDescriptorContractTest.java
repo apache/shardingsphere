@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.mcp.feature.sharding;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingDescriptorContractTest {
     
@@ -44,7 +47,24 @@ class ShardingDescriptorContractTest {
         }
     }
     
+    @Test
+    void assertPromptCompletionArguments() {
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        assertCompletionTargetArguments(catalog, ShardingFeatureDefinition.PLAN_TABLE_RULE_PROMPT_NAME, "database", "algorithm_type", "plan_id");
+        assertCompletionTargetArguments(catalog, ShardingFeatureDefinition.PLAN_TABLE_REFERENCE_PROMPT_NAME, "database", "plan_id");
+        assertCompletionTargetArguments(catalog, ShardingFeatureDefinition.PLAN_DEFAULT_STRATEGY_PROMPT_NAME, "database", "algorithm_type", "plan_id");
+        assertCompletionTargetArguments(catalog, ShardingFeatureDefinition.PLAN_KEY_GENERATOR_PROMPT_NAME, "database", "key_generator_type", "plan_id");
+        assertCompletionTargetArguments(catalog, ShardingFeatureDefinition.PLAN_KEY_GENERATE_STRATEGY_PROMPT_NAME, "database", "key_generator_type", "plan_id");
+        assertCompletionTargetArguments(catalog, ShardingFeatureDefinition.PLAN_COMPONENT_CLEANUP_PROMPT_NAME, "database", "plan_id");
+    }
+    
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getProtocolDescriptors().getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private void assertCompletionTargetArguments(final MCPDescriptorCatalog catalog, final String promptName, final String... expectedArguments) {
+        MCPCompletionTargetDescriptor actual = catalog.getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
+                .filter(each -> "prompt".equals(each.getReferenceType()) && promptName.equals(each.getReference())).findFirst().orElseThrow();
+        assertTrue(actual.getArguments().containsAll(List.of(expectedArguments)));
     }
 }

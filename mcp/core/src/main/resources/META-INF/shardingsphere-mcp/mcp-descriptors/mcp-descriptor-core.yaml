@@ -1073,6 +1073,8 @@ tools:
           has_more: false
           continuation_mode: none
           total_match_count: 1
+          returned_count: 1
+          truncated: false
           search_context:
             query: orders
             database: logic_db
@@ -1381,7 +1383,7 @@ tools:
         - TRANSACTION_CONTROL
         - SAVEPOINT
   - name: database_gateway_execute_update
-    title: Execute Update SQL
+    title: Preview or Execute Side-Effecting SQL
     description: >-
       Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state.
       Use execution_mode=preview first when the side-effect scope has not been reviewed. Preview is classification-only,
@@ -1599,7 +1601,7 @@ tools:
                 - 1
               reason: Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.
     annotations:
-      title: Execute Update SQL
+      title: Preview or Execute Side-Effecting SQL
       readOnlyHint: false
       destructiveHint: true
       idempotentHint: false

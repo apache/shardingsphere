@@ -119,6 +119,8 @@ completionTargets:
     reference: plan_broadcast_rule
     arguments:
       - database
+      - table
+      - plan_id
     maxValues: 50
 
 resourceNavigation:

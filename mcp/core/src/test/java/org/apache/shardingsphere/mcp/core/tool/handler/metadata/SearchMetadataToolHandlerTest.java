@@ -56,10 +56,10 @@ class SearchMetadataToolHandlerTest {
         MCPToolDescriptor actual = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(new SearchMetadataToolHandler().getToolName());
         assertThat(actual.getName(), is("database_gateway_search_metadata"));
         assertThat(((Map<?, ?>) actual.getInputSchema().get("properties")).size(), is(4));
-        Map<?, ?> actualProperties = (Map<?, ?>) actual.getOutputSchema().get("properties");
         Map<?, ?> actualInputProperties = (Map<?, ?>) actual.getInputSchema().get("properties");
         Map<?, ?> actualObjectTypeItems = (Map<?, ?>) ((Map<?, ?>) actualInputProperties.get("object_types")).get("items");
         assertTrue(((List<?>) actualObjectTypeItems.get("enum")).contains("storage_unit"));
+        Map<?, ?> actualProperties = (Map<?, ?>) actual.getOutputSchema().get("properties");
         Map<?, ?> actualItems = (Map<?, ?>) ((Map<?, ?>) actualProperties.get("items")).get("items");
         Map<?, ?> actualItemProperties = (Map<?, ?>) actualItems.get("properties");
         assertTrue(actualItemProperties.containsKey("resource"));
@@ -170,6 +170,8 @@ class SearchMetadataToolHandlerTest {
             assertThat(actualPayload.get("total_match_count"), is(101));
             assertThat(actualPayload.get("returned_count"), is(100));
             assertTrue((Boolean) actualPayload.get("truncated"));
+            assertFalse((Boolean) actualPayload.get("has_more"));
+            assertThat(actualPayload.get("continuation_mode"), is("none"));
             Map<?, ?> actualLargeResultGuidance = (Map<?, ?>) actualPayload.get("large_result_guidance");
             assertThat(actualLargeResultGuidance.get("state"), is("metadata_search_result_truncated"));
             assertThat(actualLargeResultGuidance.get("threshold"), is(100));

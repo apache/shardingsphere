@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.mcp.feature.mask;
 
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MaskFeatureDefinitionTest {
     
@@ -32,5 +37,12 @@ class MaskFeatureDefinitionTest {
         assertThat(MaskFeatureDefinition.ALGORITHMS_RESOURCE_URI, is("shardingsphere://features/mask/algorithms"));
         assertThat(MaskFeatureDefinition.RULES_RESOURCE_URI, is("shardingsphere://features/mask/databases/{database}/rules"));
         assertThat(MaskFeatureDefinition.RULE_RESOURCE_URI, is("shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
+    }
+    
+    @Test
+    void assertPromptCompletionArguments() {
+        MCPCompletionTargetDescriptor actual = MCPDescriptorCatalogLoader.load().getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
+                .filter(each -> "prompt".equals(each.getReferenceType()) && MaskFeatureDefinition.PLAN_PROMPT_NAME.equals(each.getReference())).findFirst().orElseThrow();
+        assertTrue(actual.getArguments().containsAll(List.of("database", "schema", "table", "column", "plan_id")));
     }
 }
