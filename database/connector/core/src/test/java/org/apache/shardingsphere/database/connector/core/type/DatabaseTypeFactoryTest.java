@@ -51,8 +51,7 @@ class DatabaseTypeFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getDatabaseTypeWithRecognizedURLArguments")
-    void assertGetWithRecognizedURL(final String name, final String url, final Collection<DatabaseType> databaseTypes,
-                                    final DatabaseType expectedDatabaseType) {
+    void assertGetWithRecognizedURL(final String name, final String url, final Collection<DatabaseType> databaseTypes, final DatabaseType expectedDatabaseType) {
         when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(databaseTypes);
         assertThat(DatabaseTypeFactory.get(url), is(expectedDatabaseType));
     }
@@ -67,8 +66,7 @@ class DatabaseTypeFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getDatabaseTypeWithDatabaseMetaDataArguments")
-    void assertGetWithDatabaseMetaData(final String name, final String url, final Collection<DatabaseType> databaseTypes,
-                                       final DatabaseType expectedDatabaseType) throws SQLException {
+    void assertGetWithDatabaseMetaData(final String name, final String url, final Collection<DatabaseType> databaseTypes, final DatabaseType expectedDatabaseType) throws SQLException {
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
         when(metaData.getURL()).thenReturn(url);
         when(ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)).thenReturn(databaseTypes);
@@ -171,8 +169,7 @@ class DatabaseTypeFactoryTest {
         DatabaseType branchOnlyDatabaseType = mockDatabaseType("jdbc:branch-only:", mock(DatabaseType.class));
         return Stream.of(
                 Arguments.of("trunk url", "jdbc:trunk://localhost:3306/test", Collections.singletonList(trunkDatabaseType), trunkDatabaseType),
-                Arguments.of("branch only url", "jdbc:branch-only://localhost:3306/test",
-                        Collections.singletonList(branchOnlyDatabaseType), branchOnlyDatabaseType));
+                Arguments.of("branch only url", "jdbc:branch-only://localhost:3306/test", Collections.singletonList(branchOnlyDatabaseType), branchOnlyDatabaseType));
     }
     
     private static DatabaseType mockDatabaseType(final String jdbcUrlPrefix, final DatabaseType trunkDatabaseType) {
