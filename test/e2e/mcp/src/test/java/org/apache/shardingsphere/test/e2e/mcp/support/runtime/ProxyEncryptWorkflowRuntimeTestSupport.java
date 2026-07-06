@@ -39,8 +39,6 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
     
     private static final String LOGICAL_DATABASE_NAME = "logic_db";
     
-    private static final String PHYSICAL_DATABASE_NAME = "orders";
-    
     private static final String STORAGE_NETWORK_ALIAS = "mysql.workflow.host";
     
     private static final String PROXY_USER = "proxy";
@@ -92,8 +90,8 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
     /**
      * Proxy-backed runtime fixture.
      */
-    @Getter
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
     public static final class ProxyEncryptWorkflowRuntimeFixture implements AutoCloseable {
         
         private final GenericContainer<?> storageContainer;
@@ -103,8 +101,6 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
         private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
         
         private final String logicalDatabaseName = LOGICAL_DATABASE_NAME;
-        
-        private final String physicalDatabaseName = PHYSICAL_DATABASE_NAME;
         
         @Override
         public void close() {
