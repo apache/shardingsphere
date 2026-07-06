@@ -182,22 +182,15 @@ class StreamableHttpMCPServletTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(delegate.closeGracefully()).thenReturn(Mono.empty());
         StreamableHttpMCPServlet actual = createServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
-        doAnswer(invocation -> assertDelegatedRequest(invocation.getArgument(0), invocation.getArgument(1), request, response))
-                .when(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
         actual.service(request, response);
         verify(request).setCharacterEncoding("UTF-8");
         verify(response).setCharacterEncoding("UTF-8");
-    }
-    
-    private Object assertDelegatedRequest(final HttpServletRequest actualRequest, final HttpServletResponse actualResponse, final HttpServletRequest request, final HttpServletResponse response) {
-        assertThat(actualRequest, is(request));
-        assertThat(actualResponse, is(response));
-        assertThat(Thread.currentThread().getContextClassLoader(), is(StreamableHttpMCPServlet.class.getClassLoader()));
-        return null;
+        verify(response).sendError(HttpServletResponse.SC_BAD_REQUEST, "Accept must include text/event-stream.");
+        verify(delegate, never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
     
     @Test
-    void assertServiceGetWithExistingAcceptHeader() throws ServletException, IOException, ReflectiveOperationException {
+    void assertRejectUnsupportedEventStreamGet() throws ServletException, IOException, ReflectiveOperationException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
@@ -205,14 +198,11 @@ class StreamableHttpMCPServletTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(delegate.closeGracefully()).thenReturn(Mono.empty());
         StreamableHttpMCPServlet actual = createServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
-        doAnswer(invocation -> {
-            assertThat(invocation.getArgument(0), is(request));
-            assertThat(((HttpServletRequest) invocation.getArgument(0)).getHeader(HttpHeaders.ACCEPT), is("text/event-stream"));
-            return null;
-        }).when(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
         actual.service(request, response);
         verify(request).setCharacterEncoding("UTF-8");
         verify(response).setCharacterEncoding("UTF-8");
+        verify(response).sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "HTTP GET event streams are not supported.");
+        verify(delegate, never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
     
     @Test

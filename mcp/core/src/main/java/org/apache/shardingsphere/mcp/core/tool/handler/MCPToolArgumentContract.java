@@ -20,9 +20,11 @@ package org.apache.shardingsphere.mcp.core.tool.handler;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMissingToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -52,6 +54,12 @@ final class MCPToolArgumentContract {
     
     private static final String ENUM = "enum";
     
+    private static final String MINIMUM = "minimum";
+    
+    private static final String MAXIMUM = "maximum";
+    
+    private static final String DEFAULT_VALUE = "default";
+    
     private static final String STRING = "string";
     
     private static final String INTEGER = "integer";
@@ -74,13 +82,9 @@ final class MCPToolArgumentContract {
     
     private void validateObject(final Map<?, ?> arguments, final Map<?, ?> schema, final String path, final Map<String, Object> rootArguments) {
         validateRequiredArguments(arguments, schema, path, rootArguments);
-        validateUnknownArguments(arguments, schema, path, rootArguments);
         for (Entry<?, ?> entry : arguments.entrySet()) {
             String argumentName = Objects.toString(entry.getKey(), "");
-            Map<?, ?> property = findProperty(schema, argumentName);
-            if (!property.isEmpty()) {
-                validateArgument(entry.getValue(), property, appendPath(path, argumentName), rootArguments);
-            }
+            validatePropertyArgument(entry.getValue(), schema, appendPath(path, argumentName), rootArguments, argumentName);
         }
     }
     
@@ -107,15 +111,18 @@ final class MCPToolArgumentContract {
         ShardingSpherePreconditions.checkState(!actualValue.isEmpty(), () -> createMissingArgumentException(rootArguments, path));
     }
     
-    private void validateUnknownArguments(final Map<?, ?> arguments, final Map<?, ?> schema, final String path, final Map<String, Object> rootArguments) {
-        if (!Boolean.FALSE.equals(schema.get(ADDITIONAL_PROPERTIES))) {
+    private void validatePropertyArgument(final Object value, final Map<?, ?> schema, final String argumentPath, final Map<String, Object> rootArguments, final String argumentName) {
+        Map<?, ?> property = findProperty(schema, argumentName);
+        if (!property.isEmpty()) {
+            validateArgument(value, property, argumentPath, rootArguments);
             return;
         }
-        for (Object each : arguments.keySet()) {
-            String argumentName = Objects.toString(each, "");
-            if (findProperty(schema, argumentName).isEmpty()) {
-                throw createContractViolationException(rootArguments, appendPath(path, argumentName), "unknown_argument", "", List.of());
-            }
+        Object additionalProperties = schema.get(ADDITIONAL_PROPERTIES);
+        if (Boolean.FALSE.equals(additionalProperties)) {
+            throw createContractViolationException(rootArguments, argumentPath, "unknown_argument", "", List.of());
+        }
+        if (additionalProperties instanceof Map<?, ?>) {
+            validateArgument(value, (Map<?, ?>) additionalProperties, argumentPath, rootArguments);
         }
     }
     
@@ -124,6 +131,9 @@ final class MCPToolArgumentContract {
         if (!expectedType.isEmpty()) {
             ShardingSpherePreconditions.checkState(isValidType(value, expectedType),
                     () -> createContractViolationException(rootArguments, path, "invalid_argument_type", expectedType, List.of()));
+        }
+        if (INTEGER.equals(expectedType)) {
+            validateIntegerRange(value, schema, path);
         }
         validateEnumValue(value, schema, path, rootArguments);
         if (ARRAY.equals(expectedType)) {
@@ -151,6 +161,47 @@ final class MCPToolArgumentContract {
             return value instanceof Collection<?>;
         }
         return !OBJECT.equals(expectedType) || value instanceof Map<?, ?>;
+    }
+    
+    private void validateIntegerRange(final Object value, final Map<?, ?> schema, final String path) {
+        if (!(schema.get(MINIMUM) instanceof Number) || !(schema.get(MAXIMUM) instanceof Number)) {
+            return;
+        }
+        BigInteger actualValue = toBigInteger(value);
+        BigInteger minimumValue = toBigInteger(schema.get(MINIMUM));
+        BigInteger maximumValue = toBigInteger(schema.get(MAXIMUM));
+        ShardingSpherePreconditions.checkState(isIntegerWithinRange(actualValue, minimumValue, maximumValue), () -> createInvalidIntegerArgumentException(value, schema, path));
+    }
+    
+    private RuntimeException createInvalidIntegerArgumentException(final Object value, final Map<?, ?> schema, final String path) {
+        int minimum = getIntegerSchemaValue(schema, MINIMUM);
+        int maximum = getIntegerSchemaValue(schema, MAXIMUM);
+        return new MCPInvalidToolArgumentException(toolName, toolName, path, minimum, maximum, getSuggestedIntegerValue(value, schema, minimum, maximum),
+                new MCPInvalidRequestException(String.format("%s is out of range.", path)));
+    }
+    
+    private BigInteger toBigInteger(final Object value) {
+        return value instanceof BigInteger ? (BigInteger) value : BigInteger.valueOf(((Number) value).longValue());
+    }
+    
+    private int getIntegerSchemaValue(final Map<?, ?> schema, final String key) {
+        return ((Number) schema.get(key)).intValue();
+    }
+    
+    private int getSuggestedIntegerValue(final Object value, final Map<?, ?> schema, final int minimumValue, final int maximumValue) {
+        Object defaultValue = schema.get(DEFAULT_VALUE);
+        if (isValidType(defaultValue, INTEGER) && isIntegerWithinRange(defaultValue, minimumValue, maximumValue)) {
+            return ((Number) defaultValue).intValue();
+        }
+        return toBigInteger(value).compareTo(BigInteger.valueOf(minimumValue)) < 0 ? minimumValue : maximumValue;
+    }
+    
+    private boolean isIntegerWithinRange(final Object value, final int minimumValue, final int maximumValue) {
+        return isIntegerWithinRange(toBigInteger(value), BigInteger.valueOf(minimumValue), BigInteger.valueOf(maximumValue));
+    }
+    
+    private boolean isIntegerWithinRange(final BigInteger value, final BigInteger minimumValue, final BigInteger maximumValue) {
+        return value.compareTo(minimumValue) >= 0 && value.compareTo(maximumValue) <= 0;
     }
     
     private void validateEnumValue(final Object value, final Map<?, ?> schema, final String path, final Map<String, Object> rootArguments) {

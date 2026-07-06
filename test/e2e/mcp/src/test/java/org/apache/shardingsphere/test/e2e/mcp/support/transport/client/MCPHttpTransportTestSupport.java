@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -129,6 +130,23 @@ public final class MCPHttpTransportTestSupport {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpointUri).GET();
         applyHeaders(requestBuilder, headers);
         return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+    }
+    
+    /**
+     * Open an event stream without waiting for the whole response body.
+     *
+     * @param httpClient HTTP client
+     * @param endpointUri MCP endpoint URI
+     * @param headers request headers
+     * @return HTTP response
+     * @throws IOException I/O exception
+     * @throws InterruptedException interrupted exception
+     */
+    public static HttpResponse<InputStream> openEventStreamInputStream(final HttpClient httpClient, final URI endpointUri,
+                                                                       final Map<String, String> headers) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpointUri).GET();
+        applyHeaders(requestBuilder, headers);
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
     }
     
     /**
