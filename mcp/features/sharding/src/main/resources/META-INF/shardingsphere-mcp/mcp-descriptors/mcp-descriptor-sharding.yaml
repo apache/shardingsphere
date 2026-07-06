@@ -850,7 +850,8 @@ tools:
           missing_required_inputs: []
           resources_to_read: []
           next_actions: []
-    annotations: &planningAnnotations
+    annotations:
+      title: Plan Sharding Table Rule
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false
@@ -890,7 +891,12 @@ tools:
       required: []
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
-    annotations: *planningAnnotations
+    annotations:
+      title: Plan Sharding Table Reference Rule
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+      readOnlyHint: false
     runtime: *planningRuntime
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.table.reference
@@ -926,7 +932,12 @@ tools:
       required: []
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
-    annotations: *planningAnnotations
+    annotations:
+      title: Plan Sharding Default Strategy
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+      readOnlyHint: false
     runtime: *planningRuntime
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.default.strategy
@@ -960,7 +971,12 @@ tools:
       required: []
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
-    annotations: *planningAnnotations
+    annotations:
+      title: Plan Sharding Key Generator
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+      readOnlyHint: false
     runtime: *planningRuntime
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.key.generator
@@ -998,7 +1014,12 @@ tools:
       required: []
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
-    annotations: *planningAnnotations
+    annotations:
+      title: Plan Sharding Key Generate Strategy
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+      readOnlyHint: false
     runtime: *planningRuntime
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.key.generate.strategy
@@ -1032,7 +1053,12 @@ tools:
       required: []
       additionalProperties: false
     outputSchema: *workflowPlanOutputSchema
-    annotations: *planningAnnotations
+    annotations:
+      title: Plan Sharding Rule Component Cleanup
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+      readOnlyHint: false
     runtime: *planningRuntime
     meta:
       org.apache.shardingsphere/workflow-kind: sharding.component.cleanup

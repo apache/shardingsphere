@@ -593,6 +593,7 @@ tools:
           proxy_topology_hint: {}
           next_actions: []
     annotations:
+      title: Plan Shadow Rule
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false
@@ -673,6 +674,7 @@ tools:
           proxy_topology_hint: {}
           next_actions: []
     annotations:
+      title: Plan Default Shadow Algorithm
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false
@@ -743,6 +745,7 @@ tools:
           proxy_topology_hint: {}
           next_actions: []
     annotations:
+      title: Plan Shadow Algorithm Cleanup
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false

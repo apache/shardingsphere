@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.core.resource.handler.capability.DatabaseCa
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.RuntimeStatusHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
-import org.apache.shardingsphere.mcp.core.resource.handler.metadata.GovernanceMetadataQueryService;
+import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.core.resource.handler.metadata.MetadataResourceHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.workflow.WorkflowPlanHandler;
 
