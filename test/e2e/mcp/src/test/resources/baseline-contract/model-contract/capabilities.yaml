@@ -590,32 +590,32 @@ tools:
   annotations: {title: Plan Readwrite-Splitting Status, readOnlyHint: false, destructiveHint: false,
     idempotentHint: false, openWorldHint: false}
 - name: database_gateway_plan_shadow_rule
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
+  annotations: {title: Plan Shadow Rule, readOnlyHint: false, destructiveHint: false,
+    idempotentHint: false, openWorldHint: false}
 - name: database_gateway_plan_default_shadow_algorithm
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
+  annotations: {title: Plan Default Shadow Algorithm, readOnlyHint: false, destructiveHint: false,
+    idempotentHint: false, openWorldHint: false}
 - name: database_gateway_plan_shadow_algorithm_cleanup
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
+  annotations: {title: Plan Shadow Algorithm Cleanup, readOnlyHint: false, destructiveHint: false,
+    idempotentHint: false, openWorldHint: false}
 - name: database_gateway_plan_sharding_table_rule
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
+  annotations: {title: Plan Sharding Table Rule, readOnlyHint: false, destructiveHint: false,
+    idempotentHint: false, openWorldHint: false}
 - name: database_gateway_plan_sharding_table_reference_rule
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
+  annotations: {title: Plan Sharding Table Reference Rule, readOnlyHint: false, destructiveHint: false,
+    idempotentHint: false, openWorldHint: false}
 - name: database_gateway_plan_sharding_default_strategy
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
+  annotations: {title: Plan Sharding Default Strategy, readOnlyHint: false, destructiveHint: false,
+    idempotentHint: false, openWorldHint: false}
 - name: database_gateway_plan_sharding_key_generator
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
+  annotations: {title: Plan Sharding Key Generator, readOnlyHint: false, destructiveHint: false,
+    idempotentHint: false, openWorldHint: false}
 - name: database_gateway_plan_sharding_key_generate_strategy
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
+  annotations: {title: Plan Sharding Key Generate Strategy, readOnlyHint: false,
+    destructiveHint: false, idempotentHint: false, openWorldHint: false}
 - name: database_gateway_plan_sharding_rule_component_cleanup
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
+  annotations: {title: Plan Sharding Rule Component Cleanup, readOnlyHint: false,
+    destructiveHint: false, idempotentHint: false, openWorldHint: false}
 - name: database_gateway_apply_workflow
   annotations: {title: Apply Workflow, readOnlyHint: false, destructiveHint: true,
     idempotentHint: false, openWorldHint: true}

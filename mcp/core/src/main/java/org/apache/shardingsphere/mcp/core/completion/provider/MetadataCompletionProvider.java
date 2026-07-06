@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.completion.provider;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMet
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.Collection;
@@ -45,7 +47,9 @@ import java.util.stream.Stream;
  */
 public final class MetadataCompletionProvider implements MCPCompletionProvider<MCPDatabaseHandlerContext> {
     
-    private static final Set<String> SUPPORTED_ARGUMENTS = Set.of("database", "schema", "table", "column", "index", "sequence");
+    private static final Set<String> SUPPORTED_ARGUMENTS = Set.of("database", "schema", "table", "column", "index", "sequence", "storageUnit");
+    
+    private final GovernanceMetadataQueryService governanceMetadataQueryService = new GovernanceMetadataQueryService();
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
@@ -109,7 +113,7 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
     }
     
     private boolean requiresDatabaseContext(final String argumentName) {
-        return "schema".equals(argumentName) || requiresSchemaContext(argumentName);
+        return "schema".equals(argumentName) || "storageUnit".equals(argumentName) || requiresSchemaContext(argumentName);
     }
     
     private boolean requiresSchemaContext(final String argumentName) {
@@ -131,6 +135,9 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         }
         if ("index".equals(argumentName)) {
             return completeIndexes(handlerContext, contextArguments);
+        }
+        if ("storageUnit".equals(argumentName)) {
+            return completeStorageUnits(handlerContext, contextArguments);
         }
         return "sequence".equals(argumentName) ? completeSequences(handlerContext, contextArguments) : List.of();
     }
@@ -193,12 +200,24 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         }
     }
     
+    private List<MCPCompletionCandidate> completeStorageUnits(final MCPDatabaseHandlerContext handlerContext, final Map<String, String> contextArguments) {
+        String database = contextArguments.getOrDefault("database", "");
+        if (database.isEmpty()) {
+            return List.of();
+        }
+        MCPFeatureQueryFacade queryFacade = handlerContext.getQueryFacade();
+        return governanceMetadataQueryService.queryStorageUnits(queryFacade, database).stream()
+                .map(each -> Objects.toString(each.get("name"), ""))
+                .filter(each -> !each.isEmpty())
+                .map(each -> new MCPCompletionCandidate(each, "storage unit", "metadata")).toList();
+    }
+    
     private String getSchema(final Map<String, String> contextArguments) {
         return Objects.toString(contextArguments.get("schema"), "");
     }
     
     private List<String> createMissingContextArguments(final String argumentName, final Map<String, String> contextArguments) {
-        if ("schema".equals(argumentName)) {
+        if ("schema".equals(argumentName) || "storageUnit".equals(argumentName)) {
             return createMissingArguments(contextArguments, "database");
         }
         if ("table".equals(argumentName) || "sequence".equals(argumentName)) {
@@ -228,6 +247,9 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         }
         if ("sequence".equals(argumentName) && !database.isEmpty() && !schema.isEmpty()) {
             return String.format("shardingsphere://databases/%s/schemas/%s/sequences", encode(database), encode(schema));
+        }
+        if ("storageUnit".equals(argumentName) && !database.isEmpty()) {
+            return String.format("shardingsphere://databases/%s/storage-units", encode(database));
         }
         String table = Objects.toString(contextArguments.get("table"), "");
         if ("column".equals(argumentName) && !database.isEmpty() && !schema.isEmpty() && !table.isEmpty()) {

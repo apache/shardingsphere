@@ -40,7 +40,7 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 
 - Searches logical database metadata.
 - Narrows scope by `database`, `schema`, `query`, and `object_types`.
-- `object_types` supports `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence`.
+- `object_types` supports `database`, `schema`, `storage_unit`, `table`, `view`, `column`, `index`, and `sequence`.
 
 `database_gateway_validate_runtime_database`
 
@@ -200,7 +200,7 @@ Feature resources:
 ## Completions
 
 Completions suggest runtime names, metadata identifiers, algorithms, and workflow `plan_id` values in the current session.
-Before choosing uncertain database, schema, table, column, algorithm, or `plan_id` values, clients should call `completion/complete` or read the nearest MCP resource.
+Before choosing uncertain database, schema, table, column, storage unit, algorithm, or `plan_id` values, clients should call `completion/complete` or read the nearest MCP resource.
 When a completion response includes meta `next_actions`, clients should follow those actions before guessing a value or switching to another tool.
 Use `resources/templates/list` to discover URI variables for the nearest resource before retrying completion with additional context.
 
