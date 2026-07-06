@@ -225,6 +225,9 @@ tools:
             - manual_only
             - recovery
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow apply summary."
         plan_id:
           type: string
           description: "Workflow plan identifier that was applied."
@@ -378,6 +381,7 @@ tools:
                 description: "Action order values that must complete before this action."
       examples:
         - response_mode: preview
+          summary: Previewed 0 workflow artifacts. Nothing has been applied.
           plan_id: encrypt-rule-20260505-001
           execution_mode: preview
           applied_artifacts: []
@@ -429,6 +433,9 @@ tools:
           enum:
             - validation
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow validation summary."
         plan_id:
           type: string
           description: "Workflow plan identifier that was validated."
@@ -540,6 +547,7 @@ tools:
                 description: "Action order values that must complete before this action."
       examples:
         - response_mode: validation
+          summary: Workflow validation passed for plan `encrypt-rule-20260505-001`.
           plan_id: encrypt-rule-20260505-001
           status: passed
           sections: []

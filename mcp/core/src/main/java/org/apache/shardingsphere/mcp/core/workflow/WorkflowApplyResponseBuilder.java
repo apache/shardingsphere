@@ -62,8 +62,9 @@ public final class WorkflowApplyResponseBuilder {
                                      final Collection<String> executedDdl, final Collection<String> executedDistSql, final Collection<String> skippedArtifacts,
                                      final Map<String, Object> manualArtifactPackage) {
         String planId = snapshot.getPlanId();
-        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(24, 1F);
         result.put("response_mode", resolveResponseMode(status, executionMode));
+        result.put(MCPPayloadFieldNames.SUMMARY, createSummary(planId, status, executionMode, issues, executedDdl, executedDistSql));
         result.put(WorkflowFieldNames.PLAN_ID, planId);
         result.put("status", status);
         result.put(WorkflowFieldNames.EXECUTION_MODE, executionMode);
@@ -103,7 +104,9 @@ public final class WorkflowApplyResponseBuilder {
         result.put("would_apply", false);
         result.put("preview_artifacts", previewArtifacts);
         result.put("review_focus", createPreviewReviewFocus(applyExecutionMode, previewArtifacts));
-        result.put("review_summary", createReviewSummary(previewArtifacts));
+        String reviewSummary = createReviewSummary(previewArtifacts);
+        result.put(MCPPayloadFieldNames.SUMMARY, reviewSummary);
+        result.put("review_summary", reviewSummary);
         result.put("argument_provenance", createPreviewArgumentProvenance());
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createPreviewNextActions(snapshot, applyExecutionMode, previewArtifacts));
         return result;
@@ -117,6 +120,23 @@ public final class WorkflowApplyResponseBuilder {
             return MCPResponseMode.MANUAL_ONLY;
         }
         return WorkflowLifecycle.STATUS_COMPLETED.equals(status) ? MCPResponseMode.EXECUTED : MCPResponseMode.TERMINAL;
+    }
+    
+    private String createSummary(final String planId, final String status, final String executionMode, final Collection<Map<String, Object>> issues,
+                                 final Collection<String> executedDdl, final Collection<String> executedDistSql) {
+        if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
+            return String.format("Workflow apply preview is ready for plan `%s`.", planId);
+        }
+        if (WorkflowLifecycle.STATUS_COMPLETED.equals(status)) {
+            return String.format("Workflow apply completed for plan `%s` with %d applied artifact(s).", planId, executedDdl.size() + executedDistSql.size());
+        }
+        if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
+            return String.format("Workflow apply exported manual artifacts for plan `%s`; external execution is required before validation.", planId);
+        }
+        if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
+            return String.format("Workflow apply failed for plan `%s` with %d issue(s).", planId, issues.size());
+        }
+        return String.format("Workflow apply returned status `%s` for plan `%s`.", status, planId);
     }
     
     private List<Map<String, Object>> createPreviewArtifacts(final Collection<WorkflowArtifactBundle.ExecutableWorkflowArtifact> executableArtifacts) {

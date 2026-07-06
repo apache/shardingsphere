@@ -206,13 +206,13 @@ public final class MCPToolDescriptorCatalogValidator {
     
     private static void validateApplyWorkflowDescriptor(final MCPToolDescriptor descriptor) {
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor,
-                List.of("response_mode", WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, MCPPayloadFieldNames.NEXT_ACTIONS, "manual_artifact_summary",
-                        "category", "message", "secret_reference_summary"));
+                List.of("response_mode", MCPPayloadFieldNames.SUMMARY, WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, MCPPayloadFieldNames.NEXT_ACTIONS,
+                        "manual_artifact_summary", "category", "message", "secret_reference_summary"));
     }
     
     private static void validateValidateWorkflowDescriptor(final MCPToolDescriptor descriptor) {
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor,
-                List.of("response_mode", WorkflowFieldNames.PLAN_ID, "status", "overall_status", "issues", MCPPayloadFieldNames.NEXT_ACTIONS));
+                List.of("response_mode", MCPPayloadFieldNames.SUMMARY, WorkflowFieldNames.PLAN_ID, "status", "overall_status", "issues", MCPPayloadFieldNames.NEXT_ACTIONS));
     }
     
     private static void validatePlanningWorkflowDescriptor(final MCPToolDescriptor descriptor) {

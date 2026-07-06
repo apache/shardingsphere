@@ -49,9 +49,11 @@ class WorkflowValidationSupportTest {
         snapshot.setStatus("executed");
         Map<String, Object> actualResult = validationSupport.checkValidatePreconditions("session-2", snapshot);
         assertThat(actualResult.get("status"), is("failed"));
+        assertThat(actualResult.get("summary"), is("Workflow validation cannot run for plan `plan-1`."));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
         assertThat(actualResult.get("recovery_guidance"), is("Continue the workflow from the same session that created the plan."));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
+        assertThat(((Map<?, ?>) ((List<?>) actualResult.get("next_actions")).getFirst()).get("required_inputs"), is(List.of("same_mcp_session")));
     }
     
     @Test
@@ -65,6 +67,7 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("plan_id"), is("plan-1"));
         assertThat(actualResult.get("recovery_guidance"), is("Execute the workflow first or continue from a validatable status."));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertThat(((Map<?, ?>) ((List<?>) actualResult.get("next_actions")).getFirst()).get("required_inputs"), is(List.of("validatable_workflow_state")));
     }
     
     @Test
@@ -153,6 +156,7 @@ class WorkflowValidationSupportTest {
         workflowSessionContext.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         assertThat(actualResult.get("response_mode"), is("validation"));
+        assertThat(actualResult.get("summary"), is("Workflow validation passed for plan `plan-1`."));
         assertThat(actualResult.get("status"), is("validated"));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
         assertThat(actualResult.get("recovery_guidance"), is(""));
@@ -175,6 +179,7 @@ class WorkflowValidationSupportTest {
         workflowSessionContext.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         assertThat(actualResult.get("response_mode"), is("validation"));
+        assertThat(actualResult.get("summary"), is("Workflow validation failed for plan `plan-1` with 1 mismatch(es)."));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
         assertThat(actualResult.get("status"), is("failed"));
         assertThat(actualResult.get("recovery_guidance"), is("Inspect mismatches, adjust the plan or runtime state, then run database_gateway_validate_workflow again."));

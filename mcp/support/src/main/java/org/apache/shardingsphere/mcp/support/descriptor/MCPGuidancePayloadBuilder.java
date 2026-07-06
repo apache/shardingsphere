@@ -92,6 +92,8 @@ final class MCPGuidancePayloadBuilder {
                         "Stop after reporting the result rows."),
                 createFirstCallRoute("side_effect_sql", "call_tool database_gateway_execute_update execution_mode=preview", "call_tool database_gateway_execute_update execution_mode=execute",
                         "Execute only after preview review confirms the intended side effect."),
+                createFirstCallRoute("complete_uncertain_argument", "call completion/complete for one uncertain argument",
+                        "follow completion meta.next_actions when context is missing or no candidates match", "Stop after the argument is selected or the nearest resource proves it is unavailable."),
                 createFirstCallRoute("recover_error", "follow top-level next_actions", "fallback to recovery.next_actions when top-level actions are absent",
                         "Ask the user only when no deterministic resource, completion, or tool action is available."));
     }
@@ -119,6 +121,8 @@ final class MCPGuidancePayloadBuilder {
         result.put("sql_tool_selection", sqlToolSelection);
         result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
         result.put("side_effect_rule", "Preview before side effects and continue only when the requested side effect is still intended.");
+        result.put("completion_rule", "Use completion/complete for one uncertain argument at a time; when completion reports missing context, follow meta.next_actions before guessing.");
+        result.put("resource_template_rule", "Use resources/templates/list to discover URI variables, then read the nearest concrete resource before filling dependent completion context.");
         result.put("next_action_rule", "Use canonical next_actions fields: type, tool_name, resource_uri, and arguments.");
         result.put("detail_resource_rule", "Use resource descriptors, outputSchema, and returned payload keys before assuming detail fields.");
         result.put("recovery_rule", "When a call fails with recovery.next_actions, follow those structured actions before inventing a new call.");
@@ -183,6 +187,9 @@ final class MCPGuidancePayloadBuilder {
                 createCommonFlow("side_effecting_sql", List.of("call_tool database_gateway_execute_update execution_mode=preview",
                         "call_tool database_gateway_execute_update execution_mode=execute"),
                         "Execute only after reviewing the previewed SQL and side-effect scope.", List.of("database_gateway_execute_update"), List.of()),
+                createCommonFlow("complete_uncertain_argument", List.of("resources/templates/list", "call completion/complete for one argument",
+                        "follow completion meta.next_actions when diagnostic is missing_context, prefix_filtered_all_candidates, or no_candidates"),
+                        "Stop when a completion value is selected or the nearest resource proves the argument is unavailable.", List.of(), List.of()),
                 createCommonFlow("workflow_plan_apply_validate", List.of("call_tool descriptor-backed feature planning tool", "call_tool database_gateway_apply_workflow execution_mode=preview",
                         "call_tool database_gateway_apply_workflow execution_mode=review-then-execute approved_steps=<preview_artifacts.approval_step>",
                         "call_tool database_gateway_validate_workflow"),

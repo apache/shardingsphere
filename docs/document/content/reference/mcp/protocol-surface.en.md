@@ -201,6 +201,8 @@ Feature resources:
 
 Completions suggest runtime names, metadata identifiers, algorithms, and workflow `plan_id` values in the current session.
 Before choosing uncertain database, schema, table, column, algorithm, or `plan_id` values, clients should call `completion/complete` or read the nearest MCP resource.
+When a completion response includes meta `next_actions`, clients should follow those actions before guessing a value or switching to another tool.
+Use `resources/templates/list` to discover URI variables for the nearest resource before retrying completion with additional context.
 
 ## Responses and recovery
 
@@ -220,5 +222,7 @@ Large-result payloads use:
 
 Recoverable error payloads keep `message` and add `recovery` hints.
 Common recovery cases include missing arguments, unsupported tools or resources, invalid enum values, workflow state errors, and unsafe SQL tool selection.
+Model-facing business payloads that require continuation include a top-level `summary` and structured `next_actions`.
+Workflow planning, apply, manual-only export, and validation responses use these fields to guide the next tool call, user question, resource read, completion call, or terminal stop.
 
 JSON-RPC numeric error codes are the MCP protocol error contract.

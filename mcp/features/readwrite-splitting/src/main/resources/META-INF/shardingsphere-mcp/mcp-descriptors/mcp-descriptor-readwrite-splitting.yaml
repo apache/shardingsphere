@@ -389,6 +389,9 @@ tools:
           enum:
             - planning
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow planning summary."
         plan_id:
           type: string
           description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
@@ -493,6 +496,7 @@ tools:
       additionalProperties: true
       examples:
         - response_mode: planning
+          summary: Workflow plan `readwrite-rule-20260606-001` for readwrite.rule is ready for preview.
           plan_id: readwrite-rule-20260606-001
           status: planned
           workflow_kind: readwrite.rule
@@ -609,6 +613,7 @@ tools:
       <<: *workflowPlanOutputSchema
       examples:
         - response_mode: planning
+          summary: Workflow plan `readwrite-status-20260606-001` for readwrite.status is ready for preview.
           plan_id: readwrite-status-20260606-001
           status: planned
           workflow_kind: readwrite.status
