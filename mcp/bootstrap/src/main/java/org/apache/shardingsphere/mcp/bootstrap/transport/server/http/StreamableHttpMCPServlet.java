@@ -61,6 +61,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private static final String JSON_CONTENT_TYPE = "application/json";
     
+    private static final String EVENT_STREAM_CONTENT_TYPE = "text/event-stream";
+    
     private final HttpServletStreamableServerTransportProvider delegate;
     
     private final McpJsonMapper jsonMapper;
@@ -135,8 +137,25 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     @Override
-    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        serviceRequest(request, response);
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        setUtf8Encoding(request, response);
+        if (!isEventStreamAccepted(request)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Accept must include text/event-stream.");
+            return;
+        }
+        if (validateTransportSecurity(request, response)) {
+            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "HTTP GET event streams are not supported.");
+        }
+    }
+    
+    private boolean isEventStreamAccepted(final HttpServletRequest request) {
+        String acceptHeader = Objects.toString(request.getHeader(HttpHeaders.ACCEPT), "");
+        for (String each : acceptHeader.split(",")) {
+            if (EVENT_STREAM_CONTENT_TYPE.equalsIgnoreCase(each.split(";", 2)[0].trim())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void serviceWithApplicationClassLoader(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {

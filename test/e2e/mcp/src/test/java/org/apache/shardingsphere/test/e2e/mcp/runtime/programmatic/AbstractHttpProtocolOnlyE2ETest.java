@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTr
 import org.junit.jupiter.api.AfterEach;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
@@ -92,6 +93,12 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
         return MCPHttpTransportTestSupport.sendJsonRpcRequest(httpClient, getEndpointUri(), headers, "resource-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"));
     }
     
+    protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,
+                                                             final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
+        return MCPHttpTransportTestSupport.sendJsonRpcRequest(httpClient, getEndpointUri(), createSessionHeaders(sessionId), toolName + "-1", "tools/call",
+                Map.of("name", toolName, "arguments", arguments));
+    }
+    
     protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
         return MCPHttpTransportTestSupport.sendDeleteRequest(httpClient, getEndpointUri(), headers);
     }
@@ -103,6 +110,10 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
     
     protected final HttpResponse<String> openEventStream(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
         return MCPHttpTransportTestSupport.openEventStream(httpClient, getEndpointUri(), headers);
+    }
+    
+    protected final HttpResponse<InputStream> openEventStreamInputStream(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
+        return MCPHttpTransportTestSupport.openEventStreamInputStream(httpClient, getEndpointUri(), headers);
     }
     
     protected final Map<String, Object> parseJsonBody(final String responseBody) {

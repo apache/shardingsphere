@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -137,6 +138,19 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(((Map<?, ?>) actualToolCallAction.get("arguments")).get("execution_mode"), is("execute"));
         assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("resources_to_read")).getFirst()).get("uri"), is("shardingsphere://databases/logic_db/capabilities"));
         assertFalse(actual.toPayload().containsKey("ask_user_when_uncertain"));
+        verifyNoInteractions(executionFacade);
+    }
+    
+    @Test
+    void assertRejectPreviewWithInvalidTimeout() {
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        MCPInvalidToolArgumentException actual = assertThrows(MCPInvalidToolArgumentException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
+                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "preview", "timeout_ms", 300001))));
+        assertThat(actual.getMessage(), is("timeout_ms must be an integer between 0 and 300000."));
+        assertThat(actual.getArgumentPath(), is("timeout_ms"));
+        assertThat(actual.getSuggestedValue(), is(0));
         verifyNoInteractions(executionFacade);
     }
     

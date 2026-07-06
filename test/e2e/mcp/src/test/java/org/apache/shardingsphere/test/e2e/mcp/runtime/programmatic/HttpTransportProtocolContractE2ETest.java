@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
+import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -85,6 +87,65 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
     }
     
     @Test
+    void assertRejectUnsupportedActiveEventStream() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        Map<String, String> headers = new LinkedHashMap<>(createSessionHeaders(sessionId));
+        headers.put("Accept", "text/event-stream");
+        HttpResponse<InputStream> actual = openEventStreamInputStream(httpClient, headers);
+        try (InputStream ignored = actual.body()) {
+            assertThat(actual.statusCode(), is(405));
+        }
+    }
+    
+    @Test
+    void assertReturnToolErrorForInvalidIntegerArgument() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", createInvalidUpdateArguments());
+        Map<String, Object> actualRecovery = assertToolErrorRecovery(actual, "invalid_integer_argument");
+        assertThat(actualRecovery.get("argument_path"), is("max_rows"));
+        assertThat(actualRecovery.get("minimum_value"), is(0));
+        assertThat(actualRecovery.get("maximum_value"), is(5000));
+        assertThat(actualRecovery.get("suggested_value"), is(100));
+    }
+    
+    @Test
+    void assertReturnToolErrorForSchemaAdditionalProperties() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_readwrite_splitting_rule",
+                Map.of("load_balancer_properties", Map.of("weight", 1)));
+        Map<String, Object> actualRecovery = assertToolErrorRecovery(actual, "invalid_argument_type");
+        assertThat(actualRecovery.get("argument_path"), is("load_balancer_properties.weight"));
+        assertThat(actualRecovery.get("expected_type"), is("string"));
+    }
+    
+    @Test
+    void assertEnforceToolCallLimitPerSession() throws IOException, InterruptedException {
+        String propertyName = MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY;
+        String originalValue = System.getProperty(propertyName);
+        System.setProperty(propertyName, "1");
+        try {
+            launchHttpTransport();
+            HttpClient httpClient = HttpClient.newHttpClient();
+            String sessionId = initializeSession(httpClient);
+            assertToolErrorRecovery(sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", createInvalidUpdateArguments()), "invalid_integer_argument");
+            Map<String, Object> actualRecovery = assertToolErrorRecovery(
+                    sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", createInvalidUpdateArguments()), "tool_call_limit_exceeded");
+            assertThat(actualRecovery.get("session_id"), is(sessionId));
+            assertThat(actualRecovery.get("max_tool_calls_per_session"), is(1));
+            String otherSessionId = initializeSession(httpClient);
+            assertToolErrorRecovery(sendToolCallRequest(httpClient, otherSessionId, "database_gateway_execute_update", createInvalidUpdateArguments()), "invalid_integer_argument");
+        } finally {
+            restoreProperty(propertyName, originalValue);
+        }
+    }
+    
+    @Test
     void assertAcceptInitializeWithUnsupportedProtocolVersion() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -137,5 +198,28 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         assertThat(deleteResponse.statusCode(), is(200));
         assertThat(actual.statusCode(), is(404));
         assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session not found: " + sessionId));
+    }
+    
+    private Map<String, Object> assertToolErrorRecovery(final HttpResponse<String> response, final String expectedCategory) {
+        assertThat(response.statusCode(), is(200));
+        Map<String, Object> result = castToMap(parseJsonBody(response.body()).get("result"));
+        assertTrue((boolean) result.get("isError"));
+        Map<String, Object> structuredContent = castToMap(result.get("structuredContent"));
+        assertThat(structuredContent.get("response_mode"), is("recovery"));
+        Map<String, Object> actualRecovery = castToMap(structuredContent.get("recovery"));
+        assertThat(actualRecovery.get("category"), is(expectedCategory));
+        return actualRecovery;
+    }
+    
+    private Map<String, Object> createInvalidUpdateArguments() {
+        return Map.of("database", "logic_db", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview", "max_rows", 5001);
+    }
+    
+    private void restoreProperty(final String propertyName, final String originalValue) {
+        if (null == originalValue) {
+            System.clearProperty(propertyName);
+        } else {
+            System.setProperty(propertyName, originalValue);
+        }
     }
 }
