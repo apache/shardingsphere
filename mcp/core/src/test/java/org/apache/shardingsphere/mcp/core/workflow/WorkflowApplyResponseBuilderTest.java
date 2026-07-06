@@ -42,6 +42,7 @@ class WorkflowApplyResponseBuilderTest {
                         "CREATE MASK RULE orders", true));
         Map<String, Object> actual = new WorkflowApplyResponseBuilder().buildPreviewResponse(createSnapshot("encrypt.table"), executableArtifacts, "review-then-execute", Map.of());
         assertThat(actual.get("response_mode"), is("preview"));
+        assertThat(actual.get("summary"), is("Previewed 2 workflow artifacts with side-effect scope physical-structure, rule-metadata. Nothing has been applied."));
         assertThat(actual.get("plan_id"), is("plan-1"));
         assertThat(actual.get("status"), is("preview"));
         assertThat(actual.get("execution_mode"), is("preview"));
@@ -60,6 +61,7 @@ class WorkflowApplyResponseBuilderTest {
         Map<String, Object> actual = new WorkflowApplyResponseBuilder().build(createSnapshot("encrypt.table"), WorkflowLifecycle.STATUS_COMPLETED, "review-then-execute",
                 List.of(), List.of(), List.of("ALTER TABLE orders ADD COLUMN phone_mask VARCHAR(64)"), List.of("CREATE ENCRYPT RULE orders"), List.of(), Map.of());
         assertThat(actual.get("response_mode"), is("executed"));
+        assertThat(actual.get("summary"), is("Workflow apply completed for plan `plan-1` with 2 applied artifact(s)."));
         assertThat(actual.get("executed_ddl"), is(List.of("ALTER TABLE orders ADD COLUMN phone_mask VARCHAR(64)")));
         assertThat(actual.get("executed_distsql"), is(List.of("CREATE ENCRYPT RULE orders")));
         assertThat(actual.get("applied_artifacts"), is(List.of("ALTER TABLE orders ADD COLUMN phone_mask VARCHAR(64)", "CREATE ENCRYPT RULE orders")));
@@ -75,6 +77,7 @@ class WorkflowApplyResponseBuilderTest {
         Map<String, Object> actual = new WorkflowApplyResponseBuilder().build(createSnapshot("encrypt.table"), WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION, "manual-only",
                 List.of(), List.of(), List.of(), List.of(), List.of(), manualArtifactPackage);
         assertThat(actual.get("response_mode"), is("manual_only"));
+        assertThat(actual.get("summary"), is("Workflow apply exported manual artifacts for plan `plan-1`; external execution is required before validation."));
         assertThat(actual.get("manual_artifacts"), is(List.of(manualArtifactPackage)));
         Map<?, ?> actualSummary = (Map<?, ?>) actual.get("manual_artifact_summary");
         assertThat(actualSummary.get("ddl_artifact_count"), is(1));

@@ -27,12 +27,20 @@ import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptDescriptorContractTest {
     
     @Test
     void assertEncryptDistSQLExamples() {
         assertEncryptDistSQLExampleValue(findToolDescriptor().getOutputSchema().get("examples"));
+    }
+    
+    @Test
+    void assertPlanningOutputDeclaresSummary() {
+        Map<?, ?> actualOutputSchema = findToolDescriptor().getOutputSchema();
+        Map<?, ?> actualProperties = (Map<?, ?>) actualOutputSchema.get("properties");
+        assertTrue(actualProperties.containsKey("summary"));
     }
     
     private MCPToolDescriptor findToolDescriptor() {

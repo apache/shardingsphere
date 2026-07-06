@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
@@ -54,8 +55,9 @@ public final class WorkflowPlanPayloadBuilder {
      * @return workflow-plan payload
      */
     public static Map<String, Object> build(final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(24, 1F);
         result.put("response_mode", resolveResponseMode(snapshot));
+        result.put(MCPPayloadFieldNames.SUMMARY, createSummary(snapshot));
         result.put(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId());
         result.put("workflow_kind", snapshot.getWorkflowKind().getValue());
         result.put("status", snapshot.getStatus());
@@ -73,6 +75,20 @@ public final class WorkflowPlanPayloadBuilder {
         appendSecretReferenceSummary(result, snapshot);
         WorkflowGuidancePayloadBuilder.appendPlanningGuidance(result, snapshot);
         return result;
+    }
+    
+    private static String createSummary(final WorkflowContextSnapshot snapshot) {
+        String workflowKind = snapshot.getWorkflowKind().getValue();
+        if (WorkflowLifecycle.STATUS_CLARIFYING.equals(snapshot.getStatus())) {
+            return String.format("Workflow plan `%s` for %s requires clarification before preview.", snapshot.getPlanId(), workflowKind);
+        }
+        if (WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus())) {
+            return String.format("Workflow plan `%s` for %s is ready for preview.", snapshot.getPlanId(), workflowKind);
+        }
+        if (WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus())) {
+            return String.format("Workflow plan `%s` for %s failed with %d issue(s).", snapshot.getPlanId(), workflowKind, snapshot.getIssues().size());
+        }
+        return String.format("Workflow plan `%s` for %s is `%s`.", snapshot.getPlanId(), workflowKind, snapshot.getStatus());
     }
     
     /**

@@ -468,6 +468,9 @@ tools:
           enum:
             - planning
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow planning summary."
         plan_id:
           type: string
           description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
@@ -577,6 +580,7 @@ tools:
       additionalProperties: true
       examples:
         - response_mode: planning
+          summary: Workflow plan `shadow-rule-20260606-001` for shadow.rule is ready for preview.
           plan_id: shadow-rule-20260606-001
           workflow_kind: shadow.rule
           status: planned
@@ -657,6 +661,7 @@ tools:
       <<: *workflowPlanOutputSchema
       examples:
         - response_mode: planning
+          summary: Workflow plan `default-shadow-algorithm-20260606-001` for shadow.default is ready for preview.
           plan_id: default-shadow-algorithm-20260606-001
           workflow_kind: shadow.default
           status: planned
@@ -726,6 +731,7 @@ tools:
       <<: *workflowPlanOutputSchema
       examples:
         - response_mode: planning
+          summary: Workflow plan `shadow-algorithm-cleanup-20260606-001` for shadow.cleanup is ready for preview.
           plan_id: shadow-algorithm-cleanup-20260606-001
           workflow_kind: shadow.cleanup
           status: planned

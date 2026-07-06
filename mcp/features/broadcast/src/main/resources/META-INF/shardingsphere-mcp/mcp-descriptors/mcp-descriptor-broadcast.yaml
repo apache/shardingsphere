@@ -221,6 +221,9 @@ tools:
           enum:
             - planning
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow planning summary."
         plan_id:
           type: string
           description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
@@ -318,6 +321,7 @@ tools:
       additionalProperties: true
       examples:
         - response_mode: planning
+          summary: Workflow plan `broadcast-rule-20260606-001` for broadcast.rule is ready for preview.
           plan_id: broadcast-rule-20260606-001
           status: planned
           workflow_kind: broadcast.rule

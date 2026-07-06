@@ -73,6 +73,7 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(interactionPlan);
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         assertThat(actual.get("response_mode"), is("planning"));
+        assertThat(actual.get("summary"), is("Workflow plan `plan-1` for encrypt.rule requires clarification before preview."));
         assertThat(actual.get("plan_id"), is("plan-1"));
         assertThat(actual.get("workflow_kind"), is("encrypt.rule"));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("operation_type"), is("create"));
@@ -157,6 +158,7 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setRequest(request);
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Mask workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        assertThat(actual.get("summary"), is("Workflow plan `plan-1` for mask.rule is ready for preview."));
         List<?> actualResourcesToRead = (List<?>) actual.get("resources_to_read");
         List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
         assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
@@ -335,6 +337,7 @@ class WorkflowPlanPayloadBuilderTest {
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
         assertThat(actual.get("response_mode"), is("terminal"));
+        assertThat(actual.get("summary"), is("Workflow plan `plan-1` for encrypt.rule failed with 0 issue(s)."));
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_plan_encrypt_rule"));
     }

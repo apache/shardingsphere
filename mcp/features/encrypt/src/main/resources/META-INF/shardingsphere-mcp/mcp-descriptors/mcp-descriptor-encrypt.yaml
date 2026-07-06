@@ -274,6 +274,9 @@ tools:
           enum:
             - planning
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow planning summary."
         plan_id:
           type: string
           description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
@@ -410,6 +413,7 @@ tools:
           description: "Typed resources the model should read when more rule or algorithm context is useful."
       examples:
         - response_mode: planning
+          summary: Workflow plan `encrypt-rule-20260505-001` for encrypt.rule is ready for preview.
           plan_id: encrypt-rule-20260505-001
           status: planned
           workflow_kind: encrypt.rule
