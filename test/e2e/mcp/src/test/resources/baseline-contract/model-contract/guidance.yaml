@@ -38,6 +38,10 @@ model_first_summary:
       execution_mode=preview, next_step: call_tool database_gateway_execute_update
       execution_mode=execute, stop_rule: Execute only after preview review confirms
       the intended side effect.}
+  - {intent: complete_uncertain_argument, first_action: call completion/complete for
+      one uncertain argument, next_step: follow completion meta.next_actions when
+      context is missing or no candidates match, stop_rule: Stop after the argument
+      is selected or the nearest resource proves it is unavailable.}
   - {intent: recover_error, first_action: follow top-level next_actions, next_step: fallback
       to recovery.next_actions when top-level actions are absent, stop_rule: 'Ask the
       user only when no deterministic resource, completion, or tool action is available.'}
@@ -87,6 +91,10 @@ model_contract:
     tool; re-plan when the plan is unavailable.
   side_effect_rule: Preview before side effects and continue only when the requested
     side effect is still intended.
+  completion_rule: Use completion/complete for one uncertain argument at a time; when
+    completion reports missing context, follow meta.next_actions before guessing.
+  resource_template_rule: Use resources/templates/list to discover URI variables,
+    then read the nearest concrete resource before filling dependent completion context.
   next_action_rule: 'Use canonical next_actions fields: type, tool_name, resource_uri,
     and arguments.'
   detail_resource_rule: Use resource descriptors, outputSchema, and returned payload
@@ -165,6 +173,14 @@ common_flows:
   stop_condition: Execute only after reviewing the previewed SQL and side-effect scope.
   referenced_tools: [database_gateway_execute_update]
   referenced_resources: &id001 []
+- flow_id: complete_uncertain_argument
+  steps: [resources/templates/list, call completion/complete for one argument, 'follow
+      completion meta.next_actions when diagnostic is missing_context, prefix_filtered_all_candidates,
+      or no_candidates']
+  stop_condition: Stop when a completion value is selected or the nearest resource
+    proves the argument is unavailable.
+  referenced_tools: *id001
+  referenced_resources: *id001
 - flow_id: workflow_plan_apply_validate
   steps: [call_tool descriptor-backed feature planning tool, call_tool database_gateway_apply_workflow
       execution_mode=preview, call_tool database_gateway_apply_workflow execution_mode=review-then-execute
