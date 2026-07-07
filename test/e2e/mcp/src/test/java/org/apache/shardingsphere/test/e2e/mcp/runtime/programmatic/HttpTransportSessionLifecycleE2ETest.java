@@ -39,7 +39,7 @@ class HttpTransportSessionLifecycleE2ETest extends AbstractHttpProtocolOnlyE2ETe
                 "Accept", "text/event-stream",
                 "MCP-Session-Id", sessionId,
                 "MCP-Protocol-Version", getProtocolVersion()));
-        assertThat(actual.statusCode(), is(404));
+        assertThat(actual.statusCode(), is(405));
     }
     
     @Test
