@@ -75,7 +75,7 @@ Recognition succeeds when:
 Invocation succeeds when:
 
 - In a Claude Code conversation, run a minimal validation task such as:
-  - Show the tables in `<logic-database>`.
+  - Show the tables in `logic_db`.
   - Show columns and indexes for the `orders` table.
   - Run `database_gateway_validate_runtime_database` against a configured runtime database.
 - If the tools are listed and the validation query succeeds, the integration is working.

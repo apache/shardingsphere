@@ -45,7 +45,7 @@ Recognition succeeds when:
 Invocation succeeds when:
 
 - Start with a minimal validation task such as:
-  - Show the tables in `<logic-database>`.
+  - Show the tables in `logic_db`.
   - Show columns and indexes for the `orders` table.
   - Call `database_gateway_validate_runtime_database` for a configured runtime database.
 - If ChatGPT recognizes the app and can invoke its imported tools, the integration is working.

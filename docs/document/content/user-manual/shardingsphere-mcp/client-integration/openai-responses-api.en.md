@@ -29,6 +29,8 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 Pass ShardingSphere-MCP as an `mcp` tool in the `tools` array of a Responses API request. A minimal example is:
 
 ```python
+import os
+
 from openai import OpenAI
 
 client = OpenAI()
@@ -39,7 +41,7 @@ response = client.responses.create(
         {
             "type": "mcp",
             "server_label": "shardingsphere",
-            "server_url": "https://example.com/mcp",
+            "server_url": os.environ["SHARDINGSPHERE_MCP_REMOTE_URL"],
             "allowed_tools": [
                 "database_gateway_search_metadata",
                 "database_gateway_validate_runtime_database",
@@ -49,6 +51,8 @@ response = client.responses.create(
     input="Use ShardingSphere-MCP to inspect the tables in the logic database.",
 )
 ```
+
+Set `SHARDINGSPHERE_MCP_REMOTE_URL` to the secured remote endpoint published by the trusted gateway before running the request.
 
 Pay attention to these fields:
 
@@ -69,7 +73,7 @@ Recognition succeeds when:
 Invocation succeeds when:
 
 - Start with a minimal validation request such as:
-  - Show the tables in `<logic-database>`.
+  - Show the tables in `logic_db`.
   - Show columns and indexes for the `orders` table.
   - Call `database_gateway_validate_runtime_database` for a configured runtime database.
 - When `mcp_list_tools`, approval flow events, or final query results appear as expected, the integration is working.

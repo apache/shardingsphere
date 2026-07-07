@@ -75,7 +75,7 @@ claude mcp add --transport stdio shardingsphere -- \
 调用成功：
 
 - 在 Claude Code 对话中执行一条最小验证任务，例如：
-  - 查看 `<logic-database>` 中有哪些表。
+  - 查看 `logic_db` 中有哪些表。
   - 查看 `orders` 表的列和索引。
   - 对已经配置的 runtime database 执行 `database_gateway_validate_runtime_database`。
 - 如果工具已被列出并能返回查询结果，说明接入已经生效。

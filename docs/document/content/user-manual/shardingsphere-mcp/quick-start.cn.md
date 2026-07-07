@@ -36,14 +36,14 @@ cd distribution/mcp/target/apache-shardingsphere-mcp-${version}
 
 ```yaml
 runtimeDatabases:
-  "<logic-database>":
-    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
-    username: "<proxy-username>"
-    password: "<proxy-password>"
+  "logic_db":
+    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db"
+    username: "root"
+    password: ""
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-将 `<logic-database>`、`<proxy-host>`、`<proxy-port>`、`<proxy-username>` 和 `<proxy-password>` 替换为 ShardingSphere-Proxy 的实际连接信息。
+根据 ShardingSphere-Proxy 的实际连接信息调整 `logic_db`、`127.0.0.1`、`3307`、`root` 和空密码。
 MCP Server 会从 `jdbcUrl` 解析数据库类型。
 如果目标数据库驱动没有随发行包提供，请在启动前把对应 JDBC 驱动 jar 放入 `plugins/`。
 
@@ -78,9 +78,9 @@ start "ShardingSphere MCP" cmd /c "bin\start.bat > logs\mcp-http.log 2>&1"
 
 配置完成后，在 AI 应用中输入以下任务验证 ShardingSphere-MCP 是否可以访问目标逻辑库：
 
-- “查看 `<logic-database>` 中有哪些表。”
-- “查看 `<table-name>` 的字段和索引。”
-- “查询 `<table-name>` 前 10 行。”
+- “查看 `logic_db` 中有哪些表。”
+- “查看 `orders` 的字段和索引。”
+- “查询 `orders` 前 10 行。”
 
 如果可以返回逻辑库、表结构或查询结果，说明 MCP Server 已经可以通过 AI 应用访问目标 ShardingSphere-Proxy 逻辑库。
 进一步的部署方式、健康检查和基础可观测入口，请参考[部署说明](../deployment/)。
