@@ -37,11 +37,15 @@ class MCPArchitectureBoundaryTest {
             "mcp/bootstrap/src/main/java");
     
     private static final List<String> FEATURE_PACKAGE_IMPORTS = List.of(
+            "org.apache.shardingsphere.mcp.feature.broadcast",
             "org.apache.shardingsphere.mcp.feature.encrypt",
-            "org.apache.shardingsphere.mcp.feature.mask");
+            "org.apache.shardingsphere.mcp.feature.mask",
+            "org.apache.shardingsphere.mcp.feature.readwritesplitting",
+            "org.apache.shardingsphere.mcp.feature.shadow",
+            "org.apache.shardingsphere.mcp.feature.sharding");
     
     @Test
-    void assertGenericModulesDoNotImportEncryptOrMaskFeatures() throws IOException {
+    void assertGenericModulesDoNotImportFeatures() throws IOException {
         Path projectRoot = findProjectRoot();
         for (String each : GENERIC_MODULE_SOURCE_DIRECTORIES) {
             assertNoFeatureImport(projectRoot.resolve(each));
@@ -52,7 +56,7 @@ class MCPArchitectureBoundaryTest {
         try (Stream<Path> paths = Files.walk(sourceDirectory)) {
             List<Path> actualViolations = paths.filter(Files::isRegularFile).filter(each -> each.toString().endsWith(".java"))
                     .filter(this::containsFeaturePackageImport).toList();
-            assertTrue(actualViolations.isEmpty(), () -> "Generic MCP modules must not import encrypt/mask feature packages: " + actualViolations);
+            assertTrue(actualViolations.isEmpty(), () -> "Generic MCP modules must not import feature packages: " + actualViolations);
         }
     }
     
