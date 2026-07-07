@@ -35,11 +35,11 @@ public final class AlterSchemaPushDownMetaDataRefresher implements PushDownMetaD
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        Optional<String> renameSchemaName = sqlStatement.getRenameSchema().map(optional -> SchemaRefreshUtils.getActualSchemaName(database, optional, props));
+        Optional<String> renameSchemaName = sqlStatement.getRenameSchema().map(optional -> SchemaRefreshUtils.getActualSchemaName(database, optional));
         if (!renameSchemaName.isPresent()) {
             return;
         }
-        metaDataManagerPersistService.renameSchema(database, SchemaRefreshUtils.getActualSchemaName(database, sqlStatement.getSchemaName(), props), renameSchemaName.get());
+        metaDataManagerPersistService.renameSchema(database, SchemaRefreshUtils.getActualSchemaName(database, sqlStatement.getSchemaName()), renameSchemaName.get());
     }
     
     @Override

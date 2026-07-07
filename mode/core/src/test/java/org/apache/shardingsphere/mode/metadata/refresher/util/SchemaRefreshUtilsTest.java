@@ -61,13 +61,13 @@ class SchemaRefreshUtilsTest {
     
     @Test
     void assertGetActualSchemaNameWithInsensitiveProps() {
-        assertThat(SchemaRefreshUtils.getActualSchemaName(createDatabase(), new IdentifierValue("Foo_Schema"), new ConfigurationProperties(new Properties())), is("foo_schema"));
+        assertThat(SchemaRefreshUtils.getActualSchemaName(createDatabase(), new IdentifierValue("Foo_Schema")), is("foo_schema"));
     }
     
     @Test
     void assertGetActualSchemaNames() {
         List<IdentifierValue> schemaIdentifiers = Arrays.asList(new IdentifierValue("Foo_Schema"), new IdentifierValue("bar_schema"), new IdentifierValue("new_schema"));
-        assertThat(SchemaRefreshUtils.getActualSchemaNames(createDatabaseWithSchema("foo_schema", "bar_schema"), schemaIdentifiers, new ConfigurationProperties(new Properties())),
+        assertThat(SchemaRefreshUtils.getActualSchemaNames(createDatabaseWithSchema("foo_schema", "bar_schema"), schemaIdentifiers),
                 is(Arrays.asList("foo_schema", "bar_schema", "new_schema")));
     }
     

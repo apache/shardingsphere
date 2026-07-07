@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -39,9 +40,9 @@ public final class DropViewPushDownMetaDataRefresher implements PushDownMetaData
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
-        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
+        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
         Collection<IdentifierValue> viewIdentifierValues = sqlStatement.getViews().stream().map(SimpleTableSegment::getTableName)
-                .map(each -> each.getIdentifier()).collect(Collectors.toList());
+                .map(TableNameSegment::getIdentifier).collect(Collectors.toList());
         Collection<String> actualViewNames = TableRefreshUtils.getActualViewNames(database, actualSchemaName, viewIdentifierValues, props);
         metaDataManagerPersistService.dropTables(database, actualSchemaName, actualViewNames);
         metaDataManagerPersistService.dropViews(database, actualSchemaName, actualViewNames);

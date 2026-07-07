@@ -38,7 +38,7 @@ public final class DropTablePushDownMetaDataRefresher implements PushDownMetaDat
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
-        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
+        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
         Collection<String> tableNames = TableRefreshUtils.getActualTableNames(database, actualSchemaName,
                 sqlStatement.getTables().stream().map(each -> each.getTableName().getIdentifier()).collect(Collectors.toList()), props);
         metaDataManagerPersistService.dropTables(database, actualSchemaName, tableNames);
