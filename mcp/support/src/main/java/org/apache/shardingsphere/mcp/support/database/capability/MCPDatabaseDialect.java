@@ -32,9 +32,6 @@ import java.util.Optional;
  */
 public final class MCPDatabaseDialect {
     
-    private static final Collection<String> LEGACY_SYSTEM_SCHEMAS = List.of(
-            "information_schema", "mysql", "performance_schema", "pg_catalog", "shardingsphere", "sys", "system_lobs");
-    
     private final String databaseType;
     
     private final Optional<MCPDatabaseCapabilityOption> option;
@@ -126,7 +123,7 @@ public final class MCPDatabaseDialect {
             return false;
         }
         Collection<String> systemSchemas = option.map(MCPDatabaseCapabilityOption::getSystemSchemas).orElseGet(List::of);
-        return containsSystemSchema(systemSchemas, actualSchemaName) || containsSystemSchema(LEGACY_SYSTEM_SCHEMAS, actualSchemaName);
+        return containsSystemSchema(systemSchemas, actualSchemaName);
     }
     
     /**
