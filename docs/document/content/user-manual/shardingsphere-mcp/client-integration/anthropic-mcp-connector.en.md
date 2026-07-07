@@ -27,6 +27,7 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 ### Configure the integration
 
+Set `SHARDINGSPHERE_MCP_REMOTE_URL` to the secured remote endpoint published by the trusted gateway.
 In a Messages API request, declare ShardingSphere-MCP in `mcp_servers` first, then add the matching `mcp_toolset` in the `tools` array. A minimal example is:
 
 ```bash
@@ -35,36 +36,34 @@ curl https://api.anthropic.com/v1/messages \
   -H "x-api-key: $ANTHROPIC_API_KEY" \
   -H "anthropic-version: 2023-06-01" \
   -H "anthropic-beta: mcp-client-2025-11-20" \
-  -d '{
-    "model": "claude-sonnet-4-5",
-    "max_tokens": 1024,
-    "messages": [
-      {
-        "role": "user",
-        "content": "Use ShardingSphere-MCP to inspect the tables in the logic database."
-      }
-    ],
-    "mcp_servers": [
-      {
-        "type": "url",
-        "url": "https://example.com/mcp",
-        "name": "shardingsphere"
-      }
-    ],
-    "tools": [
-      {
-        "type": "mcp_toolset",
-        "mcp_server_name": "shardingsphere"
-      }
-    ]
-  }'
+  -d @- <<EOF
+{
+  "model": "claude-sonnet-4-5",
+  "max_tokens": 1024,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Use ShardingSphere-MCP to inspect the tables in the logic database."
+    }
+  ],
+  "mcp_servers": [
+    {
+      "type": "url",
+      "url": "${SHARDINGSPHERE_MCP_REMOTE_URL}",
+      "name": "shardingsphere"
+    }
+  ],
+  "tools": [
+    {
+      "type": "mcp_toolset",
+      "mcp_server_name": "shardingsphere"
+    }
+  ]
+}
+EOF
 ```
 
-If the secured remote endpoint or gateway requires OAuth or Bearer authentication, add this field to the `mcp_servers` entry:
-
-```json
-"authorization_token": "YOUR_TOKEN"
-```
+If the secured remote endpoint or gateway requires OAuth or Bearer authentication, read the token from a protected source and add `authorization_token` to the `mcp_servers` entry at request creation time.
 
 To expose only a subset of tools, use `default_config` and `configs` in the `mcp_toolset` as an allowlist or denylist. For example, disable everything by default and enable only a small subset:
 
@@ -95,7 +94,7 @@ Recognition succeeds when:
 Invocation succeeds when:
 
 - In a Claude conversation, run a minimal validation task such as:
-  - Show the tables in `<logic-database>`.
+  - Show the tables in `logic_db`.
   - Show columns and indexes for the `orders` table.
   - Call `database_gateway_validate_runtime_database` for a configured runtime database.
 - If Claude returns tool results from ShardingSphere-MCP, the integration is working.

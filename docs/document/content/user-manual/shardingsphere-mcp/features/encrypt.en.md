@@ -20,9 +20,9 @@ Users describe the encryption goal in an AI application that integrates Sharding
 
 Examples:
 
-- Check whether `<logic-database>.orders.status` already has an encryption rule.
+- Check whether `logic_db.orders.status` already has an encryption rule.
 - List data encryption algorithms available from the current Proxy.
-- Plan reversible encryption for `<logic-database>.orders.status` with equality query support, and preview it without execution.
+- Plan reversible encryption for `logic_db.orders.status` with equality query support, and preview it without execution.
 - Continue the previous plan with the AES algorithm and provide the key through a protected channel.
 - Confirm and execute the previous encryption rule plan, then validate the result.
 
@@ -34,7 +34,7 @@ When using natural language, include the following information when possible:
 
 | Information                         | Description                                                                                            | Example                                                                              |
 |-------------------------------------|--------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| Logical database, table, and column | Specify the ShardingSphere-Proxy logical object to configure.                                          | "Configure encryption for `<logic-database>.orders.status`."                         |
+| Logical database, table, and column | Specify the ShardingSphere-Proxy logical object to configure.                                          | "Configure encryption for `logic_db.orders.status`."                         |
 | Schema or namespace                 | Recommended for multi-schema logical databases.                                                        | "The schema is `public`."                                                            |
 | Operation type                      | Create, alter, or drop an encryption rule.                                                             | "Create an encryption rule" or "drop the encryption rule for this column."           |
 | Encryption goal                     | Describe whether reversible encryption, equality query, or LIKE query is required.                     | "Use reversible encryption and support equality queries."                            |

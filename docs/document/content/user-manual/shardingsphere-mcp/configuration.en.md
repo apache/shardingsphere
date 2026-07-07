@@ -68,10 +68,10 @@ The MCP Server resolves the database type from `jdbcUrl`; use a JDBC driver clas
 
 ```yaml
 runtimeDatabases:
-  "<logic-database>":
-    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
-    username: "<proxy-username>"
-    password: "<proxy-password>"
+  "logic_db":
+    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db"
+    username: "root"
+    password: ""
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
@@ -93,7 +93,7 @@ Notes:
 - With a direct database connection, users see metadata from the target database itself, not ShardingSphere rule state.
 - Schema, table, view, index, and sequence metadata depends on JDBC metadata from the connection target. Proxy-visible metadata and direct-connection metadata may differ.
 - If the target JDBC driver is not packaged, copy the driver jar under `plugins/`.
-- Keep placeholder values such as `<logic-database>` in examples only. Runtime YAML files reject unresolved placeholders.
+- The sample values such as `logic_db` and `127.0.0.1:3307` are examples only. Runtime YAML files reject unresolved angle-bracket placeholder syntax.
 
 ## Secret Placeholders
 

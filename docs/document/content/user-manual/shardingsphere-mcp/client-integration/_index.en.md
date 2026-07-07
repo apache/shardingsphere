@@ -36,8 +36,8 @@ Local examples such as `http://127.0.0.1:18088/mcp` are only suitable for local 
 
 After configuration, users describe tasks directly in the conversation. Examples:
 
-- Show the tables in `<logic-database>`.
-- Inspect columns and indexes for `<table-name>`.
+- Show the tables in `logic_db`.
+- Inspect columns and indexes for `orders`.
 - Run a read-only query and limit the result to 100 rows.
 - Call `database_gateway_validate_runtime_database` for a configured runtime database.
 - Plan a data encryption or data masking rule and preview it without execution.

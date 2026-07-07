@@ -14,7 +14,7 @@ weight = 4
 
 ## 自然语言示例
 
-- 查看 `<logic-database>` 当前有哪些广播表规则。
+- 查看 `logic_db` 当前有哪些广播表规则。
 - 为 `config_region` 和 `config_feature` 规划广播表规则，先预览不要执行。
 - 删除 `config_region` 的广播表规则，并校验结果。
 

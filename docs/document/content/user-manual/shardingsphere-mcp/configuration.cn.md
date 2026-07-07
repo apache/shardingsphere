@@ -68,10 +68,10 @@ MCP Server 会从 `jdbcUrl` 解析数据库类型；请使用与该 JDBC URL 匹
 
 ```yaml
 runtimeDatabases:
-  "<logic-database>":
-    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
-    username: "<proxy-username>"
-    password: "<proxy-password>"
+  "logic_db":
+    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db"
+    username: "root"
+    password: ""
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
@@ -93,7 +93,7 @@ runtimeDatabases:
 - 数据库直连时，用户看到的是目标数据库自身的元数据，不代表 ShardingSphere 规则状态。
 - 模式、表、视图、索引和序列等元数据依赖连接目标的 JDBC 元数据；Proxy 和数据库直连的可见结果可能不同。
 - 如果目标 JDBC 驱动没有随发行包提供，请把驱动 jar 放入 `plugins/`。
-- `<logic-database>` 等占位值只能用于示例。运行时 YAML 文件会拒绝未替换的占位符。
+- `logic_db` 和 `127.0.0.1:3307` 等示例值只用于说明。运行时 YAML 文件会拒绝未替换的尖括号占位符语法。
 
 ## 敏感值占位符
 

@@ -20,10 +20,10 @@ After MCP integration, users can describe database tasks in natural language in 
 
 Common task examples:
 
-- Show the tables in `<logic-database>`.
-- Inspect columns, indexes, and structure for `<table-name>`.
-- Check whether `<table-name>` already has encryption or masking rules.
-- Plan a masking rule for `<table-name>.<column-name>` and preview it without execution.
+- Show the tables in `logic_db`.
+- Inspect columns, indexes, and structure for `orders`.
+- Check whether `orders` already has encryption or masking rules.
+- Plan a masking rule for `orders.phone` and preview it without execution.
 - Confirm the previous governance change plan and validate the result.
 
 Tasks with side effects should create or preview a plan first, then run only after the user reviews the changes.

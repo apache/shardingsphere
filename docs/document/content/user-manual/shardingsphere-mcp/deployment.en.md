@@ -25,10 +25,10 @@ The distribution directory contains:
 
 Official MCP Registry metadata lives in `mcp/server.json`.
 The published server name is `io.github.apache/shardingsphere-mcp`.
-The OCI image shape is:
+An example OCI image reference is:
 
 ```text
-ghcr.io/apache/shardingsphere-mcp:<version>
+ghcr.io/apache/shardingsphere-mcp:5.5.4
 ```
 
 The OCI image can start with its built-in `conf/mcp-http-docker.yaml` configuration and an empty `runtimeDatabases` map.
@@ -44,10 +44,10 @@ transport:
     endpointPath: /mcp
 
 runtimeDatabases:
-  "<logic-database>":
-    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
-    username: "<proxy-username>"
-    password: "<proxy-password>"
+  "logic_db":
+    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db"
+    username: "root"
+    password: ""
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
@@ -120,7 +120,7 @@ Nginx example:
 ```nginx
 server {
   listen 443 ssl http2;
-  server_name mcp.example.com;
+  server_name _;
 
   ssl_certificate     /etc/nginx/certs/mcp.crt;
   ssl_certificate_key /etc/nginx/certs/mcp.key;
@@ -194,7 +194,7 @@ After deployment, verify that ShardingSphere-MCP is truly usable instead of stop
 
 1. Service process and endpoint are reachable
 
-   - In HTTP mode, confirm that the process has started, the port is listening, and `http://<bind-host>:<port><endpointPath>` matches the client configuration.
+   - In HTTP mode, confirm that the process has started, the port is listening, and `http://127.0.0.1:18088/mcp` matches the client configuration.
    - In STDIO mode, confirm that the AI application launches the MCP process correctly and does not treat stdin/stdout as an interactive shell.
 
 2. MCP protocol is ready
@@ -205,7 +205,7 @@ After deployment, verify that ShardingSphere-MCP is truly usable instead of stop
 3. Runtime databases are ready
 
    - Read `shardingsphere://runtime` and confirm that the transport, runtime database summary, and readiness details are visible.
-   - Call `database_gateway_validate_runtime_database`, or run a minimal task such as “Show tables in `<logic-database>`” from the AI application to confirm that the configured runtime database is usable.
+   - Call `database_gateway_validate_runtime_database`, or run a minimal task such as “Show tables in `logic_db`” from the AI application to confirm that the configured runtime database is usable.
    - A running MCP Server process alone does not mean that the target runtime database is ready. Connectivity failures, insufficient privileges, or invisible logical databases can still block tasks.
 
 ## Basic Observability Entrypoints

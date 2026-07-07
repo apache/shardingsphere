@@ -14,7 +14,7 @@ It generates broadcast rule DistSQL only. It does not generate physical table DD
 
 ## Natural language examples
 
-- List current broadcast table rules in `<logic-database>`.
+- List current broadcast table rules in `logic_db`.
 - Plan a broadcast rule for `config_region` and `config_feature`, then preview it without execution.
 - Drop the broadcast rule for `config_region` and validate the result.
 

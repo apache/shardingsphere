@@ -236,13 +236,13 @@ class YamlMCPLaunchConfigurationSwapperTest {
         String yamlContent = "transport:\n"
                 + "  type: STDIO\n"
                 + "runtimeDatabases:\n"
-                + "  <logic-database>:\n"
+                + "  <unresolved-database>:\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    password: ''\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
-        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains placeholder database name `<logic-database>`."));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains placeholder database name `<unresolved-database>`."));
     }
     
     @Test
@@ -251,7 +251,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  type: STDIO\n"
                 + "runtimeDatabases:\n"
                 + "  logic_db:\n"
-                + "    jdbcUrl: jdbc:mysql://<proxy-host>:3306/logic_db\n"
+                + "    jdbcUrl: jdbc:mysql://<unresolved-host>:3306/logic_db\n"
                 + "    username: demo\n"
                 + "    password: ''\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
@@ -267,7 +267,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  logic_db:\n"
                 + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
                 + "    username: demo\n"
-                + "    password: <proxy-password>\n"
+                + "    password: <unresolved-password>\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
         assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains placeholder database `logic_db` property `password`."));

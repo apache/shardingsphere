@@ -48,13 +48,13 @@ Usage boundaries:
 | Task | Natural language example | Connection target | User focus |
 | --- | --- | --- | --- |
 | List accessible databases | "List the databases that can be accessed." | Proxy or direct database connection | Confirm that database names match the configuration. |
-| Inspect schemas or namespaces | "Show schemas in `<database-name>`." | Proxy or direct database connection | For multi-schema databases, confirm the target schema first. |
-| Inspect tables or views | "List tables and views in `<schema-name>`." | Proxy or direct database connection | Proxy connections show logical objects. |
-| Inspect columns | "Show columns and column types for `<table-name>`." | Proxy or direct database connection | Column types follow metadata visible from the connection target. |
-| Inspect indexes | "Show indexes for `<table-name>`." | Proxy or direct database connection | With Proxy connections, index information may differ from the full physical database structure. |
-| Inspect sequences | "List sequences in `<schema-name>`." | Proxy or direct database connection | Available only when the connection target exposes sequence metadata. |
-| Inspect storage units | "List storage units in `<database-name>`." | Proxy only | Backed by `SHOW STORAGE UNITS FROM <database-name>`; sensitive connection properties are redacted or omitted. |
-| Inspect storage unit usage | "Which rules use storage unit `write_ds`?" | Proxy only | Backed by `SHOW RULES USED STORAGE UNIT <storage-unit> FROM <database-name>`. |
+| Inspect schemas or namespaces | "Show schemas in `logic_db`." | Proxy or direct database connection | For multi-schema databases, confirm the target schema first. |
+| Inspect tables or views | "List tables and views in `public`." | Proxy or direct database connection | Proxy connections show logical objects. |
+| Inspect columns | "Show columns and column types for `orders`." | Proxy or direct database connection | Column types follow metadata visible from the connection target. |
+| Inspect indexes | "Show indexes for `orders`." | Proxy or direct database connection | With Proxy connections, index information may differ from the full physical database structure. |
+| Inspect sequences | "List sequences in `public`." | Proxy or direct database connection | Available only when the connection target exposes sequence metadata. |
+| Inspect storage units | "List storage units in `logic_db`." | Proxy only | Backed by `SHOW STORAGE UNITS FROM logic_db`; sensitive connection properties are redacted or omitted. |
+| Inspect storage unit usage | "Which rules use storage unit `write_ds`?" | Proxy only | Backed by `SHOW RULES USED STORAGE UNIT write_ds FROM logic_db`. |
 | Inspect single tables | "Which storage unit contains single table `t_user`?" | Proxy only | Backed by `SHOW SINGLE TABLE` and `SHOW SINGLE TABLES`; use the default single table storage unit resource for new single tables. |
 
 ## Metadata Search

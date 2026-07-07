@@ -146,8 +146,8 @@ Read the database list:
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
-  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>' \
+  -H 'MCP-Session-Id: demo-session-id' \
+  -H 'MCP-Protocol-Version: 2025-11-25' \
   --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://databases"}}'
 ```
 
@@ -157,8 +157,8 @@ Call the metadata search tool:
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
-  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>' \
+  -H 'MCP-Session-Id: demo-session-id' \
+  -H 'MCP-Protocol-Version: 2025-11-25' \
   --data '{
     "jsonrpc":"2.0",
     "id":"tool-1",
@@ -166,8 +166,8 @@ curl -sS http://127.0.0.1:18088/mcp \
     "params":{
       "name":"database_gateway_search_metadata",
       "arguments":{
-        "database":"<logic-database>",
-        "query":"<metadata-keyword>",
+        "database":"logic_db",
+        "query":"orders",
         "object_types":["table","view"]
       }
     }
