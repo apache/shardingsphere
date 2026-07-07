@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,10 +41,9 @@ public final class FirebirdPutBlobSegmentCommandExecutor implements CommandExecu
     
     @Override
     public Collection<DatabasePacket> execute() {
-        int blobHandle = FirebirdBlobUploadCache.getInstance().getBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
-        FirebirdBlobUploadCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, packet.getSegment());
-        FirebirdBlobRegistry.setSegment(packet.getSegment());
-        OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
+        int blobHandle = FirebirdBlobWriteCache.getInstance().getBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
+        FirebirdBlobWriteCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, packet.getSegment());
+        OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
         FirebirdGenericResponsePacket response = new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId);
         return Collections.singleton(response);

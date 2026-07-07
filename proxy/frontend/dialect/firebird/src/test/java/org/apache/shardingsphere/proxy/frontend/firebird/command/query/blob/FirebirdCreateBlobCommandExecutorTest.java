@@ -22,7 +22,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +54,7 @@ class FirebirdCreateBlobCommandExecutorTest {
     void setup() {
         FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdBlobUploadCache.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
     }
     
@@ -62,7 +62,7 @@ class FirebirdCreateBlobCommandExecutorTest {
     void tearDown() {
         FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
-        FirebirdBlobUploadCache.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test

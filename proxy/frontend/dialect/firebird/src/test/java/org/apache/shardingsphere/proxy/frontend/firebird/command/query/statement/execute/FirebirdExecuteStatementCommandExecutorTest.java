@@ -46,7 +46,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -119,7 +119,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
     @BeforeEach
     void setUp() {
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdBlobUploadCache.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementId()).thenReturn(STATEMENT_ID);
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
@@ -137,7 +137,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
     void tearDown() {
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
-        FirebirdBlobUploadCache.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
@@ -185,8 +185,8 @@ class FirebirdExecuteStatementCommandExecutorTest {
     void assertSkipUnclosedBlobParameter() throws SQLException {
         int blobHandle = 7;
         long blobId = 11L;
-        FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
-        FirebirdBlobUploadCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, new byte[]{1, 2});
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, new byte[]{1, 2});
         when(packet.getStatementId()).thenReturn(2);
         when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
         when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(blobId)));
@@ -250,9 +250,9 @@ class FirebirdExecuteStatementCommandExecutorTest {
         int blobHandle = 13;
         long blobId = 17L;
         byte[] expectedBytes = new byte[]{3, 4};
-        FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
-        FirebirdBlobUploadCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, expectedBytes);
-        FirebirdBlobUploadCache.getInstance().closeUpload(CONNECTION_ID, blobHandle);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, expectedBytes);
+        FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, blobHandle);
         List<Object> params = new ArrayList<>(Collections.singletonList(blobId));
         when(packet.getStatementId()).thenReturn(2);
         when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
@@ -265,7 +265,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         List<Object> actualParams = queryContextCaptor.getValue().getParameters();
         assertThat(actualParams.size(), is(1));
         assertThat(actualParams.get(0), is(expectedBytes));
-        assertFalse(FirebirdBlobUploadCache.getInstance().getBlobData(CONNECTION_ID, blobId).isPresent());
+        assertFalse(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, blobId).isPresent());
     }
     
     @Test

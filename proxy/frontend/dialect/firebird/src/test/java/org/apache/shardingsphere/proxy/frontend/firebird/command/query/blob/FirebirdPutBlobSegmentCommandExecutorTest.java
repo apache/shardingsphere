@@ -22,7 +22,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +54,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
     void setup() {
         FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdBlobUploadCache.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
     }
     
@@ -62,7 +62,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
     void tearDown() {
         FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
-        FirebirdBlobUploadCache.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
@@ -70,7 +70,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         int blobHandle = 4;
         long blobId = 12L;
         byte[] segment = new byte[]{1, 2};
-        FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         when(packet.getSegment()).thenReturn(segment);
         FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
@@ -80,7 +80,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(0));
         assertThat(((FirebirdGenericResponsePacket) response).getId(), is(blobId));
-        assertThat(FirebirdBlobUploadCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(segment.length));
+        assertThat(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(segment.length));
     }
     
     @Test
@@ -88,13 +88,13 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         int blobHandle = 7;
         long blobId = 21L;
         byte[] segment = new byte[]{1, 2, 3};
-        FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
         when(packet.getBlobHandle()).thenReturn(0xFFFF);
         when(packet.getSegment()).thenReturn(segment);
         FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getId(), is(blobId));
-        assertThat(FirebirdBlobUploadCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(segment.length));
+        assertThat(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(segment.length));
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public final class FirebirdCreateBlobCommandExecutor implements CommandExecutor 
     public Collection<DatabasePacket> execute() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
         long blobId = FirebirdBlobIdGenerator.getInstance().nextBlobId(connectionSession.getConnectionId());
-        FirebirdBlobUploadCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, blobId);
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(blobId));
     }
 }

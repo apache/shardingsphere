@@ -23,7 +23,8 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,9 +42,10 @@ public final class FirebirdCloseBlobCommandExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        int blobHandle = FirebirdBlobUploadCache.getInstance().getBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
-        OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
-        FirebirdBlobUploadCache.getInstance().closeUpload(connectionSession.getConnectionId(), blobHandle);
+        int blobHandle = FirebirdBlobWriteCache.getInstance().getBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
+        OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
+        FirebirdBlobWriteCache.getInstance().closeWrite(connectionSession.getConnectionId(), blobHandle);
+        FirebirdBlobReadCache.getInstance().removeBlob(connectionSession.getConnectionId(), blobHandle);
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
         FirebirdGenericResponsePacket response = new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId);
         return Collections.singleton(response);

@@ -43,7 +43,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 
@@ -128,11 +128,11 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
                 params.set(i, null);
                 continue;
             }
-            if (!FirebirdBlobUploadCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId)) {
+            if (!FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId)) {
                 params.set(i, null);
                 continue;
             }
-            Optional<byte[]> blobData = FirebirdBlobUploadCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId);
+            Optional<byte[]> blobData = FirebirdBlobWriteCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId);
             byte[] bytes = blobData.get();
             params.set(i, bytes);
             blobIds.add(blobId);
@@ -142,7 +142,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     
     private void clearBlobUploads(final List<Long> blobIds) {
         for (Long each : blobIds) {
-            FirebirdBlobUploadCache.getInstance().removeUpload(connectionSession.getConnectionId(), each);
+            FirebirdBlobWriteCache.getInstance().removeWrite(connectionSession.getConnectionId(), each);
         }
     }
     

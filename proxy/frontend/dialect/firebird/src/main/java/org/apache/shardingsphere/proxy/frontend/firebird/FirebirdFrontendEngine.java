@@ -29,7 +29,8 @@ import org.apache.shardingsphere.proxy.frontend.firebird.authentication.Firebird
 import org.apache.shardingsphere.proxy.frontend.firebird.command.FirebirdCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
@@ -53,7 +54,8 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
         FirebirdTransactionIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdBlobIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdBlobHandleGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
-        FirebirdBlobUploadCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
+        FirebirdBlobWriteCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
+        FirebirdBlobReadCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdConnectionProtocolVersion.getInstance().unsetProtocolVersion(connectionSession.getConnectionId());
         FirebirdFetchStatementCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdBatchRegistry.getInstance().unregisterConnection(connectionSession.getConnectionId());

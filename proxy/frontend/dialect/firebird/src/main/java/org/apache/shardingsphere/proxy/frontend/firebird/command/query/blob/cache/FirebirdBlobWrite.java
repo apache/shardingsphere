@@ -15,53 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Objects;
 
-@Getter
-public final class FirebirdBlobUpload {
-    
+@RequiredArgsConstructor
+public final class FirebirdBlobWrite {
+
+    @Getter
     private final int blobHandle;
-    
+
+    @Getter
     private final long blobId;
-    
+
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    
+
+    @Getter
     private boolean closed;
-    
-    public FirebirdBlobUpload(final int blobHandle, final long blobId) {
-        this.blobHandle = blobHandle;
-        this.blobId = blobId;
-    }
-    
+
     /**
      * Append a BLOB data segment.
      *
      * @param segment BLOB data segment bytes
      */
     public void append(final byte[] segment) {
-        Objects.requireNonNull(segment, "BLOB segment must not be null");
         buffer.write(segment, 0, segment.length);
     }
-    
+
     public int getSize() {
         return buffer.size();
     }
-    
+
     public byte[] getBytes() {
         return buffer.toByteArray();
     }
-    
-    public boolean isClosed() {
-        return closed;
-    }
-    
+
     /**
-     * Mark this BLOB upload as closed.
+     * Mark this BLOB write as closed.
      */
     public void markClosed() {
         closed = true;

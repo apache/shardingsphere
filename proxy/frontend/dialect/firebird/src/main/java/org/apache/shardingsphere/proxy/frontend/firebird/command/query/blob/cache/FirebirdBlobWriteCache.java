@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,54 +37,54 @@ import java.util.concurrent.ConcurrentHashMap;
  * and can be substituted into the statement as a regular parameter on execute.</p>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FirebirdBlobUploadCache {
+public final class FirebirdBlobWriteCache {
     
-    private static final FirebirdBlobUploadCache INSTANCE = new FirebirdBlobUploadCache();
+    private static final FirebirdBlobWriteCache INSTANCE = new FirebirdBlobWriteCache();
     
     private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
     
-    private final Map<Integer, Map<Integer, FirebirdBlobUpload>> uploadsByHandle = new ConcurrentHashMap<>(16);
+    private final Map<Integer, Map<Integer, FirebirdBlobWrite>> writesByHandle = new ConcurrentHashMap<>(16);
     
-    private final Map<Integer, Map<Long, FirebirdBlobUpload>> uploadsById = new ConcurrentHashMap<>(16);
+    private final Map<Integer, Map<Long, FirebirdBlobWrite>> writesById = new ConcurrentHashMap<>(16);
     
     private final Map<Integer, Integer> lastBlobHandle = new ConcurrentHashMap<>(16);
     
-    public static FirebirdBlobUploadCache getInstance() {
+    public static FirebirdBlobWriteCache getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Register connection for BLOB uploads.
+     * Register connection for BLOB writes.
      *
      * @param connectionId connection id
      */
     public void registerConnection(final int connectionId) {
-        uploadsByHandle.put(connectionId, new ConcurrentHashMap<>(4));
-        uploadsById.put(connectionId, new ConcurrentHashMap<>(4));
+        writesByHandle.put(connectionId, new ConcurrentHashMap<>(4));
+        writesById.put(connectionId, new ConcurrentHashMap<>(4));
     }
     
     /**
-     * Unregister connection for BLOB uploads.
+     * Unregister connection for BLOB writes.
      *
      * @param connectionId connection id
      */
     public void unregisterConnection(final int connectionId) {
-        uploadsByHandle.remove(connectionId);
-        uploadsById.remove(connectionId);
+        writesByHandle.remove(connectionId);
+        writesById.remove(connectionId);
         lastBlobHandle.remove(connectionId);
     }
     
     /**
-     * Register a new BLOB upload by handle and id.
+     * Register a new BLOB write by handle and id.
      *
      * @param connectionId connection id
      * @param blobHandle blob handle
      * @param blobId blob id
      */
     public void registerBlob(final int connectionId, final int blobHandle, final long blobId) {
-        FirebirdBlobUpload upload = new FirebirdBlobUpload(blobHandle, blobId);
-        getHandleMap(connectionId).put(blobHandle, upload);
-        getIdMap(connectionId).put(blobId, upload);
+        FirebirdBlobWrite write = new FirebirdBlobWrite(blobHandle, blobId);
+        getHandleMap(connectionId).put(blobHandle, write);
+        getIdMap(connectionId).put(blobId, write);
         lastBlobHandle.put(connectionId, blobHandle);
     }
     
@@ -93,7 +93,7 @@ public final class FirebirdBlobUploadCache {
      *
      * <p>In the Firebird lazy (deferred) protocol a pipelined operation such as {@code op_put_segment} that is flushed
      * together with its preceding {@code op_create_blob2} carries the placeholder handle {@code 0xFFFF} (INVALID_OBJECT),
-     * which the server resolves to the most recently created object. This mirrors that resolution for BLOB uploads.</p>
+     * which the server resolves to the most recently created object. This mirrors that resolution for BLOB writes.</p>
      *
      * @param connectionId connection id
      * @param blobHandle blob handle received from the client
@@ -116,28 +116,28 @@ public final class FirebirdBlobUploadCache {
      * @return optional current size of buffered data
      */
     public OptionalInt appendSegment(final int connectionId, final int blobHandle, final byte[] segment) {
-        FirebirdBlobUpload upload = getHandleMap(connectionId).get(blobHandle);
-        if (null == upload) {
+        FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
+        if (null == write) {
             return OptionalInt.empty();
         }
-        upload.append(segment);
-        return OptionalInt.of(upload.getSize());
+        write.append(segment);
+        return OptionalInt.of(write.getSize());
     }
     
     /**
-     * Close upload by handle.
+     * Close write by handle.
      *
      * @param connectionId connection id
      * @param blobHandle blob handle
      * @return optional current size of buffered data
      */
-    public OptionalInt closeUpload(final int connectionId, final int blobHandle) {
-        FirebirdBlobUpload upload = getHandleMap(connectionId).get(blobHandle);
-        if (null == upload) {
+    public OptionalInt closeWrite(final int connectionId, final int blobHandle) {
+        FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
+        if (null == write) {
             return OptionalInt.empty();
         }
-        upload.markClosed();
-        return OptionalInt.of(upload.getSize());
+        write.markClosed();
+        return OptionalInt.of(write.getSize());
     }
     
     /**
@@ -148,11 +148,11 @@ public final class FirebirdBlobUploadCache {
      * @return optional blob id
      */
     public OptionalLong getBlobId(final int connectionId, final int blobHandle) {
-        FirebirdBlobUpload upload = getHandleMap(connectionId).get(blobHandle);
-        if (null == upload) {
+        FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
+        if (null == write) {
             return OptionalLong.empty();
         }
-        return OptionalLong.of(upload.getBlobId());
+        return OptionalLong.of(write.getBlobId());
     }
     
     /**
@@ -163,43 +163,43 @@ public final class FirebirdBlobUploadCache {
      * @return optional buffered bytes
      */
     public Optional<byte[]> getBlobData(final int connectionId, final long blobId) {
-        FirebirdBlobUpload upload = getIdMap(connectionId).get(blobId);
-        if (null == upload) {
+        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+        if (null == write) {
             return Optional.empty();
         }
-        return Optional.of(upload.getBytes());
+        return Optional.of(write.getBytes());
     }
     
     /**
-     * Check if upload is closed.
+     * Check if write is closed.
      *
      * @param connectionId connection id
      * @param blobId blob id
-     * @return whether upload is closed
+     * @return whether write is closed
      */
     public boolean isClosed(final int connectionId, final long blobId) {
-        FirebirdBlobUpload upload = getIdMap(connectionId).get(blobId);
-        return null != upload && upload.isClosed();
+        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+        return null != write && write.isClosed();
     }
     
     /**
-     * Remove upload by blob id.
+     * Remove write by blob id.
      *
      * @param connectionId connection id
      * @param blobId blob id
      */
-    public void removeUpload(final int connectionId, final long blobId) {
-        FirebirdBlobUpload upload = getIdMap(connectionId).remove(blobId);
-        if (null != upload) {
-            getHandleMap(connectionId).remove(upload.getBlobHandle());
+    public void removeWrite(final int connectionId, final long blobId) {
+        FirebirdBlobWrite write = getIdMap(connectionId).remove(blobId);
+        if (null != write) {
+            getHandleMap(connectionId).remove(write.getBlobHandle());
         }
     }
     
-    private Map<Integer, FirebirdBlobUpload> getHandleMap(final int connectionId) {
-        return uploadsByHandle.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
+    private Map<Integer, FirebirdBlobWrite> getHandleMap(final int connectionId) {
+        return writesByHandle.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
     }
     
-    private Map<Long, FirebirdBlobUpload> getIdMap(final int connectionId) {
-        return uploadsById.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
+    private Map<Long, FirebirdBlobWrite> getIdMap(final int connectionId) {
+        return writesById.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
     }
 }

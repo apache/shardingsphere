@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -37,9 +37,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class FirebirdBlobUploadCacheTest {
+class FirebirdBlobWriteCacheTest {
     
-    private static final FirebirdBlobUploadCache CACHE = FirebirdBlobUploadCache.getInstance();
+    private static final FirebirdBlobWriteCache CACHE = FirebirdBlobWriteCache.getInstance();
     
     @AfterEach
     void tearDown() {
@@ -51,8 +51,8 @@ class FirebirdBlobUploadCacheTest {
     void assertRegisterAndUnregisterConnection() {
         int connectionId = 1;
         CACHE.registerConnection(connectionId);
-        Map<Integer, Map<Integer, FirebirdBlobUpload>> handleMap = getHandleCache();
-        Map<Integer, Map<Long, FirebirdBlobUpload>> idMap = getIdCache();
+        Map<Integer, Map<Integer, FirebirdBlobWrite>> handleMap = getHandleCache();
+        Map<Integer, Map<Long, FirebirdBlobWrite>> idMap = getIdCache();
         assertTrue(handleMap.containsKey(connectionId));
         assertTrue(idMap.containsKey(connectionId));
         CACHE.unregisterConnection(connectionId);
@@ -69,8 +69,8 @@ class FirebirdBlobUploadCacheTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("missingUploadProvider")
-    void assertMissingUploadReturnsEmpty(final String caseName, final BooleanSupplier invocation) {
+    @MethodSource("missingWriteProvider")
+    void assertMissingWriteReturnsEmpty(final String caseName, final BooleanSupplier invocation) {
         assertFalse(invocation.getAsBoolean(), caseName);
     }
     
@@ -87,44 +87,44 @@ class FirebirdBlobUploadCacheTest {
         assertTrue(actualSizeAfterAppend.isPresent());
         assertThat(actualSizeAfterAppend.getAsInt(), is(3));
         assertFalse(CACHE.isClosed(connectionId, blobId));
-        OptionalInt actualSizeAfterClose = CACHE.closeUpload(connectionId, blobHandle);
+        OptionalInt actualSizeAfterClose = CACHE.closeWrite(connectionId, blobHandle);
         assertTrue(actualSizeAfterClose.isPresent());
         assertThat(actualSizeAfterClose.getAsInt(), is(3));
         assertTrue(CACHE.isClosed(connectionId, blobId));
         Optional<byte[]> actualBlobData = CACHE.getBlobData(connectionId, blobId);
         assertTrue(actualBlobData.isPresent());
         assertThat(actualBlobData.get(), is(new byte[]{1, 2, 3}));
-        CACHE.removeUpload(connectionId, blobId);
+        CACHE.removeWrite(connectionId, blobId);
         assertFalse(getHandleCache().get(connectionId).containsKey(blobHandle));
         assertFalse(getIdCache().get(connectionId).containsKey(blobId));
     }
     
     @Test
-    void assertRemoveUploadWhenUploadMissing() {
+    void assertRemoveWriteWhenWriteMissing() {
         int connectionId = 7;
         CACHE.registerConnection(connectionId);
-        CACHE.removeUpload(connectionId, 11L);
+        CACHE.removeWrite(connectionId, 11L);
         assertTrue(getHandleCache().get(connectionId).isEmpty());
         assertTrue(getIdCache().get(connectionId).isEmpty());
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Map<Integer, Map<Integer, FirebirdBlobUpload>> getHandleCache() {
-        return (Map<Integer, Map<Integer, FirebirdBlobUpload>>) Plugins.getMemberAccessor().get(FirebirdBlobUploadCache.class.getDeclaredField("uploadsByHandle"), CACHE);
+    private Map<Integer, Map<Integer, FirebirdBlobWrite>> getHandleCache() {
+        return (Map<Integer, Map<Integer, FirebirdBlobWrite>>) Plugins.getMemberAccessor().get(FirebirdBlobWriteCache.class.getDeclaredField("writesByHandle"), CACHE);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Map<Integer, Map<Long, FirebirdBlobUpload>> getIdCache() {
-        return (Map<Integer, Map<Long, FirebirdBlobUpload>>) Plugins.getMemberAccessor().get(FirebirdBlobUploadCache.class.getDeclaredField("uploadsById"), CACHE);
+    private Map<Integer, Map<Long, FirebirdBlobWrite>> getIdCache() {
+        return (Map<Integer, Map<Long, FirebirdBlobWrite>>) Plugins.getMemberAccessor().get(FirebirdBlobWriteCache.class.getDeclaredField("writesById"), CACHE);
     }
     
-    private static Stream<Arguments> missingUploadProvider() {
+    private static Stream<Arguments> missingWriteProvider() {
         return Stream.of(
-                Arguments.of("append missing upload returns empty", (BooleanSupplier) () -> CACHE.appendSegment(3, 5, new byte[]{1}).isPresent()),
-                Arguments.of("close missing upload returns empty", (BooleanSupplier) () -> CACHE.closeUpload(4, 6).isPresent()),
-                Arguments.of("get blob data missing upload returns empty", (BooleanSupplier) () -> CACHE.getBlobData(5, 7L).isPresent()),
-                Arguments.of("get blob id missing upload returns empty", (BooleanSupplier) () -> CACHE.getBlobId(8, 10).isPresent()));
+                Arguments.of("append missing write returns empty", (BooleanSupplier) () -> CACHE.appendSegment(3, 5, new byte[]{1}).isPresent()),
+                Arguments.of("close missing write returns empty", (BooleanSupplier) () -> CACHE.closeWrite(4, 6).isPresent()),
+                Arguments.of("get blob data missing write returns empty", (BooleanSupplier) () -> CACHE.getBlobData(5, 7L).isPresent()),
+                Arguments.of("get blob id missing write returns empty", (BooleanSupplier) () -> CACHE.getBlobId(8, 10).isPresent()));
     }
 }

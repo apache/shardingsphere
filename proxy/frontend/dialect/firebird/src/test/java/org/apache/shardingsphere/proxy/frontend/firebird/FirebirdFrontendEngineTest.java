@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionSt
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.FirebirdAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.FirebirdCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ProxyContext.class, FirebirdStatementIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdBlobIdGenerator.class, FirebirdBlobUploadCache.class,
+@StaticMockSettings({ProxyContext.class, FirebirdStatementIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdBlobIdGenerator.class, FirebirdBlobWriteCache.class,
         FirebirdConnectionProtocolVersion.class, FirebirdFetchStatementCache.class})
 class FirebirdFrontendEngineTest {
     
@@ -88,7 +88,7 @@ class FirebirdFrontendEngineTest {
         verify(FirebirdStatementIdGenerator.getInstance()).unregisterConnection(connectionId);
         verify(FirebirdTransactionIdGenerator.getInstance()).unregisterConnection(connectionId);
         verify(FirebirdBlobIdGenerator.getInstance()).unregisterConnection(connectionId);
-        verify(FirebirdBlobUploadCache.getInstance()).unregisterConnection(connectionId);
+        verify(FirebirdBlobWriteCache.getInstance()).unregisterConnection(connectionId);
         verify(FirebirdConnectionProtocolVersion.getInstance()).unsetProtocolVersion(connectionId);
         verify(FirebirdFetchStatementCache.getInstance()).unregisterConnection(connectionId);
     }

@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 
 import java.util.Collection;
@@ -43,8 +43,8 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         byte[] blobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(packet.getBlobId());
-        FirebirdBlobRegistry.setSegment(blobContent == null ? new byte[0] : blobContent);
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
+        FirebirdBlobReadCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, null == blobContent ? new byte[0] : blobContent);
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(packet.getBlobId()));
     }
 }

@@ -22,21 +22,43 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
+import java.util.OptionalLong;
 
 /**
  * Blob info command executor for Firebird.
  */
 @RequiredArgsConstructor
 public final class FirebirdBlobInfoExecutor implements CommandExecutor {
-    
+
     private final FirebirdInfoPacket packet;
-    
+
+    private final ConnectionSession connectionSession;
+
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdBlobInfoReturnPacket(packet.getInfoItems())));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdBlobInfoReturnPacket(packet.getInfoItems(), getBlobLength())));
+    }
+
+    private int getBlobLength() {
+        int connectionId = connectionSession.getConnectionId();
+        int blobHandle = FirebirdBlobWriteCache.getInstance().getBlobHandle(connectionId, packet.getHandle());
+        Optional<byte[]> readSegment = FirebirdBlobReadCache.getInstance().getSegment(connectionId, blobHandle);
+        if (readSegment.isPresent()) {
+            return readSegment.get().length;
+        }
+        OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionId, blobHandle);
+        if (!blobId.isPresent()) {
+            return 0;
+        }
+        Optional<byte[]> uploadData = FirebirdBlobWriteCache.getInstance().getBlobData(connectionId, blobId.getAsLong());
+        return uploadData.map(data -> data.length).orElse(0);
     }
 }
