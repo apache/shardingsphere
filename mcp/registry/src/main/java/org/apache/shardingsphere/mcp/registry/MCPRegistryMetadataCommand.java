@@ -42,7 +42,7 @@ public final class MCPRegistryMetadataCommand {
     
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     
-    private static final String SCHEMA_URL = "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json";
+    private static final String REGISTRY_SCHEMA_URL = "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json";
     
     private static final String SERVER_NAME = "io.github.apache/shardingsphere-mcp";
     
@@ -155,7 +155,7 @@ public final class MCPRegistryMetadataCommand {
     }
     
     private static void validateServerJson(final Map<String, Object> server, final boolean allowSnapshot) {
-        ShardingSpherePreconditions.checkState(SCHEMA_URL.equals(server.get("$schema")), () -> new IllegalArgumentException("server.json must use the official MCP Registry schema."));
+        ShardingSpherePreconditions.checkState(REGISTRY_SCHEMA_URL.equals(server.get("$schema")), () -> new IllegalArgumentException("server.json must use the official MCP Registry schema."));
         ShardingSpherePreconditions.checkState(SERVER_NAME.equals(server.get("name")),
                 () -> new IllegalArgumentException("server.json name must match the published ShardingSphere MCP server name."));
         validateString(server, "description", 100);
