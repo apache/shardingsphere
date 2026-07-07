@@ -254,7 +254,7 @@ tableReference
     ;
 
 lateralView
-    : LATERAL VIEW OUTER? functionCall alias AS columnNames
+    : LATERAL VIEW OUTER? functionCall alias (AS columnNames)?
     ;
 
 tableFactor

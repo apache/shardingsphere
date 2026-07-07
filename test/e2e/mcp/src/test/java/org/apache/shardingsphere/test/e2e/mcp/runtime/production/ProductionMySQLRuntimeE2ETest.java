@@ -84,7 +84,7 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
             assertToolDefinition(actual, "database_gateway_search_metadata", "Search Metadata", "", "object_types", "array");
             assertToolDefinition(actual, "database_gateway_validate_runtime_database", "Validate Runtime Database", "database", "database", "string");
             assertToolDefinition(actual, "database_gateway_execute_query", "Execute Query SQL", "sql", "timeout_ms", "integer");
-            assertToolDefinition(actual, "database_gateway_execute_update", "Execute Update SQL", "sql", "timeout_ms", "integer");
+            assertToolDefinition(actual, "database_gateway_execute_update", "Preview or Execute Side-Effecting SQL", "sql", "timeout_ms", "integer");
         }
     }
     

@@ -1633,7 +1633,9 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     private JoinTableSegment visitLateralView(final LateralViewContext ctx, final TableSegment tableSegment) {
         FunctionTableSegment functionTable = new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (FunctionSegment) visit(ctx.functionCall()));
         functionTable.setAlias((AliasSegment) visit(ctx.alias()));
-        functionTable.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
+        if (null != ctx.columnNames()) {
+            functionTable.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
+        }
         JoinTableSegment result = new JoinTableSegment();
         result.setLeft(tableSegment);
         result.setStartIndex(tableSegment.getStartIndex());

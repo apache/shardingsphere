@@ -1797,4 +1797,26 @@
         </from>
     </select>
 
+    <select sql-case-id="hive_select_lateral_view_without_column_alias">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="COMMA" start-index="14" stop-index="89">
+                <left>
+                    <simple-table name="t_data_type_array" alias="data_array" start-index="14" stop-index="41" />
+                </left>
+                <right>
+                    <function-table table-alias="exploded_array" start-index="43" stop-index="89">
+                        <table-function function-name="explode" text="explode(type_array)" start-index="56" stop-index="74">
+                            <parameter>
+                                <column name="type_array" start-index="64" stop-index="73" />
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
+
 </sql-parser-test-cases>

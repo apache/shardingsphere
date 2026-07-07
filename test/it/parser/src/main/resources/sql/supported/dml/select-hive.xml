@@ -110,4 +110,5 @@
     <sql-case id="hive_select_map_item" value="SELECT type_map['a'] FROM t_data_type_map" db-types="Hive" />
     <sql-case id="hive_select_dayofweek_function" value="SELECT dayofweek(creation_date) AS creation_day_of_week FROM t_order ORDER BY order_id" db-types="Hive" />
     <sql-case id="hive_select_lateral_view_explode" value="SELECT data_array.id, item_value FROM t_data_type_array data_array LATERAL VIEW explode(type_array) exploded_array AS item_value" db-types="Hive" />
+    <sql-case id="hive_select_lateral_view_without_column_alias" value="SELECT * FROM t_data_type_array data_array LATERAL VIEW explode(type_array) exploded_array" db-types="Hive" />
 </sql-cases>
