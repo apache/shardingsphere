@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.handshake;
 
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
@@ -26,6 +27,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -123,6 +127,22 @@ class MySQLHandshakeResponse41PacketTest {
         assertNull(actual.getDatabase());
         assertNull(actual.getAuthPluginName());
         verify(payload).skipReserved(23);
+    }
+    
+    @Test
+    void assertNewWithPayloadWithConnectionAttributes() {
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        payload.writeInt4(MySQLCapabilityFlag.CLIENT_CONNECT_ATTRS.getValue());
+        payload.writeInt4(1000);
+        payload.writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
+        payload.writeReserved(23);
+        payload.writeStringNul("root");
+        payload.writeStringNul("");
+        payload.writeIntLenenc("program_name".length() + "mysql".length() + 2L);
+        payload.writeStringLenenc("program_name");
+        payload.writeStringLenenc("mysql");
+        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
+        assertThat(actual.getConnectionAttributes(), is(Collections.singletonMap("program_name", "mysql")));
     }
     
     @Test

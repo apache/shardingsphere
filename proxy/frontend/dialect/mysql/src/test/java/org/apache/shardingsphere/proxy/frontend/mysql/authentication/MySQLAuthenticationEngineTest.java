@@ -173,14 +173,20 @@ class MySQLAuthenticationEngineTest {
         ContextManager contextManager = mockContextManager(rule);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ChannelHandlerContext context = mockChannelHandlerContext();
-        MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
-        when(payload.readInt4()).thenReturn(0);
-        when(payload.readInt1()).thenReturn(1);
-        when(payload.readStringNul()).thenReturn("root");
-        when(payload.readStringNulByBytes()).thenReturn(new byte[0]);
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        payload.writeInt4(MySQLCapabilityFlag.CLIENT_CONNECT_ATTRS.getValue());
+        payload.writeInt4(1000);
+        payload.writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
+        payload.writeReserved(23);
+        payload.writeStringNul("root");
+        payload.writeStringNul("");
+        payload.writeIntLenenc("program_name".length() + "mysql".length() + 2L);
+        payload.writeStringLenenc("program_name");
+        payload.writeStringLenenc("mysql");
         AuthenticationResult actual = authenticationEngine.authenticate(context, payload);
         assertFalse(actual.isFinished());
         assertThat(getConnectionPhase(), is(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH));
+        assertThat(actual.getConnectionAttributes(), is(Collections.singletonMap("program_name", "mysql")));
     }
     
     @Test
