@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
@@ -55,8 +56,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.metadata.FirebirdBlobColumnMetaData;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.metadata.FirebirdBlobColumnMetaDataResolver;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
@@ -468,11 +467,28 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         String tableAliasString = null == tableAlias ? table.getName() : tableAlias.getValue();
         String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        FirebirdBlobColumnMetaDataResolver blobResolver = new FirebirdBlobColumnMetaDataResolver(connectionSession.getCurrentDatabaseName());
-        FirebirdBlobColumnMetaData blobMetaData = blobResolver.resolve(table, column);
-        Integer columnLength = blobMetaData.isBlobColumn() ? null : resolveColumnLength(table, column);
-        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength, blobMetaData.isBlobColumn(),
-                blobMetaData.getBlobSubtype()));
+        boolean blobColumn = isBlobColumn(table, column);
+        Integer blobSubtype = resolveBlobSubtype(table, column, blobColumn);
+        Integer columnLength = blobColumn ? null : resolveColumnLength(table, column);
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength, blobColumn, blobSubtype));
+    }
+
+    private boolean isBlobColumn(final ShardingSphereTable table, final ShardingSphereColumn column) {
+        if (null == table || null == column) {
+            return false;
+        }
+        if (FirebirdBlobInfoRegistry.isBlobColumn(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName())) {
+            return true;
+        }
+        return Types.BLOB == column.getDataType();
+    }
+
+    private Integer resolveBlobSubtype(final ShardingSphereTable table, final ShardingSphereColumn column, final boolean blobColumn) {
+        if (!blobColumn) {
+            return null;
+        }
+        OptionalInt subtype = FirebirdBlobInfoRegistry.findBlobSubtype(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());
+        return subtype.isPresent() ? subtype.getAsInt() : null;
     }
     
     private Integer resolveColumnLength(final ShardingSphereTable table, final ShardingSphereColumn column) {
