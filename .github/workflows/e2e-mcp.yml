@@ -28,6 +28,7 @@ on:
     paths:
       - '.github/workflows/e2e-mcp.yml'
       - 'pom.xml'
+      - 'distribution/mcp/**'
       - 'mcp/**'
       - 'test/e2e/pom.xml'
       - 'test/e2e/mcp/**'

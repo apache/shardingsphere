@@ -11,7 +11,7 @@ MCP is an open protocol for connecting AI applications to external data sources 
 AI application developers can integrate ShardingSphere-MCP as a controlled database access capability.
 After integration, users can inspect database structure, run controlled queries, and plan reviewable ShardingSphere rule changes through natural language.
 
-Before use, prepare a reachable database and configure its connection information in `runtimeDatabases`. If data encryption, data masking, or other rule change capabilities are required, the connection target should be a ShardingSphere-Proxy logical database.
+Before using database-backed capabilities, prepare a reachable database and configure its connection information in `runtimeDatabases`. If data encryption, data masking, or other rule change capabilities are required, the connection target should be a ShardingSphere-Proxy logical database.
 
 ## Database Access for AI Applications
 

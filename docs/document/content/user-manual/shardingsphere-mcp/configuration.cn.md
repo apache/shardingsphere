@@ -4,7 +4,7 @@ weight = 3
 +++
 
 ShardingSphere-MCP 使用 YAML 文件配置传输方式和 MCP Server 可以连接的数据库。
-发行包默认读取 `conf/mcp-http.yaml`，也内置 `conf/mcp-stdio.yaml`。
+发行包默认读取 `conf/mcp-http.yaml`，也内置 `conf/mcp-stdio.yaml` 和 `conf/mcp-http-docker.yaml`。
 
 ## 传输方式
 
@@ -62,7 +62,7 @@ transport:
 
 ## 数据库配置
 
-`runtimeDatabases` 定义 MCP Server 可以连接并对外暴露的数据库。
+`runtimeDatabases` 定义 MCP Server 可以连接并对外暴露的数据库。Server 启动时可以省略或为空，此时不提供依赖数据库的能力。
 每个条目的 key 是用户在自然语言任务中引用的数据库名称，通常对应 ShardingSphere-Proxy 暴露的逻辑库。
 MCP Server 会从 `jdbcUrl` 解析数据库类型；请使用与该 JDBC URL 匹配的驱动类。
 
@@ -93,6 +93,7 @@ runtimeDatabases:
 - 数据库直连时，用户看到的是目标数据库自身的元数据，不代表 ShardingSphere 规则状态。
 - 模式、表、视图、索引和序列等元数据依赖连接目标的 JDBC 元数据；Proxy 和数据库直连的可见结果可能不同。
 - 如果目标 JDBC 驱动没有随发行包提供，请把驱动 jar 放入 `plugins/`。
+- `<logic-database>` 等占位值只能用于示例。运行时 YAML 文件会拒绝未替换的占位符。
 
 ## 敏感值占位符
 

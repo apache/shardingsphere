@@ -31,7 +31,8 @@ The OCI image shape is:
 ghcr.io/apache/shardingsphere-mcp:<version>
 ```
 
-Before using the OCI image, prepare a custom configuration file.
+The OCI image can start with its built-in `conf/mcp-http-docker.yaml` configuration and an empty `runtimeDatabases` map.
+Before using metadata, SQL, or rule capabilities, prepare a custom configuration file.
 When HTTP mode runs in a container, `bindHost` should bind to a network interface that the container can expose, such as `0.0.0.0`:
 
 ```yaml
