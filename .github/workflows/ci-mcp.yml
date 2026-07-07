@@ -52,7 +52,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          MCP_MODULES=mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask
+          MCP_MODULES=mcp/api,mcp/support,mcp/core,mcp/features/broadcast,mcp/features/encrypt,mcp/features/mask
+          MCP_MODULES="${MCP_MODULES},mcp/features/readwrite-splitting,mcp/features/shadow,mcp/features/sharding"
           MCP_MODULES="${MCP_MODULES},mcp/bootstrap,mcp/registry"
           ./mvnw -pl "${MCP_MODULES}" -am install \
             -DskipITs -Dspotless.skip=true \
