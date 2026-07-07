@@ -20,14 +20,11 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -36,17 +33,9 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.ProjectionsToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,6 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 class ShardingProjectionsTokenGeneratorTest {
     
@@ -162,41 +152,19 @@ class ShardingProjectionsTokenGeneratorTest {
                 is(", AVG(price) AS avg_alias , COUNT(price) AS AVG_DERIVED_COUNT_0 , SUM(price) AS AVG_DERIVED_SUM_0 "));
     }
     
-    @Test
-    void assertGenerateSQLTokenWithExpressionDerivedDistinctAggregation() {
-        FunctionSegment functionSegment =
-                new FunctionSegment(0, 32, "COALESCE", "COALESCE(SUM(DISTINCT price), 0)");
-        AggregationDistinctProjectionSegment sumSegment = new AggregationDistinctProjectionSegment(9, 27, AggregationType.SUM, "SUM(DISTINCT price)", "price");
-        LiteralExpressionSegment literalSegment =
-                new LiteralExpressionSegment(31, 31, 0);
-        functionSegment.getParameters().add(sumSegment);
-        functionSegment.getParameters().add(literalSegment);
-        
-        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 32, "COALESCE(SUM(DISTINCT price), 0)", functionSegment);
-        
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 32);
-        projectionsSegment.getProjections().add(expressionSegment);
-        
-        SelectStatement selectStatement = SelectStatement.builder()
-                .databaseType(databaseType)
-                .projections(projectionsSegment)
-                .from(new SimpleTableSegment(
-                        new TableNameSegment(39, 45, new IdentifierValue("t_order"))))
-                .build();
-        
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("foo_db");
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
-        
-        ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
-        assertThat(actual.toString(routeUnit), is(", price AS EXPR_DERIVED_0 "));
-    }
-    
     private AggregationProjection createAggregationProjection() {
-        AggregationDistinctProjection derivedProjection = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, new AggregationProjectionSegment(0, 0, AggregationType.COUNT, ""),
-                new IdentifierValue("foo_agg_alias"), "foo_agg_expr", databaseType);
-        AggregationProjection result = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, new AggregationProjectionSegment(0, 0, AggregationType.COUNT, ""), null, "", databaseType);
+        AggregationProjection derivedProjection = new AggregationProjection(
+                AggregationType.COUNT,
+                new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "foo_agg_expr"),
+                new IdentifierValue("foo_agg_alias"),
+                databaseType,
+                "foo_agg_expr");
+        AggregationProjection result = new AggregationProjection(
+                AggregationType.COUNT,
+                new AggregationProjectionSegment(0, 0, AggregationType.COUNT, ""),
+                null,
+                databaseType,
+                "");
         result.getDerivedAggregationProjections().add(derivedProjection);
         return result;
     }

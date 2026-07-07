@@ -171,14 +171,22 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     
     private void setExpressionValueToMemoryRow(final SelectStatementContext selectStatementContext, final Map<GroupByValue, MemoryQueryResultRow> dataMap) {
         Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations();
-        if (expressionDerivedAggregations.isEmpty()) {
+        if (expressionDerivedAggregations == null || expressionDerivedAggregations.isEmpty()) {
             return;
         }
         
         List<Projection> expandProjections = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
         Map<ExpressionProjection, Integer> projectionIndexMap = new HashMap<>();
+        
         for (ExpressionProjection exprProj : expressionDerivedAggregations.keySet()) {
-            int index = expandProjections.indexOf(exprProj);
+            int index = -1;
+            for (int i = 0; i < expandProjections.size(); i++) {
+                if (expandProjections.get(i).getExpression().equalsIgnoreCase(exprProj.getExpression())) {
+                    index = i;
+                    break;
+                }
+            }
+            
             if (index >= 0) {
                 projectionIndexMap.put(exprProj, index + 1);
             }
@@ -186,7 +194,6 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         
         for (Entry<GroupByValue, MemoryQueryResultRow> entry : dataMap.entrySet()) {
             MemoryQueryResultRow row = entry.getValue();
-            
             for (Entry<ExpressionProjection, List<AggregationProjection>> exprEntry : expressionDerivedAggregations.entrySet()) {
                 Object evaluatedValue = LightweightExpressionEvaluator.evaluate(
                         exprEntry.getKey().getExpressionSegment().getExpr(),
@@ -194,7 +201,6 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
                         row);
                 
                 Integer columnIndex = projectionIndexMap.get(exprEntry.getKey());
-                
                 if (null != columnIndex && null != evaluatedValue) {
                     row.setCell(columnIndex, evaluatedValue);
                 }

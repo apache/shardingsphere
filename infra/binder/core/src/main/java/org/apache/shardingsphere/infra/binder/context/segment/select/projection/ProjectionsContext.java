@@ -107,10 +107,11 @@ public final class ProjectionsContext {
     public Optional<String> findAlias(final String projectionName) {
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
-                Optional<Projection> projection =
-                        ((ShorthandProjection) each).getActualColumns().stream().filter(optional -> projectionName.equalsIgnoreCase(getOriginalColumnName(optional))).findFirst();
+                Optional<Projection> projection = ((ShorthandProjection) each).getActualColumns().stream()
+                        .filter(optional -> projectionName.equalsIgnoreCase(getOriginalColumnName(optional)))
+                        .findFirst();
                 if (projection.isPresent()) {
-                    return projection.map(Projection::getExpression);
+                    return projection.flatMap(Projection::getAlias).map(IdentifierValue::getValue);
                 }
             }
             if (projectionName.equalsIgnoreCase(SQLUtils.getExactlyValue(each.getExpression()))) {
@@ -171,13 +172,6 @@ public final class ProjectionsContext {
         for (Projection each : projections) {
             if (each instanceof AggregationDistinctProjection) {
                 result.add((AggregationDistinctProjection) each);
-            }
-        }
-        for (List<AggregationProjection> derivedAggregations : expressionDerivedAggregations.values()) {
-            for (AggregationProjection each : derivedAggregations) {
-                if (each instanceof AggregationDistinctProjection) {
-                    result.add((AggregationDistinctProjection) each);
-                }
             }
         }
         return result;
