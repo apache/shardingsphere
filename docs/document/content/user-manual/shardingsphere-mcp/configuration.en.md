@@ -4,7 +4,7 @@ weight = 3
 +++
 
 ShardingSphere-MCP uses YAML files to configure the transport and the databases that the MCP Server can connect to.
-The packaged distribution reads `conf/mcp-http.yaml` by default and also ships `conf/mcp-stdio.yaml`.
+The packaged distribution reads `conf/mcp-http.yaml` by default and also ships `conf/mcp-stdio.yaml` and `conf/mcp-http-docker.yaml`.
 
 ## Transport configuration
 
@@ -62,7 +62,7 @@ Enable this only when clients cannot forge these headers directly.
 
 ## Database configuration
 
-`runtimeDatabases` defines the databases that the MCP Server can connect to and expose to users.
+`runtimeDatabases` defines the databases that the MCP Server can connect to and expose to users. It may be omitted or empty when the server starts without database-backed capabilities.
 Each entry key is the database name that users reference in natural-language tasks. It usually maps to a logical database exposed by ShardingSphere-Proxy.
 The MCP Server resolves the database type from `jdbcUrl`; use a JDBC driver class that matches the configured URL.
 
@@ -93,6 +93,7 @@ Notes:
 - With a direct database connection, users see metadata from the target database itself, not ShardingSphere rule state.
 - Schema, table, view, index, and sequence metadata depends on JDBC metadata from the connection target. Proxy-visible metadata and direct-connection metadata may differ.
 - If the target JDBC driver is not packaged, copy the driver jar under `plugins/`.
+- Keep placeholder values such as `<logic-database>` in examples only. Runtime YAML files reject unresolved placeholders.
 
 ## Secret Placeholders
 

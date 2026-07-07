@@ -113,10 +113,10 @@ class YamlMCPLaunchConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectWithoutRuntimeDatabasesSection() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(
+        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(
                 "transport:\n" + "  type: STDIO\n",
-                YamlMCPLaunchConfiguration.class)));
-        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` is required."));
+                YamlMCPLaunchConfiguration.class));
+        assertThat(actual.getDatabases(), is(Collections.emptyMap()));
     }
     
     @Test
@@ -127,6 +127,14 @@ class YamlMCPLaunchConfigurationSwapperTest {
         yamlConfig.setRuntimeDatabases(null);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` is required."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithEmptyRuntimeDatabases() {
+        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(
+                "transport:\n" + "  type: STDIO\n" + "runtimeDatabases: {}\n",
+                YamlMCPLaunchConfiguration.class));
+        assertThat(actual.getDatabases(), is(Collections.emptyMap()));
     }
     
     @Test
@@ -221,6 +229,48 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    unsupported: true\n";
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
         assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains unsupported property `unsupported` for database `logic_db`."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithPlaceholderRuntimeDatabaseName() {
+        String yamlContent = "transport:\n"
+                + "  type: STDIO\n"
+                + "runtimeDatabases:\n"
+                + "  <logic-database>:\n"
+                + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
+                + "    username: demo\n"
+                + "    password: ''\n"
+                + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains placeholder database name `<logic-database>`."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithPlaceholderJdbcUrl() {
+        String yamlContent = "transport:\n"
+                + "  type: STDIO\n"
+                + "runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    jdbcUrl: jdbc:mysql://<proxy-host>:3306/logic_db\n"
+                + "    username: demo\n"
+                + "    password: ''\n"
+                + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains placeholder database `logic_db` property `jdbcUrl`."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithPlaceholderPassword() {
+        String yamlContent = "transport:\n"
+                + "  type: STDIO\n"
+                + "runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    jdbcUrl: jdbc:mysql://localhost:3306/logic_db\n"
+                + "    username: demo\n"
+                + "    password: <proxy-password>\n"
+                + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains placeholder database `logic_db` property `password`."));
     }
     
     @Test

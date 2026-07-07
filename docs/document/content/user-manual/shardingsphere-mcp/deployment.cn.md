@@ -31,7 +31,8 @@ OCI image 形态是：
 ghcr.io/apache/shardingsphere-mcp:<version>
 ```
 
-使用 OCI 镜像前，应先准备自定义配置文件。
+OCI 镜像可以使用内置 `conf/mcp-http-docker.yaml` 配置和空的 `runtimeDatabases` 启动。
+使用元数据、SQL 或规则能力前，请先准备自定义配置文件。
 HTTP 模式在容器中运行时，`bindHost` 应绑定到容器可暴露的网络接口，例如 `0.0.0.0`：
 
 ```yaml

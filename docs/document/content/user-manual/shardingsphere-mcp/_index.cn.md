@@ -11,7 +11,7 @@ MCP 是连接 AI 应用与外部数据源和工具的开放协议，协议说明
 AI 应用开发者可以将 ShardingSphere-MCP 作为受控数据库访问能力接入应用。
 接入后，用户可以通过自然语言查看数据库结构、执行受控查询，并规划需要审查的 ShardingSphere 规则变更。
 
-使用前需要准备可连接的数据库，并在 `runtimeDatabases` 中配置连接信息；如果需要使用数据加密、数据脱敏等规则变更能力，连接目标应为 ShardingSphere-Proxy 逻辑库。
+使用依赖数据库的能力前，需要准备可连接的数据库，并在 `runtimeDatabases` 中配置连接信息；如果需要使用数据加密、数据脱敏等规则变更能力，连接目标应为 ShardingSphere-Proxy 逻辑库。
 
 ## 面向 AI 应用的数据库访问
 

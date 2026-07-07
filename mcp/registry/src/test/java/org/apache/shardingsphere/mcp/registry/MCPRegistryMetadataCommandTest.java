@@ -84,6 +84,26 @@ class MCPRegistryMetadataCommandTest {
     }
     
     @Test
+    void assertExecuteRejectsMissingStreamableHttpRuntimeHint() throws IOException {
+        Map<String, Object> server = createServerMetadata();
+        getPackages(server).get(1).remove("runtimeHint");
+        Path serverPath = createServerJson(server);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
+        assertThat(actual.getMessage(), is("streamable-http OCI package runtimeHint must be docker."));
+    }
+    
+    @Test
+    void assertExecuteRejectsMismatchedStreamableHttpRuntimeArgument() throws IOException {
+        Map<String, Object> server = createServerMetadata();
+        getRuntimeArgument(server).put("value", "18088:18088");
+        Path serverPath = createServerJson(server);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
+        assertThat(actual.getMessage(), is("streamable-http OCI package must expose Docker port 18088 on 127.0.0.1."));
+    }
+    
+    @Test
     void assertExecuteRejectsMismatchedPackageVersion() throws IOException {
         Map<String, Object> server = createServerMetadata();
         getPackages(server).get(0).put("version", "5.5.3");
@@ -266,11 +286,19 @@ class MCPRegistryMetadataCommandTest {
     }
     
     private Map<String, Object> createPackage(final String transportType, final String url) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
         result.put("registryType", "oci");
         result.put("identifier", "ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT");
         result.put("version", "5.5.4-SNAPSHOT");
         result.put("transport", createTransport(transportType, url));
+        if ("streamable-http".equals(transportType)) {
+            result.put("runtimeHint", "docker");
+            Map<String, Object> runtimeArgument = new LinkedHashMap<>(3, 1F);
+            runtimeArgument.put("type", "named");
+            runtimeArgument.put("name", "-p");
+            runtimeArgument.put("value", "127.0.0.1:18088:18088");
+            result.put("runtimeArguments", List.of(runtimeArgument));
+        }
         result.put("environmentVariables", List.of(
                 createEnvironmentVariable("SHARDINGSPHERE_MCP_TRANSPORT", "Launch the container in the selected transport mode."),
                 createEnvironmentVariable("SHARDINGSPHERE_MCP_CONFIG", "Optional absolute config path inside the OCI container.")));
@@ -308,6 +336,11 @@ class MCPRegistryMetadataCommandTest {
     
     private Map<String, Object> getConfigEnvironmentVariable(final Map<String, Object> server) {
         return getEnvironmentVariables(server, 0).stream().filter(each -> "SHARDINGSPHERE_MCP_CONFIG".equals(each.get("name"))).findFirst().orElseThrow();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getRuntimeArgument(final Map<String, Object> server) {
+        return (Map<String, Object>) ((List<?>) getPackages(server).get(1).get("runtimeArguments")).get(0);
     }
     
     private List<Object> getPackageValues(final Map<String, Object> server, final String key) {

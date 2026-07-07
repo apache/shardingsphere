@@ -42,11 +42,15 @@ public final class YamlRuntimeDatabaseConfigurationsValidator implements Constra
     }
     
     private boolean validateRuntimeDatabase(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
+        if (isPlaceholder(databaseEntry.getKey())) {
+            addViolation(context, String.format("contains placeholder database name `%s`", databaseEntry.getKey()));
+            return false;
+        }
         if (null == databaseEntry.getValue()) {
             addViolation(context, String.format("contains null configuration for database `%s`", databaseEntry.getKey()));
             return false;
         }
-        return validateSupportedProperties(databaseEntry, context) && validateRequiredProperties(databaseEntry, context);
+        return validateSupportedProperties(databaseEntry, context) && validateRequiredProperties(databaseEntry, context) && validateNoPlaceholders(databaseEntry, context);
     }
     
     private boolean validateSupportedProperties(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
@@ -73,6 +77,42 @@ public final class YamlRuntimeDatabaseConfigurationsValidator implements Constra
         }
         addViolation(context, String.format("contains database `%s` property `%s` is required", databaseEntry.getKey(), key));
         return false;
+    }
+    
+    private boolean validateNoPlaceholders(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
+        boolean result = validateNoPlaceholder(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.JDBC_URL, context);
+        result = validateNoPlaceholder(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.USERNAME, context) && result;
+        result = validateNoPlaceholder(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.DRIVER_CLASS_NAME, context) && result;
+        return validateNoPasswordPlaceholder(databaseEntry, context) && result;
+    }
+    
+    private boolean validateNoPlaceholder(final Entry<String, Map<String, Object>> databaseEntry, final String key, final ConstraintValidatorContext context) {
+        Object value = databaseEntry.getValue().get(key);
+        if (null == value || !isPlaceholder(value.toString())) {
+            return true;
+        }
+        addViolation(context, String.format("contains placeholder database `%s` property `%s`", databaseEntry.getKey(), key));
+        return false;
+    }
+    
+    private boolean validateNoPasswordPlaceholder(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
+        Object value = databaseEntry.getValue().get(YamlRuntimeDatabaseConfigurationProperties.PASSWORD);
+        if (null == value || !isStandalonePlaceholder(value.toString())) {
+            return true;
+        }
+        addViolation(context, String.format("contains placeholder database `%s` property `%s`", databaseEntry.getKey(), YamlRuntimeDatabaseConfigurationProperties.PASSWORD));
+        return false;
+    }
+    
+    private boolean isPlaceholder(final String value) {
+        String actualValue = value.trim();
+        int startIndex = actualValue.indexOf('<');
+        return startIndex >= 0 && actualValue.indexOf('>', startIndex + 1) > startIndex + 1;
+    }
+    
+    private boolean isStandalonePlaceholder(final String value) {
+        String actualValue = value.trim();
+        return actualValue.startsWith("<") && actualValue.endsWith(">") && actualValue.length() > 2;
     }
     
     private void addViolation(final ConstraintValidatorContext context, final String message) {

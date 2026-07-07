@@ -54,6 +54,10 @@ public final class MCPRegistryMetadataCommand {
     
     private static final String PACKAGE_SHAPE_ERROR_MESSAGE = "server.json packages must contain exactly one stdio OCI package and one streamable-http OCI package.";
     
+    private static final String STREAMABLE_HTTP_RUNTIME_HINT = "docker";
+    
+    private static final String STREAMABLE_HTTP_PORT_ARGUMENT = "127.0.0.1:18088:18088";
+    
     /**
      * Main entrance.
      *
@@ -186,10 +190,22 @@ public final class MCPRegistryMetadataCommand {
                 () -> new IllegalArgumentException("MCP Registry package transport type must be stdio or streamable-http."));
         if ("streamable-http".equals(transportType)) {
             validateHttpUrl(transport.get("url"));
+            validateStreamableHttpRuntime(packageMetadata);
         }
         validateEnvironmentVariable(packageMetadata, "SHARDINGSPHERE_MCP_TRANSPORT");
         validateEnvironmentVariable(packageMetadata, "SHARDINGSPHERE_MCP_CONFIG");
         return transportType;
+    }
+    
+    private static void validateStreamableHttpRuntime(final Map<String, Object> packageMetadata) {
+        ShardingSpherePreconditions.checkState(STREAMABLE_HTTP_RUNTIME_HINT.equals(packageMetadata.get("runtimeHint")),
+                () -> new IllegalArgumentException("streamable-http OCI package runtimeHint must be docker."));
+        Object runtimeArguments = packageMetadata.get("runtimeArguments");
+        ShardingSpherePreconditions.checkState(runtimeArguments instanceof List<?> && 1 == ((List<?>) runtimeArguments).size(),
+                () -> new IllegalArgumentException("streamable-http OCI package must define one Docker port runtime argument."));
+        Map<String, Object> portArgument = asMap(((List<?>) runtimeArguments).get(0), "streamable-http OCI package runtime argument must be an object.");
+        ShardingSpherePreconditions.checkState("named".equals(portArgument.get("type")) && "-p".equals(portArgument.get("name")) && STREAMABLE_HTTP_PORT_ARGUMENT.equals(portArgument.get("value")),
+                () -> new IllegalArgumentException("streamable-http OCI package must expose Docker port 18088 on 127.0.0.1."));
     }
     
     private static List<Map<String, Object>> getPackages(final Map<String, Object> server) {

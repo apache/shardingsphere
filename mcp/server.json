@@ -40,10 +40,18 @@
       "registryType": "oci",
       "identifier": "ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT",
       "version": "5.5.4-SNAPSHOT",
+      "runtimeHint": "docker",
       "transport": {
         "type": "streamable-http",
         "url": "http://127.0.0.1:18088/mcp"
       },
+      "runtimeArguments": [
+        {
+          "type": "named",
+          "name": "-p",
+          "value": "127.0.0.1:18088:18088"
+        }
+      ],
       "environmentVariables": [
         {
           "name": "SHARDINGSPHERE_MCP_TRANSPORT",

@@ -74,8 +74,7 @@ class MCPLaunchConfigurationTest {
     void assertValidateWhenDatabasesEmpty() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(MCPTransportType.STREAMABLE_HTTP, null);
         yamlConfig.setRuntimeDatabases(Collections.emptyMap());
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
-        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` is required."));
+        assertDoesNotThrow(() -> validate(yamlConfig));
     }
     
     @Test
