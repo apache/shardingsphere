@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 
@@ -29,10 +31,8 @@ import java.util.Objects;
 /**
  * DistSQL query utilities for workflow planning.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowDistSQLQueryUtils {
-    
-    private WorkflowDistSQLQueryUtils() {
-    }
     
     /**
      * Judge whether a query failed because the current backend cannot parse ShardingSphere DistSQL.

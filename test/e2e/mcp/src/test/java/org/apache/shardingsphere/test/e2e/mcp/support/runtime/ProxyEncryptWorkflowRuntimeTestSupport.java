@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -35,6 +36,7 @@ import java.util.Map;
 /**
  * Proxy-backed runtime fixture support for workflow E2E tests.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyEncryptWorkflowRuntimeTestSupport {
     
     private static final String LOGICAL_DATABASE_NAME = "logic_db";
@@ -44,9 +46,6 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
     private static final String PROXY_USER = "proxy";
     
     private static final String PROXY_PASSWORD = "Proxy@123";
-    
-    private ProxyEncryptWorkflowRuntimeTestSupport() {
-    }
     
     /**
      * Create Proxy-backed runtime fixture.

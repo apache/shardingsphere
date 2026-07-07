@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.service;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -36,6 +38,7 @@ import java.util.Map;
 /**
  * Broadcast workflow planning service.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class BroadcastWorkflowPlanningService {
     
     private static final List<String> INTERACTION_STEPS = List.of(
@@ -59,11 +62,6 @@ public final class BroadcastWorkflowPlanningService {
     public BroadcastWorkflowPlanningService() {
         ruleInspectionService = new BroadcastRuleInspectionService();
         ruleDistSQLPlanningService = new BroadcastRuleDistSQLPlanningService();
-    }
-    
-    BroadcastWorkflowPlanningService(final BroadcastRuleInspectionService ruleInspectionService, final BroadcastRuleDistSQLPlanningService ruleDistSQLPlanningService) {
-        this.ruleInspectionService = ruleInspectionService;
-        this.ruleDistSQLPlanningService = ruleDistSQLPlanningService;
     }
     
     /**

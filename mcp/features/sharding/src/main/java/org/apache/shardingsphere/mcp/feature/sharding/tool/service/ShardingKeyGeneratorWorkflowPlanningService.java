@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingKeyGeneratorWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
@@ -25,16 +27,13 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 /**
  * Sharding key generator workflow planning service.
  */
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ShardingKeyGeneratorWorkflowPlanningService {
     
     private final ShardingWorkflowPlanningKernel kernel;
     
     public ShardingKeyGeneratorWorkflowPlanningService() {
         this(new ShardingWorkflowPlanningKernel());
-    }
-    
-    ShardingKeyGeneratorWorkflowPlanningService(final ShardingWorkflowPlanningKernel kernel) {
-        this.kernel = kernel;
     }
     
     /**

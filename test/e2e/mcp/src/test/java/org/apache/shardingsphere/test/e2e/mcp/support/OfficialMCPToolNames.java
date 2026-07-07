@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 
@@ -25,12 +27,10 @@ import java.util.List;
 /**
  * Official MCP tool names packaged by default.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OfficialMCPToolNames {
     
     private static final List<String> ALL = ToolDefinitionRegistry.getSupportedToolDescriptors().stream().map(MCPToolDescriptor::getName).toList();
-    
-    private OfficialMCPToolNames() {
-    }
     
     /**
      * Get official MCP tool names.

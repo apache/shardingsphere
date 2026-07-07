@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Workflow lifecycle vocabulary.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowLifecycle {
     
     public static final String STATUS_AWAITING_MANUAL_EXECUTION = "awaiting-manual-execution";
@@ -58,6 +62,4 @@ public final class WorkflowLifecycle {
     
     public static final String OPERATION_DROP = "drop";
     
-    private WorkflowLifecycle() {
-    }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingKeyGenerateStrategyWorkflowRequest;
@@ -28,6 +30,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 /**
  * Tool handler for sharding key generate strategy planning.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class PlanShardingKeyGenerateStrategyToolHandler extends AbstractShardingPlanningToolHandler {
     
     private final ShardingPlanningRequestBinder requestBinder = new ShardingPlanningRequestBinder();
@@ -36,10 +39,6 @@ public final class PlanShardingKeyGenerateStrategyToolHandler extends AbstractSh
     
     public PlanShardingKeyGenerateStrategyToolHandler() {
         planningService = new ShardingKeyGenerateStrategyWorkflowPlanningService();
-    }
-    
-    PlanShardingKeyGenerateStrategyToolHandler(final ShardingKeyGenerateStrategyWorkflowPlanningService planningService) {
-        this.planningService = planningService;
     }
     
     @Override

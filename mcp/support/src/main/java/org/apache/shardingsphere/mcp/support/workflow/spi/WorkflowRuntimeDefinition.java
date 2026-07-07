@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.spi;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
  * Workflow runtime definition.
  */
 @Getter
+@AllArgsConstructor
 public final class WorkflowRuntimeDefinition {
     
     private final WorkflowKind workflowKind;
@@ -37,14 +39,6 @@ public final class WorkflowRuntimeDefinition {
     public WorkflowRuntimeDefinition(final WorkflowKind workflowKind, final MCPWorkflowValidationHandler validationHandler,
                                      final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler) {
         this(workflowKind, validationHandler, applySynchronizationHandler, MCPWorkflowApplyArtifactValidator.NO_OP);
-    }
-    
-    public WorkflowRuntimeDefinition(final WorkflowKind workflowKind, final MCPWorkflowValidationHandler validationHandler,
-                                     final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler, final MCPWorkflowApplyArtifactValidator applyArtifactValidator) {
-        this.workflowKind = workflowKind;
-        this.validationHandler = validationHandler;
-        this.applySynchronizationHandler = applySynchronizationHandler;
-        this.applyArtifactValidator = applyArtifactValidator;
     }
     
     /**

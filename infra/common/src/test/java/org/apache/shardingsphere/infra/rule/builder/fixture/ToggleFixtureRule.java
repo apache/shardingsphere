@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.infra.rule.builder.fixture;
 
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 
+@AllArgsConstructor
 public final class ToggleFixtureRule implements DatabaseRule {
     
     private final RuleConfiguration ruleConfig;
-    
-    public ToggleFixtureRule(final RuleConfiguration ruleConfig) {
-        this.ruleConfig = ruleConfig;
-    }
     
     @Override
     public RuleConfiguration getConfiguration() {

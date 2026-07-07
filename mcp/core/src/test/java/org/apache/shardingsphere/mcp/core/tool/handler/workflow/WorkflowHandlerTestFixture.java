@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -35,10 +37,8 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class WorkflowHandlerTestFixture {
-    
-    private WorkflowHandlerTestFixture() {
-    }
     
     static Context createContext(final WorkflowContextSnapshot snapshot) {
         MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);

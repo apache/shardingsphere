@@ -21,6 +21,7 @@ import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
@@ -334,16 +335,12 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         return ((List<?>) value).stream().map(String::valueOf).toList();
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class MySQLRuntimeFixture implements AutoCloseable {
         
         private final GenericContainer<?> container;
         
         private final String physicalSchemaName;
-        
-        private MySQLRuntimeFixture(final GenericContainer<?> container, final String physicalSchemaName) {
-            this.container = container;
-            this.physicalSchemaName = physicalSchemaName;
-        }
         
         private GenericContainer<?> container() {
             return container;

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement;
 
 import io.netty.buffer.ByteBuf;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.firebirdsql.gds.BlrConstants;
@@ -29,6 +31,7 @@ import java.util.List;
  * Firebird BLR row metadata.
  */
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlrRowMetadata {
     
     private final ByteBuf blr;
@@ -36,12 +39,6 @@ public final class FirebirdBlrRowMetadata {
     private final int length;
     
     private final List<FirebirdBinaryColumnType> columnTypes;
-    
-    private FirebirdBlrRowMetadata(final ByteBuf blr, final int length, final List<FirebirdBinaryColumnType> columnTypes) {
-        this.blr = blr;
-        this.length = length;
-        this.columnTypes = columnTypes;
-    }
     
     /**
      * Parse FirebirdBlrRowMetadata from BLR buffer.

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe.ReadinessResult;
@@ -26,6 +28,7 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Objects;
 
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMChatReadinessProbe {
     
     private static final long INITIAL_READINESS_INTERVAL_MILLIS = 250L;
@@ -35,11 +38,6 @@ final class LLMChatReadinessProbe {
     private final LLME2EConfiguration config;
     
     private final LLMChatModelClient client;
-    
-    LLMChatReadinessProbe(final LLME2EConfiguration config, final LLMChatModelClient client) {
-        this.config = config;
-        this.client = client;
-    }
     
     void waitUntilReady() throws InterruptedException {
         new ReadinessProbe(config.getReadyTimeoutSeconds() * 1000L, INITIAL_READINESS_INTERVAL_MILLIS, MAX_READINESS_INTERVAL_MILLIS)

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.tool.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
@@ -26,6 +27,7 @@ import lombok.Getter;
  * The optional schema field is a namespace hint for unqualified object names.</p>
  */
 @Getter
+@AllArgsConstructor
 public final class SQLExecutionRequest {
     
     private final String sessionId;
@@ -46,13 +48,4 @@ public final class SQLExecutionRequest {
         this(sessionId, database, schema, sql, maxRows, timeoutMs, false);
     }
     
-    public SQLExecutionRequest(final String sessionId, final String database, final String schema, final String sql, final int maxRows, final int timeoutMs, final boolean readOnlyExecution) {
-        this.sessionId = sessionId;
-        this.database = database;
-        this.schema = schema;
-        this.sql = sql;
-        this.maxRows = maxRows;
-        this.timeoutMs = timeoutMs;
-        this.readOnlyExecution = readOnlyExecution;
-    }
 }

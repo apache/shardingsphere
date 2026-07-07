@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 
@@ -30,12 +32,10 @@ import java.util.Objects;
 /**
  * Encrypt algorithm catalog.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptAlgorithmCatalog {
     
     private static final Map<String, EncryptAlgorithmDefinition> DEFINITIONS = createDefinitions();
-    
-    private EncryptAlgorithmCatalog() {
-    }
     
     /**
      * Find encrypt capability map.

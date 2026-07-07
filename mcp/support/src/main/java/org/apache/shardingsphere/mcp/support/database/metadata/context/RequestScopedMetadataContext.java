@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.context;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -30,6 +31,7 @@ import java.util.Optional;
 /**
  * Request-scoped metadata context.
  */
+@RequiredArgsConstructor
 public final class RequestScopedMetadataContext implements AutoCloseable {
     
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
@@ -39,11 +41,6 @@ public final class RequestScopedMetadataContext implements AutoCloseable {
     private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
     
     private final Map<String, MCPDatabaseMetadata> loadedDatabaseMetadata = new LinkedHashMap<>(4, 1F);
-    
-    public RequestScopedMetadataContext(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final MCPDatabaseCapabilityProvider databaseCapabilityProvider) {
-        this.runtimeDatabases = runtimeDatabases;
-        this.databaseCapabilityProvider = databaseCapabilityProvider;
-    }
     
     /**
      * Load database metadata lazily within the current request.

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
@@ -224,16 +226,12 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
         }
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class ProgrammaticRuntimeFixture implements AutoCloseable {
         
         private final GenericContainer<?> container;
         
         private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
-        
-        private ProgrammaticRuntimeFixture(final GenericContainer<?> container, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-            this.container = container;
-            this.runtimeDatabases = runtimeDatabases;
-        }
         
         private GenericContainer<?> container() {
             return container;

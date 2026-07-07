@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMMCPConversationTurnPlanner {
     
     private final LLMMCPConversationInstructionFactory instructionFactory;
@@ -37,11 +40,6 @@ final class LLMMCPConversationTurnPlanner {
     
     LLMMCPConversationTurnPlanner(final LLMMCPConversationInstructionFactory instructionFactory) {
         this(instructionFactory, createReadOnlyToolNames());
-    }
-    
-    LLMMCPConversationTurnPlanner(final LLMMCPConversationInstructionFactory instructionFactory, final Set<String> readOnlyToolNames) {
-        this.instructionFactory = instructionFactory;
-        this.readOnlyToolNames = readOnlyToolNames;
     }
     
     private static Set<String> createReadOnlyToolNames() {

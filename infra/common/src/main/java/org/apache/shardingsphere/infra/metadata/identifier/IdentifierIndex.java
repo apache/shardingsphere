@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.infra.metadata.identifier;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
@@ -41,6 +43,7 @@ import java.util.Optional;
  * @param <T> metadata object type
  */
 @Slf4j
+@RequiredArgsConstructor
 public final class IdentifierIndex<T> {
     
     private final DatabaseIdentifierContext databaseIdentifierContext;
@@ -48,11 +51,6 @@ public final class IdentifierIndex<T> {
     private final IdentifierScope identifierScope;
     
     private volatile Snapshot<T> snapshot = Snapshot.empty();
-    
-    public IdentifierIndex(final DatabaseIdentifierContext databaseIdentifierContext, final IdentifierScope identifierScope) {
-        this.databaseIdentifierContext = databaseIdentifierContext;
-        this.identifierScope = identifierScope;
-    }
     
     /**
      * Rebuild identifier index by actual names.
@@ -328,6 +326,7 @@ public final class IdentifierIndex<T> {
     }
     
     @Getter(AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class Snapshot<T> {
         
         private static final Snapshot<?> EMPTY = new Snapshot<>(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
@@ -338,18 +337,13 @@ public final class IdentifierIndex<T> {
         
         private final Map<String, NormalizedBucket<T>> normalizedBuckets;
         
-        private Snapshot(final Map<String, T> exactValues, final Map<String, Collection<String>> normalizedIdentifierNames, final Map<String, NormalizedBucket<T>> normalizedBuckets) {
-            this.exactValues = exactValues;
-            this.normalizedIdentifierNames = normalizedIdentifierNames;
-            this.normalizedBuckets = normalizedBuckets;
-        }
-        
         @SuppressWarnings("unchecked")
         private static <T> Snapshot<T> empty() {
             return (Snapshot<T>) EMPTY;
         }
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class NormalizedBucket<T> {
         
         @Getter(AccessLevel.PRIVATE)
@@ -368,16 +362,6 @@ public final class IdentifierIndex<T> {
         
         @Getter(AccessLevel.PRIVATE)
         private final Collection<String> unquotedIdentifiers;
-        
-        private NormalizedBucket(final String singleIdentifier, final T singleValue, final Collection<String> identifiers,
-                                 final String singleUnquotedIdentifier, final T singleUnquotedValue, final Collection<String> unquotedIdentifiers) {
-            this.singleIdentifier = singleIdentifier;
-            this.singleValue = singleValue;
-            this.identifiers = identifiers;
-            this.singleUnquotedIdentifier = singleUnquotedIdentifier;
-            this.singleUnquotedValue = singleUnquotedValue;
-            this.unquotedIdentifiers = unquotedIdentifiers;
-        }
         
         private boolean hasSingleIdentifier() {
             return null != singleIdentifier;

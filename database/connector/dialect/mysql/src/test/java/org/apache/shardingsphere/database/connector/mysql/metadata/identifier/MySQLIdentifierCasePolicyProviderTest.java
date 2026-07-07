@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.database.connector.mysql.metadata.identifier;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
@@ -63,7 +65,7 @@ class MySQLIdentifierCasePolicyProviderTest {
     }
     
     @Test
-    void assertProvideWithQuotedTableName() throws SQLException {
+    void assertProvideWithQuotedTableName() {
         IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 1)))
                 .map(policySet -> policySet.getPolicy(IdentifierScope.TABLE)).orElseThrow(AssertionError::new);
         assertThat(actual.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
@@ -86,7 +88,7 @@ class MySQLIdentifierCasePolicyProviderTest {
         }
     }
     
-    private static Stream<Arguments> provideArguments() throws SQLException {
+    private static Stream<Arguments> provideArguments() {
         return Stream.of(
                 Arguments.of("null_data_source", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, null), null, null, null),
                 Arguments.of("null_connection", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new NullConnectionFixtureDataSource()), null, null, null),
@@ -101,7 +103,7 @@ class MySQLIdentifierCasePolicyProviderTest {
     }
     
     @Test
-    void assertProvideWithLowerCaseTableNamesZeroUsesScopedPolicies() throws SQLException {
+    void assertProvideWithLowerCaseTableNamesZeroUsesScopedPolicies() {
         IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0));
         IdentifierCasePolicySet actual = provider.provide(context).orElseThrow(AssertionError::new);
         assertThat(actual.getPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE), is(Boolean.TRUE));
@@ -142,16 +144,12 @@ class MySQLIdentifierCasePolicyProviderTest {
         return null;
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class FixtureDataSource implements DataSource {
         
         private final boolean hasResultSetRow;
         
         private final int lowerCaseTableNames;
-        
-        private FixtureDataSource(final boolean hasResultSetRow, final int lowerCaseTableNames) {
-            this.hasResultSetRow = hasResultSetRow;
-            this.lowerCaseTableNames = lowerCaseTableNames;
-        }
         
         @Override
         public Connection getConnection() {

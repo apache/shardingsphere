@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -30,16 +32,13 @@ import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 /**
  * Load-balance algorithm plugin catalog handler.
  */
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class LoadBalanceAlgorithmPluginsHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
     private final ReadwriteSplittingInspectionService inspectionService;
     
     public LoadBalanceAlgorithmPluginsHandler() {
         inspectionService = new ReadwriteSplittingInspectionService();
-    }
-    
-    LoadBalanceAlgorithmPluginsHandler(final ReadwriteSplittingInspectionService inspectionService) {
-        this.inspectionService = inspectionService;
     }
     
     @Override

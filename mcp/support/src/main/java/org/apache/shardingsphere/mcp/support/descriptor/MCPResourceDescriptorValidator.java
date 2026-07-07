@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
@@ -32,10 +34,8 @@ import java.util.Set;
 /**
  * Validator for MCP resource descriptors.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPResourceDescriptorValidator {
-    
-    private MCPResourceDescriptorValidator() {
-    }
     
     /**
      * Validate fixed and templated resources in one descriptor catalog.

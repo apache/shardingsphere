@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 /**
  * Database identifier context.
  */
+@AllArgsConstructor
 public final class DatabaseIdentifierContext {
     
     private volatile IdentifierCasePolicySet policySet;
@@ -34,11 +36,6 @@ public final class DatabaseIdentifierContext {
     
     public DatabaseIdentifierContext(final IdentifierCasePolicySet policySet) {
         this(policySet, false);
-    }
-    
-    public DatabaseIdentifierContext(final IdentifierCasePolicySet policySet, final boolean heterogeneousTableLookupEnabled) {
-        this.policySet = policySet;
-        this.heterogeneousTableLookupEnabled = heterogeneousTableLookupEnabled;
     }
     
     /**

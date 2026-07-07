@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
@@ -32,14 +34,12 @@ import java.util.stream.Collectors;
 /**
  * Validator for MCP prompt descriptors and their internal templates.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPPromptDescriptorValidator {
     
     private static final String CLIENT_FORM_ONLY_ARGUMENTS = "org.apache.shardingsphere/client-form-only-arguments";
     
     private static final Pattern SINGLE_BRACE_PLACEHOLDER_PATTERN = Pattern.compile("(?<!\\{)\\{\\s*([a-zA-Z0-9_.-]+)\\s*}(?!})");
-    
-    private MCPPromptDescriptorValidator() {
-    }
     
     /**
      * Validate prompt descriptors against their internal templates.

@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
 /**
  * Workflow lifecycle utility methods.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowLifecycleUtils {
-    
-    private WorkflowLifecycleUtils() {
-    }
     
     /**
      * Check whether the workflow snapshot belongs to the current session.

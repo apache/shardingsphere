@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -31,6 +33,7 @@ import java.util.Optional;
 /**
  * MCP tool descriptor validation utilities.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPToolDescriptorValidationUtils {
     
     private static final Collection<String> REQUIRED_WORKFLOW_PLAN_OUTPUT_FIELDS = List.of(
@@ -42,9 +45,6 @@ public final class MCPToolDescriptorValidationUtils {
     private static final Collection<String> REQUIRED_WORKFLOW_PLAN_META_FIELDS = List.of(
             "org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/artifact-categories", "org.apache.shardingsphere/side-effect-scope",
             "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
-    
-    private MCPToolDescriptorValidationUtils() {
-    }
     
     /**
      * Validate required workflow planning output fields.
