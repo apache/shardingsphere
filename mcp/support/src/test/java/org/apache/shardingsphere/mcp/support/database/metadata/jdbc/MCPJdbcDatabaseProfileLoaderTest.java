@@ -41,10 +41,10 @@ class MCPJdbcDatabaseProfileLoaderTest {
     @Test
     void assertLoad() throws SQLException {
         try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
-            RuntimeDatabaseProfile actual = new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("MySQL"), "8.0.32"));
+            RuntimeDatabaseProfile actual = new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0"));
             assertThat(actual.getDatabase(), is("logic_db"));
-            assertThat(actual.getDatabaseType(), is("MySQL"));
-            assertThat(actual.getDatabaseVersion(), is("8.0.32"));
+            assertThat(actual.getDatabaseType(), is("FixtureDB"));
+            assertThat(actual.getDatabaseVersion(), is("1.0"));
         }
     }
     

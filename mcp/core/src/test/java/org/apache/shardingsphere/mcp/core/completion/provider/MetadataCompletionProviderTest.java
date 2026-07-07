@@ -259,11 +259,11 @@ class MetadataCompletionProviderTest {
     }
     
     private RuntimeDatabaseProfile createDatabaseProfile(final String database) {
-        return new RuntimeDatabaseProfile(database, "MySQL", "8.0");
+        return new RuntimeDatabaseProfile(database, "FixtureDB", "1.0");
     }
     
     private MCPDatabaseMetadata createDatabaseMetadata() {
-        return new MCPDatabaseMetadata("logic_db", "MySQL", "8.0", List.of(createSchemaMetadata()));
+        return new MCPDatabaseMetadata("logic_db", "FixtureDB", "1.0", List.of(createSchemaMetadata()));
     }
     
     private MCPSchemaMetadata createSchemaMetadata() {

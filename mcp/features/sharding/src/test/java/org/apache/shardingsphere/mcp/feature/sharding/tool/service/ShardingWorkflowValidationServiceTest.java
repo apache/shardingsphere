@@ -177,7 +177,7 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertSynchronizeWhenStateDoesNotConverge() throws ReflectiveOperationException {
+    void assertSynchronizeWhenStateDoesNotConverge() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
                 ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND, createReferenceRuleRequest());
         ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
@@ -202,7 +202,7 @@ class ShardingWorkflowValidationServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(result.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         return result;
     }
     

@@ -199,7 +199,7 @@ class RuntimeDatabaseValidationServiceTest {
     }
     
     private static RuntimeDatabaseProfile createProfile() {
-        return new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0.36");
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0");
     }
     
     private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration() {
@@ -207,7 +207,7 @@ class RuntimeDatabaseValidationServiceTest {
     }
     
     private static MCPDatabaseMetadata createMetadata(final String schemaName) {
-        return new MCPDatabaseMetadata("logic_db", "MySQL", "8.0.36", List.of(new MCPSchemaMetadata("logic_db", schemaName, List.of(), List.of(), List.of())));
+        return new MCPDatabaseMetadata("logic_db", "FixtureDB", "1.0", List.of(new MCPSchemaMetadata("logic_db", schemaName, List.of(), List.of(), List.of())));
     }
     
     private static Map<String, Object> createRecoveryPayload(final RuntimeDatabaseConnectionException cause) {

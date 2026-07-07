@@ -73,7 +73,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
         ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
         when(inspectionService.queryRules(any(), any())).thenReturn(List.of(createRuleRow()));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actual = createRuleService(inspectionService).validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
@@ -144,7 +144,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
         ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
         when(inspectionService.queryRuleStatus(any(), any(), any())).thenReturn(List.of(createStatusRow("ENABLED")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         Map<String, Object> actual = createStatusService(inspectionService).validate(
                 workflowSessionContext, mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
@@ -152,7 +152,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertSynchronizeStatusWhenStateDoesNotConverge() throws ReflectiveOperationException {
+    void assertSynchronizeStatusWhenStateDoesNotConverge() {
         WorkflowContextSnapshot snapshot = createStatusSnapshot("plan-1", "session-1", "executed", "enable");
         ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
         when(inspectionService.queryRuleStatus(any(), any(), any())).thenReturn(List.of(createStatusRow("DISABLED")));

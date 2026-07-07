@@ -36,7 +36,7 @@ class MCPJdbcMetadataLoaderFailureTest {
         when(runtimeDatabaseConfiguration.openConnection("logic_db")).thenThrow(expected);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                () -> metadataLoader.load("logic_db", runtimeDatabaseConfiguration, new RuntimeDatabaseProfile("logic_db", "PostgreSQL", "")));
+                () -> metadataLoader.load("logic_db", runtimeDatabaseConfiguration, new RuntimeDatabaseProfile("logic_db", "FixtureDB", "")));
         assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: connection_failed."));
         assertThat(actual.getCause(), is(expected));
     }

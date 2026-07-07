@@ -113,7 +113,7 @@ class BroadcastWorkflowPlanningServiceTest {
     
     private MCPFeatureQueryFacade mockQueryFacade(final List<Map<String, Object>> broadcastRules) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(result.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(broadcastRules);
         return result;
     }

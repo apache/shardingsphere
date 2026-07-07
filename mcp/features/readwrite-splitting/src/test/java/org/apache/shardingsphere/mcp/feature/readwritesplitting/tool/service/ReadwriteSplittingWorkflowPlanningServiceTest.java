@@ -187,14 +187,14 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
     
     private MCPFeatureQueryFacade mockRuleQueryFacade(final List<Map<String, Object>> rules) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(result.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(rules);
         return result;
     }
     
     private MCPFeatureQueryFacade mockStatusQueryFacade(final List<Map<String, Object>> statuses) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(result.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(statuses);
         return result;
     }

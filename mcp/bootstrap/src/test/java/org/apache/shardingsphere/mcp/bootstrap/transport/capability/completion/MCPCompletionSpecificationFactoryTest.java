@@ -198,8 +198,8 @@ class MCPCompletionSpecificationFactoryTest {
     private MCPRuntimeContext createRuntimeContext(final WorkflowSessionContext workflowSessionContext) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.getDatabaseProfiles()).thenReturn(List.of(
-                new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0"),
-                new RuntimeDatabaseProfile("warehouse", "PostgreSQL", "16")));
+                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0"),
+                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0")));
         MCPRuntimeContext result = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseCapabilityProvider()).thenReturn(databaseCapabilityProvider);
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);

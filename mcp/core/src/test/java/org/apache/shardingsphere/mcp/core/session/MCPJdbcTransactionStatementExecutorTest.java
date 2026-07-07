@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.session;
 
-import org.apache.shardingsphere.mcp.core.fixture.CoreDatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
@@ -25,8 +24,11 @@ import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationRes
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
+import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
@@ -35,11 +37,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -49,7 +48,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,7 +65,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         sessionManager.createSession("session-1");
         prepareTransactionState(sql, sessionManager, connection, savepoint);
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
-        SQLExecutionResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify(sql));
+        SQLExecutionResponse actual = executor.execute("session-1", "logic_db", createCapability(), new StatementClassifier().classify(sql));
         assertThat(actual.getStatementType(), is(expectedStatementType));
         assertThat(actual.getMessage(), is(expectedMessage));
         assertDatabaseExecution(sql, sessionManager, runtimeDatabaseConfig, connection, savepoint);
@@ -90,7 +88,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
-                () -> executor.execute("session-1", "warehouse", createCapability("warehouse"), new StatementClassifier().classify("SAVEPOINT sp_1")));
+                () -> executor.execute("session-1", "warehouse", createCapabilityWithoutSavepoint(), new StatementClassifier().classify("SAVEPOINT sp_1")));
         assertThat(actual.getMessage(), is("Savepoint is not supported."));
     }
     
@@ -100,7 +98,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("SELECT 1")));
+                () -> executor.execute("session-1", "logic_db", createCapability(), new StatementClassifier().classify("SELECT 1")));
         assertThat(actual.getMessage(), is("Statement is not a transaction command."));
     }
     
@@ -109,7 +107,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class,
-                () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN")));
+                () -> executor.execute("session-1", "logic_db", createCapability(), new StatementClassifier().classify("BEGIN")));
         assertThat(actual.getMessage(), is("Session does not exist."));
     }
     
@@ -119,7 +117,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         MCPTransactionStateException actual = assertThrows(MCPTransactionStateException.class,
-                () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("COMMIT")));
+                () -> executor.execute("session-1", "logic_db", createCapability(), new StatementClassifier().classify("COMMIT")));
         assertThat(actual.getMessage(), is("No active transaction."));
     }
     
@@ -130,42 +128,26 @@ class MCPJdbcTransactionStatementExecutorTest {
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> executor.execute("session-1", "logic_db", createCapability("logic_db"),
+                () -> executor.execute("session-1", "logic_db", createCapability(),
                         new ClassificationResult(SupportedMCPStatement.SAVEPOINT, statementType, sql, "", "")));
         assertThat(actual.getMessage(), is("Savepoint name is required."));
     }
     
-    private MCPDatabaseCapabilityProvider createDatabaseCapabilityBuilder() {
-        return CoreDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(Map.of(
-                "logic_db", createCapabilityRuntimeDatabaseConfiguration("logic_db", "MySQL"),
-                "warehouse", createCapabilityRuntimeDatabaseConfiguration("warehouse", "Hive")));
+    private MCPDatabaseCapability createCapability() {
+        return createCapability("logic_db", TransactionCapability.LOCAL_WITH_SAVEPOINT);
     }
     
-    private MCPDatabaseCapability createCapability(final String databaseName) {
-        return createDatabaseCapabilityBuilder().provide(databaseName).orElseThrow(IllegalStateException::new);
+    private MCPDatabaseCapability createCapability(final String databaseName, final TransactionCapability transactionCapability) {
+        MCPDatabaseCapabilityOption option = mock(MCPDatabaseCapabilityOption.class);
+        when(option.getType()).thenReturn("FixtureDB");
+        when(option.getTransactionCapability()).thenReturn(transactionCapability);
+        when(option.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.NATIVE_SCHEMA);
+        when(option.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
+        return new MCPDatabaseCapability(databaseName, "", option);
     }
     
-    private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration(final String databaseName, final String databaseType) {
-        RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        try {
-            when(result.openConnection(databaseName)).thenReturn(connection);
-            when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
-            when(databaseMetaData.getURL()).thenReturn(CoreDatabaseTypeFactoryMocker.createJdbcUrl(databaseType));
-            mockEmptyScalarQueries(connection);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex);
-        }
-        return result;
-    }
-    
-    private void mockEmptyScalarQueries(final Connection connection) throws SQLException {
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(anyString())).thenReturn(resultSet);
+    private MCPDatabaseCapability createCapabilityWithoutSavepoint() {
+        return createCapability("warehouse", TransactionCapability.LOCAL);
     }
     
     private void prepareTransactionState(final String sql, final MCPSessionManager sessionManager, final Connection connection, final Savepoint savepoint) throws SQLException {

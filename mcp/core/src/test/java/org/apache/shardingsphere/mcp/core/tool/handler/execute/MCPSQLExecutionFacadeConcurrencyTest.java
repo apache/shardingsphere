@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.core.fixture.CoreDatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
+import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
+import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
@@ -27,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -173,30 +177,19 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     }
     
     private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager) {
-        return new MCPSQLExecutionFacade(CoreDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(Map.of("logic_db", createCapabilityRuntimeDatabaseConfiguration())), sessionManager);
+        MCPDatabaseCapability databaseCapability = createDatabaseCapability();
+        MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
+        when(databaseCapabilityProvider.provide("logic_db")).thenReturn(Optional.of(databaseCapability));
+        return new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionManager);
     }
     
-    private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration() {
-        RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        try {
-            when(result.openConnection("logic_db")).thenReturn(connection);
-            when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
-            when(databaseMetaData.getURL()).thenReturn(CoreDatabaseTypeFactoryMocker.createJdbcUrl("MySQL"));
-            mockEmptyScalarQueries(connection);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex);
-        }
-        return result;
-    }
-    
-    private void mockEmptyScalarQueries(final Connection connection) throws SQLException {
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(anyString())).thenReturn(resultSet);
+    private MCPDatabaseCapability createDatabaseCapability() {
+        MCPDatabaseCapabilityOption option = mock(MCPDatabaseCapabilityOption.class);
+        when(option.getType()).thenReturn("FixtureDB");
+        when(option.getTransactionCapability()).thenReturn(TransactionCapability.LOCAL_WITH_SAVEPOINT);
+        when(option.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.NATIVE_SCHEMA);
+        when(option.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
+        return new MCPDatabaseCapability("logic_db", "", option);
     }
     
     private SQLExecutionRequest createExecutionRequest(final String sessionId, final String sql) {

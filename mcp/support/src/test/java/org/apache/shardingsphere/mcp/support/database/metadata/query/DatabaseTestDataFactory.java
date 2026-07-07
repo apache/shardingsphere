@@ -52,7 +52,7 @@ final class DatabaseTestDataFactory {
     
     static List<MCPDatabaseMetadata> createDatabaseMetadata() {
         return List.of(
-                new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
+                new MCPDatabaseMetadata("logic_db", "FixtureDB", "", List.of(
                         new MCPSchemaMetadata("logic_db", "public", List.of(
                                 new MCPTableMetadata("logic_db", "public", "orders",
                                         List.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "order_id")),
@@ -62,9 +62,9 @@ final class DatabaseTestDataFactory {
                                 List.of(new MCPViewMetadata("logic_db", "public", "orders_view",
                                         List.of(new MCPColumnMetadata("logic_db", "public", "", "orders_view", "order_id")))),
                                 List.of()))),
-                new MCPDatabaseMetadata("runtime_db", "PostgreSQL", "", List.of(
+                new MCPDatabaseMetadata("runtime_db", "FixtureRuntimeDB", "", List.of(
                         new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))),
-                new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
+                new MCPDatabaseMetadata("warehouse", "FixtureWarehouseDB", "", List.of(
                         new MCPSchemaMetadata("warehouse", "warehouse", List.of(new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(), List.of())), List.of(), List.of()))));
     }
     
