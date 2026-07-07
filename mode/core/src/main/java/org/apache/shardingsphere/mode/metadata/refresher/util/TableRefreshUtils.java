@@ -26,7 +26,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -72,11 +71,10 @@ public final class TableRefreshUtils {
      *
      * @param database database
      * @param tableIdentifierValue table identifier value
-     * @param props configuration properties
      * @return table load candidate name
      */
-    public static String getTableLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue tableIdentifierValue, final ConfigurationProperties props) {
-        return getLoadCandidateName(database, tableIdentifierValue, IdentifierScope.TABLE, props);
+    public static String getTableLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue tableIdentifierValue) {
+        return getLoadCandidateName(database, tableIdentifierValue, IdentifierScope.TABLE);
     }
     
     /**
@@ -84,11 +82,10 @@ public final class TableRefreshUtils {
      *
      * @param database database
      * @param viewIdentifierValue view identifier value
-     * @param props configuration properties
      * @return view load candidate name
      */
-    public static String getViewLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue viewIdentifierValue, final ConfigurationProperties props) {
-        return getLoadCandidateName(database, viewIdentifierValue, IdentifierScope.VIEW, props);
+    public static String getViewLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue viewIdentifierValue) {
+        return getLoadCandidateName(database, viewIdentifierValue, IdentifierScope.VIEW);
     }
     
     /**
@@ -97,12 +94,11 @@ public final class TableRefreshUtils {
      * @param database database
      * @param schemaName schema name
      * @param tableIdentifierValue table identifier value
-     * @param props configuration properties
      * @return actual table name
      */
     public static String getActualTableName(final ShardingSphereDatabase database, final String schemaName,
-                                            final IdentifierValue tableIdentifierValue, final ConfigurationProperties props) {
-        return getActualObjectName(database, schemaName, tableIdentifierValue, props, IdentifierScope.TABLE,
+                                            final IdentifierValue tableIdentifierValue) {
+        return getActualObjectName(database, schemaName, tableIdentifierValue, IdentifierScope.TABLE,
                 schema -> schema.getAllTables().stream().map(ShardingSphereTable::getName));
     }
     
@@ -112,14 +108,13 @@ public final class TableRefreshUtils {
      * @param database database
      * @param schemaName schema name
      * @param tableIdentifierValues table identifier values
-     * @param props configuration properties
      * @return actual table names
      */
     public static Collection<String> getActualTableNames(final ShardingSphereDatabase database, final String schemaName,
-                                                         final Collection<IdentifierValue> tableIdentifierValues, final ConfigurationProperties props) {
+                                                         final Collection<IdentifierValue> tableIdentifierValues) {
         Collection<String> result = new LinkedList<>();
         for (IdentifierValue each : tableIdentifierValues) {
-            String actualTableName = getActualTableName(database, schemaName, each, props);
+            String actualTableName = getActualTableName(database, schemaName, each);
             if (null != actualTableName) {
                 result.add(actualTableName);
             }
@@ -133,14 +128,13 @@ public final class TableRefreshUtils {
      * @param database database
      * @param schemaName schema name
      * @param viewIdentifierValues view identifier values
-     * @param props configuration properties
      * @return actual view names
      */
     public static Collection<String> getActualViewNames(final ShardingSphereDatabase database, final String schemaName,
-                                                        final Collection<IdentifierValue> viewIdentifierValues, final ConfigurationProperties props) {
+                                                        final Collection<IdentifierValue> viewIdentifierValues) {
         Collection<String> result = new LinkedList<>();
         for (IdentifierValue each : viewIdentifierValues) {
-            String actualViewName = getActualViewName(database, schemaName, each, props);
+            String actualViewName = getActualViewName(database, schemaName, each);
             if (null != actualViewName) {
                 result.add(actualViewName);
             }
@@ -154,12 +148,11 @@ public final class TableRefreshUtils {
      * @param database database
      * @param schemaName schema name
      * @param viewIdentifierValue view identifier value
-     * @param props configuration properties
      * @return actual view name
      */
     public static String getActualViewName(final ShardingSphereDatabase database, final String schemaName,
-                                           final IdentifierValue viewIdentifierValue, final ConfigurationProperties props) {
-        return getActualObjectName(database, schemaName, viewIdentifierValue, props, IdentifierScope.VIEW,
+                                           final IdentifierValue viewIdentifierValue) {
+        return getActualObjectName(database, schemaName, viewIdentifierValue, IdentifierScope.VIEW,
                 schema -> schema.getAllViews().stream().map(ShardingSphereView::getName));
     }
     
@@ -170,12 +163,11 @@ public final class TableRefreshUtils {
      * @param schemaName schema name
      * @param tableName table name
      * @param indexIdentifierValue index identifier value
-     * @param props configuration properties
      * @return actual index name
      */
     public static String getActualIndexName(final ShardingSphereDatabase database, final String schemaName, final String tableName,
-                                            final IdentifierValue indexIdentifierValue, final ConfigurationProperties props) {
-        return getActualObjectName(database, schemaName, tableName, indexIdentifierValue, props, IdentifierScope.INDEX,
+                                            final IdentifierValue indexIdentifierValue) {
+        return getActualObjectName(database, schemaName, tableName, indexIdentifierValue, IdentifierScope.INDEX,
                 ShardingSphereTable::getAllIndexes, ShardingSphereIndex::getName);
     }
     
@@ -186,14 +178,13 @@ public final class TableRefreshUtils {
      * @param schemaName schema name
      * @param tableName table name
      * @param columnIdentifierValues column identifier values
-     * @param props configuration properties
      * @return actual column names
      */
     public static Collection<String> getActualColumnNames(final ShardingSphereDatabase database, final String schemaName, final String tableName,
-                                                          final Collection<IdentifierValue> columnIdentifierValues, final ConfigurationProperties props) {
+                                                          final Collection<IdentifierValue> columnIdentifierValues) {
         Collection<String> result = new LinkedList<>();
         for (IdentifierValue each : columnIdentifierValues) {
-            String actualColumnName = getActualObjectName(database, schemaName, tableName, each, props, IdentifierScope.COLUMN,
+            String actualColumnName = getActualObjectName(database, schemaName, tableName, each, IdentifierScope.COLUMN,
                     ShardingSphereTable::getAllColumns, ShardingSphereColumn::getName);
             if (null != actualColumnName) {
                 result.add(actualColumnName);
@@ -208,11 +199,10 @@ public final class TableRefreshUtils {
      * @param database database
      * @param schemaName schema name
      * @param indexIdentifierValue index identifier value
-     * @param props configuration properties
      * @return actual table name
      */
     public static Optional<String> findActualTableNameByIndex(final ShardingSphereDatabase database, final String schemaName,
-                                                              final IdentifierValue indexIdentifierValue, final ConfigurationProperties props) {
+                                                              final IdentifierValue indexIdentifierValue) {
         IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(IdentifierScope.INDEX);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
@@ -288,7 +278,7 @@ public final class TableRefreshUtils {
         return Joiner.on(".").join(segments);
     }
     
-    private static String getLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue identifierValue, final IdentifierScope scope, final ConfigurationProperties props) {
+    private static String getLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue identifierValue, final IdentifierScope scope) {
         IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(scope);
         return QuoteCharacter.NONE == identifierValue.getQuoteCharacter() && LookupMode.NORMALIZED == policy.getLookupMode(identifierValue.getQuoteCharacter())
                 ? policy.normalize(identifierValue.getValue())
@@ -296,7 +286,7 @@ public final class TableRefreshUtils {
     }
     
     private static String getActualObjectName(final ShardingSphereDatabase database, final String schemaName,
-                                              final IdentifierValue objectIdentifierValue, final ConfigurationProperties props,
+                                              final IdentifierValue objectIdentifierValue,
                                               final IdentifierScope scope, final Function<ShardingSphereSchema, java.util.stream.Stream<String>> actualNameStream) {
         IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(scope);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
@@ -314,13 +304,13 @@ public final class TableRefreshUtils {
     }
     
     private static <T> String getActualObjectName(final ShardingSphereDatabase database, final String schemaName, final String tableName,
-                                                  final IdentifierValue objectIdentifierValue, final ConfigurationProperties props, final IdentifierScope scope,
+                                                  final IdentifierValue objectIdentifierValue, final IdentifierScope scope,
                                                   final Function<ShardingSphereTable, Collection<T>> actualObjects, final Function<T, String> actualNameMapper) {
         IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(scope);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null != schema) {
-            String actualTableName = getActualTableName(database, actualSchemaName, new IdentifierValue(tableName), props);
+            String actualTableName = getActualTableName(database, actualSchemaName, new IdentifierValue(tableName));
             ShardingSphereTable table = schema.getTable(actualTableName);
             Optional<String> matchedName = getMatchedObjectName(table, objectIdentifierValue, policy, actualObjects, actualNameMapper);
             if (matchedName.isPresent()) {

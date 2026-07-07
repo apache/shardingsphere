@@ -44,10 +44,10 @@ public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaD
         Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
         Collection<String> droppedTables = new LinkedList<>();
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
-            String toBeRenamedTableName = TableRefreshUtils.getActualTableName(database, actualSchemaName, each.getTable().getTableName().getIdentifier(), props);
+            String toBeRenamedTableName = TableRefreshUtils.getActualTableName(database, actualSchemaName, each.getTable().getTableName().getIdentifier());
             ShardingSphereTable toBeRenamedTable = database.getSchema(actualSchemaName).getTable(toBeRenamedTableName);
             alteredTables.add(new ShardingSphereTable(
-                    TableRefreshUtils.getActualTableName(database, actualSchemaName, each.getRenameTable().getTableName().getIdentifier(), props),
+                    TableRefreshUtils.getActualTableName(database, actualSchemaName, each.getRenameTable().getTableName().getIdentifier()),
                     toBeRenamedTable.getAllColumns(), toBeRenamedTable.getAllIndexes(), toBeRenamedTable.getAllConstraints()));
             droppedTables.add(toBeRenamedTableName);
         }
