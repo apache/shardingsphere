@@ -82,7 +82,7 @@ public final class FirebirdBlobUploadCache {
     }
     
     /**
-     * Resolve a BLOB handle, mapping the deferred placeholder handle to the last created BLOB handle.
+     * Get a BLOB handle, mapping the deferred placeholder handle to the last created BLOB handle.
      *
      * <p>In the Firebird lazy (deferred) protocol a pipelined operation such as {@code op_put_segment} that is flushed
      * together with its preceding {@code op_create_blob2} carries the placeholder handle {@code 0xFFFF} (INVALID_OBJECT),
@@ -92,7 +92,7 @@ public final class FirebirdBlobUploadCache {
      * @param blobHandle blob handle received from the client
      * @return resolved blob handle
      */
-    public int resolveBlobHandle(final int connectionId, final int blobHandle) {
+    public int getBlobHandle(final int connectionId, final int blobHandle) {
         if (INVALID_OBJECT_HANDLE != blobHandle) {
             return blobHandle;
         }

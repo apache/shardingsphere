@@ -42,7 +42,7 @@ public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor 
     
     @Override
     public Collection<DatabasePacket> execute() {
-        int blobHandle = FirebirdBlobUploadCache.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
+        int blobHandle = FirebirdBlobUploadCache.getInstance().getBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
         OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
         if (blobId.isPresent()) {
             FirebirdBlobUploadCache.getInstance().removeUpload(connectionSession.getConnectionId(), blobId.getAsLong());
