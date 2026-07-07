@@ -207,7 +207,7 @@ security_hints:
   client_safety_policy:
     identity_scope: mcp_session
     transport_scope: HTTP transport can bind trusted session attribution when configured;
-      authentication and authorization remain outside the runtime in this release.
+      the MCP runtime does not provide built-in authentication or authorization.
       STDIO inherits the local process boundary.
     tool_call_limit: {scope: session, max_calls: 10000, property: shardingsphere.mcp.maxToolCallsPerSession,
       recovery: Close and recreate the MCP session after the quota is exhausted.}
