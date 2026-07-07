@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * p_resp_blob_id generator for Firebird.
+ * BLOB handle (p_resp_object) generator for Firebird.
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
-public final class FirebirdBlobIdGenerator {
+public final class FirebirdBlobHandleGenerator {
     
-    private static final FirebirdBlobIdGenerator INSTANCE = new FirebirdBlobIdGenerator();
+    private static final FirebirdBlobHandleGenerator INSTANCE = new FirebirdBlobHandleGenerator();
     
-    private final Map<Integer, AtomicLong> connectionRegistry = new ConcurrentHashMap<>();
+    private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
     
-    public static FirebirdBlobIdGenerator getInstance() {
+    public static FirebirdBlobHandleGenerator getInstance() {
         return INSTANCE;
     }
     
@@ -44,16 +44,16 @@ public final class FirebirdBlobIdGenerator {
      * @param connectionId connection ID
      */
     public void registerConnection(final int connectionId) {
-        connectionRegistry.put(connectionId, new AtomicLong(0L));
+        connectionRegistry.put(connectionId, new AtomicInteger());
     }
     
     /**
-     * Generate next blob ID for connection.
+     * Generate next BLOB handle for connection.
      *
      * @param connectionId connection ID
-     * @return generated statement ID
+     * @return generated BLOB handle
      */
-    public long nextBlobId(final int connectionId) {
+    public int nextBlobHandle(final int connectionId) {
         return connectionRegistry.get(connectionId).incrementAndGet();
     }
     

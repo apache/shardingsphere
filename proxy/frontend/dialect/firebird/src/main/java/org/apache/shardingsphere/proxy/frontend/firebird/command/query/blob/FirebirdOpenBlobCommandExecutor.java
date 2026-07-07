@@ -25,7 +25,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobHandleGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 
 import java.util.Collection;
 import java.util.Collections;

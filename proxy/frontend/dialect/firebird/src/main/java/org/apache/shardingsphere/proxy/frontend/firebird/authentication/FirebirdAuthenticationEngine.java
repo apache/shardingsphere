@@ -47,8 +47,8 @@ import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.v
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobHandleGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
