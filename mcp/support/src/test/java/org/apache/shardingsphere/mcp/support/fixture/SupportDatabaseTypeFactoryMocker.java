@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatab
 import org.mockito.MockedStatic;
 
 import java.sql.DatabaseMetaData;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -42,6 +41,18 @@ import static org.mockito.Mockito.when;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SupportDatabaseTypeFactoryMocker {
+    
+    private static final String JDBC_URL_PREFIX = "jdbc:mcp-fixture:";
+    
+    /**
+     * Create MCP fixture JDBC URL.
+     *
+     * @param databaseType database type
+     * @return MCP fixture JDBC URL
+     */
+    public static String createJdbcUrl(final String databaseType) {
+        return JDBC_URL_PREFIX + databaseType + ":test";
+    }
     
     /**
      * Mock database type factory by JDBC connection metadata.
@@ -73,38 +84,13 @@ public final class SupportDatabaseTypeFactoryMocker {
     }
     
     private static String resolveTypeByURL(final String url) {
-        String actualURL = Objects.toString(url, "").toLowerCase(Locale.ENGLISH);
-        if (actualURL.startsWith("jdbc:mysql:")) {
-            return "MySQL";
+        String actualURL = Objects.toString(url, "");
+        if (!actualURL.startsWith(JDBC_URL_PREFIX)) {
+            return "";
         }
-        if (actualURL.startsWith("jdbc:postgresql:")) {
-            return "PostgreSQL";
-        }
-        if (actualURL.startsWith("jdbc:opengauss:")) {
-            return "openGauss";
-        }
-        if (actualURL.startsWith("jdbc:sqlserver:")) {
-            return "SQLServer";
-        }
-        if (actualURL.startsWith("jdbc:mariadb:")) {
-            return "MariaDB";
-        }
-        if (actualURL.startsWith("jdbc:oracle:")) {
-            return "Oracle";
-        }
-        if (actualURL.startsWith("jdbc:clickhouse:")) {
-            return "ClickHouse";
-        }
-        if (actualURL.startsWith("jdbc:hive2:") || actualURL.startsWith("jdbc:hive:")) {
-            return "Hive";
-        }
-        if (actualURL.startsWith("jdbc:presto:")) {
-            return "Presto";
-        }
-        if (actualURL.startsWith("jdbc:firebirdsql:")) {
-            return "Firebird";
-        }
-        return "";
+        String databaseType = actualURL.substring(JDBC_URL_PREFIX.length());
+        int delimiterIndex = databaseType.indexOf(':');
+        return -1 == delimiterIndex ? databaseType : databaseType.substring(0, delimiterIndex);
     }
     
     private static DatabaseType mockDatabaseType(final String databaseType) {

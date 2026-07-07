@@ -27,7 +27,6 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -80,7 +79,7 @@ class MCPJdbcMetadataLoaderSequenceTest extends AbstractMCPJdbcMetadataLoaderTes
     @MethodSource("loadSequenceDialectArguments")
     void assertLoadWithDialectSequenceMetadata(final String name, final String databaseType, final String sequenceSchema,
                                                final String sequenceName, final String sequenceQuery) throws SQLException {
-        String jdbcUrl = "jdbc:mock:sequence:" + databaseType.toLowerCase(Locale.ENGLISH);
+        String jdbcUrl = "jdbc:mock:sequence:" + name.replace(' ', '-');
         Driver mockDriver = new MockDriver(jdbcUrl, createConnectionWithSequenceMetadata(databaseType, sequenceSchema, sequenceName, sequenceQuery));
         try (MockDriverRegistration ignored = MockDriverRegistration.register(mockDriver)) {
             LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration(jdbcUrl, "", "", MockDriver.class.getName())));

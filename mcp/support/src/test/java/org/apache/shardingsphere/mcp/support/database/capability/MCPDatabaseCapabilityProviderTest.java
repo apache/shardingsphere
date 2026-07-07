@@ -134,38 +134,11 @@ class MCPDatabaseCapabilityProviderTest {
             when(statement.executeQuery(anyString())).thenReturn(scalarResultSet);
             when(scalarResultSet.next()).thenReturn(false);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseVersion);
-            when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseType));
+            when(databaseMetaData.getURL()).thenReturn(SupportDatabaseTypeFactoryMocker.createJdbcUrl(databaseType));
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
         return result;
-    }
-    
-    private String getJdbcUrl(final String databaseType) {
-        switch (databaseType) {
-            case "MySQL":
-                return "jdbc:mysql:test";
-            case "PostgreSQL":
-                return "jdbc:postgresql:test";
-            case "openGauss":
-                return "jdbc:opengauss:test";
-            case "SQLServer":
-                return "jdbc:sqlserver:test";
-            case "MariaDB":
-                return "jdbc:mariadb:test";
-            case "Oracle":
-                return "jdbc:oracle:test";
-            case "ClickHouse":
-                return "jdbc:clickhouse:test";
-            case "Hive":
-                return "jdbc:hive2:test";
-            case "Presto":
-                return "jdbc:presto:test";
-            case "Firebird":
-                return "jdbc:firebirdsql:test";
-            default:
-                throw new IllegalArgumentException(databaseType);
-        }
     }
     
     private static Stream<Arguments> provideCapabilityMatrixArguments() {

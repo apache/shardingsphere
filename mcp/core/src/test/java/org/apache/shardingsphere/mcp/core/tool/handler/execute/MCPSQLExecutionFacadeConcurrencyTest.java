@@ -184,7 +184,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             when(result.openConnection("logic_db")).thenReturn(connection);
             when(connection.getMetaData()).thenReturn(databaseMetaData);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
-            when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/facade_concurrency");
+            when(databaseMetaData.getURL()).thenReturn(CoreDatabaseTypeFactoryMocker.createJdbcUrl("MySQL"));
             mockEmptyScalarQueries(connection);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);

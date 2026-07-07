@@ -65,15 +65,6 @@ import static org.mockito.Mockito.when;
 
 abstract class AbstractMCPJdbcMetadataLoaderTest {
     
-    protected static final Map<String, String> METADATA_JDBC_URLS = Map.of(
-            "MySQL", "jdbc:mysql://metadata-loader/test",
-            "PostgreSQL", "jdbc:postgresql://metadata-loader/test",
-            "openGauss", "jdbc:opengauss://metadata-loader/test",
-            "SQLServer", "jdbc:sqlserver://metadata-loader",
-            "Oracle", "jdbc:oracle:thin:@metadata-loader",
-            "MariaDB", "jdbc:mariadb://metadata-loader/test",
-            "Firebird", "jdbc:firebirdsql://metadata-loader/test");
-    
     protected LoadedMetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
             MCPJdbcDatabaseProfileLoader databaseProfileLoader = new MCPJdbcDatabaseProfileLoader();
@@ -200,7 +191,7 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
                 List.of(Map.of("SEQUENCE_SCHEMA", "PUBLIC", "SEQUENCE_NAME", "order_seq")));
         DatabaseMetaData databaseMetaData = result.getMetaData();
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("16.2");
-        when(databaseMetaData.getURL()).thenReturn("jdbc:postgresql://metadata-loader/test");
+        when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl("PostgreSQL"));
         return result;
     }
     
@@ -285,7 +276,7 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
     }
     
     protected String getMetadataJdbcUrl(final String databaseType) {
-        return METADATA_JDBC_URLS.getOrDefault(databaseType, METADATA_JDBC_URLS.get("PostgreSQL"));
+        return SupportDatabaseTypeFactoryMocker.createJdbcUrl(databaseType);
     }
     
     protected int countMetadata(final MCPDatabaseMetadata databaseMetadata, final SupportedMCPMetadataObjectType objectType, final String objectName) {

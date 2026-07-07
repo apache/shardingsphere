@@ -153,7 +153,7 @@ class MCPJdbcTransactionStatementExecutorTest {
             when(result.openConnection(databaseName)).thenReturn(connection);
             when(connection.getMetaData()).thenReturn(databaseMetaData);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
-            when(databaseMetaData.getURL()).thenReturn(String.format("jdbc:%s://transaction-executor/test", databaseType.toLowerCase(java.util.Locale.ENGLISH)));
+            when(databaseMetaData.getURL()).thenReturn(CoreDatabaseTypeFactoryMocker.createJdbcUrl(databaseType));
             mockEmptyScalarQueries(connection);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
