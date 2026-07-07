@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partitio
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
@@ -31,6 +32,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class AddPartitionDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
@@ -48,30 +50,12 @@ public final class AddPartitionDefinitionSegment implements AlterDefinitionSegme
     private Integer buckets;
     
     /**
-     * Set partition values.
-     *
-     * @param partitionValues partition values
-     */
-    public void setPartitionValues(final PartitionValuesSegment partitionValues) {
-        this.partitionValues = partitionValues;
-    }
-    
-    /**
      * Get partition values.
      *
      * @return partition values
      */
     public Optional<PartitionValuesSegment> getPartitionValues() {
         return Optional.ofNullable(partitionValues);
-    }
-    
-    /**
-     * Set properties.
-     *
-     * @param properties properties
-     */
-    public void setProperties(final PropertiesSegment properties) {
-        this.properties = properties;
     }
     
     /**
@@ -84,30 +68,12 @@ public final class AddPartitionDefinitionSegment implements AlterDefinitionSegme
     }
     
     /**
-     * Set distributed column.
-     *
-     * @param distributedColumn distributed column
-     */
-    public void setDistributedColumn(final ColumnSegment distributedColumn) {
-        this.distributedColumn = distributedColumn;
-    }
-    
-    /**
      * Get distributed column.
      *
      * @return distributed column
      */
     public Optional<ColumnSegment> getDistributedColumn() {
         return Optional.ofNullable(distributedColumn);
-    }
-    
-    /**
-     * Set buckets.
-     *
-     * @param buckets buckets
-     */
-    public void setBuckets(final Integer buckets) {
-        this.buckets = buckets;
     }
     
     /**

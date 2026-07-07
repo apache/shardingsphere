@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -33,6 +35,7 @@ abstract class AbstractShardingResourceHandler implements MCPResourceHandler<MCP
     
     private final String resourceUriTemplate;
     
+    @Getter(AccessLevel.PROTECTED)
     private final ShardingInspectionService inspectionService;
     
     AbstractShardingResourceHandler(final String resourceUriTemplate, final ShardingInspectionService inspectionService) {
@@ -54,10 +57,6 @@ abstract class AbstractShardingResourceHandler implements MCPResourceHandler<MCP
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(query(databaseContext, uriVariables),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
-    }
-    
-    protected ShardingInspectionService getInspectionService() {
-        return inspectionService;
     }
     
     protected abstract List<Map<String, Object>> query(MCPDatabaseHandlerContext databaseContext, MCPUriVariables uriVariables);

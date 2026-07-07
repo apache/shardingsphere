@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.sql.env;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
@@ -308,35 +310,21 @@ public final class DataSetEnvironmentManager {
     }
     
     @RequiredArgsConstructor
+    @Getter(AccessLevel.PRIVATE)
     private static final class ResetPlan {
         
         private final Map<DataNode, InsertDataNodePlan> insertDataNodePlans;
         
         private final Map<String, Collection<String>> tableNamesByDataSourceName;
-        
-        private Map<DataNode, InsertDataNodePlan> getInsertDataNodePlans() {
-            return insertDataNodePlans;
-        }
-        
-        private Map<String, Collection<String>> getTableNamesByDataSourceName() {
-            return tableNamesByDataSourceName;
-        }
     }
     
     @RequiredArgsConstructor
+    @Getter(AccessLevel.PRIVATE)
     private static final class InsertDataNodePlan {
         
         private final Collection<DataSetColumn> columnMetaData;
         
         private final Collection<SQLValueGroup> sqlValueGroups = new LinkedList<>();
-        
-        private Collection<DataSetColumn> getColumnMetaData() {
-            return columnMetaData;
-        }
-        
-        private Collection<SQLValueGroup> getSqlValueGroups() {
-            return sqlValueGroups;
-        }
         
         private void addSQLValueGroup(final SQLValueGroup sqlValueGroup) {
             sqlValueGroups.add(sqlValueGroup);

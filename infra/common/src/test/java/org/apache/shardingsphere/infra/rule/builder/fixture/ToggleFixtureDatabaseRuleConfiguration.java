@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.infra.rule.builder.fixture;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 
 public final class ToggleFixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
+    @Getter
     private final boolean empty;
     
     public ToggleFixtureDatabaseRuleConfiguration(final boolean empty) {
         this.empty = empty;
-    }
-    
-    public boolean isEmpty() {
-        return empty;
     }
 }

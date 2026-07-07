@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
@@ -325,6 +327,7 @@ public final class IdentifierIndex<T> {
         return snapshot.getExactValues().toString();
     }
     
+    @Getter(AccessLevel.PRIVATE)
     private static final class Snapshot<T> {
         
         private static final Snapshot<?> EMPTY = new Snapshot<>(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
@@ -345,32 +348,25 @@ public final class IdentifierIndex<T> {
         private static <T> Snapshot<T> empty() {
             return (Snapshot<T>) EMPTY;
         }
-        
-        private Map<String, T> getExactValues() {
-            return exactValues;
-        }
-        
-        private Map<String, Collection<String>> getNormalizedIdentifierNames() {
-            return normalizedIdentifierNames;
-        }
-        
-        private Map<String, NormalizedBucket<T>> getNormalizedBuckets() {
-            return normalizedBuckets;
-        }
     }
     
     private static final class NormalizedBucket<T> {
         
+        @Getter(AccessLevel.PRIVATE)
         private final String singleIdentifier;
         
+        @Getter(AccessLevel.PRIVATE)
         private final T singleValue;
         
+        @Getter(AccessLevel.PRIVATE)
         private final Collection<String> identifiers;
         
         private final String singleUnquotedIdentifier;
         
+        @Getter(AccessLevel.PRIVATE)
         private final T singleUnquotedValue;
         
+        @Getter(AccessLevel.PRIVATE)
         private final Collection<String> unquotedIdentifiers;
         
         private NormalizedBucket(final String singleIdentifier, final T singleValue, final Collection<String> identifiers,
@@ -387,32 +383,12 @@ public final class IdentifierIndex<T> {
             return null != singleIdentifier;
         }
         
-        private String getSingleIdentifier() {
-            return singleIdentifier;
-        }
-        
-        private T getSingleValue() {
-            return singleValue;
-        }
-        
-        private Collection<String> getIdentifiers() {
-            return identifiers;
-        }
-        
         private boolean hasUnquotedIdentifier() {
             return null != singleUnquotedIdentifier;
         }
         
         private boolean hasSingleUnquotedIdentifier() {
             return null == unquotedIdentifiers && null != singleUnquotedIdentifier;
-        }
-        
-        private T getSingleUnquotedValue() {
-            return singleUnquotedValue;
-        }
-        
-        private Collection<String> getUnquotedIdentifiers() {
-            return unquotedIdentifiers;
         }
     }
 }

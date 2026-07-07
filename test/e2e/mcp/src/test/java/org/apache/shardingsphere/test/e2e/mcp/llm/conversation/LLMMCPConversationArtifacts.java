@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
@@ -36,10 +38,13 @@ final class LLMMCPConversationArtifacts {
     
     private final List<String> rawModelOutputs = new LinkedList<>();
     
+    @Getter(AccessLevel.PACKAGE)
     private final List<MCPInteractionTraceRecord> interactionTrace = new LinkedList<>();
     
     private final List<String> mcpRuntimeLogLines = new LinkedList<>();
     
+    @Getter(AccessLevel.PACKAGE)
+    @Setter(AccessLevel.PACKAGE)
     private String finalAnswerJson = "";
     
     void addRawModelOutput(final String rawModelOutput) {
@@ -54,20 +59,8 @@ final class LLMMCPConversationArtifacts {
         mcpRuntimeLogLines.add(runtimeLogLine);
     }
     
-    List<MCPInteractionTraceRecord> getInteractionTrace() {
-        return interactionTrace;
-    }
-    
     int nextSequence() {
         return interactionTrace.size() + 1;
-    }
-    
-    String getFinalAnswerJson() {
-        return finalAnswerJson;
-    }
-    
-    void setFinalAnswerJson(final String finalAnswerJson) {
-        this.finalAnswerJson = finalAnswerJson;
     }
     
     LLME2EArtifactBundle createArtifactBundle(final LLME2EScenario scenario, final LLME2EAssertionReport assertionReport) {
