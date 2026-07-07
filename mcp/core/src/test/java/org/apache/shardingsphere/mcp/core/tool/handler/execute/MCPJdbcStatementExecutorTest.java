@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
+import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
+import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.exception.QueryDidNotReturnResultSetException;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -80,7 +82,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         when(transactionResourceManager.findTransactionConnection(anyString(), anyString())).thenReturn(Optional.empty());
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", runtimeDatabaseConfig), transactionResourceManager);
-        SQLExecutionResponse actual = statementExecutor.execute(executionRequest, classificationResult, createDatabaseCapability("MySQL"));
+        SQLExecutionResponse actual = statementExecutor.execute(executionRequest, classificationResult, createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertThat(actual.getResultKind(), is(expectedResultKind));
         assertThat(actual.getStatementClass(), is(classificationResult.getStatementClass()));
         assertThat(actual.getStatementType(), is(expectedStatementType));
@@ -102,7 +104,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Collections.emptyMap(), transactionResourceManager);
         SQLExecutionResponse actual = statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "UPDATE orders SET status = 'DONE'", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability("MySQL"));
+                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertThat(actual.getAffectedRows(), is(2));
         verify(connection, never()).close();
     }
@@ -123,7 +125,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         SQLExecutionResponse actual = statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "SELECT status FROM orders", 10, 1000, true),
-                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("MySQL"));
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertThat(actual.getRows().size(), is(1));
         verify(connection).setReadOnly(true);
         verify(connection).setAutoCommit(false);
@@ -141,7 +143,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Collections.emptyMap(), transactionResourceManager);
         SQLExecutionResponse actual = statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "SELECT status FROM orders", 10, 1000, true),
-                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("MySQL"));
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertThat(actual.getRows().size(), is(1));
         verify(connection, never()).setReadOnly(true);
         verify(connection, never()).rollback();
@@ -164,7 +166,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         SQLExecutionResponse actual = statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", " ", "SELECT status FROM orders", 0, 0),
-                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("MySQL"));
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertThat(actual.getRows().size(), is(2));
         assertFalse(actual.isTruncated());
         verify(connection, never()).setSchema(anyString());
@@ -186,7 +188,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         SQLExecutionResponse actual = statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "SELECT status FROM orders", Integer.MAX_VALUE, 1000),
-                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("MySQL"));
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertThat(actual.getRows().size(), is(0));
         assertFalse(actual.isTruncated());
         verify(statement).setMaxRows(Integer.MAX_VALUE);
@@ -208,7 +210,7 @@ class MCPJdbcStatementExecutorTest {
                 "logic_db", "public", "WITH updated_orders AS (UPDATE orders SET status = 'DONE' RETURNING *) SELECT * FROM updated_orders", 10, 1000),
                 new ClassificationResult(SupportedMCPStatement.DML, "SELECT",
                         "WITH updated_orders AS (UPDATE orders SET status = 'DONE' RETURNING *) SELECT * FROM updated_orders", "", ""),
-                createDatabaseCapability("MySQL"));
+                createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getStatementClass(), is(SupportedMCPStatement.DML));
         assertThat(actual.getStatementType(), is("SELECT"));
@@ -225,7 +227,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         SQLExecutionResponse actual = statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "logic_db", "UPDATE orders SET status = 'DONE'", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability("MySQL"));
+                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertThat(actual.getAffectedRows(), is(1));
         verify(connection, never()).setSchema(anyString());
     }
@@ -241,7 +243,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "UPDATE orders SET status = 'DONE'", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability("PostgreSQL")));
+                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability(SchemaExecutionSemantics.BEST_EFFORT)));
         assertThat(actual.getMessage(), is("schema"));
         verify(connection).setSchema("public");
         verify(connection, never()).createStatement();
@@ -258,7 +260,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         QueryDidNotReturnResultSetException actual = assertThrows(QueryDidNotReturnResultSetException.class, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "SELECT status FROM orders", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("MySQL")));
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
         assertThat(actual.getMessage(), is("Query did not return a result set."));
     }
     
@@ -272,7 +274,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         StatementClassNotSupportedException actual = assertThrows(StatementClassNotSupportedException.class, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "BEGIN", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "BEGIN", "", ""), createDatabaseCapability("MySQL")));
+                new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "BEGIN", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
         assertThat(actual.getMessage(), is("Statement class is not supported."));
     }
     
@@ -291,7 +293,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         ShardingSphereMCPException actual = assertThrows(expectedExceptionClass, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "SELECT status FROM orders", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("MySQL")));
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
         assertThat(actual.getClass(), is(expectedExceptionClass));
         assertThat(actual.getMessage(), is(expectedMessage));
         assertThat(actual.getCause(), is(sqlException));
@@ -305,7 +307,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Collections.emptyMap(), transactionResourceManager);
         MCPTransactionStateException actual = assertThrows(MCPTransactionStateException.class, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "SELECT status FROM orders", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("MySQL")));
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
         assertThat(actual.getMessage(), is("Transaction already active."));
         assertThat(actual.getCause(), is(cause));
     }
@@ -317,7 +319,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Collections.emptyMap(), transactionResourceManager);
         MCPUnavailableException actual = assertThrows(MCPUnavailableException.class, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "missing_db", "public", "SELECT status FROM orders", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("MySQL")));
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
         assertThat(actual.getMessage(), is("Database `missing_db` is not configured."));
     }
     
@@ -335,7 +337,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         MCPQueryFailedException actual = assertThrows(MCPQueryFailedException.class, () -> statementExecutor.execute(new SQLExecutionRequest("session-1", "logic_db",
                 "public", "UPDATE orders SET status = 'DONE'", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability("MySQL")));
+                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
         assertThat(actual.getMessage(), is("statement close failed"));
     }
     
@@ -350,7 +352,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         SQLExecutionResponse actual = statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "UPDATE orders SET status = 'DONE'", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability("MySQL"));
+                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertThat(actual.getAffectedRows(), is(1));
         verify(connection).close();
     }
@@ -364,7 +366,7 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         assertThrows(NullPointerException.class, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "", "SELECT status FROM orders", 0, 0),
-                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("MySQL")));
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
     }
     
     @Test
@@ -378,11 +380,16 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
         assertThrows(NullPointerException.class, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "", "SELECT status FROM orders", 0, 0),
-                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("MySQL")));
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
     }
     
-    private static MCPDatabaseCapability createDatabaseCapability(final String databaseType) {
-        return new MCPDatabaseCapability("logic_db", "", TypedSPILoader.getService(MCPDatabaseCapabilityOption.class, databaseType));
+    private static MCPDatabaseCapability createDatabaseCapability(final SchemaExecutionSemantics schemaExecutionSemantics) {
+        MCPDatabaseCapabilityOption option = mock(MCPDatabaseCapabilityOption.class);
+        when(option.getType()).thenReturn("FixtureDB");
+        when(option.getTransactionCapability()).thenReturn(TransactionCapability.NONE);
+        when(option.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.NATIVE_SCHEMA);
+        when(option.getSchemaExecutionSemantics()).thenReturn(schemaExecutionSemantics);
+        return new MCPDatabaseCapability("logic_db", "", option);
     }
     
     private static Connection createStatementConnection(final boolean hasResultSet, final int updateCount, final ResultSet resultSet) throws SQLException {

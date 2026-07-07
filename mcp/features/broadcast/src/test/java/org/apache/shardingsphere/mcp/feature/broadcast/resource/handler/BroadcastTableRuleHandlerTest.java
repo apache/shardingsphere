@@ -52,7 +52,7 @@ class BroadcastTableRuleHandlerTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         when(ruleInspectionService.queryBroadcastRules(queryFacade, "logic_db")).thenReturn(List.of(Map.of("broadcast_table", "t_order"), Map.of("broadcast_table", "t_order_item")));
         MCPResponse actual = new BroadcastTableRuleHandler(ruleInspectionService).handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "t_order")));
         verify(ruleInspectionService).queryBroadcastRules(queryFacade, "logic_db");
