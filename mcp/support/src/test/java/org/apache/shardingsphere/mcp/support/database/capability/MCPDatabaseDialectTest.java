@@ -100,9 +100,15 @@ class MCPDatabaseDialectTest {
     }
     
     @Test
-    void assertIsSystemSchemaWithUnknownDatabaseType() {
+    void assertIsSystemSchemaIgnoresUnknownDatabaseType() {
         boolean actual = MCPDatabaseDialect.of("FixtureDB").isSystemSchema("INFORMATION_SCHEMA");
-        assertTrue(actual);
+        assertFalse(actual);
+    }
+    
+    @Test
+    void assertIsSystemSchemaIgnoresOtherDatabaseType() {
+        boolean actual = MCPDatabaseDialect.of("SQLServer").isSystemSchema("pg_catalog");
+        assertFalse(actual);
     }
     
     private static Stream<Arguments> getIdentifierQuoteCharacterArguments() {
