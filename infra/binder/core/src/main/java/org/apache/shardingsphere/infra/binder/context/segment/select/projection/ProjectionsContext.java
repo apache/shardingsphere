@@ -54,8 +54,6 @@ public final class ProjectionsContext {
     
     private final Collection<Projection> projections;
     
-    private final Collection<AggregationDistinctProjection> aggregationDistinctProjections;
-    
     private final List<Projection> expandProjections;
     
     private final boolean containsLastInsertIdProjection;
@@ -70,20 +68,9 @@ public final class ProjectionsContext {
         this.stopIndex = stopIndex;
         this.distinctRow = distinctRow;
         this.projections = projections;
-        aggregationDistinctProjections = createAggregationDistinctProjections();
         expandProjections = createExpandProjections();
         containsLastInsertIdProjection = isContainsLastInsertIdProjection(projections);
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(expandProjections);
-    }
-    
-    private Collection<AggregationDistinctProjection> createAggregationDistinctProjections() {
-        Collection<AggregationDistinctProjection> result = new LinkedList<>();
-        for (Projection each : projections) {
-            if (each instanceof AggregationDistinctProjection) {
-                result.add((AggregationDistinctProjection) each);
-            }
-        }
-        return result;
     }
     
     private List<Projection> createExpandProjections() {
@@ -170,6 +157,28 @@ public final class ProjectionsContext {
         }
         for (List<AggregationProjection> derivedAggregations : expressionDerivedAggregations.values()) {
             result.addAll(derivedAggregations);
+        }
+        return result;
+    }
+    
+    /**
+     * Get aggregation distinct projections.
+     *
+     * @return aggregation distinct projections
+     */
+    public Collection<AggregationDistinctProjection> getAggregationDistinctProjections() {
+        Collection<AggregationDistinctProjection> result = new LinkedList<>();
+        for (Projection each : projections) {
+            if (each instanceof AggregationDistinctProjection) {
+                result.add((AggregationDistinctProjection) each);
+            }
+        }
+        for (List<AggregationProjection> derivedAggregations : expressionDerivedAggregations.values()) {
+            for (AggregationProjection each : derivedAggregations) {
+                if (each instanceof AggregationDistinctProjection) {
+                    result.add((AggregationDistinctProjection) each);
+                }
+            }
         }
         return result;
     }
