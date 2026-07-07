@@ -60,11 +60,22 @@ class ShardingWorkflowRequestTest {
     }
     
     @Test
-    void assertMergeUsesCurrentWhenPreviousIsGeneric() {
-        ShardingWorkflowRequest current = createRequest();
-        ShardingWorkflowRequest actual = ShardingWorkflowRequest.merge(new WorkflowRequest(), current);
+    void assertMergeWithGenericPrevious() {
+        WorkflowRequest previous = new WorkflowRequest();
+        previous.setPlanId("plan-1");
+        previous.setDatabase("logic_db");
+        previous.setTable("t_order");
+        previous.setOperationType("create");
+        ShardingWorkflowRequest current = new ShardingWorkflowRequest();
+        current.setRuleName("ref_rule");
+        current.setShardingColumns("order_id");
+        ShardingWorkflowRequest actual = ShardingWorkflowRequest.merge(previous, current);
+        assertThat(actual.getPlanId(), is("plan-1"));
         assertThat(actual.getDatabase(), is("logic_db"));
+        assertThat(actual.getTable(), is("t_order"));
+        assertThat(actual.getOperationType(), is("create"));
         assertThat(actual.getRuleName(), is("ref_rule"));
+        assertThat(actual.getShardingColumns(), is("order_id"));
     }
     
     private ShardingWorkflowRequest createRequest() {

@@ -76,21 +76,23 @@ final class MCPDescriptorCatalogYamlSwapper {
     private static void swapFixedResourceDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors, final Collection<MCPResourceDescriptor> resources,
                                                      final Collection<ShardingSphereMCPResourceMetadata> resourceMetadata) {
         for (YamlMCPResourceDescriptor each : emptyIfNull(yamlDescriptors)) {
-            ShardingSphereMCPResourceMetadata metadata = swapShardingSphereResourceMetadata(each.getUri(), each.getShardingSphereMetadata());
-            resources.add(new MCPResourceDescriptor(each.getUri(), each.getName(), each.getTitle(), each.getDescription(), each.getMimeType(),
-                    swapResourceAnnotations(each.getAnnotations()), createResourceMeta(each.getUri(), emptyMapIfNull(each.getMeta()), metadata)));
-            resourceMetadata.add(metadata);
+            swapResourceDescriptor(each.getUri(), each, resources, resourceMetadata);
         }
     }
     
     private static void swapResourceTemplateDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors, final Collection<MCPResourceDescriptor> resourceTemplates,
                                                         final Collection<ShardingSphereMCPResourceMetadata> resourceMetadata) {
         for (YamlMCPResourceDescriptor each : emptyIfNull(yamlDescriptors)) {
-            ShardingSphereMCPResourceMetadata metadata = swapShardingSphereResourceMetadata(each.getUriTemplate(), each.getShardingSphereMetadata());
-            resourceTemplates.add(new MCPResourceDescriptor(each.getUriTemplate(), each.getName(), each.getTitle(), each.getDescription(), each.getMimeType(),
-                    swapResourceAnnotations(each.getAnnotations()), createResourceMeta(each.getUriTemplate(), emptyMapIfNull(each.getMeta()), metadata)));
-            resourceMetadata.add(metadata);
+            swapResourceDescriptor(each.getUriTemplate(), each, resourceTemplates, resourceMetadata);
         }
+    }
+    
+    private static void swapResourceDescriptor(final String uriTemplate, final YamlMCPResourceDescriptor yamlDescriptor, final Collection<MCPResourceDescriptor> resources,
+                                               final Collection<ShardingSphereMCPResourceMetadata> resourceMetadata) {
+        ShardingSphereMCPResourceMetadata metadata = swapShardingSphereResourceMetadata(uriTemplate, yamlDescriptor.getShardingSphereMetadata());
+        resources.add(new MCPResourceDescriptor(uriTemplate, yamlDescriptor.getName(), yamlDescriptor.getTitle(), yamlDescriptor.getDescription(), yamlDescriptor.getMimeType(),
+                swapResourceAnnotations(yamlDescriptor.getAnnotations()), createResourceMeta(uriTemplate, emptyMapIfNull(yamlDescriptor.getMeta()), metadata)));
+        resourceMetadata.add(metadata);
     }
     
     private static ShardingSphereMCPResourceMetadata swapShardingSphereResourceMetadata(final String uriTemplate, final YamlShardingSphereMCPResourceMetadata yamlMetadata) {
