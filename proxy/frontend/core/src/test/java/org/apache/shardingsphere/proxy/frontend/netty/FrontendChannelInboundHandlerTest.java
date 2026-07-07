@@ -129,7 +129,7 @@ class FrontendChannelInboundHandlerTest {
     @Test
     void assertChannelReadNotAuthenticated() throws Exception {
         channel.register();
-        AuthenticationResult authenticationResult = AuthenticationResultBuilder.finished("username", "hostname", "database");
+        AuthenticationResult authenticationResult = AuthenticationResultBuilder.finished("username", "hostname", "database", Collections.emptyMap());
         when(authenticationEngine.authenticate(any(ChannelHandlerContext.class), any(PacketPayload.class))).thenReturn(authenticationResult);
         channel.writeInbound(Unpooled.EMPTY_BUFFER);
         assertThat(connectionSession.getConnectionContext().getGrantee(), is(new Grantee("username", "hostname")));

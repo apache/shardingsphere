@@ -26,6 +26,9 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Handshake response above MySQL 4.1 packet protocol.
  * 
@@ -52,6 +55,8 @@ public final class MySQLHandshakeResponse41Packet extends MySQLPacket {
     
     private int multiStatementsOption;
     
+    private Map<String, String> connectionAttributes;
+    
     public MySQLHandshakeResponse41Packet(final MySQLPacketPayload payload) {
         capabilityFlags = payload.readInt4();
         multiStatementsOption = readMultiStatementsOption(capabilityFlags);
@@ -62,6 +67,7 @@ public final class MySQLHandshakeResponse41Packet extends MySQLPacket {
         authResponse = readAuthResponse(payload);
         database = readDatabase(payload);
         authPluginName = readAuthPluginName(payload);
+        connectionAttributes = readConnectionAttributes(payload);
     }
     
     private int readMultiStatementsOption(final int capabilityFlags) {
@@ -86,6 +92,24 @@ public final class MySQLHandshakeResponse41Packet extends MySQLPacket {
     
     private String readAuthPluginName(final MySQLPacketPayload payload) {
         return 0 == (capabilityFlags & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue()) ? null : payload.readStringNul();
+    }
+    
+    private Map<String, String> readConnectionAttributes(final MySQLPacketPayload payload) {
+        if (0 == (capabilityFlags & MySQLCapabilityFlag.CLIENT_CONNECT_ATTRS.getValue()) || !payload.getByteBuf().isReadable()) {
+            return new HashMap<>();
+        }
+        int attributeLength = (int) payload.readIntLenenc();
+        if (attributeLength > payload.getByteBuf().readableBytes()) {
+            return new HashMap<>();
+        }
+        Map<String, String> result = new HashMap<>();
+        int endIndex = payload.getByteBuf().readerIndex() + attributeLength;
+        while (payload.getByteBuf().readerIndex() < endIndex) {
+            String key = new String(payload.readStringLenencByBytes(), payload.getCharset());
+            String value = new String(payload.readStringLenencByBytes(), payload.getCharset());
+            result.put(key, value);
+        }
+        return result;
     }
     
     /**
