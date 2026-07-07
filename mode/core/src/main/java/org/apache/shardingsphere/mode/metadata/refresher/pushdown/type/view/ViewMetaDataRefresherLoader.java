@@ -54,7 +54,7 @@ public final class ViewMetaDataRefresherLoader {
      */
     public ShardingSphereTable loadCreatedView(final ShardingSphereDatabase database, final String logicDataSourceName,
                                                final String schemaName, final IdentifierValue viewIdentifierValue, final ConfigurationProperties props) throws SQLException {
-        String candidateViewName = TableRefreshUtils.getViewLoadCandidateName(database, viewIdentifierValue, props);
+        String candidateViewName = TableRefreshUtils.getViewLoadCandidateName(database, viewIdentifierValue);
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         boolean singleTable = TableRefreshUtils.isSingleTable(candidateViewName, database);
         if (singleTable) {
@@ -89,7 +89,7 @@ public final class ViewMetaDataRefresherLoader {
      */
     public ShardingSphereSchema loadAlteredView(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName,
                                                 final IdentifierValue viewIdentifierValue, final String viewDefinition, final ConfigurationProperties props) throws SQLException {
-        String candidateViewName = TableRefreshUtils.getViewLoadCandidateName(database, viewIdentifierValue, props);
+        String candidateViewName = TableRefreshUtils.getViewLoadCandidateName(database, viewIdentifierValue);
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         boolean singleTable = TableRefreshUtils.isSingleTable(candidateViewName, database);
         if (singleTable) {

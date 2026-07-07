@@ -43,7 +43,7 @@ public final class DropViewPushDownMetaDataRefresher implements PushDownMetaData
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
         Collection<IdentifierValue> viewIdentifierValues = sqlStatement.getViews().stream().map(SimpleTableSegment::getTableName)
                 .map(TableNameSegment::getIdentifier).collect(Collectors.toList());
-        Collection<String> actualViewNames = TableRefreshUtils.getActualViewNames(database, actualSchemaName, viewIdentifierValues, props);
+        Collection<String> actualViewNames = TableRefreshUtils.getActualViewNames(database, actualSchemaName, viewIdentifierValues);
         metaDataManagerPersistService.dropTables(database, actualSchemaName, actualViewNames);
         metaDataManagerPersistService.dropViews(database, actualSchemaName, actualViewNames);
     }

@@ -55,16 +55,16 @@ public final class AlterIndexPushDownMetaDataRefresher implements PushDownMetaDa
         IndexSegment indexSegment = sqlStatement.getIndex().get();
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database,
                 indexSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(new IdentifierValue(schemaName)));
-        String actualTableName = TableRefreshUtils.findActualTableNameByIndex(database, actualSchemaName, indexSegment.getIndexName().getIdentifier(), props)
+        String actualTableName = TableRefreshUtils.findActualTableNameByIndex(database, actualSchemaName, indexSegment.getIndexName().getIdentifier())
                 .orElseThrow(() -> new IndexNotFoundException(indexSegment.getIndexName().getIdentifier().getValue(), actualSchemaName));
-        String indexName = TableRefreshUtils.getActualIndexName(database, actualSchemaName, actualTableName, indexSegment.getIndexName().getIdentifier(), props);
+        String indexName = TableRefreshUtils.getActualIndexName(database, actualSchemaName, actualTableName, indexSegment.getIndexName().getIdentifier());
         ShardingSpherePreconditions.checkState(database.containsSchema(actualSchemaName), () -> new SchemaNotFoundException(actualSchemaName));
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         ShardingSpherePreconditions.checkState(schema.containsTable(actualTableName), () -> new TableNotFoundException(actualTableName));
         ShardingSphereTable table = schema.getTable(actualTableName);
         ShardingSphereTable newTable = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
         newTable.removeIndex(indexName);
-        String renameIndexName = TableRefreshUtils.getActualIndexName(database, actualSchemaName, actualTableName, renameIndex.get().getIndexName().getIdentifier(), props);
+        String renameIndexName = TableRefreshUtils.getActualIndexName(database, actualSchemaName, actualTableName, renameIndex.get().getIndexName().getIdentifier());
         newTable.putIndex(new ShardingSphereIndex(renameIndexName, new LinkedList<>(), false));
         metaDataManagerPersistService.alterTables(database, actualSchemaName, Collections.singleton(newTable));
     }
