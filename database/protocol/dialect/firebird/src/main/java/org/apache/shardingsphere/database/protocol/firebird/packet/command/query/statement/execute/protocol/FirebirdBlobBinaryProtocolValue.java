@@ -36,30 +36,32 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
     
     private static final AtomicLong ID_SEQ = new AtomicLong(1L);
     
-    private static final Map<Long, byte[]> STORE = new ConcurrentHashMap<>();
+    private static final Map<Integer, Map<Long, byte[]>> CONTENTS_BY_CONNECTION = new ConcurrentHashMap<>();
     
     /**
-     * Get stored BLOB content by internal BLOB id.
+     * Get stored BLOB content by connection id and internal BLOB id.
      *
+     * @param connectionId connection id
      * @param blobId internal BLOB id
      * @return stored bytes or {@code null} if missing
      */
-    public static byte[] getBlobContent(final long blobId) {
-        return STORE.get(blobId);
+    public static byte[] getBlobContent(final int connectionId, final long blobId) {
+        Map<Long, byte[]> connectionContents = CONTENTS_BY_CONNECTION.get(connectionId);
+        return null == connectionContents ? null : connectionContents.get(blobId);
     }
     
     /**
-     * Remove stored BLOB content by internal BLOB id.
+     * Unregister connection and drop all BLOB contents stored for it.
      *
-     * @param blobId internal BLOB id
+     * @param connectionId connection id
      */
-    public static void removeBlobContent(final long blobId) {
-        STORE.remove(blobId);
+    public static void unregisterConnection(final int connectionId) {
+        CONTENTS_BY_CONNECTION.remove(connectionId);
     }
     
-    private static long register(final byte[] bytes) {
+    private static long register(final int connectionId, final byte[] bytes) {
         long id = ID_SEQ.getAndIncrement();
-        STORE.put(id, bytes.clone());
+        CONTENTS_BY_CONNECTION.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4)).put(id, bytes.clone());
         return id;
     }
     
@@ -93,10 +95,10 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
         } else if (value instanceof Long) {
             blobId = (Long) value;
         } else if (value instanceof byte[]) {
-            blobId = register((byte[]) value);
+            blobId = register(payload.getConnectionId(), (byte[]) value);
         } else if (value instanceof Blob) {
             try {
-                blobId = register(readAllBytes(((Blob) value).getBinaryStream()));
+                blobId = register(payload.getConnectionId(), readAllBytes(((Blob) value).getBinaryStream()));
             } catch (final SQLException ex) {
                 throw new IllegalStateException("Failed to read java.sql.Blob stream", ex);
             } catch (final IOException ex) {
@@ -107,12 +109,12 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
                 Clob clob = (Clob) value;
                 int len = (int) Math.min(Integer.MAX_VALUE, clob.length());
                 String str = clob.getSubString(1L, len);
-                blobId = register(str.getBytes(payload.getCharset()));
+                blobId = register(payload.getConnectionId(), str.getBytes(payload.getCharset()));
             } catch (final SQLException ex) {
                 throw new IllegalStateException("Failed to read java.sql.Clob", ex);
             }
         } else {
-            blobId = register(value.toString().getBytes(payload.getCharset()));
+            blobId = register(payload.getConnectionId(), value.toString().getBytes(payload.getCharset()));
         }
         
         payload.writeInt8(blobId);

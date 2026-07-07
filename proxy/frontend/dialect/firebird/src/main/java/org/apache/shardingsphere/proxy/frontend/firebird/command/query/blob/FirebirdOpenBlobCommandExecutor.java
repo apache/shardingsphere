@@ -42,7 +42,7 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        byte[] blobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(packet.getBlobId());
+        byte[] blobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(connectionSession.getConnectionId(), packet.getBlobId());
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
         FirebirdBlobReadCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, null == blobContent ? new byte[0] : blobContent);
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(packet.getBlobId()));

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.exception.core.exception.transaction.I
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
@@ -57,6 +58,7 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
         FirebirdBlobWriteCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdBlobReadCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdConnectionProtocolVersion.getInstance().unsetProtocolVersion(connectionSession.getConnectionId());
+        FirebirdBlobBinaryProtocolValue.unregisterConnection(connectionSession.getConnectionId());
         FirebirdFetchStatementCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdBatchRegistry.getInstance().unregisterConnection(connectionSession.getConnectionId());
     }

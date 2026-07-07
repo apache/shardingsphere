@@ -24,9 +24,12 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
+import org.firebirdsql.gds.ISCConstants;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 /**
@@ -34,18 +37,29 @@ import java.util.OptionalLong;
  */
 @RequiredArgsConstructor
 public final class FirebirdPutBlobSegmentCommandExecutor implements CommandExecutor {
-    
+
     private final FirebirdPutBlobSegmentCommandPacket packet;
-    
+
     private final ConnectionSession connectionSession;
-    
+
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket> execute() throws SQLException {
         int blobHandle = FirebirdBlobWriteCache.getInstance().getBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
-        FirebirdBlobWriteCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, packet.getSegment());
         OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
+        OptionalInt bufferedSize = FirebirdBlobWriteCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, packet.getSegment());
+        validateBlobSize(bufferedSize, blobId);
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
         FirebirdGenericResponsePacket response = new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId);
         return Collections.singleton(response);
+    }
+
+    private void validateBlobSize(final OptionalInt bufferedSize, final OptionalLong blobId) throws SQLException {
+        if (!bufferedSize.isPresent() || bufferedSize.getAsInt() <= FirebirdBlobWriteCache.MAX_BLOB_SIZE) {
+            return;
+        }
+        if (blobId.isPresent()) {
+            FirebirdBlobWriteCache.getInstance().removeWrite(connectionSession.getConnectionId(), blobId.getAsLong());
+        }
+        throw new SQLException("", null, ISCConstants.isc_blobtoobig);
     }
 }

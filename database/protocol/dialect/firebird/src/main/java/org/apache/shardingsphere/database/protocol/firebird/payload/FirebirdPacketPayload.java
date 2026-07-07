@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.payload;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 
 import java.nio.charset.Charset;
@@ -36,6 +37,9 @@ public final class FirebirdPacketPayload implements PacketPayload {
     private final ByteBuf byteBuf;
     
     private final Charset charset;
+    
+    @Setter
+    private int connectionId = -1;
     
     /**
      * Read 1 byte fixed length integer from unsigned byte buffers.

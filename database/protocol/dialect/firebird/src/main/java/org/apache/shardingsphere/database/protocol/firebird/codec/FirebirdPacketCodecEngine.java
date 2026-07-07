@@ -183,6 +183,10 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     @Override
     public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(out, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
+        Integer connectionId = context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get();
+        if (null != connectionId) {
+            payload.setConnectionId(connectionId);
+        }
         try {
             message.write(payload);
             // CHECKSTYLE:OFF

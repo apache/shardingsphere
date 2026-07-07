@@ -32,6 +32,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.Matchers.is;
@@ -66,7 +67,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
     }
     
     @Test
-    void assertExecute() {
+    void assertExecute() throws SQLException {
         int blobHandle = 4;
         long blobId = 12L;
         byte[] segment = new byte[]{1, 2};
@@ -84,7 +85,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithDeferredPlaceholderHandle() {
+    void assertExecuteWithDeferredPlaceholderHandle() throws SQLException {
         int blobHandle = 7;
         long blobId = 21L;
         byte[] segment = new byte[]{1, 2, 3};
