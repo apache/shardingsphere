@@ -45,6 +45,11 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.
       Add them only when they define a stable boundary, keep owner classes readable, or remove meaningful duplicated logic.
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
+    - When adding or touching boilerplate constructors, getters, setters, or logger fields, apply the `CODE_OF_CONDUCT.md` Lombok preference first when Lombok is already available in the module and the replacement is semantically equivalent.
+      Use the narrowest suitable Lombok annotation, such as `@NoArgsConstructor(access = AccessLevel.PRIVATE)` for utility-class private constructors, `@RequiredArgsConstructor` or `@AllArgsConstructor` for plain constructors, and `@Getter` or `@Setter` for accessor methods.
+      For public constructors and accessors, verify the generated signature, access level, parameter order, annotations, and reflection or serialization behavior before replacing manual code.
+      Keep manual members only when they contain real logic, annotations, documentation, validation, defaulting, side effects, compatibility requirements, framework or reflection semantics, or public-contract details that Lombok would change or obscure.
+      Do not use broad Lombok annotations such as `@Data` unless every generated behavior is intentionally required.
     - Do not add guard clauses, parameter checks, or exception throws only to make code appear safer.
       Add a runtime guard only when it protects a real contract boundary, such as external input, public API usage, persisted or parsed configuration,
       SPI or reflection input, invalid shared/asynchronous state, or an immediately diagnosable failure mode.
