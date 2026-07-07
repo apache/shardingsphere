@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequence
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
+import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -92,7 +93,7 @@ final class DatabaseTestDataFactory {
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseMetadata.getDatabaseVersion());
-        when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseMetadata));
+        when(databaseMetaData.getURL()).thenReturn(SupportDatabaseTypeFactoryMocker.createJdbcUrl(databaseMetadata.getDatabaseType()));
         when(databaseMetaData.getTables(nullable(String.class), nullable(String.class), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3, String[].class);
             return createResultSet("TABLE".equals(tableTypes[0]) ? createTableRows(databaseMetadata) : createViewRows(databaseMetadata));
@@ -104,19 +105,6 @@ final class DatabaseTestDataFactory {
         ResultSet sequenceResultSet = createResultSet(createSequenceRows(databaseMetadata));
         when(statement.executeQuery(anyString())).thenReturn(sequenceResultSet);
         return result;
-    }
-    
-    private static String getJdbcUrl(final MCPDatabaseMetadata databaseMetadata) {
-        switch (databaseMetadata.getDatabaseType()) {
-            case "MySQL":
-                return String.format("jdbc:mysql://metadata-query/%s", databaseMetadata.getDatabase());
-            case "PostgreSQL":
-                return String.format("jdbc:postgresql://metadata-query/%s", databaseMetadata.getDatabase());
-            case "Hive":
-                return String.format("jdbc:hive2://metadata-query/%s", databaseMetadata.getDatabase());
-            default:
-                throw new IllegalArgumentException(databaseMetadata.getDatabaseType());
-        }
     }
     
     private static List<Map<String, String>> createTableRows(final MCPDatabaseMetadata databaseMetadata) {

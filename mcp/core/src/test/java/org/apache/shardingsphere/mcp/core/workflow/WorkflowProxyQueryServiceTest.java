@@ -244,7 +244,7 @@ class WorkflowProxyQueryServiceTest {
             when(result.openConnection("logic_db")).thenReturn(connection);
             when(connection.getMetaData()).thenReturn(databaseMetaData);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
-            when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseType));
+            when(databaseMetaData.getURL()).thenReturn(CoreDatabaseTypeFactoryMocker.createJdbcUrl(databaseType));
             mockEmptyScalarQueries(connection);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
@@ -257,15 +257,5 @@ class WorkflowProxyQueryServiceTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(anyString())).thenReturn(resultSet);
-    }
-    
-    private String getJdbcUrl(final String databaseType) {
-        if ("PostgreSQL".equals(databaseType)) {
-            return "jdbc:postgresql://workflow-proxy-query/test";
-        }
-        if ("openGauss".equals(databaseType)) {
-            return "jdbc:opengauss://workflow-proxy-query/test";
-        }
-        return "jdbc:mysql://workflow-proxy-query/test";
     }
 }
