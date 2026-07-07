@@ -203,4 +203,25 @@ class MySQLHandshakeResponse41PacketTest {
         verify(payload).writeInt1(1);
         verify(payload).writeBytes(new byte[]{1});
     }
+    
+    @Test
+    void assertNewWithPayloadWithEmptyAuthResponseAndAuthPluginName() {
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        payload.writeInt4(MySQLCapabilityFlag.calculateCapabilityFlags(MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION, MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH,
+                MySQLCapabilityFlag.CLIENT_CONNECT_ATTRS, MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA));
+        payload.writeInt4(1000);
+        payload.writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
+        payload.writeReserved(23);
+        payload.writeStringNul("root");
+        payload.writeInt1(0);
+        payload.writeInt1(0);
+        payload.writeStringNul(MySQLAuthenticationMethod.CACHING_SHA2_PASSWORD.getMethodName());
+        payload.writeIntLenenc("_client_name".length() + "MariaDB Connector/J".length() + 2L);
+        payload.writeStringLenenc("_client_name");
+        payload.writeStringLenenc("MariaDB Connector/J");
+        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
+        assertThat(actual.getAuthResponse(), is(new byte[]{}));
+        assertThat(actual.getAuthPluginName(), is(MySQLAuthenticationMethod.CACHING_SHA2_PASSWORD.getMethodName()));
+        assertThat(actual.getConnectionAttributes(), is(Collections.singletonMap("_client_name", "MariaDB Connector/J")));
+    }
 }

@@ -91,7 +91,34 @@ public final class MySQLHandshakeResponse41Packet extends MySQLPacket {
     }
     
     private String readAuthPluginName(final MySQLPacketPayload payload) {
-        return 0 == (capabilityFlags & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue()) ? null : payload.readStringNul();
+        if (0 == (capabilityFlags & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue())) {
+            return null;
+        }
+        String result = payload.readStringNul();
+        return result.isEmpty() && isKnownAuthPluginName(payload) ? payload.readStringNul() : result;
+    }
+    
+    private boolean isKnownAuthPluginName(final MySQLPacketPayload payload) {
+        for (MySQLAuthenticationMethod each : MySQLAuthenticationMethod.values()) {
+            if (isAuthPluginName(payload, each.getMethodName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isAuthPluginName(final MySQLPacketPayload payload, final String authPluginName) {
+        byte[] authPluginNameBytes = authPluginName.getBytes(payload.getCharset());
+        if (payload.getByteBuf().readableBytes() <= authPluginNameBytes.length) {
+            return false;
+        }
+        int readerIndex = payload.getByteBuf().readerIndex();
+        for (int i = 0; i < authPluginNameBytes.length; i++) {
+            if (authPluginNameBytes[i] != payload.getByteBuf().getByte(readerIndex + i)) {
+                return false;
+            }
+        }
+        return 0 == payload.getByteBuf().getByte(readerIndex + authPluginNameBytes.length);
     }
     
     private Map<String, String> readConnectionAttributes(final MySQLPacketPayload payload) {
