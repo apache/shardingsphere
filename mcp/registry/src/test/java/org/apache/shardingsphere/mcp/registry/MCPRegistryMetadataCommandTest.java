@@ -32,11 +32,14 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPRegistryMetadataCommandTest {
     
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+    
+    private static final String REGISTRY_SCHEMA_URL = "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json";
     
     private static final String PACKAGE_SHAPE_ERROR_MESSAGE = "server.json packages must contain exactly one stdio OCI package and one streamable-http OCI package.";
     
@@ -169,6 +172,13 @@ class MCPRegistryMetadataCommandTest {
     }
     
     @Test
+    void assertSourceMetadataKeepsRegistrySchemaSeparateFromRuntimeProtocolVersion() throws IOException {
+        Map<String, Object> actual = readServerJson(resolveMCPDirectory().resolve("server.json"));
+        assertThat(actual.get("$schema"), is(REGISTRY_SCHEMA_URL));
+        assertFalse(actual.containsKey("protocolVersion"));
+    }
+    
+    @Test
     void assertExecuteValidatesDockerfileMetadata() throws IOException {
         Path serverPath = createServerJson(createServerMetadata());
         Path dockerfilePath = createDockerfile(createDockerfileContent());
@@ -276,7 +286,7 @@ class MCPRegistryMetadataCommandTest {
     
     private Map<String, Object> createServerMetadata() {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
-        result.put("$schema", "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json");
+        result.put("$schema", REGISTRY_SCHEMA_URL);
         result.put("name", "io.github.apache/shardingsphere-mcp");
         result.put("title", "Apache ShardingSphere MCP");
         result.put("description", "MCP Server for Apache ShardingSphere metadata discovery, SQL preview, and rule workflows");

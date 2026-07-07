@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +31,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -50,6 +56,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         Map<String, Object> actualResult = castToMap(actualPayload.get("result"));
         assertThat(String.valueOf(actualPayload.get("jsonrpc")), is("2.0"));
         assertThat(String.valueOf(actualResult.get("protocolVersion")), is(getProtocolVersion()));
+        assertServerCapabilities(castToMap(actualResult.get("capabilities")));
         assertThat(sendInitializedNotification(httpClient, actualSessionId).statusCode(), is(202));
     }
     
@@ -125,6 +132,48 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
     }
     
     @Test
+    void assertReturnJsonRpcErrorForUnsupportedTool() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                "missing-tool-1", "tools/call", Map.of("name", "database_gateway_missing_tool", "arguments", Map.of())));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> actualPayload = parseJsonBody(actual.body());
+        assertTrue(MCPInteractionPayloads.hasJsonRpcError(actualPayload));
+        assertFalse(actualPayload.containsKey("result"));
+        Map<String, Object> actualError = castToMap(actualPayload.get("error"));
+        assertTrue(actualError.containsKey("code"));
+        assertTrue(actualError.containsKey("message"));
+    }
+    
+    @Test
+    void assertExposeToolInputSchemaConstraints() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        Map<String, Object> actualResult = sendInitializedRequest(httpClient, sessionId, "tools-list-constraints", "tools/list", Map.of());
+        Map<String, Object> actualTool = MCPInteractionPayloads.castToList(actualResult.get("tools")).stream()
+                .filter(each -> "database_gateway_execute_update".equals(each.get("name"))).findFirst().orElseThrow();
+        Map<String, Object> actualProperties = castToMap(castToMap(actualTool.get("inputSchema")).get("properties"));
+        Map<String, Object> actualMaxRows = castToMap(actualProperties.get("max_rows"));
+        assertThat(actualMaxRows.get("minimum"), is(0));
+        assertThat(actualMaxRows.get("maximum"), is(5000));
+        assertThat(castToMap(actualProperties.get("execution_mode")).get("enum"), is(List.of("execute", "preview")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("listMethodCases")
+    void assertListMethodCompletesWithoutPaginationCursor(final String method, final String resultKey) throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        Map<String, Object> actualResult = sendInitializedRequest(httpClient, sessionId, method + "-1", method, Map.of());
+        assertFalse(MCPInteractionPayloads.castToList(actualResult.get(resultKey)).isEmpty());
+        assertFalse(actualResult.containsKey("nextCursor"));
+    }
+    
+    @Test
     void assertEnforceToolCallLimitPerSession() throws IOException, InterruptedException {
         String propertyName = MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY;
         String originalValue = System.getProperty(propertyName);
@@ -168,6 +217,15 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
     }
     
     @Test
+    void assertRejectFollowUpRequestWithoutProtocolHeader() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", sessionId));
+        assertThat(actual.statusCode(), is(400));
+    }
+    
+    @Test
     void assertRejectFollowUpRequestWithMissingSession() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -198,6 +256,36 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         assertThat(deleteResponse.statusCode(), is(200));
         assertThat(actual.statusCode(), is(404));
         assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session not found: " + sessionId));
+    }
+    
+    private static Stream<Arguments> listMethodCases() {
+        return Stream.of(
+                Arguments.of("tools/list", "tools"),
+                Arguments.of("resources/list", "resources"),
+                Arguments.of("resources/templates/list", "resourceTemplates"),
+                Arguments.of("prompts/list", "prompts"));
+    }
+    
+    private void assertServerCapabilities(final Map<String, Object> capabilities) {
+        assertTrue(capabilities.containsKey("completions"));
+        assertFalse(capabilities.containsKey("experimental"));
+        assertFalse(capabilities.containsKey("tasks"));
+        Map<String, Object> resources = castToMap(capabilities.get("resources"));
+        assertFalse((boolean) resources.get("subscribe"));
+        assertFalse((boolean) resources.get("listChanged"));
+        Map<String, Object> tools = castToMap(capabilities.get("tools"));
+        assertFalse((boolean) tools.get("listChanged"));
+        Map<String, Object> prompts = castToMap(capabilities.get("prompts"));
+        assertFalse((boolean) prompts.get("listChanged"));
+    }
+    
+    private Map<String, Object> sendInitializedRequest(final HttpClient httpClient, final String sessionId, final String requestId, final String method,
+                                                       final Map<String, Object> params) throws IOException, InterruptedException {
+        HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(requestId, method, params));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> actualPayload = parseJsonBody(actual.body());
+        assertFalse(MCPInteractionPayloads.hasJsonRpcError(actualPayload));
+        return castToMap(actualPayload.get("result"));
     }
     
     private Map<String, Object> assertToolErrorRecovery(final HttpResponse<String> response, final String expectedCategory) {
