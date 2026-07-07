@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.test.e2e.sql.it.sql.dql;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
  * Exclusive execution detector for SQL E2E tests.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DQLExclusiveExecutionDetector {
     
     private static final Pattern SELECT_PATTERN = Pattern.compile("\\bSELECT\\b");
@@ -41,9 +44,6 @@ public final class DQLExclusiveExecutionDetector {
     private static final Pattern KEEP_LOCKS_PATTERN = Pattern.compile("\\bWITH\\s+(?:RR|RS|CS)\\s+USE\\s+AND\\s+KEEP\\s+(?:UPDATE|EXCLUSIVE|SHARE)\\s+LOCKS\\b");
     
     private static final Pattern WITH_LOCK_PATTERN = Pattern.compile("\\bWITH\\s+LOCK\\b(?!\\s+AS\\b)");
-    
-    private DQLExclusiveExecutionDetector() {
-    }
     
     /**
      * Judge whether SQL requires exclusive execution.

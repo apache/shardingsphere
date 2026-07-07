@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
@@ -35,13 +36,10 @@ import java.util.Optional;
  * Session attribution resolver.
  */
 @Getter
+@AllArgsConstructor
 public final class SessionAttributionResolver {
     
     private final SessionAttributionSourceConfiguration config;
-    
-    public SessionAttributionResolver(final SessionAttributionSourceConfiguration config) {
-        this.config = config;
-    }
     
     /**
      * Resolve session identity from HTTP request.

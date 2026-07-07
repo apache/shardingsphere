@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
@@ -45,6 +47,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class ProductionMCPClientTransportFactory {
     
     private static final String STDIO_LOGBACK_CONFIG_FILE_NAME = "mcp-e2e-sdk-stdio-logback.xml";
@@ -52,9 +55,6 @@ final class ProductionMCPClientTransportFactory {
     private static final String MASK_PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
     
     private static final List<String> SUPPORTED_PROTOCOL_VERSIONS = List.of(ProtocolVersions.MCP_2025_11_25);
-    
-    private ProductionMCPClientTransportFactory() {
-    }
     
     static McpSyncClient createElicitationClient(final McpClientTransport clientTransport, final List<McpSchema.ElicitRequest> elicitationRequests,
                                                  final BiFunction<List<McpSchema.ElicitRequest>, McpSchema.ElicitRequest, McpSchema.ElicitResult> elicitationHandler) {

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.assertion;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
@@ -29,10 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Assertions for model-facing MCP contracts.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPModelContractAssertions {
-    
-    private MCPModelContractAssertions() {
-    }
     
     /**
      * Assert that all concrete next_actions lists use the canonical action shape.

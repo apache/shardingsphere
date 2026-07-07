@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPDescriptorCatalogValidator {
-    
-    private MCPDescriptorCatalogValidator() {
-    }
     
     static void validate(final MCPDescriptorCatalog catalog) {
         MCPResourceDescriptorValidator.validate(catalog);

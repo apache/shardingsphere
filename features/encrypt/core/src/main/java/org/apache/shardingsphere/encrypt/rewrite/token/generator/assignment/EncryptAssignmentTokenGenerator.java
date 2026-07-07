@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -51,6 +52,7 @@ import java.util.Optional;
  */
 @Slf4j
 @HighFrequencyInvocation
+@AllArgsConstructor
 public final class EncryptAssignmentTokenGenerator {
     
     private final EncryptRule rule;
@@ -58,12 +60,6 @@ public final class EncryptAssignmentTokenGenerator {
     private final ShardingSphereDatabase database;
     
     private final DatabaseType databaseType;
-    
-    public EncryptAssignmentTokenGenerator(final EncryptRule rule, final ShardingSphereDatabase database, final DatabaseType databaseType) {
-        this.rule = rule;
-        this.database = database;
-        this.databaseType = databaseType;
-    }
     
     /**
      * Generate SQL tokens.

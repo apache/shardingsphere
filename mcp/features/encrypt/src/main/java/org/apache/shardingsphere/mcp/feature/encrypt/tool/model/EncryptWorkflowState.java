@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFeatureData;
 
 import java.util.LinkedHashMap;
@@ -29,14 +30,12 @@ import java.util.Map;
  * Encrypt workflow state.
  */
 @Getter
+@NoArgsConstructor
 public final class EncryptWorkflowState implements WorkflowFeatureData {
     
     private final List<Map<String, Object>> beforeRules = new LinkedList<>();
     
     private final List<Map<String, Object>> expectedRules = new LinkedList<>();
-    
-    public EncryptWorkflowState() {
-    }
     
     public EncryptWorkflowState(final List<Map<String, Object>> beforeRules, final List<Map<String, Object>> expectedRules) {
         this.beforeRules.addAll(copyRules(beforeRules));

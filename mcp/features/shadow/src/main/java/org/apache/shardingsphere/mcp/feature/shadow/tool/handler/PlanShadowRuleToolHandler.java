@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.handler;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -38,16 +40,13 @@ import java.util.function.Consumer;
 /**
  * Tool handler for shadow rule workflow planning.
  */
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class PlanShadowRuleToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
     
     private final ShadowWorkflowPlanningService planningService;
     
     public PlanShadowRuleToolHandler() {
         planningService = new ShadowWorkflowPlanningService();
-    }
-    
-    PlanShadowRuleToolHandler(final ShadowWorkflowPlanningService planningService) {
-        this.planningService = planningService;
     }
     
     @Override

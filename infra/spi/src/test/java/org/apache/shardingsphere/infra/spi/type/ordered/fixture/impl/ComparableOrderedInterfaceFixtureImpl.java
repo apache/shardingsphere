@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.infra.spi.type.ordered.fixture.impl;
 
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.spi.type.ordered.fixture.OrderedInterfaceFixture;
 
 import java.util.Objects;
 
+@AllArgsConstructor
 public final class ComparableOrderedInterfaceFixtureImpl implements OrderedInterfaceFixture {
     
     private final String value;
-    
-    public ComparableOrderedInterfaceFixtureImpl(final String value) {
-        this.value = value;
-    }
     
     @Override
     public boolean equals(final Object obj) {

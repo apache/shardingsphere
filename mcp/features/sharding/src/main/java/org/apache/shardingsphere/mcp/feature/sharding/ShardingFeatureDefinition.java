@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Sharding MCP feature definition.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingFeatureDefinition {
     
     public static final WorkflowKind TABLE_RULE_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHARDING_TABLE_RULE);
@@ -117,6 +120,4 @@ public final class ShardingFeatureDefinition {
     
     public static final String AUDITOR_FIELD = "auditor";
     
-    private ShardingFeatureDefinition() {
-    }
 }

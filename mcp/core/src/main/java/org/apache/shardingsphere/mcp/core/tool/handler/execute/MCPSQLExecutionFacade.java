@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
@@ -39,6 +41,7 @@ import java.util.Optional;
 /**
  * MCP SQL execution facade.
  */
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
@@ -60,18 +63,6 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
                 new MCPJdbcTransactionStatementExecutor(sessionManager),
                 new MCPJdbcStatementExecutor(sessionManager.getTransactionResourceManager().getRuntimeDatabases(), sessionManager.getTransactionResourceManager()),
                 new StatementClassifier(), new SQLStatementScanner(), new SQLExecutionTraceFactory());
-    }
-    
-    MCPSQLExecutionFacade(final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final MCPSessionExecutionCoordinator sessionExecutionCoordinator,
-                          final MCPJdbcTransactionStatementExecutor transactionStatementExecutor, final MCPJdbcStatementExecutor statementExecutor,
-                          final StatementClassifier statementClassifier, final SQLStatementScanner scanner, final SQLExecutionTraceFactory sqlExecutionTraceFactory) {
-        this.databaseCapabilityProvider = databaseCapabilityProvider;
-        this.sessionExecutionCoordinator = sessionExecutionCoordinator;
-        this.transactionStatementExecutor = transactionStatementExecutor;
-        this.statementExecutor = statementExecutor;
-        this.statementClassifier = statementClassifier;
-        this.scanner = scanner;
-        this.sqlExecutionTraceFactory = sqlExecutionTraceFactory;
     }
     
     @Override

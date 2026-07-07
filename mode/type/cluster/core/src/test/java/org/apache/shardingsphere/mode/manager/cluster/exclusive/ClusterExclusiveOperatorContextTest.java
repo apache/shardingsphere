@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.exclusive;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveLockHandle;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
@@ -255,13 +257,10 @@ class ClusterExclusiveOperatorContextTest {
         }
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class FreshDistributedLock implements DistributedLock {
         
         private final SharedState sharedState;
-        
-        private FreshDistributedLock(final SharedState sharedState) {
-            this.sharedState = sharedState;
-        }
         
         @Override
         public boolean tryLock(final long timeoutMillis) {

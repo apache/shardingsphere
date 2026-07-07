@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
@@ -45,6 +47,7 @@ import java.util.stream.Stream;
 /**
  * Packaged distribution support for MCP E2E tests.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PackagedDistributionTestSupport {
     
     private static final String DIST_PATTERN = "apache-shardingsphere-mcp-";
@@ -56,9 +59,6 @@ public final class PackagedDistributionTestSupport {
     private static final int DOCKER_HTTP_PORT = 18088;
     
     private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
-    
-    private PackagedDistributionTestSupport() {
-    }
     
     /**
      * Prepare one packaged MCP distribution copy for E2E tests.

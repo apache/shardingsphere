@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
@@ -34,10 +36,8 @@ import java.util.stream.Collectors;
 /**
  * Validator for MCP completion targets.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPCompletionTargetDescriptorValidator {
-    
-    private MCPCompletionTargetDescriptorValidator() {
-    }
     
     /**
      * Validate completion targets against declared prompt and resource descriptors.

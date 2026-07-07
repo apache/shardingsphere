@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.exclusive;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveLockHandle;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorContext;
@@ -63,6 +64,7 @@ public final class ClusterExclusiveOperatorContext implements ExclusiveOperatorC
         return Math.max(0L, timeoutMillis - (System.currentTimeMillis() - startTimeMillis));
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class ClusterExclusiveLockHandle implements ExclusiveLockHandle {
         
         private final String operationKey;
@@ -72,12 +74,6 @@ public final class ClusterExclusiveOperatorContext implements ExclusiveOperatorC
         private final Collection<String> exclusiveOperationKeys;
         
         private final AtomicBoolean closed = new AtomicBoolean();
-        
-        private ClusterExclusiveLockHandle(final String operationKey, final DistributedLock distributedLock, final Collection<String> exclusiveOperationKeys) {
-            this.operationKey = operationKey;
-            this.distributedLock = distributedLock;
-            this.exclusiveOperationKeys = exclusiveOperationKeys;
-        }
         
         @Override
         public void close() {

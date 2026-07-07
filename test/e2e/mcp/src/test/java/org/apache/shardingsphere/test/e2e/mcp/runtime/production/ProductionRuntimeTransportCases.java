@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.List;
 import java.util.stream.Stream;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class ProductionRuntimeTransportCases {
-    
-    private ProductionRuntimeTransportCases() {
-    }
     
     static Stream<Arguments> transports() {
         return runtimeTransports().map(each -> Arguments.of(getTransportName(each), each));

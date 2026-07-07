@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.util;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -98,16 +100,12 @@ class SchemaRefreshUtilsTest {
         return new FixtureSQLStatementContext(sqlStatement, tablesContext);
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class FixtureSQLStatementContext implements SQLStatementContext {
         
         private final SQLStatement sqlStatement;
         
         private final TablesContext tablesContext;
-        
-        private FixtureSQLStatementContext(final SQLStatement sqlStatement, final TablesContext tablesContext) {
-            this.sqlStatement = sqlStatement;
-            this.tablesContext = tablesContext;
-        }
         
         @Override
         public SQLStatement getSqlStatement() {

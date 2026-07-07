@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
@@ -31,15 +33,13 @@ import java.util.Map.Entry;
 /**
  * Validator for model-facing MCP tool output schema contracts.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPToolOutputSchemaValidator {
     
     private static final Collection<String> CONTINUATION_MODES = List.of("none", "pagination", "metadata_search");
     
     private static final Collection<String> RECOVERY_CATEGORIES = List.of("not_found", "ambiguous", "empty_scope", "missing_context", "validation", "terminal",
             "unsupported_target", "invalid_enum", "unsafe_sql", "stale_workflow", "unavailable_runtime", "terminal_operator_action");
-    
-    private MCPToolOutputSchemaValidator() {
-    }
     
     /**
      * Validate one tool output schema.

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.protocol;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -27,6 +29,7 @@ import java.util.Set;
 /**
  * MCP model-facing payload contract.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPModelFacingPayloadContract {
     
     private static final Collection<String> REMOVED_MODEL_FACING_FIELDS = Set.of(
@@ -53,9 +56,6 @@ public final class MCPModelFacingPayloadContract {
             MCPPayloadFieldNames.SUMMARY, MCPPayloadFieldNames.NEXT_ACTIONS, MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.RESOURCE,
             MCPPayloadFieldNames.SELF_RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE, MCPPayloadFieldNames.NEXT_RESOURCES, "manual_artifact_summary", "manual_follow_up",
             "empty_state", "ambiguity_state", MCPPayloadFieldNames.RECOVERY, "recovery_guidance", "remediation");
-    
-    private MCPModelFacingPayloadContract() {
-    }
     
     private static Collection<String> createNextActionSchemaAllowedFields() {
         Set<String> result = new LinkedHashSet<>();

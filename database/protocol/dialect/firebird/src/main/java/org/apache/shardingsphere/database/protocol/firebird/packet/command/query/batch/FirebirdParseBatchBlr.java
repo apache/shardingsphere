@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
 import io.netty.buffer.ByteBuf;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -30,6 +32,7 @@ import java.util.List;
  * Firebird batch message format parser, port of {@code PARSE_msg_format} / {@code parse_format} from Firebird {@code parser.cpp}.
  */
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdParseBatchBlr {
     
     private static final int HEADER_LENGTH = 4;
@@ -39,12 +42,6 @@ public final class FirebirdParseBatchBlr {
     private final int messageLength;
     
     private final int netLength;
-    
-    private FirebirdParseBatchBlr(final List<FirebirdBatchColumnDescriptor> fields, final int messageLength, final int netLength) {
-        this.fields = fields;
-        this.messageLength = messageLength;
-        this.netLength = netLength;
-    }
     
     /**
      * Parse a BLR message buffer into its message format and validate that every field is supported.

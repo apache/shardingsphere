@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Validator for MCP tool descriptors and their runtime bindings.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPToolDescriptorCatalogValidator {
     
     private static final Collection<String> SUPPORTED_INPUT_SCHEMA_TOP_LEVEL_FIELDS = Set.of("type", "properties", "required", "additionalProperties");
@@ -48,9 +51,6 @@ public final class MCPToolDescriptorCatalogValidator {
     private static final String VALIDATE_RUNTIME_DATABASE = "database_gateway_validate_runtime_database";
     
     private static final Collection<String> SECRET_WORKFLOW_OUTPUT_FIELDS = List.of("masked_property_preview", "secret_reference_summary");
-    
-    private MCPToolDescriptorCatalogValidator() {
-    }
     
     /**
      * Validate tool descriptors in one descriptor catalog.

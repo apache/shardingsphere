@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
@@ -29,10 +31,8 @@ import java.util.Set;
 /**
  * Validator for MCP resource navigation descriptors.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPResourceNavigationDescriptorValidator {
-    
-    private MCPResourceNavigationDescriptorValidator() {
-    }
     
     /**
      * Validate resource navigation endpoints against public descriptor identifiers.

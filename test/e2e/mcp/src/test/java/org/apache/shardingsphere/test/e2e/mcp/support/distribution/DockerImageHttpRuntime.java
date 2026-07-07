@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe.ReadinessResult;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpInteractionClient;
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Docker image HTTP runtime support for MCP distribution E2E tests.
  */
+@RequiredArgsConstructor
 public final class DockerImageHttpRuntime implements AutoCloseable {
     
     private static final String CONTAINER_CONFIG_FILE = "/tmp/shardingsphere-mcp-e2e.yaml";
@@ -56,11 +58,6 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
     private Thread outputCollector;
     
     private int httpPort;
-    
-    public DockerImageHttpRuntime(final String imageName, final Path configFile) {
-        this.imageName = imageName;
-        this.configFile = configFile;
-    }
     
     /**
      * Open an HTTP interaction client after the Docker image becomes ready.

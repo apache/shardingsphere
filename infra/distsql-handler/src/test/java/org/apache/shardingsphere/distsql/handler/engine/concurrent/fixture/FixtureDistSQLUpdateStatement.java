@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -25,11 +26,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
  * Fixture DistSQL update statement.
  */
 @Getter
+@AllArgsConstructor
 public final class FixtureDistSQLUpdateStatement extends DistSQLStatement {
     
     private final ShardingSphereRule expectedRule;
     
-    public FixtureDistSQLUpdateStatement(final ShardingSphereRule expectedRule) {
-        this.expectedRule = expectedRule;
-    }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
@@ -33,13 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPDescriptorCatalogPayloadBuilder {
     
     private final MCPDescriptorCatalog catalog;
-    
-    private MCPDescriptorCatalogPayloadBuilder(final MCPDescriptorCatalog catalog) {
-        this.catalog = catalog;
-    }
     
     static Map<String, Object> build(final MCPDescriptorCatalog catalog, final Collection<String> supportedResources, final Collection<String> supportedTools,
                                      final Collection<?> supportedStatements) {

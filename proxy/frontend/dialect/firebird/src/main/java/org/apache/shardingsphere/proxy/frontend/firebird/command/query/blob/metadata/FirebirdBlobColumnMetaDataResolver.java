@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.metadata;
 
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -27,13 +28,10 @@ import java.util.OptionalInt;
 /**
  * Resolver for Firebird BLOB column metadata.
  */
+@AllArgsConstructor
 public final class FirebirdBlobColumnMetaDataResolver {
     
     private final String databaseName;
-    
-    public FirebirdBlobColumnMetaDataResolver(final String databaseName) {
-        this.databaseName = databaseName;
-    }
     
     /**
      * Resolve BLOB-related metadata for the given table column.

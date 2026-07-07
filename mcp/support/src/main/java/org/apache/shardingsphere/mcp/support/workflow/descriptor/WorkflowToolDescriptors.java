@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Shared workflow tool names.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowToolDescriptors {
     
     public static final String APPLY_TOOL_NAME = "database_gateway_apply_workflow";
     
     public static final String VALIDATE_TOOL_NAME = "database_gateway_validate_workflow";
     
-    private WorkflowToolDescriptors() {
-    }
 }

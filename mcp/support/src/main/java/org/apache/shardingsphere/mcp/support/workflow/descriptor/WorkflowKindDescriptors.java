@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import java.util.Collection;
 import java.util.Set;
 
 /**
  * Shared workflow kind descriptors.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowKindDescriptors {
     
     public static final String ENCRYPT_RULE = "encrypt.rule";
@@ -56,9 +59,6 @@ public final class WorkflowKindDescriptors {
     private static final Collection<String> RULE_DISTSQL_ONLY_WORKFLOW_KINDS = Set.of(ENCRYPT_RULE, MASK_RULE, BROADCAST_RULE, READWRITE_RULE, READWRITE_STATUS, SHADOW_RULE,
             SHADOW_DEFAULT_ALGORITHM, SHADOW_ALGORITHM_CLEANUP, SHARDING_TABLE_RULE, SHARDING_TABLE_REFERENCE, SHARDING_DEFAULT_STRATEGY, SHARDING_KEY_GENERATOR,
             SHARDING_KEY_GENERATE_STRATEGY, SHARDING_COMPONENT_CLEANUP);
-    
-    private WorkflowKindDescriptors() {
-    }
     
     /**
      * Judge whether workflow must expose rule DistSQL artifacts only.

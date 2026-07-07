@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -26,6 +28,7 @@ import java.util.Map;
 /**
  * Workflow artifact payload utility methods.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowArtifactPayloadUtils {
     
     public static final String ARTIFACT_TYPE_CREATE_INDEX = "create-index";
@@ -45,9 +48,6 @@ public final class WorkflowArtifactPayloadUtils {
     public static final String STEP_INDEX_DDL = "index_ddl";
     
     public static final String STEP_RULE_DISTSQL = "rule_distsql";
-    
-    private WorkflowArtifactPayloadUtils() {
-    }
     
     /**
      * Create masked workflow artifact payload.

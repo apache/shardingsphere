@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.testcontainers.DockerClientFactory;
 
@@ -24,10 +26,8 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.Properties;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MySQLRuntimeDockerSupport {
-    
-    private MySQLRuntimeDockerSupport() {
-    }
     
     static String getMySQLImage() {
         return getMySQLImage(EnvironmentPropertiesLoader.loadProperties());

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
@@ -44,10 +46,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPDescriptorCatalogYamlSwapper {
-    
-    private MCPDescriptorCatalogYamlSwapper() {
-    }
     
     static MCPDescriptorCatalog swap(final Collection<YamlMCPDescriptorCatalog> yamlCatalogs) {
         Collection<MCPResourceDescriptor> resourceDescriptors = new LinkedList<>();

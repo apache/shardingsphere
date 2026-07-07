@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -30,16 +32,13 @@ import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 /**
  * Broadcast rule count handler.
  */
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class BroadcastRuleCountHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
     private final BroadcastRuleInspectionService ruleInspectionService;
     
     public BroadcastRuleCountHandler() {
         ruleInspectionService = new BroadcastRuleInspectionService();
-    }
-    
-    BroadcastRuleCountHandler(final BroadcastRuleInspectionService ruleInspectionService) {
-        this.ruleInspectionService = ruleInspectionService;
     }
     
     @Override

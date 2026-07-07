@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Shadow MCP feature definition.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowFeatureDefinition {
     
     public static final String PLAN_RULE_TOOL_NAME = "database_gateway_plan_shadow_rule";
@@ -73,6 +76,4 @@ public final class ShadowFeatureDefinition {
     
     public static final String ALGORITHM_PLUGINS_RESOURCE_URI = "shardingsphere://features/shadow/algorithm-plugins";
     
-    private ShadowFeatureDefinition() {
-    }
 }

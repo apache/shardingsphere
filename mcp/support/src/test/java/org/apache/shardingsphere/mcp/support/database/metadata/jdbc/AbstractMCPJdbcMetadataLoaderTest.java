@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
@@ -403,16 +404,12 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
         }
     }
     
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
     protected static final class MockDriver implements Driver {
         
         private final String jdbcUrl;
         
         private final Connection connection;
-        
-        protected MockDriver(final String jdbcUrl, final Connection connection) {
-            this.jdbcUrl = jdbcUrl;
-            this.connection = connection;
-        }
         
         @Override
         public Connection connect(final String url, final Properties info) {

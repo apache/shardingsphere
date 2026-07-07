@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -664,10 +666,6 @@ class DatabaseIdentifierContextFactoryTest {
         return new IdentifierValue(quoted ? quoteCharacter + lookupName + quoteCharacter : lookupName);
     }
     
-    private static ResourceMetaData createResourceMetaDataWithFirstDataSource() {
-        return createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db");
-    }
-    
     private static ResourceMetaData createResourceMetaDataWithMySQLLowerCaseTableNames(final int lowerCaseTableNames) {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(1, 1F);
         storageUnits.put("ds_0", createStorageUnit("ds_0", "jdbc:mysql://localhost:3306/foo_db", new LowerCaseTableNamesDataSource(lowerCaseTableNames)));
@@ -739,13 +737,10 @@ class DatabaseIdentifierContextFactoryTest {
         }
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class LowerCaseTableNamesDataSource implements DataSource {
         
         private final int lowerCaseTableNames;
-        
-        private LowerCaseTableNamesDataSource(final int lowerCaseTableNames) {
-            this.lowerCaseTableNames = lowerCaseTableNames;
-        }
         
         @Override
         public Connection getConnection() {
