@@ -193,13 +193,13 @@
     </question>
     <answer>no_builtin_auth|origin_403|gateway_auth_boundary</answer>
     <expected_answer>
-      The built-in ShardingSphere MCP HTTP runtime does not provide authorization in this release; transport.type only selects the active
+      The built-in ShardingSphere MCP HTTP runtime does not provide authentication or authorization; transport.type only selects the active
       transport, and bindHost controls the listener address. Missing Origin is accepted for non-browser clients, but any present Origin on a
       non-loopback binding is rejected with 403. Authentication and authorization must be enforced by the trusted network, reverse proxy, or
       gateway, and the answer should not invent OAuth or token YAML fields.
     </expected_answer>
     <verification>
-      <step>Confirm the answer says built-in Streamable HTTP authorization is absent in this release.</step>
+      <step>Confirm the answer says built-in Streamable HTTP authentication and authorization are absent.</step>
       <step>Confirm the answer states present Origin headers are rejected for non-loopback bindings.</step>
       <step>Confirm the answer places authentication at a trusted gateway or network boundary.</step>
     </verification>
