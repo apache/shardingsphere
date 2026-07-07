@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
@@ -251,21 +252,7 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
     }
     
     protected String getSequenceQuery(final String databaseType) {
-        switch (databaseType) {
-            case "PostgreSQL":
-            case "openGauss":
-                return "SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences";
-            case "SQLServer":
-                return "SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id";
-            case "Oracle":
-                return "SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES";
-            case "MariaDB":
-                return "SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'";
-            case "Firebird":
-                return "SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0";
-            default:
-                return "";
-        }
+        return MCPDatabaseDialect.of(databaseType).getSequenceQuery().orElse("");
     }
     
     protected ResultSet mockResultSet(final String columnName, final String... values) throws SQLException {

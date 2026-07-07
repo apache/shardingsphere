@@ -71,6 +71,11 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertCanonicalizeIdentifierKeepsMySQLUnquotedIdentifier() {
+        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("MySQL", "Phone"), is("Phone"));
+    }
+    
+    @Test
     void assertCanonicalizeIdentifierPreservesSpecialIdentifier() {
         assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "Phone Number"), is("Phone Number"));
     }
@@ -185,6 +190,12 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertFormatSQLIdentifierUsesSQLServerQuoteStyle() {
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("SQLServer", "order detail");
+        assertThat(actualValue, is("[order detail]"));
+    }
+    
+    @Test
     void assertFormatSQLIdentifierPreservesDelimitedSafeIdentifier() {
         String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "\"orders\"");
         assertThat(actualValue, is("\"orders\""));
@@ -206,8 +217,12 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertIsSameIdentifierKeepsPostgreSQLExistingQuotedIdentifierDistinct() {
+    void assertIsSameIdentifierRejectsUnquotedPostgreSQLQuotedName() {
         assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "Phone"));
+    }
+    
+    @Test
+    void assertIsSameIdentifierMatchesQuotedPostgreSQLName() {
         assertTrue(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "\"Phone\"", "Phone"));
     }
     

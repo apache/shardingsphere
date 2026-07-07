@@ -123,7 +123,7 @@ class WorkflowValidationSupportTest {
     
     @Test
     void assertCreateProjectionValidationSql() {
-        assertThat(validationSupport.createProjectionValidationSql(createSnapshot()), is("SELECT phone FROM orders"));
+        assertThat(validationSupport.createProjectionValidationSql(createSnapshot(), "MySQL"), is("SELECT phone FROM orders"));
     }
     
     @Test
@@ -131,7 +131,7 @@ class WorkflowValidationSupportTest {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getRequest().setTable("order detail");
         snapshot.getRequest().setColumn("Phone Number");
-        assertThat(validationSupport.createProjectionValidationSql(snapshot), is("SELECT `Phone Number` FROM `order detail`"));
+        assertThat(validationSupport.createProjectionValidationSql(snapshot, "MySQL"), is("SELECT `Phone Number` FROM `order detail`"));
     }
     
     @Test

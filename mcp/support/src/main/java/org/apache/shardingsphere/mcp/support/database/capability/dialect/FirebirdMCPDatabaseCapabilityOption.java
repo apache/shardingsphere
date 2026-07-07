@@ -21,13 +21,30 @@ import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecution
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * MCP database capability option for Firebird.
  */
 public final class FirebirdMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
+    private static final String SEQUENCE_QUERY =
+            "SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0";
+    
     public FirebirdMCPDatabaseCapabilityOption() {
         super("Firebird", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                 SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return List.of("system_lobs", "system_tables");
+    }
+    
+    @Override
+    public Optional<String> getSequenceQuery() {
+        return Optional.of(SEQUENCE_QUERY);
     }
 }

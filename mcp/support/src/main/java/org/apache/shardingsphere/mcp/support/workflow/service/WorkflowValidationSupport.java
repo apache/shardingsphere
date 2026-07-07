@@ -99,16 +99,6 @@ public final class WorkflowValidationSupport {
      * Create the baseline projection SQL used by workflow validation.
      *
      * @param snapshot workflow snapshot
-     * @return projection validation SQL
-     */
-    public String createProjectionValidationSql(final WorkflowContextSnapshot snapshot) {
-        return createProjectionValidationSql(snapshot, "MySQL");
-    }
-    
-    /**
-     * Create the baseline projection SQL used by workflow validation.
-     *
-     * @param snapshot workflow snapshot
      * @param databaseType database type
      * @return projection validation SQL
      */

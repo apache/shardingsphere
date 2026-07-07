@@ -17,18 +17,52 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * MCP database capability option for openGauss.
  */
 public final class OpenGaussMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
+    private static final String SEQUENCE_QUERY =
+            "SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences";
+    
     public OpenGaussMCPDatabaseCapabilityOption() {
         super("openGauss", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                 SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
+    }
+    
+    @Override
+    public IdentifierCasePolicySet getIdentifierCasePolicySet() {
+        return IdentifierCasePolicyFactory.newLowerCasePolicySet();
+    }
+    
+    @Override
+    public boolean isUnquotedIdentifierCaseFolded() {
+        return true;
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return List.of("information_schema", "pg_catalog", "shardingsphere");
+    }
+    
+    @Override
+    public Optional<String> getSequenceQuery() {
+        return Optional.of(SEQUENCE_QUERY);
+    }
+    
+    @Override
+    public boolean isInformationSchemaColumnSchemaFilterRequired() {
+        return true;
     }
     
     @Override

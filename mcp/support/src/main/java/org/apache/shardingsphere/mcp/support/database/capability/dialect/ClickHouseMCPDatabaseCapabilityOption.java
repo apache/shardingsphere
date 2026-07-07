@@ -21,6 +21,9 @@ import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecution
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * MCP database capability option for ClickHouse.
  */
@@ -28,5 +31,10 @@ public final class ClickHouseMCPDatabaseCapabilityOption extends AbstractMCPData
     
     public ClickHouseMCPDatabaseCapabilityOption() {
         super("ClickHouse", TransactionCapability.NONE, false, SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, false);
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return List.of("information_schema");
     }
 }
