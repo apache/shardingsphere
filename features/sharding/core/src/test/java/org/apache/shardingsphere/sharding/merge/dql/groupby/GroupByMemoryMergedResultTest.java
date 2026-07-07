@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -662,8 +663,15 @@ class GroupByMemoryMergedResultTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
         
-        AggregationProjection avgProjection =
-                selectStatementContext.getProjectionsContext().getAggregationProjections().get(0);
+        AggregationProjection avgProjection;
+        if (!selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()) {
+            avgProjection = selectStatementContext.getProjectionsContext().getAggregationProjections().get(0);
+        } else {
+            ExpressionProjection expressionProjection = (ExpressionProjection) selectStatementContext.getProjectionsContext().getProjections().iterator().next();
+            avgProjection = selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations().get(expressionProjection).get(0);
+        }
+        
+        avgProjection.setIndex(1);
         avgProjection.getDerivedAggregationProjections().get(0).setIndex(3);
         avgProjection.getDerivedAggregationProjections().get(1).setIndex(4);
         
