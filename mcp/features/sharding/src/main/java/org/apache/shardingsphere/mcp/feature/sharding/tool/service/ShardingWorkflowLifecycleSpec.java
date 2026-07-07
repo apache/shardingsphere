@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -25,6 +27,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+@Getter(AccessLevel.PACKAGE)
 final class ShardingWorkflowLifecycleSpec {
     
     private final WorkflowKind workflowKind;
@@ -54,31 +57,4 @@ final class ShardingWorkflowLifecycleSpec {
         this.artifactSupplier = artifactSupplier;
     }
     
-    WorkflowKind getWorkflowKind() {
-        return workflowKind;
-    }
-    
-    String getDefaultOperationType() {
-        return defaultOperationType;
-    }
-    
-    String getSummary() {
-        return summary;
-    }
-    
-    Function<ShardingWorkflowRequest, Boolean> getExistsSupplier() {
-        return existsSupplier;
-    }
-    
-    Function<ShardingWorkflowRequest, Boolean> getRequiredInputSupplier() {
-        return requiredInputSupplier;
-    }
-    
-    BiFunction<ShardingWorkflowRequest, WorkflowContextSnapshot, Boolean> getAlgorithmPlanSupplier() {
-        return algorithmPlanSupplier;
-    }
-    
-    Function<ShardingWorkflowRequest, RuleArtifact> getArtifactSupplier() {
-        return artifactSupplier;
-    }
 }

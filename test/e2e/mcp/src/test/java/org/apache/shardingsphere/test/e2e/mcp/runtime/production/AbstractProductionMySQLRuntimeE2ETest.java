@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
@@ -59,19 +61,13 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     
     protected static final String MASK_PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
     
+    @Getter(AccessLevel.PROTECTED)
     private GenericContainer<?> container;
     
+    @Getter(AccessLevel.PROTECTED)
     private String physicalSchemaName;
     
     private MySQLRuntimeFixture sharedRuntimeFixture;
-    
-    protected GenericContainer<?> getContainer() {
-        return container;
-    }
-    
-    protected String getPhysicalSchemaName() {
-        return physicalSchemaName;
-    }
     
     @AfterEach
     void tearDownContainer() {

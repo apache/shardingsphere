@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.view;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -242,10 +244,13 @@ class CreateViewPushDownMetaDataRefresherTest {
     
     private static final class RecordingMetaDataManagerPersistService implements MetaDataManagerPersistService {
         
+        @Getter(AccessLevel.PRIVATE)
         private boolean alterSingleRuleConfigurationCalled;
         
+        @Getter(AccessLevel.PRIVATE)
         private ShardingSphereDatabase alterSingleRuleConfigurationDatabase;
         
+        @Getter(AccessLevel.PRIVATE)
         private RuleMetaData alterSingleRuleConfigurationRuleMetaData;
         
         @Override
@@ -341,18 +346,6 @@ class CreateViewPushDownMetaDataRefresherTest {
         @Override
         public void alterProperties(final Properties props) {
             throw new UnsupportedOperationException();
-        }
-        
-        private boolean isAlterSingleRuleConfigurationCalled() {
-            return alterSingleRuleConfigurationCalled;
-        }
-        
-        private ShardingSphereDatabase getAlterSingleRuleConfigurationDatabase() {
-            return alterSingleRuleConfigurationDatabase;
-        }
-        
-        private RuleMetaData getAlterSingleRuleConfigurationRuleMetaData() {
-            return alterSingleRuleConfigurationRuleMetaData;
         }
     }
 }

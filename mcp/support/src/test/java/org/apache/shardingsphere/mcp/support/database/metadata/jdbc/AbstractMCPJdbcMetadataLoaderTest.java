@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
@@ -373,16 +374,13 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PROTECTED)
     protected static final class LoadedMetadataCatalog {
         
         private final Map<String, MCPDatabaseMetadata> databaseMetadataMap;
         
         protected Optional<MCPDatabaseMetadata> findMetadata(final String databaseName) {
             return Optional.ofNullable(databaseMetadataMap.get(databaseName));
-        }
-        
-        protected Map<String, MCPDatabaseMetadata> getDatabaseMetadataMap() {
-            return databaseMetadataMap;
         }
     }
     

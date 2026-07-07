@@ -56,10 +56,6 @@ public final class FirebirdBlobUpload {
         return buffer.toByteArray();
     }
     
-    public boolean isClosed() {
-        return closed;
-    }
-    
     /**
      * Mark this BLOB upload as closed.
      */

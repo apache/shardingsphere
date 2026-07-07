@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource.handler;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
@@ -392,41 +393,23 @@ class CoreResourceHandlerSurfaceTest {
         
         private final String description;
         
+        @Getter(AccessLevel.PRIVATE)
         private final MCPResourceHandler<?> handler;
         
+        @Getter(AccessLevel.PRIVATE)
         private final String expectedUriTemplate;
         
+        @Getter(AccessLevel.PRIVATE)
         private final String resourceUri;
         
+        @Getter(AccessLevel.PRIVATE)
         private final HandlerResultType expectedType;
         
+        @Getter(AccessLevel.PRIVATE)
         private final String expectedDatabase;
         
+        @Getter(AccessLevel.PRIVATE)
         private final List<String> expectedObjectNames;
-        
-        private MCPResourceHandler<?> getHandler() {
-            return handler;
-        }
-        
-        private String getExpectedUriTemplate() {
-            return expectedUriTemplate;
-        }
-        
-        private String getResourceUri() {
-            return resourceUri;
-        }
-        
-        private HandlerResultType getExpectedType() {
-            return expectedType;
-        }
-        
-        private String getExpectedDatabase() {
-            return expectedDatabase;
-        }
-        
-        private List<String> getExpectedObjectNames() {
-            return expectedObjectNames;
-        }
         
         @Override
         public String toString() {
