@@ -27,7 +27,14 @@ import java.util.OptionalLong;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Registry for Firebird BLOB upload segments.
+ * Registry for Firebird BLOB.
+ *
+ * <p>In the Firebird protocol the client transfers a BLOB before the SQL statement: first create_blob,
+ * then the data segments, and only then execute with an INSERT/UPDATE that carries a blob id instead of the content.
+ * Routing depends on the SQL and the sharding key, so while the BLOB is being transferred the proxy does not know
+ * yet which shard it should go to and cannot forward the data to a backend right away. That is why we buffer
+ * the BLOB here: the client keeps sending put_segment, and once it calls close the BLOB is fully received
+ * and can be substituted into the statement as a regular parameter on execute.</p>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlobUploadCache {
