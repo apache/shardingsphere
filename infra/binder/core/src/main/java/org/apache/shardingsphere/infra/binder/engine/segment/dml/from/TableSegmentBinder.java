@@ -28,6 +28,9 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.JoinT
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SubqueryTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
@@ -35,6 +38,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Table segment binder.
@@ -68,7 +74,7 @@ public final class TableSegmentBinder {
         if (segment instanceof FunctionTableSegment) {
             String name = segment.getAliasName().orElseGet(() -> ((FunctionTableSegment) segment).getTableFunction().getText());
             if (null != name) {
-                tableBinderContexts.put(CaseInsensitiveString.of(name), new FunctionTableSegmentBinderContext());
+                tableBinderContexts.put(CaseInsensitiveString.of(name), new FunctionTableSegmentBinderContext(createProjectionSegments(((FunctionTableSegment) segment).getColumns())));
             }
             return segment;
         }
@@ -80,5 +86,11 @@ public final class TableSegmentBinder {
             return segment;
         }
         return segment;
+    }
+    
+    private static Collection<ProjectionSegment> createProjectionSegments(final Collection<ColumnSegment> columns) {
+        Collection<ProjectionSegment> result = new LinkedList<>();
+        columns.forEach(each -> result.add(new ColumnProjectionSegment(each)));
+        return result;
     }
 }

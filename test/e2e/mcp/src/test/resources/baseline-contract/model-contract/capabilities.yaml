@@ -575,8 +575,8 @@ tools:
   annotations: {title: Execute Query SQL, readOnlyHint: true, destructiveHint: false,
     idempotentHint: true, openWorldHint: true}
 - name: database_gateway_execute_update
-  annotations: {title: Execute Update SQL, readOnlyHint: false, destructiveHint: true,
-    idempotentHint: false, openWorldHint: true}
+  annotations: {title: Preview or Execute Side-Effecting SQL, readOnlyHint: false,
+    destructiveHint: true, idempotentHint: false, openWorldHint: true}
 - name: database_gateway_plan_encrypt_rule
   annotations: {title: Plan Encrypt Rule, readOnlyHint: false, destructiveHint: false,
     idempotentHint: false, openWorldHint: true}
@@ -754,7 +754,7 @@ prompts:
 completionTargets:
 - referenceType: prompt
   reference: plan_broadcast_rule
-  arguments: [database]
+  arguments: [database, table, plan_id]
   maxValues: 50
 - referenceType: resource
   reference: shardingsphere://databases/{database}
@@ -870,55 +870,57 @@ completionTargets:
       sequence: [database, schema]
 - referenceType: prompt
   reference: plan_encrypt_rule
-  arguments: [algorithm_type, assisted_query_algorithm_type, like_query_algorithm_type]
+  arguments: [database, schema, table, column, algorithm_type, assisted_query_algorithm_type,
+    like_query_algorithm_type, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_mask_rule
-  arguments: [algorithm_type]
+  arguments: [database, schema, table, column, algorithm_type, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_readwrite_splitting_rule
-  arguments: [database, load_balancer_type]
+  arguments: [database, write_storage_unit, load_balancer_type, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_readwrite_splitting_status
-  arguments: [database]
+  arguments: [database, storage_unit, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_shadow_rule
-  arguments: [database, algorithm_type]
+  arguments: [database, source_storage_unit, shadow_storage_unit, table, algorithm_type,
+    plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_default_shadow_algorithm
-  arguments: [database, algorithm_type]
+  arguments: [database, algorithm_type, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_shadow_algorithm_cleanup
-  arguments: [database]
+  arguments: [database, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_sharding_table_rule
-  arguments: [database, algorithm_type]
+  arguments: [database, algorithm_type, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_sharding_table_reference_rule
-  arguments: [database]
+  arguments: [database, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_sharding_default_strategy
-  arguments: [database, algorithm_type]
+  arguments: [database, algorithm_type, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_sharding_key_generator
-  arguments: [database, key_generator_type]
+  arguments: [database, key_generator_type, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_sharding_key_generate_strategy
-  arguments: [database, key_generator_type]
+  arguments: [database, key_generator_type, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: plan_sharding_rule_component_cleanup
-  arguments: [database]
+  arguments: [database, plan_id]
   maxValues: 50
 - referenceType: prompt
   reference: inspect_metadata

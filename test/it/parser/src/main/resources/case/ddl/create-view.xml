@@ -2418,20 +2418,22 @@
 
     <create-view sql-case-id="create_view_with_cte" view-definition="CREATE VIEW user_orders AS WITH user_cte AS (SELECT id, name FROM users) SELECT u.name, o.order_id FROM user_cte u JOIN orders o ON u.id = o.user_id">
         <view name="user_orders" start-index="12" stop-index="22" />
-        <cte start-index="38" stop-index="76">
-            <cte-item name="user_cte" start-index="43" stop-index="51">
-                <select>
-                    <projections start-index="63" stop-index="70">
-                        <column-projection name="id" start-index="63" stop-index="65" />
-                        <column-projection name="name" start-index="68" stop-index="70" />
-                    </projections>
-                    <from>
-                        <simple-table name="users" start-index="77" stop-index="82" />
-                    </from>
-                </select>
-            </cte-item>
-        </cte>
         <select>
+            <with start-index="27" stop-index="71">
+                <common-table-expression name="user_cte" start-index="32" stop-index="71">
+                    <subquery start-index="44" stop-index="71">
+                        <select>
+                            <projections start-index="52" stop-index="59">
+                                <column-projection name="id" start-index="52" stop-index="53" />
+                                <column-projection name="name" start-index="56" stop-index="59" />
+                            </projections>
+                            <from>
+                                <simple-table name="users" start-index="66" stop-index="70" />
+                            </from>
+                        </select>
+                    </subquery>
+                </common-table-expression>
+            </with>
             <projections start-index="80" stop-index="97">
                 <column-projection name="name" start-index="80" stop-index="85">
                     <owner name="u" start-index="80" stop-index="80" />
