@@ -25,7 +25,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MaskFeatureDefinitionTest {
     
@@ -43,6 +42,6 @@ class MaskFeatureDefinitionTest {
     void assertPromptCompletionArguments() {
         MCPCompletionTargetDescriptor actual = MCPDescriptorCatalogLoader.load().getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
                 .filter(each -> "prompt".equals(each.getReferenceType()) && MaskFeatureDefinition.PLAN_PROMPT_NAME.equals(each.getReference())).findFirst().orElseThrow();
-        assertTrue(actual.getArguments().containsAll(List.of("database", "schema", "table", "column", "plan_id")));
+        assertThat(actual.getArguments(), is(List.of("database", "schema", "table", "column", "algorithm_type", "plan_id")));
     }
 }

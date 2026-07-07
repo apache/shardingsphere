@@ -51,6 +51,8 @@ final class ProductionMCPClientTransportFactory {
     
     private static final String MASK_PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
     
+    private static final List<String> SUPPORTED_PROTOCOL_VERSIONS = List.of(ProtocolVersions.MCP_2025_11_25);
+    
     private ProductionMCPClientTransportFactory() {
     }
     
@@ -67,7 +69,7 @@ final class ProductionMCPClientTransportFactory {
     
     static McpClientTransport createHttpClientTransport(final URI endpointUri) {
         return HttpClientStreamableHttpTransport.builder(String.format("%s://%s:%d", endpointUri.getScheme(), endpointUri.getHost(), endpointUri.getPort()))
-                .endpoint(endpointUri.getPath()).build();
+                .endpoint(endpointUri.getPath()).supportedProtocolVersions(SUPPORTED_PROTOCOL_VERSIONS).build();
     }
     
     static StdioClientTransport createStdioClientTransport(final Path configFile) throws IOException {
@@ -111,7 +113,7 @@ final class ProductionMCPClientTransportFactory {
         
         @Override
         public List<String> protocolVersions() {
-            return List.of(ProtocolVersions.MCP_2025_06_18, ProtocolVersions.MCP_2025_11_25);
+            return SUPPORTED_PROTOCOL_VERSIONS;
         }
     }
 }

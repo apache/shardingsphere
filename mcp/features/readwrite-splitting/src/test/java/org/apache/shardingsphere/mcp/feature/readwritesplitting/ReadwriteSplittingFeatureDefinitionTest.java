@@ -26,7 +26,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReadwriteSplittingFeatureDefinitionTest {
     
@@ -39,13 +38,13 @@ class ReadwriteSplittingFeatureDefinitionTest {
     @Test
     void assertPromptCompletionArguments() {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
-        assertCompletionTargetArguments(catalog, ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME, "database", "write_storage_unit", "plan_id");
+        assertCompletionTargetArguments(catalog, ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME, "database", "write_storage_unit", "load_balancer_type", "plan_id");
         assertCompletionTargetArguments(catalog, ReadwriteSplittingFeatureDefinition.PLAN_STATUS_PROMPT_NAME, "database", "storage_unit", "plan_id");
     }
     
     private void assertCompletionTargetArguments(final MCPDescriptorCatalog catalog, final String promptName, final String... expectedArguments) {
         MCPCompletionTargetDescriptor actual = catalog.getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
                 .filter(each -> "prompt".equals(each.getReferenceType()) && promptName.equals(each.getReference())).findFirst().orElseThrow();
-        assertTrue(actual.getArguments().containsAll(List.of(expectedArguments)));
+        assertThat(actual.getArguments(), is(List.of(expectedArguments)));
     }
 }

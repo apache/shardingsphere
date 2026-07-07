@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatab
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
 
@@ -152,6 +153,19 @@ class MCPCompletionSpecificationFactoryTest {
     }
     
     @Test
+    void assertCompletePlanIdsByPromptWorkflowKind() {
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(createSnapshot("encrypt-plan", "session-1", "encrypt.rule", WorkflowLifecycle.STATUS_PLANNED));
+        workflowSessionContext.save(createSnapshot("mask-plan", "session-1", "mask.rule", WorkflowLifecycle.STATUS_PLANNED));
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(workflowSessionContext)).createCompletionSpecifications(),
+                new McpSchema.PromptReference("plan_encrypt_rule"));
+        McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
+                new McpSchema.CompleteRequest(new McpSchema.PromptReference("plan_encrypt_rule"), new McpSchema.CompleteRequest.CompleteArgument("plan_id", "")));
+        assertThat(actual.completion().values(), is(List.of("encrypt-plan")));
+        assertThat(actual.completion().total(), is(1));
+    }
+    
+    @Test
     void assertCompletePlanIdsWithExactMatchFirst() {
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         when(workflowSessionContext.list("session-1")).thenReturn(List.of(
@@ -200,7 +214,13 @@ class MCPCompletionSpecificationFactoryTest {
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId, final String sessionId, final String status) {
-        return createSnapshot(planId, sessionId, status, null);
+        return createSnapshot(planId, sessionId, status, (Instant) null);
+    }
+    
+    private WorkflowContextSnapshot createSnapshot(final String planId, final String sessionId, final String workflowKind, final String status) {
+        WorkflowContextSnapshot result = createSnapshot(planId, sessionId, status);
+        result.setWorkflowKind(WorkflowKind.valueOf(workflowKind));
+        return result;
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId, final String sessionId, final String status, final Instant updateTime) {

@@ -394,7 +394,9 @@ tools:
               type: tool_call
               title: Call database_gateway_apply_workflow
               tool_name: database_gateway_apply_workflow
-              arguments: {}
+              arguments:
+                plan_id: mask-rule-20260505-001
+                execution_mode: preview
               reason: Preview generated mask rule DistSQL artifacts.
     annotations:
       title: Plan Mask Rule

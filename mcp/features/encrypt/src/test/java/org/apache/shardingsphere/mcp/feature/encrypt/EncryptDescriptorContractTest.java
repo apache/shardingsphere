@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,7 +49,8 @@ class EncryptDescriptorContractTest {
     
     @Test
     void assertPromptCompletionArguments() {
-        assertCompletionTargetArguments(EncryptFeatureDefinition.PLAN_PROMPT_NAME, "database", "schema", "table", "column", "plan_id");
+        assertCompletionTargetArguments(EncryptFeatureDefinition.PLAN_PROMPT_NAME, "database", "schema", "table", "column", "algorithm_type", "assisted_query_algorithm_type",
+                "like_query_algorithm_type", "plan_id");
     }
     
     private MCPToolDescriptor findToolDescriptor() {
@@ -59,7 +62,7 @@ class EncryptDescriptorContractTest {
     private void assertCompletionTargetArguments(final String promptName, final String... expectedArguments) {
         MCPCompletionTargetDescriptor actual = MCPDescriptorCatalogLoader.load().getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
                 .filter(each -> "prompt".equals(each.getReferenceType()) && promptName.equals(each.getReference())).findFirst().orElseThrow();
-        assertTrue(actual.getArguments().containsAll(List.of(expectedArguments)));
+        assertThat(actual.getArguments(), is(List.of(expectedArguments)));
     }
     
     private void assertEncryptDistSQLExampleValue(final Object value) {

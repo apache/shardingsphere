@@ -72,6 +72,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String executionMode = resolveExecutionMode(toolArguments);
+        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
         String sql = toolArguments.getStringArgument("sql");
         ClassificationResult classificationResult = checkUpdateStatement(toolArguments, sql);
         if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
