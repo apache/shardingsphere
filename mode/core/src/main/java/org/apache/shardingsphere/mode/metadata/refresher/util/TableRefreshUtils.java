@@ -214,7 +214,7 @@ public final class TableRefreshUtils {
     public static Optional<String> findActualTableNameByIndex(final ShardingSphereDatabase database, final String schemaName,
                                                               final IdentifierValue indexIdentifierValue, final ConfigurationProperties props) {
         IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(IdentifierScope.INDEX);
-        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
+        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null == schema) {
             return Optional.empty();
@@ -299,7 +299,7 @@ public final class TableRefreshUtils {
                                               final IdentifierValue objectIdentifierValue, final ConfigurationProperties props,
                                               final IdentifierScope scope, final Function<ShardingSphereSchema, java.util.stream.Stream<String>> actualNameStream) {
         IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(scope);
-        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
+        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null != schema) {
             Optional<String> matchedName = actualNameStream.apply(schema)
@@ -317,7 +317,7 @@ public final class TableRefreshUtils {
                                                   final IdentifierValue objectIdentifierValue, final ConfigurationProperties props, final IdentifierScope scope,
                                                   final Function<ShardingSphereTable, Collection<T>> actualObjects, final Function<T, String> actualNameMapper) {
         IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(scope);
-        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
+        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null != schema) {
             String actualTableName = getActualTableName(database, actualSchemaName, new IdentifierValue(tableName), props);

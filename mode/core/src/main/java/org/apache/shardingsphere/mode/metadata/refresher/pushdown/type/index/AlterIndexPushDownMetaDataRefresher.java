@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -53,7 +54,7 @@ public final class AlterIndexPushDownMetaDataRefresher implements PushDownMetaDa
         }
         IndexSegment indexSegment = sqlStatement.getIndex().get();
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database,
-                indexSegment.getOwner().map(optional -> optional.getIdentifier()).orElse(new IdentifierValue(schemaName)), props);
+                indexSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(new IdentifierValue(schemaName)));
         String actualTableName = TableRefreshUtils.findActualTableNameByIndex(database, actualSchemaName, indexSegment.getIndexName().getIdentifier(), props)
                 .orElseThrow(() -> new IndexNotFoundException(indexSegment.getIndexName().getIdentifier().getValue(), actualSchemaName));
         String indexName = TableRefreshUtils.getActualIndexName(database, actualSchemaName, actualTableName, indexSegment.getIndexName().getIdentifier(), props);
