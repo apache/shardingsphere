@@ -77,6 +77,8 @@ class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRunti
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
+        assertCompletionValuesContain("encrypt algorithm completion", httpClient, sessionId,
+                Map.of("type", "ref/prompt", "name", "plan_encrypt_rule"), "algorithm_type", "AES", "AES");
         assertCompletionValuesContain("readwrite-splitting load balancer completion", httpClient, sessionId,
                 Map.of("type", "ref/prompt", "name", "plan_readwrite_splitting_rule"), "load_balancer_type", "ROUND", "ROUND_ROBIN");
         assertCompletionValuesContain("shadow algorithm completion", httpClient, sessionId,

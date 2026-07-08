@@ -120,6 +120,9 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         CallToolResult actual = createRealDescriptorCallToolResult(EncryptFeatureDefinition.PLAN_TOOL_NAME, createEncryptPlanResponse());
         assertFalse(actual.isError(), () -> String.valueOf(actual.structuredContent()));
         assertThat(getStructuredContent(actual).get("status"), is("planned"));
+        String actualText = ((TextContent) actual.content().getFirst()).text();
+        assertFalse(actualText.contains("123456"));
+        assertTrue(actualText.contains("******"));
     }
     
     @Test

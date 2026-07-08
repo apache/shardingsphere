@@ -154,10 +154,12 @@
     <answer>feature_resources|plan_feature_workflows|no_apply_execute</answer>
     <expected_answer>
       The model should first use tools/list, resources/templates/list, and resources/read to discover the feature resources for encrypt,
-      broadcast, readwrite-splitting, shadow, and sharding instead of guessing tool names. It should call the matching database_gateway_plan_*
-      workflow tool only after required logical database, rule, table, storage-unit, or algorithm inputs are known, then report plan_id,
-      reviewable DistSQL artifacts, resources_to_read, and next_actions. It must not call database_gateway_apply_workflow in execute mode,
-      execute SQL updates, create physical metadata, or perform migration while the request is still a read-only review.
+      broadcast, readwrite-splitting, shadow, and sharding instead of guessing tool names. It should call the matching planning tool only
+      after required logical database, rule, table, storage-unit, or algorithm inputs are known: database_gateway_plan_encrypt_rule,
+      database_gateway_plan_broadcast_rule, database_gateway_plan_readwrite_splitting_rule, database_gateway_plan_shadow_rule, or
+      database_gateway_plan_sharding_table_rule. The model should then report plan_id, reviewable DistSQL artifacts, resources_to_read,
+      and next_actions. It must not call database_gateway_apply_workflow in execute mode, execute SQL updates, create physical metadata,
+      or perform migration while the request is still a read-only review.
     </expected_answer>
     <verification>
       <step>Confirm the answer discovers feature resources and tool schemas before selecting a planning workflow.</step>
@@ -174,11 +176,12 @@
     <answer>completion_or_plugin_resources|bounded_candidates|return_next_actions</answer>
     <expected_answer>
       The model should use completion/complete or resources/read against the nearest shardingsphere:// plugin resource before choosing
-      uncertain algorithm fields: mask algorithms, readwrite-splitting load-balance algorithms, shadow algorithm plugins, sharding algorithm
-      plugins, and sharding key-generate algorithm plugins. It should treat returned values as bounded candidates, keep context arguments such
-      as database or resource reference explicit, and avoid exposing secret property values as completion suggestions. If completion has no safe
-      candidate, it should use the recovery message, resources_to_read, and next_actions from the planning response instead of inventing an
-      algorithm or applying a workflow.
+      uncertain algorithm fields: shardingsphere://features/mask/algorithms,
+      shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins, shardingsphere://features/shadow/algorithm-plugins,
+      shardingsphere://features/sharding/algorithm-plugins, and shardingsphere://features/sharding/key-generate-algorithm-plugins.
+      It should treat returned values as bounded candidates, keep context arguments such as database or resource reference explicit, and avoid
+      exposing secret property values as completion suggestions. If completion has no safe candidate, it should use the recovery message,
+      resources_to_read, and next_actions from the planning response instead of inventing an algorithm or applying a workflow.
     </expected_answer>
     <verification>
       <step>Confirm the answer uses completion/complete or resources/read plugin resources before selecting uncertain algorithm names.</step>
