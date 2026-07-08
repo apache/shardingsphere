@@ -56,16 +56,19 @@ class MCPGuidancePayloadBuilderTest {
         Map<?, ?> actualCompletionRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "complete_uncertain_argument");
         assertThat(actualCompletionRoute.get("first_action"), is("call completion/complete for one uncertain argument"));
         Map<?, ?> actualRuleWorkflowRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "rule_workflow");
-        assertThat(actualRuleWorkflowRoute.get("first_action"), is("call_tool matching database_gateway_plan_* workflow tool"));
+        assertThat(actualRuleWorkflowRoute.get("first_action"), is("call_tool matching database_gateway_plan_* workflow tool without plan_id for a new plan"));
         Map<?, ?> actualRecoveryRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "recover_error");
         assertThat(actualRecoveryRoute.get("first_action"), is("follow top-level next_actions"));
         assertThat(((Map<?, ?>) actual.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
         Map<?, ?> actualSideEffectingSelection = castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting"));
         assertThat(actualSideEffectingSelection.get("execute_requires"), is("execution_mode=execute"));
         assertThat(actualSideEffectingSelection.get("rule_change_preference"),
-                is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw SQL execution."));
+                is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw SQL execution; "
+                        + "omit plan_id for a new plan."));
         Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
-        assertThat(actualWorkflowRule.get("selection_rule"), is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw side-effect SQL."));
+        assertThat(actualWorkflowRule.get("selection_rule"),
+                is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw side-effect SQL; "
+                        + "omit plan_id for a new plan and reuse only returned plan_id values."));
         assertThat(actualWorkflowRule.get("planning_tools"), is(List.of("database_gateway_plan_encrypt_rule")));
         assertThat(castToMap(actualWorkflowRule.get("preview_tool")).get("execution_mode"), is("preview"));
         assertThat(castToMap(actualWorkflowRule.get("execute_tool")).get("execute_requires"),

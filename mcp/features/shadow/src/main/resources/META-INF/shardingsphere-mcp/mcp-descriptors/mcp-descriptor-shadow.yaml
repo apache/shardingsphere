@@ -199,7 +199,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a shadow rule plan."
+        description: "Existing current-session workflow plan identifier used only to continue a shadow rule plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -236,7 +236,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a default shadow algorithm plan."
+        description: "Existing current-session workflow plan identifier used only to continue a default shadow algorithm plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -268,7 +268,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a shadow algorithm cleanup plan."
+        description: "Existing current-session workflow plan identifier used only to continue a shadow algorithm cleanup plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -403,7 +403,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Optional existing workflow plan identifier used to continue or revise a previous shadow plan."
+          description: "Existing workflow plan identifier used only to continue or revise a previous shadow plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the shadow rule."

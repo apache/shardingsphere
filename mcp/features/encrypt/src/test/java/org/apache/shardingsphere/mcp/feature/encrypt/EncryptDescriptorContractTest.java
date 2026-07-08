@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -51,6 +52,16 @@ class EncryptDescriptorContractTest {
     void assertPromptCompletionArguments() {
         assertCompletionTargetArguments(EncryptFeatureDefinition.PLAN_PROMPT_NAME, "database", "schema", "table", "column", "algorithm_type", "assisted_query_algorithm_type",
                 "like_query_algorithm_type", "plan_id");
+    }
+    
+    @Test
+    void assertPlanIdInputGuidesNewPlanOmission() {
+        MCPToolDescriptor actualDescriptor = findToolDescriptor();
+        Map<?, ?> actualPlanIdInput = MCPToolDescriptorValidationUtils.findToolInputProperty(actualDescriptor, "plan_id").orElseThrow();
+        String actualDescription = actualPlanIdInput.get("description").toString();
+        assertFalse(MCPToolDescriptorValidationUtils.isRequiredToolInput(actualDescriptor, "plan_id"));
+        assertTrue(actualDescription.contains("Omit when starting a new plan"));
+        assertTrue(actualDescription.contains("never use placeholder values"));
     }
     
     private MCPToolDescriptor findToolDescriptor() {

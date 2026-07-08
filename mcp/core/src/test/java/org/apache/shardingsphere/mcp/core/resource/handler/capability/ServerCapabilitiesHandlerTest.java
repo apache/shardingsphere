@@ -125,7 +125,7 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> firstRoute = findByKey((List<?>) actual.get("first_call_routes"), "intent", "inspect_metadata");
         assertThat(firstRoute.get("first_action"), is("read_resource shardingsphere://databases"));
         Map<?, ?> ruleWorkflowRoute = findByKey((List<?>) actual.get("first_call_routes"), "intent", "rule_workflow");
-        assertThat(ruleWorkflowRoute.get("first_action"), is("call_tool matching database_gateway_plan_* workflow tool"));
+        assertThat(ruleWorkflowRoute.get("first_action"), is("call_tool matching database_gateway_plan_* workflow tool without plan_id for a new plan"));
         Map<?, ?> recoveryRoute = findByKey((List<?>) actual.get("first_call_routes"), "intent", "recover_error");
         assertThat(recoveryRoute.get("first_action"), is("follow top-level next_actions"));
         Map<?, ?> metadataRule = (Map<?, ?>) actual.get("metadata_rule");
@@ -136,10 +136,13 @@ class ServerCapabilitiesHandlerTest {
         assertThat(((Map<?, ?>) sqlToolSelection.get("read_only")).get("tool"), is("database_gateway_execute_query"));
         assertThat(((Map<?, ?>) sqlToolSelection.get("side_effecting")).get("first_mode"), is("preview"));
         assertThat(((Map<?, ?>) sqlToolSelection.get("side_effecting")).get("rule_change_preference"),
-                is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw SQL execution."));
+                is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw SQL execution; "
+                        + "omit plan_id for a new plan."));
         assertTrue(String.valueOf(actual.get("side_effect_rule")).contains("requested side effect is still intended"));
         Map<?, ?> workflowRule = (Map<?, ?>) actual.get("workflow_rule");
-        assertThat(workflowRule.get("selection_rule"), is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw side-effect SQL."));
+        assertThat(workflowRule.get("selection_rule"),
+                is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw side-effect SQL; "
+                        + "omit plan_id for a new plan and reuse only returned plan_id values."));
         assertTrue(workflowRule.containsKey("planning_tools"));
         assertThat(((Map<?, ?>) workflowRule.get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) workflowRule.get("execute_tool")).get("execute_requires"),
