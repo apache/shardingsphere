@@ -130,13 +130,6 @@ class MCPDatabaseDialectTest {
         assertThat(actual, is(expected));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("isInformationSchemaColumnSchemaFilterRequiredArguments")
-    void assertIsInformationSchemaColumnSchemaFilterRequired(final String name, final String databaseType, final boolean expected) {
-        boolean actual = MCPDatabaseDialect.of(databaseType).isInformationSchemaColumnSchemaFilterRequired();
-        assertThat(actual, is(expected));
-    }
-    
     @Test
     void assertIsSystemSchema() {
         boolean actual = MCPDatabaseDialect.of("PostgreSQL").isSystemSchema("PG_CATALOG");
@@ -274,11 +267,4 @@ class MCPDatabaseDialectTest {
                 Arguments.of("mysql", "MySQL", ""));
     }
     
-    private static Stream<Arguments> isInformationSchemaColumnSchemaFilterRequiredArguments() {
-        return Stream.of(
-                Arguments.of("mysql", "MySQL", true),
-                Arguments.of("postgresql", "PostgreSQL", true),
-                Arguments.of("sql server", "SQLServer", false),
-                Arguments.of("unknown", "FixtureDB", false));
-    }
 }

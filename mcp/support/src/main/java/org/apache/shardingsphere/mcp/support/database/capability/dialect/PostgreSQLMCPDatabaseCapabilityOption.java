@@ -61,11 +61,6 @@ public final class PostgreSQLMCPDatabaseCapabilityOption extends AbstractMCPData
     }
     
     @Override
-    public boolean isInformationSchemaColumnSchemaFilterRequired() {
-        return true;
-    }
-    
-    @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return true;
     }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableExcept
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -34,14 +33,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * Direct query service for Proxy-backed workflow reads.
@@ -101,54 +96,6 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
         } catch (final SQLException ex) {
             throw new MCPQueryFailedException(ex.getMessage(), ex);
         }
-    }
-    
-    @Override
-    public Set<String> queryInformationSchemaColumnNames(final String databaseName, final String schemaName, final String tableName, final Collection<String> columnNames) {
-        WorkflowSQLUtils.checkSupportedIdentifier("database", databaseName);
-        WorkflowSQLUtils.checkSupportedIdentifier("schema", schemaName);
-        WorkflowSQLUtils.checkSupportedIdentifier("table", tableName);
-        String actualDatabaseName = WorkflowSQLUtils.normalizeIdentifier(databaseName);
-        String actualSchemaName = WorkflowSQLUtils.normalizeIdentifier(schemaName);
-        if (columnNames.isEmpty()) {
-            return Set.of();
-        }
-        StringBuilder result = new StringBuilder(columnNames.size() * 8);
-        for (String each : columnNames) {
-            WorkflowSQLUtils.checkSupportedIdentifier("column", each);
-            if (!result.isEmpty()) {
-                result.append(", ");
-            }
-            result.append('\'').append(WorkflowSQLUtils.escapeLiteral(WorkflowSQLUtils.normalizeIdentifier(each))).append('\'');
-        }
-        String sql = createInformationSchemaColumnQuery(actualDatabaseName, actualSchemaName, WorkflowSQLUtils.normalizeIdentifier(tableName), result.toString());
-        Set<String> actualResult = new LinkedHashSet<>(columnNames.size(), 1F);
-        for (Map<String, Object> each : query(actualDatabaseName, "", sql)) {
-            String actualColumnName = Objects.toString(each.get("column_name"), "").trim();
-            if (!actualColumnName.isEmpty()) {
-                actualResult.add(actualColumnName);
-            }
-        }
-        return actualResult;
-    }
-    
-    private String createInformationSchemaColumnQuery(final String databaseName, final String schemaName, final String tableName, final String columnList) {
-        if (!shouldFilterBySchema(databaseName, schemaName)) {
-            return String.format("SELECT DISTINCT column_name FROM information_schema.columns WHERE table_name = '%s' AND column_name IN (%s)",
-                    WorkflowSQLUtils.escapeLiteral(tableName), columnList);
-        }
-        String actualSchemaName = normalize(schemaName);
-        return String.format("SELECT DISTINCT column_name FROM information_schema.columns WHERE table_schema = '%s' AND table_name = '%s' AND column_name IN (%s)",
-                WorkflowSQLUtils.escapeLiteral(actualSchemaName), WorkflowSQLUtils.escapeLiteral(tableName), columnList);
-    }
-    
-    private boolean shouldFilterBySchema(final String databaseName, final String schemaName) {
-        String actualSchemaName = normalize(schemaName);
-        if (actualSchemaName.isEmpty()) {
-            return false;
-        }
-        String databaseType = databaseCapabilityProvider.provide(databaseName).map(MCPDatabaseCapability::getDatabaseType).orElse("");
-        return MCPDatabaseDialect.of(databaseType).isInformationSchemaColumnSchemaFilterRequired();
     }
     
     private Connection openConnection(final String databaseName) throws SQLException {

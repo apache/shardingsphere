@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.database.spi;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * MCP feature direct query facade.
@@ -66,14 +64,4 @@ public interface MCPFeatureQueryFacade {
      */
     String queryColumnDefinition(String databaseName, String schemaName, String tableName, String columnName);
     
-    /**
-     * Query information schema columns.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @return actual column names
-     */
-    Set<String> queryInformationSchemaColumnNames(String databaseName, String schemaName, String tableName, Collection<String> columnNames);
 }

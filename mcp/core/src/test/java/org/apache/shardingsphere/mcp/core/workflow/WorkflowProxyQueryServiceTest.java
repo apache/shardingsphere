@@ -22,8 +22,6 @@ import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatab
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -35,7 +33,6 @@ import java.sql.Types;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -178,50 +175,6 @@ class WorkflowProxyQueryServiceTest {
         String actual = service.queryColumnDefinition("\"logic_db\"", "\"public\"", "order detail", "amount due");
         assertThat(actual, is("VARCHAR(4000)"));
         verify(connection).setSchema("public");
-    }
-    
-    @Test
-    void assertQueryInformationSchemaColumnNamesSkipsSchemaFilterWhenSchemaIsEmpty() throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT DISTINCT column_name FROM information_schema.columns WHERE table_name = 'orders' "
-                + "AND column_name IN ('status_cipher', 'status_assisted_query')"))
-                .thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("COLUMN_NAME");
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getObject(1)).thenReturn("status_cipher", "status_assisted_query");
-        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
-        Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "", "orders", List.of("status_cipher", "status_assisted_query"));
-        assertThat(actual, is(Set.of("status_cipher", "status_assisted_query")));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @ValueSource(strings = {"MySQL", "MariaDB", "PostgreSQL", "openGauss"})
-    void assertQueryInformationSchemaColumnNamesUsesSchemaFilter(final String databaseType) throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT DISTINCT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'orders' "
-                + "AND column_name IN ('status_cipher')")).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("COLUMN_NAME");
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getObject(1)).thenReturn("status_cipher");
-        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig), databaseType);
-        Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "public", "orders", List.of("status_cipher"));
-        assertThat(actual, is(Set.of("status_cipher")));
     }
     
     private WorkflowProxyQueryService createService(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
