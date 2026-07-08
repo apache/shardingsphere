@@ -40,17 +40,6 @@ import java.util.Optional;
 public final class SchemaRefreshUtils {
     
     /**
-     * Get schema name.
-     *
-     * @param database database
-     * @param sqlStatementContext SQL statement context
-     * @return schema name
-     */
-    public static String getSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
-        return getRawSchemaName(database, sqlStatementContext).getValue().toLowerCase();
-    }
-    
-    /**
      * Get actual schema name.
      *
      * @param database database
