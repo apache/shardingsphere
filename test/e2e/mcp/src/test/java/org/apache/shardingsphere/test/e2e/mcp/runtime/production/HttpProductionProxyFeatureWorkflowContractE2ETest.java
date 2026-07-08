@@ -99,8 +99,8 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     @Test
     void assertBroadcastWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actualPlanResponse = interactionClient.call(BROADCAST_PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "tables", "orders"));
+            Map<String, Object> arguments = Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "tables", "orders");
+            Map<String, Object> actualPlanResponse = interactionClient.call(BROADCAST_PLAN_TOOL_NAME, arguments);
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
             Map<String, Object> actualApplyResponse = interactionClient.call(APPLY_TOOL_NAME,
@@ -110,6 +110,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
             List<Map<String, Object>> actualRules = getPayloadItems(interactionClient.readResource(String.format(BROADCAST_RULES_RESOURCE_URI, getLogicalDatabaseName())));
             assertThat(actualRules.stream().map(each -> String.valueOf(each.get("broadcast_table"))).toList(), hasItem("orders"));
+            assertDuplicateCreateFails(interactionClient, BROADCAST_PLAN_TOOL_NAME, arguments);
         }
     }
     
@@ -210,6 +211,15 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
         assertApplyCompleted(actualApplyResponse);
         assertThat(getStringList(actualApplyResponse.get("executed_distsql")).size(), is(1));
         assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
+        assertDuplicateCreateFails(interactionClient, toolName, arguments);
+    }
+    
+    private void assertDuplicateCreateFails(final MCPInteractionClient interactionClient, final String toolName,
+                                            final Map<String, Object> arguments) throws IOException, InterruptedException {
+        Map<String, Object> actual = interactionClient.call(toolName, arguments);
+        assertThat(String.valueOf(actual.get("status")), is("failed"));
+        assertFalse(getMapList(actual.get("issues")).isEmpty());
+        assertModelFacingPayloadContract(actual);
     }
     
     private record FeatureWorkflowScenario(String toolName, Map<String, Object> planArguments, String expectedDistSQLToken) {
