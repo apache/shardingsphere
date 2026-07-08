@@ -175,29 +175,15 @@ public final class ProjectionEngine {
                         projectionSegment.getSeparator().orElse(null));
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
-            // TODO replace avg to constant, avoid calculate useless avg
         }
         return result;
     }
     
     private AggregationProjection createDerivedAggregationProjection(final AggregationProjectionSegment aggrSegment) {
         IdentifierValue alias = new IdentifierValue(DerivedColumn.EXPRESSION_DERIVED.getDerivedColumnAlias(expressionDerivedColumnCount++));
-        if (aggrSegment instanceof AggregationDistinctProjectionSegment) {
-            return createDerivedDistinctAggregationProjection((AggregationDistinctProjectionSegment) aggrSegment, alias);
-        }
         AggregationProjection result = new AggregationProjection(aggrSegment.getType(), aggrSegment, alias, databaseType, aggrSegment.getSeparator().orElse(null));
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
-        }
-        return result;
-    }
-    
-    private AggregationDistinctProjection createDerivedDistinctAggregationProjection(final AggregationDistinctProjectionSegment distinctSegment, final IdentifierValue alias) {
-        AggregationDistinctProjection result = new AggregationDistinctProjection(
-                distinctSegment.getStartIndex(), distinctSegment.getStopIndex(), distinctSegment.getType(),
-                distinctSegment, alias, distinctSegment.getDistinctInnerExpression(), databaseType, distinctSegment.getSeparator().orElse(null));
-        if (AggregationType.AVG == result.getType()) {
-            appendAverageDistinctDerivedProjection(result);
         }
         return result;
     }
@@ -208,6 +194,9 @@ public final class ProjectionEngine {
         }
         
         if (segment instanceof AggregationProjectionSegment) {
+            if (segment instanceof AggregationDistinctProjectionSegment) {
+                return;
+            }
             if (!((AggregationProjectionSegment) segment).getWindow().isPresent()) {
                 extractedSegments.add((AggregationProjectionSegment) segment);
             }

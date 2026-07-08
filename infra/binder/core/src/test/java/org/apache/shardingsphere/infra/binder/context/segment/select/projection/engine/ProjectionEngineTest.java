@@ -193,26 +193,4 @@ class ProjectionEngineTest {
         assertTrue(actual.isPresent());
         assertTrue(engine.getExpressionDerivedAggregations().isEmpty());
     }
-    
-    @Test
-    void assertCreateProjectionWithDistinctAggregationInExpression() {
-        FunctionSegment functionSegment = new FunctionSegment(0, 36, "IFNULL", "IFNULL(AVG(DISTINCT price), 0)");
-        AggregationDistinctProjectionSegment avgSegment = new AggregationDistinctProjectionSegment(7, 25, AggregationType.AVG, "AVG(DISTINCT price)", "price");
-        LiteralExpressionSegment literalSegment = new LiteralExpressionSegment(28, 28, 0);
-        functionSegment.getParameters().add(avgSegment);
-        functionSegment.getParameters().add(literalSegment);
-        
-        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 36, "IFNULL(AVG(DISTINCT price), 0)", functionSegment);
-        
-        ProjectionEngine engine = new ProjectionEngine(databaseType);
-        Optional<Projection> actual = engine.createProjection(expressionSegment);
-        
-        assertTrue(actual.isPresent());
-        Map<ExpressionProjection, List<AggregationProjection>> derived = engine.getExpressionDerivedAggregations();
-        assertThat(derived.size(), is(1));
-        
-        List<AggregationProjection> derivedProjections = derived.values().iterator().next();
-        assertThat(derivedProjections.size(), is(1));
-        assertThat(derivedProjections.get(0), isA(AggregationDistinctProjection.class));
-    }
 }
