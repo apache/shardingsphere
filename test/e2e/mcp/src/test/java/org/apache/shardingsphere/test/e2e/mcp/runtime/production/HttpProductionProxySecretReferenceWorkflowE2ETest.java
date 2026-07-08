@@ -60,6 +60,7 @@ class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProducti
             assertThat(String.valueOf(applyResponse.get("response_mode")), is("recovery"));
             assertThat(String.valueOf(applyResponse.get("status")), is("failed"));
             assertThat(String.valueOf(applyResponse.get("category")), is(MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
+            assertModelFacingPayloadContract(applyResponse);
             assertThat(getMapList(applyResponse.get("step_results")).size(), is(0));
             assertThat(getStringList(applyResponse.get("executed_distsql")).size(), is(0));
             assertThat(getStringList(applyResponse.get("applied_artifacts")).size(), is(0));
@@ -78,6 +79,7 @@ class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProducti
     
     private void assertPlannedSecretReferencePayload(final Map<String, Object> planResponse) {
         assertThat(String.valueOf(planResponse.get("status")), is("planned"));
+        assertModelFacingPayloadContract(planResponse);
         Map<String, Object> secretReferenceSummary = getMap(planResponse.get("secret_reference_summary"));
         assertTrue((Boolean) secretReferenceSummary.get("required"));
         assertThat(secretReferenceSummary.get("reference_count"), is(1));
@@ -91,6 +93,7 @@ class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProducti
     
     private void assertSecretReferencedPreview(final Map<String, Object> previewResponse) {
         assertThat(String.valueOf(previewResponse.get("status")), is("preview"));
+        assertModelFacingPayloadContract(previewResponse);
         List<Map<String, Object>> previewArtifacts = getMapList(previewResponse.get("preview_artifacts"));
         assertThat(previewArtifacts.size(), is(1));
         assertThat(String.valueOf(previewArtifacts.getFirst().get("sql")), containsString("'aes-key-value'='<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>'"));

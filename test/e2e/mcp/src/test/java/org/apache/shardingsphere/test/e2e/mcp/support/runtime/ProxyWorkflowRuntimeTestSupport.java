@@ -37,7 +37,7 @@ import java.util.Map;
  * Proxy-backed runtime fixture support for workflow E2E tests.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyEncryptWorkflowRuntimeTestSupport {
+public final class ProxyWorkflowRuntimeTestSupport {
     
     private static final String LOGICAL_DATABASE_NAME = "logic_db";
     
@@ -53,7 +53,7 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
      * @return runtime fixture
      * @throws SQLException SQL exception
      */
-    public static ProxyEncryptWorkflowRuntimeFixture createFixture() throws SQLException {
+    public static ProxyWorkflowRuntimeFixture createFixture() throws SQLException {
         GenericContainer<?> storageContainer = MySQLRuntimeTestSupport.createContainer().withNetworkAliases(STORAGE_NETWORK_ALIAS);
         ShardingSphereProxyEmbeddedContainer proxyContainer = createProxyContainer();
         boolean success = false;
@@ -63,7 +63,7 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
             proxyContainer.dependsOn(storageContainer);
             proxyContainer.start();
             success = true;
-            return new ProxyEncryptWorkflowRuntimeFixture(storageContainer, proxyContainer, createRuntimeDatabases(proxyContainer.getProxyPort()));
+            return new ProxyWorkflowRuntimeFixture(storageContainer, proxyContainer, createRuntimeDatabases(proxyContainer.getProxyPort()));
         } finally {
             if (!success) {
                 proxyContainer.stop();
@@ -91,7 +91,7 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
      */
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
-    public static final class ProxyEncryptWorkflowRuntimeFixture implements AutoCloseable {
+    public static final class ProxyWorkflowRuntimeFixture implements AutoCloseable {
         
         private final GenericContainer<?> storageContainer;
         

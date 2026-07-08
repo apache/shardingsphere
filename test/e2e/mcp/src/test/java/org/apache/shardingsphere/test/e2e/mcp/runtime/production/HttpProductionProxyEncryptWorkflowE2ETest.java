@@ -76,12 +76,14 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             Map<String, Object> clarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("table", "orders", "column", "status", "natural_language_intent", "encrypt status with reversible encryption, no equality, no like"));
             assertThat(String.valueOf(clarifyingResponse.get("status")), is("clarifying"));
+            assertModelFacingPayloadContract(clarifyingResponse);
             assertThat(getClarificationMessages(clarifyingResponse), is(List.of("Please provide logical database first.")));
             String planId = String.valueOf(clarifyingResponse.get("plan_id"));
             Map<String, Object> plannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("plan_id", planId, "database", getLogicalDatabaseName(), "algorithm_type", "AES",
                             "cipher_column_name", "status_cipher", "primary_algorithm_properties", Map.of("aes-key-value", TEMPLATE_SECRET_VALUE)));
             assertThat(String.valueOf(plannedResponse.get("status")), is("planned"));
+            assertModelFacingPayloadContract(plannedResponse);
             assertSecretRedacted(plannedResponse, TEMPLATE_SECRET_VALUE);
             assertThat(String.valueOf(plannedResponse.get("current_step")), is("review"));
             assertThat(getStringList(plannedResponse.get("global_steps")).size(), is(8));
@@ -349,11 +351,6 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
         Map<String, Object> result = interactionClient.call(APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, getApprovedSteps(previewResponse)));
         assertSecretRedacted(result, secretValue);
         return result;
-    }
-    
-    private Map<String, Object> findItemByField(final List<Map<String, Object>> items, final String fieldName, final String expectedValue) {
-        return items.stream().filter(each -> expectedValue.equalsIgnoreCase(String.valueOf(each.get(fieldName)))).findFirst()
-                .orElseThrow(() -> new AssertionError(String.format("Failed to find item by %s=%s in %s", fieldName, expectedValue, items)));
     }
     
     private void assertSecretRedacted(final Map<String, Object> actual, final String secretValue) {

@@ -85,6 +85,17 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
     }
     
     @Test
+    void assertAcceptInitializeWithParameterizedAcceptHeader() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actual = sendInitializeRequest(httpClient,
+                Map.of("Accept", "application/json; charset=utf-8, text/event-stream; charset=utf-8"),
+                MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
+        assertThat(actual.statusCode(), is(200));
+        assertThat(actual.headers().firstValue("MCP-Protocol-Version").orElse(""), is(getProtocolVersion()));
+    }
+    
+    @Test
     void assertRejectEventStreamWithoutAcceptHeader() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -169,6 +180,17 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> actualResult = sendInitializedRequest(httpClient, sessionId, method + "-1", method, Map.of());
+        assertFalse(MCPInteractionPayloads.castToList(actualResult.get(resultKey)).isEmpty());
+        assertFalse(actualResult.containsKey("nextCursor"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("listMethodCases")
+    void assertListMethodAcceptsPaginationCursorParameter(final String method, final String resultKey) throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        Map<String, Object> actualResult = sendInitializedRequest(httpClient, sessionId, method + "-cursor-1", method, Map.of("cursor", "opaque-cursor"));
         assertFalse(MCPInteractionPayloads.castToList(actualResult.get(resultKey)).isEmpty());
         assertFalse(actualResult.containsKey("nextCursor"));
     }
