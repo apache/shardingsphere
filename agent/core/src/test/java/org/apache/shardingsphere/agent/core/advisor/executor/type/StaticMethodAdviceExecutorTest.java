@@ -38,6 +38,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -129,6 +132,68 @@ class StaticMethodAdviceExecutorTest {
         assertThat(queue, is(Arrays.asList("first before foo", "second before bar", "origin call")));
     }
     
+    @Test
+    void assertAdviceLogsTargetClassNameWhenBeforeThrows() throws ReflectiveOperationException {
+        List<String> queue = new LinkedList<>();
+        Map<String, Collection<StaticMethodAdvice>> advices = Collections.singletonMap(
+                "foo", Collections.singletonList(new ConfigurableStaticMethodAdvice(queue, "first", true, true, false, false)));
+        StaticMethodAdviceExecutor executor = new StaticMethodAdviceExecutor(advices);
+        Method method = TargetObjectFixture.class.getMethod("staticCall", List.class);
+        Callable<Object> callable = () -> "result";
+        List<LogRecord> records = new LinkedList<>();
+        Logger logger = Logger.getLogger(StaticMethodAdviceExecutor.class.getName());
+        Handler handler = new RecordingHandler(records);
+        logger.addHandler(handler);
+        try {
+            executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable);
+            assertThat(records.get(0).getParameters()[1], is(TargetObjectFixture.class.getName()));
+        } finally {
+            logger.removeHandler(handler);
+        }
+    }
+    
+    @Test
+    void assertAdviceLogsTargetClassNameWhenThrowingThrows() throws ReflectiveOperationException {
+        List<String> queue = new LinkedList<>();
+        Map<String, Collection<StaticMethodAdvice>> advices = Collections.singletonMap(
+                "foo", Collections.singletonList(new ConfigurableStaticMethodAdvice(queue, "first", true, false, false, true)));
+        StaticMethodAdviceExecutor executor = new StaticMethodAdviceExecutor(advices);
+        Method method = TargetObjectFixture.class.getMethod("staticCallWhenExceptionThrown", List.class);
+        Callable<Object> callable = () -> {
+            throw new IllegalStateException("callable error");
+        };
+        List<LogRecord> records = new LinkedList<>();
+        Logger logger = Logger.getLogger(StaticMethodAdviceExecutor.class.getName());
+        Handler handler = new RecordingHandler(records);
+        logger.addHandler(handler);
+        try {
+            assertThrows(IllegalStateException.class, () -> executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable));
+            assertThat(records.get(0).getParameters()[1], is(TargetObjectFixture.class.getName()));
+        } finally {
+            logger.removeHandler(handler);
+        }
+    }
+    
+    @Test
+    void assertAdviceLogsTargetClassNameWhenAfterThrows() throws ReflectiveOperationException {
+        List<String> queue = new LinkedList<>();
+        Map<String, Collection<StaticMethodAdvice>> advices = Collections.singletonMap(
+                "foo", Collections.singletonList(new ConfigurableStaticMethodAdvice(queue, "first", true, false, true, false)));
+        StaticMethodAdviceExecutor executor = new StaticMethodAdviceExecutor(advices);
+        Method method = TargetObjectFixture.class.getMethod("staticCall", List.class);
+        Callable<Object> callable = () -> "result";
+        List<LogRecord> records = new LinkedList<>();
+        Logger logger = Logger.getLogger(StaticMethodAdviceExecutor.class.getName());
+        Handler handler = new RecordingHandler(records);
+        logger.addHandler(handler);
+        try {
+            executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable);
+            assertThat(records.get(0).getParameters()[1], is(TargetObjectFixture.class.getName()));
+        } finally {
+            logger.removeHandler(handler);
+        }
+    }
+    
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     void assertIntercept() {
@@ -140,6 +205,25 @@ class StaticMethodAdviceExecutorTest {
         when(implementationDefinition.intercept(any())).thenReturn((ReceiverTypeDefinition) intercepted);
         AdviceExecutor executor = new StaticMethodAdviceExecutor(Collections.emptyMap());
         assertThat(executor.intercept(builder, methodDescription), is(intercepted));
+    }
+    
+    @RequiredArgsConstructor
+    private static final class RecordingHandler extends Handler {
+        
+        private final List<LogRecord> records;
+        
+        @Override
+        public void publish(final LogRecord record) {
+            records.add(record);
+        }
+        
+        @Override
+        public void flush() {
+        }
+        
+        @Override
+        public void close() {
+        }
     }
     
     @RequiredArgsConstructor
