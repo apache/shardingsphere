@@ -142,6 +142,26 @@ class ExecuteUpdateToolHandlerTest {
     }
     
     @Test
+    void assertPreviewRuleDistSQLStatementWithoutExecuting() {
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
+                Map.of("database", "sharding_db", "sql",
+                        "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))",
+                        "execution_mode", "preview")));
+        assertThat(actual.toPayload().get("response_mode"), is("preview"));
+        assertThat(actual.toPayload().get("statement_class"), is("ddl"));
+        assertThat(actual.toPayload().get("side_effect_scope"), is(List.of("rule-metadata")));
+        assertThat(actual.toPayload().get("summary"), is("Previewed CREATE statement with side-effect scope rule-metadata. It has not been executed."));
+        assertThat(actual.toPayload().get("review_guidance"),
+                is("Review normalized_sql and side_effect_scope before execution. "
+                        + "This preview is classification-only; it does not guarantee parsing, rule validation, algorithm initialization, affected rows, or runtime success."
+                        + " For natural-language rule changes, prefer the matching database_gateway_plan_* workflow tool before raw execution."));
+        verifyNoInteractions(executionFacade);
+    }
+    
+    @Test
     void assertRejectPreviewWithInvalidTimeout() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);

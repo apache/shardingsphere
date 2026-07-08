@@ -55,11 +55,17 @@ class MCPGuidancePayloadBuilderTest {
         assertThat(actualMetadataRoute.get("first_action"), is("read_resource shardingsphere://databases"));
         Map<?, ?> actualCompletionRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "complete_uncertain_argument");
         assertThat(actualCompletionRoute.get("first_action"), is("call completion/complete for one uncertain argument"));
+        Map<?, ?> actualRuleWorkflowRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "rule_workflow");
+        assertThat(actualRuleWorkflowRoute.get("first_action"), is("call_tool matching database_gateway_plan_* workflow tool"));
         Map<?, ?> actualRecoveryRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "recover_error");
         assertThat(actualRecoveryRoute.get("first_action"), is("follow top-level next_actions"));
         assertThat(((Map<?, ?>) actual.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
-        assertThat(castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting")).get("execute_requires"), is("execution_mode=execute"));
+        Map<?, ?> actualSideEffectingSelection = castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting"));
+        assertThat(actualSideEffectingSelection.get("execute_requires"), is("execution_mode=execute"));
+        assertThat(actualSideEffectingSelection.get("rule_change_preference"),
+                is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw SQL execution."));
         Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
+        assertThat(actualWorkflowRule.get("selection_rule"), is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw side-effect SQL."));
         assertThat(actualWorkflowRule.get("planning_tools"), is(List.of("database_gateway_plan_encrypt_rule")));
         assertThat(castToMap(actualWorkflowRule.get("preview_tool")).get("execution_mode"), is("preview"));
         assertThat(castToMap(actualWorkflowRule.get("execute_tool")).get("execute_requires"),
@@ -76,7 +82,8 @@ class MCPGuidancePayloadBuilderTest {
         assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(String.valueOf(actual.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
-        assertThat(castToMap(actual.get("sql_tool_selection")).keySet().stream().toList(), is(List.of("read_only", "side_effecting")));
+        Map<?, ?> actualSqlToolSelection = castToMap(actual.get("sql_tool_selection"));
+        assertThat(actualSqlToolSelection.keySet().stream().toList(), is(List.of("read_only", "side_effecting")));
         assertThat(actual.get("side_effect_rule"), is("Preview before side effects and continue only when the requested side effect is still intended."));
         assertThat(actual.get("completion_rule"),
                 is("Use completion/complete for one uncertain argument at a time; when completion reports missing context, follow meta.next_actions before guessing."));

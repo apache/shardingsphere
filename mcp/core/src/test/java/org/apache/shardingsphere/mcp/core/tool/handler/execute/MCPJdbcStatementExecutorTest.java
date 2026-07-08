@@ -278,6 +278,29 @@ class MCPJdbcStatementExecutorTest {
         assertThat(actual.getMessage(), is("Statement class is not supported."));
     }
     
+    @Test
+    void assertExecuteRuleDistSQLSyntaxError() throws SQLException {
+        SQLSyntaxErrorException cause = new SQLSyntaxErrorException("syntax error");
+        Statement statement = mock(Statement.class);
+        when(statement.execute(anyString())).thenThrow(cause);
+        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
+        when(transactionResourceManager.findTransactionConnection(anyString(), anyString())).thenReturn(Optional.empty());
+        Connection connection = createStatementConnection(statement);
+        RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(databaseConfig.openConnection(anyString())).thenReturn(connection);
+        MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("sharding_db", databaseConfig), transactionResourceManager);
+        ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.DDL, "CREATE",
+                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))", "", "");
+        RuleDistSQLExecutionException actual = assertThrows(RuleDistSQLExecutionException.class, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
+                "sharding_db", "public", "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))", 10, 1000),
+                classificationResult, createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
+        assertThat(actual.getDatabase(), is("sharding_db"));
+        assertThat(actual.getClassificationResult(), is(classificationResult));
+        assertThat(actual.getCause(), is(cause));
+        assertThat(actual.getMessage(),
+                is("Rule DistSQL execution failed for database `sharding_db`; check MCP runtime capability and workflow guidance before asking for corrected SQL."));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteWithSQLExceptionCases")
     void assertExecuteWithSQLException(final String name, final SQLException sqlException, final Class<? extends ShardingSphereMCPException> expectedExceptionClass,

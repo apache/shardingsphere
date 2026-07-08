@@ -68,6 +68,7 @@ public final class MCPJdbcStatementExecutor {
      * @throws MCPTimeoutException when the JDBC execution times out
      * @throws MCPUnsupportedException when the JDBC driver or statement class is unsupported
      * @throws MCPInvalidRequestException when the SQL is invalid for the target database
+     * @throws RuleDistSQLExecutionException when rule DistSQL needs workflow-aware recovery
      * @throws MCPQueryFailedException when query execution fails
      * @throws MCPUnavailableException when the runtime database configuration is unavailable
      */
@@ -94,6 +95,9 @@ public final class MCPJdbcStatementExecutor {
         } catch (final SQLFeatureNotSupportedException ex) {
             throw new MCPUnsupportedException(ex.getMessage(), ex);
         } catch (final SQLSyntaxErrorException ex) {
+            if (classificationResult.isRuleDistSQL()) {
+                throw new RuleDistSQLExecutionException(executionRequest.getDatabase(), classificationResult, ex);
+            }
             throw new MCPInvalidRequestException(ex.getMessage(), ex);
         } catch (final SQLException ex) {
             throw new MCPQueryFailedException(ex.getMessage(), ex);

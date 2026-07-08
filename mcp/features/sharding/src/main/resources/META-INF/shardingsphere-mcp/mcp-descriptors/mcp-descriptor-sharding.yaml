@@ -319,7 +319,7 @@ resourceTemplates:
 prompts:
   - name: plan_sharding_table_rule
     title: Plan Sharding Table Rule
-    description: "Guide the model to plan sharding table rule DistSQL."
+    description: "Guide the model to plan sharding table rule DistSQL, including database/table sharding and key generation."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-table-rule.md
     arguments:
@@ -778,7 +778,7 @@ resourceNavigation:
 tools:
   - name: database_gateway_plan_sharding_table_rule
     title: Plan Sharding Table Rule
-    description: "Plan reviewable sharding table rule DistSQL without executing it."
+    description: "Plan reviewable sharding table rule DistSQL without executing it. Use this before raw SQL for natural-language requests to create, alter, or drop database/table sharding rules."
     inputSchema:
       type: object
       properties:

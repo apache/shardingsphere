@@ -32,7 +32,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StatementClassifierTest {
     
@@ -83,6 +85,21 @@ class StatementClassifierTest {
     void assertClassifyDMLReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify("UPDATE logic_db.foo_orders SET status = 'DONE' FROM other_db.foo_order_items");
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
+    }
+    
+    @Test
+    void assertClassifyRuleDistSQLSideEffectScope() {
+        ClassificationResult actualResult = statementClassifier.classify(
+                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))");
+        assertTrue(actualResult.isRuleDistSQL());
+        assertThat(actualResult.getSideEffectScope(), is("rule-metadata"));
+    }
+    
+    @Test
+    void assertClassifyPhysicalDDLSideEffectScope() {
+        ClassificationResult actualResult = statementClassifier.classify("CREATE TABLE foo_orders(order_id BIGINT)");
+        assertFalse(actualResult.isRuleDistSQL());
+        assertThat(actualResult.getSideEffectScope(), is("physical-structure"));
     }
     
     @Test

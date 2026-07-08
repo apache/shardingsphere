@@ -124,6 +124,8 @@ class ServerCapabilitiesHandlerTest {
         assertFalse(actual.containsKey("safe_first_resource"));
         Map<?, ?> firstRoute = findByKey((List<?>) actual.get("first_call_routes"), "intent", "inspect_metadata");
         assertThat(firstRoute.get("first_action"), is("read_resource shardingsphere://databases"));
+        Map<?, ?> ruleWorkflowRoute = findByKey((List<?>) actual.get("first_call_routes"), "intent", "rule_workflow");
+        assertThat(ruleWorkflowRoute.get("first_action"), is("call_tool matching database_gateway_plan_* workflow tool"));
         Map<?, ?> recoveryRoute = findByKey((List<?>) actual.get("first_call_routes"), "intent", "recover_error");
         assertThat(recoveryRoute.get("first_action"), is("follow top-level next_actions"));
         Map<?, ?> metadataRule = (Map<?, ?>) actual.get("metadata_rule");
@@ -133,8 +135,11 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> sqlToolSelection = (Map<?, ?>) actual.get("sql_tool_selection");
         assertThat(((Map<?, ?>) sqlToolSelection.get("read_only")).get("tool"), is("database_gateway_execute_query"));
         assertThat(((Map<?, ?>) sqlToolSelection.get("side_effecting")).get("first_mode"), is("preview"));
+        assertThat(((Map<?, ?>) sqlToolSelection.get("side_effecting")).get("rule_change_preference"),
+                is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw SQL execution."));
         assertTrue(String.valueOf(actual.get("side_effect_rule")).contains("requested side effect is still intended"));
         Map<?, ?> workflowRule = (Map<?, ?>) actual.get("workflow_rule");
+        assertThat(workflowRule.get("selection_rule"), is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw side-effect SQL."));
         assertTrue(workflowRule.containsKey("planning_tools"));
         assertThat(((Map<?, ?>) workflowRule.get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) workflowRule.get("execute_tool")).get("execute_requires"),
@@ -153,7 +158,8 @@ class ServerCapabilitiesHandlerTest {
         assertFalse(actual.containsKey("safe_first_resource"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(String.valueOf(actual.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
-        assertTrue(((Map<?, ?>) actual.get("sql_tool_selection")).containsKey("side_effecting"));
+        Map<?, ?> sqlToolSelection = (Map<?, ?>) actual.get("sql_tool_selection");
+        assertTrue(sqlToolSelection.containsKey("side_effecting"));
         assertTrue(actual.containsKey("workflow_session_rule"));
         assertTrue(actual.containsKey("next_action_rule"));
         assertTrue(actual.containsKey("recovery_rule"));

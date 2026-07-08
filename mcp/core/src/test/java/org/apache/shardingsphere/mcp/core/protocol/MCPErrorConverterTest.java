@@ -41,6 +41,7 @@ import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
@@ -296,6 +297,28 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("recovery_category"), is("unsupported_target"));
         assertThat(actualRecovery.get("normalized_sql"), is("SELECT * FROM orders"));
         assertThat(actualRecovery.get("suggested_arguments"), is(suggestedArguments));
+    }
+    
+    @Test
+    void assertConvertRuleDistSQLExecutionWithRecovery() {
+        ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.DDL, "CREATE",
+                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))", "", "");
+        Map<String, Object> actual = MCPErrorConverter.convert(new RuleDistSQLExecutionException(
+                "sharding_db", classificationResult, new SQLSyntaxErrorException("syntax error"))).toPayload();
+        assertThat(actual.get("message"),
+                is("Rule DistSQL execution failed for database `sharding_db`; check MCP runtime capability and workflow guidance before asking for corrected SQL."));
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("rule_distsql_execution_failed"));
+        assertThat(actualRecovery.get("recovery_category"), is("rule_metadata_execution"));
+        assertThat(actualRecovery.get("database"), is("sharding_db"));
+        assertThat(actualRecovery.get("side_effect_scope"), is(List.of("rule-metadata")));
+        assertTrue((Boolean) actualRecovery.get("secret_safe"));
+        assertFalse((Boolean) actualRecovery.get("ask_user_when_uncertain"));
+        assertThat(getResourceToRead(actualRecovery, 1).get("uri"), is("shardingsphere://databases/sharding_db/capabilities"));
+        List<?> actualNextActions = (List<?>) actualRecovery.get("next_actions");
+        assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("resource_uri"), is("shardingsphere://guidance"));
+        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("type"), is("resource_read"));
+        assertFalse(String.valueOf(actual).contains("syntax error"));
     }
     
     @Test

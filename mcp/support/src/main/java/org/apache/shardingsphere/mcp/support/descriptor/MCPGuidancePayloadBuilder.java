@@ -90,6 +90,8 @@ final class MCPGuidancePayloadBuilder {
                         "Follow top-level next_actions when validation fails."),
                 createFirstCallRoute("read_only_sql", "read_resource shardingsphere://databases/{database}/capabilities", "call_tool database_gateway_execute_query",
                         "Stop after reporting the result rows."),
+                createFirstCallRoute("rule_workflow", "call_tool matching database_gateway_plan_* workflow tool", "call_tool database_gateway_apply_workflow execution_mode=preview",
+                        "Use workflow apply and validation for natural-language rule changes before considering raw side-effect SQL."),
                 createFirstCallRoute("side_effect_sql", "call_tool database_gateway_execute_update execution_mode=preview", "call_tool database_gateway_execute_update execution_mode=execute",
                         "Execute only after preview review confirms the intended side effect."),
                 createFirstCallRoute("complete_uncertain_argument", "call completion/complete for one uncertain argument",
@@ -249,16 +251,18 @@ final class MCPGuidancePayloadBuilder {
         readOnly.put("tool", "database_gateway_execute_query");
         readOnly.put("statement_rule", "Use for one SELECT or EXPLAIN ANALYZE statement.");
         result.put("read_only", readOnly);
-        Map<String, Object> sideEffecting = new LinkedHashMap<>(3, 1F);
+        Map<String, Object> sideEffecting = new LinkedHashMap<>(4, 1F);
         sideEffecting.put("tool", "database_gateway_execute_update");
         sideEffecting.put("first_mode", "preview");
         sideEffecting.put("execute_requires", "execution_mode=execute");
+        sideEffecting.put("rule_change_preference", "For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw SQL execution.");
         result.put("side_effecting", sideEffecting);
         return result;
     }
     
     private Map<String, Object> createWorkflowRule() {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("selection_rule", "For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw side-effect SQL.");
         result.put("planning_tools", catalog.getProtocolDescriptors().getToolDescriptors().stream()
                 .map(MCPToolDescriptor::getName).filter(each -> each.startsWith(PLANNING_TOOL_NAME_PREFIX)).toList());
         Map<String, Object> previewTool = new LinkedHashMap<>(2, 1F);

@@ -19,11 +19,14 @@ package org.apache.shardingsphere.mcp.core.protocol.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +53,49 @@ final class MCPSQLRecoveryPayloadFactory {
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(cause.getTargetTool(), createSQLToolMismatchActionReason(cause), cause.getSuggestedArguments())));
         result.put("ask_user_when_uncertain", false);
         return result;
+    }
+    
+    static Map<String, Object> createRuleDistSQLExecutionRecovery(final RuleDistSQLExecutionException cause) {
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery("rule_distsql_execution_failed",
+                "Do not ask the user to rewrite the SQL yet; read workflow guidance and verify the runtime database can execute ShardingSphere rule DistSQL.");
+        ClassificationResult classificationResult = cause.getClassificationResult();
+        result.put("database", cause.getDatabase());
+        result.put("statement_class", classificationResult.getStatementClass().name().toLowerCase(Locale.ENGLISH));
+        result.put("statement_type", classificationResult.getStatementType());
+        result.put("side_effect_scope", List.of(classificationResult.getSideEffectScope()));
+        result.put("secret_safe", true);
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createRuleDistSQLExecutionResources(cause.getDatabase()));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createRuleDistSQLExecutionNextActions(cause.getDatabase()));
+        result.put("ask_user_when_uncertain", false);
+        return result;
+    }
+    
+    private static List<Map<String, Object>> createRuleDistSQLExecutionResources(final String database) {
+        return List.of(
+                MCPResourceHintUtils.create("shardingsphere://guidance", "guidance", "read_first",
+                        "Read workflow guidance before retrying rule DistSQL execution.", MCPPayloadFieldNames.RESOURCES_TO_READ),
+                createDatabaseCapabilityResourceHint(database));
+    }
+    
+    private static Map<String, Object> createDatabaseCapabilityResourceHint(final String database) {
+        return MCPResourceHintUtils.create(createDatabaseCapabilityUri(database), database.isEmpty() ? "logical-database" : "logical-database-capability", "read_first",
+                createDatabaseCapabilityReason(database), MCPPayloadFieldNames.RESOURCES_TO_READ);
+    }
+    
+    private static String createDatabaseCapabilityUri(final String database) {
+        return database.isEmpty() ? "shardingsphere://databases" : String.format("shardingsphere://databases/%s/capabilities", MCPUriPathSegmentUtils.encodePathSegment(database));
+    }
+    
+    private static String createDatabaseCapabilityReason(final String database) {
+        return database.isEmpty()
+                ? "Choose a configured logical database before retrying rule DistSQL execution."
+                : "Verify the runtime database capabilities before retrying rule DistSQL execution.";
+    }
+    
+    private static List<Map<String, Object>> createRuleDistSQLExecutionNextActions(final String database) {
+        return MCPNextActionUtils.ordered(
+                MCPNextActionUtils.readResource("shardingsphere://guidance", "Read workflow guidance and choose the matching database_gateway_plan_* workflow tool for rule changes."),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.readResource(createDatabaseCapabilityUri(database), createDatabaseCapabilityReason(database)), 1));
     }
     
     static Map<String, Object> createMetadataIntrospectionSQLRecovery(final MetadataIntrospectionSQLStatementException cause) {

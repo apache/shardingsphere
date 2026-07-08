@@ -54,6 +54,9 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     private static final String PREVIEW_REVIEW_GUIDANCE = "Review normalized_sql and side_effect_scope before execution. "
             + "This preview is classification-only; it does not guarantee parsing, rule validation, algorithm initialization, affected rows, or runtime success.";
     
+    private static final String RULE_DIST_SQL_PREVIEW_REVIEW_GUIDANCE = PREVIEW_REVIEW_GUIDANCE
+            + " For natural-language rule changes, prefer the matching database_gateway_plan_* workflow tool before raw execution.";
+    
     private static final String PREVIEW_CONFIRMATION_REASON = "Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.";
     
     private static final String PREVIEW_EXECUTION_REASON = "Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.";
@@ -118,7 +121,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("side_effect_scope", createSideEffectScope(classificationResult));
         classificationResult.getTargetObjectName().ifPresent(optional -> result.put("target_object", optional));
         classificationResult.getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
-        result.put("review_guidance", PREVIEW_REVIEW_GUIDANCE);
+        result.put("review_guidance", createReviewGuidance(classificationResult));
         String reviewSummary = createReviewSummary(classificationResult);
         result.put(MCPPayloadFieldNames.SUMMARY, reviewSummary);
         result.put("review_summary", reviewSummary);
@@ -141,14 +144,12 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
                 String.join(", ", createSideEffectScope(classificationResult)));
     }
     
+    private String createReviewGuidance(final ClassificationResult classificationResult) {
+        return classificationResult.isRuleDistSQL() ? RULE_DIST_SQL_PREVIEW_REVIEW_GUIDANCE : PREVIEW_REVIEW_GUIDANCE;
+    }
+    
     private List<String> createSideEffectScope(final ClassificationResult classificationResult) {
-        return switch (classificationResult.getAnalyzedStatementClass().orElse(classificationResult.getStatementClass())) {
-            case DML -> List.of("physical-data");
-            case DDL -> List.of("physical-structure");
-            case DCL -> List.of("privilege-metadata");
-            case TRANSACTION_CONTROL, SAVEPOINT -> List.of("transaction-state");
-            default -> List.of("unknown-side-effect");
-        };
+        return List.of(classificationResult.getSideEffectScope());
     }
     
     private Map<String, Object> createSuggestedArguments(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {

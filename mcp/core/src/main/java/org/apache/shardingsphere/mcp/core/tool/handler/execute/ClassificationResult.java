@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPSta
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -29,6 +30,16 @@ import java.util.Optional;
  */
 @Getter
 public final class ClassificationResult {
+    
+    private static final Collection<String> RULE_DIST_SQL_PREFIXES = List.of(
+            "CREATE SHARDING ", "ALTER SHARDING ", "DROP SHARDING ",
+            "CREATE DEFAULT SHARDING ", "ALTER DEFAULT SHARDING ", "DROP DEFAULT SHARDING ",
+            "CREATE BROADCAST ", "DROP BROADCAST ",
+            "CREATE ENCRYPT ", "ALTER ENCRYPT ", "DROP ENCRYPT ",
+            "CREATE MASK ", "ALTER MASK ", "DROP MASK ",
+            "CREATE SHADOW ", "ALTER SHADOW ", "DROP SHADOW ",
+            "CREATE DEFAULT SHADOW ", "ALTER DEFAULT SHADOW ", "DROP DEFAULT SHADOW ",
+            "CREATE READWRITE_SPLITTING ", "ALTER READWRITE_SPLITTING ", "DROP READWRITE_SPLITTING ");
     
     private final SupportedMCPStatement statementClass;
     
@@ -90,6 +101,42 @@ public final class ClassificationResult {
      */
     public Optional<String> getSavepointName() {
         return savepointName.isEmpty() ? Optional.empty() : Optional.of(savepointName);
+    }
+    
+    /**
+     * Determine whether this statement mutates ShardingSphere rule metadata through DistSQL.
+     *
+     * @return true when the statement is a recognized rule DistSQL statement
+     */
+    public boolean isRuleDistSQL() {
+        if (SupportedMCPStatement.DDL != statementClass) {
+            return false;
+        }
+        String upperSql = normalizedSql.toUpperCase(Locale.ENGLISH);
+        for (String each : RULE_DIST_SQL_PREFIXES) {
+            if (upperSql.startsWith(each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Get model-facing side-effect scope.
+     *
+     * @return side-effect scope
+     */
+    public String getSideEffectScope() {
+        if (isRuleDistSQL()) {
+            return "rule-metadata";
+        }
+        return switch (analyzedStatementClass.orElse(statementClass)) {
+            case DML -> "physical-data";
+            case DDL -> "physical-structure";
+            case DCL -> "privilege-metadata";
+            case TRANSACTION_CONTROL, SAVEPOINT -> "transaction-state";
+            default -> "unknown-side-effect";
+        };
     }
     
     String getTraceStatementMarker() {

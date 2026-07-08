@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -44,6 +45,9 @@ import java.util.Optional;
 final class MCPQueryRecoveryPayloadFactory {
     
     static boolean isQueryFailure(final Throwable cause) {
+        if (cause instanceof RuleDistSQLExecutionException) {
+            return false;
+        }
         if (cause instanceof MCPQueryFailedException || cause instanceof SQLException) {
             return true;
         }
