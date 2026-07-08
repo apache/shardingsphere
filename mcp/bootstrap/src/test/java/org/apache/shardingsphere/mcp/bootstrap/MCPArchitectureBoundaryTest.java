@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -36,6 +37,14 @@ class MCPArchitectureBoundaryTest {
             "mcp/core/src/main/java",
             "mcp/bootstrap/src/main/java");
     
+    private static final List<String> FEATURE_MODULE_SOURCE_DIRECTORIES = List.of(
+            "mcp/features/broadcast/src/main/java",
+            "mcp/features/encrypt/src/main/java",
+            "mcp/features/mask/src/main/java",
+            "mcp/features/readwrite-splitting/src/main/java",
+            "mcp/features/shadow/src/main/java",
+            "mcp/features/sharding/src/main/java");
+    
     private static final List<String> FEATURE_PACKAGE_IMPORTS = List.of(
             "org.apache.shardingsphere.mcp.feature.broadcast",
             "org.apache.shardingsphere.mcp.feature.encrypt",
@@ -44,26 +53,36 @@ class MCPArchitectureBoundaryTest {
             "org.apache.shardingsphere.mcp.feature.shadow",
             "org.apache.shardingsphere.mcp.feature.sharding");
     
+    private static final List<String> BOOTSTRAP_PACKAGE_IMPORTS = List.of("org.apache.shardingsphere.mcp.bootstrap");
+    
     @Test
     void assertGenericModulesDoNotImportFeatures() throws IOException {
         Path projectRoot = findProjectRoot();
         for (String each : GENERIC_MODULE_SOURCE_DIRECTORIES) {
-            assertNoFeatureImport(projectRoot.resolve(each));
+            assertNoPackageImport(projectRoot.resolve(each), FEATURE_PACKAGE_IMPORTS, "Generic MCP modules must not import feature packages");
         }
     }
     
-    private void assertNoFeatureImport(final Path sourceDirectory) throws IOException {
+    @Test
+    void assertFeatureModulesDoNotImportBootstrap() throws IOException {
+        Path projectRoot = findProjectRoot();
+        for (String each : FEATURE_MODULE_SOURCE_DIRECTORIES) {
+            assertNoPackageImport(projectRoot.resolve(each), BOOTSTRAP_PACKAGE_IMPORTS, "MCP feature modules must not import bootstrap packages");
+        }
+    }
+    
+    private void assertNoPackageImport(final Path sourceDirectory, final Collection<String> forbiddenImports, final String message) throws IOException {
         try (Stream<Path> paths = Files.walk(sourceDirectory)) {
             List<Path> actualViolations = paths.filter(Files::isRegularFile).filter(each -> each.toString().endsWith(".java"))
-                    .filter(this::containsFeaturePackageImport).toList();
-            assertTrue(actualViolations.isEmpty(), () -> "Generic MCP modules must not import feature packages: " + actualViolations);
+                    .filter(each -> containsPackageImport(each, forbiddenImports)).toList();
+            assertTrue(actualViolations.isEmpty(), () -> message + ": " + actualViolations);
         }
     }
     
-    private boolean containsFeaturePackageImport(final Path path) {
+    private boolean containsPackageImport(final Path path, final Collection<String> forbiddenImports) {
         try {
             String source = Files.readString(path);
-            return FEATURE_PACKAGE_IMPORTS.stream().anyMatch(each -> source.contains("import " + each));
+            return forbiddenImports.stream().anyMatch(each -> source.contains("import " + each));
         } catch (final IOException ex) {
             throw new IllegalStateException("Failed to read " + path, ex);
         }

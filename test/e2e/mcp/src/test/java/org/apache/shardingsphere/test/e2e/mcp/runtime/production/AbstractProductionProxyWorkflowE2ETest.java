@@ -19,9 +19,10 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyEncryptWorkflowRuntimeTestSupport;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyEncryptWorkflowRuntimeTestSupport.ProxyEncryptWorkflowRuntimeFixture;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport.ProxyWorkflowRuntimeFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
@@ -40,9 +41,9 @@ import static org.hamcrest.Matchers.is;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProductionRuntimeE2ETest {
     
-    private ProxyEncryptWorkflowRuntimeFixture runtimeFixture;
+    private ProxyWorkflowRuntimeFixture runtimeFixture;
     
-    private ProxyEncryptWorkflowRuntimeFixture sharedRuntimeFixture;
+    private ProxyWorkflowRuntimeFixture sharedRuntimeFixture;
     
     private boolean sharedRuntimeFixtureSelected;
     
@@ -81,7 +82,7 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
                 prepareSharedRuntimeFixture();
                 return;
             }
-            runtimeFixture = ProxyEncryptWorkflowRuntimeTestSupport.createFixture();
+            runtimeFixture = ProxyWorkflowRuntimeTestSupport.createFixture();
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
@@ -89,7 +90,7 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     private void prepareSharedRuntimeFixture() throws SQLException {
         if (null == sharedRuntimeFixture) {
-            sharedRuntimeFixture = ProxyEncryptWorkflowRuntimeTestSupport.createFixture();
+            sharedRuntimeFixture = ProxyWorkflowRuntimeTestSupport.createFixture();
         }
         runtimeFixture = sharedRuntimeFixture;
     }
@@ -112,10 +113,12 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
         assertThat(actualValidationResponse.toString(), String.valueOf(actualValidationResponse.get("overall_status")), is("passed"));
         assertThat(actualValidationResponse.toString(), getMapList(actualValidationResponse.get("issues")).size(), is(0));
         assertThat(actualValidationResponse.toString(), getMapList(actualValidationResponse.get("mismatches")).size(), is(0));
+        assertModelFacingPayloadContract(actualValidationResponse);
     }
     
     protected final void assertApplyCompleted(final Map<String, Object> actualApplyResponse) {
         assertThat(actualApplyResponse.toString(), String.valueOf(actualApplyResponse.get("status")), is("completed"));
+        assertModelFacingPayloadContract(actualApplyResponse);
     }
     
     protected final Map<String, Object> applyReviewedWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
@@ -125,6 +128,7 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     protected final Map<String, Object> previewWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
         Map<String, Object> result = interactionClient.call(WorkflowToolDescriptors.APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
         assertThat(String.valueOf(result.get("status")), is("preview"));
+        assertModelFacingPayloadContract(result);
         return result;
     }
     
@@ -142,6 +146,15 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     protected final List<String> getClarificationMessages(final Map<String, Object> payload) {
         return getMapList(payload.get("clarification_questions")).stream().map(each -> String.valueOf(each.get("display_message"))).toList();
+    }
+    
+    protected final void assertModelFacingPayloadContract(final Map<String, Object> payload) {
+        MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
+    }
+    
+    protected final Map<String, Object> findItemByField(final List<Map<String, Object>> items, final String fieldName, final String expectedValue) {
+        return items.stream().filter(each -> expectedValue.equalsIgnoreCase(String.valueOf(each.get(fieldName)))).findFirst()
+                .orElseThrow(() -> new AssertionError(String.format("Failed to find item by %s=%s in %s", fieldName, expectedValue, items)));
     }
     
     protected final List<String> getStringList(final Object value) {
