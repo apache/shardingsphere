@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
