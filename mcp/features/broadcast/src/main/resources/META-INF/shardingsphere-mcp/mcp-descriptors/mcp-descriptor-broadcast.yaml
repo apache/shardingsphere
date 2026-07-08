@@ -96,7 +96,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a broadcast plan."
+        description: "Existing current-session workflow plan identifier used only to continue a broadcast plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -172,7 +172,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Optional existing workflow plan identifier used to continue or revise a previous broadcast plan."
+          description: "Existing workflow plan identifier used only to continue or revise a previous broadcast plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the broadcast rule."

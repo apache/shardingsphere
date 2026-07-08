@@ -1387,7 +1387,7 @@ tools:
     description: >-
       Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state.
       Use execution_mode=preview first when the side-effect scope has not been reviewed. Preview is classification-only,
-      not a database dry run.
+      not a database dry run. For natural-language rule changes, prefer the matching database_gateway_plan_* workflow tool.
     inputSchema:
       type: object
       properties:
@@ -1505,7 +1505,7 @@ tools:
           description: "False for preview because preview does not estimate affected row counts."
         side_effect_scope:
           type: array
-          description: "Preview-only side-effect categories such as physical-data, physical-structure, privilege-metadata, or transaction-state."
+          description: "Preview-only side-effect categories such as physical-data, physical-structure, privilege-metadata, rule-metadata, or transaction-state."
         target_object:
           type: string
           description: "Preview-only target object name when the classifier can identify one."
@@ -1611,6 +1611,7 @@ tools:
         - physical-data
         - physical-structure
         - privilege-metadata
+        - rule-metadata
         - transaction-state
     meta:
       org.apache.shardingsphere/related-resource-uris:

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding;
 
+import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
@@ -55,6 +56,21 @@ class ShardingDescriptorContractTest {
         assertCompletionTargetArguments(catalog, ShardingFeatureDefinition.PLAN_KEY_GENERATOR_PROMPT_NAME, "database", "key_generator_type", "plan_id");
         assertCompletionTargetArguments(catalog, ShardingFeatureDefinition.PLAN_KEY_GENERATE_STRATEGY_PROMPT_NAME, "database", "key_generator_type", "plan_id");
         assertCompletionTargetArguments(catalog, ShardingFeatureDefinition.PLAN_COMPONENT_CLEANUP_PROMPT_NAME, "database", "plan_id");
+    }
+    
+    @Test
+    void assertPlanTableRuleToolGuidesNaturalLanguageRuleChanges() {
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        MCPPromptDescriptor actualPrompt = findPrompt(catalog, ShardingFeatureDefinition.PLAN_TABLE_RULE_PROMPT_NAME);
+        assertThat(actualPrompt.getDescription(), is("Guide the model to plan sharding table rule DistSQL, including database/table sharding and key generation."));
+        MCPToolDescriptor actual = findTool(catalog, ShardingFeatureDefinition.PLAN_TABLE_RULE_TOOL_NAME);
+        assertThat(actual.getDescription(),
+                is("Plan reviewable sharding table rule DistSQL without executing it. "
+                        + "Use this before raw SQL for natural-language requests to create, alter, or drop database/table sharding rules."));
+    }
+    
+    private MCPPromptDescriptor findPrompt(final MCPDescriptorCatalog catalog, final String promptName) {
+        return catalog.getProtocolDescriptors().getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
     }
     
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {

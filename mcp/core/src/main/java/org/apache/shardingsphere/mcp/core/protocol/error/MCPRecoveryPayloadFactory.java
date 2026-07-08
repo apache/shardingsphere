@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateExc
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
@@ -49,6 +50,7 @@ final class MCPRecoveryPayloadFactory {
     
     private static final List<RecoveryMapping> RECOVERY_MAPPINGS = List.of(
             new RecoveryMapping(SQLToolMismatchException.class, cause -> MCPSQLRecoveryPayloadFactory.createSQLToolMismatchRecovery((SQLToolMismatchException) cause)),
+            new RecoveryMapping(RuleDistSQLExecutionException.class, cause -> MCPSQLRecoveryPayloadFactory.createRuleDistSQLExecutionRecovery((RuleDistSQLExecutionException) cause)),
             new RecoveryMapping(MetadataIntrospectionSQLStatementException.class,
                     cause -> MCPSQLRecoveryPayloadFactory.createMetadataIntrospectionSQLRecovery((MetadataIntrospectionSQLStatementException) cause)),
             new RecoveryMapping(MCPMultipleSQLStatementsException.class, cause -> MCPSQLRecoveryPayloadFactory.createMultipleStatementsRecovery()),

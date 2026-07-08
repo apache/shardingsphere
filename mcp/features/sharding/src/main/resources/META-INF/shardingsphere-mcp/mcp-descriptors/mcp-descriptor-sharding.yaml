@@ -319,7 +319,7 @@ resourceTemplates:
 prompts:
   - name: plan_sharding_table_rule
     title: Plan Sharding Table Rule
-    description: "Guide the model to plan sharding table rule DistSQL."
+    description: "Guide the model to plan sharding table rule DistSQL, including database/table sharding and key generation."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-table-rule.md
     arguments:
@@ -337,7 +337,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a sharding table rule plan."
+        description: "Existing current-session workflow plan identifier used only to continue a sharding table rule plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -372,7 +372,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue this sharding plan."
+        description: "Existing current-session workflow plan identifier used only to continue this sharding plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -408,7 +408,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a default sharding strategy plan."
+        description: "Existing current-session workflow plan identifier used only to continue a default sharding strategy plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -445,7 +445,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a sharding key generator plan."
+        description: "Existing current-session workflow plan identifier used only to continue a sharding key generator plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -482,7 +482,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a sharding key generate strategy plan."
+        description: "Existing current-session workflow plan identifier used only to continue a sharding key generate strategy plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -778,11 +778,11 @@ resourceNavigation:
 tools:
   - name: database_gateway_plan_sharding_table_rule
     title: Plan Sharding Table Rule
-    description: "Plan reviewable sharding table rule DistSQL without executing it."
+    description: "Plan reviewable sharding table rule DistSQL without executing it. Use this before raw SQL for natural-language requests to create, alter, or drop database/table sharding rules."
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Optional workflow plan id."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         table: {type: string, description: "Logical table."}
         column: {type: string, description: "Standard or auto-table sharding column."}
@@ -893,7 +893,7 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Optional workflow plan id."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         rule: {type: string, description: "Table reference rule name."}
         operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
@@ -930,7 +930,7 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Optional workflow plan id."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
         default_strategy_type: {type: string, description: "DATABASE or TABLE default strategy type.", enum: [DATABASE, TABLE]}
@@ -972,7 +972,7 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Optional workflow plan id."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         key_generator: {type: string, description: "Key generator name."}
         operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
@@ -1011,7 +1011,7 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Optional workflow plan id."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         key_generate_strategy: {type: string, description: "Key generate strategy name."}
         operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
@@ -1055,7 +1055,7 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Optional workflow plan id."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         operation_type: {type: string, description: "Cleanup is drop-only.", enum: [drop]}
         component_type: {type: string, description: "algorithm, key-generator, or auditor.", enum: [algorithm, key-generator, auditor]}

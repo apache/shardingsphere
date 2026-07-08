@@ -34,6 +34,11 @@ model_first_summary:
   - {intent: read_only_sql, first_action: 'read_resource shardingsphere://databases/{database}/capabilities',
     next_step: call_tool database_gateway_execute_query, stop_rule: Stop after reporting
       the result rows.}
+  - {intent: rule_workflow, first_action: call_tool matching database_gateway_plan_*
+      workflow tool without plan_id for a new plan, next_step: call_tool database_gateway_apply_workflow
+      execution_mode=preview with the returned plan_id, stop_rule: Use workflow apply
+      and validation for natural-language rule changes before considering raw side-effect
+      SQL.}
   - {intent: side_effect_sql, first_action: call_tool database_gateway_execute_update
       execution_mode=preview, next_step: call_tool database_gateway_execute_update
       execution_mode=execute, stop_rule: Execute only after preview review confirms
@@ -54,10 +59,19 @@ model_first_summary:
   sql_tool_selection:
     read_only: {tool: database_gateway_execute_query, statement_rule: Use for one
         SELECT or EXPLAIN ANALYZE statement.}
-    side_effecting: {tool: database_gateway_execute_update, first_mode: preview, execute_requires: execution_mode=execute}
+    side_effecting:
+      tool: database_gateway_execute_update
+      first_mode: preview
+      execute_requires: execution_mode=execute
+      rule_change_preference: For natural-language rule changes, use the matching
+        database_gateway_plan_* workflow tool before raw SQL execution; omit plan_id
+        for a new plan.
   side_effect_rule: Preview side effects first; execute only when the requested side
     effect is still intended.
   workflow_rule:
+    selection_rule: For natural-language rule changes, use the matching database_gateway_plan_*
+      workflow tool before raw side-effect SQL; omit plan_id for a new plan and reuse
+      only returned plan_id values.
     planning_tools: [database_gateway_plan_broadcast_rule, database_gateway_plan_encrypt_rule,
       database_gateway_plan_mask_rule, database_gateway_plan_readwrite_splitting_rule,
       database_gateway_plan_readwrite_splitting_status, database_gateway_plan_shadow_rule,

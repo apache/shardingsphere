@@ -53,6 +53,7 @@ class LLMUsabilityScenarioCatalogTest {
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("create a mask rule"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("table `orders`"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("MD5 mask algorithm"));
+        assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("Do not send plan_id to the planning tool"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("manual-only"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("validate the workflow"));
         assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getRequiredToolNames(),
@@ -62,6 +63,7 @@ class LLMUsabilityScenarioCatalogTest {
         assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("MD5 encrypt algorithm"));
         assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("cipher column `status_cipher`"));
         assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("irreversible hashing, no equality, and no like"));
+        assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("Do not send plan_id to the planning tool"));
         assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("manual-only"));
         assertThat(actualScenarios.get("natural-encrypt-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("validate the workflow"));
         assertTrue(actual.stream().allMatch(each -> each.getTags().contains("natural")));
