@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -27,6 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -55,6 +57,8 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         assertFeatureDiscovery(httpClient, sessionId, scenario);
+        assertFeatureToolSchemaMatchesPlanArguments(httpClient, sessionId, scenario);
+        assertRejectUnsupportedPlanArgument(httpClient, sessionId, scenario);
         assertClarifiesMissingDatabase(httpClient, sessionId, scenario);
         assertRecoversWhenDistSQLIsUnsupportedByDirectDatabase(httpClient, sessionId, scenario);
     }
@@ -85,6 +89,45 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         Map<String, Object> payload = getFirstResourcePayload(actual.body());
         assertTrue(((List<?>) payload.get("supportedTools")).stream().map(String::valueOf).toList().contains(scenario.toolName()));
         assertTrue(String.valueOf(payload).contains(scenario.discoveryToken()));
+        assertModelFacingPayloadContract(payload);
+    }
+    
+    private void assertFeatureToolSchemaMatchesPlanArguments(final HttpClient httpClient, final String sessionId,
+                                                             final FeatureWorkflowScenario scenario) throws IOException, InterruptedException {
+        HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                scenario.toolName() + "-schema-1", "tools/list", Map.of()));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = castToMap(parseJsonBody(actual.body()).get("result"));
+        assertModelFacingPayloadContract(payload);
+        Map<String, Object> actualTool = findByKey(castToMapList(payload.get("tools")), "name", scenario.toolName());
+        Map<String, Object> actualInputSchema = castToMap(actualTool.get("inputSchema"));
+        assertFalse((Boolean) actualInputSchema.get("additionalProperties"));
+        Map<String, Object> actualProperties = castToMap(actualInputSchema.get("properties"));
+        for (String each : scenario.planArguments().keySet()) {
+            assertTrue(actualProperties.containsKey(each), each);
+        }
+    }
+    
+    private List<Map<String, Object>> castToMapList(final Object value) {
+        return ((List<?>) value).stream().map(this::castToMap).toList();
+    }
+    
+    private Map<String, Object> findByKey(final List<Map<String, Object>> values, final String key, final String expectedValue) {
+        return values.stream().filter(each -> expectedValue.equals(each.get(key))).findFirst().orElseThrow();
+    }
+    
+    private void assertRejectUnsupportedPlanArgument(final HttpClient httpClient, final String sessionId,
+                                                     final FeatureWorkflowScenario scenario) throws IOException, InterruptedException {
+        Map<String, Object> arguments = new LinkedHashMap<>(scenario.planArguments());
+        arguments.put("client_hint", "narrow");
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, scenario.toolName(), arguments);
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> result = castToMap(parseJsonBody(actual.body()).get("result"));
+        assertTrue((Boolean) result.get("isError"));
+        Map<String, Object> payload = castToMap(result.get("structuredContent"));
+        Map<String, Object> recovery = getRecoveryPayload(payload, "validation");
+        assertThat(recovery.get("category"), is("unknown_argument"));
+        assertThat(recovery.get("argument_path"), is("client_hint"));
         assertModelFacingPayloadContract(payload);
     }
     
