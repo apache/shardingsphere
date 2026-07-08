@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.api.advice;
 
 /**
- * Wrapped class for target and provide a context to store variable during invocation.
+ * Wrapper class for target and provides a context to store variables during invocation.
  */
 public interface TargetAdviceObject {
     
