@@ -73,12 +73,11 @@ class MaskWorkflowValidationServiceTest {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
-        snapshot.getRequest().setColumn("Phone");
         workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("PostgreSQL");
+        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actual = createService(ruleInspectionService)
