@@ -6132,4 +6132,21 @@
             <simple-table name="t_order" start-index="29" stop-index="35" />
         </from>
     </select>
+
+    <select sql-case-id="select_split_by_string" db-types="Doris">
+        <projections start-index="7" stop-index="52">
+            <expression-projection start-index="7" stop-index="52" text="SPLIT_BY_STRING('apple::banana::cherry', '::')">
+                <expr>
+                    <function function-name="SPLIT_BY_STRING" text="SPLIT_BY_STRING('apple::banana::cherry', '::')" start-index="7" stop-index="52">
+                        <parameter>
+                            <literal-expression value="'apple::banana::cherry'" start-index="23" stop-index="45" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'::'" start-index="48" stop-index="51" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

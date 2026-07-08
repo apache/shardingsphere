@@ -162,3 +162,7 @@ PERFORMANCE_SCHEMA
 TOKUDB
     : T O K U D B
     ;
+
+SPLIT_BY_STRING
+    : S P L I T UL_ B Y UL_ S T R I N G
+    ;

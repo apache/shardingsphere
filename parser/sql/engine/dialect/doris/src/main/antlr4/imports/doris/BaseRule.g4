@@ -66,6 +66,7 @@ customKeyword
     | UTC_TIME
     | UTC_TIMESTAMP
     | UTC_TIMESTAMP
+    | SPLIT_BY_STRING
     ;
 
 literals
@@ -1154,6 +1155,9 @@ specialFunction
     // DORIS ADDED END
     | positionFunction
     | substringFunction
+    // DORIS ADDED BEGIN
+    | splitByStringFunction
+    // DORIS ADDED END
     | trimFunction
     | valuesFunction
     | weightStringFunction
@@ -1251,6 +1255,12 @@ substringFunction
     : (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
     | (SUBSTRING | SUBSTR) LP_ expr COMMA_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
+
+// DORIS ADDED BEGIN
+splitByStringFunction
+    : SPLIT_BY_STRING LP_ expr COMMA_ expr RP_
+    ;
+// DORIS ADDED END
 
 extractFunction
     : EXTRACT LP_ intervalUnit FROM expr RP_

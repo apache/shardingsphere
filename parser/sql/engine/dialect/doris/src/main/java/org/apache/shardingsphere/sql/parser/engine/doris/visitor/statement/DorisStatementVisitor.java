@@ -129,6 +129,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Shortha
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SpecialFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SplitByStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.String_Context;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SubqueryContext;
@@ -1143,6 +1144,11 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.substringFunction()) {
             return visit(ctx.substringFunction());
         }
+        // DORIS ADDED BEGIN
+        if (null != ctx.splitByStringFunction()) {
+            return visit(ctx.splitByStringFunction());
+        }
+        // DORIS ADDED END
         if (null != ctx.extractFunction()) {
             return visit(ctx.extractFunction());
         }
@@ -1210,6 +1216,15 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     @Override
     public final ASTNode visitInstrFunction(final InstrFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.INSTR().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add(new LiteralExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), each.getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitSplitByStringFunction(final SplitByStringFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.SPLIT_BY_STRING().getText(), getOriginalText(ctx));
         for (ExprContext each : ctx.expr()) {
             result.getParameters().add(new LiteralExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), each.getText()));
         }
