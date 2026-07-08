@@ -41,6 +41,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdBlobInfoReturnPacketTest {
@@ -61,10 +63,10 @@ class FirebirdBlobInfoReturnPacketTest {
     }
     
     @Test
-    void assertWriteCommonInfo() {
+    void assertWriteCommonInfoWithRequestedEndWritesSingleTerminator() {
         FirebirdBlobInfoReturnPacket packet = new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdCommonInfoPacketType.END), 0);
         packet.write((PacketPayload) payload);
-        inOrder(payload).verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
+        verify(payload, times(1)).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -76,6 +78,7 @@ class FirebirdBlobInfoReturnPacketTest {
         order.verify(payload).writeInt1(type.getCode());
         order.verify(payload).writeInt2LE(4);
         order.verify(payload).writeInt4LE(expectedValue);
+        order.verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
     }
     
     @Test

@@ -43,12 +43,16 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         for (FirebirdInfoPacketType type : infoItems) {
+            if (FirebirdCommonInfoPacketType.END == type) {
+                continue;
+            }
             if (type.isCommon()) {
                 FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
             } else {
                 parseBlobInfo(payload, (FirebirdBlobInfoPacketType) type);
             }
         }
+        FirebirdCommonInfoPacketType.parseCommonInfo(payload, FirebirdCommonInfoPacketType.END);
     }
     
     private void parseBlobInfo(final FirebirdPacketPayload payload, final FirebirdBlobInfoPacketType type) {
