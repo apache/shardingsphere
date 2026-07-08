@@ -90,6 +90,15 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
+    void assertValidateRejectsUnsupportedNestedInputSchemaField() {
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.",
+                createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query.", "pattern", ".+"))),
+                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query` contains unsupported field `pattern`.");
+    }
+    
+    @Test
     void assertValidateRejectsUnknownRelatedResourceUri() {
         assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.", createInputSchema(),
