@@ -78,6 +78,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         }
         List<?> returnedItems = capListItems(items);
         appendListSizeMetadata(navigationPayload, items.size(), returnedItems.size());
+        navigationPayload.put(MCPPayloadFieldNames.SUMMARY, createListSummary(metadata, items.size(), returnedItems.size()));
         if (items.isEmpty()) {
             appendEmptyStateGuidance(navigationPayload, metadata, databaseContext, uriVariables);
         } else if (isTruncated(items, returnedItems)) {
@@ -105,8 +106,9 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     private Map<String, Object> createDetailPayload(final ShardingSphereMCPResourceMetadata descriptor, final List<?> items, final Map<String, Object> navigationPayload) {
-        Map<String, Object> result = new LinkedHashMap<>(navigationPayload.size() + 6, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(navigationPayload.size() + 7, 1F);
         result.put("response_mode", MCPResponseMode.DETAIL);
+        result.put(MCPPayloadFieldNames.SUMMARY, createDetailSummary(descriptor, items));
         result.put(MCPPayloadFieldNames.RESOURCE_KIND, "detail");
         if (null != descriptor.getObjectScope()) {
             result.put("object_scope", descriptor.getObjectScope());
@@ -119,6 +121,20 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         }
         result.putAll(navigationPayload);
         return result;
+    }
+    
+    private String createListSummary(final ShardingSphereMCPResourceMetadata descriptor, final int totalCount, final int returnedCount) {
+        return String.format("Returned %d of %d %s metadata entries.", returnedCount, totalCount, resolveSummaryScope(descriptor));
+    }
+    
+    private String createDetailSummary(final ShardingSphereMCPResourceMetadata descriptor, final List<?> items) {
+        return items.isEmpty()
+                ? String.format("No %s detail item matched this resource URI.", resolveSummaryScope(descriptor))
+                : String.format("Returned %s detail for this resource URI.", resolveSummaryScope(descriptor));
+    }
+    
+    private String resolveSummaryScope(final ShardingSphereMCPResourceMetadata descriptor) {
+        return null == descriptor.getObjectScope() ? descriptor.getResourceKind() : descriptor.getObjectScope().replace('_', '-');
     }
     
     private void appendEmptyStateGuidance(final Map<String, Object> payload, final ShardingSphereMCPResourceMetadata descriptor,
@@ -270,16 +286,20 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        String uriOrTemplate = descriptor.getUriTemplate();
-        Optional<String> selfUri = new MCPUriTemplate(uriOrTemplate).expandIfComplete(uriVariables);
-        selfUri.ifPresent(optional -> result.put("self_uri", optional));
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        String uriTemplate = descriptor.getUriTemplate();
+        Optional<String> selfUri = new MCPUriTemplate(uriTemplate).expandIfComplete(uriVariables);
+        selfUri.ifPresent(uri -> {
+            result.put("self_uri", uri);
+            result.put(MCPPayloadFieldNames.SELF_RESOURCE,
+                    MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_self", "Read this metadata resource.", MCPPayloadFieldNames.SELF_RESOURCE));
+        });
         String parentUri = createParentUri(selfUri.orElse(""));
         if (!parentUri.isEmpty()) {
             result.put(MCPPayloadFieldNames.PARENT_RESOURCE, MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
                     "Read the parent metadata resource before broadening or correcting the request.", MCPPayloadFieldNames.PARENT_RESOURCE));
         }
-        List<Map<String, Object>> nextResources = MCPDescriptorCatalogIndex.getResourceNavigationDescriptors(uriOrTemplate).stream()
+        List<Map<String, Object>> nextResources = MCPDescriptorCatalogIndex.getResourceNavigationDescriptors(uriTemplate).stream()
                 .filter(each -> each.getTo().startsWith("shardingsphere://"))
                 .map(each -> createNextResourceHint(each.getTo(), each.getDescription(), uriVariables)).flatMap(Optional::stream).toList();
         if (!nextResources.isEmpty()) {

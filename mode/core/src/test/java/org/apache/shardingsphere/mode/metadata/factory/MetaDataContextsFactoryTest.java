@@ -77,6 +77,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -115,8 +116,17 @@ class MetaDataContextsFactoryTest {
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
         when(DatabaseTypeEngine.getProtocolType(any(DatabaseConfiguration.class), any(ConfigurationProperties.class))).thenReturn(databaseType);
         when(DatabaseTypeFactory.get(anyString())).thenReturn(databaseType);
+        when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenAnswer(invocation -> createStorageUnitNodeMap(invocation.getArgument(0)));
         when(metaDataPersistFacade.getRepository()).thenReturn(repository);
         when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load(anyString(), any(DatabaseType.class))).thenReturn(Collections.emptyList());
+    }
+    
+    private Map<String, StorageNode> createStorageUnitNodeMap(final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
+        Map<String, StorageNode> result = new LinkedHashMap<>(dataSourcePoolPropsMap.size(), 1F);
+        for (String each : dataSourcePoolPropsMap.keySet()) {
+            result.put(each, new StorageNode(each));
+        }
+        return result;
     }
     
     private ShardingSphereDatabase createDatabaseFromConfiguration(final String databaseName, final DatabaseType protocolType,
@@ -247,7 +257,7 @@ class MetaDataContextsFactoryTest {
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo", new MockedDataSource()), Collections.emptyList());
         return new ContextManagerBuilderParameter(null, Collections.singletonMap("foo_db", databaseConfig), Collections.emptyMap(),
-                Collections.emptyList(), new Properties(), Collections.emptyList(), null);
+                Collections.emptyList(), new Properties(), null);
     }
     
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final String... storageUnitNames) {
@@ -266,6 +276,8 @@ class MetaDataContextsFactoryTest {
         props.put("url", "jdbc:mock://127.0.0.1/" + storageUnitName);
         props.put("username", "root");
         StorageUnit result = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        when(result.getStorageNode()).thenReturn(new StorageNode(storageUnitName));
+        when(result.getStorageType()).thenReturn(databaseType);
         when(result.getDataSourcePoolProperties()).thenReturn(new DataSourcePoolProperties("HikariCP", props));
         when(result.getDataSource()).thenReturn(new MockedDataSource());
         return result;

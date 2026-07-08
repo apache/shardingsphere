@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableExcept
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -147,8 +148,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
             return false;
         }
         String databaseType = databaseCapabilityProvider.provide(databaseName).map(MCPDatabaseCapability::getDatabaseType).orElse("");
-        return "MySQL".equalsIgnoreCase(databaseType) || "MariaDB".equalsIgnoreCase(databaseType)
-                || "PostgreSQL".equalsIgnoreCase(databaseType) || "openGauss".equalsIgnoreCase(databaseType);
+        return MCPDatabaseDialect.of(databaseType).isInformationSchemaColumnSchemaFilterRequired();
     }
     
     private Connection openConnection(final String databaseName) throws SQLException {

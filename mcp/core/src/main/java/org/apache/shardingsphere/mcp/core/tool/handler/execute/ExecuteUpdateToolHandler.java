@@ -54,6 +54,8 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     private static final String PREVIEW_REVIEW_GUIDANCE = "Review normalized_sql and side_effect_scope before execution. "
             + "This preview is classification-only; it does not guarantee parsing, rule validation, algorithm initialization, affected rows, or runtime success.";
     
+    private static final String PREVIEW_CONFIRMATION_REASON = "Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.";
+    
     private static final String PREVIEW_EXECUTION_REASON = "Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.";
     
     @Override
@@ -70,6 +72,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String executionMode = resolveExecutionMode(toolArguments);
+        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
         String sql = toolArguments.getStringArgument("sql");
         ClassificationResult classificationResult = checkUpdateStatement(toolArguments, sql);
         if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
@@ -101,7 +104,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     }
     
     private MCPResponse createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
-        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(17, 1F);
         result.put("response_mode", MCPResponseMode.PREVIEW);
         result.put("result_kind", RESULT_KIND_PREVIEW);
         result.put(MCPPayloadFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW);
@@ -116,13 +119,21 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         classificationResult.getTargetObjectName().ifPresent(optional -> result.put("target_object", optional));
         classificationResult.getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
         result.put("review_guidance", PREVIEW_REVIEW_GUIDANCE);
-        result.put("review_summary", createReviewSummary(classificationResult));
+        String reviewSummary = createReviewSummary(classificationResult);
+        result.put(MCPPayloadFieldNames.SUMMARY, reviewSummary);
+        result.put("review_summary", reviewSummary);
         Map<String, Object> suggestedArguments = createSuggestedArguments(toolArguments, classificationResult);
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(toolArguments));
         result.put("argument_provenance", createArgumentProvenance(suggestedArguments));
-        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(TOOL_NAME, PREVIEW_EXECUTION_REASON, suggestedArguments)));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createPreviewNextActions(suggestedArguments));
         return new MCPMapResponse(result);
+    }
+    
+    private List<Map<String, Object>> createPreviewNextActions(final Map<String, Object> suggestedArguments) {
+        return MCPNextActionUtils.ordered(
+                MCPNextActionUtils.askUser(PREVIEW_CONFIRMATION_REASON, List.of("execution_approved")),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(TOOL_NAME, PREVIEW_EXECUTION_REASON, suggestedArguments), 1));
     }
     
     private String createReviewSummary(final ClassificationResult classificationResult) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
  * Firebird batch statement metadata.
  */
 @Getter
+@RequiredArgsConstructor
 public final class FirebirdBatchStatement {
     
     private final int statementHandle;
@@ -46,13 +48,6 @@ public final class FirebirdBatchStatement {
     
     public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBatchColumnDescriptor> columnDescriptors, final long bufferSize) {
         this(statementHandle, columnDescriptors, bufferSize, false);
-    }
-    
-    public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBatchColumnDescriptor> columnDescriptors, final long bufferSize, final boolean recordCounts) {
-        this.statementHandle = statementHandle;
-        this.columnDescriptors = columnDescriptors;
-        this.bufferSize = bufferSize;
-        this.recordCounts = recordCounts;
     }
     
     /**

@@ -19,8 +19,7 @@ package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
@@ -39,7 +38,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,22 +47,6 @@ import java.util.Set;
  * MCP JDBC metadata loader.
  */
 public final class MCPJdbcMetadataLoader {
-    
-    private static final Set<String> SYSTEM_SCHEMAS = Set.of("INFORMATION_SCHEMA", "MYSQL", "PERFORMANCE_SCHEMA", "PG_CATALOG", "SHARDINGSPHERE", "SYS", "SYSTEM_LOBS");
-    
-    private static final String INFORMATION_SCHEMA_SEQUENCE_QUERY =
-            "SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences";
-    
-    private static final String SQL_SERVER_SEQUENCE_QUERY =
-            "SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id";
-    
-    private static final String ORACLE_SEQUENCE_QUERY = "SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES";
-    
-    private static final String MARIADB_SEQUENCE_QUERY =
-            "SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'";
-    
-    private static final String FIREBIRD_SEQUENCE_QUERY =
-            "SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0";
     
     /**
      * Load database metadata.
@@ -85,21 +67,22 @@ public final class MCPJdbcMetadataLoader {
     
     private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final RuntimeDatabaseProfile databaseProfile,
                                                      final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
-        SchemaSemantics defaultSchemaSemantics = getDefaultSchemaSemantics(databaseProfile.getDatabaseType());
+        MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(databaseProfile.getDatabaseType());
+        SchemaSemantics defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
         DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, databaseProfile.getDatabaseType(), databaseProfile.getDatabaseVersion());
-        loadTables(databaseName, defaultSchemaSemantics, accumulator, databaseMetaData);
-        loadViews(databaseName, defaultSchemaSemantics, accumulator, databaseMetaData);
-        loadSequences(databaseName, defaultSchemaSemantics, databaseProfile.getDatabaseType(), accumulator, connection);
+        loadTables(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, databaseMetaData);
+        loadViews(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, databaseMetaData);
+        loadSequences(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, connection);
         return accumulator.build();
     }
     
-    private void loadTables(final String databaseName, final SchemaSemantics defaultSchemaSemantics,
+    private void loadTables(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
                             final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
                 String schemaName = Objects.toString(tables.getString("TABLE_SCHEM"), "").trim();
                 String catalogName = Objects.toString(tables.getString("TABLE_CAT"), "").trim();
-                if (isSystemSchema(defaultSchemaSemantics, schemaName, catalogName)) {
+                if (databaseDialect.isSystemSchema(schemaName, catalogName, defaultSchemaSemantics)) {
                     continue;
                 }
                 String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
@@ -118,13 +101,13 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
-    private void loadViews(final String databaseName, final SchemaSemantics defaultSchemaSemantics,
+    private void loadViews(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
                            final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
         try (ResultSet views = databaseMetaData.getTables(null, null, "%", new String[]{"VIEW"})) {
             while (views.next()) {
                 String schemaName = Objects.toString(views.getString("TABLE_SCHEM"), "").trim();
                 String catalogName = Objects.toString(views.getString("TABLE_CAT"), "").trim();
-                if (isSystemSchema(defaultSchemaSemantics, schemaName, catalogName)) {
+                if (databaseDialect.isSystemSchema(schemaName, catalogName, defaultSchemaSemantics)) {
                     continue;
                 }
                 String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
@@ -140,16 +123,16 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
-    private void loadSequences(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final String databaseType,
+    private void loadSequences(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
                                final DatabaseMetadataAccumulator accumulator, final Connection connection) throws SQLException {
-        Optional<String> sequenceQuery = getSequenceQuery(databaseType);
+        Optional<String> sequenceQuery = databaseDialect.getSequenceQuery();
         if (sequenceQuery.isEmpty()) {
             return;
         }
         try (Statement statement = connection.createStatement(); ResultSet sequences = statement.executeQuery(sequenceQuery.get())) {
             while (sequences.next()) {
                 String schemaName = Objects.toString(sequences.getString("SEQUENCE_SCHEMA"), "").trim();
-                if (isSystemSchema(schemaName)) {
+                if (databaseDialect.isSystemSchema(schemaName)) {
                     continue;
                 }
                 String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
@@ -159,35 +142,6 @@ public final class MCPJdbcMetadataLoader {
                 }
             }
         }
-    }
-    
-    private Optional<String> getSequenceQuery(final String databaseType) {
-        if (null == databaseType || databaseType.isBlank()) {
-            return Optional.empty();
-        }
-        switch (databaseType.toUpperCase(Locale.ENGLISH)) {
-            case "POSTGRESQL":
-            case "OPENGAUSS":
-                return Optional.of(INFORMATION_SCHEMA_SEQUENCE_QUERY);
-            case "SQLSERVER":
-                return Optional.of(SQL_SERVER_SEQUENCE_QUERY);
-            case "ORACLE":
-                return Optional.of(ORACLE_SEQUENCE_QUERY);
-            case "MARIADB":
-                return Optional.of(MARIADB_SEQUENCE_QUERY);
-            case "FIREBIRD":
-                return Optional.of(FIREBIRD_SEQUENCE_QUERY);
-            default:
-                return Optional.empty();
-        }
-    }
-    
-    private boolean isSystemSchema(final String schemaName) {
-        return SYSTEM_SCHEMAS.contains(schemaName.toUpperCase(Locale.ENGLISH));
-    }
-    
-    private boolean isSystemSchema(final SchemaSemantics defaultSchemaSemantics, final String schemaName, final String catalogName) {
-        return isSystemSchema(schemaName) || SchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics && isSystemSchema(catalogName);
     }
     
     private List<String> loadColumns(final DatabaseMetaData databaseMetaData, final String catalogName, final String schemaName, final String objectName) throws SQLException {
@@ -220,12 +174,6 @@ public final class MCPJdbcMetadataLoader {
     private String getPattern(final String value) {
         String result = Objects.toString(value, "").trim();
         return result.isEmpty() ? null : result;
-    }
-    
-    private SchemaSemantics getDefaultSchemaSemantics(final String databaseType) {
-        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType)
-                .map(MCPDatabaseCapabilityOption::getDefaultSchemaSemantics)
-                .orElse(SchemaSemantics.NATIVE_SCHEMA);
     }
     
     private String normalizeSchemaName(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final String schemaName) {

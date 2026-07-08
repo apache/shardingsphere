@@ -37,7 +37,7 @@ public final class MCPCompletionProviderResult {
     
     private final Collection<String> missingContextArguments;
     
-    private final String guidanceResourceUri;
+    private final String nearestResourceUri;
     
     public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates) {
         this(candidates, Map.of(), List.of(), "");

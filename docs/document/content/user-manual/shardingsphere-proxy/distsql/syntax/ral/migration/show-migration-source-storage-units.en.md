@@ -12,7 +12,7 @@ The `SHOW MIGRATION SOURCE STORAGE UNITS` syntax is used to query the registered
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-ShowStorageUnit ::=
+ShowMigrationSourceStorageUnits ::=
   'SHOW' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNITS'
 ```
 {{% /tab %}}
@@ -23,16 +23,22 @@ ShowStorageUnit ::=
 
 ### Return Value Description
 
-| Column    | Description            |
-|-----------|------------------------|
-| name      | Storage unit name      |
-| type      | Storage unit type      |
-| host      | Storage unit host      |
-| port      | Storage unit port      |
-| db        | Database name          |
-| attribute | Storage unit attribute |
+| Column                          | Description                          |
+|---------------------------------|--------------------------------------|
+| name                            | Storage unit name                    |
+| type                            | Storage unit type                    |
+| host                            | Storage unit host                    |
+| port                            | Storage unit port                    |
+| db                              | Database name                        |
+| connection_timeout_milliseconds | Connection timeout in milliseconds   |
+| idle_timeout_milliseconds       | Idle timeout in milliseconds         |
+| max_lifetime_milliseconds       | Maximum lifetime in milliseconds     |
+| max_pool_size                   | Maximum connection pool size         |
+| min_pool_size                   | Minimum connection pool size         |
+| read_only                       | Whether the storage unit is read-only |
+| other_attributes                | Other storage unit attributes        |
 
- ### Example
+### Example
 
 - Query registered migration source storage units
 

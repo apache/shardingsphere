@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -119,6 +121,7 @@ class AbstractMCPInteractionClientTest {
                 "argument", Map.of("name", "schema", "value", "pub"))));
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class FakeMCPInteractionClient extends AbstractMCPInteractionClient {
         
         private final Map<String, Object> response;
@@ -131,12 +134,13 @@ class AbstractMCPInteractionClientTest {
         
         private Map<String, Object> params = Map.of();
         
-        private FakeMCPInteractionClient(final Map<String, Object> response) {
-            this.response = response;
+        @Override
+        public void open() {
         }
         
         @Override
-        public void open() {
+        public Map<String, Object> getInitializePayload() {
+            throw new UnsupportedOperationException("initialize payload is not available.");
         }
         
         @Override

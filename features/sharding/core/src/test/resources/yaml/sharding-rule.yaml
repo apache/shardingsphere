@@ -98,10 +98,3 @@ rules:
   auditors:
     sharding_key_required_auditor:
       type: DML_SHARDING_CONDITIONS
-
-  shardingCache:
-    allowedMaxSqlLength: 512
-    routeCache:
-      softValues: true
-      initialCapacity: 65536
-      maximumSize: 262144

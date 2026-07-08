@@ -84,7 +84,7 @@ public final class SubqueryTableSegmentBinder {
         segment.getAliasSegment().ifPresent(result::setAlias);
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
                 boundSubSelect.getProjections().getProjections(), subqueryTableName, binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
-        Collection<ColumnSegment> boundSubqueryColumns = bindSubqueryColumns(segment.getColumns(), new ArrayList<>(subqueryProjections));
+        Collection<ColumnSegment> boundSubqueryColumns = bindSubqueryColumns(getSubqueryColumns(segment), new ArrayList<>(subqueryProjections));
         result.getColumns().addAll(boundSubqueryColumns);
         if (!boundSubqueryColumns.isEmpty()) {
             subqueryProjections = createBoundSubqueryColumnProjections(boundSubqueryColumns, subqueryTableName);
@@ -94,6 +94,21 @@ public final class SubqueryTableSegmentBinder {
         tableBinderContexts.put(CaseInsensitiveString.of(subqueryTableName.getValue()), tableBinderContext);
         segment.getPivot().map(optional -> PivotSegmentBinder.bind(optional, binderContext,
                 createTableBinderContexts(subqueryTableName, tableBinderContext), outerTableBinderContexts)).ifPresent(result::setPivot);
+        return result;
+    }
+    
+    private static Collection<ColumnSegment> getSubqueryColumns(final SubqueryTableSegment segment) {
+        if (!segment.getColumns().isEmpty()) {
+            return segment.getColumns();
+        }
+        if (!segment.getAliasSegment().isPresent() || segment.getAliasSegment().get().getColumnAliases().isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<ColumnSegment> result = new LinkedList<>();
+        AliasSegment aliasSegment = segment.getAliasSegment().get();
+        for (IdentifierValue each : aliasSegment.getColumnAliases()) {
+            result.add(new ColumnSegment(aliasSegment.getStartIndex(), aliasSegment.getStopIndex(), each));
+        }
         return result;
     }
     

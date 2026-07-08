@@ -102,6 +102,17 @@ final class MCPBuilderEvaluationArtifactTest {
         NodeList qaPairs = root.getElementsByTagName("qa_pair");
         assertThat(qaPairs.getLength(), is(EXPECTED_QA_PAIR_COUNT));
         assertEvaluationQuestions(qaPairs);
+        String content = root.getTextContent();
+        for (String each : Set.of(
+                "database_gateway_plan_encrypt_rule",
+                "database_gateway_plan_mask_rule",
+                "database_gateway_plan_broadcast_rule",
+                "database_gateway_plan_readwrite_splitting_rule",
+                "database_gateway_plan_shadow_rule",
+                "database_gateway_plan_sharding_table_rule",
+                "completion/complete")) {
+            assertTrue(content.contains(each), () -> "Evaluation artifact must cover " + each);
+        }
     }
     
     @Test

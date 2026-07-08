@@ -40,14 +40,14 @@ public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaD
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final RenameTableStatement sqlStatement, final ConfigurationProperties props) {
-        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
+        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
         Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
         Collection<String> droppedTables = new LinkedList<>();
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
-            String toBeRenamedTableName = TableRefreshUtils.getActualTableName(database, actualSchemaName, each.getTable().getTableName().getIdentifier(), props);
+            String toBeRenamedTableName = TableRefreshUtils.getActualTableName(database, actualSchemaName, each.getTable().getTableName().getIdentifier());
             ShardingSphereTable toBeRenamedTable = database.getSchema(actualSchemaName).getTable(toBeRenamedTableName);
             alteredTables.add(new ShardingSphereTable(
-                    TableRefreshUtils.getActualTableName(database, actualSchemaName, each.getRenameTable().getTableName().getIdentifier(), props),
+                    TableRefreshUtils.getActualTableName(database, actualSchemaName, each.getRenameTable().getTableName().getIdentifier()),
                     toBeRenamedTable.getAllColumns(), toBeRenamedTable.getAllIndexes(), toBeRenamedTable.getAllConstraints()));
             droppedTables.add(toBeRenamedTableName);
         }

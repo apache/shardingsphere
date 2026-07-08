@@ -70,8 +70,7 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             DataSource dataSource = storageNodeDataSources.containsKey(storageNode) ? storageNodeDataSources.get(storageNode) : storageNodeDataSources.get(new StorageNode(storageUnitName));
-            StorageUnit storageUnit = new StorageUnit(storageNode, entry.getValue(), dataSource);
-            result.put(storageUnitName, storageUnit);
+            result.put(storageUnitName, new StorageUnit(storageNode, entry.getValue(), dataSource));
         }
         return result;
     }
@@ -80,4 +79,5 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         return dataSources.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
+    
 }

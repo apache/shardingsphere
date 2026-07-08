@@ -36,12 +36,6 @@ class WorkflowPlanningArgumentsTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getBooleanArgumentCases")
-    void assertGetBooleanArgument(final String name, final Map<String, Object> rawArguments, final boolean defaultValue, final boolean expectedValue) {
-        assertThat(new WorkflowPlanningArguments(rawArguments).getBooleanArgument("enabled", defaultValue), is(expectedValue));
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("getMapArgumentCases")
     void assertGetMapArgument(final String name, final Map<String, Object> rawArguments, final Map<String, String> expectedValue) {
         assertThat(new WorkflowPlanningArguments(rawArguments).getMapArgument("props"), is(expectedValue));
@@ -64,14 +58,6 @@ class WorkflowPlanningArgumentsTest {
                 Arguments.of("missing string", Map.of(), ""),
                 Arguments.of("trimmed string", Map.of("name", " foo_name "), "foo_name"),
                 Arguments.of("number string", Map.of("name", 42), "42"));
-    }
-    
-    private static Stream<Arguments> getBooleanArgumentCases() {
-        return Stream.of(
-                Arguments.of("missing boolean", Map.of(), true, true),
-                Arguments.of("boolean literal", Map.of("enabled", false), true, false),
-                Arguments.of("parsed boolean", Map.of("enabled", " true "), false, true),
-                Arguments.of("blank boolean", Map.of("enabled", "   "), true, true));
     }
     
     private static Stream<Arguments> getMapArgumentCases() {

@@ -64,7 +64,7 @@ class BroadcastWorkflowValidationServiceTest {
         BroadcastRuleInspectionService ruleInspectionService = mock(BroadcastRuleInspectionService.class);
         when(ruleInspectionService.queryBroadcastRules(any(), any())).thenReturn(List.of(Map.of("broadcast_table", "t_order")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actual = createService(ruleInspectionService)

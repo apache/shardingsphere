@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.values.Inse
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
@@ -72,6 +73,8 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     private final EncryptRule rule;
     
     private final ShardingSphereDatabase database;
+    
+    private final SQLRewriteContext sqlRewriteContext;
     
     private List<SQLToken> previousSQLTokens;
     
@@ -199,6 +202,13 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         return Optional.empty();
     }
     
+    private Optional<String> getOriginalSQLExpressionText(final ExpressionSegment valueExpression) {
+        if (null == sqlRewriteContext || valueExpression.getStartIndex() < 0 || valueExpression.getStopIndex() >= sqlRewriteContext.getSql().length()) {
+            return Optional.empty();
+        }
+        return Optional.of(sqlRewriteContext.getSql().substring(valueExpression.getStartIndex(), valueExpression.getStopIndex() + 1));
+    }
+    
     private Optional<EncryptInsertColumnToken> addAssistedQueryColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
                                                                       final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue,
                                                                       final int parameterIndexCount) {
@@ -248,11 +258,22 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     }
     
     private Optional<String> getTemporalLiteralValue(final ExpressionSegment valueExpression) {
-        if (null == valueExpression.getText()) {
+        return getTemporalLiteralExpressionText(valueExpression).flatMap(this::getTemporalLiteralValue);
+    }
+    
+    private Optional<String> getTemporalLiteralValue(final String expressionText) {
+        if (null == expressionText) {
             return Optional.empty();
         }
-        Matcher matcher = TEMPORAL_LITERAL_PATTERN.matcher(valueExpression.getText());
+        Matcher matcher = TEMPORAL_LITERAL_PATTERN.matcher(expressionText);
         return matcher.matches() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    private Optional<String> getTemporalLiteralExpressionText(final ExpressionSegment valueExpression) {
+        if (getTemporalLiteralValue(valueExpression.getText()).isPresent()) {
+            return Optional.of(valueExpression.getText());
+        }
+        return getOriginalSQLExpressionText(valueExpression).filter(optional -> getTemporalLiteralValue(optional).isPresent());
     }
     
     private int getParameterIndexCount(final Collection<ExpressionSegment> expressionSegments) {

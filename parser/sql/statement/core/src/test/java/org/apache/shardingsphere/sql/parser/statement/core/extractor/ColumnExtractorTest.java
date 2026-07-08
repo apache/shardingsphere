@@ -56,7 +56,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Alias
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -116,6 +118,8 @@ class ColumnExtractorTest {
                         "foo_inner_join_left",
                         "bar_inner_join_right",
                         "foo_subquery_table_column",
+                        "foo_table_sample_left",
+                        "bar_table_sample_right",
                         "foo_join_left",
                         "bar_join_right",
                         "foo_using_column",
@@ -242,7 +246,12 @@ class ColumnExtractorTest {
         innerJoin.setCondition(createBinaryOperation("foo_inner_join_left", "bar_inner_join_right"));
         JoinTableSegment result = new JoinTableSegment();
         result.setLeft(innerJoin);
-        result.setRight(new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_subquery_table_column"), "")));
+        JoinTableSegment rightJoin = new JoinTableSegment();
+        rightJoin.setLeft(new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_subquery_table_column"), "")));
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("sample_table")));
+        simpleTableSegment.setTableSampleExpression(createBinaryOperation("foo_table_sample_left", "bar_table_sample_right"));
+        rightJoin.setRight(simpleTableSegment);
+        result.setRight(rightJoin);
         result.setCondition(createBinaryOperation("foo_join_left", "bar_join_right"));
         result.setUsing(Collections.singletonList(createColumnSegment("foo_using_column")));
         result.setDerivedUsing(Collections.singletonList(createColumnSegment("bar_derived_using_column")));

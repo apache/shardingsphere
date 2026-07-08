@@ -27,12 +27,11 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTr
 import org.junit.jupiter.api.AfterEach;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -82,7 +81,7 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
     
     protected final HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> headers,
                                                                final Map<String, Object> initializeRequestParams) throws IOException, InterruptedException {
-        return sendJsonRpcRequest(httpClient, headers, "init-1", "initialize", initializeRequestParams);
+        return MCPHttpTransportTestSupport.sendJsonRpcRequest(httpClient, getEndpointUri(), headers, "init-1", "initialize", initializeRequestParams);
     }
     
     protected final HttpResponse<String> sendInitializedNotification(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
@@ -91,27 +90,30 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
     }
     
     protected final HttpResponse<String> sendCapabilitiesRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
-        return sendJsonRpcRequest(httpClient, headers, "resource-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"));
+        return MCPHttpTransportTestSupport.sendJsonRpcRequest(httpClient, getEndpointUri(), headers, "resource-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"));
+    }
+    
+    protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,
+                                                             final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
+        return MCPHttpTransportTestSupport.sendJsonRpcRequest(httpClient, getEndpointUri(), createSessionHeaders(sessionId), toolName + "-1", "tools/call",
+                Map.of("name", toolName, "arguments", arguments));
     }
     
     protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(getEndpointUri()).DELETE();
-        applyHeaders(requestBuilder, headers);
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+        return MCPHttpTransportTestSupport.sendDeleteRequest(httpClient, getEndpointUri(), headers);
     }
     
     protected final HttpResponse<String> sendRawPostRequest(final HttpClient httpClient, final Map<String, String> headers,
                                                             final String requestBody) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = MCPHttpTransportTestSupport.createJsonRequestBuilder(getEndpointUri())
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody));
-        applyHeaders(requestBuilder, headers);
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+        return MCPHttpTransportTestSupport.sendRawPostRequest(httpClient, getEndpointUri(), headers, requestBody);
     }
     
     protected final HttpResponse<String> openEventStream(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(getEndpointUri()).GET();
-        applyHeaders(requestBuilder, headers);
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+        return MCPHttpTransportTestSupport.openEventStream(httpClient, getEndpointUri(), headers);
+    }
+    
+    protected final HttpResponse<InputStream> openEventStreamInputStream(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
+        return MCPHttpTransportTestSupport.openEventStreamInputStream(httpClient, getEndpointUri(), headers);
     }
     
     protected final Map<String, Object> parseJsonBody(final String responseBody) {
@@ -134,10 +136,7 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
     }
     
     protected final Map<String, String> createSessionHeaders(final String sessionId) {
-        Map<String, String> result = new LinkedHashMap<>(2, 1F);
-        result.put("MCP-Session-Id", sessionId);
-        result.put("MCP-Protocol-Version", getProtocolVersion());
-        return result;
+        return MCPHttpTransportTestSupport.createSessionHeaders(sessionId, getProtocolVersion());
     }
     
     protected HttpTransportConfiguration createHttpTransportConfiguration() {
@@ -146,15 +145,6 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
     
     protected String getHttpEndpointPath() {
         return ENDPOINT_PATH;
-    }
-    
-    private HttpResponse<String> sendJsonRpcRequest(final HttpClient httpClient, final Map<String, String> headers, final String requestId,
-                                                    final String method, final Map<String, Object> params) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, headers, MCPHttpTransportTestSupport.createJsonRpcRequestBody(requestId, method, params));
-    }
-    
-    private void applyHeaders(final HttpRequest.Builder requestBuilder, final Map<String, String> headers) {
-        headers.forEach(requestBuilder::setHeader);
     }
     
     private MCPRuntimeContext createRuntimeContext() {

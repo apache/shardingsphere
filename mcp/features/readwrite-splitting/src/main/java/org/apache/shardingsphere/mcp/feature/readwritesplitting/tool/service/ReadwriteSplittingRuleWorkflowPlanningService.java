@@ -128,9 +128,10 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!ensureSupportedIdentifier("database", request.getDatabase(), snapshot) || !ensureSupportedIdentifier(ReadwriteSplittingFeatureDefinition.RULE_FIELD, request.getRuleName(), snapshot)
-                || !ensureSupportedIdentifier(ReadwriteSplittingFeatureDefinition.WRITE_STORAGE_UNIT_FIELD, request.getWriteStorageUnit(), snapshot)
-                || !ensureSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD, request.getReadStorageUnits(), snapshot)) {
+        if (!planningSupport.ensureOptionalSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, "intaking")
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.RULE_FIELD, List.of(request.getRuleName()), snapshot, "intaking")
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.WRITE_STORAGE_UNIT_FIELD, List.of(request.getWriteStorageUnit()), snapshot, "intaking")
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD, request.getReadStorageUnits(), snapshot, "intaking")) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -165,25 +166,6 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
         if (value.isEmpty()) {
             missingInputs.add(fieldName);
         }
-    }
-    
-    private boolean ensureSupportedIdentifiers(final String fieldName, final Collection<String> identifiers, final WorkflowContextSnapshot snapshot) {
-        for (String each : identifiers) {
-            if (!ensureSupportedIdentifier(fieldName, each, snapshot)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
-        if (identifier.isEmpty() || WorkflowSQLUtils.isSupportedIdentifier(identifier)) {
-            return true;
-        }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "intaking",
-                String.format("%s identifier `%s` contains unsupported characters.", fieldName, identifier),
-                "Use a reviewable logical identifier without NUL or line terminators.", false, Map.of("field", fieldName, "identifier", identifier)));
-        return false;
     }
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final ReadwriteSplittingRuleWorkflowRequest request, final List<Map<String, Object>> rules,

@@ -131,7 +131,7 @@ class ReadwriteSplittingToolHandlerTest {
         request.setRuleName("readwrite_ds");
         WorkflowContextSnapshot result = createSnapshot(request, ReadwriteSplittingFeatureDefinition.RULE_WORKFLOW_KIND.getValue());
         result.getRuleArtifacts().add(new RuleArtifact("create",
-                "CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=write_ds, READ_STORAGE_UNITS(read_ds_0), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')"));
+                "CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')"));
         return result;
     }
     
@@ -153,7 +153,7 @@ class ReadwriteSplittingToolHandlerTest {
         request.setTargetStatus("disable");
         request.setOperationType("disable");
         WorkflowContextSnapshot result = createSnapshot(request, ReadwriteSplittingFeatureDefinition.STATUS_WORKFLOW_KIND.getValue());
-        result.getRuleArtifacts().add(new RuleArtifact("disable", "ALTER READWRITE_SPLITTING RULE readwrite_ds DISABLE read_ds_0 FROM logic_db"));
+        result.getRuleArtifacts().add(new RuleArtifact("disable", "ALTER READWRITE_SPLITTING RULE `readwrite_ds` DISABLE `read_ds_0` FROM `logic_db`"));
         return result;
     }
     

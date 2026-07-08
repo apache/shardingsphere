@@ -211,6 +211,22 @@ class ColumnSegmentBinderTest {
     }
     
     @Test
+    void assertBindNestedObjectColumnWhenOwnerIsNotTable() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        ColumnSegment boundStructColumn = new ColumnSegment(0, 0, new IdentifierValue("type_struct"));
+        boundStructColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
+                new IdentifierValue("t_data_type_struct"), new IdentifierValue("type_struct"), TableSourceType.PHYSICAL_TABLE));
+        tableBinderContexts.put(CaseInsensitiveString.of("t_data_type_struct"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundStructColumn)), TableSourceType.PHYSICAL_TABLE));
+        ColumnSegment fieldSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
+        fieldSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("type_struct")));
+        ColumnSegment actual = ColumnSegmentBinder.bind(fieldSegment, SegmentType.PROJECTION, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        assertThat(actual.getExpression(), is("type_struct.name"));
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_data_type_struct"));
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("type_struct"));
+    }
+    
+    @Test
     void assertBindExcludedColumnInSetAssignment() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));

@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Shadow MCP feature definition.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowFeatureDefinition {
     
     public static final String PLAN_RULE_TOOL_NAME = "database_gateway_plan_shadow_rule";
@@ -36,11 +40,11 @@ public final class ShadowFeatureDefinition {
     
     public static final String PLAN_ALGORITHM_CLEANUP_PROMPT_NAME = "plan_shadow_algorithm_cleanup";
     
-    public static final WorkflowKind RULE_WORKFLOW_KIND = WorkflowKind.valueOf("shadow.rule");
+    public static final WorkflowKind RULE_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHADOW_RULE);
     
-    public static final WorkflowKind DEFAULT_ALGORITHM_WORKFLOW_KIND = WorkflowKind.valueOf("shadow.default");
+    public static final WorkflowKind DEFAULT_ALGORITHM_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHADOW_DEFAULT_ALGORITHM);
     
-    public static final WorkflowKind ALGORITHM_CLEANUP_WORKFLOW_KIND = WorkflowKind.valueOf("shadow.cleanup");
+    public static final WorkflowKind ALGORITHM_CLEANUP_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHADOW_ALGORITHM_CLEANUP);
     
     public static final String RULE_FIELD = "rule";
     
@@ -72,6 +76,4 @@ public final class ShadowFeatureDefinition {
     
     public static final String ALGORITHM_PLUGINS_RESOURCE_URI = "shardingsphere://features/shadow/algorithm-plugins";
     
-    private ShadowFeatureDefinition() {
-    }
 }

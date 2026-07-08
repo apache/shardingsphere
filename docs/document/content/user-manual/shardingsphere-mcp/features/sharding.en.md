@@ -14,7 +14,7 @@ It generates sharding rule DistSQL only. It does not generate physical DDL, inde
 
 ## Natural language examples
 
-- List sharding table rules, table nodes, algorithms, key generators, auditors, and unused components in `<logic-database>`.
+- List sharding table rules, table nodes, algorithms, key generators, auditors, and unused components in `logic_db`.
 - Plan a sharding table rule for `t_order` with explicit data nodes and a standard sharding strategy.
 - Plan a default table sharding strategy using algorithm `t_order_inline`.
 - Drop unused sharding algorithm `t_order_inline` only if Proxy-visible state proves it is unused.

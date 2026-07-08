@@ -46,7 +46,7 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("readwrite.rule"));
         assertThat(actual.getRuleArtifacts().getFirst().getSql(),
-                is("CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=write_ds, READ_STORAGE_UNITS(read_ds_0), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')"));
+                is("CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')"));
         assertFalse(actual.getDdlArtifacts().iterator().hasNext());
         assertFalse(actual.getIndexPlans().iterator().hasNext());
     }
@@ -59,7 +59,7 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), "session-1", request);
         assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("WEIGHT"));
         assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("read_ds_0"));
-        String expectedSQL = "CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=write_ds, READ_STORAGE_UNITS(read_ds_0), "
+        String expectedSQL = "CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`), "
                 + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC', TYPE(NAME='weight', PROPERTIES('read_ds_0'='2')))";
         assertThat(actual.getRuleArtifacts().getFirst().getSql(), is(expectedSQL));
     }
@@ -101,7 +101,7 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
         request.setOperationType("drop");
         WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of(Map.of("name", "readwrite_ds"))), "session-1", request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
-        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP READWRITE_SPLITTING RULE readwrite_ds"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP READWRITE_SPLITTING RULE `readwrite_ds`"));
     }
     
     @Test
@@ -147,7 +147,7 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
                 createStatusService().plan(new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of(createStatusRow("ENABLED"))), "session-1", createStatusRequest("disable"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("readwrite.status"));
-        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("ALTER READWRITE_SPLITTING RULE readwrite_ds DISABLE read_ds_0 FROM logic_db"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("ALTER READWRITE_SPLITTING RULE `readwrite_ds` DISABLE `read_ds_0` FROM `logic_db`"));
     }
     
     @Test
@@ -159,7 +159,7 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(((ReadwriteSplittingStatusWorkflowRequest) actual.getRequest()).getTargetStatus(), is("disable"));
         assertThat(actual.getRequest().getOperationType(), is(""));
-        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("ALTER READWRITE_SPLITTING RULE readwrite_ds DISABLE read_ds_0 FROM logic_db"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("ALTER READWRITE_SPLITTING RULE `readwrite_ds` DISABLE `read_ds_0` FROM `logic_db`"));
     }
     
     @Test
@@ -187,14 +187,14 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
     
     private MCPFeatureQueryFacade mockRuleQueryFacade(final List<Map<String, Object>> rules) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(result.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(rules);
         return result;
     }
     
     private MCPFeatureQueryFacade mockStatusQueryFacade(final List<Map<String, Object>> statuses) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(result.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(statuses);
         return result;
     }

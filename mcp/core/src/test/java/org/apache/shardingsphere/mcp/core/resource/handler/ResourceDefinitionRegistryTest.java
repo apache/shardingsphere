@@ -87,6 +87,7 @@ class ResourceDefinitionRegistryTest {
         Collection<String> actual = ResourceDefinitionRegistry.getSupportedResources();
         assertThat(actual, is(List.of(
                 "shardingsphere://capabilities",
+                "shardingsphere://guidance",
                 "shardingsphere://runtime",
                 "shardingsphere://workflows/{plan_id}",
                 "shardingsphere://databases/{database}/capabilities",
@@ -203,7 +204,7 @@ class ResourceDefinitionRegistryTest {
     
     private static String getRequiredUriMessage() {
         MCPResourceHandler<?> handler = createResourceHandler(null);
-        return String.format("Resource URI or URI template is required for `%s`.", handler.getClass().getName());
+        return String.format("Resource URI template is required for `%s`.", handler.getClass().getName());
     }
     
     private static String getDuplicateUriTemplateMessage() {

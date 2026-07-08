@@ -53,8 +53,20 @@ class MetadataResourceHandlerTest {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases",
                 (requestContext, uriVariables) -> List.of(Map.of("database", "logic_db")));
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
-        assertThat(actual.toPayload(), is(Map.of("response_mode", "list", "items", List.of(Map.of("database", "logic_db")), "count", 1, "has_more", false,
-                "continuation_mode", "none", "self_uri", "shardingsphere://databases", "total_count", 1, "returned_count", 1, "truncated", false)));
+        Map<String, Object> actualPayload = actual.toPayload();
+        assertThat(actualPayload.get("response_mode"), is("list"));
+        assertThat(actualPayload.get("summary"), is("Returned 1 of 1 logical-database metadata entries."));
+        assertThat(actualPayload.get("items"), is(List.of(Map.of("database", "logic_db"))));
+        assertThat(actualPayload.get("count"), is(1));
+        assertFalse((Boolean) actualPayload.get("has_more"));
+        assertThat(actualPayload.get("continuation_mode"), is("none"));
+        assertThat(actualPayload.get("self_uri"), is("shardingsphere://databases"));
+        assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("uri"), is("shardingsphere://databases"));
+        assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("resource_kind"), is("logical-database"));
+        assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("source_field"), is("self_resource"));
+        assertThat(actualPayload.get("total_count"), is(1));
+        assertThat(actualPayload.get("returned_count"), is(1));
+        assertFalse((Boolean) actualPayload.get("truncated"));
     }
     
     @Test
@@ -66,6 +78,7 @@ class MetadataResourceHandlerTest {
         assertThat(actualPayload.get("count"), is(100));
         assertThat(actualPayload.get("total_count"), is(101));
         assertThat(actualPayload.get("returned_count"), is(100));
+        assertThat(actualPayload.get("summary"), is("Returned 100 of 101 logical-database metadata entries."));
         assertTrue((Boolean) actualPayload.get("truncated"));
         assertTrue((Boolean) actualPayload.get("has_more"));
         assertThat(actualPayload.get("continuation_mode"), is("metadata_search"));
@@ -100,7 +113,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleListResourceWithEmptyScope() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0"))),
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0"))),
                 new MCPUriVariables(Map.of("database", "logic_db")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("empty_scope"));
@@ -111,7 +124,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleSchemaDetailResourceNotVisible() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0"))),
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0"))),
                 new MCPUriVariables(Map.of("database", "logic_db", "schema", "missing_schema")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("schema_not_visible"));
@@ -123,7 +136,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleObjectDetailResourceNotVisible() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0"))),
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0"))),
                 new MCPUriVariables(Map.of("database", "logic_db", "schema", "public", "table", "missing_table")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("object_not_visible"));
@@ -137,26 +150,36 @@ class MetadataResourceHandlerTest {
                 (requestContext, uriVariables) -> List.of(Map.of("database", uriVariables.getValue("database"))));
         MCPUriVariables uriVariables = new MCPUriVariables(Map.of("database", "逻辑 库/2026?"));
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), uriVariables);
-        assertThat(actual.toPayload(), is(Map.of("response_mode", "detail", "resource_kind", "detail", "object_scope", "logical-database", "found", true,
-                "items", List.of(Map.of("database", "逻辑 库/2026?")), "count", 1, "item", Map.of("database", "逻辑 库/2026?"),
-                "self_uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F",
-                "parent_resource", Map.of("uri", "shardingsphere://databases", "resource_kind", "logical-database", "purpose", "inspect_parent",
-                        "reason", "Read the parent metadata resource before broadening or correcting the request.", "source_field", "parent_resource"),
-                "next_resources", List.of(Map.of("uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F/schemas", "resource_kind", "schema", "purpose", "inspect_detail",
-                        "reason", "List schemas after choosing a logical database.", "source_field", "next_resources"),
-                        Map.of("uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F/storage-units", "resource_kind", "storage-unit",
-                                "purpose", "inspect_detail", "reason", "List storage units after choosing a logical database.", "source_field", "next_resources"),
-                        Map.of("uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F/single-tables", "resource_kind", "single-table",
-                                "purpose", "inspect_detail", "reason", "List single table mappings after choosing a logical database.", "source_field", "next_resources"),
-                        Map.of("uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F/single-table/default-storage-unit",
-                                "resource_kind", "single-table", "purpose", "inspect_detail",
-                                "reason", "Read the default single table storage unit after choosing a logical database.", "source_field", "next_resources")))));
+        Map<String, Object> actualPayload = actual.toPayload();
+        assertThat(actualPayload.get("response_mode"), is("detail"));
+        assertThat(actualPayload.get("summary"), is("Returned logical-database detail for this resource URI."));
+        assertThat(actualPayload.get("resource_kind"), is("detail"));
+        assertThat(actualPayload.get("object_scope"), is("logical-database"));
+        assertTrue((Boolean) actualPayload.get("found"));
+        assertThat(actualPayload.get("items"), is(List.of(Map.of("database", "逻辑 库/2026?"))));
+        assertThat(actualPayload.get("count"), is(1));
+        assertThat(actualPayload.get("item"), is(Map.of("database", "逻辑 库/2026?")));
+        String expectedSelfUri = "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F";
+        assertThat(actualPayload.get("self_uri"), is(expectedSelfUri));
+        assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("uri"), is(expectedSelfUri));
+        Map<?, ?> actualParentResource = (Map<?, ?>) actualPayload.get("parent_resource");
+        assertThat(actualParentResource.get("uri"), is("shardingsphere://databases"));
+        assertThat(actualParentResource.get("source_field"), is("parent_resource"));
+        List<?> actualNextResources = (List<?>) actualPayload.get("next_resources");
+        assertThat(actualNextResources.size(), is(4));
+        List<String> actualNextResourceUris = actualNextResources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
+        assertThat(actualNextResourceUris, is(List.of(
+                expectedSelfUri + "/schemas",
+                expectedSelfUri + "/storage-units",
+                expectedSelfUri + "/single-tables",
+                expectedSelfUri + "/single-table/default-storage-unit")));
     }
     
     @Test
     void assertHandleMissingDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}", (requestContext, uriVariables) -> List.of());
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), mock(MCPUriVariables.class));
+        assertThat(actual.toPayload().get("summary"), is("No logical-database detail item matched this resource URI."));
         assertFalse((Boolean) actual.toPayload().get("found"));
         assertThat(((Map<?, ?>) actual.toPayload().get("empty_state")).get("reason"), is("logical-database detail resource was not found for this URI."));
         assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("recovery_category"), is("not_found"));

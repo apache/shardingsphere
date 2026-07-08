@@ -76,34 +76,6 @@ class WorkflowPlanningSupportTest {
     }
     
     @Test
-    void assertEnsureRulePlanningContextDoesNotReadMetadata() {
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setTable("orders");
-        request.setColumn("phone");
-        boolean actual = planningSupport.ensureRulePlanningContext(request, clarifiedIntent, snapshot);
-        assertTrue(actual);
-        assertTrue(clarifiedIntent.getClarificationMessages().isEmpty());
-        assertTrue(snapshot.getIssues().isEmpty());
-    }
-    
-    @Test
-    void assertEnsureRulePlanningContextRejectsMissingTableAndColumn() {
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        boolean actual = planningSupport.ensureRulePlanningContext(request, clarifiedIntent, snapshot);
-        assertFalse(actual);
-        assertThat(snapshot.getStatus(), is("clarifying"));
-        assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please specify target table.", "Please specify target column.")));
-        assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.TABLE_REQUIRED));
-        assertThat(snapshot.getIssues().get(1).getCode(), is(WorkflowIssueCode.COLUMN_REQUIRED));
-    }
-    
-    @Test
     void assertEnsurePlanningContextRejectsUnsupportedIdentifier() {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -254,6 +226,24 @@ class WorkflowPlanningSupportTest {
         assertThat(snapshot.getInteractionPlan().getExecutionMode(), is("manual-only"));
         assertThat(snapshot.getRequest().getExecutionMode(), is("manual-only"));
         assertThat(clarifiedIntent.getInferredValues().get("execution_mode"), is("manual-only"));
+    }
+    
+    @Test
+    void assertEnsureOptionalSupportedIdentifiersAllowsEmptyIdentifier() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        boolean actual = planningSupport.ensureOptionalSupportedIdentifiers("rule", List.of(""), snapshot, "intaking");
+        assertTrue(actual);
+        assertTrue(snapshot.getIssues().isEmpty());
+    }
+    
+    @Test
+    void assertEnsureSupportedIdentifiersRejectsUnsupportedIdentifier() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        boolean actual = planningSupport.ensureSupportedIdentifiers("", List.of("orders\ndrop"), snapshot, "intaking");
+        assertFalse(actual);
+        assertThat(snapshot.getIssues().getFirst().getMessage(), is("Identifier `orders\ndrop` contains unsupported characters."));
+        assertThat(snapshot.getIssues().getFirst().getUserAction(), is("Use reviewable logical identifiers without NUL or line terminators."));
+        assertThat(snapshot.getIssues().getFirst().getDetails(), is(Map.of("identifier", "orders\ndrop")));
     }
     
     @ParameterizedTest(name = "{0}")

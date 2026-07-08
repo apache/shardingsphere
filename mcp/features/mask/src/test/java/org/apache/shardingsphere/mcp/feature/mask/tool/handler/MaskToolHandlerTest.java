@@ -145,7 +145,7 @@ class MaskToolHandlerTest {
         WorkflowContextSnapshot result = createSnapshot("plan-1", "planned");
         result.setRequest(request);
         result.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "first-n", true, false, "from", ""));
-        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders (TYPE(NAME='keep_first_n_last_m'))"));
+        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE `orders` (TYPE(NAME='keep_first_n_last_m'))"));
         result.setInteractionPlan(createInteractionPlan());
         return result;
     }

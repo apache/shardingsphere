@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.view;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -55,21 +54,6 @@ class DropViewPushDownMetaDataRefresherTest {
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))),
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_view")))), false);
         refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        assertThat(persistService.getDroppedTableSchemaName(), is("Foo_Schema"));
-        assertThat(persistService.getDroppedTableNames(), contains("Foo_View", "Bar_View"));
-        assertThat(persistService.getDroppedViewSchemaName(), is("Foo_Schema"));
-        assertThat(persistService.getDroppedViewNames(), contains("Foo_View", "Bar_View"));
-    }
-    
-    @Test
-    void assertRefreshUsesActualQuotedViewNamesWithSensitiveProps() {
-        PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
-        DropViewStatement sqlStatement = new DropViewStatement(databaseType, Arrays.asList(
-                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Foo_View", QuoteCharacter.QUOTE))),
-                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Bar_View", QuoteCharacter.QUOTE)))), false);
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        refresher.refresh(persistService, createDatabase(), "logic_ds", "Foo_Schema", databaseType, sqlStatement, new ConfigurationProperties(props));
         assertThat(persistService.getDroppedTableSchemaName(), is("Foo_Schema"));
         assertThat(persistService.getDroppedTableNames(), contains("Foo_View", "Bar_View"));
         assertThat(persistService.getDroppedViewSchemaName(), is("Foo_Schema"));

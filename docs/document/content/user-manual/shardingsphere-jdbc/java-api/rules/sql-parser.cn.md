@@ -22,7 +22,7 @@ SQL 是使用者与数据库交流的标准语言。 SQL 解析引擎负责将 S
 
 ## 本地缓存配置
 
-类名称：org.apache.shardingsphere.sql.parser.api.CacheOption
+类名称：org.apache.shardingsphere.sql.parser.engine.api.CacheOption
 
 可配置属性：
 

@@ -19,9 +19,9 @@ Users describe the masking goal in an AI application that integrates ShardingSph
 
 Examples:
 
-- Check whether `<logic-database>.orders.phone` already has a masking rule.
+- Check whether `logic_db.orders.phone` already has a masking rule.
 - List data masking algorithms available from the current Proxy.
-- Plan phone-number masking for `<logic-database>.orders.phone`, keep the first 3 and last 4 characters, and preview it without execution.
+- Plan phone-number masking for `logic_db.orders.phone`, keep the first 3 and last 4 characters, and preview it without execution.
 - Adjust the previous plan to use `*` as the replacement character.
 - Confirm and execute the previous masking rule plan, then validate the result.
 
@@ -33,7 +33,7 @@ When using natural language, include the following information when possible:
 
 | Information                         | Description                                                                          | Example                                                                                                         |
 |-------------------------------------|--------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-| Logical database, table, and column | Specify the ShardingSphere-Proxy logical object to configure.                        | "Configure masking for `<logic-database>.orders.phone`."                                                        |
+| Logical database, table, and column | Specify the ShardingSphere-Proxy logical object to configure.                        | "Configure masking for `logic_db.orders.phone`."                                                        |
 | Schema or namespace                 | Recommended for multi-schema logical databases.                                      | "The schema is `public`."                                                                                       |
 | Operation type                      | Create, alter, or drop a masking rule.                                               | "Create a masking rule" or "drop the masking rule for this column."                                             |
 | Masking goal                        | Describe retained characters, replacement characters, or other masking effects.      | "Keep the first 3 and last 4 phone-number characters, and replace the middle part with `*`."                    |

@@ -37,4 +37,13 @@ class SwitchingResourceTest {
         Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(staleDataSource::isClosed);
         assertTrue(staleDataSource.isClosed());
     }
+    
+    @Test
+    void assertCloseNewDataSources() {
+        MockedDataSource newDataSource = new MockedDataSource();
+        new SwitchingResource(Collections.singletonMap(new StorageNode("new_ds"), newDataSource),
+                Collections.singletonMap(new StorageNode("stale_ds"), new MockedDataSource()), Collections.emptyList(), Collections.emptyMap()).closeNewDataSources();
+        Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(newDataSource::isClosed);
+        assertTrue(newDataSource.isClosed());
+    }
 }

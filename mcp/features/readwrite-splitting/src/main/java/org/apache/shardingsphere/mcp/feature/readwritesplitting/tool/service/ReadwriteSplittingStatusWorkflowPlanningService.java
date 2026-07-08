@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -37,6 +39,7 @@ import java.util.Map;
 /**
  * Readwrite-splitting status workflow planning service.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ReadwriteSplittingStatusWorkflowPlanningService {
     
     private static final List<String> INTERACTION_STEPS = List.of(
@@ -60,12 +63,6 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
     public ReadwriteSplittingStatusWorkflowPlanningService() {
         inspectionService = new ReadwriteSplittingInspectionService();
         distSQLPlanningService = new ReadwriteSplittingStatusDistSQLPlanningService();
-    }
-    
-    ReadwriteSplittingStatusWorkflowPlanningService(final ReadwriteSplittingInspectionService inspectionService,
-                                                    final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService) {
-        this.inspectionService = inspectionService;
-        this.distSQLPlanningService = distSQLPlanningService;
     }
     
     /**
@@ -117,8 +114,9 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!ensureSupportedIdentifier("database", request.getDatabase(), snapshot) || !ensureSupportedIdentifier(ReadwriteSplittingFeatureDefinition.RULE_FIELD, request.getRuleName(), snapshot)
-                || !ensureSupportedIdentifier(ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request.getStorageUnit(), snapshot)) {
+        if (!planningSupport.ensureOptionalSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, "intaking")
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.RULE_FIELD, List.of(request.getRuleName()), snapshot, "intaking")
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, List.of(request.getStorageUnit()), snapshot, "intaking")) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -141,16 +139,6 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         if (value.isEmpty()) {
             missingInputs.add(fieldName);
         }
-    }
-    
-    private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
-        if (identifier.isEmpty() || WorkflowSQLUtils.isSupportedIdentifier(identifier)) {
-            return true;
-        }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "intaking",
-                String.format("%s identifier `%s` contains unsupported characters.", fieldName, identifier),
-                "Use a reviewable logical identifier without NUL or line terminators.", false, Map.of("field", fieldName, "identifier", identifier)));
-        return false;
     }
     
     private boolean ensureTargetStatusRow(final ReadwriteSplittingStatusWorkflowRequest request, final List<Map<String, Object>> statuses,

@@ -13,7 +13,7 @@ weight = 9
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-ShowShardingTableNode::=
+ShowShardingTableNodes::=
   'SHOW' 'SHARDING' 'TABLE' 'NODES' tableName? ('FROM' databaseName)?
 
 tableName ::=
@@ -112,4 +112,3 @@ mysql> SHOW SHARDING TABLE NODES;
 ### Related links
 
 - [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-

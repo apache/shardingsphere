@@ -289,12 +289,25 @@ completionTargets:
   - referenceType: prompt
     reference: plan_shadow_rule
     arguments:
+      - database
+      - source_storage_unit
+      - shadow_storage_unit
+      - table
       - algorithm_type
+      - plan_id
     maxValues: 50
   - referenceType: prompt
     reference: plan_default_shadow_algorithm
     arguments:
+      - database
       - algorithm_type
+      - plan_id
+    maxValues: 50
+  - referenceType: prompt
+    reference: plan_shadow_algorithm_cleanup
+    arguments:
+      - database
+      - plan_id
     maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/shadow/databases/{database}/rules
@@ -461,6 +474,9 @@ tools:
           enum:
             - planning
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow planning summary."
         plan_id:
           type: string
           description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
@@ -570,6 +586,7 @@ tools:
       additionalProperties: true
       examples:
         - response_mode: planning
+          summary: Workflow plan `shadow-rule-20260606-001` for shadow.rule is ready for preview.
           plan_id: shadow-rule-20260606-001
           workflow_kind: shadow.rule
           status: planned
@@ -580,14 +597,29 @@ tools:
           distsql_artifacts: []
           resources_to_read: []
           proxy_topology_hint: {}
-          next_actions: []
+          next_actions:
+            - order: 1
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments:
+                plan_id: shadow-rule-20260606-001
+                execution_mode: preview
+              reason: Preview generated shadow DistSQL artifacts.
     annotations:
+      title: Plan Shadow Rule
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false
       readOnlyHint: false
+    runtime:
+      workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: shadow.rule
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/shadow/databases/{database}/rules
         - shardingsphere://features/shadow/databases/{database}/table-rules
@@ -644,6 +676,7 @@ tools:
       <<: *workflowPlanOutputSchema
       examples:
         - response_mode: planning
+          summary: Workflow plan `default-shadow-algorithm-20260606-001` for shadow.default is ready for preview.
           plan_id: default-shadow-algorithm-20260606-001
           workflow_kind: shadow.default
           status: planned
@@ -653,14 +686,29 @@ tools:
           distsql_artifacts: []
           resources_to_read: []
           proxy_topology_hint: {}
-          next_actions: []
+          next_actions:
+            - order: 1
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments:
+                plan_id: default-shadow-algorithm-20260606-001
+                execution_mode: preview
+              reason: Preview generated default shadow algorithm DistSQL artifacts.
     annotations:
+      title: Plan Default Shadow Algorithm
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false
       readOnlyHint: false
+    runtime:
+      workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: shadow.default
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/shadow/databases/{database}/default-algorithm
         - shardingsphere://features/shadow/databases/{database}/algorithms
@@ -707,6 +755,7 @@ tools:
       <<: *workflowPlanOutputSchema
       examples:
         - response_mode: planning
+          summary: Workflow plan `shadow-algorithm-cleanup-20260606-001` for shadow.cleanup is ready for preview.
           plan_id: shadow-algorithm-cleanup-20260606-001
           workflow_kind: shadow.cleanup
           status: planned
@@ -716,14 +765,29 @@ tools:
           distsql_artifacts: []
           resources_to_read: []
           proxy_topology_hint: {}
-          next_actions: []
+          next_actions:
+            - order: 1
+              type: tool_call
+              title: Call database_gateway_apply_workflow
+              tool_name: database_gateway_apply_workflow
+              arguments:
+                plan_id: shadow-algorithm-cleanup-20260606-001
+                execution_mode: preview
+              reason: Preview generated shadow algorithm cleanup DistSQL artifacts.
     annotations:
+      title: Plan Shadow Algorithm Cleanup
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false
       readOnlyHint: false
+    runtime:
+      workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: shadow.cleanup
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/shadow/databases/{database}/algorithms
         - shardingsphere://features/shadow/databases/{database}/table-rules

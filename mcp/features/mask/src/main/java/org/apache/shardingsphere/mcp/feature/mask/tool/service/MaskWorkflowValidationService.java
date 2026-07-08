@@ -17,35 +17,43 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 /**
  * Mask workflow validation service.
  */
-public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHandler {
+public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHandler, MCPWorkflowApplyArtifactValidator {
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
@@ -62,19 +70,48 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
                                         final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId,
                                         final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
-        if (!rejectedResponse.isEmpty()) {
-            return rejectedResponse;
+        return validationSupport.validateAndFinalize(workflowSessionContext, sessionId, snapshot, () -> createValidationReport(snapshot, queryFacade));
+    }
+    
+    @Override
+    public List<Map<String, Object>> validate(final WorkflowContextSnapshot snapshot, final Collection<ExecutableWorkflowArtifact> artifacts) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (ExecutableWorkflowArtifact each : artifacts) {
+            if (each.ruleDistSql()) {
+                addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
+            }
         }
-        ValidationReport validationReport = createValidationReport(snapshot, queryFacade);
-        snapshot.setValidationReport(validationReport);
-        return validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
+        return result;
     }
     
     @Override
     public void synchronize(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
                             final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
         workflowSynchronizationSupport.synchronize(() -> createValidationReport(snapshot, queryFacade));
+    }
+    
+    private void addRuleDistSQLIssues(final List<Map<String, Object>> issues, final WorkflowContextSnapshot snapshot, final String sql, final String displaySql) {
+        if (!isMaskRuleDistSQL(sql)) {
+            return;
+        }
+        WorkflowRequest request = null == snapshot.getRequest() ? new WorkflowRequest() : snapshot.getRequest();
+        if (request.getAlgorithmType().isEmpty()) {
+            return;
+        }
+        if (!WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(MaskAlgorithm.class, request.getAlgorithmType(), request.getPrimaryAlgorithmProperties())) {
+            issues.add(createValidationIssue(String.format("Generated mask DistSQL references algorithm `%s`, but it cannot be loaded or initialized by MaskAlgorithm SPI.",
+                    request.getAlgorithmType()), displaySql));
+        }
+    }
+    
+    private boolean isMaskRuleDistSQL(final String sql) {
+        String actualSQL = sql.trim().toUpperCase(Locale.ENGLISH);
+        return actualSQL.startsWith("CREATE MASK RULE") || actualSQL.startsWith("ALTER MASK RULE");
+    }
+    
+    private Map<String, Object> createValidationIssue(final String message, final String sql) {
+        return new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", WorkflowLifecycle.STEP_REVIEW,
+                message, "Regenerate the workflow artifact through the feature planner before approval.", true, Map.of("sql", sql)).toMap();
     }
     
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
@@ -98,23 +135,26 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
             if (actualRule.isEmpty()) {
                 return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(), "Mask rule has been removed.");
             }
+            Map<String, Object> maskedActualRule = createMaskedRules(snapshot, List.of(actualRule.get())).getFirst();
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no mask rule",
-                    String.valueOf(createMaskedRules(snapshot, List.of(actualRule.get())).getFirst()),
+                    String.valueOf(maskedActualRule),
                     "Mask rule still exists after drop.", "Drop the mask rule again or investigate the failure."));
-            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), "Mask rule still exists.");
+            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, maskedActualRule, "Mask rule still exists.");
         }
         if (actualRule.isEmpty()) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
                     "Mask rule is missing.", "Create or alter the mask rule again."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Mask rule is missing.");
         }
-        String actualAlgorithmType = WorkflowRuleValueUtils.getRuleValue(actualRule.get(), "algorithm_type");
+        Map<String, Object> actualRuleValue = actualRule.get();
+        Map<String, Object> maskedActualRule = createMaskedRules(snapshot, List.of(actualRuleValue)).getFirst();
+        String actualAlgorithmType = WorkflowRuleValueUtils.getRuleValue(actualRuleValue, "algorithm_type");
         if (!snapshot.getRequest().getAlgorithmType().equalsIgnoreCase(actualAlgorithmType)) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getAlgorithmType(), actualAlgorithmType,
                     "Mask algorithm type does not match.", "Re-apply the intended mask rule."));
-            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), "Mask algorithm type does not match.");
+            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, maskedActualRule, "Mask algorithm type does not match.");
         }
-        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, createMaskedRules(snapshot, List.of(actualRule.get())).getFirst(), createPassedRuleMessage(snapshot));
+        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, maskedActualRule, createPassedRuleMessage(snapshot));
     }
     
     private Optional<RuleWorkflowFeatureData> getRuleFeatureData(final WorkflowContextSnapshot snapshot) {

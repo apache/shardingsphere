@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.security;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
@@ -25,6 +27,7 @@ import java.util.Map;
 /**
  * MCP runtime protection policy.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPRuntimeProtectionPolicy {
     
     public static final int DEFAULT_MAX_TOOL_CALLS_PER_SESSION = 10000;
@@ -38,9 +41,6 @@ public final class MCPRuntimeProtectionPolicy {
     public static final int DEFAULT_TIMEOUT_MILLISECONDS = 0;
     
     public static final int MAX_TIMEOUT_MILLISECONDS = 300000;
-    
-    private MCPRuntimeProtectionPolicy() {
-    }
     
     /**
      * Get maximum tool calls per MCP session.

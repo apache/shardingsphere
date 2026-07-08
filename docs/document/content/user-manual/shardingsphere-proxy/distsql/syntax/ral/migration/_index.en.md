@@ -1,5 +1,5 @@
 +++
-title = "MIGRATUION"
+title = "MIGRATION"
 weight = 3
 chapter = true
 

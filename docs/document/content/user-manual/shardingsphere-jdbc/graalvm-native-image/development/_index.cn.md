@@ -93,7 +93,6 @@ sudo systemctl restart docker.service
 ```shell
 winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
-# 此时需要打开新的 Powershell 7 终端
 vfox add java
 vfox install java@25.0.2-graalce
 vfox use --global java@25.0.2-graalce
@@ -121,12 +120,12 @@ wsl --install
 
 ```shell
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
-# 打开新的 PowerShell 7 终端
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
   "min-api-version": "1.41",
+  "seccomp-profile": "/etc/rancher-desktop/seccomp.json",
   "features": {
     "containerd-snapshotter": true
   },
@@ -150,12 +149,12 @@ rdctl start --application.start-in-background --container-engine.name=moby --kub
 ```shell
 iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
-# 打开新的 PowerShell 7 终端
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
   "min-api-version": "1.41",
+  "seccomp-profile": "/etc/rancher-desktop/seccomp.json",
   "features": {
     "containerd-snapshotter": true
   },
@@ -198,9 +197,12 @@ cd ./shardingsphere/
 
 如果 nativeTest 执行失败，应为单元测试生成初步的 GraalVM Reachability Metadata，
 并手动调整 `shardingsphere-infra-reachability-metadata` 子模块的 classpath 中，
-`META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata/` 文件夹下的内容，以修复 nativeTest。
+`META-INF/native-image/org.apache.shardingsphere/` 文件夹下的内容，以修复 nativeTest。
 如有需要，可使用 `org.junit.jupiter.api.condition.DisabledInNativeImage` 注解或 `org.graalvm.nativeimage.imagecode` 的 System Property，
 以屏蔽部分单元测试在 GraalVM Native Image 下运行。
+
+1. `META-INF/native-image/org.apache.shardingsphere/infra-reachability-metadata` 文件夹用于存放与 `org.apache.shardingsphere.**` 的 Java Package 相关的 GraalVM Reachability Metadata
+2. `META-INF/native-image/org.apache.shardingsphere/jdk-built-in-file-metadata` 文件夹用于存放与 GraalVM CE 自有类相关的 GraalVM Reachability Metadata
 
 `generateMetadata` 的 Maven Profile 将在 `shardingsphere-infra-reachability-metadata` 子模块的 classpath 中，
 `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` 文件夹下，
@@ -214,7 +216,7 @@ cd ./shardingsphere/
 
 贡献者仍可能需要手动调整具体的 JSON 条目，并适时调整 Maven Profile 和 GraalVM Tracing Agent 的 Filter 链。
 针对 `shardingsphere-infra-reachability-metadata` 子模块，
-手动增删改动的 JSON 条目应位于 `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata/` 文件夹下，
+手动增删改动的 JSON 条目应位于 `META-INF/native-image/org.apache.shardingsphere/` 文件夹下，
 而 `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` 中的条目仅应由 `generateMetadata` 的 Maven Profile 生成。
 
 对于测试类和测试文件独立使用的 GraalVM Reachability Metadata，贡献者应该放置到 `shardingsphere-test-native` 子模块的 classpath 的

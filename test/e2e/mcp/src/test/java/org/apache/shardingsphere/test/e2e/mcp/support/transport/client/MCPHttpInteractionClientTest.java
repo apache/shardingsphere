@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.SSLContext;
@@ -194,6 +196,7 @@ class MCPHttpInteractionClientTest {
     private record QueuedResponse(int statusCode, Map<String, List<String>> headers, String body) {
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class StringHttpResponse implements HttpResponse<String> {
         
         private final HttpRequest request;
@@ -203,13 +206,6 @@ class MCPHttpInteractionClientTest {
         private final Map<String, List<String>> rawHeaders;
         
         private final String body;
-        
-        private StringHttpResponse(final HttpRequest request, final int statusCode, final Map<String, List<String>> rawHeaders, final String body) {
-            this.request = request;
-            this.statusCode = statusCode;
-            this.rawHeaders = rawHeaders;
-            this.body = body;
-        }
         
         @Override
         public int statusCode() {

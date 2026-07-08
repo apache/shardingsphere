@@ -27,7 +27,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   ds_1:
     url: jdbc:opengauss://opengauss.distsql_rdl.host:5432/rdl_ds_1?batchMode=OFF
@@ -38,7 +38,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   ds_2:
     url: jdbc:opengauss://opengauss.distsql_rdl.host:5432/rdl_ds_2?batchMode=OFF
@@ -49,7 +49,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
 
 rules:

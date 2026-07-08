@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -166,9 +167,12 @@ public final class MCPInteractionPayloads {
     
     private static Map<String, Object> createJsonRpcErrorPayload(final Object rawError) {
         Map<String, Object> error = castToMap(rawError);
-        return Map.of(
-                "error_code", "json_rpc_error",
-                "message", String.valueOf(error.getOrDefault("message", "Unknown JSON-RPC error.")));
+        Map<String, Object> data = error.get("data") instanceof Map ? castToMap(error.get("data")) : Map.of();
+        Map<String, Object> result = new LinkedHashMap<>(data.size() + 2, 1F);
+        result.putAll(data);
+        result.put("error_code", "json_rpc_error");
+        result.put("message", String.valueOf(error.getOrDefault("message", "Unknown JSON-RPC error.")));
+        return result;
     }
     
     private static String normalizeJsonBody(final String responseBody) {

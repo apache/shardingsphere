@@ -5,21 +5,36 @@ weight = 3
 
 ### Description
 
-The `REGISTER MIGRATION SOURCE STORAGE UNIT` syntax is used to register migration source storage unit for the currently connection.
+The `REGISTER MIGRATION SOURCE STORAGE UNIT` syntax is used to register migration source storage unit for the current connection.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-RegisterStorageUnit ::=
+RegisterMigrationSourceStorageUnit ::=
   'REGISTER' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
-  StorageUnitName '('  'URL' '=' url ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
+  storageUnitName '(' (simpleSource | urlSource) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)? ')'
 
 storageUnitName ::=
   identifier
+
+simpleSource ::=
+  'HOST' '=' hostname ',' 'PORT' '=' port ',' 'DB' '=' dbName
+
+urlSource ::=
+  'URL' '=' url
+
+hostname ::=
+  string
+
+port ::=
+  int
+
+dbName ::=
+  string
 
 url ::=
   string
@@ -31,7 +46,7 @@ password ::=
   string
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' ( key  '=' value ) ( ',' key  '=' value )* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string
@@ -55,7 +70,7 @@ value ::=
   parameter name, `value` supports int and String types;
 - When `password` contains special characters, it is recommended to use the string form; For example, the string form
   of `password@123` is `"password@123"`.
-- The data migration source storage unit currently only supports registration using `URL`, and temporarily does not support using `HOST` and `PORT`.
+- The migration source storage unit supports registration using either `URL`, or `HOST`, `PORT`, and `DB`.
 
 ### Example
 
@@ -64,6 +79,18 @@ value ::=
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
+    USER="root",
+    PASSWORD="root"
+);
+```
+
+- Register migration source storage unit using host, port, and database name
+
+```sql
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="migration_ds_0",
     USER="root",
     PASSWORD="root"
 );
@@ -82,7 +109,7 @@ REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
 
 ### Reserved word
 
-`REGISTER`, `MIGRATION`, `SOURCE`, `STORAGE`, `UNIT`, `USER`, `PASSWORD`, `PROPERTIES`, `URL`
+`REGISTER`, `MIGRATION`, `SOURCE`, `STORAGE`, `UNIT`, `USER`, `PASSWORD`, `PROPERTIES`, `URL`, `HOST`, `PORT`, `DB`
 
 ### Related links
 

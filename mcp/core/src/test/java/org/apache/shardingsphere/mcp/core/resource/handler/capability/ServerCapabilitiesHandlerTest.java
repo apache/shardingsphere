@@ -40,9 +40,11 @@ class ServerCapabilitiesHandlerTest {
         Map<String, Object> actual = createCapabilitiesPayload();
         assertBaselineTopLevelKeys(actual);
         assertTrue(((Collection<?>) actual.get("supportedResources")).contains("shardingsphere://capabilities"));
+        assertTrue(((Collection<?>) actual.get("supportedResources")).contains("shardingsphere://guidance"));
         assertTrue(
                 ((Collection<?>) actual.get("supportedTools")).containsAll(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
                         "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
+        assertThat(actual.get("guidanceResource"), is("shardingsphere://guidance"));
         assertFalse(((List<?>) actual.get("resources")).isEmpty());
         assertFalse(((List<?>) actual.get("resourceTemplates")).isEmpty());
         assertFalse(((List<?>) actual.get("tools")).isEmpty());
@@ -50,6 +52,14 @@ class ServerCapabilitiesHandlerTest {
         assertFalse(((List<?>) actual.get("completionTargets")).isEmpty());
         assertFalse(((List<?>) actual.get("resourceNavigation")).isEmpty());
         assertFalse(actual.containsKey("fingerprints"));
+        assertResourcePayloadContracts(actual);
+        assertCoreToolSchemas(actual);
+    }
+    
+    @Test
+    void assertHandleReturnsGuidanceContract() {
+        Map<String, Object> actual = createGuidancePayload();
+        assertGuidanceTopLevelKeys(actual);
         assertModelFirstSummary(actual);
         assertModelContract(actual);
         assertSurfaceSummary(actual);
@@ -57,8 +67,6 @@ class ServerCapabilitiesHandlerTest {
         assertNextActionContract(actual);
         assertCommonFlows(actual);
         assertSecurityHints(actual);
-        assertResourcePayloadContracts(actual);
-        assertCoreToolSchemas(actual);
     }
     
     @Test
@@ -72,10 +80,22 @@ class ServerCapabilitiesHandlerTest {
         }
     }
     
+    private Map<String, Object> createGuidancePayload() {
+        try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext())) {
+            return new ServerGuidanceHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+        }
+    }
+    
     private void assertBaselineTopLevelKeys(final Map<String, Object> capabilities) {
-        assertThat(capabilities.keySet(), is(Set.of("response_mode", "model_first_summary", "supportedResources", "supportedTools", "supportedStatementClasses", "model_contract",
-                "surface_summary", "field_naming_contract", "next_action_contract", "common_flows", "security_hints", "resources", "resourceTemplates", "tools", "prompts",
-                "completionTargets", "resourceNavigation", "protocolAvailability")));
+        assertThat(capabilities.keySet(), is(Set.of("response_mode", "supportedResources", "supportedTools", "supportedStatementClasses", "guidanceResource", "resources",
+                "resourceTemplates", "tools", "prompts", "completionTargets", "resourceNavigation", "protocolAvailability")));
+    }
+    
+    private void assertGuidanceTopLevelKeys(final Map<String, Object> guidance) {
+        assertThat(guidance.keySet(), is(Set.of("response_mode", "guidance_resource", "model_first_summary", "model_contract", "surface_summary", "field_naming_contract",
+                "next_action_contract", "common_flows", "security_hints")));
+        assertThat(guidance.get("response_mode"), is("guidance"));
+        assertThat(guidance.get("guidance_resource"), is("shardingsphere://guidance"));
     }
     
     private void assertProtocolAvailability(final Map<String, Object> capabilities) {
@@ -98,10 +118,14 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("model_first_summary");
         assertThat(actual.get("official_discovery_methods"), is(createOfficialDiscoveryMethods()));
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
-        assertThat(actual.get("catalog_resource_role"),
-                is("shardingsphere://capabilities complements MCP list methods with ShardingSphere domain capability guidance, workflow guidance, and side-effect notes."));
-        assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertThat(actual.get("guidance_resource_role"),
+                is("shardingsphere://guidance complements MCP list methods with ShardingSphere domain guidance, workflow guidance, and side-effect notes."));
+        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
         assertFalse(actual.containsKey("safe_first_resource"));
+        Map<?, ?> firstRoute = findByKey((List<?>) actual.get("first_call_routes"), "intent", "inspect_metadata");
+        assertThat(firstRoute.get("first_action"), is("read_resource shardingsphere://databases"));
+        Map<?, ?> recoveryRoute = findByKey((List<?>) actual.get("first_call_routes"), "intent", "recover_error");
+        assertThat(recoveryRoute.get("first_action"), is("follow top-level next_actions"));
         Map<?, ?> metadataRule = (Map<?, ?>) actual.get("metadata_rule");
         assertThat(metadataRule.get("first_resource"), is("shardingsphere://databases"));
         assertThat(metadataRule.get("search_tool"), is("database_gateway_search_metadata"));
@@ -125,7 +149,7 @@ class ServerCapabilitiesHandlerTest {
         assertThat(actual.get("public_surface_source"), is("MCP list methods expose the protocol surface: tools/list, resources/list, resources/templates/list, prompts/list."));
         assertThat(actual.get("official_discovery_methods"), is(createOfficialDiscoveryMethods()));
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
-        assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
         assertFalse(actual.containsKey("safe_first_resource"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(String.valueOf(actual.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
@@ -139,7 +163,7 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("surface_summary");
         assertThat(actual.get("official_discovery_methods"), is(createOfficialDiscoveryMethods()));
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
-        assertThat(actual.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
         assertThat(actual.get("metadata_search_tool"), is("database_gateway_search_metadata"));
         assertThat(actual.get("preflight_validation_tool"), is("database_gateway_validate_runtime_database"));
         assertThat(actual.get("side_effect_sql_tool"), is("database_gateway_execute_update"));
@@ -149,7 +173,8 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("field_naming_contract");
         assertThat(actual.get("official_discovery_methods"), is(List.of("tools/list", "resources/list", "resources/templates/list", "prompts/list")));
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
-        assertThat(actual.get("catalog_fields"), is(List.of("supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability")));
+        assertThat(actual.get("catalog_fields"), is(List.of("supportedResources", "supportedTools", "supportedStatementClasses", "guidanceResource", "resourceTemplates",
+                "completionTargets", "resourceNavigation", "protocolAvailability")));
         assertThat(actual.get("payload_fields"), is("ShardingSphere-owned structured payload fields use snake_case."));
     }
     
@@ -167,32 +192,17 @@ class ServerCapabilitiesHandlerTest {
     }
     
     private void assertCommonFlows(final Map<String, Object> capabilities) {
-        Collection<?> supportedTools = (Collection<?>) capabilities.get("supportedTools");
-        Collection<?> supportedResources = (Collection<?>) capabilities.get("supportedResources");
         Map<?, ?> inspectMetadata = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "inspect_metadata");
         assertTrue(((List<?>) inspectMetadata.get("steps")).containsAll(List.of("resources/list", "resources/templates/list", "call_tool database_gateway_search_metadata")));
-        assertReferencedFlowEntries(inspectMetadata, supportedTools, supportedResources);
         Map<?, ?> validateRuntimeDatabase = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "validate_runtime_database");
         assertTrue(((List<?>) validateRuntimeDatabase.get("steps")).contains("call_tool database_gateway_validate_runtime_database"));
-        assertReferencedFlowEntries(validateRuntimeDatabase, supportedTools, supportedResources);
         Map<?, ?> sideEffectingSql = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "side_effecting_sql");
         assertTrue(((List<?>) sideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=preview"));
         assertTrue(((List<?>) sideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=execute"));
-        assertReferencedFlowEntries(sideEffectingSql, supportedTools, supportedResources);
         Map<?, ?> workflow = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "workflow_plan_apply_validate");
         assertTrue(((List<?>) workflow.get("steps")).contains(
                 "call_tool database_gateway_apply_workflow execution_mode=review-then-execute approved_steps=<preview_artifacts.approval_step>"));
         assertThat(workflow.get("stop_condition"), is("Reuse the same current-session plan_id and stop after validation succeeds."));
-        assertReferencedFlowEntries(workflow, supportedTools, supportedResources);
-    }
-    
-    private void assertReferencedFlowEntries(final Map<?, ?> flow, final Collection<?> supportedTools, final Collection<?> supportedResources) {
-        for (Object each : (List<?>) flow.get("referenced_tools")) {
-            assertTrue(supportedTools.contains(each), "Unknown flow tool: " + each);
-        }
-        for (Object each : (List<?>) flow.get("referenced_resources")) {
-            assertTrue(supportedResources.contains(each), "Unknown flow resource: " + each);
-        }
     }
     
     private void assertSecurityHints(final Map<String, Object> capabilities) {
@@ -211,6 +221,8 @@ class ServerCapabilitiesHandlerTest {
     private void assertResourcePayloadContracts(final Map<String, Object> capabilities) {
         Map<?, ?> capabilityCatalog = findResource(capabilities, "shardingsphere://capabilities");
         assertThat(getResourceMeta(capabilityCatalog).get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("capability-catalog"));
+        Map<?, ?> guidance = findResource(capabilities, "shardingsphere://guidance");
+        assertThat(getResourceMeta(guidance).get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("guidance"));
         Map<?, ?> runtimeStatus = findResource(capabilities, "shardingsphere://runtime");
         assertThat(getResourceMeta(runtimeStatus).get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("detail"));
         Map<?, ?> databaseDetail = findResource(capabilities, "shardingsphere://databases/{database}");
@@ -221,7 +233,7 @@ class ServerCapabilitiesHandlerTest {
         assertThat(getResourceMeta(databases).get(MCPShardingSphereMetadataKeys.RELATED_TOOLS), is(List.of("database_gateway_search_metadata", "database_gateway_execute_query")));
         Map<?, ?> databaseVariable = findUriVariable(databaseDetail, "database");
         assertTrue((Boolean) databaseVariable.get("required"));
-        Map<?, ?> navigation = findByKey((List<?>) capabilities.get("resourceNavigation"), "from", "shardingsphere://capabilities");
+        Map<?, ?> navigation = findByKey((List<?>) capabilities.get("resourceNavigation"), "to", "shardingsphere://guidance");
         assertThat(navigation.get("from_type"), is("resource"));
         assertThat(navigation.get("to_type"), is("resource"));
     }
@@ -239,23 +251,38 @@ class ServerCapabilitiesHandlerTest {
     private void assertCoreToolSchemas(final Map<String, Object> capabilities) {
         Map<?, ?> searchMetadataTool = findTool(capabilities, "database_gateway_search_metadata");
         Map<?, ?> searchMetadataOutputProperties = (Map<?, ?>) ((Map<?, ?>) searchMetadataTool.get("outputSchema")).get("properties");
+        assertTrue(searchMetadataOutputProperties.containsKey("summary"));
         assertTrue(searchMetadataOutputProperties.containsKey("total_match_count"));
+        assertTrue(searchMetadataOutputProperties.containsKey("returned_count"));
+        assertTrue(searchMetadataOutputProperties.containsKey("truncated"));
+        assertTrue(searchMetadataOutputProperties.containsKey("large_result_guidance"));
+        assertThat(getInputFieldNames(searchMetadataTool), is(List.of("database", "schema", "query", "object_types")));
         Map<?, ?> objectTypesSchema = findInputSchema(searchMetadataTool, "object_types");
-        assertTrue(((List<?>) ((Map<?, ?>) objectTypesSchema.get("items")).get("enum")).containsAll(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
+        assertTrue(((List<?>) ((Map<?, ?>) objectTypesSchema.get("items")).get("enum")).containsAll(List.of("database", "schema", "table", "view", "column", "index", "storage_unit", "sequence")));
         Map<?, ?> validateRuntimeDatabaseTool = findTool(capabilities, "database_gateway_validate_runtime_database");
         Map<?, ?> validateRuntimeDatabaseOutputProperties = (Map<?, ?>) ((Map<?, ?>) validateRuntimeDatabaseTool.get("outputSchema")).get("properties");
         assertThat(getInputFieldNames(validateRuntimeDatabaseTool), is(List.of("database")));
+        assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("summary"));
         assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("status"));
         assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("checks"));
         assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("category"));
         assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("recovery"));
+        assertTrue(validateRuntimeDatabaseOutputProperties.containsKey("next_actions"));
         Map<?, ?> executeUpdateTool = findTool(capabilities, "database_gateway_execute_update");
         Map<?, ?> executeUpdateOutputProperties = (Map<?, ?>) ((Map<?, ?>) executeUpdateTool.get("outputSchema")).get("properties");
         assertTrue(executeUpdateOutputProperties.containsKey("response_mode"));
+        assertTrue(executeUpdateOutputProperties.containsKey("summary"));
         assertTrue(((List<?>) ((Map<?, ?>) executeUpdateOutputProperties.get("result_kind")).get("enum")).containsAll(List.of("preview", "result_set", "update_count", "statement_ack")));
         assertTrue(executeUpdateOutputProperties.containsKey("preview_semantics"));
         assertTrue(executeUpdateOutputProperties.containsKey("review_summary"));
         assertFalse(executeUpdateOutputProperties.containsKey("approval_summary"));
+        assertThat(executeUpdateTool.get("title"), is("Preview or Execute Side-Effecting SQL"));
+        assertTrue(((String) executeUpdateTool.get("description")).contains("Preview is classification-only, not a database dry run."));
+        assertThat(findInputSchema(executeUpdateTool, "execution_mode").get("description"),
+                is("Required safety gate. Use preview to classify side effects without execution; preview is not a database dry run. Use execute only after reviewing the preview."));
+        assertThat(((Map<?, ?>) executeUpdateOutputProperties.get("preview_semantics")).get("description"), is(
+                "Preview meaning. classification_only means the server classified SQL and side-effect scope without parsing, rule validation, "
+                        + "algorithm initialization, affected-row estimation, runtime execution, or database dry-run guarantees."));
         assertThat(getInputFieldNames(executeUpdateTool), is(List.of("database", "schema", "sql", "execution_mode", "max_rows", "timeout_ms")));
         Map<?, ?> applyWorkflowTool = findTool(capabilities, "database_gateway_apply_workflow");
         assertThat(getInputFieldNames(applyWorkflowTool), is(List.of("plan_id", "execution_mode", "approved_steps")));

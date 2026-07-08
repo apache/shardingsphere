@@ -200,11 +200,12 @@ public final class MetaDataContextsFactory {
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
                 : switchingResource.getMergedDataSourcePoolPropertiesMap();
         boolean isInstanceConnectionEnabled = metaDataContexts.getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED);
-        return new DataSourceProvidedDatabaseConfiguration(getMergedStorageNodeDataSources(currentResourceMetaData, switchingResource), toBeCreatedRuleConfigs, propsMap, isInstanceConnectionEnabled);
+        Map<StorageNode, DataSource> storageNodeDataSources = getMergedStorageNodeDataSources(currentResourceMetaData, switchingResource);
+        return new DataSourceProvidedDatabaseConfiguration(storageNodeDataSources, toBeCreatedRuleConfigs, propsMap, isInstanceConnectionEnabled);
     }
     
     private Map<StorageNode, DataSource> getMergedStorageNodeDataSources(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {
-        Map<StorageNode, DataSource> result = currentResourceMetaData.getDataSources();
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(currentResourceMetaData.getDataSources());
         if (null != switchingResource && !switchingResource.getNewDataSources().isEmpty()) {
             result.putAll(switchingResource.getNewDataSources());
         }

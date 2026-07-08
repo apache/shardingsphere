@@ -14,7 +14,7 @@ It generates readwrite-splitting DistSQL only. It does not generate storage unit
 
 ## Natural language examples
 
-- List readwrite-splitting rules and load-balance algorithm plugins in `<logic-database>`.
+- List readwrite-splitting rules and load-balance algorithm plugins in `logic_db`.
 - Plan a readwrite-splitting rule named `rw_ds` with write storage unit `write_ds` and read storage units `read_ds_0, read_ds_1`.
 - Disable read storage unit `read_ds_1` for rule `rw_ds`, then validate the status.
 

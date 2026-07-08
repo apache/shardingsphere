@@ -230,6 +230,10 @@ Bootstrap 会输出类似的日志
 
 CDC 任务的启动和停止目前只能通过 CDC Client 控制，可以通过在 proxy 中执行 DistSQL 查看 CDC 任务状态
 
+完整 DistSQL 语法请参考 [SHOW STREAMING LIST](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-list/)、
+[SHOW STREAMING STATUS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-status/)
+和 [DROP STREAMING](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/drop-streaming/)。
+
 1. 查看 CDC 任务列表
 
 SHOW STREAMING LIST;
@@ -263,7 +267,7 @@ sharding_db=> SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
 
 DROP STREAMING j0302p0000702a83116fcee83f70419ca5e2993791;
 
-只有当 CDC 任务没有订阅的时候才可以删除，此时也会删除 openGauss 物理库上的 replication slots
+CDC 任务删除后，也会删除 openGauss 物理库上的 replication slots
 
 ```
 sharding_db=> DROP STREAMING j0302p0000702a83116fcee83f70419ca5e2993791;
@@ -275,8 +279,7 @@ SUCCESS
 ## 增量数据推送的说明
 
 1. CDC 增量推送目前是按照事务维度的，物理库的事务不会被拆分，所以如果一个事务中有多个表的数据变更，那么这些数据变更会被一起推送。
-如果要支持 XA 事务（目前只支持 openGauss），则 openGauss 和 Proxy 都需要 GLT 模块。
-2. 满足推送的条件是满足了一定大小的数据量或者到了一定的时间间隔（目前是 300ms），在处理 XA 事务时，收到的多个分库增量事件超过了 300ms，可能会导致 XA 事务被拆开推送。
+2. 满足推送的条件是满足了一定大小的数据量或者到了一定的时间间隔（目前是 300ms）。
 
 ## 超大事务的处理
 

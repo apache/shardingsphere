@@ -25,12 +25,10 @@ import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -73,26 +71,6 @@ class ComputeNodeInstanceContextTest {
         instanceContext.getClusterInstanceRegistry().add(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
         instanceContext.updateStatus("bar_instance_id", InstanceState.CIRCUIT_BREAK.name());
         assertThat(instanceContext.getInstance().getState().getCurrentState(), is(InstanceState.OK));
-    }
-    
-    @Test
-    void assertUpdateLabelsWithCurrentInstance() {
-        InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3306);
-        ComputeNodeInstanceContext instanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(ModeConfiguration.class), new EventBusContext());
-        instanceContext.init(mock(WorkerIdGenerator.class));
-        instanceContext.updateLabels("foo_instance_id", Arrays.asList("label_1", "label_2"));
-        assertThat(instanceContext.getInstance().getLabels(), is(Arrays.asList("label_1", "label_2")));
-    }
-    
-    @Test
-    void assertUpdateLabelsWithOtherInstance() {
-        InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3306);
-        ComputeNodeInstanceContext instanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(ModeConfiguration.class), new EventBusContext());
-        instanceContext.init(mock(WorkerIdGenerator.class));
-        instanceContext.getClusterInstanceRegistry().add(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
-        instanceContext.updateLabels("bar_instance_id", Arrays.asList("label_1", "label_2"));
-        assertTrue(instanceContext.getInstance().getLabels().isEmpty());
-        assertThat(instanceContext.getClusterInstanceRegistry().getAllClusterInstances().iterator().next().getLabels(), is(Arrays.asList("label_1", "label_2")));
     }
     
     @Test

@@ -45,7 +45,7 @@ weight = 4
 调用成功：
 
 - 先执行一条最小验证任务，例如：
-  - 查看 `<logic-database>` 中有哪些表。
+  - 查看 `logic_db` 中有哪些表。
   - 查看 `orders` 表的列和索引。
   - 对已经配置的 runtime database 调用 `database_gateway_validate_runtime_database`。
 - 如果 ChatGPT 能识别到对应 app，并能按预期调用导入工具，说明接入已经生效。

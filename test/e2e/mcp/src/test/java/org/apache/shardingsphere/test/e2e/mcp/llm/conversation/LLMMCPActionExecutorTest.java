@@ -33,9 +33,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class LLMMCPActionExecutorTest {
     
     @Test
+    void assertExecuteSafelyWithListTools() throws InterruptedException {
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient();
+        assertThat(new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.LIST_TOOLS, Map.of()),
+                is(Map.of("tools", List.of(Map.of("name", "fixture_ping")))));
+    }
+    
+    @Test
     void assertExecuteSafelyWithListResources() throws InterruptedException {
         FakeMCPInteractionClient client = new FakeMCPInteractionClient();
         assertThat(new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.LIST_RESOURCES, Map.of()), is(Map.of("resources", List.of())));
+    }
+    
+    @Test
+    void assertExecuteSafelyWithListResourceTemplates() throws InterruptedException {
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient();
+        assertThat(new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES, Map.of()),
+                is(Map.of("resourceTemplates", List.of(Map.of("uriTemplate", "shardingsphere://databases/{database}")))));
     }
     
     @Test
@@ -174,11 +188,26 @@ class LLMMCPActionExecutorTest {
         }
         
         @Override
+        public Map<String, Object> getInitializePayload() {
+            throw new UnsupportedOperationException("initialize payload is not available.");
+        }
+        
+        @Override
+        public List<Map<String, Object>> listTools() {
+            return List.of(Map.of("name", "fixture_ping"));
+        }
+        
+        @Override
         public Map<String, Object> listResources() throws IOException {
             if (failWithIOException) {
                 throw new IOException("unavailable");
             }
             return Map.of("resources", List.of());
+        }
+        
+        @Override
+        public Map<String, Object> listResourceTemplates() {
+            return Map.of("resourceTemplates", List.of(Map.of("uriTemplate", "shardingsphere://databases/{database}")));
         }
         
         @Override
@@ -206,6 +235,11 @@ class LLMMCPActionExecutorTest {
             completionArgumentValue = argumentValue;
             this.contextArguments = contextArguments;
             return Map.of("completion", "public");
+        }
+        
+        @Override
+        public Map<String, Object> sendRawRequest(final String requestId, final String method, final Map<String, Object> params) {
+            throw new UnsupportedOperationException("Raw JSON-RPC request is not supported.");
         }
         
         @Override

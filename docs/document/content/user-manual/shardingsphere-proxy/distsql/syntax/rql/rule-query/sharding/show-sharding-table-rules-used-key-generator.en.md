@@ -41,7 +41,7 @@ databaseName ::=
 
 ### Example
 
-- Query sharding table rules for the specified sharding key generator in spicified logical database
+- Query sharding table rules for the specified sharding key generator in specified logical database
 
 ```sql
 SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake_key_generator FROM sharding_db;

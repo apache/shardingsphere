@@ -180,13 +180,13 @@ e2e.native.database.password=123456
 #### Run debugging mode
 
   - Standard test engine
-    Run `org.apache.shardingsphere.test.e2e.it.sql.${SQL-TYPE}.General${SQL-TYPE}E2EIT` to start the test engines of different SQL types.
+    Run `org.apache.shardingsphere.test.e2e.sql.it.sql.${SQL-TYPE}.General${SQL-TYPE}E2EIT` to start the test engines of different SQL types.
 
   - Batch test engine
-    Run `org.apache.shardingsphere.test.e2e.it.sql.dml.BatchDMLE2EIT` to start the batch test engine for the test `addBatch()` provided for DML statements.
+    Run `org.apache.shardingsphere.test.e2e.sql.it.sql.dml.BatchDMLE2EIT` to start the batch test engine for the test `addBatch()` provided for DML statements.
 
   - Additional test engine
-    Run `org.apache.shardingsphere.test.e2e.it.sql.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` to start the test engine with more JDBC method calls.
+    Run `org.apache.shardingsphere.test.e2e.sql.it.sql.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` to start the test engine with more JDBC method calls.
     Additional test engines need to be enabled by setting `e2e.run.additional.cases=true`.
 
 #### Run Docker mode

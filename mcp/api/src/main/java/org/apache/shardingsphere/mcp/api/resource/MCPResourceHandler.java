@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.api.resource;
 
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 
 /**
@@ -35,9 +36,11 @@ public interface MCPResourceHandler<T extends MCPHandlerContext> {
     Class<T> getContextType();
     
     /**
-     * Get resource URI template.
+     * Get canonical resource URI template.
      *
-     * @return resource URI template
+     * <p>A fixed resource URI is represented as a URI template without variables.</p>
+     *
+     * @return canonical resource URI template
      */
     String getResourceUriTemplate();
     
@@ -46,7 +49,8 @@ public interface MCPResourceHandler<T extends MCPHandlerContext> {
      *
      * @param handlerContext handler context
      * @param uriVariables URI variables
-     * @return resource response
+     * @return successful resource response
+     * @throws ShardingSphereMCPException controlled failure to be converted by runtime
      */
     MCPResponse handle(T handlerContext, MCPUriVariables uriVariables);
 }

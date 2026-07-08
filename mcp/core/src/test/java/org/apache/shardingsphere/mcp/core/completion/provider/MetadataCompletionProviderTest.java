@@ -29,11 +29,12 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequence
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,6 +62,20 @@ class MetadataCompletionProviderTest {
     }
     
     @Test
+    void assertSupportsStorageUnit() {
+        assertTrue(new MetadataCompletionProvider().supports(createRequestContext("storageUnit", Map.of())));
+    }
+    
+    @Test
+    void assertSupportsStorageUnitAliases() {
+        MetadataCompletionProvider provider = new MetadataCompletionProvider();
+        assertTrue(provider.supports(createRequestContext("storage_unit", Map.of())));
+        assertTrue(provider.supports(createRequestContext("write_storage_unit", Map.of())));
+        assertTrue(provider.supports(createRequestContext("source_storage_unit", Map.of())));
+        assertTrue(provider.supports(createRequestContext("shadow_storage_unit", Map.of())));
+    }
+    
+    @Test
     void assertSupportsWithUnknownArgument() {
         assertFalse(new MetadataCompletionProvider().supports(createRequestContext("foo_value", Map.of())));
     }
@@ -71,7 +86,7 @@ class MetadataCompletionProviderTest {
         when(metadataQueryFacade.queryDatabases()).thenReturn(List.of(createDatabaseMetadata()));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade), createRequestContext("database", Map.of()));
         assertCandidate(actual, "logic_db");
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases"));
         assertThat(actual.getMissingContextArguments(), is(List.of()));
     }
     
@@ -81,7 +96,7 @@ class MetadataCompletionProviderTest {
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata()));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade), createRequestContext("schema", Map.of("database", "logic_db")));
         assertCandidate(actual, "public");
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases/logic_db/schemas"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/schemas"));
     }
     
     @Test
@@ -136,7 +151,7 @@ class MetadataCompletionProviderTest {
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class)), createRequestContext("table", Map.of()));
         assertThat(actual.getCandidates(), is(List.of()));
         assertThat(actual.getMissingContextArguments(), is(List.of("database", "schema")));
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases"));
     }
     
     @Test
@@ -146,7 +161,7 @@ class MetadataCompletionProviderTest {
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("column", Map.of("database", "logic_db", "schema", "public", "table", "t_order")));
         assertCandidate(actual, "order_id");
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/tables/t_order/columns"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/tables/t_order/columns"));
     }
     
     @Test
@@ -156,7 +171,7 @@ class MetadataCompletionProviderTest {
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("index", Map.of("database", "logic_db", "schema", "public", "table", "t_order")));
         assertCandidate(actual, "idx_order_id");
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/tables/t_order/indexes"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/tables/t_order/indexes"));
     }
     
     @Test
@@ -166,7 +181,50 @@ class MetadataCompletionProviderTest {
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("sequence", Map.of("database", "logic_db", "schema", "public")));
         assertCandidate(actual, "order_seq");
-        assertThat(actual.getGuidanceResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/sequences"));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/schemas/public/sequences"));
+    }
+    
+    @Test
+    void assertCompleteStorageUnit() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade),
+                createRequestContext("storageUnit", Map.of("database", "logic_db")));
+        assertCandidate(actual, "write_ds");
+        assertThat(actual.getMissingContextArguments(), is(List.of()));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/storage-units"));
+    }
+    
+    @Test
+    void assertCompleteStorageUnitAlias() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade),
+                createRequestContext("write_storage_unit", Map.of("database", "logic_db")));
+        assertCandidate(actual, "write_ds");
+        assertThat(actual.getMissingContextArguments(), is(List.of()));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/storage-units"));
+    }
+    
+    @Test
+    void assertCompleteStorageUnitWithSingleDatabaseDefaulted() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(
+                createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade, List.of(createDatabaseProfile("logic_db"))), createRequestContext("storageUnit", Map.of()));
+        assertCandidate(actual, "write_ds");
+        assertThat(actual.getInferredContextArguments(), is(Map.of("database", "logic_db")));
+        assertThat(actual.getMissingContextArguments(), is(List.of()));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases/logic_db/storage-units"));
+    }
+    
+    @Test
+    void assertCompleteStorageUnitWithMissingContext() {
+        MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class),
+                List.of(createDatabaseProfile("logic_db"), createDatabaseProfile("warehouse"))), createRequestContext("storageUnit", Map.of()));
+        assertThat(actual.getCandidates(), is(List.of()));
+        assertThat(actual.getMissingContextArguments(), is(List.of("database")));
+        assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases"));
     }
     
     private MCPCompletionRequestContext createRequestContext(final String argumentName, final Map<String, String> contextArguments) {
@@ -187,12 +245,25 @@ class MetadataCompletionProviderTest {
         return result;
     }
     
+    private MCPDatabaseHandlerContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade) {
+        MCPDatabaseHandlerContext result = createHandlerContext(metadataQueryFacade, List.of());
+        when(result.getQueryFacade()).thenReturn(queryFacade);
+        return result;
+    }
+    
+    private MCPDatabaseHandlerContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
+                                                           final List<RuntimeDatabaseProfile> databaseProfiles) {
+        MCPDatabaseHandlerContext result = createHandlerContext(metadataQueryFacade, databaseProfiles);
+        when(result.getQueryFacade()).thenReturn(queryFacade);
+        return result;
+    }
+    
     private RuntimeDatabaseProfile createDatabaseProfile(final String database) {
-        return new RuntimeDatabaseProfile(database, "MySQL", "8.0");
+        return new RuntimeDatabaseProfile(database, "FixtureDB", "1.0");
     }
     
     private MCPDatabaseMetadata createDatabaseMetadata() {
-        return new MCPDatabaseMetadata("logic_db", "MySQL", "8.0", List.of(createSchemaMetadata()));
+        return new MCPDatabaseMetadata("logic_db", "FixtureDB", "1.0", List.of(createSchemaMetadata()));
     }
     
     private MCPSchemaMetadata createSchemaMetadata() {
@@ -204,8 +275,8 @@ class MetadataCompletionProviderTest {
     }
     
     private void assertCandidate(final MCPCompletionProviderResult actual, final String expectedValue) {
-        List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
+        Collection<MCPCompletionCandidate> actualCandidates = actual.getCandidates();
         assertThat(actualCandidates.size(), is(1));
-        assertThat(actualCandidates.get(0).getValue(), is(expectedValue));
+        assertThat(actualCandidates.iterator().next().getValue(), is(expectedValue));
     }
 }

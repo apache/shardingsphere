@@ -34,8 +34,8 @@ class ShadowDistSQLPlanningServiceTest {
     @Test
     void assertPlanCreateRule() {
         RuleArtifact actual = new ShadowDistSQLPlanningService().planCreateRule(createRuleRequest());
-        assertThat(actual.getSql(), is("CREATE SHADOW RULE shadow_rule(SOURCE=demo_ds, SHADOW=demo_ds_shadow, "
-                + "t_order(TYPE(NAME='value_match', PROPERTIES('column'='user_id', 'operation'='insert', 'value'='1'))))"));
+        assertThat(actual.getSql(), is("CREATE SHADOW RULE `shadow_rule`(SOURCE=`demo_ds`, SHADOW=`demo_ds_shadow`, "
+                + "`t_order`(TYPE(NAME='value_match', PROPERTIES('column'='user_id', 'operation'='insert', 'value'='1'))))"));
         assertNoForbiddenArtifacts(actual.getSql());
     }
     
@@ -53,12 +53,12 @@ class ShadowDistSQLPlanningServiceTest {
     
     @Test
     void assertPlanAlterRule() {
-        assertTrue(new ShadowDistSQLPlanningService().planAlterRule(createRuleRequest()).getSql().startsWith("ALTER SHADOW RULE shadow_rule"));
+        assertTrue(new ShadowDistSQLPlanningService().planAlterRule(createRuleRequest()).getSql().startsWith("ALTER SHADOW RULE `shadow_rule`"));
     }
     
     @Test
     void assertPlanDropRule() {
-        assertThat(new ShadowDistSQLPlanningService().planDropRule("shadow_rule").getSql(), is("DROP SHADOW RULE shadow_rule"));
+        assertThat(new ShadowDistSQLPlanningService().planDropRule("shadow_rule").getSql(), is("DROP SHADOW RULE `shadow_rule`"));
     }
     
     @Test
@@ -72,7 +72,7 @@ class ShadowDistSQLPlanningServiceTest {
     
     @Test
     void assertPlanCleanup() {
-        assertThat(new ShadowDistSQLPlanningService().planDropAlgorithm("unused_algorithm").getSql(), is("DROP SHADOW ALGORITHM unused_algorithm"));
+        assertThat(new ShadowDistSQLPlanningService().planDropAlgorithm("unused_algorithm").getSql(), is("DROP SHADOW ALGORITHM `unused_algorithm`"));
     }
     
     private ShadowRuleWorkflowRequest createRuleRequest() {

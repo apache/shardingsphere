@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -30,9 +32,12 @@ import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.Field;
@@ -43,8 +48,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -66,12 +73,11 @@ class MaskWorkflowValidationServiceTest {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
-        snapshot.getRequest().setColumn("Phone");
         workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("PostgreSQL");
+        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actual = createService(ruleInspectionService)
@@ -84,6 +90,33 @@ class MaskWorkflowValidationServiceTest {
         assertFalse(actual.containsKey("sql_executability_validation"));
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsRejectsUnavailableMaskAlgorithm() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        WorkflowRequest request = new WorkflowRequest();
+        request.setAlgorithmType("MASK_FROM_X_TO_Y");
+        request.getPrimaryAlgorithmProperties().put("replace-char", "raw-secret");
+        snapshot.setRequest(request);
+        String sql = "CREATE MASK RULE `orders` (COLUMNS((NAME=`phone`, TYPE(NAME='mask_from_x_to_y', PROPERTIES('replace-char'='******')))))";
+        try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
+            mockedStatic.when(() -> TypedSPILoader.checkService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y",
+                    WorkflowSQLUtils.createProperties(request.getPrimaryAlgorithmProperties()))).thenThrow(new IllegalArgumentException("raw-secret"));
+            List<Map<String, Object>> actual = new MaskWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact(sql)));
+            assertThat(actual.size(), is(1));
+            assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+            assertFalse(String.valueOf(actual).contains("raw-secret"));
+        }
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsIgnoresDropMaskRule() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        WorkflowRequest request = new WorkflowRequest();
+        request.setAlgorithmType("MASK_FROM_X_TO_Y");
+        snapshot.setRequest(request);
+        assertTrue(new MaskWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact("DROP MASK RULE `orders`"))).isEmpty());
     }
     
     @Test
@@ -254,5 +287,9 @@ class MaskWorkflowValidationServiceTest {
         clarifiedIntent.setOperationType(operationType);
         result.setClarifiedIntent(clarifiedIntent);
         return result;
+    }
+    
+    private ExecutableWorkflowArtifact createRuleDistSQLArtifact(final String sql) {
+        return new ExecutableWorkflowArtifact("review-rule-sql", "rule_dist_sql", sql, sql, true);
     }
 }

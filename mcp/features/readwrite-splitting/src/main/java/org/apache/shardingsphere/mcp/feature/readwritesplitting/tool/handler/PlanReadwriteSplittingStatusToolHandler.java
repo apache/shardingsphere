@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.handler;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -40,16 +42,13 @@ import java.util.function.Consumer;
 /**
  * Tool handler for readwrite-splitting storage-unit status workflow planning.
  */
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
     
     private final ReadwriteSplittingStatusWorkflowPlanningService planningService;
     
     public PlanReadwriteSplittingStatusToolHandler() {
         planningService = new ReadwriteSplittingStatusWorkflowPlanningService();
-    }
-    
-    PlanReadwriteSplittingStatusToolHandler(final ReadwriteSplittingStatusWorkflowPlanningService planningService) {
-        this.planningService = planningService;
     }
     
     @Override

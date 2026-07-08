@@ -67,14 +67,6 @@ showComputeNodeMode
     : SHOW COMPUTE NODE MODE
     ;
 
-labelComputeNode
-    : (LABEL | RELABEL) COMPUTE NODE instanceId WITH label (COMMA_ label)*
-    ;
-
-unlabelComputeNode
-    : UNLABEL COMPUTE NODE instanceId (WITH label (COMMA_ label)*)?
-    ;
-
 exportDatabaseConfiguration
     : EXPORT DATABASE CONFIGURATION (FROM databaseName)? (TO FILE filePath)?
     ;
@@ -157,10 +149,6 @@ fromSegment
 
 lockStrategy
     : LOCK_STRATEGY LP_ algorithmDefinition RP_
-    ;
-
-label
-    : IDENTIFIER_
     ;
 
 showLike

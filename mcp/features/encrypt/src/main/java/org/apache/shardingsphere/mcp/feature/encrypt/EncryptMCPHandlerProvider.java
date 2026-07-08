@@ -28,9 +28,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflo
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,12 +38,12 @@ public final class EncryptMCPHandlerProvider implements MCPHandlerProvider, MCPW
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
-        return Arrays.asList(new EncryptAlgorithmsHandler(), new EncryptRulesHandler(), new EncryptRuleHandler());
+        return List.of(new EncryptAlgorithmsHandler(), new EncryptRulesHandler(), new EncryptRuleHandler());
     }
     
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
-        return Collections.singleton(new PlanEncryptRuleToolHandler());
+        return List.of(new PlanEncryptRuleToolHandler());
     }
     
     @Override

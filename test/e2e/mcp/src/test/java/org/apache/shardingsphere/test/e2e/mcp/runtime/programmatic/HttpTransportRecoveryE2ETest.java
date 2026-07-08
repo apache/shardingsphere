@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
+import org.apache.shardingsphere.test.e2e.mcp.support.fixture.MCPWorkflowSecretReferenceFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -124,6 +125,41 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         Map<String, Object> recovery = getRecoveryPayload(payload, "missing_context");
         assertThat(String.valueOf(recovery.get("category")), is("missing_execution_mode"));
         assertModelFacingPayloadContract(payload);
+    }
+    
+    @Test
+    void assertWorkflowResponseRedactsSecretReference() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> planResponse = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_encrypt_rule", createSecretReferencedEncryptRulePlanArguments());
+        assertThat(planResponse.statusCode(), is(200));
+        assertSecretReferenceRedacted(planResponse.body());
+        Map<String, Object> planPayload = getStructuredContent(planResponse.body());
+        assertModelFacingPayloadContract(planPayload);
+        String planId = String.valueOf(planPayload.get("plan_id"));
+        HttpResponse<String> previewResponse = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,
+                Map.of("plan_id", planId, "execution_mode", "preview"));
+        assertThat(previewResponse.statusCode(), is(200));
+        assertSecretReferenceRedacted(previewResponse.body());
+        assertModelFacingPayloadContract(getStructuredContent(previewResponse.body()));
+    }
+    
+    private Map<String, Object> createSecretReferencedEncryptRulePlanArguments() {
+        return Map.of(
+                "database", "logic_db",
+                "schema", "logic_db",
+                "table", "orders",
+                "column", "status",
+                "operation_type", "create",
+                "algorithm_type", "AES",
+                "primary_algorithm_properties", Map.of("aes-key-value", MCPWorkflowSecretReferenceFixture.createSecretReferenceInput()),
+                "structured_intent_evidence", Map.of("requires_equality_filter", false, "requires_like_query", false));
+    }
+    
+    private void assertSecretReferenceRedacted(final String payload) {
+        assertFalse(payload.contains(MCPWorkflowSecretReferenceFixture.SECRET_REF), payload);
+        assertFalse(payload.contains(MCPWorkflowSecretReferenceFixture.INPUT_LABEL), payload);
     }
     
     private Map<String, Object> getFirstNextAction(final Map<String, Object> recovery) {

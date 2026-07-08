@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.markdown;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -84,6 +86,7 @@ class MCPMarkdownResourceLoaderTest {
         }
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class FixtureResourceClassLoader extends ClassLoader {
         
         private final String resourceName;
@@ -92,11 +95,6 @@ class MCPMarkdownResourceLoaderTest {
         
         private FixtureResourceClassLoader(final String resourceName) {
             this(resourceName, null);
-        }
-        
-        private FixtureResourceClassLoader(final String resourceName, final String content) {
-            this.resourceName = resourceName;
-            this.content = content;
         }
         
         @Override

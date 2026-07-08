@@ -17,8 +17,15 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * MCP database capability option.
@@ -75,6 +82,60 @@ public interface MCPDatabaseCapabilityOption extends TypedSPI {
      * @return whether sequence metadata is supported
      */
     boolean isSequenceSupported();
+    
+    /**
+     * Get identifier quote character.
+     *
+     * @return identifier quote character
+     */
+    default QuoteCharacter getIdentifierQuoteCharacter() {
+        return QuoteCharacter.QUOTE;
+    }
+    
+    /**
+     * Get identifier case policy set.
+     *
+     * @return identifier case policy set
+     */
+    default IdentifierCasePolicySet getIdentifierCasePolicySet() {
+        return IdentifierCasePolicyFactory.newSensitivePolicySet();
+    }
+    
+    /**
+     * Judge whether unquoted identifiers are folded by database metadata lookup.
+     *
+     * @return whether unquoted identifiers are folded
+     */
+    default boolean isUnquotedIdentifierCaseFolded() {
+        return false;
+    }
+    
+    /**
+     * Get system schemas.
+     *
+     * @return system schemas
+     */
+    default Collection<String> getSystemSchemas() {
+        return List.of();
+    }
+    
+    /**
+     * Get sequence metadata query.
+     *
+     * @return sequence metadata query
+     */
+    default Optional<String> getSequenceQuery() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Judge whether information_schema column lookup should filter table_schema.
+     *
+     * @return whether information_schema column lookup should filter table_schema
+     */
+    default boolean isInformationSchemaColumnSchemaFilterRequired() {
+        return false;
+    }
     
     @Override
     String getType();

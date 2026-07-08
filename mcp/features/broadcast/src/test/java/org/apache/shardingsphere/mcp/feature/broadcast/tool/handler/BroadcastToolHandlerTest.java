@@ -97,7 +97,7 @@ class BroadcastToolHandlerTest {
         clarifiedIntent.setOperationType("create");
         result.setClarifiedIntent(clarifiedIntent);
         result.setInteractionPlan(InteractionPlan.create("plan-1", request, "Broadcast workflow plan.", List.of("review"), List.of("rules")));
-        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE BROADCAST TABLE RULE t_order"));
+        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE BROADCAST TABLE RULE `t_order`"));
         return result;
     }
     

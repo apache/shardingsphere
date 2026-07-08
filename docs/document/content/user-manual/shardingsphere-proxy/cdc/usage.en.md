@@ -230,6 +230,10 @@ Bootstrap will output a similar log.
 
 The start and stop of the CDC task can only be controlled by the CDC Client. You can view the status of the CDC task by executing DistSQL in the proxy
 
+For complete DistSQL syntax, refer to [SHOW STREAMING LIST](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-list/),
+[SHOW STREAMING STATUS](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-status/)
+and [DROP STREAMING](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/drop-streaming/).
+
 1. View the CDC task list
 
 SHOW STREAMING LIST;
@@ -263,7 +267,7 @@ sharding_db=> SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
 
 DROP STREAMING j0302p0000702a83116fcee83f70419ca5e2993791;
 
-The CDC task can only be deleted when there are no subscriptions. At this time, the replication slots on the openGauss physical database will also be deleted.
+After the CDC task is deleted, the replication slots on the openGauss physical database will also be deleted.
 
 ```
 sharding_db=> DROP STREAMING j0302p0000702a83116fcee83f70419ca5e2993791;
@@ -275,8 +279,7 @@ SUCCESS
 ## Explanation of incremental data push
 
 1. The CDC incremental push is currently transactional, and the transactions of the physical database will not be split. Therefore, if there are data changes in multiple tables in a transaction, these data changes will be pushed together.
-If you want to support XA transactions (currently only supports openGauss), both openGauss and Proxy need the GLT module.
-2. The conditions for push are met when a certain amount of data is met or a certain time interval is reached (currently 300ms). When processing XA transactions, if the received multiple physical database incremental events exceed 300ms, it may cause the XA transaction to be split and pushed.
+2. The conditions for push are met when a certain amount of data is met or a certain time interval is reached (currently 300ms).
 
 ## Handling of large transactions
 

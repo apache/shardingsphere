@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -55,19 +54,6 @@ class DropTablePushDownMetaDataRefresherTest {
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))),
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")))), false, false);
         refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        assertThat(persistService.getDroppedTableSchemaName(), is("Foo_Schema"));
-        assertThat(persistService.getDroppedTableNames(), contains("Foo_Tbl", "Bar_Tbl"));
-    }
-    
-    @Test
-    void assertRefreshUsesActualQuotedTableNamesWithSensitiveProps() {
-        PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
-        DropTableStatement sqlStatement = new DropTableStatement(databaseType, Arrays.asList(
-                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Foo_Tbl", QuoteCharacter.QUOTE))),
-                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Bar_Tbl", QuoteCharacter.QUOTE)))), false, false);
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        refresher.refresh(persistService, createDatabase(), "logic_ds", "Foo_Schema", databaseType, sqlStatement, new ConfigurationProperties(props));
         assertThat(persistService.getDroppedTableSchemaName(), is("Foo_Schema"));
         assertThat(persistService.getDroppedTableNames(), contains("Foo_Tbl", "Bar_Tbl"));
     }

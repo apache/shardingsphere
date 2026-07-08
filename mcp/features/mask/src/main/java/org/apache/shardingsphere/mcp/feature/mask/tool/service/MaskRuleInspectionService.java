@@ -45,7 +45,7 @@ public final class MaskRuleInspectionService {
      * @return mask rules
      */
     public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryRuleRows(queryFacade, databaseName, String.format("SHOW MASK RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return WorkflowDistSQLQueryUtils.queryRuleRows(queryFacade, databaseName, String.format("SHOW MASK RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -57,7 +57,7 @@ public final class MaskRuleInspectionService {
      * @return mask rules
      */
     public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return queryRuleRows(
+        return WorkflowDistSQLQueryUtils.queryRuleRows(
                 queryFacade, databaseName, String.format("SHOW MASK RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
@@ -69,17 +69,6 @@ public final class MaskRuleInspectionService {
      */
     public List<Map<String, Object>> queryMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
         return decorateMaskAlgorithms(queryAlgorithmRows(queryFacade));
-    }
-    
-    private List<Map<String, Object>> queryRuleRows(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String sql) {
-        try {
-            return queryFacade.query(databaseName, "", sql);
-        } catch (final MCPQueryFailedException ex) {
-            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return List.of();
-            }
-            throw ex;
-        }
     }
     
     private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {

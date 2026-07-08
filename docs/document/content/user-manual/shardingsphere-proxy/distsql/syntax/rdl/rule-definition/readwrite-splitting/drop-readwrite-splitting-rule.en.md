@@ -5,7 +5,7 @@ weight = 3
 
 ## Description
 
-The `DROP READWRITE_SPLITTING RULE` syntax is used to drop readwrite-splitting rule for specified database
+The `DROP READWRITE_SPLITTING RULE` syntax is used to drop readwrite-splitting rules from the current database.
 
 ### Syntax
 
@@ -13,7 +13,7 @@ The `DROP READWRITE_SPLITTING RULE` syntax is used to drop readwrite-splitting r
 {{% tab name="Grammar" %}}
 ```sql
 DropReadwriteSplittingRule ::=
-  'DROP' 'READWRITE_SPLITTING' 'RULE' ifExists? ruleName (',' ruleName)* ('FROM' databaseName)?
+  'DROP' 'READWRITE_SPLITTING' 'RULE' ifExists? ruleName (',' ruleName)*
 
 ifExists ::=
   'IF' 'EXISTS'
@@ -21,8 +21,6 @@ ifExists ::=
 ruleName ::=
   identifier
 
-databaseName ::=
-  identifier
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -32,21 +30,20 @@ databaseName ::=
 
 ### Supplement
 
-- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted;
-- `ifExists` clause is used for avoid `Readwrite-splitting rule not exists` error.
+- `ifExists` clause is used to avoid `Readwrite-splitting rule not exists` error.
 
 ### Example
 
-- Drop readwrite-splitting rule for specified database
-
-```sql
-DROP READWRITE_SPLITTING RULE ms_group_1 FROM readwrite_splitting_db;
-```
-
-- Drop readwrite-splitting rule for current database
+- Drop readwrite-splitting rule
 
 ```sql
 DROP READWRITE_SPLITTING RULE ms_group_1;
+```
+
+- Drop multiple readwrite-splitting rules
+
+```sql
+DROP READWRITE_SPLITTING RULE ms_group_1, ms_group_2;
 ```
 
 - Drop readwrite-splitting rule with `ifExists` clause
@@ -57,7 +54,7 @@ DROP READWRITE_SPLITTING RULE IF EXISTS ms_group_1;
 
 ### Reserved word
 
-`DROP`, `READWRITE_SPLITTING`, `RULE`
+`DROP`, `READWRITE_SPLITTING`, `RULE`, `IF`, `EXISTS`
 
 ### Related links
 

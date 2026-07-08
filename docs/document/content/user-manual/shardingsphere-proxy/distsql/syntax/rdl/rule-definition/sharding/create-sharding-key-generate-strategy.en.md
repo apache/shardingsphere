@@ -36,7 +36,7 @@ algorithmDefinition ::=
   'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string

@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Workflow MCP field names.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowFieldNames {
     
     public static final String ALGORITHM_TYPE = "algorithm_type";
@@ -68,6 +72,4 @@ public final class WorkflowFieldNames {
     
     public static final String TABLE = "table";
     
-    private WorkflowFieldNames() {
-    }
 }

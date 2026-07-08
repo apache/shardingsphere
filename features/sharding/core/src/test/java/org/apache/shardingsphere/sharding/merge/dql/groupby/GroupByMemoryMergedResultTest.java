@@ -39,6 +39,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Shor
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -212,6 +214,38 @@ class GroupByMemoryMergedResultTest {
         ShardingDQLResultMerger merger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = merger.merge(Arrays.asList(queryResult, queryResult, queryResult), createSelectStatementContext(database), database, mock(ConnectionContext.class));
         assertFalse(actual.next());
+    }
+    
+    @Test
+    void assertNextForEmptyResultWithWindowAggregation() throws SQLException {
+        when(database.getName()).thenReturn("db_schema");
+        QueryResult queryResult1 = createEmptyQueryResultWithWindowAggregation();
+        QueryResult queryResult2 = createEmptyQueryResultWithWindowAggregation();
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2), createSelectStatementContextForWindowAggregation(), database, mock(ConnectionContext.class));
+        assertFalse(actual.next());
+    }
+    
+    private QueryResult createEmptyQueryResultWithWindowAggregation() throws SQLException {
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(1);
+        when(result.getMetaData().getColumnLabel(1)).thenReturn("c_5");
+        when(result.next()).thenReturn(false);
+        return result;
+    }
+    
+    private SelectStatementContext createSelectStatementContextForWindowAggregation() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(
+                0, 0, AggregationType.MAX, "pg_catalog.max(ref_0.c36) over (partition by ref_0.c39 order by ref_0.vkey desc)");
+        aggregationProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("c_5")));
+        aggregationProjectionSegment.setWindow(new WindowItemSegment(29, 86));
+        projectionsSegment.getProjections().add(aggregationProjectionSegment);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment).build();
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        return new SelectStatementContext(
+                selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }
     
     @Test

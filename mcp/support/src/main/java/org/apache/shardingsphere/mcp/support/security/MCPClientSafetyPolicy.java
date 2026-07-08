@@ -52,7 +52,7 @@ public final class MCPClientSafetyPolicy {
         result.put("identity_scope", "mcp_session");
         result.put("transport_scope",
                 "HTTP transport can bind trusted session attribution when configured; "
-                        + "authentication and authorization remain outside the runtime in this release. "
+                        + "the MCP runtime does not provide built-in authentication or authorization. "
                         + "STDIO inherits the local process boundary.");
         result.put("tool_call_limit", MCPRuntimeProtectionPolicy.createToolCallLimitPayload());
         result.put("runtime_protection", MCPRuntimeProtectionPolicy.createRuntimeProtectionPayload());

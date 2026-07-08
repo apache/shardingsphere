@@ -19,8 +19,12 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,8 +43,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowSQLUtils {
     
-    private static final String SAFE_IDENTIFIER_PATTERN = "[A-Za-z0-9_$]+";
-    
     private static final String UNQUOTED_IDENTIFIER_PATTERN = "[A-Za-z_][A-Za-z0-9_$]*";
     
     private static final Set<String> DIST_SQL_RESERVED_IDENTIFIERS = Set.of(
@@ -52,16 +54,6 @@ public final class WorkflowSQLUtils {
     private static final char BACK_QUOTE = '`';
     
     private static final char DOUBLE_QUOTE = '"';
-    
-    /**
-     * Check whether an identifier can be used as an unquoted SQL identifier.
-     *
-     * @param identifier identifier to check
-     * @return whether the identifier is safe
-     */
-    public static boolean isSafeIdentifier(final String identifier) {
-        return null != identifier && identifier.matches(SAFE_IDENTIFIER_PATTERN);
-    }
     
     /**
      * Normalize a SQL identifier from user input.
@@ -93,8 +85,12 @@ public final class WorkflowSQLUtils {
     public static String canonicalizeIdentifier(final String databaseType, final String identifier) {
         String rawIdentifier = trimToEmpty(identifier);
         String result = normalizeIdentifier(rawIdentifier);
-        return !isDelimitedIdentifier(rawIdentifier) && isLowerCaseFoldedIdentifierDatabase(databaseType) && !isSpecialSQLIdentifier(result)
-                ? result.toLowerCase(Locale.ENGLISH)
+        if (isDelimitedIdentifier(rawIdentifier) || isSpecialSQLIdentifier(result)) {
+            return result;
+        }
+        MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(databaseType);
+        return databaseDialect.isUnquotedIdentifierCaseFolded()
+                ? databaseDialect.getIdentifierCasePolicy(IdentifierScope.TABLE).normalize(result)
                 : result;
     }
     
@@ -134,7 +130,19 @@ public final class WorkflowSQLUtils {
         checkSupportedIdentifier("identifier", actualIdentifier);
         return actualIdentifier.isEmpty() || !isSpecialDistSQLIdentifier(actualIdentifier) && !isDelimitedIdentifier(rawIdentifier)
                 ? actualIdentifier
-                : IdentifierQuoteStyle.BACK_QUOTE.wrap(actualIdentifier);
+                : wrapIdentifier(QuoteCharacter.BACK_QUOTE, actualIdentifier);
+    }
+    
+    /**
+     * Format an identifier rendered by generated rule DistSQL artifacts.
+     *
+     * @param identifier identifier to format
+     * @return formatted DistSQL identifier
+     */
+    public static String formatGeneratedRuleDistSQLIdentifier(final String identifier) {
+        String actualIdentifier = normalizeIdentifier(trimToEmpty(identifier));
+        checkSupportedIdentifier("identifier", actualIdentifier);
+        return actualIdentifier.isEmpty() ? actualIdentifier : wrapIdentifier(QuoteCharacter.BACK_QUOTE, actualIdentifier);
     }
     
     /**
@@ -150,7 +158,7 @@ public final class WorkflowSQLUtils {
         checkSupportedIdentifier("identifier", actualIdentifier);
         return actualIdentifier.isEmpty() || !isSpecialSQLIdentifier(actualIdentifier) && !isDelimitedIdentifier(rawIdentifier)
                 ? actualIdentifier
-                : getSQLIdentifierQuoteStyle(databaseType).wrap(actualIdentifier);
+                : wrapIdentifier(MCPDatabaseDialect.of(databaseType).getIdentifierQuoteCharacter(), actualIdentifier);
     }
     
     /**
@@ -164,12 +172,8 @@ public final class WorkflowSQLUtils {
     public static boolean isSameIdentifier(final String databaseType, final String identifier, final String existingIdentifier) {
         String actualIdentifier = normalizeIdentifier(identifier);
         String actualExistingIdentifier = normalizeIdentifier(existingIdentifier);
-        if (isCaseInsensitiveIdentifierDatabase(databaseType)) {
-            return actualIdentifier.equalsIgnoreCase(actualExistingIdentifier);
-        }
-        return isLowerCaseFoldedIdentifierDatabase(databaseType)
-                ? canonicalizeIdentifier(databaseType, identifier).equals(actualExistingIdentifier)
-                : actualIdentifier.equals(actualExistingIdentifier);
+        IdentifierCasePolicy identifierCasePolicy = MCPDatabaseDialect.of(databaseType).getIdentifierCasePolicy(IdentifierScope.TABLE);
+        return identifierCasePolicy.matches(actualExistingIdentifier, actualIdentifier, getQuoteCharacter(identifier));
     }
     
     /**
@@ -220,13 +224,7 @@ public final class WorkflowSQLUtils {
                 .collect(Collectors.joining(", "));
     }
     
-    /**
-     * Parse property entries from a list of {@code key=value} or {@code key:value} strings.
-     *
-     * @param entries property entries
-     * @return parsed property map
-     */
-    public static Map<String, String> parsePropertyEntries(final List<String> entries) {
+    private static Map<String, String> parsePropertyEntries(final List<String> entries) {
         Map<String, String> result = new LinkedHashMap<>(entries.size(), 1F);
         for (String each : entries) {
             int separatorIndex = findPropertySeparatorIndex(each);
@@ -300,44 +298,16 @@ public final class WorkflowSQLUtils {
         return !identifier.matches(UNQUOTED_IDENTIFIER_PATTERN);
     }
     
-    private static boolean isCaseInsensitiveIdentifierDatabase(final String databaseType) {
-        String actualDatabaseType = trimToEmpty(databaseType).toLowerCase(Locale.ENGLISH);
-        return "mysql".equals(actualDatabaseType) || "mariadb".equals(actualDatabaseType) || "doris".equals(actualDatabaseType);
+    private static QuoteCharacter getQuoteCharacter(final String identifier) {
+        String actualIdentifier = trimToEmpty(identifier);
+        return isDelimitedIdentifier(actualIdentifier) ? QuoteCharacter.getQuoteCharacter(actualIdentifier) : QuoteCharacter.NONE;
     }
     
-    private static boolean isLowerCaseFoldedIdentifierDatabase(final String databaseType) {
-        String actualDatabaseType = trimToEmpty(databaseType).toLowerCase(Locale.ENGLISH);
-        return "postgresql".equals(actualDatabaseType) || "opengauss".equals(actualDatabaseType);
-    }
-    
-    private static IdentifierQuoteStyle getSQLIdentifierQuoteStyle(final String databaseType) {
-        String actualDatabaseType = trimToEmpty(databaseType).toLowerCase(Locale.ENGLISH);
-        if (actualDatabaseType.isEmpty() || "mysql".equals(actualDatabaseType) || "mariadb".equals(actualDatabaseType) || "doris".equals(actualDatabaseType) || "hive".equals(actualDatabaseType)) {
-            return IdentifierQuoteStyle.BACK_QUOTE;
-        }
-        return "sqlserver".equals(actualDatabaseType) ? IdentifierQuoteStyle.BRACKETS : IdentifierQuoteStyle.DOUBLE_QUOTE;
-    }
-    
-    private enum IdentifierQuoteStyle {
-        
-        BACK_QUOTE("`", "`"),
-        
-        DOUBLE_QUOTE("\"", "\""),
-        
-        BRACKETS("[", "]");
-        
-        private final String startDelimiter;
-        
-        private final String endDelimiter;
-        
-        IdentifierQuoteStyle(final String startDelimiter, final String endDelimiter) {
-            this.startDelimiter = startDelimiter;
-            this.endDelimiter = endDelimiter;
-        }
-        
-        private String wrap(final String value) {
-            return startDelimiter + value.replace(endDelimiter, endDelimiter + endDelimiter) + endDelimiter;
-        }
+    private static String wrapIdentifier(final QuoteCharacter quoteCharacter, final String value) {
+        return QuoteCharacter.NONE == quoteCharacter
+                ? value
+                : quoteCharacter.getStartDelimiter() + value.replace(quoteCharacter.getEndDelimiter(), quoteCharacter.getEndDelimiter() + quoteCharacter.getEndDelimiter())
+                        + quoteCharacter.getEndDelimiter();
     }
     
     private static Map<String, String> parsePropertyString(final String value) {

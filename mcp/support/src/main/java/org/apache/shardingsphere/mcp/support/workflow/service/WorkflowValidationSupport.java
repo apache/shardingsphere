@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
@@ -36,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Workflow validation support.
@@ -63,6 +61,26 @@ public final class WorkflowValidationSupport {
     }
     
     /**
+     * Validate workflow snapshot and persist validation response.
+     *
+     * @param workflowSessionContext workflow session context
+     * @param sessionId session identifier
+     * @param snapshot workflow snapshot
+     * @param validationReportSupplier validation report supplier
+     * @return validation response
+     */
+    public Map<String, Object> validateAndFinalize(final WorkflowSessionContext workflowSessionContext, final String sessionId, final WorkflowContextSnapshot snapshot,
+                                                   final Supplier<ValidationReport> validationReportSupplier) {
+        Map<String, Object> rejectedResponse = checkValidatePreconditions(sessionId, snapshot);
+        if (!rejectedResponse.isEmpty()) {
+            return rejectedResponse;
+        }
+        ValidationReport validationReport = validationReportSupplier.get();
+        snapshot.setValidationReport(validationReport);
+        return finalizeValidation(workflowSessionContext, snapshot, validationReport);
+    }
+    
+    /**
      * Resolve overall validation status from validation sections.
      *
      * @param validationSections validation sections
@@ -75,41 +93,6 @@ public final class WorkflowValidationSupport {
             }
         }
         return WorkflowLifecycle.STATUS_PASSED;
-    }
-    
-    /**
-     * Validate logical metadata visibility for the planned logical column.
-     *
-     * @param snapshot workflow snapshot
-     * @param metadataQueryFacade metadata query facade
-     * @param validationReport validation report
-     * @return logical metadata validation section
-     */
-    public ValidationSection validateLogicalMetadata(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
-                                                     final ValidationReport validationReport) {
-        String databaseName = WorkflowSQLUtils.normalizeIdentifier(snapshot.getRequest().getDatabase());
-        String databaseType = metadataQueryFacade.queryDatabase(databaseName).map(MCPDatabaseMetadata::getDatabaseType).orElse("");
-        if (metadataQueryFacade.queryTableColumn(
-                databaseName, WorkflowSQLUtils.canonicalizeIdentifier(databaseType, snapshot.getRequest().getSchema()),
-                WorkflowSQLUtils.canonicalizeIdentifier(databaseType, snapshot.getRequest().getTable()), WorkflowSQLUtils.canonicalizeIdentifier(databaseType, snapshot.getRequest().getColumn()))
-                .isPresent()) {
-            return new ValidationSection(WorkflowLifecycle.STATUS_PASSED,
-                    Map.of(WorkflowFieldNames.TABLE, snapshot.getRequest().getTable(), WorkflowFieldNames.COLUMN, snapshot.getRequest().getColumn()),
-                    "Logical table and column are still visible from Proxy metadata.");
-        }
-        validationReport.getMismatches().add(createMismatch(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH, "logical_metadata", snapshot.getRequest().getColumn(), "",
-                "Logical column is not visible from Proxy metadata.", "Refresh metadata or investigate the logical schema."));
-        return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Logical column is not visible from Proxy metadata.");
-    }
-    
-    /**
-     * Create the baseline projection SQL used by workflow validation.
-     *
-     * @param snapshot workflow snapshot
-     * @return projection validation SQL
-     */
-    public String createProjectionValidationSql(final WorkflowContextSnapshot snapshot) {
-        return createProjectionValidationSql(snapshot, "MySQL");
     }
     
     /**
@@ -126,34 +109,6 @@ public final class WorkflowValidationSupport {
     }
     
     /**
-     * Validate whether planned SQLs are executable from the logical view.
-     *
-     * @param executionFacade SQL execution facade
-     * @param sessionId session identifier
-     * @param snapshot workflow snapshot
-     * @param validationReport validation report
-     * @param validationSqls validation SQLs
-     * @param successDetails success details
-     * @return SQL executability validation section
-     */
-    public ValidationSection validateSqlExecutability(final MCPFeatureExecutionFacade executionFacade, final String sessionId,
-                                                      final WorkflowContextSnapshot snapshot, final ValidationReport validationReport,
-                                                      final List<String> validationSqls, final String successDetails) {
-        for (String each : validationSqls) {
-            try {
-                executionFacade.execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each, 1, 0));
-                // CHECKSTYLE:OFF
-            } catch (final RuntimeException ex) {
-                // CHECKSTYLE:ON
-                validationReport.getMismatches().add(createMismatch(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "sql_executability", each, ex.getMessage(),
-                        "Validation SQL cannot be executed from the logical view.", "Inspect rule state and logical metadata."));
-                return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, each, ex.getMessage());
-            }
-        }
-        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, validationSqls, successDetails);
-    }
-    
-    /**
      * Persist validation result and create response payload.
      *
      * @param workflowSessionContext workflow session context
@@ -167,6 +122,7 @@ public final class WorkflowValidationSupport {
         workflowSessionContext.persist(snapshot, WorkflowLifecycle.STEP_VALIDATED, validationStatus);
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("response_mode", "validation");
+        result.put(MCPPayloadFieldNames.SUMMARY, createValidationSummary(snapshot, validationReport));
         result.put(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId());
         result.put("status", validationStatus);
         result.put("issues", createValidationIssues(validationReport));
@@ -230,6 +186,13 @@ public final class WorkflowValidationSupport {
         return WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus()) ? WorkflowLifecycle.STATUS_FAILED : WorkflowLifecycle.STATUS_VALIDATED;
     }
     
+    private String createValidationSummary(final WorkflowContextSnapshot snapshot, final ValidationReport validationReport) {
+        if (WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus())) {
+            return String.format("Workflow validation failed for plan `%s` with %d mismatch(es).", snapshot.getPlanId(), validationReport.getMismatches().size());
+        }
+        return String.format("Workflow validation passed for plan `%s`.", snapshot.getPlanId());
+    }
+    
     private boolean isValidatableStatus(final WorkflowContextSnapshot snapshot) {
         String actualStatus = null == snapshot.getStatus() ? "" : snapshot.getStatus();
         if (WorkflowLifecycle.STATUS_VALIDATED.equalsIgnoreCase(actualStatus)
@@ -247,16 +210,25 @@ public final class WorkflowValidationSupport {
     }
     
     private Map<String, Object> createRejectedResponse(final WorkflowContextSnapshot snapshot, final String issueCode, final String message, final String userAction) {
-        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("response_mode", "terminal");
+        result.put(MCPPayloadFieldNames.SUMMARY, String.format("Workflow validation cannot run for plan `%s`.", snapshot.getPlanId()));
         result.put(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId());
         result.put("status", WorkflowLifecycle.STATUS_FAILED);
         result.put("issues", List.of(new WorkflowIssue(issueCode, "error", "validating", message, userAction, false, Map.of()).toMap()));
         result.put("overall_status", WorkflowLifecycle.STATUS_FAILED);
         result.put("mismatches", List.of());
         result.put("recovery_guidance", userAction);
-        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of());
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createRejectedNextActions(issueCode, userAction));
         return result;
+    }
+    
+    private List<Map<String, Object>> createRejectedNextActions(final String issueCode, final String userAction) {
+        return MCPNextActionUtils.ordered(MCPNextActionUtils.askUser(userAction, List.of(resolveRejectedRequiredInput(issueCode))));
+    }
+    
+    private String resolveRejectedRequiredInput(final String issueCode) {
+        return WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH.equals(issueCode) ? "same_mcp_session" : "validatable_workflow_state";
     }
     
     /**

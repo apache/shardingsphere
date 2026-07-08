@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.api.tool;
 
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 
 /**
@@ -35,9 +36,9 @@ public interface MCPToolHandler<T extends MCPHandlerContext> {
     Class<T> getContextType();
     
     /**
-     * Get tool name.
+     * Get canonical tool name.
      *
-     * @return tool name
+     * @return canonical tool name
      */
     String getToolName();
     
@@ -46,7 +47,8 @@ public interface MCPToolHandler<T extends MCPHandlerContext> {
      *
      * @param handlerContext handler context
      * @param toolCall tool call
-     * @return tool response
+     * @return successful tool response
+     * @throws ShardingSphereMCPException controlled failure to be converted by runtime
      */
     MCPResponse handle(T handlerContext, MCPToolCall toolCall);
 }

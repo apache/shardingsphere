@@ -22,9 +22,7 @@ package org.apache.shardingsphere.infra.config.props;
  */
 public enum MetadataIdentifierCaseSensitivity {
     
-    AUTO,
-    
-    SENSITIVE,
+    DATABASE,
     
     INSENSITIVE
 }

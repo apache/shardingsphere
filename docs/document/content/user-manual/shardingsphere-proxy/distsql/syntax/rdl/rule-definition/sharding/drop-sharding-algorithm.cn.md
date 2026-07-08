@@ -5,7 +5,7 @@ weight = 11
 
 ## 描述
 
-`DROP SHARDING ALGORITHM` 语法用于删除指定逻辑库的指定分片算法。
+`DROP SHARDING ALGORITHM` 语法用于从当前逻辑库中删除分片算法。
 
 ### 语法定义
 
@@ -13,7 +13,7 @@ weight = 11
 {{% tab name="语法" %}}
 ```sql
 DropShardingAlgorithm ::=
-  'DROP' 'SHARDING' 'ALGORITHM' algorithmName ifExists? ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'ALGORITHM' ifExists? algorithmName (',' algorithmName)*
 
 ifExists ::=
   'IF' 'EXISTS'
@@ -21,8 +21,6 @@ ifExists ::=
 algorithmName ::=
   identifier
 
-databaseName ::=
-  identifier
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -32,21 +30,20 @@ databaseName ::=
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
 - `ifExists` 子句用于避免 `Sharding algorithm not exists` 错误。
 
 ### 示例
 
-- 删除指定逻辑库的指定分片算法
-
-```sql
-DROP SHARDING ALGORITHM t_order_hash_mod FROM sharding_db;
-```
-
-- 删除当前逻辑库的指定分片算法
+- 删除分片算法
 
 ```sql
 DROP SHARDING ALGORITHM t_order_hash_mod;
+```
+
+- 删除多个分片算法
+
+```sql
+DROP SHARDING ALGORITHM t_order_hash_mod, t_item_hash_mod;
 ```
 
 - 使用 `ifExists` 子句删除分片算法
@@ -57,7 +54,7 @@ DROP SHARDING ALGORITHM IF EXISTS t_order_hash_mod;
 
 ### 保留字
 
-`DROP`、`SHARDING`、`ALGORITHM`、`FROM`
+`DROP`、`SHARDING`、`ALGORITHM`、`IF`、`EXISTS`
 
 ### 相关链接
 

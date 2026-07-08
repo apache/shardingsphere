@@ -145,12 +145,13 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     void assertRunWithModelServiceUnavailable() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        doThrow(new IllegalStateException("Model service is not ready for `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.")).when(getLLMChatClient()).waitUntilReady();
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenThrow(
+                new IllegalStateException("Model service is not ready for `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`."));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
-        verify(getMCPInteractionClient(), never()).open();
+        verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient()).close();
     }
     

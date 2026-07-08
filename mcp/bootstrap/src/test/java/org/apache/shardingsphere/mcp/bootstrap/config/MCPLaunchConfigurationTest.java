@@ -74,8 +74,7 @@ class MCPLaunchConfigurationTest {
     void assertValidateWhenDatabasesEmpty() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(MCPTransportType.STREAMABLE_HTTP, null);
         yamlConfig.setRuntimeDatabases(Collections.emptyMap());
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
-        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` is required."));
+        assertDoesNotThrow(() -> validate(yamlConfig));
     }
     
     @Test
@@ -134,7 +133,6 @@ class MCPLaunchConfigurationTest {
     
     private Map<String, Map<String, Object>> createRuntimeDatabases() {
         return Collections.singletonMap("logic_db", Map.of(
-                "databaseType", "MySQL",
                 "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
                 "username", "demo",
                 "password", "",

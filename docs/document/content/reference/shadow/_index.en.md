@@ -26,4 +26,4 @@ If the execution SQL does not contain comments or the HINT shadow algorithm dete
 ## References
 
 [JAVA API: shadow database configuration](/en/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)  
-[YAMLconfiguration: shadow database](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/shadow/)  
+[YAML configuration: shadow database](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/shadow/)

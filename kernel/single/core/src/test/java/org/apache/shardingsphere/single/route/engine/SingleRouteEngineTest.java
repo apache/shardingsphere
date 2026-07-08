@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.single.route.engine;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCasePolicy;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -240,8 +240,8 @@ class SingleRouteEngineTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        IdentifierCaseRule identifierCaseRule = new StandardIdentifierCaseRule(LookupMode.NORMALIZED, LookupMode.NORMALIZED, each -> each.toLowerCase(Locale.ENGLISH), each -> true);
-        when(result.getIdentifierCaseRule(IdentifierScope.SCHEMA)).thenReturn(identifierCaseRule);
+        IdentifierCasePolicy identifierCasePolicy = new StandardIdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED, each -> each.toLowerCase(Locale.ENGLISH), each -> true);
+        when(result.getIdentifierCasePolicy(IdentifierScope.SCHEMA)).thenReturn(identifierCasePolicy);
         return result;
     }
 }

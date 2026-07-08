@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.it.rewriter.engine;
 
-import lombok.RequiredArgsConstructor;
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -32,8 +32,8 @@ import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -195,7 +195,7 @@ public abstract class SQLRewriterIT {
     private ConfigurationProperties createConfigurationProperties(final YamlRootConfiguration rootConfig) {
         Properties result = new Properties();
         result.putAll(rootConfig.getProps());
-        result.putIfAbsent(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name());
+        result.putIfAbsent(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name());
         return new ConfigurationProperties(result);
     }
     

@@ -56,10 +56,11 @@ class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProducti
             assertPlannedSecretReferencePayload(planResponse);
             Map<String, Object> previewResponse = previewWorkflow(interactionClient, planId);
             assertSecretReferencedPreview(previewResponse);
-            Map<String, Object> applyResponse = interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, getApprovedSteps(previewResponse)));
+            Map<String, Object> applyResponse = interactionClient.call(APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, getApprovedSteps(previewResponse)));
             assertThat(String.valueOf(applyResponse.get("response_mode")), is("recovery"));
             assertThat(String.valueOf(applyResponse.get("status")), is("failed"));
             assertThat(String.valueOf(applyResponse.get("category")), is(MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
+            assertModelFacingPayloadContract(applyResponse);
             assertThat(getMapList(applyResponse.get("step_results")).size(), is(0));
             assertThat(getStringList(applyResponse.get("executed_distsql")).size(), is(0));
             assertThat(getStringList(applyResponse.get("applied_artifacts")).size(), is(0));
@@ -78,6 +79,7 @@ class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProducti
     
     private void assertPlannedSecretReferencePayload(final Map<String, Object> planResponse) {
         assertThat(String.valueOf(planResponse.get("status")), is("planned"));
+        assertModelFacingPayloadContract(planResponse);
         Map<String, Object> secretReferenceSummary = getMap(planResponse.get("secret_reference_summary"));
         assertTrue((Boolean) secretReferenceSummary.get("required"));
         assertThat(secretReferenceSummary.get("reference_count"), is(1));
@@ -89,24 +91,13 @@ class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProducti
         MCPWorkflowSecretReferenceFixture.assertSecretReferenceRedacted(planResponse);
     }
     
-    private Map<String, Object> previewWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
-        return interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
-    }
-    
     private void assertSecretReferencedPreview(final Map<String, Object> previewResponse) {
         assertThat(String.valueOf(previewResponse.get("status")), is("preview"));
+        assertModelFacingPayloadContract(previewResponse);
         List<Map<String, Object>> previewArtifacts = getMapList(previewResponse.get("preview_artifacts"));
         assertThat(previewArtifacts.size(), is(1));
         assertThat(String.valueOf(previewArtifacts.getFirst().get("sql")), containsString("'aes-key-value'='<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>'"));
         assertFalse(String.valueOf(previewArtifacts.getFirst().get("sql")).contains("secret_reference:primary.aes-key-value"));
         MCPWorkflowSecretReferenceFixture.assertSecretReferenceRedacted(previewResponse);
-    }
-    
-    private List<String> getApprovedSteps(final Map<String, Object> previewResponse) {
-        return getMapList(previewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList();
-    }
-    
-    private Map<String, Object> createApplyArguments(final String planId, final List<String> approvedSteps) {
-        return Map.of("plan_id", planId, "execution_mode", "review-then-execute", "approved_steps", approvedSteps);
     }
 }

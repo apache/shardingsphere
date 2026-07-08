@@ -115,7 +115,7 @@ class ShadowToolHandlerTest {
         clarifiedIntent.setOperationType("create");
         result.setClarifiedIntent(clarifiedIntent);
         result.setInteractionPlan(InteractionPlan.create("plan-1", request, "Shadow workflow plan.", List.of("review"), List.of("rules")));
-        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE SHADOW RULE shadow_rule(SOURCE=demo_ds, SHADOW=demo_ds_shadow, t_order(TYPE(NAME='sql_hint')))"));
+        result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE SHADOW RULE `shadow_rule`(SOURCE=`demo_ds`, SHADOW=`demo_ds_shadow`, `t_order`(TYPE(NAME='sql_hint')))"));
         return result;
     }
     

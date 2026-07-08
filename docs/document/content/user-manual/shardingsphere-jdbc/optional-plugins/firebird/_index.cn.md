@@ -37,7 +37,7 @@ ShardingSphere 对 Firebird JDBC Driver 的支持位于可选模块中。
 ```yaml
 services:
   firebird:
-    image: firebirdsql/firebird:5.0.3
+    image: firebirdsql/firebird:5.0.4-bookworm
     environment:
       FIREBIRD_ROOT_PASSWORD: masterkey
       FIREBIRD_USER: alice

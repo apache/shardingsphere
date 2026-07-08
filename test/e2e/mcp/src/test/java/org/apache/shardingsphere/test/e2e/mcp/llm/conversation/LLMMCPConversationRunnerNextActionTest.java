@@ -374,6 +374,36 @@ class LLMMCPConversationRunnerNextActionTest extends AbstractLLMMCPConversationR
     }
     
     @Test
+    void assertRunFollowsImmediateCompletionRecoveryAction() throws IOException, InterruptedException {
+        List<String> toolNames = List.of("database_gateway_plan_mask_rule", "database_gateway_execute_query");
+        LLME2EScenario actualScenario = createScenario(toolNames);
+        LLMMCPConversationRunner actualRunner = createRunner(4);
+        Map<String, Object> planArguments = Map.of("plan_id", "plan_id", "database", DATABASE_NAME, "schema", SCHEMA_NAME, "table", TABLE_NAME);
+        Map<String, Object> reference = Map.of("type", "ref/resource", "uri", "shardingsphere://workflows/{plan_id}");
+        Map<String, Object> argument = Map.of("name", "plan_id", "value", "");
+        Map<String, Object> completionArguments = Map.of("ref", reference, "argument", argument);
+        Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+                createToolCallCompletion("tool-1", "database_gateway_plan_mask_rule", planArguments, "plan-response"),
+                createToolCallCompletion("tool-2", MCPInteractionActionNames.COMPLETE, completionArguments, "completion-response"),
+                createToolCallCompletion("tool-3", "database_gateway_execute_query", executeQueryArguments, "query-response"));
+        when(getMCPInteractionClient().call("database_gateway_plan_mask_rule", planArguments)).thenReturn(Map.of("response_mode", "recovery", "recovery", Map.of(
+                "next_actions", List.of(Map.of("type", "completion", "ref", reference, "argument", argument)))));
+        when(getMCPInteractionClient().complete(reference, "plan_id", "", Map.of())).thenReturn(Map.of("completion", Map.of("values", List.of())));
+        when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
+        when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
+                createFinalAnswerCompletion(List.of("database_gateway_plan_mask_rule", MCPInteractionActionNames.COMPLETE, "database_gateway_execute_query"), 2, "final-answer-response"));
+        
+        LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
+        
+        assertTrue(actual.getAssertionReport().isSuccess());
+        List<List<Map<String, Object>>> actualTools = captureRequiredToolDefinitions(3);
+        assertThat(getToolNames(actualTools.get(1)), is(List.of(MCPInteractionActionNames.COMPLETE)));
+        assertThat(actual.getInteractionTrace().get(1).getActionKind(), is(MCPInteractionActionNames.COMPLETION_KIND));
+        verify(getMCPInteractionClient()).complete(reference, "plan_id", "", Map.of());
+    }
+    
+    @Test
     void assertRunCompactsManualArtifactsBeforeReadOnlyVerification() throws IOException, InterruptedException {
         List<String> toolNames = List.of("database_gateway_apply_workflow", "database_gateway_execute_query");
         LLME2EScenario actualScenario = createScenario(toolNames);

@@ -5,7 +5,7 @@ weight = 11
 
 ## Description
 
-The `DROP SHARDING ALGORITHM` syntax is used to drop sharding algorithm for specified database.
+The `DROP SHARDING ALGORITHM` syntax is used to drop sharding algorithms from the current database.
 
 ### Syntax
 
@@ -13,7 +13,7 @@ The `DROP SHARDING ALGORITHM` syntax is used to drop sharding algorithm for spec
 {{% tab name="Grammar" %}}
 ```sql
 DropShardingAlgorithm ::=
-  'DROP' 'SHARDING' 'ALGORITHM' algorithmName ifExists? ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'ALGORITHM' ifExists? algorithmName (',' algorithmName)*
 
 ifExists ::=
   'IF' 'EXISTS'
@@ -21,8 +21,6 @@ ifExists ::=
 algorithmName ::=
   identifier
 
-databaseName ::=
-  identifier
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -32,21 +30,20 @@ databaseName ::=
 
 ### Supplement
 
-- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted;
-- `ifExists` clause used for avoid `Sharding algorithm not exists` error.
+- `ifExists` clause is used to avoid `Sharding algorithm not exists` error.
 
 ### Example
 
-- Drop sharding algorithm for specified database
-
-```sql
-DROP SHARDING ALGORITHM t_order_hash_mod FROM sharding_db;
-```
-
-- Drop sharding algorithm for current database
+- Drop sharding algorithm
 
 ```sql
 DROP SHARDING ALGORITHM t_order_hash_mod;
+```
+
+- Drop multiple sharding algorithms
+
+```sql
+DROP SHARDING ALGORITHM t_order_hash_mod, t_item_hash_mod;
 ```
 
 - Drop sharding algorithm with `ifExists` clause
@@ -57,7 +54,7 @@ DROP SHARDING ALGORITHM IF EXISTS t_order_hash_mod;
 
 ### Reserved word
 
-`DROP`, `SHARDING`, `ALGORITHM`, `FROM`
+`DROP`, `SHARDING`, `ALGORITHM`, `IF`, `EXISTS`
 
 ### Related links
 

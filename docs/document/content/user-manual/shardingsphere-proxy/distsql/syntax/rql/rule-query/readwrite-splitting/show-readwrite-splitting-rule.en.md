@@ -36,8 +36,8 @@ databaseName ::=
 | Column                            | Description                                          |
 |-----------------------------------|------------------------------------------------------|
 | name                              | Readwrite-splitting rule name                        |
-| write_data_source_name            | Write data source name                               |
-| read_data_source_names            | Read data source name list                           |
+| write_storage_unit_name           | Write storage unit name                              |
+| read_storage_unit_names           | Read storage unit name list                          |
 | transactional_read_query_strategy | Routing strategy for read query within a transaction |
 | load_balancer_type                | Load balance algorithm type                          |
 | load_balancer_props               | Load balance algorithm parameter                     |

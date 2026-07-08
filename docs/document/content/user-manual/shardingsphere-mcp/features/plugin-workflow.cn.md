@@ -32,10 +32,14 @@ weight = 1
 
 面向模型的规划响应可能包含：
 
+- `summary`：简短的模型可读状态摘要，说明计划需要补充信息、可以预览，或已经失败。
 - `algorithm_recommendations`：根据 Proxy 可见插件目录或用户显式输入选择的候选算法。
 - `property_requirements`：所选算法的必填或可选属性；缺少必填属性时，workflow 会保持在澄清状态，而不是生成不安全产物。
 - `resources_to_read` 和 `next_actions`：继续 workflow 所需的资源和工具导航提示。
 - `distsql_artifacts`：在当前功能插件边界内生成的可审查规则 DistSQL。
+
+预览、执行、人工执行包导出和校验响应也会返回 `summary` 和 `next_actions`。
+Client 应优先遵循这些字段，而不是自行猜测替代调用，或向用户询问 payload 中已经包含的信息。
 
 ## 变更执行选择
 

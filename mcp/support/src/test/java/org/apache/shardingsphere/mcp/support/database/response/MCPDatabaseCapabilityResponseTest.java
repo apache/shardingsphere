@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.database.response;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
+import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumSet;
@@ -31,17 +31,26 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MCPDatabaseCapabilityResponseTest {
     
     @Test
     void assertToPayload() {
-        MCPDatabaseCapability actualCapability = new MCPDatabaseCapability("logic_db", "8.0.32", TypedSPILoader.getService(MCPDatabaseCapabilityOption.class, "MySQL"));
+        MCPDatabaseCapabilityOption option = mock(MCPDatabaseCapabilityOption.class);
+        when(option.getType()).thenReturn("FixtureDB");
+        when(option.isIndexSupported()).thenReturn(true);
+        when(option.getTransactionCapability()).thenReturn(TransactionCapability.LOCAL_WITH_SAVEPOINT);
+        when(option.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.DATABASE_AS_SCHEMA);
+        when(option.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
+        when(option.isExplainAnalyzeSupported("1.0")).thenReturn(true);
+        MCPDatabaseCapability actualCapability = new MCPDatabaseCapability("logic_db", "1.0", option);
         Map<String, Object> actual = new MCPDatabaseCapabilityResponse(actualCapability).toPayload();
         assertThat(actual, is(Map.ofEntries(
                 Map.entry("response_mode", "detail"),
                 Map.entry("database", "logic_db"),
-                Map.entry("databaseType", "MySQL"),
+                Map.entry("databaseType", "FixtureDB"),
                 Map.entry("supportedObjectTypes", EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
                         SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX)),
                 Map.entry("supportedStatementClasses", EnumSet.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL,

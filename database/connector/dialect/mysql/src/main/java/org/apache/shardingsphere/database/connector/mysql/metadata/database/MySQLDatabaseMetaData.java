@@ -31,6 +31,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLDataTypeOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLFunctionOption;
+import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLGeneratedKeyOption;
 
 import java.sql.Connection;
 import java.util.Arrays;
@@ -84,7 +85,7 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public Optional<DialectGeneratedKeyOption> getGeneratedKeyOption() {
-        return Optional.of(new DialectGeneratedKeyOption("GENERATED_KEY"));
+        return Optional.of(new MySQLGeneratedKeyOption());
     }
     
     @Override

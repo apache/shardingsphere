@@ -46,7 +46,7 @@ import java.time.Duration;
 class PostgresTest {
     
     @Container
-    private final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:18.1-trixie");
+    private final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:18.4-trixie");
     
     private ProxyTestingServer proxyTestingServer;
     

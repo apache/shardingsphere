@@ -29,6 +29,8 @@ weight = 3
 在 Responses API 请求中，把 ShardingSphere-MCP 作为 `tools` 中的一个 `mcp` 工具传入。最小示例如下：
 
 ```python
+import os
+
 from openai import OpenAI
 
 client = OpenAI()
@@ -39,7 +41,7 @@ response = client.responses.create(
         {
             "type": "mcp",
             "server_label": "shardingsphere",
-            "server_url": "https://example.com/mcp",
+            "server_url": os.environ["SHARDINGSPHERE_MCP_REMOTE_URL"],
             "allowed_tools": [
                 "database_gateway_search_metadata",
                 "database_gateway_validate_runtime_database",
@@ -49,6 +51,8 @@ response = client.responses.create(
     input="Use ShardingSphere-MCP to inspect the tables in the logic database.",
 )
 ```
+
+运行请求前，先将 `SHARDINGSPHERE_MCP_REMOTE_URL` 设置为受信网关对外发布的受保护远程 endpoint。
 
 配置时建议关注这些字段：
 
@@ -69,7 +73,7 @@ response = client.responses.create(
 调用成功：
 
 - 可以先用一条最小验证请求确认导入与调用链路，例如：
-  - 查看 `<logic-database>` 中有哪些表。
+  - 查看 `logic_db` 中有哪些表。
   - 查看 `orders` 表的列和索引。
   - 对已经配置的 runtime database 调用 `database_gateway_validate_runtime_database`。
 - 当 `mcp_list_tools`、审批流程或最终查询结果按预期返回时，说明接入已经生效。

@@ -76,12 +76,14 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             Map<String, Object> clarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("table", "orders", "column", "status", "natural_language_intent", "encrypt status with reversible encryption, no equality, no like"));
             assertThat(String.valueOf(clarifyingResponse.get("status")), is("clarifying"));
+            assertModelFacingPayloadContract(clarifyingResponse);
             assertThat(getClarificationMessages(clarifyingResponse), is(List.of("Please provide logical database first.")));
             String planId = String.valueOf(clarifyingResponse.get("plan_id"));
             Map<String, Object> plannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("plan_id", planId, "database", getLogicalDatabaseName(), "algorithm_type", "AES",
                             "cipher_column_name", "status_cipher", "primary_algorithm_properties", Map.of("aes-key-value", TEMPLATE_SECRET_VALUE)));
             assertThat(String.valueOf(plannedResponse.get("status")), is("planned"));
+            assertModelFacingPayloadContract(plannedResponse);
             assertSecretRedacted(plannedResponse, TEMPLATE_SECRET_VALUE);
             assertThat(String.valueOf(plannedResponse.get("current_step")), is("review"));
             assertThat(getStringList(plannedResponse.get("global_steps")).size(), is(8));
@@ -93,7 +95,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             List<Map<String, Object>> distSqlArtifacts = getMapList(plannedResponse.get("distsql_artifacts"));
             assertThat(distSqlArtifacts.size(), is(1));
             assertThat(String.valueOf(distSqlArtifacts.getFirst().get("sql")), containsString("'aes-key-value'='******'"));
-            assertThat(String.valueOf(distSqlArtifacts.getFirst().get("sql")), containsString("CIPHER=status_cipher"));
+            assertThat(String.valueOf(distSqlArtifacts.getFirst().get("sql")), containsString("CIPHER=`status_cipher`"));
             assertSecretRedacted(interactionClient.readResource(String.format(WORKFLOW_RESOURCE_URI, planId)), TEMPLATE_SECRET_VALUE);
             Map<String, Object> applyResponse = applyReviewedWorkflow(interactionClient, planId, TEMPLATE_SECRET_VALUE);
             assertApplyCompleted(applyResponse);
@@ -146,7 +148,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertFalse(actualPlannedResponse.containsKey("index_plan"));
             List<Map<String, Object>> actualDistSqlArtifacts = getMapList(actualPlannedResponse.get("distsql_artifacts"));
             assertThat(actualDistSqlArtifacts.size(), is(1));
-            assertThat(String.valueOf(actualDistSqlArtifacts.getFirst().get("sql")), containsString("ASSISTED_QUERY_COLUMN=status_assisted_query"));
+            assertThat(String.valueOf(actualDistSqlArtifacts.getFirst().get("sql")), containsString("ASSISTED_QUERY_COLUMN=`status_assisted_query`"));
             Map<String, Object> actualApplyResponse = applyReviewedWorkflow(interactionClient, planId);
             assertApplyCompleted(actualApplyResponse);
             assertThat(getMapList(actualApplyResponse.get("step_results")).size(), is(1));
@@ -249,12 +251,11 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
                             "cipher_column_name", "status_cipher", "primary_algorithm_properties", Map.of("aes-key-value", "approved-secret")));
             assertThat(String.valueOf(actualPlannedResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlannedResponse.get("plan_id"));
-            Map<String, Object> actualPreviewResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
-            assertThat(String.valueOf(actualPreviewResponse.get("status")), is("preview"));
+            Map<String, Object> actualPreviewResponse = previewWorkflow(interactionClient, planId);
             List<Map<String, Object>> actualPreviewArtifacts = getMapList(actualPreviewResponse.get("preview_artifacts"));
             assertThat(actualPreviewArtifacts.size(), is(1));
             assertThat(String.valueOf(actualPreviewArtifacts.getFirst().get("approval_step")), is("rule_distsql"));
-            Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, List.of("rule_distsql")));
+            Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, List.of("rule_distsql")));
             assertThat(String.valueOf(actualRuleApplyResponse.get("status")), is("completed"));
             assertThat(getStringList(actualRuleApplyResponse.get("executed_ddl")).size(), is(0));
             assertThat(getStringList(actualRuleApplyResponse.get("executed_distsql")).size(), is(1));
@@ -290,7 +291,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(getIssueCodes(actualDropPlanResponse), hasItem(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED));
             assertFalse(getIssueCodes(actualDropPlanResponse).contains(WorkflowIssueCode.PHYSICAL_CLEANUP_REQUIRED));
             assertFalse(actualDropPlanResponse.containsKey("ddl_artifacts"));
-            assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).getFirst().get("sql")), is("DROP ENCRYPT RULE orders"));
+            assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).getFirst().get("sql")), is("DROP ENCRYPT RULE `orders`"));
             String planId = String.valueOf(actualDropPlanResponse.get("plan_id"));
             Map<String, Object> actualApplyResponse = applyReviewedWorkflow(interactionClient, planId);
             assertApplyCompleted(actualApplyResponse);
@@ -344,27 +345,12 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
         assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
     }
     
-    private Map<String, Object> applyReviewedWorkflow(final MCPInteractionClient interactionClient, final String planId) throws IOException, InterruptedException {
-        return applyReviewedWorkflow(interactionClient, planId, "");
-    }
-    
     private Map<String, Object> applyReviewedWorkflow(final MCPInteractionClient interactionClient, final String planId, final String secretValue) throws IOException, InterruptedException {
-        Map<String, Object> previewResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "preview"));
-        assertThat(String.valueOf(previewResponse.get("status")), is("preview"));
+        Map<String, Object> previewResponse = previewWorkflow(interactionClient, planId);
         assertSecretRedacted(previewResponse, secretValue);
-        List<String> approvedSteps = getMapList(previewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList();
-        Map<String, Object> result = interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId, approvedSteps));
+        Map<String, Object> result = interactionClient.call(APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, getApprovedSteps(previewResponse)));
         assertSecretRedacted(result, secretValue);
         return result;
-    }
-    
-    private Map<String, Object> createApplyArguments(final String planId, final List<String> approvedSteps) {
-        return Map.of("plan_id", planId, "execution_mode", "review-then-execute", "approved_steps", approvedSteps);
-    }
-    
-    private Map<String, Object> findItemByField(final List<Map<String, Object>> items, final String fieldName, final String expectedValue) {
-        return items.stream().filter(each -> expectedValue.equalsIgnoreCase(String.valueOf(each.get(fieldName)))).findFirst()
-                .orElseThrow(() -> new AssertionError(String.format("Failed to find item by %s=%s in %s", fieldName, expectedValue, items)));
     }
     
     private void assertSecretRedacted(final Map<String, Object> actual, final String secretValue) {

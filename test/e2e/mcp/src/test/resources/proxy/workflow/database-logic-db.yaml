@@ -29,6 +29,28 @@ dataSources:
     minPoolSize: 1
     customPoolProps:
       driverClassName: com.mysql.cj.jdbc.Driver
+  ds_1:
+    url: jdbc:mysql://mysql.workflow.host:3306/orders?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf-8
+    username: mcp
+    password: mcp
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 1
+    customPoolProps:
+      driverClassName: com.mysql.cj.jdbc.Driver
+  ds_shadow:
+    url: jdbc:mysql://mysql.workflow.host:3306/orders?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf-8
+    username: mcp
+    password: mcp
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 1
+    customPoolProps:
+      driverClassName: com.mysql.cj.jdbc.Driver
 
 rules:
 - !SINGLE
