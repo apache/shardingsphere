@@ -31,6 +31,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
@@ -89,6 +90,7 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("open_blob2", FirebirdCommandPacketType.OPEN_BLOB2, FirebirdOpenBlobCommandPacket.class),
                 Arguments.of("get_segment", FirebirdCommandPacketType.GET_SEGMENT, FirebirdGetBlobSegmentCommandPacket.class),
                 Arguments.of("put_segment", FirebirdCommandPacketType.PUT_SEGMENT, FirebirdPutBlobSegmentCommandPacket.class),
+                Arguments.of("batch_segments", FirebirdCommandPacketType.BATCH_SEGMENTS, FirebirdBatchBlobSegmentsCommandPacket.class),
                 Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, FirebirdCancelBlobCommandPacket.class),
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdCloseBlobCommandPacket.class),
                 Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdAllocateStatementPacket.class),
@@ -121,6 +123,7 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("open_blob2", FirebirdCommandPacketType.OPEN_BLOB2, 16),
                 Arguments.of("get_segment", FirebirdCommandPacketType.GET_SEGMENT, 12),
                 Arguments.of("put_segment", FirebirdCommandPacketType.PUT_SEGMENT, 12),
+                Arguments.of("batch_segments", FirebirdCommandPacketType.BATCH_SEGMENTS, 12),
                 Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, 8),
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, 8),
                 Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, 8),

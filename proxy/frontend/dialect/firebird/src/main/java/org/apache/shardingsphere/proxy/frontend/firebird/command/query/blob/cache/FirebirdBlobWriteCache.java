@@ -110,6 +110,19 @@ public final class FirebirdBlobWriteCache {
     }
     
     /**
+     * Check if appending segment data of the given total length would exceed {@link #MAX_BLOB_SIZE}.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     * @param segmentsLength total length of the segment data to append
+     * @return whether the buffered data would exceed the maximum BLOB size
+     */
+    public boolean exceedsMaxSize(final int connectionId, final int blobHandle, final long segmentsLength) {
+        FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
+        return null != write && write.getSize() + segmentsLength > MAX_BLOB_SIZE;
+    }
+
+    /**
      * Append segment data by handle.
      *
      * @param connectionId connection id

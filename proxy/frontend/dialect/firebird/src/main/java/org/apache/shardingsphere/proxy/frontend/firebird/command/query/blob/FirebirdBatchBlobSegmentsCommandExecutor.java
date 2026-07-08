@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -32,27 +32,32 @@ import java.util.Collections;
 import java.util.OptionalLong;
 
 /**
- * Put blob segment command executor for Firebird.
+ * Batch segments with blob command executor for Firebird.
+ *
+ * <p>Similar to put segment, but appends multiple segments within a single request.</p>
  */
 @RequiredArgsConstructor
-public final class FirebirdPutBlobSegmentCommandExecutor implements CommandExecutor {
-
-    private final FirebirdPutBlobSegmentCommandPacket packet;
-
+public final class FirebirdBatchBlobSegmentsCommandExecutor implements CommandExecutor {
+    
+    private final FirebirdBatchBlobSegmentsCommandPacket packet;
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         int blobHandle = FirebirdBlobWriteCache.getInstance().getBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
         OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
-        validateBlobSize(blobHandle, blobId, packet.getSegment().length);
-        FirebirdBlobWriteCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, packet.getSegment());
+        long totalSegmentsLength = packet.getSegments().stream().mapToLong(each -> each.length).sum();
+        validateBlobSize(blobHandle, blobId, totalSegmentsLength);
+        for (byte[] each : packet.getSegments()) {
+            FirebirdBlobWriteCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, each);
+        }
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
         return Collections.singleton(new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId));
     }
 
-    private void validateBlobSize(final int blobHandle, final OptionalLong blobId, final int segmentLength) throws SQLException {
-        if (!FirebirdBlobWriteCache.getInstance().exceedsMaxSize(connectionSession.getConnectionId(), blobHandle, segmentLength)) {
+    private void validateBlobSize(final int blobHandle, final OptionalLong blobId, final long segmentsLength) throws SQLException {
+        if (!FirebirdBlobWriteCache.getInstance().exceedsMaxSize(connectionSession.getConnectionId(), blobHandle, segmentsLength)) {
             return;
         }
         if (blobId.isPresent()) {

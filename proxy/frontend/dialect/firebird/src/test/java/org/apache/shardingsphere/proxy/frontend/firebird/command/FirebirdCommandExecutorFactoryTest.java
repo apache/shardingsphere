@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
@@ -47,6 +48,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.Fire
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdGetBlobSegmentCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdOpenBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdPutBlobSegmentCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBatchBlobSegmentsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCreateCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
@@ -129,6 +131,12 @@ class FirebirdCommandExecutorFactoryTest {
     void assertNewInstanceWithPutBlobSegment() {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.PUT_SEGMENT, mock(FirebirdPutBlobSegmentCommandPacket.class), connectionSession),
                 isA(FirebirdPutBlobSegmentCommandExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithBatchSegmentsWithBlob() {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.BATCH_SEGMENTS, mock(FirebirdBatchBlobSegmentsCommandPacket.class), connectionSession),
+                isA(FirebirdBatchBlobSegmentsCommandExecutor.class));
     }
     
     @Test

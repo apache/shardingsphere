@@ -30,6 +30,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
@@ -81,6 +82,8 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdGetBlobSegmentCommandPacket(payload);
             case PUT_SEGMENT:
                 return new FirebirdPutBlobSegmentCommandPacket(payload);
+            case BATCH_SEGMENTS:
+                return new FirebirdBatchBlobSegmentsCommandPacket(payload);
             case CANCEL_BLOB:
                 return new FirebirdCancelBlobCommandPacket(payload);
             case CLOSE_BLOB:
@@ -151,6 +154,8 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdGetBlobSegmentCommandPacket.getLength(payload);
             case PUT_SEGMENT:
                 return FirebirdPutBlobSegmentCommandPacket.getLength(payload);
+            case BATCH_SEGMENTS:
+                return FirebirdBatchBlobSegmentsCommandPacket.getLength(payload);
             case CANCEL_BLOB:
                 return FirebirdCancelBlobCommandPacket.getLength();
             case CLOSE_BLOB:
