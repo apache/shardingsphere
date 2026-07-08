@@ -472,7 +472,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         Integer columnLength = blobColumn ? null : resolveColumnLength(table, column);
         describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength, blobColumn, blobSubtype));
     }
-
+    
     private boolean isBlobColumn(final ShardingSphereTable table, final ShardingSphereColumn column) {
         if (null == table || null == column) {
             return false;
@@ -482,7 +482,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         return Types.BLOB == column.getDataType();
     }
-
+    
     private Integer resolveBlobSubtype(final ShardingSphereTable table, final ShardingSphereColumn column, final boolean blobColumn) {
         if (!blobColumn) {
             return null;

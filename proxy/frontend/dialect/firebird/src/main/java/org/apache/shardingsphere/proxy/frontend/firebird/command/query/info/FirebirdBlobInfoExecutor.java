@@ -37,16 +37,16 @@ import java.util.OptionalLong;
  */
 @RequiredArgsConstructor
 public final class FirebirdBlobInfoExecutor implements CommandExecutor {
-
+    
     private final FirebirdInfoPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() {
         return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdBlobInfoReturnPacket(packet.getInfoItems(), getBlobLength())));
     }
-
+    
     private int getBlobLength() {
         int connectionId = connectionSession.getConnectionId();
         int blobHandle = FirebirdBlobWriteCache.getInstance().getBlobHandle(connectionId, packet.getHandle());

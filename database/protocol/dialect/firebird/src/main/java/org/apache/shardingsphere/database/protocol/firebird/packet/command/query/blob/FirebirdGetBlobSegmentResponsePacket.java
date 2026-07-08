@@ -24,10 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 /**
  * Firebird get blob segment response packet.
  *
- * <p>Each segment is written as a 2-byte little-endian length followed by the segment data.</p>
- *
- * <p>Note: it should be verified whether the per-segment padding to a 4-byte boundary is needed here, since
- * p_resp_data is already aligned to a 4-byte boundary by FirebirdGenericResponsePacket.</p>
+ * <p>Each segment is written as a 2-byte little-endian length followed by the segment data</p>
  *
  * @see <a href="https://firebirdsql.org/file/documentation/html/en/firebirddocs/wireprotocol/firebird-wire-protocol.html#wireprotocol-blobs-create-v11">Firebird wire protocol - blobs</a>
  */
@@ -38,14 +35,9 @@ public final class FirebirdGetBlobSegmentResponsePacket extends FirebirdPacket {
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        int segmentLength = segment.length;
-        payload.writeInt2LE(segmentLength);
-        if (segmentLength > 0) {
+        payload.writeInt2LE(segment.length);
+        if (segment.length > 0) {
             payload.writeBytes(segment);
-            int pad = (4 - (segmentLength % 4)) & 0x3;
-            if (pad > 0) {
-                payload.getByteBuf().writeZero(pad);
-            }
         }
     }
 }

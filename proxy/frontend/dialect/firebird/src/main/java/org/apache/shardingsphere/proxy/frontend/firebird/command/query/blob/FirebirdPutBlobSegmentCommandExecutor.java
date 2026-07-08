@@ -36,11 +36,11 @@ import java.util.OptionalLong;
  */
 @RequiredArgsConstructor
 public final class FirebirdPutBlobSegmentCommandExecutor implements CommandExecutor {
-
+    
     private final FirebirdPutBlobSegmentCommandPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         int blobHandle = FirebirdBlobWriteCache.getInstance().getBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
@@ -50,7 +50,7 @@ public final class FirebirdPutBlobSegmentCommandExecutor implements CommandExecu
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
         return Collections.singleton(new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId));
     }
-
+    
     private void validateBlobSize(final int blobHandle, final OptionalLong blobId, final int segmentLength) throws SQLException {
         if (!FirebirdBlobWriteCache.getInstance().exceedsMaxSize(connectionSession.getConnectionId(), blobHandle, segmentLength)) {
             return;

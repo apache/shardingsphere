@@ -55,7 +55,7 @@ public final class FirebirdBatchBlobSegmentsCommandExecutor implements CommandEx
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
         return Collections.singleton(new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId));
     }
-
+    
     private void validateBlobSize(final int blobHandle, final OptionalLong blobId, final long segmentsLength) throws SQLException {
         if (!FirebirdBlobWriteCache.getInstance().exceedsMaxSize(connectionSession.getConnectionId(), blobHandle, segmentsLength)) {
             return;

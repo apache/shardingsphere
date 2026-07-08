@@ -32,10 +32,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdPutBlobSegmentCommandPacketTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertPutBlobSegmentPacket() {
         when(payload.readBlobHandle()).thenReturn(15);
@@ -52,7 +52,7 @@ class FirebirdPutBlobSegmentCommandPacketTest {
         packet.write(payload);
         verifyNoMoreInteractions(payload);
     }
-
+    
     @Test
     void assertGetLength() {
         when(payload.getBufferLength(12)).thenReturn(20);

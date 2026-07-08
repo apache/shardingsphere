@@ -127,7 +127,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl", Collections.emptyMap());
     }
-
+    
     private MetaDataContexts createMetaDataContexts() {
         SQLParserRule parserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(128, 1024L)));
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(parserRule));
@@ -186,7 +186,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
         verify(payload).writeInt4LE(7);
     }
-
+    
     @Test
     void assertDescribeBlobTypeColumnWithoutRegistryEntryReturnsBlobTypeAndDefaultSubtype() throws Exception {
         FirebirdReturnColumnPacket columnPacket = describeSingleColumn("SELECT content FROM foo_tbl");
@@ -195,7 +195,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getSubtype());
     }
-
+    
     private FirebirdReturnColumnPacket describeSingleColumn(final String sql) throws Exception {
         when(packet.getSQL()).thenReturn(sql);
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
@@ -215,7 +215,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         assertThat(returnPacket.getDescribeSelect().size(), is(1));
         return returnPacket.getDescribeSelect().get(0);
     }
-
+    
     @Test
     void assertExecuteWithValidStatementHandleCleansPreviousPreparedStatementResources() throws Exception {
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, new FirebirdServerPreparedStatement("SELECT 0", mock(SelectStatementContext.class), new HintValueContext()));

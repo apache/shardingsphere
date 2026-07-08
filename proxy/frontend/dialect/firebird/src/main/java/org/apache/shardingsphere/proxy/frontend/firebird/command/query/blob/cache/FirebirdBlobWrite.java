@@ -24,18 +24,18 @@ import java.io.ByteArrayOutputStream;
 
 @RequiredArgsConstructor
 public final class FirebirdBlobWrite {
-
+    
     @Getter
     private final int blobHandle;
-
+    
     @Getter
     private final long blobId;
-
+    
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
+    
     @Getter
     private boolean closed;
-
+    
     /**
      * Append a BLOB data segment.
      *
@@ -44,15 +44,15 @@ public final class FirebirdBlobWrite {
     public void append(final byte[] segment) {
         buffer.write(segment, 0, segment.length);
     }
-
+    
     public int getSize() {
         return buffer.size();
     }
-
+    
     public byte[] getBytes() {
         return buffer.toByteArray();
     }
-
+    
     /**
      * Mark this BLOB write as closed.
      */

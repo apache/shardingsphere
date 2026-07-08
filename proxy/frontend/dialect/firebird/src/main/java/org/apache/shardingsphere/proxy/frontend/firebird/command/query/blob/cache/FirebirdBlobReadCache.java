@@ -33,15 +33,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlobReadCache {
-
+    
     private static final FirebirdBlobReadCache INSTANCE = new FirebirdBlobReadCache();
-
+    
     private final Map<Integer, Map<Integer, byte[]>> remainingSegments = new ConcurrentHashMap<>(16);
-
+    
     public static FirebirdBlobReadCache getInstance() {
         return INSTANCE;
     }
-
+    
     /**
      * Register connection for BLOB reads.
      *
@@ -50,7 +50,7 @@ public final class FirebirdBlobReadCache {
     public void registerConnection(final int connectionId) {
         remainingSegments.put(connectionId, new ConcurrentHashMap<>(4));
     }
-
+    
     /**
      * Unregister connection for BLOB reads.
      *
@@ -59,7 +59,7 @@ public final class FirebirdBlobReadCache {
     public void unregisterConnection(final int connectionId) {
         remainingSegments.remove(connectionId);
     }
-
+    
     /**
      * Register an opened BLOB with its full content.
      *
@@ -70,7 +70,7 @@ public final class FirebirdBlobReadCache {
     public void registerBlob(final int connectionId, final int blobHandle, final byte[] content) {
         getSegmentMap(connectionId).put(blobHandle, content);
     }
-
+    
     /**
      * Get remaining segment data by handle.
      *
@@ -81,7 +81,7 @@ public final class FirebirdBlobReadCache {
     public Optional<byte[]> getSegment(final int connectionId, final int blobHandle) {
         return Optional.ofNullable(getSegmentMap(connectionId).get(blobHandle));
     }
-
+    
     /**
      * Replace remaining segment data by handle.
      *
@@ -92,7 +92,7 @@ public final class FirebirdBlobReadCache {
     public void setSegment(final int connectionId, final int blobHandle, final byte[] segment) {
         getSegmentMap(connectionId).put(blobHandle, segment);
     }
-
+    
     /**
      * Remove BLOB by handle.
      *
@@ -102,7 +102,7 @@ public final class FirebirdBlobReadCache {
     public void removeBlob(final int connectionId, final int blobHandle) {
         getSegmentMap(connectionId).remove(blobHandle);
     }
-
+    
     private Map<Integer, byte[]> getSegmentMap(final int connectionId) {
         return remainingSegments.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
     }

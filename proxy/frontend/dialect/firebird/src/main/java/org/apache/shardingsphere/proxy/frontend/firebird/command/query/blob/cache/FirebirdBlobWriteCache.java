@@ -40,9 +40,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class FirebirdBlobWriteCache {
     
     public static final int MAX_BLOB_SIZE = 64 * 1024 * 1024;
-
+    
     private static final FirebirdBlobWriteCache INSTANCE = new FirebirdBlobWriteCache();
-
+    
     private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
     
     private final Map<Integer, Map<Integer, FirebirdBlobWrite>> writesByHandle = new ConcurrentHashMap<>(16);
@@ -121,7 +121,7 @@ public final class FirebirdBlobWriteCache {
         FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
         return null != write && write.getSize() + segmentsLength > MAX_BLOB_SIZE;
     }
-
+    
     /**
      * Append segment data by handle.
      *

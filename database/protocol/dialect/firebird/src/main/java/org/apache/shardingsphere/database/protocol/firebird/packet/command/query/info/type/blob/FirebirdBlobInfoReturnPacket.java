@@ -37,9 +37,9 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
     private static final int BLOB_TYPE_SEGMENTED = 0;
     
     private final List<FirebirdInfoPacketType> infoItems;
-
+    
     private final int blobLength;
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         for (FirebirdInfoPacketType type : infoItems) {
@@ -77,7 +77,7 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
     private int getSegmentLength() {
         return blobLength;
     }
-
+    
     private int getSegmentCount() {
         return 0 == blobLength ? 0 : 1;
     }
