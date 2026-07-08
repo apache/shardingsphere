@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -47,16 +46,12 @@ public final class ShardingSphereSchema {
     @Getter
     private final DatabaseType protocolType;
     
-    @Getter(AccessLevel.NONE)
     private DatabaseIdentifierContext identifierContext;
     
-    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereTable> tableIndex;
     
-    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereTable> logicalTableIndex;
     
-    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereView> viewIndex;
     
     /**
