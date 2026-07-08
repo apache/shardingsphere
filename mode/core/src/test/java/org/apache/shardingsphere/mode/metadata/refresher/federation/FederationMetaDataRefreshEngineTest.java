@@ -88,7 +88,7 @@ class FederationMetaDataRefreshEngineTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         FederationMetaDataRefresher<CreateViewStatement> refresher = mock(FederationMetaDataRefresher.class);
         when(TypedSPILoader.findService(FederationMetaDataRefresher.class, CreateViewStatement.class)).thenReturn(Optional.of(refresher));
-        when(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext)).thenReturn("foo_schema");
+        when(SchemaRefreshUtils.getActualSchemaName(database, sqlStatementContext)).thenReturn("foo_schema");
         new FederationMetaDataRefreshEngine(sqlStatementContext).refresh(metaDataManagerPersistService, database);
         verify(refresher).refresh(metaDataManagerPersistService, databaseType, database, "foo_schema", sqlStatement);
     }
@@ -99,7 +99,7 @@ class FederationMetaDataRefreshEngineTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         FederationMetaDataRefresher<AlterViewStatement> refresher = mock(FederationMetaDataRefresher.class);
         when(TypedSPILoader.findService(FederationMetaDataRefresher.class, AlterViewStatement.class)).thenReturn(Optional.of(refresher));
-        when(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext)).thenReturn("bar_schema");
+        when(SchemaRefreshUtils.getActualSchemaName(database, sqlStatementContext)).thenReturn("bar_schema");
         new FederationMetaDataRefreshEngine(sqlStatementContext).refresh(metaDataManagerPersistService, database);
         verify(refresher).refresh(metaDataManagerPersistService, databaseType, database, "bar_schema", sqlStatement);
     }
@@ -117,7 +117,7 @@ class FederationMetaDataRefreshEngineTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         FederationMetaDataRefresher<CreateViewStatement> refresher = mock(FederationMetaDataRefresher.class);
         when(TypedSPILoader.findService(FederationMetaDataRefresher.class, CreateViewStatement.class)).thenReturn(Optional.of(refresher));
-        when(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext)).thenReturn("foo_schema");
+        when(SchemaRefreshUtils.getActualSchemaName(database, sqlStatementContext)).thenReturn("foo_schema");
         FederationMetaDataRefreshEngine engine = new FederationMetaDataRefreshEngine(sqlStatementContext);
         engine.refresh(metaDataManagerPersistService, database);
         engine.refresh(metaDataManagerPersistService, database);

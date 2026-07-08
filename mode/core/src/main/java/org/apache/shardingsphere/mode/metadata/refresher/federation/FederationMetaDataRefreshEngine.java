@@ -64,7 +64,7 @@ public final class FederationMetaDataRefreshEngine {
             return;
         }
         refresher.get().refresh(metaDataManagerPersistService, sqlStatementContext.getSqlStatement().getDatabaseType(),
-                database, SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement());
+                database, SchemaRefreshUtils.getActualSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement());
     }
     
     @SuppressWarnings("rawtypes")

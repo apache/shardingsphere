@@ -50,16 +50,6 @@ class SchemaRefreshUtilsTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertGetSchemaNameWithSchemaFromContext() {
-        assertThat(SchemaRefreshUtils.getSchemaName(createDatabase(), createSQLStatementContextWithSchema("Foo_Schema")), is("foo_schema"));
-    }
-    
-    @Test
-    void assertGetSchemaNameWithDefaultSchema() {
-        assertThat(SchemaRefreshUtils.getSchemaName(createDatabase(), createSQLStatementContextWithoutSchema()), is("foo_db"));
-    }
-    
-    @Test
     void assertGetActualSchemaNameWithInsensitiveProps() {
         assertThat(SchemaRefreshUtils.getActualSchemaName(createDatabase(), new IdentifierValue("Foo_Schema")), is("foo_schema"));
     }
