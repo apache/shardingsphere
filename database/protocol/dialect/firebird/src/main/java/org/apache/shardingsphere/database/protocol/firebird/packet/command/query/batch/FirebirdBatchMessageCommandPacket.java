@@ -149,9 +149,6 @@ public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPack
     }
     
     private static Object readValue(final FirebirdPacketPayload payload, final FirebirdBatchColumnDescriptor descriptor) {
-        if (FirebirdBinaryColumnType.BLOB == descriptor.getType()) {
-            return payload.readInt8();
-        }
         if (FirebirdBinaryColumnType.TEXT == descriptor.getType() || FirebirdBinaryColumnType.LEGACY_TEXT == descriptor.getType()) {
             String result = payload.readBytes(descriptor.getLength()).toString(payload.getCharset());
             payload.skipPadding(descriptor.getLength());

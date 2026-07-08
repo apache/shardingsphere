@@ -74,9 +74,9 @@ class FirebirdBlobBinaryProtocolValueTest {
     
     @Test
     void assertRead() {
-        ByteBuf byteBuf = Unpooled.wrappedBuffer(new byte[]{0, 0, 0, 3, 65, 66, 67, 0});
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(new byte[]{0, 0, 0, 0, 0, 0, 0, 42});
         FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        assertThat(new FirebirdBlobBinaryProtocolValue().read(payload), is("ABC"));
+        assertThat(new FirebirdBlobBinaryProtocolValue().read(payload), is(42L));
     }
     
     @ParameterizedTest(name = "{0}")

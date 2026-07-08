@@ -80,10 +80,7 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
     
     @Override
     public Object read(final FirebirdPacketPayload payload) {
-        byte[] bytes = new byte[payload.readInt4()];
-        payload.getByteBuf().readBytes(bytes);
-        payload.skipPadding(bytes.length);
-        return new String(bytes, payload.getCharset());
+        return payload.readInt8();
     }
     
     @Override
