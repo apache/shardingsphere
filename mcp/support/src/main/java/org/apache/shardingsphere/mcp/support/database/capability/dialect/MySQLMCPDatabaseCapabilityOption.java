@@ -54,11 +54,6 @@ public final class MySQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseC
     }
     
     @Override
-    public boolean isInformationSchemaColumnSchemaFilterRequired() {
-        return true;
-    }
-    
-    @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return DatabaseVersionUtil.isVersionAtLeast(databaseVersion, 8, 0, 18);
     }

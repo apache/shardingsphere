@@ -128,15 +128,6 @@ public interface MCPDatabaseCapabilityOption extends TypedSPI {
         return Optional.empty();
     }
     
-    /**
-     * Judge whether information_schema column lookup should filter table_schema.
-     *
-     * @return whether information_schema column lookup should filter table_schema
-     */
-    default boolean isInformationSchemaColumnSchemaFilterRequired() {
-        return false;
-    }
-    
     @Override
     String getType();
 }

@@ -61,8 +61,4 @@ public final class MariaDBMCPDatabaseCapabilityOption extends AbstractMCPDatabas
         return Optional.of(SEQUENCE_QUERY);
     }
     
-    @Override
-    public boolean isInformationSchemaColumnSchemaFilterRequired() {
-        return true;
-    }
 }

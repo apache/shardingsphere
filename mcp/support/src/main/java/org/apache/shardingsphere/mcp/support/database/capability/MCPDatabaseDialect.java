@@ -147,15 +147,6 @@ public final class MCPDatabaseDialect {
     }
     
     /**
-     * Judge whether information_schema column lookup should filter table_schema.
-     *
-     * @return whether information_schema column lookup should filter table_schema
-     */
-    public boolean isInformationSchemaColumnSchemaFilterRequired() {
-        return option.map(MCPDatabaseCapabilityOption::isInformationSchemaColumnSchemaFilterRequired).orElse(false);
-    }
-    
-    /**
      * Judge whether schema is a system schema.
      *
      * @param schemaName schema name
