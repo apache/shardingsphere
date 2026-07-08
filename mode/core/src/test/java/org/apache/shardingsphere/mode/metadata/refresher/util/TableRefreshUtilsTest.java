@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.util;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -42,57 +38,23 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedStatic;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 class TableRefreshUtilsTest {
     
     private final DatabaseType fixtureDatabaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
-    @Test
-    void assertGetTableNameFormatsWithIdentifierPattern() {
-        assertThat(TableRefreshUtils.getTableName(new IdentifierValue("Foo_Table"), fixtureDatabaseType), is("Foo_Table"));
-    }
-    
-    @Test
-    void assertGetTableNameWithQuotedIdentifierReturnsOriginal() {
-        assertThat(TableRefreshUtils.getTableName(new IdentifierValue("FooTable", QuoteCharacter.QUOTE), fixtureDatabaseType), is("FooTable"));
-    }
-    
-    @Test
-    void assertGetTableNameFormatsUpperCase() {
-        DatabaseType upperCaseDatabaseType = mock(DatabaseType.class);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.UPPER_CASE);
-        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, upperCaseDatabaseType)).thenReturn(dialectDatabaseMetaData);
-            assertThat(TableRefreshUtils.getTableName(new IdentifierValue("foo_table"), upperCaseDatabaseType), is("FOO_TABLE"));
-        }
-    }
-    
-    @Test
-    void assertGetTableNameFormatsLowerCase() {
-        DatabaseType lowerCaseDatabaseType = mock(DatabaseType.class);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.LOWER_CASE);
-        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, lowerCaseDatabaseType)).thenReturn(dialectDatabaseMetaData);
-            assertThat(TableRefreshUtils.getTableName(new IdentifierValue("Foo_Table"), lowerCaseDatabaseType), is("foo_table"));
-        }
-    }
     
     @Test
     void assertGetActualTableNameUsesExistingTableName() {

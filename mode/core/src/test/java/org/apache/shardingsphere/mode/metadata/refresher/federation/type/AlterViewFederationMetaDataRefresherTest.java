@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.mode.metadata.refresher.federation.type;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -35,8 +38,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,7 +50,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AlterViewFederationMetaDataRefresherTest {
@@ -59,9 +63,6 @@ class AlterViewFederationMetaDataRefresherTest {
     @Mock
     private MetaDataManagerPersistService metaDataManagerPersistService;
     
-    @Mock
-    private ShardingSphereDatabase database;
-    
     private AlterViewStatement sqlStatement;
     
     @BeforeEach
@@ -72,8 +73,7 @@ class AlterViewFederationMetaDataRefresherTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertRefreshWithRenameView() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(schemaName, databaseType, Collections.emptyList(), Collections.singleton(new ShardingSphereView("foo_view", "SELECT * FROM foo_tbl")));
-        when(database.getSchema(schemaName)).thenReturn(schema);
+        ShardingSphereDatabase database = createDatabase(new ShardingSphereView("foo_view", "SELECT * FROM foo_tbl"));
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
         sqlStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_view"))));
         refresher.refresh(metaDataManagerPersistService, databaseType, database, schemaName, sqlStatement);
@@ -92,6 +92,7 @@ class AlterViewFederationMetaDataRefresherTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertRefreshWithViewDefinition() {
+        ShardingSphereDatabase database = createDatabase();
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
         String expectedViewDefinition = "SELECT * FROM foo_tbl";
         sqlStatement.setViewDefinition(expectedViewDefinition);
@@ -106,5 +107,10 @@ class AlterViewFederationMetaDataRefresherTest {
         assertThat(actualView.getName(), is("foo_view"));
         assertThat(actualView.getViewDefinition(), is(expectedViewDefinition));
         assertTrue(droppedViewsCaptor.getValue().isEmpty());
+    }
+    
+    private ShardingSphereDatabase createDatabase(final ShardingSphereView... views) {
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
+                Collections.singleton(new ShardingSphereSchema(schemaName, databaseType, Collections.emptyList(), Arrays.asList(views))), new ConfigurationProperties(new Properties()));
     }
 }
