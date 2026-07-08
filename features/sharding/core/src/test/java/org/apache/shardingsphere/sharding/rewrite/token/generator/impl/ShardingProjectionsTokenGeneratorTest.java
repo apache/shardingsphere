@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
@@ -153,18 +154,18 @@ class ShardingProjectionsTokenGeneratorTest {
     }
     
     private AggregationProjection createAggregationProjection() {
-        AggregationProjection derivedProjection = new AggregationProjection(
-                AggregationType.COUNT,
-                new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "foo_agg_expr"),
+        AggregationDistinctProjection derivedProjection = new AggregationDistinctProjection(
+                0, 0, AggregationType.COUNT,
+                new AggregationProjectionSegment(0, 0, AggregationType.COUNT, ""),
                 new IdentifierValue("foo_agg_alias"),
-                databaseType,
-                "foo_agg_expr");
-        AggregationProjection result = new AggregationProjection(
-                AggregationType.COUNT,
+                "foo_agg_expr",
+                databaseType);
+        AggregationProjection result = new AggregationDistinctProjection(
+                0, 0, AggregationType.COUNT,
                 new AggregationProjectionSegment(0, 0, AggregationType.COUNT, ""),
                 null,
-                databaseType,
-                "");
+                "",
+                databaseType);
         result.getDerivedAggregationProjections().add(derivedProjection);
         return result;
     }

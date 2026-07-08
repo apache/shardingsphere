@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
@@ -118,7 +119,8 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     
     private String getDerivedProjectionText(final Projection projection) {
         Preconditions.checkState(projection.getAlias().isPresent());
-        return projection.getExpression() + " AS " + projection.getAlias().get().getValue() + " ";
+        String projectionExpression = projection instanceof AggregationDistinctProjection ? ((AggregationDistinctProjection) projection).getDistinctInnerExpression() : projection.getExpression();
+        return projectionExpression + " AS " + projection.getAlias().get().getValue() + " ";
     }
     
     private String getDerivedProjectionText(final DerivedProjection projection, final TableExtractor tableExtractor, final RouteUnit routeUnit, final DatabaseType databaseType) {
