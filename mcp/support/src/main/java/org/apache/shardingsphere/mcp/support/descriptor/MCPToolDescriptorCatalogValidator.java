@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,6 +42,9 @@ import java.util.stream.Collectors;
 public final class MCPToolDescriptorCatalogValidator {
     
     private static final Collection<String> SUPPORTED_INPUT_SCHEMA_TOP_LEVEL_FIELDS = Set.of("type", "properties", "required", "additionalProperties");
+    
+    private static final Collection<String> SUPPORTED_INPUT_SCHEMA_FIELDS = Set.of(
+            "type", "properties", "required", "additionalProperties", "items", "enum", "minimum", "maximum", "default", "description", "examples");
     
     private static final String SEARCH_METADATA = "database_gateway_search_metadata";
     
@@ -89,7 +93,39 @@ public final class MCPToolDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Tool `%s` inputSchema must be an object.", descriptor.getName())));
         Object properties = inputSchema.get("properties");
         ShardingSpherePreconditions.checkState(properties instanceof Map, () -> new IllegalStateException(String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName())));
+        validateNestedInputSchemaFields(descriptor, inputSchema, "inputSchema");
         MCPToolOutputSchemaValidator.validateInputSchemaFields(descriptor);
+    }
+    
+    private static void validateNestedInputSchemaFields(final MCPToolDescriptor descriptor, final Map<?, ?> schema, final String path) {
+        validateInputSchemaProperties(descriptor, schema.get("properties"), path + ".properties");
+        validateInputSchemaMapField(descriptor, schema.get("items"), path + ".items");
+        validateInputSchemaMapField(descriptor, schema.get("additionalProperties"), path + ".additionalProperties");
+    }
+    
+    private static void validateInputSchemaProperties(final MCPToolDescriptor descriptor, final Object properties, final String path) {
+        if (!(properties instanceof Map)) {
+            return;
+        }
+        for (Entry<?, ?> entry : ((Map<?, ?>) properties).entrySet()) {
+            validateInputSchemaMapField(descriptor, entry.getValue(), path + "." + entry.getKey());
+        }
+    }
+    
+    private static void validateInputSchemaMapField(final MCPToolDescriptor descriptor, final Object value, final String path) {
+        if (!(value instanceof Map)) {
+            return;
+        }
+        validateInputSchemaMap(descriptor, (Map<?, ?>) value, path);
+    }
+    
+    private static void validateInputSchemaMap(final MCPToolDescriptor descriptor, final Map<?, ?> schema, final String path) {
+        for (Object each : schema.keySet()) {
+            String fieldName = String.valueOf(each);
+            ShardingSpherePreconditions.checkState(SUPPORTED_INPUT_SCHEMA_FIELDS.contains(fieldName),
+                    () -> new IllegalStateException(String.format("Tool `%s` inputSchema at `%s` contains unsupported field `%s`.", descriptor.getName(), path, fieldName)));
+        }
+        validateNestedInputSchemaFields(descriptor, schema, path);
     }
     
     private static void validateToolDescriptorContract(final MCPToolDescriptor descriptor, final MCPToolRuntimeDescriptor runtimeDescriptor) {
