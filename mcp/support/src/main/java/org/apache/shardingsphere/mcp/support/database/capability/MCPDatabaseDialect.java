@@ -183,23 +183,11 @@ public final class MCPDatabaseDialect {
     
     private Collection<String> getSystemSchemas() {
         Collection<String> optionSystemSchemas = option.map(MCPDatabaseCapabilityOption::getSystemSchemas).orElseGet(List::of);
-        return findDialectSystemSchemas().filter(each -> optionSystemSchemas.isEmpty() || containsSameSystemSchemas(each, optionSystemSchemas)).orElse(optionSystemSchemas);
+        return optionSystemSchemas.isEmpty() ? findDialectSystemSchemas().orElse(optionSystemSchemas) : optionSystemSchemas;
     }
     
     private Optional<Collection<String>> findDialectSystemSchemas() {
         return systemDatabase.map(SystemDatabase::getSystemSchemas).filter(each -> !each.isEmpty());
-    }
-    
-    private static boolean containsSameSystemSchemas(final Collection<String> systemSchemas, final Collection<String> expectedSystemSchemas) {
-        if (systemSchemas.size() != expectedSystemSchemas.size()) {
-            return false;
-        }
-        for (String each : systemSchemas) {
-            if (!containsSystemSchema(expectedSystemSchemas, each)) {
-                return false;
-            }
-        }
-        return true;
     }
     
     private static boolean containsSystemSchema(final Collection<String> systemSchemas, final String schemaName) {
