@@ -153,6 +153,7 @@ class MySQLAuthenticationEngineTest {
         when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channel.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channel.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.CONNECTION_ATTRIBUTES_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(payload.readInt1()).thenReturn(1);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
@@ -172,14 +173,20 @@ class MySQLAuthenticationEngineTest {
         ContextManager contextManager = mockContextManager(rule);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ChannelHandlerContext context = mockChannelHandlerContext();
-        MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
-        when(payload.readInt4()).thenReturn(0);
-        when(payload.readInt1()).thenReturn(1);
-        when(payload.readStringNul()).thenReturn("root");
-        when(payload.readStringNulByBytes()).thenReturn(new byte[0]);
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        payload.writeInt4(MySQLCapabilityFlag.CLIENT_CONNECT_ATTRS.getValue());
+        payload.writeInt4(1000);
+        payload.writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
+        payload.writeReserved(23);
+        payload.writeStringNul("root");
+        payload.writeStringNul("");
+        payload.writeIntLenenc("program_name".length() + "mysql".length() + 2L);
+        payload.writeStringLenenc("program_name");
+        payload.writeStringLenenc("mysql");
         AuthenticationResult actual = authenticationEngine.authenticate(context, payload);
         assertFalse(actual.isFinished());
         assertThat(getConnectionPhase(), is(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH));
+        assertThat(actual.getConnectionAttributes(), is(Collections.singletonMap("program_name", "mysql")));
     }
     
     @Test
@@ -213,7 +220,8 @@ class MySQLAuthenticationEngineTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setAuthenticationResult() {
-        Plugins.getMemberAccessor().set(MySQLAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine, AuthenticationResultBuilder.continued("root", "", "foo_db"));
+        Plugins.getMemberAccessor().set(MySQLAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
+                AuthenticationResultBuilder.continued("root", "", "foo_db", Collections.emptyMap()));
     }
     
     private ShardingSpherePrivileges mockPrivileges() {
@@ -377,6 +385,7 @@ class MySQLAuthenticationEngineTest {
         when(channel.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channel.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.CONNECTION_ATTRIBUTES_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         doReturn(channel).when(result).channel();
         return result;
     }
@@ -389,6 +398,7 @@ class MySQLAuthenticationEngineTest {
         when(result.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(result.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(result.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(result.attr(MySQLConstants.CONNECTION_ATTRIBUTES_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         return result;
     }
     

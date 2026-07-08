@@ -20,6 +20,9 @@ package org.apache.shardingsphere.authentication.result;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Authentication result builder.
  */
@@ -32,10 +35,11 @@ public final class AuthenticationResultBuilder {
      * @param username username
      * @param hostname hostname
      * @param database database
+     * @param attributes attributes
      * @return finished authentication result
      */
-    public static AuthenticationResult finished(final String username, final String hostname, final String database) {
-        return new AuthenticationResult(username, hostname, database, true);
+    public static AuthenticationResult finished(final String username, final String hostname, final String database, final Map<String, String> attributes) {
+        return new AuthenticationResult(username, hostname, database, true, attributes);
     }
     
     /**
@@ -44,7 +48,7 @@ public final class AuthenticationResultBuilder {
      * @return continued authentication result
      */
     public static AuthenticationResult continued() {
-        return new AuthenticationResult(null, null, null, false);
+        return new AuthenticationResult(null, null, null, false, Collections.emptyMap());
     }
     
     /**
@@ -53,9 +57,10 @@ public final class AuthenticationResultBuilder {
      * @param username username
      * @param hostname hostname
      * @param database database
+     * @param attributes attributes
      * @return continued authentication result
      */
-    public static AuthenticationResult continued(final String username, final String hostname, final String database) {
-        return new AuthenticationResult(username, hostname, database, false);
+    public static AuthenticationResult continued(final String username, final String hostname, final String database, final Map<String, String> attributes) {
+        return new AuthenticationResult(username, hostname, database, false, attributes);
     }
 }

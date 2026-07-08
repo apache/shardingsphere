@@ -63,6 +63,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authen
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -120,7 +121,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         context.write(new PostgreSQLParameterStatusPacket("integer_datetimes", "on"));
         context.write(new PostgreSQLParameterStatusPacket("standard_conforming_strings", "on"));
         context.writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
-        return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase());
+        return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase(), currentAuthResult.getConnectionAttributes());
     }
     
     private void login(final String databaseName, final String username, final byte[] md5Salt, final String digest, final AuthorityRule rule) {
@@ -142,7 +143,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         ShardingSpherePreconditions.checkNotEmpty(username, EmptyUsernameException::new);
         startupMessageReceived = true;
         context.writeAndFlush(getIdentifierPacket(username, rule));
-        currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase());
+        currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase(), Collections.emptyMap());
         return currentAuthResult;
     }
     
