@@ -24,8 +24,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -52,19 +50,6 @@ import java.util.function.Function;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableRefreshUtils {
-    
-    /**
-     * Get table name.
-     *
-     * @param tableIdentifierValue table identifier value
-     * @param databaseType database type
-     * @return table name
-     */
-    public static String getTableName(final IdentifierValue tableIdentifierValue, final DatabaseType databaseType) {
-        return QuoteCharacter.NONE == tableIdentifierValue.getQuoteCharacter()
-                ? new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(tableIdentifierValue.getValue())
-                : tableIdentifierValue.getValue();
-    }
     
     /**
      * Get table load candidate name.

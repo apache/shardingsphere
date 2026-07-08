@@ -18,7 +18,11 @@
 package org.apache.shardingsphere.mode.metadata.refresher.federation.type;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefresher;
@@ -35,6 +39,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -55,9 +61,6 @@ class CreateViewFederationMetaDataRefresherTest {
     @Mock
     private MetaDataManagerPersistService metaDataManagerPersistService;
     
-    @Mock
-    private ShardingSphereDatabase database;
-    
     private CreateViewStatement sqlStatement;
     
     @BeforeEach
@@ -69,6 +72,7 @@ class CreateViewFederationMetaDataRefresherTest {
     @Test
     void assertRefresh() {
         String schemaName = "foo_schema";
+        ShardingSphereDatabase database = createDatabase(schemaName);
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
         String expectedViewDefinition = "SELECT * FROM foo_tbl";
         sqlStatement.setViewDefinition(expectedViewDefinition);
@@ -81,5 +85,10 @@ class CreateViewFederationMetaDataRefresherTest {
         ShardingSphereView actualView = alteredViews.iterator().next();
         assertThat(actualView.getName(), is("foo_view"));
         assertThat(actualView.getViewDefinition(), is(expectedViewDefinition));
+    }
+    
+    private ShardingSphereDatabase createDatabase(final String schemaName) {
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
+                Collections.singleton(new ShardingSphereSchema(schemaName, databaseType, Collections.emptyList(), Collections.emptyList())), new ConfigurationProperties(new Properties()));
     }
 }
