@@ -46,8 +46,6 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     private static final int INDEX_NAME_MAX_LENGTH = 30;
     
-    private static final String SEQUENCE_QUERY = "SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES";
-    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
@@ -105,7 +103,7 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public Optional<DialectSequenceOption> getSequenceOption() {
-        return Optional.of(new DialectSequenceOption(SEQUENCE_QUERY));
+        return Optional.of(new DialectSequenceOption("SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES"));
     }
     
     @Override

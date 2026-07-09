@@ -100,7 +100,7 @@ class OpenGaussDatabaseMetaDataTest {
     
     @Test
     void assertGetSequenceOption() {
-        assertThat(dialectDatabaseMetaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuery).orElse(""),
+        assertThat(dialectDatabaseMetaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuerySQL).orElse(""),
                 is("SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences"));
     }
     

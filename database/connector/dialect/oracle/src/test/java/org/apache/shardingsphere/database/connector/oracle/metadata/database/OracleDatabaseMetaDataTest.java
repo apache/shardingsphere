@@ -83,7 +83,7 @@ class OracleDatabaseMetaDataTest {
     
     @Test
     void assertGetSequenceOption() {
-        assertThat(dialectDatabaseMetaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuery).orElse(""),
+        assertThat(dialectDatabaseMetaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuerySQL).orElse(""),
                 is("SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES"));
     }
     

@@ -56,7 +56,7 @@ public final class SequenceMetaDataLoader {
      */
     public Map<String, Collection<String>> load(final Connection connection) throws SQLException {
         Optional<DialectSequenceOption> option = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSequenceOption();
-        return option.isPresent() ? loadSequences(connection, option.get().getSequenceMetadataQuery()) : Collections.emptyMap();
+        return option.isPresent() ? loadSequences(connection, option.get().getSequenceMetadataQuerySQL()) : Collections.emptyMap();
     }
     
     private Map<String, Collection<String>> loadSequences(final Connection connection, final String sequenceMetadataQuery) throws SQLException {

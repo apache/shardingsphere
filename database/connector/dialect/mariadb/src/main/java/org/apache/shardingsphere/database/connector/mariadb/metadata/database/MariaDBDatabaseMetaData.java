@@ -40,9 +40,6 @@ import java.util.Optional;
  */
 public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     
-    private static final String SEQUENCE_QUERY =
-            "SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'";
-    
     private final DialectDatabaseMetaData delegate = new MySQLDatabaseMetaData();
     
     @Override
@@ -92,7 +89,7 @@ public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public Optional<DialectSequenceOption> getSequenceOption() {
-        return Optional.of(new DialectSequenceOption(SEQUENCE_QUERY));
+        return Optional.of(new DialectSequenceOption("SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'"));
     }
     
     @Override

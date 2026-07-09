@@ -45,9 +45,6 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     private static final int INDEX_NAME_MAX_LENGTH = 63;
     
-    private static final String SEQUENCE_QUERY =
-            "SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences";
-    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
@@ -90,7 +87,7 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public Optional<DialectSequenceOption> getSequenceOption() {
-        return Optional.of(new DialectSequenceOption(SEQUENCE_QUERY));
+        return Optional.of(new DialectSequenceOption("SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences"));
     }
     
     @Override

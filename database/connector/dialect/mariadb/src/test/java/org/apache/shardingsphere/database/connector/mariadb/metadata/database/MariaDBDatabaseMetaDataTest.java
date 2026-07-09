@@ -110,7 +110,7 @@ class MariaDBDatabaseMetaDataTest {
     
     @Test
     void assertGetSequenceOption() {
-        assertThat(metaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuery).orElse(""),
+        assertThat(metaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuerySQL).orElse(""),
                 is("SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'"));
     }
     

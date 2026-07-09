@@ -40,9 +40,6 @@ import java.util.Optional;
  */
 public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData {
     
-    private static final String SEQUENCE_QUERY =
-            "SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id";
-    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BRACKETS;
@@ -81,7 +78,8 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public Optional<DialectSequenceOption> getSequenceOption() {
-        return Optional.of(new DialectSequenceOption(SEQUENCE_QUERY));
+        return Optional.of(new DialectSequenceOption(
+                "SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id"));
     }
     
     @Override

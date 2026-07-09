@@ -84,7 +84,7 @@ class FirebirdDatabaseMetaDataTest {
     
     @Test
     void assertGetSequenceOption() {
-        assertThat(dialectDatabaseMetaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuery).orElse(""),
+        assertThat(dialectDatabaseMetaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuerySQL).orElse(""),
                 is("SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0"));
     }
     

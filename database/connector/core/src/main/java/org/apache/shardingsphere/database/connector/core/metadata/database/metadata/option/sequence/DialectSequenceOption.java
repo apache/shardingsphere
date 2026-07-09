@@ -27,5 +27,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class DialectSequenceOption {
     
-    private final String sequenceMetadataQuery;
+    private final String sequenceMetadataQuerySQL;
 }

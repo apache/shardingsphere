@@ -87,7 +87,7 @@ class SQLServerDatabaseMetaDataTest {
     
     @Test
     void assertGetSequenceOption() {
-        assertThat(dialectDatabaseMetaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuery).orElse(""),
+        assertThat(dialectDatabaseMetaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuerySQL).orElse(""),
                 is("SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id"));
     }
     

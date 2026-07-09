@@ -38,9 +38,6 @@ import java.util.Optional;
  */
 public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     
-    private static final String SEQUENCE_QUERY =
-            "SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0";
-    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
@@ -78,7 +75,7 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public Optional<DialectSequenceOption> getSequenceOption() {
-        return Optional.of(new DialectSequenceOption(SEQUENCE_QUERY));
+        return Optional.of(new DialectSequenceOption("SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0"));
     }
     
     @Override
