@@ -152,6 +152,14 @@ class ShardingToolHandlerTest {
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(requestCaptor.getValue().toWorkflowRequest().getComponentName(), is("unused_algorithm"));
         assertThat(actual.toPayload().get("workflow_kind"), is("sharding.component.cleanup"));
+        List<String> actualResourceUris = extractResourceUris((List<?>) actual.toPayload().get("resources_to_read"));
+        assertThat(actualResourceUris, is(List.of(
+                "shardingsphere://features/sharding/databases/logic_db/algorithms",
+                "shardingsphere://features/sharding/databases/logic_db/key-generators",
+                "shardingsphere://features/sharding/databases/logic_db/auditors",
+                "shardingsphere://features/sharding/databases/logic_db/unused-algorithms",
+                "shardingsphere://features/sharding/databases/logic_db/unused-key-generators",
+                "shardingsphere://features/sharding/databases/logic_db/unused-auditors")));
     }
     
     private WorkflowContextSnapshot createSnapshot(final WorkflowKind workflowKind, final ShardingWorkflowRequest request, final String sql) {
@@ -173,6 +181,10 @@ class ShardingToolHandlerTest {
         result.setDatabase("logic_db");
         result.setTable("t_order");
         return result;
+    }
+    
+    private List<String> extractResourceUris(final List<?> resourcesToRead) {
+        return resourcesToRead.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {

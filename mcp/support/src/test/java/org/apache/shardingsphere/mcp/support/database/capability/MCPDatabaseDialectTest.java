@@ -94,6 +94,21 @@ class MCPDatabaseDialectTest {
         }
     }
     
+    @Test
+    void assertGetIdentifierCasePolicyFromUpperCaseDialectDatabaseMetaData() {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseType = mockDatabaseType("FixtureWithOption", typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.UPPER_CASE);
+            MCPDatabaseCapabilityOption option = mockMCPDatabaseCapabilityOption("FixtureWithOption", typedSPILoader);
+            when(option.getIdentifierCasePolicySet()).thenReturn(IdentifierCasePolicyFactory.newSensitivePolicySet());
+            IdentifierCasePolicy actual = MCPDatabaseDialect.of("FixtureWithOption").getIdentifierCasePolicy(IdentifierScope.TABLE);
+            assertTrue(actual.matches("FIXTURE", "fixture", QuoteCharacter.NONE));
+        }
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getDefaultSchemaSemanticsArguments")
     void assertGetDefaultSchemaSemantics(final String name, final String databaseType, final SchemaSemantics expected) {
@@ -216,6 +231,7 @@ class MCPDatabaseDialectTest {
     private static Stream<Arguments> isUnquotedIdentifierCaseFoldedArguments() {
         return Stream.of(
                 Arguments.of("lower case", "FixtureLowerCase", IdentifierPatternType.LOWER_CASE, true),
+                Arguments.of("upper case", "FixtureUpperCase", IdentifierPatternType.UPPER_CASE, true),
                 Arguments.of("keep origin", "FixtureKeepOrigin", IdentifierPatternType.KEEP_ORIGIN, false));
     }
     

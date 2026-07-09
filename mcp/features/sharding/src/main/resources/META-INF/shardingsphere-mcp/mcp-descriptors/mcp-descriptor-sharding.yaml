@@ -524,6 +524,9 @@ prompts:
         - database_gateway_apply_workflow
         - database_gateway_validate_workflow
       org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/databases/{database}/algorithms
+        - shardingsphere://features/sharding/databases/{database}/key-generators
+        - shardingsphere://features/sharding/databases/{database}/auditors
         - shardingsphere://features/sharding/databases/{database}/unused-algorithms
         - shardingsphere://features/sharding/databases/{database}/unused-key-generators
         - shardingsphere://features/sharding/databases/{database}/unused-auditors
@@ -1093,6 +1096,9 @@ tools:
       org.apache.shardingsphere/side-effect-scope:
         - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/databases/{database}/algorithms
+        - shardingsphere://features/sharding/databases/{database}/key-generators
+        - shardingsphere://features/sharding/databases/{database}/auditors
         - shardingsphere://features/sharding/databases/{database}/unused-algorithms
         - shardingsphere://features/sharding/databases/{database}/unused-key-generators
         - shardingsphere://features/sharding/databases/{database}/unused-auditors

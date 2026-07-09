@@ -29,11 +29,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
 class WorkflowAlgorithmUtilsTest {
+    
+    @Test
+    void assertNormalizeAlgorithmType() {
+        assertThat(WorkflowAlgorithmUtils.normalizeAlgorithmType(" fixture "), is("FIXTURE"));
+    }
+    
+    @Test
+    void assertGetAlgorithmType() {
+        assertThat(WorkflowAlgorithmUtils.getAlgorithmType(Map.of("type", " fixture ")), is("FIXTURE"));
+    }
+    
+    @Test
+    void assertGetAlgorithmTypeWithFallbackKey() {
+        assertThat(WorkflowAlgorithmUtils.getAlgorithmType(Map.of("name", " fixture "), "type", "name"), is("FIXTURE"));
+    }
+    
+    @Test
+    void assertGetAlgorithmTypeKeepsPresentPrimaryKey() {
+        assertThat(WorkflowAlgorithmUtils.getAlgorithmType(Map.of("type", "", "name", "fixture"), "type", "name"), is(""));
+    }
+    
+    @Test
+    void assertContainsAlgorithm() {
+        assertTrue(WorkflowAlgorithmUtils.containsAlgorithm(List.of(Map.of("name", " fixture ")), "fixture", "type", "name"));
+    }
     
     @Test
     void assertAlgorithmServiceAvailable() {
