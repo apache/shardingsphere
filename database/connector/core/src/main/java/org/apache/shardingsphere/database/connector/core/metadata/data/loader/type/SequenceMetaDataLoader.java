@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.data.loader.type;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
@@ -32,7 +33,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -55,45 +55,31 @@ public final class SequenceMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public Map<String, Collection<String>> load(final Connection connection) throws SQLException {
-        Optional<DialectSequenceOption> sequenceOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSequenceOption();
-        if (!sequenceOption.isPresent()) {
-            return Collections.emptyMap();
-        }
-        return loadSequences(connection, sequenceOption.get().getSequenceMetadataQuery());
+        Optional<DialectSequenceOption> option = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSequenceOption();
+        return option.isPresent() ? loadSequences(connection, option.get().getSequenceMetadataQuery()) : Collections.emptyMap();
     }
     
     private Map<String, Collection<String>> loadSequences(final Connection connection, final String sequenceMetadataQuery) throws SQLException {
         Map<String, Collection<String>> result = new LinkedHashMap<>(16, 1F);
-        try (Statement statement = connection.createStatement(); ResultSet sequences = statement.executeQuery(sequenceMetadataQuery)) {
+        Collection<String> systemSchemas = new SystemDatabase(databaseType).getSystemSchemas();
+        try (
+                Statement statement = connection.createStatement();
+                ResultSet sequences = statement.executeQuery(sequenceMetadataQuery)) {
             while (sequences.next()) {
-                addSequence(result, sequences);
+                addSequence(result, sequences, systemSchemas);
             }
         }
         return result;
     }
     
-    private void addSequence(final Map<String, Collection<String>> sequences, final ResultSet resultSet) throws SQLException {
-        String sequenceName = trimToEmpty(resultSet.getString(SEQUENCE_NAME));
-        if (sequenceName.isEmpty()) {
+    private void addSequence(final Map<String, Collection<String>> sequences, final ResultSet resultSet, final Collection<String> systemSchemas) throws SQLException {
+        String sequenceName = resultSet.getString(SEQUENCE_NAME);
+        if (Strings.isNullOrEmpty(sequenceName)) {
             return;
         }
-        String schemaName = trimToEmpty(resultSet.getString(SEQUENCE_SCHEMA));
-        if (!schemaName.isEmpty() && isSystemSchema(schemaName)) {
-            return;
+        String schemaName = resultSet.getString(SEQUENCE_SCHEMA);
+        if (Strings.isNullOrEmpty(schemaName) || systemSchemas.stream().noneMatch(schemaName::equalsIgnoreCase)) {
+            sequences.computeIfAbsent(schemaName, unused -> new LinkedHashSet<>()).add(sequenceName);
         }
-        sequences.computeIfAbsent(schemaName, unused -> new LinkedHashSet<>()).add(sequenceName);
-    }
-    
-    private boolean isSystemSchema(final String schemaName) {
-        for (String each : new SystemDatabase(databaseType).getSystemSchemas()) {
-            if (schemaName.equalsIgnoreCase(each)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private String trimToEmpty(final String value) {
-        return Objects.toString(value, "").trim();
     }
 }
