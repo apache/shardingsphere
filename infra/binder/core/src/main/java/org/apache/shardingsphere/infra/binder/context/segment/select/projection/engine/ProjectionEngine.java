@@ -175,6 +175,7 @@ public final class ProjectionEngine {
                         projectionSegment.getSeparator().orElse(null));
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
+            // TODO replace avg to constant, avoid calculate useless avg
         }
         return result;
     }
