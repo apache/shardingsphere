@@ -20,17 +20,12 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.DatabaseMetadataFixture;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestScopeFixture;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
@@ -228,13 +223,6 @@ class SearchMetadataToolServiceTest {
     }
     
     @Test
-    void assertExecuteSearchWithNullViewValueInColumnMetadata() {
-        MetadataSearchResult actual = execute(createDatabaseMetadataWithNullViewColumn(),
-                new MetadataSearchRequest("null_view_db", "", "missing", Set.of(SupportedMCPMetadataObjectType.COLUMN)));
-        assertThat(actual.getItems().size(), is(0));
-    }
-    
-    @Test
     void assertExecuteSearchWithEmptyQuery() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("logic_db", "", "", Set.of()));
         assertThat(actual.getItems().size(), is(11));
@@ -291,14 +279,16 @@ class SearchMetadataToolServiceTest {
         assertThat(actual.getItems().size(), is(0));
     }
     
-    private MetadataSearchResult execute(final List<MCPDatabaseMetadata> databaseMetadata, final MetadataSearchRequest request) {
-        try (MCPRequestScope requestScope = ResourceTestDataFactory.createRequestScope(databaseMetadata)) {
+    private MetadataSearchResult execute(final List<DatabaseMetadataFixture> databaseMetadata, final MetadataSearchRequest request) {
+        try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(databaseMetadata)) {
+            MCPRequestScope requestScope = requestScopeFixture.getRequestScope();
             return new SearchMetadataToolService(requestScope.getMetadataQueryFacade()).execute(request);
         }
     }
     
-    private MetadataSearchResult execute(final List<MCPDatabaseMetadata> databaseMetadata, final MCPFeatureQueryFacade queryFacade, final MetadataSearchRequest request) {
-        try (MCPRequestScope requestScope = ResourceTestDataFactory.createRequestScope(databaseMetadata)) {
+    private MetadataSearchResult execute(final List<DatabaseMetadataFixture> databaseMetadata, final MCPFeatureQueryFacade queryFacade, final MetadataSearchRequest request) {
+        try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(databaseMetadata)) {
+            MCPRequestScope requestScope = requestScopeFixture.getRequestScope();
             return new SearchMetadataToolService(requestScope.getMetadataQueryFacade(), queryFacade).execute(request);
         }
     }
@@ -319,58 +309,40 @@ class SearchMetadataToolServiceTest {
         return hit.getNextResources().stream().map(each -> String.valueOf(each.get("uri"))).toList();
     }
     
-    private List<MCPDatabaseMetadata> createDatabaseMetadata() {
-        List<MCPDatabaseMetadata> result = new LinkedList<>();
-        result.add(new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
-                new MCPSchemaMetadata("logic_db", "public", List.of(
-                        new MCPTableMetadata("logic_db", "public", "orders",
-                                List.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "order_id"),
-                                        new MCPColumnMetadata("logic_db", "public", "orders", "", "status")),
-                                List.of(new MCPIndexMetadata("logic_db", "public", "orders", "idx_orders_status"))),
-                        new MCPTableMetadata("logic_db", "public", "order_items", List.of(), List.of())),
+    private List<DatabaseMetadataFixture> createDatabaseMetadata() {
+        List<DatabaseMetadataFixture> result = new LinkedList<>();
+        result.add(ResourceTestDataFactory.createDatabase("logic_db", "MySQL", "", List.of(
+                ResourceTestDataFactory.createSchema("public", List.of(
+                        ResourceTestDataFactory.createTable("orders", List.of("order_id", "status"), List.of("idx_orders_status")),
+                        ResourceTestDataFactory.createTable("order_items", List.of(), List.of())),
                         List.of(
-                                new MCPViewMetadata("logic_db", "public", "active_orders",
-                                        List.of(new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_id"),
-                                                new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_status"))),
-                                new MCPViewMetadata("logic_db", "public", "archived_orders", List.of())),
+                                ResourceTestDataFactory.createTable("active_orders", List.of("order_id", "order_status"), List.of()),
+                                ResourceTestDataFactory.createTable("archived_orders", List.of(), List.of())),
                         List.of()))));
-        result.add(new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
-                new MCPSchemaMetadata("analytics_db", "public", List.of(
-                        new MCPTableMetadata("analytics_db", "public", "metrics",
-                                List.of(new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
-                        List.of(), List.of()))));
-        result.add(new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
-                new MCPSchemaMetadata("warehouse", "warehouse", List.of(
-                        new MCPTableMetadata("warehouse", "warehouse", "facts",
-                                List.of(new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
-                        List.of(), List.of()))));
-        result.add(new MCPDatabaseMetadata("runtime_db", "PostgreSQL", "", List.of(
-                new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))));
+        result.add(ResourceTestDataFactory.createDatabase("analytics_db", "PostgreSQL", "", List.of(
+                ResourceTestDataFactory.createSchema("public", List.of(ResourceTestDataFactory.createTable("metrics", List.of("metric_id"), List.of())), List.of(), List.of()))));
+        result.add(ResourceTestDataFactory.createDatabase("warehouse", "Hive", "", List.of(
+                ResourceTestDataFactory.createSchema("warehouse", List.of(ResourceTestDataFactory.createTable("facts", List.of("fact_id"), List.of())), List.of(), List.of()))));
+        result.add(ResourceTestDataFactory.createDatabase("runtime_db", "PostgreSQL", "", List.of(
+                ResourceTestDataFactory.createSchema("public", List.of(), List.of(), List.of("order_seq")))));
         return result;
     }
     
-    private List<MCPDatabaseMetadata> createDatabaseMetadataWithEmptySchema() {
-        return List.of(new MCPDatabaseMetadata("schema_less_db", "PostgreSQL", "",
-                List.of(new MCPSchemaMetadata("schema_less_db", "", List.of(new MCPTableMetadata("schema_less_db", "", "schema_less_orders", List.of(), List.of())), List.of(), List.of()))));
+    private List<DatabaseMetadataFixture> createDatabaseMetadataWithEmptySchema() {
+        return List.of(ResourceTestDataFactory.createDatabase("schema_less_db", "PostgreSQL", "",
+                List.of(ResourceTestDataFactory.createSchema("", List.of(ResourceTestDataFactory.createTable("schema_less_orders", List.of(), List.of())), List.of(), List.of()))));
     }
     
-    private List<MCPDatabaseMetadata> createLargeDatabaseMetadata() {
-        List<MCPTableMetadata> tables = new LinkedList<>();
+    private List<DatabaseMetadataFixture> createLargeDatabaseMetadata() {
+        List<ResourceTestDataFactory.TableMetadataFixture> tables = new LinkedList<>();
         for (int index = 0; index < 101; index++) {
-            tables.add(new MCPTableMetadata("large_db", "public", "table_" + index, List.of(), List.of()));
+            tables.add(ResourceTestDataFactory.createTable("table_" + index, List.of(), List.of()));
         }
-        return List.of(new MCPDatabaseMetadata("large_db", "MySQL", "", List.of(new MCPSchemaMetadata("large_db", "public", tables, List.of(), List.of()))));
+        return List.of(ResourceTestDataFactory.createDatabase("large_db", "MySQL", "", List.of(ResourceTestDataFactory.createSchema("public", tables, List.of(), List.of()))));
     }
     
-    private List<MCPDatabaseMetadata> createDatabaseMetadataWithUnsafeUriName() {
-        return List.of(new MCPDatabaseMetadata("逻辑 库", "MySQL", "",
-                List.of(new MCPSchemaMetadata("逻辑 库", "public/main",
-                        List.of(new MCPTableMetadata("逻辑 库", "public/main", "orders?archive%2026", List.of(), List.of())), List.of(), List.of()))));
-    }
-    
-    private List<MCPDatabaseMetadata> createDatabaseMetadataWithNullViewColumn() {
-        return List.of(new MCPDatabaseMetadata("null_view_db", "MySQL", "",
-                List.of(new MCPSchemaMetadata("null_view_db", "public", List.of(),
-                        List.of(new MCPViewMetadata("null_view_db", "public", "active_view", List.of(new MCPColumnMetadata("null_view_db", "public", "", null, "status")))), List.of()))));
+    private List<DatabaseMetadataFixture> createDatabaseMetadataWithUnsafeUriName() {
+        return List.of(ResourceTestDataFactory.createDatabase("逻辑 库", "MySQL", "",
+                List.of(ResourceTestDataFactory.createSchema("public/main", List.of(ResourceTestDataFactory.createTable("orders?archive%2026", List.of(), List.of())), List.of(), List.of()))));
     }
 }

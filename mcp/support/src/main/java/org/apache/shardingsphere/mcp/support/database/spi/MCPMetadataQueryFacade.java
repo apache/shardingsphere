@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.database.spi;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,17 +36,17 @@ public interface MCPMetadataQueryFacade {
     /**
      * Query all logical databases.
      *
-     * @return database metadata list
+     * @return database profiles
      */
-    List<MCPDatabaseMetadata> queryDatabases();
+    List<RuntimeDatabaseProfile> queryDatabases();
     
     /**
      * Query one logical database.
      *
      * @param databaseName database name
-     * @return database metadata
+     * @return database profile
      */
-    Optional<MCPDatabaseMetadata> queryDatabase(String databaseName);
+    Optional<RuntimeDatabaseProfile> queryDatabase(String databaseName);
     
     /**
      * Query schemas in one logical database.
@@ -55,7 +54,7 @@ public interface MCPMetadataQueryFacade {
      * @param databaseName database name
      * @return schema metadata list
      */
-    List<MCPSchemaMetadata> querySchemas(String databaseName);
+    List<ShardingSphereSchema> querySchemas(String databaseName);
     
     /**
      * Query one schema in a logical database.
@@ -64,7 +63,7 @@ public interface MCPMetadataQueryFacade {
      * @param schemaName schema name
      * @return schema metadata
      */
-    Optional<MCPSchemaMetadata> querySchema(String databaseName, String schemaName);
+    Optional<ShardingSphereSchema> querySchema(String databaseName, String schemaName);
     
     /**
      * Query tables in a schema.
@@ -73,7 +72,7 @@ public interface MCPMetadataQueryFacade {
      * @param schemaName schema name
      * @return table metadata list
      */
-    List<MCPTableMetadata> queryTables(String databaseName, String schemaName);
+    List<ShardingSphereTable> queryTables(String databaseName, String schemaName);
     
     /**
      * Query one table in a schema.
@@ -83,7 +82,7 @@ public interface MCPMetadataQueryFacade {
      * @param tableName table name
      * @return table metadata
      */
-    Optional<MCPTableMetadata> queryTable(String databaseName, String schemaName, String tableName);
+    Optional<ShardingSphereTable> queryTable(String databaseName, String schemaName, String tableName);
     
     /**
      * Query views in a schema.
@@ -92,7 +91,7 @@ public interface MCPMetadataQueryFacade {
      * @param schemaName schema name
      * @return view metadata list
      */
-    List<MCPViewMetadata> queryViews(String databaseName, String schemaName);
+    List<ShardingSphereTable> queryViews(String databaseName, String schemaName);
     
     /**
      * Query one view in a schema.
@@ -102,7 +101,7 @@ public interface MCPMetadataQueryFacade {
      * @param viewName view name
      * @return view metadata
      */
-    Optional<MCPViewMetadata> queryView(String databaseName, String schemaName, String viewName);
+    Optional<ShardingSphereTable> queryView(String databaseName, String schemaName, String viewName);
     
     /**
      * Query table columns.
@@ -112,7 +111,7 @@ public interface MCPMetadataQueryFacade {
      * @param tableName table name
      * @return column metadata list
      */
-    List<MCPColumnMetadata> queryTableColumns(String databaseName, String schemaName, String tableName);
+    List<ShardingSphereColumn> queryTableColumns(String databaseName, String schemaName, String tableName);
     
     /**
      * Query one table column.
@@ -123,7 +122,7 @@ public interface MCPMetadataQueryFacade {
      * @param columnName column name
      * @return column metadata
      */
-    Optional<MCPColumnMetadata> queryTableColumn(String databaseName, String schemaName, String tableName, String columnName);
+    Optional<ShardingSphereColumn> queryTableColumn(String databaseName, String schemaName, String tableName, String columnName);
     
     /**
      * Query view columns.
@@ -133,7 +132,7 @@ public interface MCPMetadataQueryFacade {
      * @param viewName view name
      * @return column metadata list
      */
-    List<MCPColumnMetadata> queryViewColumns(String databaseName, String schemaName, String viewName);
+    List<ShardingSphereColumn> queryViewColumns(String databaseName, String schemaName, String viewName);
     
     /**
      * Query one view column.
@@ -144,7 +143,7 @@ public interface MCPMetadataQueryFacade {
      * @param columnName column name
      * @return column metadata
      */
-    Optional<MCPColumnMetadata> queryViewColumn(String databaseName, String schemaName, String viewName, String columnName);
+    Optional<ShardingSphereColumn> queryViewColumn(String databaseName, String schemaName, String viewName, String columnName);
     
     /**
      * Query table indexes.
@@ -154,7 +153,7 @@ public interface MCPMetadataQueryFacade {
      * @param tableName table name
      * @return index metadata list
      */
-    List<MCPIndexMetadata> queryIndexes(String databaseName, String schemaName, String tableName);
+    List<ShardingSphereIndex> queryIndexes(String databaseName, String schemaName, String tableName);
     
     /**
      * Query one table index.
@@ -165,7 +164,7 @@ public interface MCPMetadataQueryFacade {
      * @param indexName index name
      * @return index metadata
      */
-    Optional<MCPIndexMetadata> queryIndex(String databaseName, String schemaName, String tableName, String indexName);
+    Optional<ShardingSphereIndex> queryIndex(String databaseName, String schemaName, String tableName, String indexName);
     
     /**
      * Query sequences in a schema.
@@ -174,7 +173,7 @@ public interface MCPMetadataQueryFacade {
      * @param schemaName schema name
      * @return sequence metadata list
      */
-    List<MCPSequenceMetadata> querySequences(String databaseName, String schemaName);
+    List<ShardingSphereSequence> querySequences(String databaseName, String schemaName);
     
     /**
      * Query one sequence in a schema.
@@ -184,7 +183,7 @@ public interface MCPMetadataQueryFacade {
      * @param sequenceName sequence name
      * @return sequence metadata
      */
-    Optional<MCPSequenceMetadata> querySequence(String databaseName, String schemaName, String sequenceName);
+    Optional<ShardingSphereSequence> querySequence(String databaseName, String schemaName, String sequenceName);
     
     /**
      * Check whether the database supports the specified metadata object type.

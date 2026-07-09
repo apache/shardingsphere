@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -89,9 +91,9 @@ public final class WorkflowPlanningContextValidator {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
-        Optional<MCPDatabaseMetadata> databaseMetadata = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()));
-        String databaseType = databaseMetadata.map(MCPDatabaseMetadata::getDatabaseType).orElse("");
-        request.setSchema(resolveSchema(databaseMetadata, request, clarifiedIntent, databaseType));
+        Optional<RuntimeDatabaseProfile> databaseProfile = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()));
+        String databaseType = databaseProfile.map(RuntimeDatabaseProfile::getDatabaseType).orElse("");
+        request.setSchema(resolveSchema(metadataQueryFacade, request, clarifiedIntent, databaseType));
         if (!ensureSupportedIdentifiers(WorkflowFieldNames.SCHEMA, List.of(request.getSchema()), snapshot, "discovering")) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
@@ -170,26 +172,36 @@ public final class WorkflowPlanningContextValidator {
         return fieldName.isEmpty() ? Map.of("identifier", identifier) : Map.of("field", fieldName, "identifier", identifier);
     }
     
-    private String resolveSchema(final Optional<MCPDatabaseMetadata> databaseMetadata, final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final String databaseType) {
+    private String resolveSchema(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final String databaseType) {
         String actualSchema = request.getSchema();
         if (!isEmptyIdentifier(actualSchema)) {
             return actualSchema;
         }
-        if (databaseMetadata.isEmpty()) {
+        List<ShardingSphereSchema> schemas = metadataQueryFacade.querySchemas(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()));
+        if (schemas.isEmpty()) {
             return "";
         }
         if (!WorkflowSQLUtils.normalizeIdentifier(request.getTable()).isEmpty()) {
             List<String> result = new LinkedList<>();
-            for (MCPSchemaMetadata each : databaseMetadata.get().getSchemas()) {
-                if (each.getTables().stream().anyMatch(table -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getTable(), table.getTable()))) {
-                    result.add(each.getSchema());
+            for (ShardingSphereSchema each : schemas) {
+                if (containsTable(databaseType, request.getTable(), each.getAllTables())) {
+                    result.add(each.getName());
                 }
             }
             if (1 == result.size()) {
                 return recordInferredSchema(clarifiedIntent, result.get(0));
             }
         }
-        return 1 == databaseMetadata.get().getSchemas().size() ? recordInferredSchema(clarifiedIntent, databaseMetadata.get().getSchemas().iterator().next().getSchema()) : "";
+        return 1 == schemas.size() ? recordInferredSchema(clarifiedIntent, schemas.iterator().next().getName()) : "";
+    }
+    
+    private boolean containsTable(final String databaseType, final String tableName, final Collection<ShardingSphereTable> tables) {
+        for (ShardingSphereTable each : tables) {
+            if (TableType.TABLE == each.getType() && WorkflowSQLUtils.isSameIdentifier(databaseType, tableName, each.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private String recordInferredSchema(final ClarifiedIntent clarifiedIntent, final String schema) {

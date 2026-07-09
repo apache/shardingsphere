@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -64,6 +66,7 @@ class WorkflowPlanningContextValidatorTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata()));
         when(metadataQueryFacade.queryTable("logic_db", "public", "orders")).thenReturn(Optional.of(createTableMetadata()));
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(createColumnMetadata()));
         boolean actual = validator.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
@@ -91,16 +94,19 @@ class WorkflowPlanningContextValidatorTest {
         assertTrue(snapshot.getIssues().isEmpty());
     }
     
-    private MCPDatabaseMetadata createDatabaseMetadata() {
-        return new MCPDatabaseMetadata("logic_db", "MySQL", "8.0",
-                List.of(new MCPSchemaMetadata("logic_db", "public", List.of(createTableMetadata()), List.of(), List.of())));
+    private RuntimeDatabaseProfile createDatabaseMetadata() {
+        return new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0");
     }
     
-    private MCPTableMetadata createTableMetadata() {
-        return new MCPTableMetadata("logic_db", "public", "orders", List.of(createColumnMetadata()), List.of());
+    private ShardingSphereSchema createSchemaMetadata() {
+        return new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(createTableMetadata()), List.of());
     }
     
-    private MCPColumnMetadata createColumnMetadata() {
-        return new MCPColumnMetadata("logic_db", "public", "orders", "", "phone");
+    private ShardingSphereTable createTableMetadata() {
+        return new ShardingSphereTable("orders", List.of(createColumnMetadata()), List.of(), List.of(), TableType.TABLE);
+    }
+    
+    private ShardingSphereColumn createColumnMetadata() {
+        return new ShardingSphereColumn("phone", java.sql.Types.OTHER, false, false, false, true, false, true);
     }
 }

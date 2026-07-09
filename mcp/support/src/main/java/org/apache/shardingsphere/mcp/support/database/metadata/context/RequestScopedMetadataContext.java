@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.mcp.support.database.metadata.context;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -40,16 +41,16 @@ public final class RequestScopedMetadataContext implements AutoCloseable {
     
     private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
     
-    private final Map<String, MCPDatabaseMetadata> loadedDatabaseMetadata = new LinkedHashMap<>(4, 1F);
+    private final Map<String, Collection<ShardingSphereSchema>> loadedSchemas = new LinkedHashMap<>(4, 1F);
     
     /**
-     * Load database metadata lazily within the current request.
+     * Load schema metadata lazily within the current request.
      *
      * @param databaseName database name
-     * @return database metadata
+     * @return schema metadata
      */
-    public Optional<MCPDatabaseMetadata> loadDatabaseMetadata(final String databaseName) {
-        MCPDatabaseMetadata loadedMetadata = loadedDatabaseMetadata.get(databaseName);
+    public Optional<Collection<ShardingSphereSchema>> loadSchemas(final String databaseName) {
+        Collection<ShardingSphereSchema> loadedMetadata = loadedSchemas.get(databaseName);
         if (null != loadedMetadata) {
             return Optional.of(loadedMetadata);
         }
@@ -58,13 +59,13 @@ public final class RequestScopedMetadataContext implements AutoCloseable {
         if (null == runtimeDatabaseConfig || databaseProfile.isEmpty()) {
             return Optional.empty();
         }
-        MCPDatabaseMetadata result = metadataLoader.load(databaseName, runtimeDatabaseConfig, databaseProfile.get());
-        loadedDatabaseMetadata.put(databaseName, result);
+        Collection<ShardingSphereSchema> result = metadataLoader.load(databaseName, runtimeDatabaseConfig, databaseProfile.get());
+        loadedSchemas.put(databaseName, result);
         return Optional.of(result);
     }
     
     @Override
     public void close() {
-        loadedDatabaseMetadata.clear();
+        loadedSchemas.clear();
     }
 }

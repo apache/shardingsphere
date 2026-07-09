@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapa
 public final class PrestoMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public PrestoMCPDatabaseCapabilityOption() {
-        super("Presto", TransactionCapability.LOCAL, false, SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, false);
+        super("Presto", TransactionCapability.LOCAL, false, SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true);
     }
     
     @Override

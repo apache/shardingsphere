@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.database.connector.postgresql.metadata.database
 
 import java.sql.Connection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Database meta data of PostgreSQL.
@@ -40,6 +42,9 @@ import java.util.Collections;
 public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData {
     
     private static final int INDEX_NAME_MAX_LENGTH = 63;
+    
+    private static final String SEQUENCE_QUERY =
+            "SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences";
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -74,6 +79,11 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     @Override
     public DialectFunctionOption getFunctionOption() {
         return new PostgreSQLFunctionOption();
+    }
+    
+    @Override
+    public Optional<DialectSequenceOption> getSequenceOption() {
+        return Optional.of(new DialectSequenceOption(SEQUENCE_QUERY));
     }
     
     @Override

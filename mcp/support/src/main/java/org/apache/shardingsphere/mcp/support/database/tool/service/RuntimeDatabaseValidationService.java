@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.mcp.support.database.tool.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationCheckResult;
 import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationResult;
@@ -33,6 +32,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -91,9 +91,9 @@ public final class RuntimeDatabaseValidationService {
             appendSkippedChecks(checks, "database_visibility", "driver or connectivity validation failed");
             return createFailureResult(database, checks, ex, recoveryFactory);
         }
-        MCPDatabaseMetadata databaseMetadata;
+        Collection<ShardingSphereSchema> schemas;
         try {
-            databaseMetadata = metadataLoader.load(database, runtimeDatabaseConfig.get(), databaseProfile);
+            schemas = metadataLoader.load(database, runtimeDatabaseConfig.get(), databaseProfile);
             checks.add(RuntimeDatabaseValidationCheckResult.passed("metadata_read", "Read metadata through the configured JDBC connection."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(RuntimeDatabaseValidationCheckResult.failed("metadata_read", ex.getCategory(), "Failed to read metadata through the configured JDBC connection."));
@@ -101,7 +101,7 @@ public final class RuntimeDatabaseValidationService {
             return createFailureResult(database, checks, ex, recoveryFactory);
         }
         try {
-            validateDatabaseVisibility(database, runtimeDatabaseConfig.get(), databaseMetadata);
+            validateDatabaseVisibility(database, runtimeDatabaseConfig.get(), schemas);
             checks.add(RuntimeDatabaseValidationCheckResult.passed("database_visibility", "Validated the requested database name against visible JDBC metadata and connection context."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(RuntimeDatabaseValidationCheckResult.failed("database_visibility", ex.getCategory(), "The requested database name is not visible to the configured JDBC connection."));
@@ -139,8 +139,8 @@ public final class RuntimeDatabaseValidationService {
         return RuntimeDatabaseValidationResult.failed(database, checks, cause.getCategory(), recoveryFactory.apply(cause));
     }
     
-    private void validateDatabaseVisibility(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final MCPDatabaseMetadata databaseMetadata) {
-        if (containsVisibleSchema(databaseMetadata, database)) {
+    private void validateDatabaseVisibility(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final Collection<ShardingSphereSchema> schemas) {
+        if (containsVisibleSchema(schemas, database)) {
             return;
         }
         try (Connection connection = runtimeDatabaseConfig.openConnection(resolveExceptionDatabaseName(database))) {
@@ -154,9 +154,9 @@ public final class RuntimeDatabaseValidationService {
                 new IllegalStateException(String.format("Requested database `%s` is not visible to the configured JDBC connection.", database)));
     }
     
-    private boolean containsVisibleSchema(final MCPDatabaseMetadata databaseMetadata, final String database) {
-        for (MCPSchemaMetadata each : databaseMetadata.getSchemas()) {
-            if (database.equalsIgnoreCase(each.getSchema())) {
+    private boolean containsVisibleSchema(final Collection<ShardingSphereSchema> schemas, final String database) {
+        for (ShardingSphereSchema each : schemas) {
+            if (database.equalsIgnoreCase(each.getName())) {
                 return true;
             }
         }

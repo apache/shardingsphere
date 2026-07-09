@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
@@ -65,8 +65,8 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         if (database.isEmpty()) {
             return "";
         }
-        List<MCPSchemaMetadata> schemas = databaseContext.getMetadataQueryFacade().querySchemas(database);
-        return 1 == schemas.size() ? schemas.iterator().next().getSchema() : "";
+        List<ShardingSphereSchema> schemas = databaseContext.getMetadataQueryFacade().querySchemas(database);
+        return 1 == schemas.size() ? schemas.iterator().next().getName() : "";
     }
     
     private void checkReadOnlyQuery(final MCPToolArguments toolArguments, final String sql) {

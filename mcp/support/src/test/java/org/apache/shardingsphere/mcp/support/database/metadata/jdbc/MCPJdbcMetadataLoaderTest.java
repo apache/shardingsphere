@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,8 +36,9 @@ class MCPJdbcMetadataLoaderTest extends AbstractMCPJdbcMetadataLoaderTest {
     @Test
     void assertLoad() throws SQLException {
         LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration(createStandardPostgreSQLMetadataConnection())));
-        assertThat(actual.findMetadata("logic_db").map(MCPDatabaseMetadata::getDatabaseType).orElseThrow(), is("PostgreSQL"));
-        assertThat(actual.findMetadata("logic_db").orElseThrow().getDatabaseVersion(), is("16.2"));
+        Collection<ShardingSphereSchema> schemas = actual.findMetadata("logic_db").orElseThrow();
+        assertThat(schemas.size(), is(1));
+        assertThat(schemas.iterator().next().getName(), is("PUBLIC"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -59,9 +61,9 @@ class MCPJdbcMetadataLoaderTest extends AbstractMCPJdbcMetadataLoaderTest {
     @Test
     void assertLoadWithSchemaRegisteredOnce() throws SQLException {
         LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration(createStandardPostgreSQLMetadataConnection())));
-        MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
-        assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.TABLE, "orders"));
-        assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.VIEW, "active_orders"));
-        assertThat(databaseMetadata.getSchemas().size(), is(1));
+        Collection<ShardingSphereSchema> schemas = actual.findMetadata("logic_db").orElseThrow();
+        assertTrue(containsMetadata(schemas, SupportedMCPMetadataObjectType.TABLE, "orders"));
+        assertTrue(containsMetadata(schemas, SupportedMCPMetadataObjectType.VIEW, "active_orders"));
+        assertThat(schemas.size(), is(1));
     }
 }
