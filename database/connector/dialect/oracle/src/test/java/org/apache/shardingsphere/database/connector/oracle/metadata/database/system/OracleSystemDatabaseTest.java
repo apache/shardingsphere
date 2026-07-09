@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.firebird.metadata.database.system;
+package org.apache.shardingsphere.database.connector.oracle.metadata.database.system;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -24,30 +24,29 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class FirebirdSystemDatabaseTest {
+class OracleSystemDatabaseTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
     
     private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, databaseType);
     
     @Test
-    void assertGetSystemDatabases() {
+    void assertGetSystemDatabasesEmpty() {
         assertTrue(systemDatabase.getSystemDatabases().isEmpty());
     }
     
     @Test
     void assertGetSystemSchemasWithDatabaseName() {
-        assertThat(systemDatabase.getSystemSchemas("foo_db"), is(Collections.singleton("system_tables")));
+        assertTrue(systemDatabase.getSystemSchemas("foo_db").isEmpty());
     }
     
     @Test
     void assertGetSystemSchemas() {
-        assertThat(systemDatabase.getSystemSchemas(), is(Arrays.asList("system_lobs", "system_tables")));
+        assertThat(systemDatabase.getSystemSchemas(), is(Arrays.asList("sys", "system_lobs")));
     }
 }

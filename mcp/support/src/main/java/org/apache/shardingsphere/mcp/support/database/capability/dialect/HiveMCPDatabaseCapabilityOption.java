@@ -21,9 +21,6 @@ import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecution
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 
-import java.util.Collection;
-import java.util.List;
-
 /**
  * MCP database capability option for Hive.
  */
@@ -31,10 +28,5 @@ public final class HiveMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCa
     
     public HiveMCPDatabaseCapabilityOption() {
         super("Hive", TransactionCapability.NONE, false, SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, false);
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return List.of("information_schema", "sys");
     }
 }

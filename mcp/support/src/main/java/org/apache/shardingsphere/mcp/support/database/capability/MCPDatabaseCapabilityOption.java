@@ -22,8 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -89,15 +87,6 @@ public interface MCPDatabaseCapabilityOption extends TypedSPI {
      */
     default IdentifierCasePolicySet getIdentifierCasePolicySet() {
         return IdentifierCasePolicyFactory.newSensitivePolicySet();
-    }
-    
-    /**
-     * Get system schemas.
-     *
-     * @return system schemas
-     */
-    default Collection<String> getSystemSchemas() {
-        return List.of();
     }
     
     /**

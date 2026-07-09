@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.firebird.metadata.database.system;
+package org.apache.shardingsphere.database.connector.presto.metadata.database.system;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * System database of Firebird.
+ * System database of Presto.
  */
-public final class FirebirdSystemDatabase implements DialectSystemDatabase {
+public final class PrestoSystemDatabase implements DialectSystemDatabase {
     
-    private static final Collection<String> SYSTEM_SCHEMAS = Arrays.asList("system_lobs", "system_tables");
+    private static final Collection<String> SYSTEM_SCHEMAS = Collections.singleton("information_schema");
     
     @Override
     public Collection<String> getSystemDatabases() {
@@ -37,7 +36,7 @@ public final class FirebirdSystemDatabase implements DialectSystemDatabase {
     
     @Override
     public Collection<String> getSystemSchemas(final String databaseName) {
-        return Collections.singleton("system_tables");
+        return Collections.emptyList();
     }
     
     @Override
@@ -47,6 +46,6 @@ public final class FirebirdSystemDatabase implements DialectSystemDatabase {
     
     @Override
     public String getDatabaseType() {
-        return "Firebird";
+        return "Presto";
     }
 }
