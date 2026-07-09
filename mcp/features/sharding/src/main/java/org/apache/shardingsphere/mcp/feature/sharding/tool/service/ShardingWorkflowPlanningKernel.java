@@ -44,6 +44,8 @@ import java.util.Map;
  */
 final class ShardingWorkflowPlanningKernel {
     
+    private static final List<String> SUPPORTED_LIFECYCLE_OPERATION_TYPES = List.of("create", WorkflowLifecycle.OPERATION_DROP);
+    
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm logical database and sharding intent",
             "Inspect DistSQL-visible sharding state",
@@ -211,6 +213,9 @@ final class ShardingWorkflowPlanningKernel {
                                                           final ShardingWorkflowLifecycleSpec spec) {
         WorkflowContextSnapshot result = prepareSnapshot(workflowSessionContext, sessionId, request, spec.getWorkflowKind(), spec.getDefaultOperationType(), spec.getSummary());
         ShardingWorkflowRequest mergedRequest = (ShardingWorkflowRequest) result.getRequest();
+        if (!planningSupport.ensureSupportedOperationType(result.getClarifiedIntent(), SUPPORTED_LIFECYCLE_OPERATION_TYPES, result)) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+        }
         if (!inputValidator.hasDatabase(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }

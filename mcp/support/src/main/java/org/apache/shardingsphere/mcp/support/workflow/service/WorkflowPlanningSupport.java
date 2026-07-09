@@ -23,9 +23,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFeatureData;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.Collection;
@@ -94,12 +96,13 @@ public final class WorkflowPlanningSupport {
         String actualOperationType = clarifiedIntent.getOperationType().toLowerCase(Locale.ENGLISH);
         if ("create".equals(actualOperationType) && ruleExists) {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
-                    String.format("%s already exists for the target column.", ruleLabel), "Use alter instead of create.", false, Map.of()));
+                    String.format("%s already exists for the target column.", ruleLabel), "Use a supported change path for the existing rule, or drop it before creating a replacement.", false,
+                    Map.of()));
             return false;
         }
         if ("alter".equals(actualOperationType) && !ruleExists) {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
-                    String.format("%s does not exist for the target column.", ruleLabel), "Use create instead of alter or confirm the target column.", false, Map.of()));
+                    String.format("%s does not exist for the target column.", ruleLabel), "Use create or confirm the target column.", false, Map.of()));
             return false;
         }
         if ("drop".equals(actualOperationType) && !ruleExists) {
@@ -108,6 +111,39 @@ public final class WorkflowPlanningSupport {
             return false;
         }
         return true;
+    }
+    
+    /**
+     * Ensure workflow operation type is exposed by the feature contract.
+     *
+     * @param clarifiedIntent clarified intent
+     * @param supportedOperationTypes supported operation types
+     * @param snapshot workflow snapshot
+     * @return whether the operation type is supported
+     */
+    public boolean ensureSupportedOperationType(final ClarifiedIntent clarifiedIntent, final Collection<String> supportedOperationTypes, final WorkflowContextSnapshot snapshot) {
+        if (containsOperationType(supportedOperationTypes, clarifiedIntent.getOperationType())) {
+            return true;
+        }
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.WORKFLOW_STATUS_INVALID, "error", "intaking",
+                "Unsupported workflow operation type.", String.format("Use one of: %s.", String.join(", ", supportedOperationTypes)), false,
+                Map.of("supported_operation_types", supportedOperationTypes)));
+        clarifiedIntent.getInferredValues().remove(WorkflowFieldNames.OPERATION_TYPE);
+        clarifiedIntent.setOperationType("");
+        if (null != snapshot.getRequest()) {
+            snapshot.getRequest().setOperationType("");
+        }
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        return false;
+    }
+    
+    private boolean containsOperationType(final Collection<String> supportedOperationTypes, final String actualOperationType) {
+        for (String each : supportedOperationTypes) {
+            if (each.equalsIgnoreCase(actualOperationType)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

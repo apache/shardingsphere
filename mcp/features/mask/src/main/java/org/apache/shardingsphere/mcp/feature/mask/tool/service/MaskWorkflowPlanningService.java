@@ -44,6 +44,8 @@ import java.util.Map;
  */
 public final class MaskWorkflowPlanningService {
     
+    private static final List<String> SUPPORTED_OPERATION_TYPES = List.of("create", WorkflowLifecycle.OPERATION_DROP);
+    
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm database, table, column and target lifecycle",
             "Inspect mask algorithm plugins and DistSQL-visible rules",
@@ -93,6 +95,9 @@ public final class MaskWorkflowPlanningService {
         WorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
+        if (!planningSupport.ensureSupportedOperationType(clarifiedIntent, SUPPORTED_OPERATION_TYPES, result)) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+        }
         if (!planningSupport.ensurePlanningContext(metadataQueryFacade, mergedRequest, clarifiedIntent, result)) {
             String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
             return workflowSessionContext.persist(result, currentStep, result.getStatus());
@@ -143,8 +148,8 @@ public final class MaskWorkflowPlanningService {
                                                     final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot) {
         snapshot.getClarifiedIntent().getClarificationMessages().add(
                 "Current Proxy DistSQL cannot automatically mutate an existing mask table rule. Recreate the mask rule manually with the complete column set during a maintenance window.");
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED, "error", "planning-artifacts",
-                "Mask planning cannot automatically alter an existing table rule or shrink it while preserving remaining columns in V1.",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.MASK_RULE_REWRITE_LIMITED, "error", "planning-artifacts",
+                "Mask planning cannot automatically rewrite an existing table rule or shrink it while preserving remaining columns.",
                 "Manually recreate the mask rule with the complete column set after reviewing data impact.", true,
                 Map.of("operation_type", clarifiedIntent.getOperationType(), "target_column", request.getColumn(), "existing_columns", createExistingRuleColumns(maskRules))));
         return false;

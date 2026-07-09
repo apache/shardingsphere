@@ -131,7 +131,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     
     private boolean isEncryptRuleDistSQL(final String sql) {
         String actualSQL = sql.trim().toUpperCase(Locale.ENGLISH);
-        return actualSQL.startsWith("CREATE ENCRYPT RULE") || actualSQL.startsWith("ALTER ENCRYPT RULE");
+        return actualSQL.startsWith("CREATE ENCRYPT RULE");
     }
     
     private Map<String, Object> createValidationIssue(final String message, final String sql) {
@@ -176,7 +176,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         }
         if (actualRule.isEmpty()) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
-                    "Encrypt rule is missing.", "Create or alter the encrypt rule again."));
+                    "Encrypt rule is missing.", "Generate the encrypt rule artifact again and re-run validation."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Encrypt rule is missing.");
         }
         Map<String, Object> actualRuleValue = actualRule.get();

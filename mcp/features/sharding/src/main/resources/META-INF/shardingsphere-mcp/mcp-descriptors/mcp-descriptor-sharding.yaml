@@ -329,7 +329,7 @@ prompts:
         required: false
       - name: operation_type
         title: Operation Type
-        description: "create, alter, or drop."
+        description: "create or drop."
         required: false
       - name: algorithm_type
         title: Sharding Algorithm
@@ -361,14 +361,14 @@ prompts:
     description: "Guide the model to plan sharding table reference rule DistSQL."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-table-reference-rule.md
-    arguments: &commonPromptArguments
+    arguments:
       - name: database
         title: Logical Database
         description: "ShardingSphere logical database."
         required: false
       - name: operation_type
         title: Operation Type
-        description: "create, alter, or drop."
+        description: "create or drop."
         required: false
       - name: plan_id
         title: Workflow Plan ID
@@ -400,7 +400,7 @@ prompts:
         required: false
       - name: operation_type
         title: Operation Type
-        description: "create, alter, or drop."
+        description: "create or drop."
         required: false
       - name: algorithm_type
         title: Sharding Algorithm
@@ -437,7 +437,7 @@ prompts:
         required: false
       - name: operation_type
         title: Operation Type
-        description: "create, alter, or drop."
+        description: "create or drop."
         required: false
       - name: key_generator_type
         title: Key Generator Algorithm
@@ -474,7 +474,7 @@ prompts:
         required: false
       - name: operation_type
         title: Operation Type
-        description: "create, alter, or drop."
+        description: "create or drop."
         required: false
       - name: key_generator_type
         title: Key Generator Algorithm
@@ -505,7 +505,19 @@ prompts:
     description: "Guide the model to clean up unused sharding algorithms, key generators, or auditors."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-sharding-rule-component-cleanup.md
-    arguments: *commonPromptArguments
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database."
+        required: false
+      - name: operation_type
+        title: Operation Type
+        description: "drop."
+        required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Existing current-session workflow plan identifier used only to continue this cleanup plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_sharding_rule_component_cleanup
@@ -605,7 +617,7 @@ resourceNavigation:
     carriedArguments:
       - database
       - table
-    description: "Use current table rule state before planning create, alter, or drop."
+    description: "Use current table rule state before planning create or drop."
   - from: shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes
     to: database_gateway_plan_sharding_table_rule
     requiredArguments:
@@ -630,7 +642,7 @@ resourceNavigation:
     carriedArguments:
       - database
       - rule
-    description: "Use one table reference rule before planning alter or drop."
+    description: "Use one table reference rule before planning drop."
   - from: shardingsphere://features/sharding/databases/{database}/default-strategy
     to: database_gateway_plan_sharding_default_strategy
     requiredArguments:
@@ -653,7 +665,7 @@ resourceNavigation:
     carriedArguments:
       - database
       - keyGenerator
-    description: "Use one key generator before planning alter or drop."
+    description: "Use one key generator before planning drop."
   - from: shardingsphere://features/sharding/databases/{database}/key-generate-strategies
     to: database_gateway_plan_sharding_key_generate_strategy
     requiredArguments:
@@ -669,7 +681,7 @@ resourceNavigation:
     carriedArguments:
       - database
       - strategy
-    description: "Use one key generate strategy before planning alter or drop."
+    description: "Use one key generate strategy before planning drop."
   - from: shardingsphere://features/sharding/databases/{database}/unused-algorithms
     to: database_gateway_plan_sharding_rule_component_cleanup
     requiredArguments:
@@ -778,7 +790,7 @@ resourceNavigation:
 tools:
   - name: database_gateway_plan_sharding_table_rule
     title: Plan Sharding Table Rule
-    description: "Plan reviewable sharding table rule DistSQL without executing it. Use this before raw SQL for natural-language requests to create, alter, or drop database/table sharding rules."
+    description: "Plan reviewable sharding table rule DistSQL without executing it. Use this before raw SQL for natural-language requests to create or drop database/table sharding rules."
     inputSchema:
       type: object
       properties:
@@ -786,7 +798,7 @@ tools:
         database: {type: string, description: "Logical database."}
         table: {type: string, description: "Logical table."}
         column: {type: string, description: "Standard or auto-table sharding column."}
-        operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
+        operation_type: {type: string, description: "create or drop.", enum: [create, drop]}
         data_nodes: {type: string, description: "Explicit data nodes expression for a sharding table rule."}
         storage_units: {type: string, description: "Comma-separated storage units for an auto table rule."}
         strategy_type: {type: string, description: "Sharding strategy type.", enum: [standard, complex, hint, none]}
@@ -896,7 +908,7 @@ tools:
         plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         rule: {type: string, description: "Table reference rule name."}
-        operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
+        operation_type: {type: string, description: "create or drop.", enum: [create, drop]}
         reference_tables: {type: string, description: "Comma-separated reference table names."}
         natural_language_intent: {type: string, description: "Original user request."}
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
@@ -932,7 +944,7 @@ tools:
       properties:
         plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
-        operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
+        operation_type: {type: string, description: "create or drop.", enum: [create, drop]}
         default_strategy_type: {type: string, description: "DATABASE or TABLE default strategy type.", enum: [DATABASE, TABLE]}
         strategy_type: {type: string, description: "Sharding strategy type.", enum: [standard, complex, hint, none]}
         column: {type: string, description: "Default sharding column for standard strategies."}
@@ -975,7 +987,7 @@ tools:
         plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         key_generator: {type: string, description: "Key generator name."}
-        operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
+        operation_type: {type: string, description: "create or drop.", enum: [create, drop]}
         key_generator_type: {type: string, description: "Key generator algorithm type."}
         key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
         natural_language_intent: {type: string, description: "Original user request."}
@@ -1014,7 +1026,7 @@ tools:
         plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         key_generate_strategy: {type: string, description: "Key generate strategy name."}
-        operation_type: {type: string, description: "create, alter, or drop.", enum: [create, alter, drop]}
+        operation_type: {type: string, description: "create or drop.", enum: [create, drop]}
         table: {type: string, description: "Logical table for a table-based key generate strategy."}
         column: {type: string, description: "Key generate column for a table-based strategy."}
         sequence: {type: string, description: "Sequence name for a sequence-based strategy."}

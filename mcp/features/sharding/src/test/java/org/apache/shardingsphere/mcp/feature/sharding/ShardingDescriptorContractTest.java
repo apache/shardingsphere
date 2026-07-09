@@ -66,7 +66,21 @@ class ShardingDescriptorContractTest {
         MCPToolDescriptor actual = findTool(catalog, ShardingFeatureDefinition.PLAN_TABLE_RULE_TOOL_NAME);
         assertThat(actual.getDescription(),
                 is("Plan reviewable sharding table rule DistSQL without executing it. "
-                        + "Use this before raw SQL for natural-language requests to create, alter, or drop database/table sharding rules."));
+                        + "Use this before raw SQL for natural-language requests to create or drop database/table sharding rules."));
+    }
+    
+    @Test
+    void assertPlanningToolOperationTypesExposeOnlySupportedLifecycleActions() {
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        for (String each : List.of(
+                ShardingFeatureDefinition.PLAN_TABLE_RULE_TOOL_NAME,
+                ShardingFeatureDefinition.PLAN_TABLE_REFERENCE_TOOL_NAME,
+                ShardingFeatureDefinition.PLAN_DEFAULT_STRATEGY_TOOL_NAME,
+                ShardingFeatureDefinition.PLAN_KEY_GENERATOR_TOOL_NAME,
+                ShardingFeatureDefinition.PLAN_KEY_GENERATE_STRATEGY_TOOL_NAME)) {
+            assertOperationTypeEnum(findTool(catalog, each), List.of("create", "drop"));
+        }
+        assertOperationTypeEnum(findTool(catalog, ShardingFeatureDefinition.PLAN_COMPONENT_CLEANUP_TOOL_NAME), List.of("drop"));
     }
     
     private MCPPromptDescriptor findPrompt(final MCPDescriptorCatalog catalog, final String promptName) {
@@ -75,6 +89,12 @@ class ShardingDescriptorContractTest {
     
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getProtocolDescriptors().getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private void assertOperationTypeEnum(final MCPToolDescriptor descriptor, final List<String> expectedValues) {
+        Map<?, ?> properties = (Map<?, ?>) descriptor.getInputSchema().get("properties");
+        Map<?, ?> operationType = (Map<?, ?>) properties.get("operation_type");
+        assertThat(operationType.get("enum"), is(expectedValues));
     }
     
     private void assertCompletionTargetArguments(final MCPDescriptorCatalog catalog, final String promptName, final String... expectedArguments) {

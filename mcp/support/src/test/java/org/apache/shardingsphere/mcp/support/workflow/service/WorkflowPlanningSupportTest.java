@@ -25,9 +25,11 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMe
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -258,6 +260,35 @@ class WorkflowPlanningSupportTest {
         if (null != expectedIssueCode) {
             assertThat(snapshot.getIssues().getFirst().getCode(), is(expectedIssueCode));
         }
+    }
+    
+    @Test
+    void assertEnsureSupportedOperationTypeAllowsSupportedOperation() {
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        clarifiedIntent.setOperationType("create");
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        boolean actual = planningSupport.ensureSupportedOperationType(clarifiedIntent, List.of("create", WorkflowLifecycle.OPERATION_DROP), snapshot);
+        assertTrue(actual);
+        assertTrue(snapshot.getIssues().isEmpty());
+    }
+    
+    @Test
+    void assertEnsureSupportedOperationTypeRejectsUnsupportedOperation() {
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        clarifiedIntent.setOperationType("replace");
+        clarifiedIntent.getInferredValues().put(WorkflowFieldNames.OPERATION_TYPE, "replace");
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        WorkflowRequest request = new WorkflowRequest();
+        request.setOperationType("replace");
+        snapshot.setRequest(request);
+        boolean actual = planningSupport.ensureSupportedOperationType(clarifiedIntent, List.of("create", WorkflowLifecycle.OPERATION_DROP), snapshot);
+        assertFalse(actual);
+        assertThat(clarifiedIntent.getOperationType(), is(""));
+        assertFalse(clarifiedIntent.getInferredValues().containsKey(WorkflowFieldNames.OPERATION_TYPE));
+        assertThat(request.getOperationType(), is(""));
+        assertThat(snapshot.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertThat(snapshot.getIssues().getFirst().getDetails(), is(Map.of("supported_operation_types", List.of("create", WorkflowLifecycle.OPERATION_DROP))));
     }
     
     @Test

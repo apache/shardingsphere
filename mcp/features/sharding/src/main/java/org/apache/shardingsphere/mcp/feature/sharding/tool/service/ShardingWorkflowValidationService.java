@@ -89,7 +89,7 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     }
     
     private void addRuleDistSQLIssues(final List<Map<String, Object>> issues, final WorkflowContextSnapshot snapshot, final String sql, final String displaySql) {
-        if (!isCreateOrAlterShardingDistSQL(sql) || !(snapshot.getRequest() instanceof ShardingWorkflowRequest)) {
+        if (!isRuleDefinitionDistSQL(sql) || !(snapshot.getRequest() instanceof ShardingWorkflowRequest)) {
             return;
         }
         ShardingWorkflowRequest request = (ShardingWorkflowRequest) snapshot.getRequest();
@@ -110,10 +110,9 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
         }
     }
     
-    private boolean isCreateOrAlterShardingDistSQL(final String sql) {
+    private boolean isRuleDefinitionDistSQL(final String sql) {
         String actualSQL = sql.trim().toUpperCase(Locale.ENGLISH);
-        return actualSQL.startsWith("CREATE SHARDING ") || actualSQL.startsWith("ALTER SHARDING ")
-                || actualSQL.startsWith("CREATE DEFAULT SHARDING ") || actualSQL.startsWith("ALTER DEFAULT SHARDING ");
+        return actualSQL.startsWith("CREATE SHARDING ") || actualSQL.startsWith("CREATE DEFAULT SHARDING ");
     }
     
     private void addTableRuleAlgorithmIssues(final List<Map<String, Object>> issues, final ShardingWorkflowRequest request, final String displaySql) {

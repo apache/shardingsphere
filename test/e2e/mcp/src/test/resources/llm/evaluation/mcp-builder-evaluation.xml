@@ -159,7 +159,7 @@
       database_gateway_plan_broadcast_rule, database_gateway_plan_readwrite_splitting_rule, database_gateway_plan_shadow_rule, or
       database_gateway_plan_sharding_table_rule. The model should then report plan_id, reviewable DistSQL artifacts, resources_to_read,
       and next_actions. It must not call database_gateway_apply_workflow in execute mode, execute SQL updates, create physical metadata,
-      or perform migration while the request is still a read-only review.
+      or perform physical data changes while the request is still a read-only review.
     </expected_answer>
     <verification>
       <step>Confirm the answer discovers feature resources and tool schemas before selecting a planning workflow.</step>

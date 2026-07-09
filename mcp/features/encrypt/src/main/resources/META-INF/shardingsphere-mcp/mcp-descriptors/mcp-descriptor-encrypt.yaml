@@ -33,7 +33,7 @@ resourceTemplates:
   - uriTemplate: shardingsphere://features/encrypt/databases/{database}/rules
     name: encrypt-rules
     title: Encrypt Rules
-    description: "List encrypt table rules for one ShardingSphere logical database. Read this before altering or validating encrypt configuration."
+    description: "List encrypt table rules for one ShardingSphere logical database. Read this before planning or validating encrypt configuration."
     mimeType: application/json
     shardingSphereMetadata:
       uriVariables:
@@ -203,7 +203,6 @@ tools:
           description: "Encrypt rule lifecycle operation requested by the user."
           enum:
             - create
-            - alter
             - drop
         natural_language_intent:
           type: string
@@ -249,13 +248,13 @@ tools:
           description: "LIKE-query algorithm type override used when LIKE predicates must remain usable."
         cipher_column_name:
           type: string
-          description: "Cipher column name to put into CREATE or ALTER ENCRYPT RULE."
+          description: "Cipher column name to put into encrypt rule DistSQL."
         assisted_query_column_name:
           type: string
-          description: "Assisted-query column name to put into CREATE or ALTER ENCRYPT RULE when equality filtering is required."
+          description: "Assisted-query column name to put into encrypt rule DistSQL when equality filtering is required."
         like_query_column_name:
           type: string
-          description: "LIKE-query column name to put into CREATE or ALTER ENCRYPT RULE when LIKE query support is required."
+          description: "LIKE-query column name to put into encrypt rule DistSQL when LIKE query support is required."
         primary_algorithm_properties:
           type: object
           description: "Plugin-defined primary encrypt algorithm properties. Values may be strings or protected placeholder objects with secret_ref and optional label; placeholders require manual execution outside MCP."
