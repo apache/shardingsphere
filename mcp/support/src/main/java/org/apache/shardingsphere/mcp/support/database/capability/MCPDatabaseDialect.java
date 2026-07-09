@@ -81,8 +81,7 @@ public final class MCPDatabaseDialect {
      * @return identifier quote character
      */
     public QuoteCharacter getIdentifierQuoteCharacter() {
-        return dialectDatabaseMetaData.map(DialectDatabaseMetaData::getQuoteCharacter)
-                .orElseGet(() -> option.map(MCPDatabaseCapabilityOption::getIdentifierQuoteCharacter).orElseGet(this::getFallbackIdentifierQuoteCharacter));
+        return dialectDatabaseMetaData.map(DialectDatabaseMetaData::getQuoteCharacter).orElseGet(this::getFallbackIdentifierQuoteCharacter);
     }
     
     private QuoteCharacter getFallbackIdentifierQuoteCharacter() {
@@ -130,7 +129,7 @@ public final class MCPDatabaseDialect {
      * @return whether unquoted identifiers are folded
      */
     public boolean isUnquotedIdentifierCaseFolded() {
-        return isLowerCaseDialectIdentifierPattern() || option.map(MCPDatabaseCapabilityOption::isUnquotedIdentifierCaseFolded).orElse(false);
+        return isLowerCaseDialectIdentifierPattern();
     }
     
     private boolean isLowerCaseDialectIdentifierPattern() {

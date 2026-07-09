@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
@@ -38,16 +36,6 @@ public final class OpenGaussMCPDatabaseCapabilityOption extends AbstractMCPDatab
     public OpenGaussMCPDatabaseCapabilityOption() {
         super("openGauss", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                 SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
-    }
-    
-    @Override
-    public IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return IdentifierCasePolicyFactory.newLowerCasePolicySet();
-    }
-    
-    @Override
-    public boolean isUnquotedIdentifierCaseFolded() {
-        return true;
     }
     
     @Override

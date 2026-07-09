@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
@@ -84,30 +83,12 @@ public interface MCPDatabaseCapabilityOption extends TypedSPI {
     boolean isSequenceSupported();
     
     /**
-     * Get identifier quote character.
-     *
-     * @return identifier quote character
-     */
-    default QuoteCharacter getIdentifierQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
-    }
-    
-    /**
      * Get identifier case policy set.
      *
      * @return identifier case policy set
      */
     default IdentifierCasePolicySet getIdentifierCasePolicySet() {
         return IdentifierCasePolicyFactory.newSensitivePolicySet();
-    }
-    
-    /**
-     * Judge whether unquoted identifiers are folded by database metadata lookup.
-     *
-     * @return whether unquoted identifiers are folded
-     */
-    default boolean isUnquotedIdentifierCaseFolded() {
-        return false;
     }
     
     /**

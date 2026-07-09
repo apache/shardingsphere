@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
@@ -26,16 +31,22 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class WorkflowValidationSupportTest {
     
@@ -131,7 +142,12 @@ class WorkflowValidationSupportTest {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getRequest().setTable("order detail");
         snapshot.getRequest().setColumn("Phone Number");
-        assertThat(validationSupport.createProjectionValidationSql(snapshot, "MySQL"), is("SELECT `Phone Number` FROM `order detail`"));
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockQuoteCharacter("MySQL", QuoteCharacter.BACK_QUOTE, typedSPILoader, databaseTypedSPILoader);
+            assertThat(validationSupport.createProjectionValidationSql(snapshot, "MySQL"), is("SELECT `Phone Number` FROM `order detail`"));
+        }
     }
     
     @Test
@@ -139,7 +155,12 @@ class WorkflowValidationSupportTest {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getRequest().setTable("order detail");
         snapshot.getRequest().setColumn("Phone Number");
-        assertThat(validationSupport.createProjectionValidationSql(snapshot, "PostgreSQL"), is("SELECT \"Phone Number\" FROM \"order detail\""));
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockQuoteCharacter("PostgreSQL", QuoteCharacter.QUOTE, typedSPILoader, databaseTypedSPILoader);
+            assertThat(validationSupport.createProjectionValidationSql(snapshot, "PostgreSQL"), is("SELECT \"Phone Number\" FROM \"order detail\""));
+        }
     }
     
     @Test
@@ -227,6 +248,16 @@ class WorkflowValidationSupportTest {
         assertThat(actualMismatch.get("actual"), is("actual"));
         assertThat(actualMismatch.get("impact"), is("impact"));
         assertThat(actualMismatch.get("remediation"), is("fix it"));
+    }
+    
+    private static void mockQuoteCharacter(final String databaseType, final QuoteCharacter quoteCharacter,
+                                           final MockedStatic<TypedSPILoader> typedSPILoader, final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
+        DatabaseType databaseTypeFromSPI = mock(DatabaseType.class);
+        when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(quoteCharacter);
+        databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectDatabaseMetaData));
     }
     
     private WorkflowContextSnapshot createSnapshot() {

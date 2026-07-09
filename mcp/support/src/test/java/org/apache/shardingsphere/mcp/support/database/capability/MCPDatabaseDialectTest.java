@@ -56,23 +56,21 @@ class MCPDatabaseDialectTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getIdentifierQuoteCharacterArguments")
     void assertGetIdentifierQuoteCharacter(final String name, final String databaseType, final QuoteCharacter expected) {
-        QuoteCharacter actual = MCPDatabaseDialect.of(databaseType).getIdentifierQuoteCharacter();
-        assertThat(actual, is(expected));
-    }
-    
-    @Test
-    void assertGetIdentifierQuoteCharacterFromDialectDatabaseMetaData() {
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DatabaseType databaseType = mockDatabaseType("FixtureWithOption", typedSPILoader);
-            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
-            when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(QuoteCharacter.BRACKETS);
-            MCPDatabaseCapabilityOption option = mockMCPDatabaseCapabilityOption("FixtureWithOption", typedSPILoader);
-            when(option.getIdentifierQuoteCharacter()).thenReturn(QuoteCharacter.BACK_QUOTE);
-            QuoteCharacter actual = MCPDatabaseDialect.of("FixtureWithOption").getIdentifierQuoteCharacter();
-            assertThat(actual, is(QuoteCharacter.BRACKETS));
+            DatabaseType databaseTypeFromSPI = mockDatabaseType(databaseType, typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseTypeFromSPI, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(expected);
+            QuoteCharacter actual = MCPDatabaseDialect.of(databaseType).getIdentifierQuoteCharacter();
+            assertThat(actual, is(expected));
         }
+    }
+    
+    @Test
+    void assertGetIdentifierQuoteCharacterWithUnknownDatabaseType() {
+        QuoteCharacter actual = MCPDatabaseDialect.of("FixtureDB").getIdentifierQuoteCharacter();
+        assertThat(actual, is(QuoteCharacter.QUOTE));
     }
     
     @Test
@@ -105,22 +103,22 @@ class MCPDatabaseDialectTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("isUnquotedIdentifierCaseFoldedArguments")
-    void assertIsUnquotedIdentifierCaseFolded(final String name, final String databaseType, final boolean expected) {
-        boolean actual = MCPDatabaseDialect.of(databaseType).isUnquotedIdentifierCaseFolded();
-        assertThat(actual, is(expected));
-    }
-    
-    @Test
-    void assertIsUnquotedIdentifierCaseFoldedFromDialectDatabaseMetaData() {
+    void assertIsUnquotedIdentifierCaseFolded(final String name, final String databaseType, final IdentifierPatternType identifierPatternType, final boolean expected) {
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
-            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
-            when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.LOWER_CASE);
-            boolean actual = MCPDatabaseDialect.of("Fixture").isUnquotedIdentifierCaseFolded();
-            assertTrue(actual);
+            DatabaseType databaseTypeFromSPI = mockDatabaseType(databaseType, typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseTypeFromSPI, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(identifierPatternType);
+            boolean actual = MCPDatabaseDialect.of(databaseType).isUnquotedIdentifierCaseFolded();
+            assertThat(actual, is(expected));
         }
+    }
+    
+    @Test
+    void assertIsUnquotedIdentifierCaseFoldedWithUnknownDatabaseType() {
+        boolean actual = MCPDatabaseDialect.of("FixtureDB").isUnquotedIdentifierCaseFolded();
+        assertFalse(actual);
     }
     
     @ParameterizedTest(name = "{0}")
@@ -132,18 +130,6 @@ class MCPDatabaseDialectTest {
     
     @Test
     void assertIsSystemSchema() {
-        boolean actual = MCPDatabaseDialect.of("PostgreSQL").isSystemSchema("PG_CATALOG");
-        assertTrue(actual);
-    }
-    
-    @Test
-    void assertIsSystemSchemaWithCatalog() {
-        boolean actual = MCPDatabaseDialect.of("MySQL").isSystemSchema("", "information_schema", SchemaSemantics.DATABASE_AS_SCHEMA);
-        assertTrue(actual);
-    }
-    
-    @Test
-    void assertIsSystemSchemaFromDialectSystemDatabase() {
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
@@ -152,6 +138,20 @@ class MCPDatabaseDialectTest {
             DialectSystemDatabase dialectSystemDatabase = mockDialectSystemDatabase(databaseType, databaseTypedSPILoader);
             when(dialectSystemDatabase.getSystemSchemas()).thenReturn(List.of("fixture_system"));
             boolean actual = MCPDatabaseDialect.of("Fixture").isSystemSchema("fixture_system");
+            assertTrue(actual);
+        }
+    }
+    
+    @Test
+    void assertIsSystemSchemaWithCatalog() {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
+            mockDialectDatabaseMetaDataAbsent(databaseType, databaseTypedSPILoader);
+            DialectSystemDatabase dialectSystemDatabase = mockDialectSystemDatabase(databaseType, databaseTypedSPILoader);
+            when(dialectSystemDatabase.getSystemSchemas()).thenReturn(List.of("fixture_system"));
+            boolean actual = MCPDatabaseDialect.of("Fixture").isSystemSchema("", "fixture_system", SchemaSemantics.DATABASE_AS_SCHEMA);
             assertTrue(actual);
         }
     }
@@ -208,19 +208,15 @@ class MCPDatabaseDialectTest {
     
     private static Stream<Arguments> getIdentifierQuoteCharacterArguments() {
         return Stream.of(
-                Arguments.of("mysql", "MySQL", QuoteCharacter.BACK_QUOTE),
-                Arguments.of("hive", "Hive", QuoteCharacter.BACK_QUOTE),
-                Arguments.of("sql server", "SQLServer", QuoteCharacter.BRACKETS),
-                Arguments.of("postgresql", "PostgreSQL", QuoteCharacter.QUOTE),
-                Arguments.of("unknown", "FixtureDB", QuoteCharacter.QUOTE));
+                Arguments.of("back quote", "FixtureBackQuote", QuoteCharacter.BACK_QUOTE),
+                Arguments.of("brackets", "FixtureBrackets", QuoteCharacter.BRACKETS),
+                Arguments.of("quote", "FixtureQuote", QuoteCharacter.QUOTE));
     }
     
     private static Stream<Arguments> isUnquotedIdentifierCaseFoldedArguments() {
         return Stream.of(
-                Arguments.of("postgresql", "PostgreSQL", true),
-                Arguments.of("open gauss", "openGauss", true),
-                Arguments.of("mysql", "MySQL", false),
-                Arguments.of("unknown", "FixtureDB", false));
+                Arguments.of("lower case", "FixtureLowerCase", IdentifierPatternType.LOWER_CASE, true),
+                Arguments.of("keep origin", "FixtureKeepOrigin", IdentifierPatternType.KEEP_ORIGIN, false));
     }
     
     private static DatabaseType mockDatabaseType(final String databaseType, final MockedStatic<TypedSPILoader> typedSPILoader) {
