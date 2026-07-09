@@ -354,6 +354,7 @@ prompts:
         - shardingsphere://features/sharding/algorithm-plugins
         - shardingsphere://features/sharding/key-generate-algorithm-plugins
         - shardingsphere://features/sharding/databases/{database}/table-rules
+        - shardingsphere://features/sharding/databases/{database}/table-nodes
         - shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule
         - shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes
       org.apache.shardingsphere/stop-conditions:
@@ -903,6 +904,7 @@ tools:
         - shardingsphere://features/sharding/algorithm-plugins
         - shardingsphere://features/sharding/key-generate-algorithm-plugins
         - shardingsphere://features/sharding/databases/{database}/table-rules
+        - shardingsphere://features/sharding/databases/{database}/table-nodes
         - shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule
         - shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes
       org.apache.shardingsphere/follow-up-tools:

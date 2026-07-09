@@ -79,6 +79,7 @@ class ShardingToolHandlerTest {
         assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/algorithm-plugins"), is("algorithm"));
         assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/key-generate-algorithm-plugins"), is("algorithm"));
         assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/table-rules"), is("rule"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/table-nodes"), is("rule"));
         assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/tables/t_order/table-rule"), is("rule"));
         assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/tables/t_order/nodes"), is("rule"));
         ArgumentCaptor<ShardingTableRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingTableRuleWorkflowRequest.class);
