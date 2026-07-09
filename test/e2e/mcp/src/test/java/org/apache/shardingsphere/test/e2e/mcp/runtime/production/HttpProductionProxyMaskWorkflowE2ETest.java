@@ -80,11 +80,11 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                     is("KEEP_FIRST_N_LAST_M"));
             Map<String, Object> actualUnsupportedPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "operation_type", "replace", "algorithm_type", "KEEP_FIRST_N_LAST_M",
+                            "natural_language_intent", "update status mask rule", "algorithm_type", "KEEP_FIRST_N_LAST_M",
                             "primary_algorithm_properties", Map.of("first-n", "2", "last-m", "2", "replace-char", "#")));
             assertThat(String.valueOf(actualUnsupportedPlanResponse.get("status")), is("failed"));
             assertThat(getIssueCodes(actualUnsupportedPlanResponse), hasItem(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
-            assertFalse(String.valueOf(actualUnsupportedPlanResponse).toLowerCase(Locale.ENGLISH).contains("replace"));
+            assertFalse(String.valueOf(actualUnsupportedPlanResponse).toLowerCase(Locale.ENGLISH).contains("alter"));
             assertThat(getMapList(actualUnsupportedPlanResponse.get("distsql_artifacts")).size(), is(0));
         }
     }

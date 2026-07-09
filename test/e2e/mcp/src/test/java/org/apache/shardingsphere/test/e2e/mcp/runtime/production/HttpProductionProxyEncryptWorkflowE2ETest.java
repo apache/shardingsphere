@@ -270,11 +270,11 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             createEncryptRuleWithoutEquality(interactionClient);
             Map<String, Object> actualUnsupportedPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "encrypt status with reversible encryption, update to require equality and no like", "operation_type", "replace",
-                            "primary_algorithm_properties", Map.of("aes-key-value", "replace-secret")));
+                            "natural_language_intent", "encrypt status with reversible encryption, update to require equality and no like",
+                            "primary_algorithm_properties", Map.of("aes-key-value", "unsupported-secret")));
             assertThat(String.valueOf(actualUnsupportedPlanResponse.get("status")), is("failed"));
             assertThat(getIssueCodes(actualUnsupportedPlanResponse), hasItem(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
-            assertFalse(String.valueOf(actualUnsupportedPlanResponse).toLowerCase(Locale.ENGLISH).contains("replace"));
+            assertFalse(String.valueOf(actualUnsupportedPlanResponse).toLowerCase(Locale.ENGLISH).contains("alter"));
             assertFalse(actualUnsupportedPlanResponse.containsKey("ddl_artifacts"));
             assertThat(getMapList(actualUnsupportedPlanResponse.get("distsql_artifacts")).size(), is(0));
         }
