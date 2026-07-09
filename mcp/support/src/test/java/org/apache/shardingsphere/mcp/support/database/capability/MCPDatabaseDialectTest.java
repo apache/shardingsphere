@@ -172,38 +172,6 @@ class MCPDatabaseDialectTest {
     }
     
     @Test
-    void assertIsSystemSchemaWithOptionSystemSchema() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DatabaseType databaseType = mockDatabaseType("FixtureWithOption", typedSPILoader);
-            mockDialectDatabaseMetaDataAbsent(databaseType, databaseTypedSPILoader);
-            DialectSystemDatabase dialectSystemDatabase = mockDialectSystemDatabase(databaseType, databaseTypedSPILoader);
-            when(dialectSystemDatabase.getSystemSchemas()).thenReturn(List.of("dialect_system"));
-            MCPDatabaseCapabilityOption option = mockMCPDatabaseCapabilityOption("FixtureWithOption", typedSPILoader);
-            when(option.getSystemSchemas()).thenReturn(List.of("option_system"));
-            boolean actual = MCPDatabaseDialect.of("FixtureWithOption").isSystemSchema("option_system");
-            assertTrue(actual);
-        }
-    }
-    
-    @Test
-    void assertIsSystemSchemaIgnoresDifferentDialectSystemSchema() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DatabaseType databaseType = mockDatabaseType("FixtureWithOption", typedSPILoader);
-            mockDialectDatabaseMetaDataAbsent(databaseType, databaseTypedSPILoader);
-            DialectSystemDatabase dialectSystemDatabase = mockDialectSystemDatabase(databaseType, databaseTypedSPILoader);
-            when(dialectSystemDatabase.getSystemSchemas()).thenReturn(List.of("dialect_system"));
-            MCPDatabaseCapabilityOption option = mockMCPDatabaseCapabilityOption("FixtureWithOption", typedSPILoader);
-            when(option.getSystemSchemas()).thenReturn(List.of("option_system"));
-            boolean actual = MCPDatabaseDialect.of("FixtureWithOption").isSystemSchema("dialect_system");
-            assertFalse(actual);
-        }
-    }
-    
-    @Test
     void assertIsSystemSchemaWithUserSchema() {
         boolean actual = MCPDatabaseDialect.of("MySQL").isSystemSchema("orders");
         assertFalse(actual);

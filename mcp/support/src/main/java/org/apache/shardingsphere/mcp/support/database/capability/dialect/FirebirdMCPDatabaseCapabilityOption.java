@@ -21,8 +21,6 @@ import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecution
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -36,11 +34,6 @@ public final class FirebirdMCPDatabaseCapabilityOption extends AbstractMCPDataba
     public FirebirdMCPDatabaseCapabilityOption() {
         super("Firebird", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                 SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return List.of("system_lobs", "system_tables");
     }
     
     @Override
