@@ -99,11 +99,11 @@ public final class MCPDatabaseDialect {
     }
     
     private IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return findLowerCaseDialectIdentifierCasePolicySet()
+        return findDialectIdentifierCasePolicySet()
                 .orElseGet(() -> option.map(MCPDatabaseCapabilityOption::getIdentifierCasePolicySet).orElseGet(IdentifierCasePolicyFactory::newSensitivePolicySet));
     }
     
-    private Optional<IdentifierCasePolicySet> findLowerCaseDialectIdentifierCasePolicySet() {
+    private Optional<IdentifierCasePolicySet> findDialectIdentifierCasePolicySet() {
         return dialectDatabaseMetaData.flatMap(MCPDatabaseDialect::createDialectIdentifierCasePolicySet);
     }
     
