@@ -21,12 +21,11 @@ import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflo
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Sharding algorithm and key-generator recommendation service.
@@ -60,9 +59,9 @@ public final class ShardingAlgorithmRecommendationService {
     }
     
     private List<AlgorithmCandidate> recommendAlgorithm(final String algorithmType, final List<Map<String, Object>> algorithmRows, final List<WorkflowIssue> issues) {
-        String actualAlgorithmType = Objects.toString(algorithmType, "").trim().toUpperCase(Locale.ENGLISH);
+        String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(algorithmType);
         if (!actualAlgorithmType.isEmpty()) {
-            if (algorithmRows.isEmpty() || containsAlgorithm(algorithmRows, actualAlgorithmType)) {
+            if (algorithmRows.isEmpty() || WorkflowAlgorithmUtils.containsAlgorithm(algorithmRows, actualAlgorithmType, "type", "name")) {
                 return List.of(createCandidate("primary", actualAlgorithmType, 100, "User specified sharding algorithm."));
             }
             addAlgorithmNotFoundIssue(issues, "Sharding algorithm", actualAlgorithmType);
@@ -77,9 +76,9 @@ public final class ShardingAlgorithmRecommendationService {
     }
     
     private List<AlgorithmCandidate> recommendKeyGenerator(final String keyGeneratorType, final List<Map<String, Object>> keyGeneratorRows, final List<WorkflowIssue> issues) {
-        String actualKeyGeneratorType = Objects.toString(keyGeneratorType, "").trim().toUpperCase(Locale.ENGLISH);
+        String actualKeyGeneratorType = WorkflowAlgorithmUtils.normalizeAlgorithmType(keyGeneratorType);
         if (!actualKeyGeneratorType.isEmpty()) {
-            if (keyGeneratorRows.isEmpty() || containsAlgorithm(keyGeneratorRows, actualKeyGeneratorType)) {
+            if (keyGeneratorRows.isEmpty() || WorkflowAlgorithmUtils.containsAlgorithm(keyGeneratorRows, actualKeyGeneratorType, "type", "name")) {
                 return List.of(createCandidate("key_generator", actualKeyGeneratorType, 100, "User specified key-generator algorithm."));
             }
             addAlgorithmNotFoundIssue(issues, "Key-generator algorithm", actualKeyGeneratorType);
@@ -103,19 +102,11 @@ public final class ShardingAlgorithmRecommendationService {
     
     private String resolveRecommendedAlgorithm(final List<Map<String, Object>> algorithmRows, final List<String> preferredTypes) {
         for (String each : preferredTypes) {
-            if (containsAlgorithm(algorithmRows, each)) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithmRows, each, "type", "name")) {
                 return each;
             }
         }
-        return algorithmRows.isEmpty() ? "" : getAlgorithmType(algorithmRows.getFirst());
-    }
-    
-    private boolean containsAlgorithm(final List<Map<String, Object>> algorithmRows, final String algorithmType) {
-        return algorithmRows.stream().map(this::getAlgorithmType).anyMatch(algorithmType::equals);
-    }
-    
-    private String getAlgorithmType(final Map<String, Object> algorithmRow) {
-        return Objects.toString(algorithmRow.getOrDefault("type", algorithmRow.getOrDefault("name", "")), "").trim().toUpperCase(Locale.ENGLISH);
+        return algorithmRows.isEmpty() ? "" : WorkflowAlgorithmUtils.getAlgorithmType(algorithmRows.getFirst(), "type", "name");
     }
     
     private void addAlgorithmNotFoundIssue(final List<WorkflowIssue> issues, final String label, final String algorithmType) {

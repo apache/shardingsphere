@@ -89,6 +89,16 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertCanonicalizeIdentifierFoldsUpperCaseUnquotedIdentifier() {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockIdentifierPatternType("Oracle", IdentifierPatternType.UPPER_CASE, typedSPILoader, databaseTypedSPILoader);
+            assertThat(WorkflowSQLUtils.canonicalizeIdentifier("Oracle", "phone"), is("PHONE"));
+        }
+    }
+    
+    @Test
     void assertCanonicalizeIdentifierKeepsMySQLUnquotedIdentifier() {
         assertThat(WorkflowSQLUtils.canonicalizeIdentifier("MySQL", "Phone"), is("Phone"));
     }

@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Encrypt rule inspection service.
@@ -70,7 +69,7 @@ public final class EncryptRuleInspectionService {
     public List<Map<String, Object>> queryEncryptAlgorithms(final MCPFeatureQueryFacade queryFacade) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : queryAlgorithmRows(queryFacade)) {
-            String type = Objects.toString(each.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
+            String type = WorkflowAlgorithmUtils.getAlgorithmType(each);
             Map<String, Boolean> capability = EncryptAlgorithmCatalog.findCapability(type);
             List<AlgorithmPropertyRequirement> propertyTemplates = EncryptAlgorithmCatalog.findRequirements(EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY, type);
             Map<String, Object> row = new LinkedHashMap<>(each);

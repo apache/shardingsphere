@@ -24,6 +24,7 @@ resources:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
+      objectScope: algorithm
       feature: shadow
       relatedTools:
         - database_gateway_plan_shadow_rule
@@ -42,6 +43,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: shadow
       relatedTools:
         - database_gateway_plan_shadow_rule
@@ -82,6 +84,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: shadow
       relatedTools:
         - database_gateway_plan_shadow_rule
@@ -122,6 +125,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: shadow
       relatedTools:
         - database_gateway_plan_default_shadow_algorithm
@@ -158,6 +162,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: shadow
       relatedTools:
         - database_gateway_plan_shadow_rule
@@ -209,6 +214,7 @@ prompts:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/shadow/databases/{database}/rules
         - shardingsphere://features/shadow/databases/{database}/table-rules
+        - shardingsphere://features/shadow/databases/{database}/tables/{table}/rules
         - shardingsphere://features/shadow/algorithm-plugins
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_shadow_rule returns a planned workflow with plan_id and reviewable artifacts."
@@ -623,6 +629,7 @@ tools:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/shadow/databases/{database}/rules
         - shardingsphere://features/shadow/databases/{database}/table-rules
+        - shardingsphere://features/shadow/databases/{database}/tables/{table}/rules
         - shardingsphere://features/shadow/algorithm-plugins
       org.apache.shardingsphere/follow-up-tools:
         - database_gateway_apply_workflow

@@ -24,6 +24,7 @@ resources:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
+      objectScope: algorithm
       feature: sharding
       relatedTools:
         - database_gateway_plan_sharding_table_rule
@@ -37,6 +38,7 @@ resources:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
+      objectScope: algorithm
       feature: sharding
       relatedTools:
         - database_gateway_plan_sharding_key_generator
@@ -55,6 +57,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: sharding
       relatedTools:
         - database_gateway_plan_sharding_table_rule
@@ -272,6 +275,7 @@ resourceTemplates:
           required: true
           scope: logical-rule
       resourceKind: list
+      objectScope: rule
       feature: sharding
       relatedTools:
         - database_gateway_plan_sharding_rule_component_cleanup
@@ -283,6 +287,7 @@ resourceTemplates:
     shardingSphereMetadata:
       <<: *databaseKeyGeneratorMetadata
       resourceKind: list
+      objectScope: rule
       relatedTools:
         - database_gateway_plan_sharding_rule_component_cleanup
   - uriTemplate: shardingsphere://features/sharding/databases/{database}/auditors/{auditor}/table-rules
@@ -303,6 +308,7 @@ resourceTemplates:
           required: true
           scope: logical-rule
       resourceKind: list
+      objectScope: rule
       feature: sharding
       relatedTools:
         - database_gateway_plan_sharding_rule_component_cleanup
@@ -348,6 +354,7 @@ prompts:
         - shardingsphere://features/sharding/algorithm-plugins
         - shardingsphere://features/sharding/key-generate-algorithm-plugins
         - shardingsphere://features/sharding/databases/{database}/table-rules
+        - shardingsphere://features/sharding/databases/{database}/table-nodes
         - shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule
         - shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes
       org.apache.shardingsphere/stop-conditions:
@@ -524,6 +531,9 @@ prompts:
         - database_gateway_apply_workflow
         - database_gateway_validate_workflow
       org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/databases/{database}/algorithms
+        - shardingsphere://features/sharding/databases/{database}/key-generators
+        - shardingsphere://features/sharding/databases/{database}/auditors
         - shardingsphere://features/sharding/databases/{database}/unused-algorithms
         - shardingsphere://features/sharding/databases/{database}/unused-key-generators
         - shardingsphere://features/sharding/databases/{database}/unused-auditors
@@ -894,6 +904,7 @@ tools:
         - shardingsphere://features/sharding/algorithm-plugins
         - shardingsphere://features/sharding/key-generate-algorithm-plugins
         - shardingsphere://features/sharding/databases/{database}/table-rules
+        - shardingsphere://features/sharding/databases/{database}/table-nodes
         - shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule
         - shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes
       org.apache.shardingsphere/follow-up-tools:
@@ -1093,6 +1104,9 @@ tools:
       org.apache.shardingsphere/side-effect-scope:
         - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
+        - shardingsphere://features/sharding/databases/{database}/algorithms
+        - shardingsphere://features/sharding/databases/{database}/key-generators
+        - shardingsphere://features/sharding/databases/{database}/auditors
         - shardingsphere://features/sharding/databases/{database}/unused-algorithms
         - shardingsphere://features/sharding/databases/{database}/unused-key-generators
         - shardingsphere://features/sharding/databases/{database}/unused-auditors

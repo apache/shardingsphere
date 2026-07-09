@@ -28,47 +28,27 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowGuidanceResourceHintProviderTest {
     
     @Test
-    void assertCreateResourcesToReadWithEncryptRule() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("encrypt.rule", "logic_db", "", "t_order")));
-        assertTrue(actual.contains("shardingsphere://features/encrypt/algorithms"));
-        assertTrue(actual.contains("shardingsphere://features/encrypt/databases/logic_db/rules"));
-        assertTrue(actual.contains("shardingsphere://features/encrypt/databases/logic_db/tables/t_order/rules"));
-    }
-    
-    @Test
-    void assertCreateResourcesToReadWithShardingTableRule() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("sharding.table.rule", "logic_db", "", "t_order")));
-        assertTrue(actual.contains("shardingsphere://features/sharding/algorithm-plugins"));
-        assertTrue(actual.contains("shardingsphere://features/sharding/databases/logic_db/table-rules"));
-        assertTrue(actual.contains("shardingsphere://features/sharding/databases/logic_db/table-nodes"));
-        assertTrue(actual.contains("shardingsphere://databases/logic_db/storage-units"));
-        assertTrue(actual.contains("shardingsphere://databases/logic_db/single-tables"));
-        assertTrue(actual.contains("shardingsphere://databases/logic_db/single-tables/t_order"));
-        assertTrue(actual.contains("shardingsphere://features/sharding/databases/logic_db/tables/t_order/table-rule"));
-        assertTrue(actual.contains("shardingsphere://features/sharding/databases/logic_db/tables/t_order/nodes"));
-    }
-    
-    @Test
     void assertCreateResourcesToReadWithDescriptorResources() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("encrypt.rule", "logic_db", "", "t_order")));
-        assertTrue(actual.contains("shardingsphere://workflow/test-resource"));
+        List<Map<String, Object>> actual = new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("encrypt.rule", "logic_db", "", "t_order"));
+        assertThat(actual, is(List.of(Map.of(
+                "uri", "shardingsphere://workflow/test-resource",
+                "resource_kind", "detail",
+                "purpose", "read_first",
+                "reason", "Workflow descriptor resource used by descriptor catalog loader tests.",
+                "source_field", "resources_to_read"))));
     }
     
     @Test
-    void assertCreateResourcesToReadWithShardingComponentCleanup() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("sharding.component.cleanup", "logic_db", "", "")));
+    void assertCreateResourcesToReadWithGovernanceResources() {
+        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("sharding.table.rule", "logic_db", "", "t_order")));
         assertThat(actual, is(List.of(
-                "shardingsphere://features/sharding/databases/logic_db/algorithms",
-                "shardingsphere://features/sharding/databases/logic_db/key-generators",
-                "shardingsphere://features/sharding/databases/logic_db/auditors",
-                "shardingsphere://features/sharding/databases/logic_db/unused-algorithms",
-                "shardingsphere://features/sharding/databases/logic_db/unused-key-generators",
-                "shardingsphere://features/sharding/databases/logic_db/unused-auditors")));
+                "shardingsphere://databases/logic_db/storage-units",
+                "shardingsphere://databases/logic_db/single-tables",
+                "shardingsphere://databases/logic_db/single-tables/t_order")));
     }
     
     @Test

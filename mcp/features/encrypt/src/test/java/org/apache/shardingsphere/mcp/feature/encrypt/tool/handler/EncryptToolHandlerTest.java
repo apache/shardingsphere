@@ -97,10 +97,14 @@ class EncryptToolHandlerTest {
         assertFalse(actualPayload.containsKey("ddl_artifacts"));
         assertFalse(actualPayload.containsKey("index_plan"));
         assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("******"));
-        List<String> actualResourceUris = extractResourceUris((List<?>) actualPayload.get("resources_to_read"));
+        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+        List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
         assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/algorithms"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/databases/logic_db/rules"));
         assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/encrypt/algorithms"), is("algorithm"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/encrypt/databases/logic_db/rules"), is("rule"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"), is("rule"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
@@ -199,6 +203,16 @@ class EncryptToolHandlerTest {
     
     private List<String> extractResourceUris(final List<?> resources) {
         return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
+    }
+    
+    private String findResourceKind(final List<?> resources, final String uri) {
+        for (Object each : resources) {
+            Map<?, ?> resource = (Map<?, ?>) each;
+            if (uri.equals(resource.get("uri"))) {
+                return (String) resource.get("resource_kind");
+            }
+        }
+        return "";
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {

@@ -28,6 +28,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: broadcast
       relatedTools:
         - database_gateway_plan_broadcast_rule
@@ -67,6 +68,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: broadcast
       relatedTools:
         - database_gateway_plan_broadcast_rule

@@ -104,12 +104,12 @@ public final class MCPDatabaseDialect {
     }
     
     private Optional<IdentifierCasePolicySet> findLowerCaseDialectIdentifierCasePolicySet() {
-        return dialectDatabaseMetaData.flatMap(MCPDatabaseDialect::createLowerCaseDialectIdentifierCasePolicySet);
+        return dialectDatabaseMetaData.flatMap(MCPDatabaseDialect::createDialectIdentifierCasePolicySet);
     }
     
-    private static Optional<IdentifierCasePolicySet> createLowerCaseDialectIdentifierCasePolicySet(final DialectDatabaseMetaData dialectDatabaseMetaData) {
+    private static Optional<IdentifierCasePolicySet> createDialectIdentifierCasePolicySet(final DialectDatabaseMetaData dialectDatabaseMetaData) {
         IdentifierPatternType identifierPatternType = dialectDatabaseMetaData.getIdentifierPatternType();
-        return IdentifierPatternType.LOWER_CASE == identifierPatternType
+        return IdentifierPatternType.KEEP_ORIGIN != identifierPatternType
                 ? Optional.of(IdentifierCasePolicyFactory.newDialectDefaultPolicySet(identifierPatternType, dialectDatabaseMetaData.isCaseSensitive()))
                 : Optional.empty();
     }
@@ -129,11 +129,11 @@ public final class MCPDatabaseDialect {
      * @return whether unquoted identifiers are folded
      */
     public boolean isUnquotedIdentifierCaseFolded() {
-        return isLowerCaseDialectIdentifierPattern();
+        return isFoldedDialectIdentifierPattern();
     }
     
-    private boolean isLowerCaseDialectIdentifierPattern() {
-        return dialectDatabaseMetaData.map(each -> IdentifierPatternType.LOWER_CASE == each.getIdentifierPatternType()).orElse(false);
+    private boolean isFoldedDialectIdentifierPattern() {
+        return dialectDatabaseMetaData.map(each -> IdentifierPatternType.KEEP_ORIGIN != each.getIdentifierPatternType()).orElse(false);
     }
     
     /**

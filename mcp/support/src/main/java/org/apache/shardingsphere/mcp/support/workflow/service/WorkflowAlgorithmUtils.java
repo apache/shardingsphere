@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
+import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,6 +36,47 @@ import java.util.Objects;
 public final class WorkflowAlgorithmUtils {
     
     private static final String SECRET_REFERENCE_PREFIX = "secret_reference:";
+    
+    private static final String ALGORITHM_TYPE_KEY = "type";
+    
+    /**
+     * Normalize algorithm type.
+     *
+     * @param algorithmType algorithm type
+     * @return normalized algorithm type
+     */
+    public static String normalizeAlgorithmType(final String algorithmType) {
+        return Objects.toString(algorithmType, "").trim().toUpperCase(Locale.ENGLISH);
+    }
+    
+    /**
+     * Get algorithm type from algorithm row.
+     *
+     * @param algorithmRow algorithm row
+     * @param typeKeys algorithm type keys in fallback order
+     * @return normalized algorithm type
+     */
+    public static String getAlgorithmType(final Map<String, Object> algorithmRow, final String... typeKeys) {
+        for (String each : typeKeys.length > 0 ? typeKeys : new String[]{ALGORITHM_TYPE_KEY}) {
+            if (algorithmRow.containsKey(each)) {
+                return normalizeAlgorithmType(Objects.toString(algorithmRow.get(each), ""));
+            }
+        }
+        return "";
+    }
+    
+    /**
+     * Check whether algorithm rows contain algorithm type.
+     *
+     * @param algorithmRows algorithm rows
+     * @param algorithmType algorithm type
+     * @param typeKeys algorithm type keys in fallback order
+     * @return whether algorithm rows contain algorithm type
+     */
+    public static boolean containsAlgorithm(final Collection<Map<String, Object>> algorithmRows, final String algorithmType, final String... typeKeys) {
+        String actualAlgorithmType = normalizeAlgorithmType(algorithmType);
+        return algorithmRows.stream().map(each -> getAlgorithmType(each, typeKeys)).anyMatch(actualAlgorithmType::equals);
+    }
     
     /**
      * Check whether an algorithm service can be used by workflow generated artifacts.

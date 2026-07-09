@@ -93,7 +93,9 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(1)).get("input_type"), is("secret"));
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(1)).get("secret"));
         assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
-        assertTrue(extractResourceUris((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
+        List<?> actualResourcesToRead = (List<?>) actual.get("resources_to_read");
+        assertThat(((Map<?, ?>) actualResourcesToRead.getFirst()).get("uri"), is("shardingsphere://workflow/test-resource"));
+        assertThat(((Map<?, ?>) actualResourcesToRead.getFirst()).get("resource_kind"), is("detail"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("type"), is("ask_user"));
     }
     
@@ -145,7 +147,7 @@ class WorkflowPlanPayloadBuilderTest {
     }
     
     @Test
-    void assertBuildIncludesMaskResources() {
+    void assertBuildKeepsMaskRulePayloadRuleOnly() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
@@ -159,13 +161,8 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Mask workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         assertThat(actual.get("summary"), is("Workflow plan `plan-1` for mask.rule is ready for preview."));
-        List<?> actualResourcesToRead = (List<?>) actual.get("resources_to_read");
-        List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
-        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/rules"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));
-        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
-        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
+        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
+        assertThat(actualResourceUris, is(List.of()));
         Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
         assertThat(actualReviewFocus.get("next_review_action"), is("call_database_gateway_apply_workflow_preview"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
@@ -174,7 +171,7 @@ class WorkflowPlanPayloadBuilderTest {
     }
     
     @Test
-    void assertBuildIncludesBroadcastResources() {
+    void assertBuildKeepsBroadcastRulePayloadRuleOnly() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         snapshot.setWorkflowKind(WorkflowKind.valueOf("broadcast.rule"));
@@ -188,8 +185,7 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Broadcast workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/broadcast/databases/logic_db/rules"));
-        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
+        assertThat(actualResourceUris, is(List.of()));
         assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
     }
     
@@ -206,9 +202,7 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Readwrite workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/readwrite-splitting/databases/logic_db/rules"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/storage-units"));
+        assertThat(actualResourceUris, is(List.of("shardingsphere://databases/logic_db/storage-units")));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("tool_name"), is("database_gateway_apply_workflow"));
     }
     
@@ -225,8 +219,7 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Readwrite status workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/readwrite-splitting/databases/logic_db/status"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/storage-units"));
+        assertThat(actualResourceUris, is(List.of("shardingsphere://databases/logic_db/storage-units")));
     }
     
     @Test
@@ -243,12 +236,10 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Shadow workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/shadow/algorithm-plugins"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/shadow/databases/logic_db/rules"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/shadow/databases/logic_db/tables/t_order/rules"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/storage-units"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/single-tables"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/single-tables/t_order"));
+        assertThat(actualResourceUris, is(List.of(
+                "shardingsphere://databases/logic_db/storage-units",
+                "shardingsphere://databases/logic_db/single-tables",
+                "shardingsphere://databases/logic_db/single-tables/t_order")));
     }
     
     @Test
@@ -266,15 +257,10 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Sharding workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/sharding/algorithm-plugins"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/sharding/databases/logic_db/table-rules"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/sharding/databases/logic_db/table-nodes"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/storage-units"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/single-tables"));
-        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/single-tables/orders"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/sharding/databases/logic_db/tables/orders/table-rule"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/sharding/databases/logic_db/tables/orders/nodes"));
-        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
+        assertThat(actualResourceUris, is(List.of(
+                "shardingsphere://databases/logic_db/storage-units",
+                "shardingsphere://databases/logic_db/single-tables",
+                "shardingsphere://databases/logic_db/single-tables/orders")));
         assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
     }
     

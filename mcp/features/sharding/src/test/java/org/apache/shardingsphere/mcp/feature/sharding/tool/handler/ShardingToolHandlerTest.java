@@ -73,7 +73,15 @@ class ShardingToolHandlerTest {
                 "algorithm_type", "INLINE",
                 "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"),
                 "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id", "sharding_columns", "order_id, user_id"))));
-        assertFalse(actual.toPayload().containsKey("ddl_artifacts"));
+        Map<String, Object> actualPayload = actual.toPayload();
+        assertFalse(actualPayload.containsKey("ddl_artifacts"));
+        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/algorithm-plugins"), is("algorithm"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/key-generate-algorithm-plugins"), is("algorithm"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/table-rules"), is("rule"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/table-nodes"), is("rule"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/tables/t_order/table-rule"), is("rule"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/tables/t_order/nodes"), is("rule"));
         ArgumentCaptor<ShardingTableRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingTableRuleWorkflowRequest.class);
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         ShardingWorkflowRequest actualRequest = requestCaptor.getValue().toWorkflowRequest();
@@ -152,6 +160,18 @@ class ShardingToolHandlerTest {
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(requestCaptor.getValue().toWorkflowRequest().getComponentName(), is("unused_algorithm"));
         assertThat(actual.toPayload().get("workflow_kind"), is("sharding.component.cleanup"));
+        List<?> actualResourcesToRead = (List<?>) actual.toPayload().get("resources_to_read");
+        List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
+        assertThat(actualResourceUris, is(List.of(
+                "shardingsphere://features/sharding/databases/logic_db/algorithms",
+                "shardingsphere://features/sharding/databases/logic_db/key-generators",
+                "shardingsphere://features/sharding/databases/logic_db/auditors",
+                "shardingsphere://features/sharding/databases/logic_db/unused-algorithms",
+                "shardingsphere://features/sharding/databases/logic_db/unused-key-generators",
+                "shardingsphere://features/sharding/databases/logic_db/unused-auditors")));
+        for (String each : actualResourceUris) {
+            assertThat(findResourceKind(actualResourcesToRead, each), is("rule"));
+        }
     }
     
     private WorkflowContextSnapshot createSnapshot(final WorkflowKind workflowKind, final ShardingWorkflowRequest request, final String sql) {
@@ -173,6 +193,20 @@ class ShardingToolHandlerTest {
         result.setDatabase("logic_db");
         result.setTable("t_order");
         return result;
+    }
+    
+    private List<String> extractResourceUris(final List<?> resourcesToRead) {
+        return resourcesToRead.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
+    }
+    
+    private String findResourceKind(final List<?> resourcesToRead, final String uri) {
+        for (Object each : resourcesToRead) {
+            Map<?, ?> resource = (Map<?, ?>) each;
+            if (uri.equals(resource.get("uri"))) {
+                return (String) resource.get("resource_kind");
+            }
+        }
+        return "";
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {
