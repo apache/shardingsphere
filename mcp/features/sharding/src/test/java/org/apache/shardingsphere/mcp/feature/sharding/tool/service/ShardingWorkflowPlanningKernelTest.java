@@ -23,13 +23,16 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
 class ShardingWorkflowPlanningKernelTest {
@@ -46,6 +49,18 @@ class ShardingWorkflowPlanningKernelTest {
     }
     
     @Test
+    void assertPlanTableRuleRejectsUnsupportedOperation() {
+        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
+        request.setOperationType("replace");
+        WorkflowContextSnapshot actual = kernel.planTableRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(actual.getInteractionPlan().getCurrentStep(), is(WorkflowLifecycle.STEP_FAILED));
+        assertThat(actual.getClarifiedIntent().getOperationType(), is(""));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertRuleDistSQLOnlyPayloadDoesNotExpose(actual, "replace");
+    }
+    
+    @Test
     void assertPlanComponentCleanupRejectsNonDropOperation() {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setDatabase("logic_db");
@@ -57,5 +72,10 @@ class ShardingWorkflowPlanningKernelTest {
         assertThat(actual.getInteractionPlan().getCurrentStep(), is(WorkflowLifecycle.STEP_FAILED));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         assertThat(actual.getIssues().getFirst().getDetails(), is(Map.of("operation_type", "create")));
+    }
+    
+    private void assertRuleDistSQLOnlyPayloadDoesNotExpose(final WorkflowContextSnapshot snapshot, final String term) {
+        Map<String, Object> actualPayload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        assertFalse(String.valueOf(actualPayload).toLowerCase(Locale.ENGLISH).contains(term));
     }
 }

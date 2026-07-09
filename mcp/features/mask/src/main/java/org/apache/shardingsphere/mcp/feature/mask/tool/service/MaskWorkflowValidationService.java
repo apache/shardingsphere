@@ -106,7 +106,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     
     private boolean isMaskRuleDistSQL(final String sql) {
         String actualSQL = sql.trim().toUpperCase(Locale.ENGLISH);
-        return actualSQL.startsWith("CREATE MASK RULE") || actualSQL.startsWith("ALTER MASK RULE");
+        return actualSQL.startsWith("CREATE MASK RULE");
     }
     
     private Map<String, Object> createValidationIssue(final String message, final String sql) {
@@ -143,7 +143,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         }
         if (actualRule.isEmpty()) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
-                    "Mask rule is missing.", "Create or alter the mask rule again."));
+                    "Mask rule is missing.", "Generate the mask rule artifact again and re-run validation."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Mask rule is missing.");
         }
         Map<String, Object> actualRuleValue = actualRule.get();

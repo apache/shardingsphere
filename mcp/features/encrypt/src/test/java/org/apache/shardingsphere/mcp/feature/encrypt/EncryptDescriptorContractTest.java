@@ -64,6 +64,12 @@ class EncryptDescriptorContractTest {
         assertTrue(actualDescription.contains("never use placeholder values"));
     }
     
+    @Test
+    void assertPlanToolOperationTypesExposeOnlySupportedLifecycleActions() {
+        Map<?, ?> actualOperationType = MCPToolDescriptorValidationUtils.findToolInputProperty(findToolDescriptor(), "operation_type").orElseThrow();
+        assertThat(actualOperationType.get("enum"), is(List.of("create", "drop")));
+    }
+    
     private MCPToolDescriptor findToolDescriptor() {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
         return catalog.getProtocolDescriptors().getToolDescriptors().stream()
@@ -98,7 +104,7 @@ class EncryptDescriptorContractTest {
     
     private boolean isEncryptRuleDistSQL(final String sql) {
         String actualSQL = sql.toUpperCase(Locale.ENGLISH);
-        return actualSQL.contains("CREATE ENCRYPT RULE") || actualSQL.contains("ALTER ENCRYPT RULE");
+        return actualSQL.contains("CREATE ENCRYPT RULE");
     }
     
     private void assertEncryptRuleDistSQL(final String sql) {

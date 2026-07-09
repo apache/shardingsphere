@@ -29,9 +29,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -40,12 +42,14 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -114,21 +118,20 @@ class MaskWorkflowPlanningServiceTest {
         request.getPrimaryAlgorithmProperties().put("from-x", "1");
         WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", request);
         assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.MASK_RULE_REWRITE_LIMITED));
         assertThat(actual.getRuleArtifacts().size(), is(0));
     }
     
     @Test
-    void assertPlanRejectsAlterWhenExistingColumnsMustBePreserved() {
-        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5"), Map.of("column", "email", "algorithm_type", "MD5")));
-        MaskWorkflowPlanningService service = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), createEmptyPropertyTemplateService(),
-                new MaskRuleDistSQLPlanningService());
-        WorkflowRequest request = createRequest("alter");
-        request.getPrimaryAlgorithmProperties().put("from-x", "1");
-        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", request);
-        assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
+    void assertPlanRejectsUnsupportedOperationType() {
+        WorkflowRequest request = createRequest("replace");
+        WorkflowContextSnapshot actual = createService(mock(MaskRuleInspectionService.class), mock(MaskAlgorithmRecommendationService.class),
+                mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class))
+                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        assertThat(actual.getStatus(), is("failed"));
+        assertThat(actual.getClarifiedIntent().getOperationType(), is(""));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertRuleDistSQLOnlyPayloadDoesNotExpose(actual, "replace");
         assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
@@ -155,7 +158,7 @@ class MaskWorkflowPlanningServiceTest {
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class))
                 .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), queryFacade, "session-1", createRequest("drop"));
         assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.MASK_RULE_REWRITE_LIMITED));
         assertThat(actual.getRuleArtifacts().size(), is(0));
     }
     
@@ -173,6 +176,9 @@ class MaskWorkflowPlanningServiceTest {
         assertThat(actual.getClarifiedIntent().getOperationType(), is(expectedOperationType));
         assertThat(actual.getClarifiedIntent().getFieldSemantics(), is(expectedFieldSemantics));
         assertThat(actual.getStatus(), is(expectedStatus));
+        if ("failed".equals(expectedStatus)) {
+            assertRuleDistSQLOnlyPayloadClearsOperationType(actual);
+        }
     }
     
     @Test
@@ -291,10 +297,23 @@ class MaskWorkflowPlanningServiceTest {
         Plugins.getMemberAccessor().set(field, target, value);
     }
     
+    private void assertRuleDistSQLOnlyPayloadDoesNotExpose(final WorkflowContextSnapshot snapshot, final String term) {
+        Map<String, Object> actualPayload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        assertFalse(String.valueOf(actualPayload).toLowerCase(Locale.ENGLISH).contains(term));
+    }
+    
+    private void assertRuleDistSQLOnlyPayloadClearsOperationType(final WorkflowContextSnapshot snapshot) {
+        Map<String, Object> actualPayload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<?, ?> actualIntentInference = (Map<?, ?>) actualPayload.get("intent_inference");
+        assertThat(actualIntentInference.get(WorkflowFieldNames.OPERATION_TYPE), is(""));
+        assertFalse(((Map<?, ?>) actualIntentInference.get("inferred_values")).containsKey(WorkflowFieldNames.OPERATION_TYPE));
+        assertFalse(((Map<?, ?>) actualPayload.get("argument_provenance")).containsKey(WorkflowFieldNames.OPERATION_TYPE));
+    }
+    
     private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {
         return Stream.of(
                 Arguments.of("create from default verb", "mask phone column", false, "create", "phone", "planned"),
-                Arguments.of("alter from english verb", "update phone number mask rule", true, "alter", "phone", "clarifying"),
+                Arguments.of("unsupported update verb", "update phone number mask rule", true, "", "phone", "failed"),
                 Arguments.of("drop from english verb", "delete phone number mask rule", true, "drop", "phone", "planned"));
     }
 }

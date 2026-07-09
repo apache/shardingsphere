@@ -208,7 +208,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
                             "natural_language_intent", "encrypt amount with reversible encryption, no equality, no like", "algorithm_type", "AES",
                             "primary_algorithm_properties", Map.of("aes-key-value", "second-secret")));
             assertThat(String.valueOf(actualSecondPlanResponse.get("status")), is("clarifying"));
-            assertThat(getIssueCodes(actualSecondPlanResponse), hasItem(WorkflowIssueCode.ENCRYPT_ALTER_SCOPE_LIMITED));
+            assertThat(getIssueCodes(actualSecondPlanResponse), hasItem(WorkflowIssueCode.ENCRYPT_RULE_REWRITE_LIMITED));
             assertFalse(getClarificationMessages(actualSecondPlanResponse).isEmpty());
             assertFalse(actualSecondPlanResponse.containsKey("ddl_artifacts"));
             assertThat(getMapList(actualSecondPlanResponse.get("distsql_artifacts")).size(), is(0));
@@ -265,18 +265,18 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanRejectsUnsupportedEncryptAlterExpansionThroughProxy() throws IOException, InterruptedException {
+    void assertPlanRejectsUnsupportedEncryptOperationThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             createEncryptRuleWithoutEquality(interactionClient);
-            Map<String, Object> actualAlterPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
+            Map<String, Object> actualUnsupportedPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "encrypt status with reversible encryption, update to require equality and no like", "operation_type", "alter",
-                            "primary_algorithm_properties", Map.of("aes-key-value", "alter-secret")));
-            assertThat(String.valueOf(actualAlterPlanResponse.get("status")), is("clarifying"));
-            assertThat(getIssueCodes(actualAlterPlanResponse), hasItem(WorkflowIssueCode.ENCRYPT_ALTER_SCOPE_LIMITED));
-            assertFalse(getClarificationMessages(actualAlterPlanResponse).isEmpty());
-            assertFalse(actualAlterPlanResponse.containsKey("ddl_artifacts"));
-            assertThat(getMapList(actualAlterPlanResponse.get("distsql_artifacts")).size(), is(0));
+                            "natural_language_intent", "encrypt status with reversible encryption, update to require equality and no like", "operation_type", "replace",
+                            "primary_algorithm_properties", Map.of("aes-key-value", "replace-secret")));
+            assertThat(String.valueOf(actualUnsupportedPlanResponse.get("status")), is("failed"));
+            assertThat(getIssueCodes(actualUnsupportedPlanResponse), hasItem(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+            assertFalse(String.valueOf(actualUnsupportedPlanResponse).toLowerCase(Locale.ENGLISH).contains("replace"));
+            assertFalse(actualUnsupportedPlanResponse.containsKey("ddl_artifacts"));
+            assertThat(getMapList(actualUnsupportedPlanResponse.get("distsql_artifacts")).size(), is(0));
         }
     }
     

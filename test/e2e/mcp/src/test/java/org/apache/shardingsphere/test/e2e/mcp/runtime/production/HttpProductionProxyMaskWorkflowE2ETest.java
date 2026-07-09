@@ -33,6 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
 class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
@@ -63,7 +64,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     }
     
     @Test
-    void assertPlanApplyValidateAndRejectMaskAlterWorkflowThroughProxy() throws IOException, InterruptedException {
+    void assertPlanApplyValidateAndRejectUnsupportedMaskWorkflowThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -77,13 +78,14 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertValidationPassed(actualCreateValidationResponse);
             assertThat(String.valueOf(getMapList(getMap(actualCreateValidationResponse.get("rule_validation")).get("evidence")).getFirst().get("algorithm_type")).toUpperCase(Locale.ENGLISH),
                     is("KEEP_FIRST_N_LAST_M"));
-            Map<String, Object> actualAlterPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
+            Map<String, Object> actualUnsupportedPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "operation_type", "alter", "algorithm_type", "KEEP_FIRST_N_LAST_M",
+                            "operation_type", "replace", "algorithm_type", "KEEP_FIRST_N_LAST_M",
                             "primary_algorithm_properties", Map.of("first-n", "2", "last-m", "2", "replace-char", "#")));
-            assertThat(String.valueOf(actualAlterPlanResponse.get("status")), is("clarifying"));
-            assertThat(getIssueCodes(actualAlterPlanResponse), hasItem(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
-            assertThat(getMapList(actualAlterPlanResponse.get("distsql_artifacts")).size(), is(0));
+            assertThat(String.valueOf(actualUnsupportedPlanResponse.get("status")), is("failed"));
+            assertThat(getIssueCodes(actualUnsupportedPlanResponse), hasItem(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+            assertFalse(String.valueOf(actualUnsupportedPlanResponse).toLowerCase(Locale.ENGLISH).contains("replace"));
+            assertThat(getMapList(actualUnsupportedPlanResponse.get("distsql_artifacts")).size(), is(0));
         }
     }
     
@@ -112,7 +114,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                             "operation_type", "create", "algorithm_type", "KEEP_FIRST_N_LAST_M",
                             "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "#")));
             assertThat(String.valueOf(actualSecondCreatePlanResponse.get("status")), is("clarifying"));
-            assertThat(getIssueCodes(actualSecondCreatePlanResponse), hasItem(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED));
+            assertThat(getIssueCodes(actualSecondCreatePlanResponse), hasItem(WorkflowIssueCode.MASK_RULE_REWRITE_LIMITED));
             assertThat(getMapList(actualSecondCreatePlanResponse.get("distsql_artifacts")).size(), is(0));
         }
     }

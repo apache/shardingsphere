@@ -19,7 +19,7 @@ Plan a ShardingSphere encrypt rule workflow.
 
 Scope:
 - This prompt plans supported encrypt rule DistSQL only.
-- Do not ask MCP to generate physical DDL, derived-column DDL, index DDL, data migration, backfill, repair, cleansing, plaintext restore, or physical cleanup tasks.
+- Do not ask MCP to generate physical DDL, derived-column DDL, index DDL, physical data-change tasks, plaintext restore, or physical cleanup tasks.
 - Treat cipher, assisted-query, and LIKE-query column names as rule DistSQL inputs.
   Use names explicitly provided by the user or already present in existing encrypt rules; do not invent names from physical table structure.
 

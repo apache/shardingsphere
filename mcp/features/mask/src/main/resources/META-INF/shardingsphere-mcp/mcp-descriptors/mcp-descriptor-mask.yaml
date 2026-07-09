@@ -33,7 +33,7 @@ resourceTemplates:
   - uriTemplate: shardingsphere://features/mask/databases/{database}/rules
     name: mask-rules
     title: Mask Rules
-    description: "List mask table rules for one ShardingSphere logical database. Read this before altering or validating mask configuration."
+    description: "List mask table rules for one ShardingSphere logical database. Read this before planning or validating mask configuration."
     mimeType: application/json
     shardingSphereMetadata:
       uriVariables:
@@ -193,7 +193,6 @@ tools:
           description: "Mask rule lifecycle operation requested by the user."
           enum:
             - create
-            - alter
             - drop
         natural_language_intent:
           type: string

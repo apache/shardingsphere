@@ -29,8 +29,10 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -39,12 +41,14 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -104,7 +108,7 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planEncryptDropRule(any(), any(), any())).thenReturn(List.of(new RuleArtifact("drop", "DROP ENCRYPT RULE `orders`")));
+        when(ruleDistSQLPlanningService.planEncryptDropRule(any())).thenReturn(List.of(new RuleArtifact("drop", "DROP ENCRYPT RULE `orders`")));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), ruleDistSQLPlanningService)
                 .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("drop"));
@@ -131,6 +135,9 @@ class EncryptWorkflowPlanningServiceTest {
         assertThat(actual.getClarifiedIntent().getOperationType(), is(expectedOperationType));
         assertThat(actual.getClarifiedIntent().getFieldSemantics(), is(expectedFieldSemantics));
         assertThat(actual.getStatus(), is(expectedStatus));
+        if ("failed".equals(expectedStatus)) {
+            assertRuleDistSQLOnlyPayloadClearsOperationType(actual);
+        }
     }
     
     @Test
@@ -230,41 +237,34 @@ class EncryptWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), createEmptyPropertyTemplateService(), new EncryptRuleDistSQLPlanningService())
                 .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", request);
         assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ENCRYPT_ALTER_SCOPE_LIMITED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ENCRYPT_RULE_REWRITE_LIMITED));
         assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
     @Test
-    void assertPlanRejectsAddingAssistedQueryBindingToExistingColumn() throws ReflectiveOperationException {
+    void assertPlanRejectsDroppingColumnFromExistingTableRule() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(
-                Map.of("logic_column", "phone", "cipher_column", "phone_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
-        EncryptWorkflowRequest request = createRequest("alter");
-        request.getOptions().setRequiresEqualityFilter(true);
-        request.getOptions().setAssistedQueryColumnName("phone_assisted");
-        request.getOptions().setAssistedQueryAlgorithmType("MD5");
-        WorkflowContextSnapshot actual = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), createEmptyPropertyTemplateService(), new EncryptRuleDistSQLPlanningService())
-                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+                Map.of("logic_column", "phone", "cipher_column", "phone_cipher"),
+                Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
+        WorkflowContextSnapshot actual = createService(ruleInspectionService, mock(EncryptAlgorithmRecommendationService.class),
+                mock(EncryptAlgorithmPropertyTemplateService.class), new EncryptRuleDistSQLPlanningService())
+                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("drop"));
         assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ENCRYPT_ALTER_SCOPE_LIMITED));
-        assertTrue((Boolean) actual.getIssues().getFirst().getDetails().get("adds_assisted_query"));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ENCRYPT_RULE_REWRITE_LIMITED));
         assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
     @Test
-    void assertPlanRejectsAddingLikeQueryBindingToExistingColumn() throws ReflectiveOperationException {
-        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(
-                Map.of("logic_column", "phone", "cipher_column", "phone_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
-        EncryptWorkflowRequest request = createRequest("alter");
-        request.getOptions().setRequiresLikeQuery(true);
-        request.getOptions().setLikeQueryColumnName("phone_like");
-        request.getOptions().setLikeQueryAlgorithmType("FPE");
-        WorkflowContextSnapshot actual = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), createEmptyPropertyTemplateService(), new EncryptRuleDistSQLPlanningService())
+    void assertPlanRejectsUnsupportedOperationType() throws ReflectiveOperationException {
+        EncryptWorkflowRequest request = createRequest("replace");
+        WorkflowContextSnapshot actual = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
+                mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class))
                 .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", request);
-        assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ENCRYPT_ALTER_SCOPE_LIMITED));
-        assertTrue((Boolean) actual.getIssues().getFirst().getDetails().get("adds_like_query"));
+        assertThat(actual.getStatus(), is("failed"));
+        assertThat(actual.getClarifiedIntent().getOperationType(), is(""));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertRuleDistSQLOnlyPayloadDoesNotExpose(actual, "replace");
         assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
@@ -363,10 +363,23 @@ class EncryptWorkflowPlanningServiceTest {
         Plugins.getMemberAccessor().set(field, target, value);
     }
     
+    private void assertRuleDistSQLOnlyPayloadDoesNotExpose(final WorkflowContextSnapshot snapshot, final String term) {
+        Map<String, Object> actualPayload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        assertFalse(String.valueOf(actualPayload).toLowerCase(Locale.ENGLISH).contains(term));
+    }
+    
+    private void assertRuleDistSQLOnlyPayloadClearsOperationType(final WorkflowContextSnapshot snapshot) {
+        Map<String, Object> actualPayload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<?, ?> actualIntentInference = (Map<?, ?>) actualPayload.get("intent_inference");
+        assertThat(actualIntentInference.get(WorkflowFieldNames.OPERATION_TYPE), is(""));
+        assertFalse(((Map<?, ?>) actualIntentInference.get("inferred_values")).containsKey(WorkflowFieldNames.OPERATION_TYPE));
+        assertFalse(((Map<?, ?>) actualPayload.get("argument_provenance")).containsKey(WorkflowFieldNames.OPERATION_TYPE));
+    }
+    
     private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {
         return Stream.of(
                 Arguments.of("create from default verb", "encrypt phone column", false, "create", "phone", "planned"),
-                Arguments.of("alter from english verb", "update phone number encrypt rule", true, "alter", "phone", "planned"),
+                Arguments.of("unsupported update verb", "update phone number encrypt rule", true, "", "phone", "failed"),
                 Arguments.of("drop from english verb", "delete phone number encrypt rule", true, "drop", "phone", "planned"));
     }
 }

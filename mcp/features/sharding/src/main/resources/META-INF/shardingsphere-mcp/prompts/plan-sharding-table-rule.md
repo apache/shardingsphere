@@ -7,12 +7,12 @@ Inputs:
 - plan_id: {{plan_id}}
 
 Plan only ShardingSphere sharding table rule DistSQL.
-Use this workflow before raw side-effect SQL when the user asks in natural language to create, alter, or drop database/table sharding rules, including generated key rules such as Snowflake.
+Use this workflow before raw side-effect SQL when the user asks in natural language to create or drop database/table sharding rules, including generated key rules such as Snowflake.
 
 Before planning:
 - Read existing table rules, algorithm plugins, and key-generate algorithm plugins for the logical database.
 - Preserve existing rule details that the user did not ask to change.
-- Do not create physical databases, physical tables, indexes, storage units, migrations, backfills, or data probes.
+- Do not create physical databases, physical tables, indexes, storage units, physical data-change jobs, or data probes.
 
 Ask before planning when any required rule input is unclear:
 - logical table and actual data nodes

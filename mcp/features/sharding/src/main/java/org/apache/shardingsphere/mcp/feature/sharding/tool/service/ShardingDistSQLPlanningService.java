@@ -44,9 +44,7 @@ public final class ShardingDistSQLPlanningService {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
             return new RuleArtifact("drop", String.format("DROP SHARDING TABLE RULE %s", format(request.getTable())));
         }
-        String command = "alter".equalsIgnoreCase(operationType) ? "ALTER" : "CREATE";
-        return new RuleArtifact(command.toLowerCase(Locale.ENGLISH), String.format("%s SHARDING TABLE RULE %s(%s)",
-                command, format(request.getTable()), createTableRuleBody(request)));
+        return new RuleArtifact("create", String.format("CREATE SHARDING TABLE RULE %s(%s)", format(request.getTable()), createTableRuleBody(request)));
     }
     
     /**
@@ -60,9 +58,7 @@ public final class ShardingDistSQLPlanningService {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
             return new RuleArtifact("drop", String.format("DROP SHARDING TABLE REFERENCE RULE %s", format(request.getRuleName())));
         }
-        String command = "alter".equalsIgnoreCase(operationType) ? "ALTER" : "CREATE";
-        return new RuleArtifact(command.toLowerCase(Locale.ENGLISH), String.format("%s SHARDING TABLE REFERENCE RULE %s(%s)",
-                command, format(request.getRuleName()), joinIdentifiers(request.getReferenceTables())));
+        return new RuleArtifact("create", String.format("CREATE SHARDING TABLE REFERENCE RULE %s(%s)", format(request.getRuleName()), joinIdentifiers(request.getReferenceTables())));
     }
     
     /**
@@ -76,9 +72,8 @@ public final class ShardingDistSQLPlanningService {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
             return new RuleArtifact("drop", String.format("DROP DEFAULT SHARDING %s STRATEGY", request.getDefaultStrategyType().toUpperCase(Locale.ENGLISH)));
         }
-        String command = "alter".equalsIgnoreCase(operationType) ? "ALTER" : "CREATE";
-        return new RuleArtifact(command.toLowerCase(Locale.ENGLISH), String.format("%s DEFAULT SHARDING %s STRATEGY (%s)",
-                command, request.getDefaultStrategyType().toUpperCase(Locale.ENGLISH), createShardingStrategy(request)));
+        return new RuleArtifact("create", String.format("CREATE DEFAULT SHARDING %s STRATEGY (%s)",
+                request.getDefaultStrategyType().toUpperCase(Locale.ENGLISH), createShardingStrategy(request)));
     }
     
     /**
@@ -92,9 +87,7 @@ public final class ShardingDistSQLPlanningService {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
             return new RuleArtifact("drop", String.format("DROP SHARDING KEY GENERATOR %s", format(request.getKeyGeneratorName())));
         }
-        String command = "alter".equalsIgnoreCase(operationType) ? "ALTER" : "CREATE";
-        return new RuleArtifact(command.toLowerCase(Locale.ENGLISH), String.format("%s SHARDING KEY GENERATOR %s(%s)",
-                command, format(request.getKeyGeneratorName()), createKeyGeneratorFragment(request)));
+        return new RuleArtifact("create", String.format("CREATE SHARDING KEY GENERATOR %s(%s)", format(request.getKeyGeneratorName()), createKeyGeneratorFragment(request)));
     }
     
     /**
@@ -108,9 +101,8 @@ public final class ShardingDistSQLPlanningService {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
             return new RuleArtifact("drop", String.format("DROP SHARDING KEY GENERATE STRATEGY %s", format(request.getKeyGenerateStrategyName())));
         }
-        String command = "alter".equalsIgnoreCase(operationType) ? "ALTER" : "CREATE";
-        return new RuleArtifact(command.toLowerCase(Locale.ENGLISH), String.format("%s SHARDING KEY GENERATE STRATEGY %s(%s)",
-                command, format(request.getKeyGenerateStrategyName()), createKeyGenerateStrategyBody(request)));
+        return new RuleArtifact("create", String.format("CREATE SHARDING KEY GENERATE STRATEGY %s(%s)",
+                format(request.getKeyGenerateStrategyName()), createKeyGenerateStrategyBody(request)));
     }
     
     /**
