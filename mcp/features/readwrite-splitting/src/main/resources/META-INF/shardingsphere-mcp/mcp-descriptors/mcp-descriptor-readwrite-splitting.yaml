@@ -24,6 +24,7 @@ resources:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
+      objectScope: algorithm
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_rule
@@ -41,6 +42,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_rule
@@ -80,6 +82,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_status
@@ -102,6 +105,7 @@ resourceTemplates:
           required: true
           scope: logical-rule
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_status
@@ -119,6 +123,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_rule

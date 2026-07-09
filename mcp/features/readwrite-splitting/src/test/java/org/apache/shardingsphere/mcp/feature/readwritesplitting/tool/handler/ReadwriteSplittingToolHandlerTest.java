@@ -95,7 +95,10 @@ class ReadwriteSplittingToolHandlerTest {
         assertFalse(actualPayload.containsKey("ddl_artifacts"));
         assertFalse(actualPayload.containsKey("index_plan"));
         assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("CREATE READWRITE_SPLITTING RULE"));
-        assertTrue(extractResourceUris((List<?>) actualPayload.get("resources_to_read")).contains("shardingsphere://features/readwrite-splitting/databases/logic_db/rules"));
+        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+        assertTrue(extractResourceUris(actualResourcesToRead).contains("shardingsphere://features/readwrite-splitting/databases/logic_db/rules"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/readwrite-splitting/databases/logic_db/rules"), is("rule"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"), is("algorithm"));
         assertThat(((Map<?, ?>) actualPayload.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
     }
     
@@ -110,6 +113,8 @@ class ReadwriteSplittingToolHandlerTest {
                 "structured_intent_evidence", Map.of("rule", "readwrite_ds", "storage_unit", "read_ds_0"))));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("workflow_kind"), is("readwrite.status"));
+        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/readwrite-splitting/databases/logic_db/status"), is("rule"));
         Map<?, ?> actualIntentInference = (Map<?, ?>) actualPayload.get("intent_inference");
         assertFalse(actualIntentInference.containsKey("operation_type"));
         assertThat(actualIntentInference.get("target_status"), is("disable"));
@@ -172,6 +177,16 @@ class ReadwriteSplittingToolHandlerTest {
     
     private List<String> extractResourceUris(final List<?> resources) {
         return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
+    }
+    
+    private String findResourceKind(final List<?> resources, final String uri) {
+        for (Object each : resources) {
+            Map<?, ?> resource = (Map<?, ?>) each;
+            if (uri.equals(resource.get("uri"))) {
+                return (String) resource.get("resource_kind");
+            }
+        }
+        return "";
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {

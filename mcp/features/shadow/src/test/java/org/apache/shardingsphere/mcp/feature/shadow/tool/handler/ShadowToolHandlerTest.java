@@ -63,7 +63,13 @@ class ShadowToolHandlerTest {
                 "database", "logic_db",
                 "algorithm_type", "SQL_HINT",
                 "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order"))));
-        assertFalse(actual.toPayload().containsKey("ddl_artifacts"));
+        Map<String, Object> actualPayload = actual.toPayload();
+        assertFalse(actualPayload.containsKey("ddl_artifacts"));
+        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/algorithm-plugins"), is("algorithm"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/rules"), is("rule"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/table-rules"), is("rule"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/tables/t_order/rules"), is("rule"));
         ArgumentCaptor<ShadowRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowRuleWorkflowRequest.class);
         verify(planningService).planRule(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(requestCaptor.getValue().getTableName(), is("t_order"));
@@ -102,7 +108,18 @@ class ShadowToolHandlerTest {
         ShadowRuleWorkflowRequest result = new ShadowRuleWorkflowRequest();
         result.setDatabase("logic_db");
         result.setRuleName("shadow_rule");
+        result.setTableName("t_order");
         return result;
+    }
+    
+    private String findResourceKind(final List<?> resources, final String uri) {
+        for (Object each : resources) {
+            Map<?, ?> resource = (Map<?, ?>) each;
+            if (uri.equals(resource.get("uri"))) {
+                return (String) resource.get("resource_kind");
+            }
+        }
+        return "";
     }
     
     private WorkflowContextSnapshot createSnapshot(final WorkflowRequest request, final String workflowKind) {

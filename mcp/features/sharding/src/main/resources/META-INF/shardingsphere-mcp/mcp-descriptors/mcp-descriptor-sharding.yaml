@@ -24,6 +24,7 @@ resources:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
+      objectScope: algorithm
       feature: sharding
       relatedTools:
         - database_gateway_plan_sharding_table_rule
@@ -37,6 +38,7 @@ resources:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
+      objectScope: algorithm
       feature: sharding
       relatedTools:
         - database_gateway_plan_sharding_key_generator
@@ -55,6 +57,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: sharding
       relatedTools:
         - database_gateway_plan_sharding_table_rule
@@ -272,6 +275,7 @@ resourceTemplates:
           required: true
           scope: logical-rule
       resourceKind: list
+      objectScope: rule
       feature: sharding
       relatedTools:
         - database_gateway_plan_sharding_rule_component_cleanup
@@ -283,6 +287,7 @@ resourceTemplates:
     shardingSphereMetadata:
       <<: *databaseKeyGeneratorMetadata
       resourceKind: list
+      objectScope: rule
       relatedTools:
         - database_gateway_plan_sharding_rule_component_cleanup
   - uriTemplate: shardingsphere://features/sharding/databases/{database}/auditors/{auditor}/table-rules
@@ -303,6 +308,7 @@ resourceTemplates:
           required: true
           scope: logical-rule
       resourceKind: list
+      objectScope: rule
       feature: sharding
       relatedTools:
         - database_gateway_plan_sharding_rule_component_cleanup

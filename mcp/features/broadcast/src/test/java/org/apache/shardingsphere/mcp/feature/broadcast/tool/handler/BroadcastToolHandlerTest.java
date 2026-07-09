@@ -75,8 +75,10 @@ class BroadcastToolHandlerTest {
         assertFalse(actualPayload.containsKey("ddl_artifacts"));
         assertFalse(actualPayload.containsKey("index_plan"));
         assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("CREATE BROADCAST TABLE RULE"));
-        List<String> actualResourceUris = extractResourceUris((List<?>) actualPayload.get("resources_to_read"));
+        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+        List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
         assertTrue(actualResourceUris.contains("shardingsphere://features/broadcast/databases/logic_db/rules"));
+        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/broadcast/databases/logic_db/rules"), is("rule"));
         assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/t_order/columns"));
         assertThat(((Map<?, ?>) actualPayload.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
@@ -103,6 +105,16 @@ class BroadcastToolHandlerTest {
     
     private List<String> extractResourceUris(final List<?> resources) {
         return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
+    }
+    
+    private String findResourceKind(final List<?> resources, final String uri) {
+        for (Object each : resources) {
+            Map<?, ?> resource = (Map<?, ?>) each;
+            if (uri.equals(resource.get("uri"))) {
+                return (String) resource.get("resource_kind");
+            }
+        }
+        return "";
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {
