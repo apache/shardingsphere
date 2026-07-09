@@ -28,6 +28,19 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Architecture**: follow SOLID, DRY, separation of concerns, and YAGNI (build only what you need).
 - **Code Quality**:
     - Use clear naming and reasonable abstractions.
+    - **Meaningful Code Gate**:
+        - **Purpose traceability**: every added line, identifier, literal, YAML anchor, helper, abstraction, and configuration entry must have a traceable purpose.
+          Before keeping AI-generated code, trace it back to one concrete need: production behavior, public contract, regression protection, user-facing diagnostics,
+          security or safety, readability, or removal of real duplication.
+          If the purpose cannot be explained in one specific sentence, remove it.
+        - **Meaningless code definition**: meaningless code is code that does not change or protect behavior, clarify a real contract,
+          reduce real duplication or complexity, improve diagnostics or safety, or make the code easier to read.
+          Code is also meaningless when it exists only for formal symmetry, complete-looking groups, tidy-looking structure, coverage appearance,
+          or possible future flexibility.
+          Do not keep code merely because it was generated, looks tidy, might be useful later, or makes a diff look more complete.
+        - **YAML anchor rule**: do not add YAML anchors unless they are actually reused in the same file and reduce meaningful duplication.
+          A YAML anchor with no aliases, an anticipatory anchor for possible future reuse, or an anchor that makes nearby YAML harder to read is forbidden.
+          Prefer repeating a small YAML block when repetition is clearer than indirection.
     - Do not introduce package-private top-level helper types by default.
       Keep very small, single-owner state or continuation helpers as private nested types, but avoid accumulating multiple nested collaborators inside one class.
       When a helper has cohesive behavior, multiple callers, direct test value, or enough logic to distract from the owner class, split it into a public top-level type with a clear contract and direct tests.
@@ -117,6 +130,24 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 
 ### Testing Requirements
 - **Test-Driven**: design for testability, ensure unit-test coverage, and keep background unit tests under 60s to avoid job stalls.
+- **Meaningful Unit Tests**:
+    - Meaningless unit tests are tests that do not protect behavior owned by the class under test.
+      A unit test must cover computation, decision-making, validation, transformation, state transition, error handling,
+      protocol or payload contract generation, or another non-trivial behavior owned by the target class.
+      If a method only passes data through, delegates directly, returns a constant, exposes a getter or setter, or wires an object without adding logic,
+      do not add a dedicated unit test for that method unless the pass-through itself is a documented public contract or part of an externally visible protocol boundary.
+    - A unit test is meaningful only if it would fail for a realistic bug that matters to users, callers, protocol clients, or maintainers of the class contract.
+      If a test only proves that implementation structure remains the same, rather than proving behavior is correct, remove it.
+    - Do not add unit tests that only assert constant literal values, enum names, field names, method names, YAML anchor names,
+      or configuration structure created only for internal reuse.
+      Literal-value tests are allowed only when the literal is an external protocol value, documented compatibility contract, SQL keyword, configuration key, YAML key,
+      error code, resource URI, or model-visible schema value, and no broader behavior or contract test already protects it.
+      Prefer protecting such literals through the behavior that emits or consumes them; add a dedicated literal-only test only when no behavior path can cover the contract.
+    - Do not add tests that only verify Java, Lombok, Mockito, YAML parser, collection library, or framework behavior.
+      Do not add tests that duplicate an existing scenario without covering a new branch, input class, edge case, contract, calculation path, or failure mode.
+      Do not add tests that only increase coverage numbers but would not catch a real behavioral regression.
+    - Do not add tests that mirror private implementation details, helper call order, local variable structure,
+      or current refactoring shape unless that interaction is the explicit public contract of the class under test.
 - **Quality Assurance**: run static checks, formatting, and code reviews.
 - **Checkstyle Gate**: do not hand off code with Checkstyle/Spotless failures—run the relevant module check locally and fix before completion.
 - **Formatting Gate**: after code or documentation changes, format only with `./mvnw spotless:apply -Pcheck -T1C`, then check style with `./mvnw checkstyle:check -Pcheck -T1C`; do not use any other formatting method.
@@ -125,7 +156,10 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Continuous Verification**: rely on automated tests and integration validation.
 - **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
 - **Coverage Discipline**: follow the dedicated coverage & branch checklist before coding when coverage targets are stated.
-- **Dedicated and scoped tests**: each public production method must be covered by dedicated test methods; each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions), and different branches/inputs belong in separate test methods.
+- **Dedicated and scoped tests**: each behavior-owning public production method must be covered by dedicated test methods.
+  Pure pass-through, constant-returning, accessor, or wiring-only methods follow the Meaningful Unit Tests gate instead of forcing dedicated tests.
+  Each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions),
+  and different branches/inputs belong in separate test methods.
 - **No testing through layers**: a unit test must not appear to test the current class under test while its inputs, branch triggers, or assertions encode collaborator implementation rules such as SPI, registry, factory, parser, loader, metadata option, driver option, dialect defaults, exception classification, or message/SQLState parsing.
   Unit tests must distinguish behavior owned by the class under test from behavior owned by collaborators.
   If a collaborator implementation can change while the class under test contract stays unchanged, the current class test must not fail; mock the nearest stable collaborator boundary and cover the collaborator rule in that collaborator's own focused tests.
