@@ -19,9 +19,12 @@ package org.apache.shardingsphere.mcp.core.resource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.core.fixture.CoreDatabaseTypeFactoryMocker;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
@@ -30,7 +33,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequence
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
-import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.mockito.MockedStatic;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -41,17 +44,22 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceTestDataFactory {
+    
+    private static final String JDBC_URL_PREFIX = "jdbc:mcp-fixture:";
     
     /**
      * Create default database metadata.
@@ -98,7 +106,7 @@ public final class ResourceTestDataFactory {
         for (MCPDatabaseMetadata each : databaseMetadataList) {
             runtimeDatabases.put(each.getDatabase(), createRuntimeDatabaseConfiguration(each));
         }
-        return new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), CoreDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(runtimeDatabases), activeTransport);
+        return new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), createDatabaseCapabilityProvider(runtimeDatabases), activeTransport);
     }
     
     /**
@@ -120,6 +128,35 @@ public final class ResourceTestDataFactory {
         return new MCPRequestScope(createRuntimeContext(databaseMetadataList));
     }
     
+    private static MCPDatabaseCapabilityProvider createDatabaseCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        try (MockedStatic<DatabaseTypeFactory> ignored = mockDatabaseTypeFactoryByConnectionMetadata()) {
+            return new MCPDatabaseCapabilityProvider(runtimeDatabases);
+        }
+    }
+    
+    private static MockedStatic<DatabaseTypeFactory> mockDatabaseTypeFactoryByConnectionMetadata() {
+        MockedStatic<DatabaseTypeFactory> result = mockStatic(DatabaseTypeFactory.class, CALLS_REAL_METHODS);
+        result.when(() -> DatabaseTypeFactory.get(any(DatabaseMetaData.class)))
+                .thenAnswer(invocation -> createDatabaseType(invocation.getArgument(0, DatabaseMetaData.class).getURL()));
+        return result;
+    }
+    
+    private static DatabaseType createDatabaseType(final String url) {
+        DatabaseType result = mock(DatabaseType.class);
+        when(result.getType()).thenReturn(resolveTypeByURL(url));
+        return result;
+    }
+    
+    private static String resolveTypeByURL(final String url) {
+        String actualURL = Objects.toString(url, "");
+        if (!actualURL.startsWith(JDBC_URL_PREFIX)) {
+            return "";
+        }
+        String databaseType = actualURL.substring(JDBC_URL_PREFIX.length());
+        int delimiterIndex = databaseType.indexOf(':');
+        return -1 == delimiterIndex ? databaseType : databaseType.substring(0, delimiterIndex);
+    }
+    
     private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final MCPDatabaseMetadata databaseMetadata) {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         try {
@@ -137,7 +174,7 @@ public final class ResourceTestDataFactory {
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseMetadata.getDatabaseVersion());
-        when(databaseMetaData.getURL()).thenReturn(CoreDatabaseTypeFactoryMocker.createJdbcUrl(databaseMetadata.getDatabaseType()));
+        when(databaseMetaData.getURL()).thenReturn(createJdbcUrl(databaseMetadata.getDatabaseType()));
         when(databaseMetaData.getTables(nullable(String.class), nullable(String.class), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3, String[].class);
             return createResultSet("TABLE".equals(tableTypes[0]) ? createTableRows(databaseMetadata) : createViewRows(databaseMetadata));
@@ -149,6 +186,10 @@ public final class ResourceTestDataFactory {
         ResultSet sequenceResultSet = createResultSet(createSequenceRows(databaseMetadata));
         when(statement.executeQuery(anyString())).thenReturn(sequenceResultSet);
         return result;
+    }
+    
+    private static String createJdbcUrl(final String databaseType) {
+        return JDBC_URL_PREFIX + databaseType + ":test";
     }
     
     private static List<Map<String, String>> createTableRows(final MCPDatabaseMetadata databaseMetadata) {

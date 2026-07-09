@@ -17,23 +17,33 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class MCPJdbcMetadataLoaderSequenceTest extends AbstractMCPJdbcMetadataLoaderTest {
     
@@ -51,8 +61,18 @@ class MCPJdbcMetadataLoaderSequenceTest extends AbstractMCPJdbcMetadataLoaderTes
         Connection connection = createConnectionWithMetadata("PostgreSQL", List.of(), List.of(), Map.of(), Map.of(),
                 List.of(Map.of("SEQUENCE_SCHEMA", "PG_CATALOG", "SEQUENCE_NAME", "order_seq")));
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
-        MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
-        assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseTypeFromSPI = mock(DatabaseType.class);
+            when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
+            typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, "PostgreSQL")).thenReturn(Optional.of(databaseTypeFromSPI));
+            DialectSystemDatabase dialectSystemDatabase = mock(DialectSystemDatabase.class);
+            when(dialectSystemDatabase.getSystemSchemas()).thenReturn(List.of("pg_catalog"));
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectSystemDatabase));
+            MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
+            assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
+        }
     }
     
     @Test

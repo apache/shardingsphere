@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
@@ -37,11 +36,6 @@ public final class SQLServerMCPDatabaseCapabilityOption extends AbstractMCPDatab
     public SQLServerMCPDatabaseCapabilityOption() {
         super("SQLServer", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                 SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
-    }
-    
-    @Override
-    public QuoteCharacter getIdentifierQuoteCharacter() {
-        return QuoteCharacter.BRACKETS;
     }
     
     @Override

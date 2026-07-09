@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,18 +39,8 @@ public final class MariaDBMCPDatabaseCapabilityOption extends AbstractMCPDatabas
     }
     
     @Override
-    public QuoteCharacter getIdentifierQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
-    }
-    
-    @Override
     public IdentifierCasePolicySet getIdentifierCasePolicySet() {
         return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return List.of("information_schema", "mysql", "performance_schema", "shardingsphere", "sys");
     }
     
     @Override

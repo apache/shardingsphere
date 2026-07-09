@@ -167,6 +167,23 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **No interface-only tests**: do not create unit tests for interfaces themselves; cover behavior through concrete implementations instead, and avoid dedicated test classes for pure contracts or SPI interfaces.
 - **Parameterized tests naming**: all parameterized tests must set an explicit `name` and use the `"{0}"` template for display names.
 - **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
+
+#### Mock Helper and Test Fixture Boundaries
+
+##### Prefer Direct Mocks for Scenario Behavior
+- Do not create standalone mock utility classes only to hide Mockito setup, reduce imports, or share a few `mock`, `when`, `mockStatic`, or `mockConstruction` calls.
+- Prefer direct mocks in the test method when the mocked behavior is part of the scenario being asserted.
+
+##### Use Private Helpers Only for Local Repetition
+- Use a private helper inside the same test class only when the setup is repeated in that class and the helper name makes the tested scenario easier to read.
+
+##### Allow Standalone Fixtures Only for Stable Boundaries
+- A standalone test fixture or helper is allowed only when it represents a stable test fixture boundary, such as a reusable fake external runtime, packaged plugin fixture, JDBC metadata fixture, test distribution fixture, or multi-collaborator context that would otherwise obscure the test intent.
+- Standalone test helpers must have the narrowest practical visibility, live in the nearest owning test package or module, and must not become cross-module test APIs for convenience.
+
+##### Delete or Inline Thin Mock Wrappers
+- Delete or inline mock helpers when they merely wrap simple Mockito behavior, hide database-specific or SPI behavior from the test scenario, have only one or two incidental callers, or make it harder to see which collaborator behavior the test depends on.
+- Test-only reuse, shorter call sites, easier static mocking, or avoiding duplicated imports are not sufficient reasons to add or keep a standalone mock utility class.
 - **Reflection Rule**: when tests must touch fields or methods via reflection, use `Plugins.getMemberAccessor()`—direct reflection APIs are forbidden.
 
 ## Dangerous Operation Confirmation Mechanism

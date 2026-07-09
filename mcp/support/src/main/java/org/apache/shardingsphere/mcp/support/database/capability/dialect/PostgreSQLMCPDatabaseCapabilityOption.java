@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,21 +34,6 @@ public final class PostgreSQLMCPDatabaseCapabilityOption extends AbstractMCPData
     public PostgreSQLMCPDatabaseCapabilityOption() {
         super("PostgreSQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                 SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
-    }
-    
-    @Override
-    public IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return IdentifierCasePolicyFactory.newLowerCasePolicySet();
-    }
-    
-    @Override
-    public boolean isUnquotedIdentifierCaseFolded() {
-        return true;
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return List.of("information_schema", "pg_catalog", "shardingsphere");
     }
     
     @Override
