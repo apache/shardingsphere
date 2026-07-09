@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +50,7 @@ public final class FirebirdBlobInfoExecutor implements CommandExecutor {
     
     private int getBlobLength() {
         int connectionId = connectionSession.getConnectionId();
-        int blobHandle = FirebirdBlobWriteCache.getInstance().getBlobHandle(connectionId, packet.getHandle());
+        int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionId, packet.getHandle());
         Optional<byte[]> readSegment = FirebirdBlobReadCache.getInstance().getSegment(connectionId, blobHandle);
         if (readSegment.isPresent()) {
             return readSegment.get().length;

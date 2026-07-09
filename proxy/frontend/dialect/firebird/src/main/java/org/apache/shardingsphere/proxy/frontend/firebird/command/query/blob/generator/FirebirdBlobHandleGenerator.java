@@ -32,6 +32,8 @@ public final class FirebirdBlobHandleGenerator {
     
     private static final FirebirdBlobHandleGenerator INSTANCE = new FirebirdBlobHandleGenerator();
     
+    private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
+    
     private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
     
     public static FirebirdBlobHandleGenerator getInstance() {
@@ -55,6 +57,27 @@ public final class FirebirdBlobHandleGenerator {
      */
     public int nextBlobHandle(final int connectionId) {
         return connectionRegistry.get(connectionId).incrementAndGet();
+    }
+    
+    /**
+     * Resolve a BLOB handle, mapping the deferred placeholder handle to the most recently generated one.
+     *
+     * <p>In the Firebird lazy (deferred) protocol a pipelined operation such as {@code op_put_segment},
+     * {@code op_get_segment} or {@code op_info_blob} that is flushed together with its preceding
+     * {@code op_create_blob2} or {@code op_open_blob2} carries the placeholder handle {@code 0xFFFF}
+     * (INVALID_OBJECT), which the server resolves to the most recently created object. Handles are generated
+     * here for both created and opened BLOBs, so the last generated handle mirrors that resolution.</p>
+     *
+     * @param connectionId connection ID
+     * @param blobHandle blob handle received from the client
+     * @return resolved blob handle
+     */
+    public int resolveBlobHandle(final int connectionId, final int blobHandle) {
+        if (INVALID_OBJECT_HANDLE != blobHandle) {
+            return blobHandle;
+        }
+        AtomicInteger lastGenerated = connectionRegistry.get(connectionId);
+        return null == lastGenerated || 0 == lastGenerated.get() ? blobHandle : lastGenerated.get();
     }
     
     /**

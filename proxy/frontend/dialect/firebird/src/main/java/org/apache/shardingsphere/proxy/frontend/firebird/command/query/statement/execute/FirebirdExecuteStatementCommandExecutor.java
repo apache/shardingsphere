@@ -124,7 +124,11 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
                 continue;
             }
             long blobId = (Long) paramValue;
-            if (blobId <= 0L) {
+            if (0L == blobId) {
+                params.set(i, new byte[0]);
+                continue;
+            }
+            if (blobId < 0L) {
                 params.set(i, null);
                 continue;
             }

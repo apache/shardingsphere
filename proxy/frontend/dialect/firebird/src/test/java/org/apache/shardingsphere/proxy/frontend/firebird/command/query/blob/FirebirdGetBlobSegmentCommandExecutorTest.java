@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     
     @BeforeEach
     void setUp() {
+        FirebirdBlobHandleGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobReadCache.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getBlobHandle()).thenReturn(BLOB_HANDLE);
@@ -64,7 +66,21 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     
     @AfterEach
     void tearDown() {
+        FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobReadCache.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
+    @Test
+    void assertExecuteWithDeferredPlaceholderHandleExpectsLastOpenedBlob() {
+        int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
+        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, new byte[]{7, 8, 9});
+        when(packet.getBlobHandle()).thenReturn(0xFFFF);
+        when(packet.getSegmentLength()).thenReturn(16386);
+        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actualPackets = executor.execute();
+        FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
+        assertThat(actualGenericPacket.getHandle(), is(0));
+        assertThat(getResponseSegment(actualGenericPacket), is(new byte[]{7, 8, 9}));
     }
     
     @Test

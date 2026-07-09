@@ -231,10 +231,25 @@ class FirebirdExecuteStatementCommandExecutorTest {
     }
     
     @Test
-    void assertSkipBlobParameterWhenNonPositive() throws SQLException {
+    void assertBindEmptyBlobParameterWhenZeroBlobId() throws SQLException {
         when(packet.getStatementId()).thenReturn(2);
         when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
         when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(0L)));
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        executor.execute();
+        List<Object> actualParams = queryContextCaptor.getValue().getParameters();
+        assertThat(actualParams.size(), is(1));
+        assertThat(actualParams.get(0), is(new byte[0]));
+    }
+    
+    @Test
+    void assertSkipBlobParameterWhenNegativeBlobId() throws SQLException {
+        when(packet.getStatementId()).thenReturn(2);
+        when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
+        when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(-1L)));
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
