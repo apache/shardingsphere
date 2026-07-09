@@ -151,7 +151,9 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
                 return Collections.emptyList();
             }
             Object[] data = generateReturnData(selectStatementContext);
-            return Collections.singletonList(new MemoryQueryResultRow(data));
+            MemoryQueryResultRow syntheticRow = new MemoryQueryResultRow(data);
+            evaluateExpressionValue(selectStatementContext, syntheticRow);
+            return Collections.singletonList(syntheticRow);
         }
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
         result.sort(new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
@@ -160,7 +162,13 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     
     private Object[] generateReturnData(final SelectStatementContext selectStatementContext) {
         List<Projection> projections = new LinkedList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
-        Object[] result = new Object[projections.size()];
+        
+        int maxColumnIndex = projections.size();
+        for (AggregationProjection each : selectStatementContext.getProjectionsContext().getAggregationProjections()) {
+            maxColumnIndex = Math.max(maxColumnIndex, each.getIndex());
+        }
+        
+        Object[] result = new Object[maxColumnIndex];
         for (int i = 0; i < projections.size(); i++) {
             if (projections.get(i) instanceof AggregationProjection && AggregationType.COUNT == ((AggregationProjection) projections.get(i)).getType()) {
                 result[i] = 0;
@@ -170,6 +178,12 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     }
     
     private void setExpressionValueToMemoryRow(final SelectStatementContext selectStatementContext, final Map<GroupByValue, MemoryQueryResultRow> dataMap) {
+        for (MemoryQueryResultRow each : dataMap.values()) {
+            evaluateExpressionValue(selectStatementContext, each);
+        }
+    }
+    
+    private void evaluateExpressionValue(final SelectStatementContext selectStatementContext, final MemoryQueryResultRow row) {
         Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations();
         if (expressionDerivedAggregations == null || expressionDerivedAggregations.isEmpty()) {
             return;
@@ -177,20 +191,16 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         
         List<Projection> expandProjections = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
         
-        for (Entry<GroupByValue, MemoryQueryResultRow> entry : dataMap.entrySet()) {
-            MemoryQueryResultRow row = entry.getValue();
+        for (Entry<ExpressionProjection, List<AggregationProjection>> exprEntry : expressionDerivedAggregations.entrySet()) {
+            Object evaluatedValue = LightweightExpressionEvaluator.evaluate(
+                    exprEntry.getKey().getExpressionSegment().getExpr(),
+                    exprEntry.getValue(),
+                    row);
             
-            for (Entry<ExpressionProjection, List<AggregationProjection>> exprEntry : expressionDerivedAggregations.entrySet()) {
-                Object evaluatedValue = LightweightExpressionEvaluator.evaluate(
-                        exprEntry.getKey().getExpressionSegment().getExpr(),
-                        exprEntry.getValue(),
-                        row);
-                
-                int columnIndex = expandProjections.indexOf(exprEntry.getKey()) + 1;
-                
-                if (columnIndex > 0 && null != evaluatedValue) {
-                    row.setCell(columnIndex, evaluatedValue);
-                }
+            int columnIndex = expandProjections.indexOf(exprEntry.getKey()) + 1;
+            
+            if (columnIndex > 0 && null != evaluatedValue) {
+                row.setCell(columnIndex, evaluatedValue);
             }
         }
     }

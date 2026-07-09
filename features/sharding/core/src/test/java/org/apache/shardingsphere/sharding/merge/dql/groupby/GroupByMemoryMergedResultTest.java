@@ -344,6 +344,57 @@ class GroupByMemoryMergedResultTest {
         assertThat(actual.getValue(2, Object.class).toString(), is("15"));
     }
     
+    @Test
+    void assertMergeWithEmptyResultAndIfNullExpression() throws SQLException {
+        FunctionSegment functionSegment = new FunctionSegment(0, 21, "IFNULL", "IFNULL(SUM(price), 0)");
+        AggregationProjectionSegment sumSegment = new AggregationProjectionSegment(7, 16, AggregationType.SUM, "SUM(price)");
+        LiteralExpressionSegment literalSegment = new LiteralExpressionSegment(19, 19, 0);
+        functionSegment.getParameters().add(sumSegment);
+        functionSegment.getParameters().add(literalSegment);
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 21, "IFNULL(SUM(price), 0)", functionSegment);
+        expressionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("ifnull_col")));
+        
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 21);
+        projectionsSegment.getProjections().add(expressionSegment);
+        
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(28, 34, new IdentifierValue("t_order")));
+        
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(projectionsSegment)
+                .from(tableSegment)
+                .build();
+        
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+        
+        selectStatementContext.getProjectionsContext().getAggregationProjections().get(0).setIndex(2);
+        
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.containsTable("t_order")).thenReturn(true);
+        when(schema.containsTable(any(IdentifierValue.class))).thenReturn(true);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(schema.getTable("t_order")).thenReturn(table);
+        when(schema.getTable(any(IdentifierValue.class))).thenReturn(table);
+        when(table.containsColumn(anyString())).thenReturn(false);
+        
+        QueryResult queryResult = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(queryResult.getMetaData().getColumnCount()).thenReturn(2);
+        when(queryResult.getMetaData().getColumnLabel(1)).thenReturn("ifnull_col");
+        when(queryResult.getMetaData().getColumnName(1)).thenReturn("ifnull_col");
+        when(queryResult.getMetaData().getColumnLabel(2)).thenReturn("EXPR_DERIVED_0");
+        when(queryResult.getMetaData().getColumnName(2)).thenReturn("expr_derived_0");
+        when(queryResult.next()).thenReturn(false);
+        
+        GroupByMemoryMergedResult actual = new GroupByMemoryMergedResult(Collections.singletonList(queryResult), selectStatementContext, schema);
+        
+        assertTrue(actual.next(), "Expected synthetic aggregation row to be generated");
+        assertThat(actual.getValue(1, Object.class).toString(), is("0"));
+    }
+    
     private QueryResult createEmptyQueryResultWithCountGroupBy() throws SQLException {
         QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getColumnCount()).thenReturn(3);
