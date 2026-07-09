@@ -36,7 +36,7 @@ public final class ClickHouseSystemDatabase implements DialectSystemDatabase {
     
     @Override
     public Collection<String> getSystemSchemas(final String databaseName) {
-        return SYSTEM_SCHEMAS;
+        return Collections.emptyList();
     }
     
     @Override

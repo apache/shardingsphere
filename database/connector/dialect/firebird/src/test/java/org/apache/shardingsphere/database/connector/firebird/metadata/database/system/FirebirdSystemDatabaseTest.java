@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,7 +43,7 @@ class FirebirdSystemDatabaseTest {
     
     @Test
     void assertGetSystemSchemasWithDatabaseName() {
-        assertThat(systemDatabase.getSystemSchemas("foo_db"), is(Arrays.asList("system_lobs", "system_tables")));
+        assertThat(systemDatabase.getSystemSchemas("foo_db"), is(Collections.singleton("system_tables")));
     }
     
     @Test

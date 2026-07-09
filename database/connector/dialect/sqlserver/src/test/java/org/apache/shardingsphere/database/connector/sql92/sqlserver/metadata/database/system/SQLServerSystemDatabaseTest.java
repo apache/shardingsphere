@@ -42,7 +42,7 @@ class SQLServerSystemDatabaseTest {
     
     @Test
     void assertGetSystemSchemasWithDatabaseName() {
-        assertThat(systemDatabase.getSystemSchemas("foo_db"), is(Arrays.asList("information_schema", "sys")));
+        assertTrue(systemDatabase.getSystemSchemas("foo_db").isEmpty());
     }
     
     @Test

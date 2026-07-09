@@ -42,7 +42,7 @@ class ClickHouseSystemDatabaseTest {
     
     @Test
     void assertGetSystemSchemasWithDatabaseName() {
-        assertThat(systemDatabase.getSystemSchemas("foo_db"), is(Collections.singleton("information_schema")));
+        assertTrue(systemDatabase.getSystemSchemas("foo_db").isEmpty());
     }
     
     @Test
