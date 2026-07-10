@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
@@ -132,17 +131,15 @@ public final class MCPDatabaseDialect {
     /**
      * Get transaction capability.
      *
+     * @param supportsTransaction whether transaction is supported
+     * @param supportsSavepoint whether savepoint is supported
      * @return transaction capability
      */
-    public TransactionCapability getTransactionCapability() {
-        return dialectDatabaseMetaData.map(each -> toTransactionCapability(each.getTransactionOption())).orElse(TransactionCapability.NONE);
-    }
-    
-    private static TransactionCapability toTransactionCapability(final DialectTransactionOption transactionOption) {
-        if (!transactionOption.isSupportTransaction()) {
+    public TransactionCapability getTransactionCapability(final boolean supportsTransaction, final boolean supportsSavepoint) {
+        if (!supportsTransaction) {
             return TransactionCapability.NONE;
         }
-        return transactionOption.isSupportSavepoint() ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
+        return supportsSavepoint ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
     }
     
     /**
@@ -164,13 +161,12 @@ public final class MCPDatabaseDialect {
     }
     
     /**
-     * Judge whether EXPLAIN ANALYZE is supported for database version.
+     * Judge whether EXPLAIN is supported.
      *
-     * @param databaseVersion database version
-     * @return whether EXPLAIN ANALYZE is supported
+     * @return whether EXPLAIN is supported
      */
-    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return dialectDatabaseMetaData.map(each -> each.getExplainOption().isExplainAnalyzeSupported(databaseVersion)).orElse(false);
+    public boolean isExplainSupported() {
+        return dialectDatabaseMetaData.map(each -> each.getExplainOption().isExplainSupported()).orElse(false);
     }
     
     /**

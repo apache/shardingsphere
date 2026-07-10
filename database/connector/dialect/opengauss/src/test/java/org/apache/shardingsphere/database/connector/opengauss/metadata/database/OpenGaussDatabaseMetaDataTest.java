@@ -122,8 +122,6 @@ class OpenGaussDatabaseMetaDataTest {
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.opengauss.xa.PGXADataSource"));
-        assertTrue(actual.isSupportTransaction());
-        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test
@@ -134,7 +132,7 @@ class OpenGaussDatabaseMetaDataTest {
     @Test
     void assertGetExplainOption() {
         DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
-        assertTrue(actual.isExplainAnalyzeSupported(""));
+        assertTrue(actual.isExplainSupported());
     }
     
     @Test

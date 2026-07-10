@@ -119,7 +119,7 @@ final class MCPGuidancePayloadBuilder {
         result.put("metadata_first_resource", "shardingsphere://databases");
         result.put("preflight_rule", "Use database_gateway_validate_runtime_database with a configured database name before onboarding or troubleshooting runtime connectivity.");
         Map<String, Object> sqlToolSelection = new LinkedHashMap<>(2, 1F);
-        sqlToolSelection.put("read_only", "Use database_gateway_execute_query for one classifier-approved SELECT or EXPLAIN ANALYZE statement.");
+        sqlToolSelection.put("read_only", "Use database_gateway_execute_query for one classifier-approved SELECT or EXPLAIN statement.");
         sqlToolSelection.put("side_effecting", "Use database_gateway_execute_update with execution_mode=preview before execution.");
         result.put("sql_tool_selection", sqlToolSelection);
         result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
@@ -185,7 +185,7 @@ final class MCPGuidancePayloadBuilder {
                         "Stop after the configured runtime database reports ready or returns structured recovery guidance.",
                         List.of(PREFLIGHT_TOOL_NAME), List.of("shardingsphere://databases")),
                 createCommonFlow("read_only_sql", List.of("read_resource shardingsphere://databases/{database}/capabilities", "call_tool database_gateway_execute_query"),
-                        "Use one SELECT or EXPLAIN ANALYZE statement and stop after the result is reported.",
+                        "Use one SELECT or EXPLAIN statement and stop after the result is reported.",
                         List.of("database_gateway_execute_query"), List.of("shardingsphere://databases/{database}/capabilities")),
                 createCommonFlow("side_effecting_sql", List.of("call_tool database_gateway_execute_update execution_mode=preview",
                         "call_tool database_gateway_execute_update execution_mode=execute"),
@@ -250,7 +250,7 @@ final class MCPGuidancePayloadBuilder {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         Map<String, Object> readOnly = new LinkedHashMap<>(2, 1F);
         readOnly.put("tool", "database_gateway_execute_query");
-        readOnly.put("statement_rule", "Use for one SELECT or EXPLAIN ANALYZE statement.");
+        readOnly.put("statement_rule", "Use for one SELECT or EXPLAIN statement.");
         result.put("read_only", readOnly);
         Map<String, Object> sideEffecting = new LinkedHashMap<>(4, 1F);
         sideEffecting.put("tool", "database_gateway_execute_update");

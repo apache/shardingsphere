@@ -206,7 +206,7 @@ public final class MCPJdbcStatementExecutor {
         boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
         switch (classificationResult.getStatementClass()) {
             case QUERY:
-            case EXPLAIN_ANALYZE:
+            case EXPLAIN:
                 if (!hasResultSet) {
                     throw new QueryDidNotReturnResultSetException();
                 }

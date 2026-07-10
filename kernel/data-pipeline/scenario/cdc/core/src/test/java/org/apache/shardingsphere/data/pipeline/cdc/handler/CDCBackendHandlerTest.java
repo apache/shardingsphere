@@ -48,6 +48,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDataNodeUtils;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -65,6 +66,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -271,7 +273,8 @@ class CDCBackendHandlerTest {
     private void mockDialectMetaData(final boolean schemaAvailable, final boolean supportGlobalCSN) {
         DialectDatabaseMetaData databaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(databaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
-        lenient().when(databaseMetaData.getTransactionOption().isSupportGlobalCSN()).thenReturn(supportGlobalCSN);
+        lenient().when(databaseMetaData.getTransactionOption()).thenReturn(new DialectTransactionOption(supportGlobalCSN, false, false, false, true,
+                Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.emptyList()));
         when(DatabaseTypedSPILoader.getService(any(), any())).thenReturn(databaseMetaData);
     }
     

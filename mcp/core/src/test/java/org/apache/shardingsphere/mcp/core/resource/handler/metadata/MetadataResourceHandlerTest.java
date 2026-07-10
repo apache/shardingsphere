@@ -113,7 +113,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleListResourceWithEmptyScope() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0"))),
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true))),
                 new MCPUriVariables(Map.of("database", "logic_db")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("empty_scope"));
@@ -124,7 +124,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleSchemaDetailResourceNotVisible() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0"))),
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true))),
                 new MCPUriVariables(Map.of("database", "logic_db", "schema", "missing_schema")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("schema_not_visible"));
@@ -136,7 +136,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleObjectDetailResourceNotVisible() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0"))),
+        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true))),
                 new MCPUriVariables(Map.of("database", "logic_db", "schema", "public", "table", "missing_table")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("object_not_visible"));

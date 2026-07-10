@@ -62,7 +62,8 @@ public final class MCPJdbcDatabaseProfileLoader {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             DatabaseType databaseType = loadDatabaseType(databaseName, databaseMetaData);
             String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
-            return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion);
+            boolean supportsTransaction = databaseMetaData.supportsTransactions();
+            return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion, supportsTransaction, supportsTransaction && databaseMetaData.supportsSavepoints());
         } catch (final SQLException ex) {
             throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
         }

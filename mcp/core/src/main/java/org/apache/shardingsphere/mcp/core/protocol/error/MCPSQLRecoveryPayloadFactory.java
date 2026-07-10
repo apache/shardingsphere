@@ -172,7 +172,7 @@ final class MCPSQLRecoveryPayloadFactory {
     
     static Map<String, Object> createUnsupportedStatementRecovery() {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
-                "unsupported_sql_statement", "Ask the user for a supported SELECT, EXPLAIN ANALYZE, DML, DDL, DCL, transaction, or savepoint statement.");
+                "unsupported_sql_statement", "Ask the user for a supported SELECT, EXPLAIN, DML, DDL, DCL, transaction, or savepoint statement.");
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read supported SQL statement classes before retrying."));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read supported statement classes before retrying.")));

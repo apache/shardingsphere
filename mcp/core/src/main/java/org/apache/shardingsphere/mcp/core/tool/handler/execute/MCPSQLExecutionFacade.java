@@ -94,14 +94,11 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
                     return recordSuccess(executionRequest, transactionStatementExecutor.execute(
                             executionRequest.getSessionId(), executionRequest.getDatabase(), actualDatabaseCapability, classificationResult), classificationResult.getTraceStatementMarker());
                 case QUERY:
+                case EXPLAIN:
                 case DML:
                 case DDL:
                 case DCL:
                     return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, actualDatabaseCapability), classificationResult.getTraceStatementMarker());
-                case EXPLAIN_ANALYZE:
-                    ShardingSpherePreconditions.checkState(actualDatabaseCapability.isSupportsExplainAnalyze(), () -> new MCPUnsupportedException("EXPLAIN ANALYZE is not supported."));
-                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, actualDatabaseCapability),
-                            classificationResult.getTraceStatementMarker());
                 default:
                     throw new StatementClassNotSupportedException();
             }

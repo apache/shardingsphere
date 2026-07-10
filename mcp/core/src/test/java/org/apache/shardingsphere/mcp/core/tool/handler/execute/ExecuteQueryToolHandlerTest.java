@@ -82,27 +82,27 @@ class ExecuteQueryToolHandlerTest {
     }
     
     @Test
-    void assertHandleExplainAnalyze() {
+    void assertHandleExplain() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", List.of(), List.of(), false));
+        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(SupportedMCPStatement.EXPLAIN, "EXPLAIN", List.of(), List.of(), false));
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPResponse actual = new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "schema", "public", "sql", "EXPLAIN ANALYZE SELECT * FROM orders")));
-        assertThat(actual.toPayload().get("statement_class"), is("explain_analyze"));
+                Map.of("database", "logic_db", "schema", "public", "sql", "EXPLAIN SELECT * FROM orders")));
+        assertThat(actual.toPayload().get("statement_class"), is("explain"));
         verify(executionFacade).execute(any());
     }
     
     @Test
-    void assertRejectSideEffectingExplainAnalyze() {
+    void assertHandleExplainUpdate() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(SupportedMCPStatement.EXPLAIN, "EXPLAIN", List.of(), List.of(), false));
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "sql", "EXPLAIN ANALYZE UPDATE orders SET status = 'PAID'"))));
-        assertThat(actual.getMessage(),
-                is("database_gateway_execute_query only supports classifier-approved QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL."));
-        verifyNoInteractions(executionFacade);
+        MCPResponse actual = new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
+                Map.of("database", "logic_db", "schema", "public", "sql", "EXPLAIN UPDATE orders SET status = 'PAID'")));
+        assertThat(actual.toPayload().get("statement_class"), is("explain"));
+        verify(executionFacade).execute(any());
     }
     
     @Test
@@ -124,7 +124,7 @@ class ExecuteQueryToolHandlerTest {
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'"))));
         assertThat(actual.getMessage(),
-                is("database_gateway_execute_query only supports classifier-approved QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL."));
+                is("database_gateway_execute_query only supports classifier-approved QUERY and EXPLAIN statements. Use database_gateway_execute_update for side-effecting SQL."));
         verifyNoInteractions(executionFacade);
     }
     

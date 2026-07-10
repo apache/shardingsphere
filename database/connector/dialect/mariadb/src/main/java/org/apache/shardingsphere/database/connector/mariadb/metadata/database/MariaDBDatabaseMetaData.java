@@ -112,7 +112,7 @@ public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectExplainOption getExplainOption() {
-        return databaseVersion -> false;
+        return delegate.getExplainOption();
     }
     
     @Override

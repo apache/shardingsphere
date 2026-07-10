@@ -99,8 +99,6 @@ class DialectDatabaseMetaDataTest {
         assertFalse(actual.isReturnRollbackStatementWhenCommitFailed());
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertTrue(actual.getXaDriverClassNames().isEmpty());
-        assertTrue(actual.isSupportTransaction());
-        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test
@@ -126,7 +124,7 @@ class DialectDatabaseMetaDataTest {
     @Test
     void assertGetExplainOption() {
         DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
-        assertFalse(actual.isExplainAnalyzeSupported("9.9.9"));
+        assertFalse(actual.isExplainSupported());
     }
     
     @Test

@@ -58,12 +58,12 @@ public final class PrestoDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.emptyList(), true, false);
+        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.emptyList());
     }
     
     @Override
     public DialectExplainOption getExplainOption() {
-        return databaseVersion -> true;
+        return () -> true;
     }
     
     @Override

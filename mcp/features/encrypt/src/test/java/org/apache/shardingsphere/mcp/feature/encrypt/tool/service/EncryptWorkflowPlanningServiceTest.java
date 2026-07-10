@@ -342,7 +342,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata() {
-        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0");
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true);
     }
     
     private ShardingSphereSchema createSchemaMetadata() {

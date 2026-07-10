@@ -63,7 +63,7 @@ final class LLMMCPSafetyValidator {
         String sql = Objects.toString(arguments.get("sql"), "").trim();
         try {
             SupportedMCPStatement statementClass = statementClassifier.classify(sql).getStatementClass();
-            return SupportedMCPStatement.QUERY == statementClass || SupportedMCPStatement.EXPLAIN_ANALYZE == statementClass;
+            return SupportedMCPStatement.QUERY == statementClass || SupportedMCPStatement.EXPLAIN == statementClass;
         } catch (final MCPInvalidRequestException | MCPUnsupportedException | IllegalArgumentException ignored) {
             return false;
         }

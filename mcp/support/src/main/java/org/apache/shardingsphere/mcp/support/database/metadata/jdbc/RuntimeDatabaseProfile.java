@@ -32,4 +32,8 @@ public final class RuntimeDatabaseProfile {
     private final String databaseType;
     
     private final String databaseVersion;
+    
+    private final boolean supportsTransaction;
+    
+    private final boolean supportsSavepoint;
 }

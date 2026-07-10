@@ -56,6 +56,7 @@ public final class CommitProxyBackendHandler implements ProxyBackendHandler {
     }
     
     private boolean isReturnRollbackStatement() {
-        return connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur() && dialectDatabaseMetaData.getTransactionOption().isReturnRollbackStatementWhenCommitFailed();
+        return connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()
+                && dialectDatabaseMetaData.getTransactionOption().isReturnRollbackStatementWhenCommitFailed();
     }
 }

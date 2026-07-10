@@ -53,36 +53,36 @@ public final class ClassificationResult {
     
     private final String savepointName;
     
-    private final Optional<SupportedMCPStatement> analyzedStatementClass;
+    private final Optional<SupportedMCPStatement> explainedStatementClass;
     
     public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName) {
         this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, null);
     }
     
     /**
-     * Create statement classification result with the inner statement class analyzed by EXPLAIN ANALYZE.
+     * Create statement classification result with the inner statement class explained by EXPLAIN.
      *
      * @param statementClass statement class
      * @param statementType statement type
      * @param normalizedSql normalized SQL
      * @param targetObjectName target object name
      * @param savepointName savepoint name
-     * @param analyzedStatementClass inner statement class analyzed by EXPLAIN ANALYZE
+     * @param explainedStatementClass inner statement class explained by EXPLAIN
      */
     public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,
-                                final SupportedMCPStatement analyzedStatementClass) {
-        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, analyzedStatementClass, targetObjectName.isEmpty() ? List.of() : List.of(targetObjectName));
+                                final SupportedMCPStatement explainedStatementClass) {
+        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, explainedStatementClass, targetObjectName.isEmpty() ? List.of() : List.of(targetObjectName));
     }
     
     ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,
-                         final SupportedMCPStatement analyzedStatementClass, final Collection<String> referencedObjectNames) {
+                         final SupportedMCPStatement explainedStatementClass, final Collection<String> referencedObjectNames) {
         this.statementClass = statementClass;
         this.statementType = statementType;
         this.normalizedSql = normalizedSql;
         this.targetObjectName = targetObjectName;
         this.referencedObjectNames = referencedObjectNames;
         this.savepointName = savepointName;
-        this.analyzedStatementClass = Optional.ofNullable(analyzedStatementClass);
+        this.explainedStatementClass = Optional.ofNullable(explainedStatementClass);
     }
     
     /**
@@ -130,7 +130,7 @@ public final class ClassificationResult {
         if (isRuleDistSQL()) {
             return "rule-metadata";
         }
-        return switch (analyzedStatementClass.orElse(statementClass)) {
+        return switch (explainedStatementClass.orElse(statementClass)) {
             case DML -> "physical-data";
             case DDL -> "physical-structure";
             case DCL -> "privilege-metadata";

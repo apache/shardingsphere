@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -72,8 +71,8 @@ public final class XATransactionDataSource implements AutoCloseable {
         this.resourceName = resourceName;
         this.dataSource = dataSource;
         if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
-            DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
-            xaDataSource = new DataSourceSwapper(databaseType, transactionOption.getXaDriverClassNames()).swap(dataSource);
+            Collection<String> xaDriverClassNames = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption().getXaDriverClassNames();
+            xaDataSource = new DataSourceSwapper(databaseType, xaDriverClassNames).swap(dataSource);
             xaConnectionWrapper = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType);
             this.xaTransactionManagerProvider = xaTransactionManagerProvider;
             xaTransactionManagerProvider.registerRecoveryResource(resourceName, xaDataSource);

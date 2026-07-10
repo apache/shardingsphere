@@ -29,7 +29,9 @@ import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -41,10 +43,23 @@ class MCPJdbcDatabaseProfileLoaderTest {
     @Test
     void assertLoad() throws SQLException {
         try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
-            RuntimeDatabaseProfile actual = new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0"));
+            RuntimeDatabaseProfile actual =
+                    new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true));
             assertThat(actual.getDatabase(), is("logic_db"));
             assertThat(actual.getDatabaseType(), is("FixtureDB"));
             assertThat(actual.getDatabaseVersion(), is("1.0"));
+            assertTrue(actual.isSupportsTransaction());
+            assertTrue(actual.isSupportsSavepoint());
+        }
+    }
+    
+    @Test
+    void assertLoadWithoutTransaction() throws SQLException {
+        try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
+            RuntimeDatabaseProfile actual =
+                    new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", false, true));
+            assertFalse(actual.isSupportsTransaction());
+            assertFalse(actual.isSupportsSavepoint());
         }
     }
     
@@ -54,13 +69,14 @@ class MCPJdbcDatabaseProfileLoaderTest {
             ShardingSphereExternalException expectedCause = mock(ShardingSphereExternalException.class);
             mocked.when(() -> DatabaseTypeFactory.get(any(DatabaseMetaData.class))).thenThrow(expectedCause);
             RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                    () -> new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration("jdbc:unknown:test", "8.0.32")));
+                    () -> new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration("jdbc:unknown:test", "8.0.32", true, true)));
             assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
             assertThat(actual.getCause(), is(expectedCause));
         }
     }
     
-    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl, final String databaseVersion) throws SQLException {
+    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl, final String databaseVersion,
+                                                                            final boolean supportsTransaction, final boolean supportsSavepoint) throws SQLException {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -68,6 +84,8 @@ class MCPJdbcDatabaseProfileLoaderTest {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getURL()).thenReturn(jdbcUrl);
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseVersion);
+        when(databaseMetaData.supportsTransactions()).thenReturn(supportsTransaction);
+        when(databaseMetaData.supportsSavepoints()).thenReturn(supportsSavepoint);
         return result;
     }
 }

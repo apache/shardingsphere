@@ -21,7 +21,7 @@ Use MCP list methods (`tools/list`, `resources/list`, `resources/templates/list`
 
 Use `completion/complete` for supported argument values. Read `shardingsphere://capabilities` when ShardingSphere domain capability guidance, workflow guidance, or side-effect notes are needed.
 
-Use `database_gateway_execute_query` only for classifier-approved `SELECT` or `EXPLAIN ANALYZE`.
+Use `database_gateway_execute_query` only for classifier-approved `SELECT` or `EXPLAIN`.
 Use `database_gateway_execute_update` with `execution_mode=preview` before side effects.
 Treat `database_gateway_execute_update` preview as classification-only, not as a database dry run.
 

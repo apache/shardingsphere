@@ -111,8 +111,6 @@ class MariaDBDatabaseMetaDataTest {
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.mariadb.jdbc.MariaDbDataSource"));
-        assertTrue(actual.isSupportTransaction());
-        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test
@@ -143,6 +141,6 @@ class MariaDBDatabaseMetaDataTest {
     @Test
     void assertGetExplainOption() {
         DialectExplainOption actual = metaData.getExplainOption();
-        assertFalse(actual.isExplainAnalyzeSupported("10.11.0"));
+        assertTrue(actual.isExplainSupported());
     }
 }

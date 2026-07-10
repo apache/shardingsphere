@@ -21,7 +21,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -182,7 +185,7 @@ public final class ResourceTestDataFactory {
                 MockedStatic<DatabaseTypeFactory> ignored = mockDatabaseTypeFactoryByConnectionMetadata();
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockDatabaseTypes(createSequenceSupportByDatabaseType(databaseMetadataList), typedSPILoader, databaseTypedSPILoader);
+            mockDatabaseTypes(createIndexSupportByDatabaseType(databaseMetadataList), createSequenceSupportByDatabaseType(databaseMetadataList), typedSPILoader, databaseTypedSPILoader);
             return new MCPDatabaseCapabilityProvider(runtimeDatabases);
         }
     }
@@ -190,8 +193,34 @@ public final class ResourceTestDataFactory {
     private static MetadataSPIMocks mockMetadataSPI(final List<DatabaseMetadataFixture> databaseMetadataList) {
         MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
         MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class);
-        mockDatabaseTypes(createSequenceSupportByDatabaseType(databaseMetadataList), typedSPILoader, databaseTypedSPILoader);
+        mockDatabaseTypes(createIndexSupportByDatabaseType(databaseMetadataList), createSequenceSupportByDatabaseType(databaseMetadataList), typedSPILoader, databaseTypedSPILoader);
         return new MetadataSPIMocks(typedSPILoader, databaseTypedSPILoader);
+    }
+    
+    private static Map<String, Boolean> createIndexSupportByDatabaseType(final List<DatabaseMetadataFixture> databaseMetadataList) {
+        Map<String, Boolean> result = new LinkedHashMap<>(databaseMetadataList.size(), 1F);
+        for (DatabaseMetadataFixture each : databaseMetadataList) {
+            result.merge(each.databaseType, containsIndex(each), Boolean::logicalOr);
+        }
+        return result;
+    }
+    
+    private static boolean containsIndex(final DatabaseMetadataFixture databaseMetadata) {
+        for (SchemaMetadataFixture each : databaseMetadata.schemas) {
+            if (containsIndex(each.tables)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private static boolean containsIndex(final List<TableMetadataFixture> tables) {
+        for (TableMetadataFixture each : tables) {
+            if (!each.indexes.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private static Map<String, Boolean> createSequenceSupportByDatabaseType(final List<DatabaseMetadataFixture> databaseMetadataList) {
@@ -211,14 +240,14 @@ public final class ResourceTestDataFactory {
         return false;
     }
     
-    private static void mockDatabaseTypes(final Map<String, Boolean> sequenceSupportByDatabaseType, final MockedStatic<TypedSPILoader> typedSPILoader,
-                                          final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
+    private static void mockDatabaseTypes(final Map<String, Boolean> indexSupportByDatabaseType, final Map<String, Boolean> sequenceSupportByDatabaseType,
+                                          final MockedStatic<TypedSPILoader> typedSPILoader, final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
         for (Entry<String, Boolean> entry : sequenceSupportByDatabaseType.entrySet()) {
-            mockDatabaseType(entry.getKey(), entry.getValue(), typedSPILoader, databaseTypedSPILoader);
+            mockDatabaseType(entry.getKey(), indexSupportByDatabaseType.getOrDefault(entry.getKey(), false), entry.getValue(), typedSPILoader, databaseTypedSPILoader);
         }
     }
     
-    private static void mockDatabaseType(final String databaseType, final boolean sequenceSupported, final MockedStatic<TypedSPILoader> typedSPILoader,
+    private static void mockDatabaseType(final String databaseType, final boolean indexSupported, final boolean sequenceSupported, final MockedStatic<TypedSPILoader> typedSPILoader,
                                          final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
         DatabaseType databaseTypeFromSPI = mock(DatabaseType.class);
         when(databaseTypeFromSPI.getType()).thenReturn(databaseType);
@@ -226,8 +255,13 @@ public final class ResourceTestDataFactory {
         typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
         typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, databaseType)).thenReturn(databaseTypeFromSPI);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(
+                new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, List.of()));
+        when(dialectDatabaseMetaData.getIndexOption()).thenReturn(new DialectIndexOption(false, Integer.MAX_VALUE, indexSupported));
+        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(true, null));
         when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(
                 sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());
+        when(dialectDatabaseMetaData.getExplainOption()).thenReturn(() -> true);
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectDatabaseMetaData));
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(dialectDatabaseMetaData);
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseTypeFromSPI)).thenReturn(Optional.empty());

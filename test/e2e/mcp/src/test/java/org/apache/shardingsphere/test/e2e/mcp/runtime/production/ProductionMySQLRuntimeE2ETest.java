@@ -52,7 +52,7 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.readResource("shardingsphere://databases/logic_db/capabilities");
             assertThat(String.valueOf(actual.get("databaseType")), is("MySQL"));
-            assertThat(String.valueOf(actual.get("supportsExplainAnalyze")), is("true"));
+            assertThat(String.valueOf(actual.get("supportsExplain")), is("true"));
         }
     }
     

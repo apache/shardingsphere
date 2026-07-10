@@ -107,8 +107,6 @@ class PostgreSQLDatabaseMetaDataTest {
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.postgresql.xa.PGXADataSource"));
-        assertTrue(actual.isSupportTransaction());
-        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test
@@ -119,7 +117,7 @@ class PostgreSQLDatabaseMetaDataTest {
     @Test
     void assertGetExplainOption() {
         DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
-        assertTrue(actual.isExplainAnalyzeSupported(""));
+        assertTrue(actual.isExplainSupported());
     }
     
     @Test

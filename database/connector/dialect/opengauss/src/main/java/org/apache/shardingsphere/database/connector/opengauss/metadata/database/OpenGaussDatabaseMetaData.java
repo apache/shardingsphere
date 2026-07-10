@@ -93,7 +93,7 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public DialectExplainOption getExplainOption() {
-        return databaseVersion -> true;
+        return () -> true;
     }
     
     @Override

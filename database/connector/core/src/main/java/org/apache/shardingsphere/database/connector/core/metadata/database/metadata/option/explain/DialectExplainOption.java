@@ -24,10 +24,9 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
 public interface DialectExplainOption {
     
     /**
-     * Judge whether EXPLAIN ANALYZE is supported for database version.
+     * Judge whether EXPLAIN is supported.
      *
-     * @param databaseVersion database version
-     * @return whether EXPLAIN ANALYZE is supported
+     * @return whether EXPLAIN is supported
      */
-    boolean isExplainAnalyzeSupported(String databaseVersion);
+    boolean isExplainSupported();
 }

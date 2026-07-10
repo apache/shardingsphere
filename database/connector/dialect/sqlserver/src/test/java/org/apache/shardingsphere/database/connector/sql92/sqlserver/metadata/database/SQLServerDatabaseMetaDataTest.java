@@ -95,8 +95,6 @@ class SQLServerDatabaseMetaDataTest {
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("com.microsoft.sqlserver.jdbc.SQLServerXADataSource"));
-        assertTrue(actual.isSupportTransaction());
-        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test

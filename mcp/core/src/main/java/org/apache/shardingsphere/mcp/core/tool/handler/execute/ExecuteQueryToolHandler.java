@@ -73,7 +73,7 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         ClassificationResult classificationResult = new StatementClassifier().classify(sql);
         if (!SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult)) {
             throw new SQLToolMismatchException(
-                    "database_gateway_execute_query only supports classifier-approved QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL.",
+                    "database_gateway_execute_query only supports classifier-approved QUERY and EXPLAIN statements. Use database_gateway_execute_update for side-effecting SQL.",
                     TOOL_NAME, "database_gateway_execute_update", classificationResult,
                     createSuggestedArguments(toolArguments, classificationResult));
         }

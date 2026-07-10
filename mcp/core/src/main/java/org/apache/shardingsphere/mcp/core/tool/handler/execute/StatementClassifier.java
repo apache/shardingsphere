@@ -48,12 +48,12 @@ public final class StatementClassifier {
         String leadingSql = actualSql.substring(scanner.skipInsignificant(actualSql, 0)).trim();
         String upperLeadingSql = leadingSql.toUpperCase(Locale.ENGLISH);
         safetyValidator.checkLeadingStatement(upperLeadingSql, actualSql);
-        if (upperLeadingSql.startsWith("EXPLAIN ANALYZE")) {
-            String explainedSql = leadingSql.substring("EXPLAIN ANALYZE".length()).trim();
+        if (scanner.matchesKeyword(leadingSql, 0, "EXPLAIN")) {
+            String explainedSql = leadingSql.substring("EXPLAIN".length()).trim();
             SQLStatementStructure explainedStatementStructure = structureResolver.resolve(explainedSql);
             SupportedMCPStatement explainedStatementClass = statementClassResolver.resolve(explainedStatementStructure);
             safetyValidator.checkStructuredStatement(explainedStatementClass, explainedStatementStructure);
-            return new ClassificationResult(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", actualSql, targetResolver.resolve(explainedStatementStructure), "",
+            return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualSql, targetResolver.resolve(explainedStatementStructure), "",
                     explainedStatementClass, targetResolver.resolveAll(explainedStatementStructure));
         }
         if (isSavepointStatement(upperLeadingSql)) {

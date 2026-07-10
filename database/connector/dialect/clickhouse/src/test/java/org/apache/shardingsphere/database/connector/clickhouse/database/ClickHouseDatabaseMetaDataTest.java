@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -63,12 +62,5 @@ class ClickHouseDatabaseMetaDataTest {
         DialectSchemaOption actual = dialectDatabaseMetaData.getSchemaOption();
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
         assertFalse(actual.isCrossSchemaQuerySupported());
-    }
-    
-    @Test
-    void assertGetTransactionOption() {
-        DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
-        assertFalse(actual.isSupportTransaction());
-        assertFalse(actual.isSupportSavepoint());
     }
 }

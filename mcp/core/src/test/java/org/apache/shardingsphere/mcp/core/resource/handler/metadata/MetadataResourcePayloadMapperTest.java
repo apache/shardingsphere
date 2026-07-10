@@ -46,7 +46,7 @@ class MetadataResourcePayloadMapperTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata()));
         List<?> actual = new MetadataResourcePayloadMapper(metadataQueryFacade, new MCPUriVariables(Map.of()), true)
-                .map(createMetadata("logical-database"), List.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0")));
+                .map(createMetadata("logical-database"), List.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true)));
         Map<?, ?> actualDatabase = (Map<?, ?>) actual.getFirst();
         assertThat(actualDatabase.get("database"), is("logic_db"));
         assertThat(actualDatabase.get("databaseType"), is("FixtureDB"));

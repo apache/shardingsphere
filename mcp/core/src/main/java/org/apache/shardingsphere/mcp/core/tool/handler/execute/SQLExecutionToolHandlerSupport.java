@@ -33,11 +33,7 @@ import java.util.Map;
 final class SQLExecutionToolHandlerSupport {
     
     static boolean isReadOnlyStatement(final ClassificationResult classificationResult) {
-        if (SupportedMCPStatement.QUERY == classificationResult.getStatementClass()) {
-            return true;
-        }
-        return SupportedMCPStatement.EXPLAIN_ANALYZE == classificationResult.getStatementClass()
-                && SupportedMCPStatement.QUERY == classificationResult.getAnalyzedStatementClass().orElse(SupportedMCPStatement.QUERY);
+        return SupportedMCPStatement.QUERY == classificationResult.getStatementClass() || SupportedMCPStatement.EXPLAIN == classificationResult.getStatementClass();
     }
     
     static void checkExecutionArguments(final MCPToolArguments toolArguments, final String sourceTool) {

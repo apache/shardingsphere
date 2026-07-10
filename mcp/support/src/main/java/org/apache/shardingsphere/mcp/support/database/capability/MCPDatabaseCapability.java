@@ -44,16 +44,16 @@ public final class MCPDatabaseCapability {
     
     private final boolean supportsCrossSchemaSql;
     
-    private final boolean supportsExplainAnalyze;
+    private final boolean supportsExplain;
     
-    public MCPDatabaseCapability(final String databaseName, final String databaseVersion, final MCPDatabaseCapabilityOption option) {
+    public MCPDatabaseCapability(final String databaseName, final boolean supportsTransaction, final boolean supportsSavepoint, final MCPDatabaseCapabilityOption option) {
         this.databaseName = databaseName;
         databaseType = option.getType();
         MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(option.getType());
         supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(databaseDialect);
-        transactionCapability = databaseDialect.getTransactionCapability();
-        supportsExplainAnalyze = databaseDialect.isExplainAnalyzeSupported(databaseVersion);
-        supportedStatementClasses = createSupportedStatementClasses(transactionCapability, supportsExplainAnalyze);
+        transactionCapability = databaseDialect.getTransactionCapability(supportsTransaction, supportsSavepoint);
+        supportsExplain = databaseDialect.isExplainSupported();
+        supportedStatementClasses = createSupportedStatementClasses(transactionCapability, supportsExplain);
         defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
         supportsCrossSchemaSql = databaseDialect.isCrossSchemaQuerySupported();
         schemaExecutionSemantics = supportsCrossSchemaSql ? SchemaExecutionSemantics.BEST_EFFORT : SchemaExecutionSemantics.FIXED_TO_DATABASE;
@@ -74,7 +74,7 @@ public final class MCPDatabaseCapability {
         return result;
     }
     
-    private Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean supportsExplainAnalyze) {
+    private Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean supportsExplain) {
         Set<SupportedMCPStatement> result = new LinkedHashSet<>(16, 1F);
         result.add(SupportedMCPStatement.QUERY);
         result.add(SupportedMCPStatement.DML);
@@ -86,8 +86,8 @@ public final class MCPDatabaseCapability {
         if (TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability) {
             result.add(SupportedMCPStatement.SAVEPOINT);
         }
-        if (supportsExplainAnalyze) {
-            result.add(SupportedMCPStatement.EXPLAIN_ANALYZE);
+        if (supportsExplain) {
+            result.add(SupportedMCPStatement.EXPLAIN);
         }
         return result;
     }

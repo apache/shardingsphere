@@ -39,9 +39,9 @@ class LLMMCPSafetyValidatorTest {
     }
     
     @Test
-    void assertAllowExplainAnalyzeQuery() {
+    void assertAllowExplainQuery() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_query",
-                Map.of("sql", "EXPLAIN ANALYZE SELECT * FROM orders"));
+                Map.of("sql", "EXPLAIN SELECT * FROM orders"));
         assertFalse(actual.isPresent());
     }
     

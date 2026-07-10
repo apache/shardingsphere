@@ -40,17 +40,12 @@ import org.apache.shardingsphere.database.connector.mysql.metadata.database.opti
 
 import java.sql.Connection;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Database meta data of MySQL.
  */
 public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
-    
-    private static final Pattern VERSION_PATTERN = Pattern.compile("(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?.*");
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -115,24 +110,7 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectExplainOption getExplainOption() {
-        return MySQLDatabaseMetaData::isExplainAnalyzeSupported;
-    }
-    
-    private static boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        Matcher matcher = VERSION_PATTERN.matcher(Objects.toString(databaseVersion, "").trim());
-        if (!matcher.matches()) {
-            return false;
-        }
-        int actualMajorVersion = Integer.parseInt(matcher.group(1));
-        int actualMinorVersion = null == matcher.group(2) ? 0 : Integer.parseInt(matcher.group(2));
-        int actualPatchVersion = null == matcher.group(3) ? 0 : Integer.parseInt(matcher.group(3));
-        if (8 != actualMajorVersion) {
-            return actualMajorVersion > 8;
-        }
-        if (0 != actualMinorVersion) {
-            return actualMinorVersion > 0;
-        }
-        return actualPatchVersion >= 18;
+        return () -> true;
     }
     
     @Override

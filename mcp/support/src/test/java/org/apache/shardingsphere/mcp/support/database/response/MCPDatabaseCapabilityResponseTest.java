@@ -42,12 +42,12 @@ class MCPDatabaseCapabilityResponseTest {
         when(actualCapability.getSupportedMetadataObjectTypes()).thenReturn(EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
                 SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX));
         when(actualCapability.getSupportedStatementClasses()).thenReturn(EnumSet.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL,
-                SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT, SupportedMCPStatement.EXPLAIN_ANALYZE));
+                SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT, SupportedMCPStatement.EXPLAIN));
         when(actualCapability.isSupportsTransactionControl()).thenReturn(true);
         when(actualCapability.isSupportsSavepoint()).thenReturn(true);
         when(actualCapability.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.DATABASE_AS_SCHEMA);
         when(actualCapability.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
-        when(actualCapability.isSupportsExplainAnalyze()).thenReturn(true);
+        when(actualCapability.isSupportsExplain()).thenReturn(true);
         Map<String, Object> actual = new MCPDatabaseCapabilityResponse(actualCapability).toPayload();
         assertThat(actual, is(Map.ofEntries(
                 Map.entry("response_mode", "detail"),
@@ -56,13 +56,13 @@ class MCPDatabaseCapabilityResponseTest {
                 Map.entry("supportedObjectTypes", EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
                         SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX)),
                 Map.entry("supportedStatementClasses", EnumSet.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL,
-                        SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT, SupportedMCPStatement.EXPLAIN_ANALYZE)),
+                        SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT, SupportedMCPStatement.EXPLAIN)),
                 Map.entry("supportsTransactionControl", true),
                 Map.entry("supportsSavepoint", true),
                 Map.entry("defaultSchemaSemantics", SchemaSemantics.DATABASE_AS_SCHEMA),
                 Map.entry("schemaExecutionSemantics", SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Map.entry("supportsCrossSchemaSql", false),
-                Map.entry("supportsExplainAnalyze", true),
-                Map.entry("explainAnalyzeExecutionRisk", "EXPLAIN ANALYZE may execute the underlying SELECT on this engine; use it only when the user accepts runtime execution cost."))));
+                Map.entry("supportsExplain", true),
+                Map.entry("explainExecutionSemantics", "EXPLAIN is available for read-only execution plan diagnostics."))));
     }
 }

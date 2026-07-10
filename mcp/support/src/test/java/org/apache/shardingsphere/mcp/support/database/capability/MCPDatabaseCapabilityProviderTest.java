@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
@@ -41,7 +40,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -76,7 +74,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
         assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertFalse(actual.get().isSupportsCrossSchemaSql());
-        assertFalse(actual.get().isSupportsExplainAnalyze());
+        assertTrue(actual.get().isSupportsExplain());
     }
     
     @Test
@@ -99,7 +97,7 @@ class MCPDatabaseCapabilityProviderTest {
                                            final SchemaExecutionSemantics expectedSchemaExecutionSemantics) {
         CapabilityFixture capabilityFixture = new CapabilityFixture(expectedTransactionControl, expectedSavepoint, expectedIndexSupport, expectedSequenceSupport,
                 SchemaExecutionSemantics.FIXED_TO_DATABASE == expectedSchemaExecutionSemantics ? DialectSchemaSemantics.DATABASE_AS_SCHEMA : DialectSchemaSemantics.NATIVE_SCHEMA,
-                SchemaExecutionSemantics.BEST_EFFORT == expectedSchemaExecutionSemantics, version -> false);
+                SchemaExecutionSemantics.BEST_EFFORT == expectedSchemaExecutionSemantics, () -> false);
         Optional<MCPDatabaseCapability> actual = createCapabilityProvider(databaseType, "", capabilityFixture).provide("logic_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get().isSupportsTransactionControl(), is(expectedTransactionControl));
@@ -110,28 +108,30 @@ class MCPDatabaseCapabilityProviderTest {
     }
     
     @Test
-    void assertProvideWithRuntimeOverlay() {
+    void assertProvideWithExplainSupport() {
         Optional<MCPDatabaseCapability> actual = createCapabilityProvider("MySQL", "8.0.32").provide("logic_db");
         assertTrue(actual.isPresent());
         assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX));
         assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertFalse(actual.get().isSupportsCrossSchemaSql());
-        assertTrue(actual.get().isSupportsExplainAnalyze());
+        assertTrue(actual.get().isSupportsExplain());
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider() {
-        return createCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive")), Map.of(
-                "MySQL", new CapabilityFixture(true, true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false, "8.0.32"::equals),
-                "Hive", new CapabilityFixture(false, false, false, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false, version -> false)));
+        Map<String, CapabilityFixture> capabilityFixtures = Map.of(
+                "MySQL", new CapabilityFixture(true, true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false, () -> true),
+                "Hive", new CapabilityFixture(false, false, false, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false, () -> false));
+        return createCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive"), capabilityFixtures), capabilityFixtures);
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType, final String databaseVersion) {
         return createCapabilityProvider(databaseType, databaseVersion,
-                new CapabilityFixture(true, true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false, "8.0.32"::equals));
+                new CapabilityFixture(true, true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false, () -> true));
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType, final String databaseVersion, final CapabilityFixture capabilityFixture) {
-        return createCapabilityProvider(Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", databaseType, databaseVersion)),
+        return createCapabilityProvider(Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", databaseType, databaseVersion,
+                capabilityFixture.transactionSupported, capabilityFixture.savepointSupported)),
                 Map.of(databaseType, capabilityFixture));
     }
     
@@ -155,8 +155,6 @@ class MCPDatabaseCapabilityProviderTest {
         when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
         typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false,
-                Collections.emptyList(), capabilityFixture.transactionSupported, capabilityFixture.savepointSupported));
         when(dialectDatabaseMetaData.getIndexOption()).thenReturn(new DialectIndexOption(false, Integer.MAX_VALUE, capabilityFixture.indexSupported));
         when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(
                 new DefaultSchemaOption(false, null, capabilityFixture.schemaSemantics, capabilityFixture.crossSchemaQuerySupported));
@@ -166,15 +164,18 @@ class MCPDatabaseCapabilityProviderTest {
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectDatabaseMetaData));
     }
     
-    private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final Map<String, String> databaseTypes) {
+    private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final Map<String, String> databaseTypes, final Map<String, CapabilityFixture> capabilityFixtures) {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(databaseTypes.size(), 1F);
         for (Entry<String, String> entry : databaseTypes.entrySet()) {
-            result.put(entry.getKey(), createRuntimeDatabaseConfiguration(entry.getKey(), entry.getValue(), ""));
+            CapabilityFixture capabilityFixture = capabilityFixtures.get(entry.getValue());
+            result.put(entry.getKey(), createRuntimeDatabaseConfiguration(entry.getKey(), entry.getValue(), "",
+                    capabilityFixture.transactionSupported, capabilityFixture.savepointSupported));
         }
         return result;
     }
     
-    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName, final String databaseType, final String databaseVersion) {
+    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName, final String databaseType, final String databaseVersion,
+                                                                            final boolean transactionSupported, final boolean savepointSupported) {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         try {
             Connection connection = mock(Connection.class);
@@ -187,6 +188,8 @@ class MCPDatabaseCapabilityProviderTest {
             when(statement.executeQuery(anyString())).thenReturn(scalarResultSet);
             when(scalarResultSet.next()).thenReturn(false);
             when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseVersion);
+            when(databaseMetaData.supportsTransactions()).thenReturn(transactionSupported);
+            when(databaseMetaData.supportsSavepoints()).thenReturn(savepointSupported);
             when(databaseMetaData.getURL()).thenReturn(SupportDatabaseTypeFactoryMocker.createJdbcUrl(databaseType));
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);

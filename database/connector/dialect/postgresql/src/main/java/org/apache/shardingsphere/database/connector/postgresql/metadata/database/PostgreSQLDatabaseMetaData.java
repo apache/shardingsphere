@@ -86,7 +86,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public DialectExplainOption getExplainOption() {
-        return databaseVersion -> true;
+        return () -> true;
     }
     
     @Override

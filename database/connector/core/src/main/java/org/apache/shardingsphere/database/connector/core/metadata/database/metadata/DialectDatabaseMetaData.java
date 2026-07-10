@@ -188,7 +188,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return explain option
      */
     default DialectExplainOption getExplainOption() {
-        return databaseVersion -> false;
+        return () -> false;
     }
     
     /**

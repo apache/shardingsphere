@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
@@ -93,7 +92,7 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         StatementClassifier statementClassifier = mock(StatementClassifier.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         when(statementClassifier.classify(anyString())).thenThrow(new MCPBannedSQLStatementException());
@@ -118,7 +117,7 @@ class MCPSQLExecutionFacadeTest {
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "orders", "");
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createStatementClassifier(classification));
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.DML), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.DML));
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         StatementClassNotSupportedException actual = assertThrows(StatementClassNotSupportedException.class, () -> facade.execute(request));
@@ -132,7 +131,7 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.TRANSACTION_CONTROL), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.TRANSACTION_CONTROL));
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "BEGIN", "", "");
         SQLExecutionResponse response = SQLExecutionResponse.statementAck(SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "Transaction started.");
         mockSessionLock(coordinator);
@@ -154,7 +153,7 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "orders", "");
         SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
         mockSessionLock(coordinator);
@@ -178,7 +177,7 @@ class MCPSQLExecutionFacadeTest {
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         SQLExecutionRequest request = createExecutionRequest("SELECT * FROM other_db.orders");
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM other_db.orders", "other_db.orders", "", null,
                 List.of("other_db.orders"));
@@ -198,7 +197,7 @@ class MCPSQLExecutionFacadeTest {
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         SQLExecutionRequest request = createExecutionRequest("SELECT * FROM logic_db.orders WHERE EXISTS (SELECT 1 FROM other_db.items)");
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
         mockSessionLock(coordinator);
@@ -217,7 +216,7 @@ class MCPSQLExecutionFacadeTest {
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL, SupportedMCPStatement.DCL), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL, SupportedMCPStatement.DCL));
         SQLExecutionRequest request = createExecutionRequest(sql);
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
         mockSessionLock(coordinator);
@@ -235,7 +234,7 @@ class MCPSQLExecutionFacadeTest {
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.DML), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.DML));
         SQLExecutionRequest request = createExecutionRequest("UPDATE other_db.orders SET status = 'DONE'");
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE other_db.orders SET status = 'DONE'", "other_db.orders", "",
                 null, List.of("other_db.orders"));
@@ -253,7 +252,7 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM logic_db.orders", "logic_db.orders", "", null,
                 List.of("logic_db.orders"));
         SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
@@ -276,7 +275,7 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), false, true);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), true);
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM other_db.orders", "other_db.orders", "", null,
                 List.of("other_db.orders"));
         SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
@@ -295,21 +294,21 @@ class MCPSQLExecutionFacadeTest {
     }
     
     @Test
-    void assertExecuteWithExplainAnalyzeUnsupported() {
+    void assertExecuteWithExplainUnsupported() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        SQLExecutionRequest request = createExecutionRequest("EXPLAIN ANALYZE SELECT 1");
-        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", "EXPLAIN ANALYZE SELECT 1", "orders", "");
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.EXPLAIN_ANALYZE), false);
+        SQLExecutionRequest request = createExecutionRequest("EXPLAIN SELECT 1");
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", "EXPLAIN SELECT 1", "orders", "");
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createStatementClassifier(classification));
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
-        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> facade.execute(request));
-        assertThat(actual.getMessage(), is("EXPLAIN ANALYZE is not supported."));
-        verify(traceFactory).create("session-1", "logic_db", "EXPLAIN ANALYZE SELECT 1", false, "EXPLAIN_ANALYZE");
+        StatementClassNotSupportedException actual = assertThrows(StatementClassNotSupportedException.class, () -> facade.execute(request));
+        assertThat(actual.getMessage(), is("Statement class is not supported."));
+        verify(traceFactory).create("session-1", "logic_db", "EXPLAIN SELECT 1", false, "EXPLAIN");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -317,7 +316,7 @@ class MCPSQLExecutionFacadeTest {
     void assertExecuteWithExecutorFailure() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "orders", "");
         mockSessionLock(coordinator);
@@ -334,13 +333,13 @@ class MCPSQLExecutionFacadeTest {
     }
     
     @Test
-    void assertExecuteExplainAnalyze() {
+    void assertExecuteExplain() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.EXPLAIN_ANALYZE), true);
-        SQLExecutionRequest request = createExecutionRequest("EXPLAIN ANALYZE SELECT 1");
-        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", "EXPLAIN ANALYZE SELECT 1", "orders", "");
-        SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", Collections.emptyList(), Collections.emptyList(), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.EXPLAIN));
+        SQLExecutionRequest request = createExecutionRequest("EXPLAIN SELECT 1");
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", "EXPLAIN SELECT 1", "orders", "");
+        SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.EXPLAIN, "EXPLAIN", Collections.emptyList(), Collections.emptyList(), false);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
@@ -351,7 +350,7 @@ class MCPSQLExecutionFacadeTest {
         SQLExecutionResponse actual = facade.execute(request);
         assertThat(actual, is(response));
         verify(statementExecutor).execute(request, classification, capability);
-        verify(traceFactory).create("session-1", "logic_db", "EXPLAIN ANALYZE SELECT 1", true, "EXPLAIN_ANALYZE");
+        verify(traceFactory).create("session-1", "logic_db", "EXPLAIN SELECT 1", true, "EXPLAIN");
         verifyNoInteractions(transactionExecutor);
     }
     
@@ -372,14 +371,13 @@ class MCPSQLExecutionFacadeTest {
         when(coordinator.executeWithSessionLock(eq("session-1"), any())).thenAnswer(invocation -> ((Supplier<SQLExecutionResponse>) invocation.getArgument(1, Supplier.class)).get());
     }
     
-    private MCPDatabaseCapability createCapability(final Set<SupportedMCPStatement> supportedStatementClasses, final boolean supportsExplainAnalyze) {
-        return createCapability(supportedStatementClasses, supportsExplainAnalyze, false);
+    private MCPDatabaseCapability createCapability(final Set<SupportedMCPStatement> supportedStatementClasses) {
+        return createCapability(supportedStatementClasses, false);
     }
     
-    private MCPDatabaseCapability createCapability(final Set<SupportedMCPStatement> supportedStatementClasses, final boolean supportsExplainAnalyze, final boolean supportsCrossSchemaSql) {
+    private MCPDatabaseCapability createCapability(final Set<SupportedMCPStatement> supportedStatementClasses, final boolean supportsCrossSchemaSql) {
         MCPDatabaseCapability result = mock(MCPDatabaseCapability.class);
         when(result.getSupportedStatementClasses()).thenReturn(supportedStatementClasses);
-        when(result.isSupportsExplainAnalyze()).thenReturn(supportsExplainAnalyze);
         when(result.isSupportsCrossSchemaSql()).thenReturn(supportsCrossSchemaSql);
         return result;
     }

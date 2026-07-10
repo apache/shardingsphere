@@ -101,7 +101,7 @@ class SearchMetadataPayloadBuilderTest {
         MCPFeatureCapabilityFacade capabilityFacade = mock(MCPFeatureCapabilityFacade.class);
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(result.getCapabilityFacade()).thenReturn(capabilityFacade);
-        when(metadataQueryFacade.queryDatabases()).thenReturn(List.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0")));
+        when(metadataQueryFacade.queryDatabases()).thenReturn(List.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true)));
         when(metadataQueryFacade.querySchema("logic_db", "public")).thenReturn(Optional.of(mock(ShardingSphereSchema.class)));
         when(capabilityFacade.findDatabaseProfile("logic_db")).thenReturn(Optional.of(mock(RuntimeDatabaseProfile.class)));
         return result;
