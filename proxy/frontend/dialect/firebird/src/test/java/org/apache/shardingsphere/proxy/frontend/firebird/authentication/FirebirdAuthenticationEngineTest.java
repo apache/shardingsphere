@@ -280,7 +280,7 @@ class FirebirdAuthenticationEngineTest {
         Attribute<Charset> charsetAttr = mock(Attribute.class);
         when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
-                AuthenticationResultBuilder.continued("root", "", "db"));
+                AuthenticationResultBuilder.continued("root", "", "db", Collections.emptyMap()));
         FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
         try (
                 MockedConstruction<FirebirdAttachPacket> ignored = mockConstruction(FirebirdAttachPacket.class,
@@ -301,7 +301,7 @@ class FirebirdAuthenticationEngineTest {
         Attribute<Charset> charsetAttr = mock(Attribute.class);
         when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
-                AuthenticationResultBuilder.continued("root", "", "db"));
+                AuthenticationResultBuilder.continued("root", "", "db", Collections.emptyMap()));
         FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
         FirebirdAuthenticator authenticator = mock(FirebirdAuthenticator.class);
         when(authenticator.authenticate(any(), any())).thenReturn(true);
