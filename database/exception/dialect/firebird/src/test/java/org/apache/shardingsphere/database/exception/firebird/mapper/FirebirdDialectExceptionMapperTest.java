@@ -33,8 +33,6 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobHandleException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
@@ -96,11 +94,6 @@ class FirebirdDialectExceptionMapperTest {
     }
     
     @Test
-    void assertConvertWithInvalidBlobHandle() {
-        assertSQLException(mapper.convert(new InvalidBlobHandleException(42)), FirebirdVendorError.INVALID_BLOB_HANDLE);
-    }
-    
-    @Test
     void assertConvertWithBatchAlreadyOpened() {
         assertSQLException(mapper.convert(new BatchAlreadyOpenedException(42)), FirebirdVendorError.BATCH_ALREADY_OPENED);
     }
@@ -113,11 +106,6 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithInvalidBatchMessageFormat() {
         assertSQLException(mapper.convert(new InvalidBatchMessageFormatException("invalid message length")), FirebirdVendorError.SQLDA_ERROR);
-    }
-    
-    @Test
-    void assertConvertWithInvalidBlobId() {
-        assertSQLException(mapper.convert(new InvalidBlobIdException(42L)), FirebirdVendorError.INVALID_BLOB_ID);
     }
     
     @Test

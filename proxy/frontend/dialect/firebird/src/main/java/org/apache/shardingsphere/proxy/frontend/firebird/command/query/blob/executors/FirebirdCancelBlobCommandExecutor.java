@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -45,10 +44,9 @@ public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor 
     public Collection<DatabasePacket> execute() {
         int blobHandle = packet.getBlobHandle();
         OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
-        if (!blobId.isPresent()) {
-            throw new InvalidBlobHandleException(blobHandle);
+        if (blobId.isPresent()) {
+            FirebirdBlobUploadCache.getInstance().removeUpload(connectionSession.getConnectionId(), blobId.getAsLong());
         }
-        FirebirdBlobUploadCache.getInstance().removeUpload(connectionSession.getConnectionId(), blobId.getAsLong());
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }

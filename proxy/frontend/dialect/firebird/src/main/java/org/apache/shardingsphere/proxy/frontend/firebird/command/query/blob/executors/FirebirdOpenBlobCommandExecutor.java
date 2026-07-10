@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobIdException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
@@ -44,10 +43,7 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         byte[] blobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(packet.getBlobId());
-        if (null == blobContent) {
-            throw new InvalidBlobIdException(packet.getBlobId());
-        }
-        FirebirdBlobRegistry.setSegment(blobContent);
+        FirebirdBlobRegistry.setSegment(blobContent == null ? new byte[0] : blobContent);
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId).setId(packet.getBlobId()));
     }

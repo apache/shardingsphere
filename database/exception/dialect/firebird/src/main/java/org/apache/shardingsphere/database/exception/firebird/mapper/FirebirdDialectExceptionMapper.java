@@ -31,8 +31,6 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobHandleException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBlobIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
@@ -63,9 +61,6 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         if (sqlDialectException instanceof InvalidBatchHandleException) {
             return toSQLException(FirebirdVendorError.INVALID_BATCH_HANDLE);
         }
-        if (sqlDialectException instanceof InvalidBlobHandleException) {
-            return toSQLException(FirebirdVendorError.INVALID_BLOB_HANDLE);
-        }
         if (sqlDialectException instanceof BatchTooBigException) {
             return toSQLException(FirebirdVendorError.BATCH_TOO_BIG);
         }
@@ -77,9 +72,6 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof InvalidBatchMessageFormatException) {
             return toSQLException(FirebirdVendorError.SQLDA_ERROR);
-        }
-        if (sqlDialectException instanceof InvalidBlobIdException) {
-            return toSQLException(FirebirdVendorError.INVALID_BLOB_ID);
         }
         if (sqlDialectException instanceof InvalidStatementHandleException) {
             return toSQLException(FirebirdVendorError.INVALID_STATEMENT_HANDLE);

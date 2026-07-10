@@ -42,8 +42,6 @@ public enum FirebirdVendorError implements VendorError {
     
     DATABASE_ALREADY_EXISTS(XOpenSQLState.GENERAL_ERROR, ISCConstants.isc_db_or_file_exists, "%s"),
     
-    INVALID_BLOB_HANDLE(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_handle, ""),
-    
     INVALID_BATCH_HANDLE(FirebirdState.INVALID_BATCH_HANDLE, ISCConstants.isc_bad_batch_handle, ""),
     
     BATCH_TOO_BIG(FirebirdState.BATCH_TOO_BIG, ISCConstants.isc_batch_too_big, ""),
@@ -64,9 +62,7 @@ public enum FirebirdVendorError implements VendorError {
     
     INVALID_BATCH_PARAMETER_VERSION(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_param_version, "%s"),
     
-    SQLDA_ERROR(FirebirdState.SQLDA_ERROR, ISCConstants.isc_dsql_sqlda_err, ""),
-    
-    INVALID_BLOB_ID(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_id, "");
+    SQLDA_ERROR(FirebirdState.SQLDA_ERROR, ISCConstants.isc_dsql_sqlda_err, "");
     
     private final SQLState sqlState;
     
