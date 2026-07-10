@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * Dialect index option.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class DialectIndexOption {
     
     private final boolean isSchemaUniquenessLevel;
