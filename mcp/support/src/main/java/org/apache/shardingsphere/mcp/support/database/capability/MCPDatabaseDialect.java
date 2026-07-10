@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
@@ -120,7 +122,55 @@ public final class MCPDatabaseDialect {
      * @return default schema semantics
      */
     public SchemaSemantics getDefaultSchemaSemantics() {
-        return option.map(MCPDatabaseCapabilityOption::getDefaultSchemaSemantics).orElse(SchemaSemantics.NATIVE_SCHEMA);
+        return dialectDatabaseMetaData.map(each -> toSchemaSemantics(each.getSchemaOption().getSchemaSemantics())).orElse(SchemaSemantics.NATIVE_SCHEMA);
+    }
+    
+    private static SchemaSemantics toSchemaSemantics(final DialectSchemaSemantics schemaSemantics) {
+        return DialectSchemaSemantics.DATABASE_AS_SCHEMA == schemaSemantics ? SchemaSemantics.DATABASE_AS_SCHEMA : SchemaSemantics.NATIVE_SCHEMA;
+    }
+    
+    /**
+     * Get transaction capability.
+     *
+     * @return transaction capability
+     */
+    public TransactionCapability getTransactionCapability() {
+        return dialectDatabaseMetaData.map(each -> toTransactionCapability(each.getTransactionOption())).orElse(TransactionCapability.NONE);
+    }
+    
+    private static TransactionCapability toTransactionCapability(final DialectTransactionOption transactionOption) {
+        if (!transactionOption.isSupportTransaction()) {
+            return TransactionCapability.NONE;
+        }
+        return transactionOption.isSupportSavepoint() ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
+    }
+    
+    /**
+     * Judge whether index metadata is supported.
+     *
+     * @return whether index metadata is supported
+     */
+    public boolean isIndexSupported() {
+        return dialectDatabaseMetaData.map(each -> each.getIndexOption().isIndexMetaDataSupported()).orElse(false);
+    }
+    
+    /**
+     * Judge whether cross-schema query is supported.
+     *
+     * @return whether cross-schema query is supported
+     */
+    public boolean isCrossSchemaQuerySupported() {
+        return dialectDatabaseMetaData.map(each -> each.getSchemaOption().isCrossSchemaQuerySupported()).orElse(false);
+    }
+    
+    /**
+     * Judge whether EXPLAIN ANALYZE is supported for database version.
+     *
+     * @param databaseVersion database version
+     * @return whether EXPLAIN ANALYZE is supported
+     */
+    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
+        return dialectDatabaseMetaData.map(each -> each.getExplainOption().isExplainAnalyzeSupported(databaseVersion)).orElse(false);
     }
     
     /**

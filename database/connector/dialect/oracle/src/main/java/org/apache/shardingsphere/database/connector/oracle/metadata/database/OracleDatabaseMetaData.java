@@ -73,7 +73,7 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectIndexOption getIndexOption() {
-        return new DialectIndexOption(true, INDEX_NAME_MAX_LENGTH);
+        return new DialectIndexOption(true, INDEX_NAME_MAX_LENGTH, true);
     }
     
     @Override

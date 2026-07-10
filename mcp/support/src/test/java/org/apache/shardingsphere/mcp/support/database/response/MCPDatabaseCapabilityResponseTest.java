@@ -20,10 +20,8 @@ package org.apache.shardingsphere.mcp.support.database.response;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumSet;
@@ -38,14 +36,18 @@ class MCPDatabaseCapabilityResponseTest {
     
     @Test
     void assertToPayload() {
-        MCPDatabaseCapabilityOption option = mock(MCPDatabaseCapabilityOption.class);
-        when(option.getType()).thenReturn("FixtureDB");
-        when(option.isIndexSupported()).thenReturn(true);
-        when(option.getTransactionCapability()).thenReturn(TransactionCapability.LOCAL_WITH_SAVEPOINT);
-        when(option.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.DATABASE_AS_SCHEMA);
-        when(option.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
-        when(option.isExplainAnalyzeSupported("1.0")).thenReturn(true);
-        MCPDatabaseCapability actualCapability = new MCPDatabaseCapability("logic_db", "1.0", option);
+        MCPDatabaseCapability actualCapability = mock(MCPDatabaseCapability.class);
+        when(actualCapability.getDatabaseName()).thenReturn("logic_db");
+        when(actualCapability.getDatabaseType()).thenReturn("FixtureDB");
+        when(actualCapability.getSupportedMetadataObjectTypes()).thenReturn(EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
+                SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX));
+        when(actualCapability.getSupportedStatementClasses()).thenReturn(EnumSet.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL,
+                SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT, SupportedMCPStatement.EXPLAIN_ANALYZE));
+        when(actualCapability.isSupportsTransactionControl()).thenReturn(true);
+        when(actualCapability.isSupportsSavepoint()).thenReturn(true);
+        when(actualCapability.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.DATABASE_AS_SCHEMA);
+        when(actualCapability.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
+        when(actualCapability.isSupportsExplainAnalyze()).thenReturn(true);
         Map<String, Object> actual = new MCPDatabaseCapabilityResponse(actualCapability).toPayload();
         assertThat(actual, is(Map.ofEntries(
                 Map.entry("response_mode", "detail"),

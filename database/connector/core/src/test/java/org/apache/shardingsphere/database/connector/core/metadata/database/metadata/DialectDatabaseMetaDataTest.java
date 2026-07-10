@@ -19,10 +19,12 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.junit.jupiter.api.Test;
 
@@ -61,6 +63,8 @@ class DialectDatabaseMetaDataTest {
         DialectSchemaOption actual = dialectDatabaseMetaData.getSchemaOption();
         assertFalse(actual.isSchemaAvailable());
         assertThat(actual.getDefaultSchema(), is(Optional.empty()));
+        assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
+        assertTrue(actual.isCrossSchemaQuerySupported());
     }
     
     @Test
@@ -73,6 +77,7 @@ class DialectDatabaseMetaDataTest {
         DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
         assertFalse(actual.isSchemaUniquenessLevel());
         assertThat(actual.getIndexNameMaxLength(), is(Integer.MAX_VALUE));
+        assertFalse(actual.isIndexMetaDataSupported());
     }
     
     @Test
@@ -94,6 +99,8 @@ class DialectDatabaseMetaDataTest {
         assertFalse(actual.isReturnRollbackStatementWhenCommitFailed());
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertTrue(actual.getXaDriverClassNames().isEmpty());
+        assertTrue(actual.isSupportTransaction());
+        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test
@@ -114,6 +121,12 @@ class DialectDatabaseMetaDataTest {
     @Test
     void assertGetGeneratedKeyOption() {
         assertThat(dialectDatabaseMetaData.getGeneratedKeyOption(), is(Optional.empty()));
+    }
+    
+    @Test
+    void assertGetExplainOption() {
+        DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
+        assertFalse(actual.isExplainAnalyzeSupported("9.9.9"));
     }
     
     @Test

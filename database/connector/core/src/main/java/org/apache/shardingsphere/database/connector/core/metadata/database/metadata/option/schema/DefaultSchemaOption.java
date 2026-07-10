@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -27,13 +24,32 @@ import java.util.Optional;
 /**
  * Default schema option.
  */
-@RequiredArgsConstructor
 public final class DefaultSchemaOption implements DialectSchemaOption {
     
-    @Getter
-    private final boolean isSchemaAvailable;
+    private final boolean schemaAvailable;
     
     private final String defaultSchema;
+    
+    private final DialectSchemaSemantics schemaSemantics;
+    
+    private final boolean crossSchemaQuerySupported;
+    
+    public DefaultSchemaOption(final boolean schemaAvailable, final String defaultSchema) {
+        this(schemaAvailable, defaultSchema, DialectSchemaSemantics.NATIVE_SCHEMA, true);
+    }
+    
+    public DefaultSchemaOption(final boolean schemaAvailable, final String defaultSchema, final DialectSchemaSemantics schemaSemantics,
+                               final boolean crossSchemaQuerySupported) {
+        this.schemaAvailable = schemaAvailable;
+        this.defaultSchema = defaultSchema;
+        this.schemaSemantics = schemaSemantics;
+        this.crossSchemaQuerySupported = crossSchemaQuerySupported;
+    }
+    
+    @Override
+    public boolean isSchemaAvailable() {
+        return schemaAvailable;
+    }
     
     @Override
     @SuppressWarnings("ReturnOfNull")
@@ -53,5 +69,15 @@ public final class DefaultSchemaOption implements DialectSchemaOption {
     @Override
     public Optional<String> getDefaultSystemSchema() {
         return Optional.empty();
+    }
+    
+    @Override
+    public DialectSchemaSemantics getSchemaSemantics() {
+        return schemaSemantics;
+    }
+    
+    @Override
+    public boolean isCrossSchemaQuerySupported() {
+        return crossSchemaQuerySupported;
     }
 }

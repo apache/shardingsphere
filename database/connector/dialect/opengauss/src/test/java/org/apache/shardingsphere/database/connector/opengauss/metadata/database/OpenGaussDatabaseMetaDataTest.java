@@ -21,8 +21,10 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -89,6 +91,8 @@ class OpenGaussDatabaseMetaDataTest {
         assertTrue(actual.isSchemaAvailable());
         assertThat(actual.getDefaultSchema(), is(Optional.of("public")));
         assertThat(actual.getDefaultSystemSchema(), is(Optional.of("pg_catalog")));
+        assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
+        assertTrue(actual.isCrossSchemaQuerySupported());
     }
     
     @Test
@@ -96,6 +100,7 @@ class OpenGaussDatabaseMetaDataTest {
         DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
         assertTrue(actual.isSchemaUniquenessLevel());
         assertThat(actual.getIndexNameMaxLength(), is(63));
+        assertTrue(actual.isIndexMetaDataSupported());
     }
     
     @Test
@@ -117,11 +122,19 @@ class OpenGaussDatabaseMetaDataTest {
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.opengauss.xa.PGXADataSource"));
+        assertTrue(actual.isSupportTransaction());
+        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test
     void assertGetProtocolVersionOption() {
         assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is("9.2.4"));
+    }
+    
+    @Test
+    void assertGetExplainOption() {
+        DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
+        assertTrue(actual.isExplainAnalyzeSupported(""));
     }
     
     @Test

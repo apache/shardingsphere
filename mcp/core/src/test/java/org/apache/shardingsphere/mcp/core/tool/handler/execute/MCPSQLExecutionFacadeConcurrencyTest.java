@@ -20,11 +20,9 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
@@ -37,6 +35,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -184,12 +183,11 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     }
     
     private MCPDatabaseCapability createDatabaseCapability() {
-        MCPDatabaseCapabilityOption option = mock(MCPDatabaseCapabilityOption.class);
-        when(option.getType()).thenReturn("FixtureDB");
-        when(option.getTransactionCapability()).thenReturn(TransactionCapability.LOCAL_WITH_SAVEPOINT);
-        when(option.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.NATIVE_SCHEMA);
-        when(option.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
-        return new MCPDatabaseCapability("logic_db", "", option);
+        MCPDatabaseCapability result = mock(MCPDatabaseCapability.class);
+        when(result.getSupportedStatementClasses()).thenReturn(EnumSet.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.TRANSACTION_CONTROL));
+        when(result.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
+        when(result.isSupportsTransactionControl()).thenReturn(true);
+        return result;
     }
     
     private SQLExecutionRequest createExecutionRequest(final String sessionId, final String sql) {

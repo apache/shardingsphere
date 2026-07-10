@@ -21,7 +21,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -74,6 +76,8 @@ class PostgreSQLDatabaseMetaDataTest {
     @Test
     void assertGetDefaultSchema() {
         assertThat(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema(), is(Optional.of("public")));
+        assertThat(dialectDatabaseMetaData.getSchemaOption().getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
+        assertTrue(dialectDatabaseMetaData.getSchemaOption().isCrossSchemaQuerySupported());
     }
     
     @Test
@@ -81,6 +85,7 @@ class PostgreSQLDatabaseMetaDataTest {
         DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
         assertTrue(actual.isSchemaUniquenessLevel());
         assertThat(actual.getIndexNameMaxLength(), is(63));
+        assertTrue(actual.isIndexMetaDataSupported());
     }
     
     @Test
@@ -102,11 +107,19 @@ class PostgreSQLDatabaseMetaDataTest {
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.postgresql.xa.PGXADataSource"));
+        assertTrue(actual.isSupportTransaction());
+        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test
     void assertGetProtocolVersionOption() {
         assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is("12.3"));
+    }
+    
+    @Test
+    void assertGetExplainOption() {
+        DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
+        assertTrue(actual.isExplainAnalyzeSupported(""));
     }
     
     @Test

@@ -20,7 +20,12 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
@@ -34,6 +39,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
+import java.sql.Connection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -110,11 +117,94 @@ class MCPDatabaseDialectTest {
         }
     }
     
+    @Test
+    void assertGetDefaultSchemaSemantics() {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false));
+            assertThat(MCPDatabaseDialect.of("Fixture").getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
+        }
+    }
+    
+    @Test
+    void assertGetDefaultSchemaSemanticsWithUnknownDatabaseType() {
+        assertThat(MCPDatabaseDialect.of("FixtureDB").getDefaultSchemaSemantics(), is(SchemaSemantics.NATIVE_SCHEMA));
+    }
+    
+    @Test
+    void assertGetTransactionCapabilityWithUnknownDatabaseType() {
+        assertThat(MCPDatabaseDialect.of("FixtureDB").getTransactionCapability(), is(TransactionCapability.NONE));
+    }
+    
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getDefaultSchemaSemanticsArguments")
-    void assertGetDefaultSchemaSemantics(final String name, final String databaseType, final SchemaSemantics expected) {
-        SchemaSemantics actual = MCPDatabaseDialect.of(databaseType).getDefaultSchemaSemantics();
-        assertThat(actual, is(expected));
+    @MethodSource("getTransactionCapabilityArguments")
+    void assertGetTransactionCapability(final String name, final boolean transactionSupported, final boolean savepointSupported, final TransactionCapability expected) {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false,
+                    Collections.emptyList(), transactionSupported, savepointSupported));
+            assertThat(MCPDatabaseDialect.of("Fixture").getTransactionCapability(), is(expected));
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("isIndexSupportedArguments")
+    void assertIsIndexSupported(final String name, final boolean indexSupported) {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getIndexOption()).thenReturn(new DialectIndexOption(false, Integer.MAX_VALUE, indexSupported));
+            assertThat(MCPDatabaseDialect.of("Fixture").isIndexSupported(), is(indexSupported));
+        }
+    }
+    
+    @Test
+    void assertIsIndexSupportedWithUnknownDatabaseType() {
+        assertFalse(MCPDatabaseDialect.of("FixtureDB").isIndexSupported());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("isCrossSchemaQuerySupportedArguments")
+    void assertIsCrossSchemaQuerySupported(final String name, final boolean crossSchemaQuerySupported) {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.NATIVE_SCHEMA, crossSchemaQuerySupported));
+            assertThat(MCPDatabaseDialect.of("Fixture").isCrossSchemaQuerySupported(), is(crossSchemaQuerySupported));
+        }
+    }
+    
+    @Test
+    void assertIsCrossSchemaQuerySupportedWithUnknownDatabaseType() {
+        assertFalse(MCPDatabaseDialect.of("FixtureDB").isCrossSchemaQuerySupported());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("isExplainAnalyzeSupportedArguments")
+    void assertIsExplainAnalyzeSupported(final String name, final DialectExplainOption explainOption, final boolean expected) {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getExplainOption()).thenReturn(explainOption);
+            assertThat(MCPDatabaseDialect.of("Fixture").isExplainAnalyzeSupported("8.0.18"), is(expected));
+        }
+    }
+    
+    @Test
+    void assertIsExplainAnalyzeSupportedWithUnknownDatabaseType() {
+        assertFalse(MCPDatabaseDialect.of("FixtureDB").isExplainAnalyzeSupported("9.9.9"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -250,11 +340,29 @@ class MCPDatabaseDialectTest {
         return result;
     }
     
-    private static Stream<Arguments> getDefaultSchemaSemanticsArguments() {
+    private static Stream<Arguments> getTransactionCapabilityArguments() {
         return Stream.of(
-                Arguments.of("mysql", "MySQL", SchemaSemantics.DATABASE_AS_SCHEMA),
-                Arguments.of("postgresql", "PostgreSQL", SchemaSemantics.NATIVE_SCHEMA),
-                Arguments.of("unknown", "FixtureDB", SchemaSemantics.NATIVE_SCHEMA));
+                Arguments.of("not supported", false, false, TransactionCapability.NONE),
+                Arguments.of("local only", true, false, TransactionCapability.LOCAL),
+                Arguments.of("local with savepoint", true, true, TransactionCapability.LOCAL_WITH_SAVEPOINT));
     }
     
+    private static Stream<Arguments> isIndexSupportedArguments() {
+        return Stream.of(
+                Arguments.of("index supported", true),
+                Arguments.of("index unsupported", false));
+    }
+    
+    private static Stream<Arguments> isCrossSchemaQuerySupportedArguments() {
+        return Stream.of(
+                Arguments.of("cross schema supported", true),
+                Arguments.of("cross schema unsupported", false));
+    }
+    
+    private static Stream<Arguments> isExplainAnalyzeSupportedArguments() {
+        return Stream.of(
+                Arguments.of("explain analyze supported", (DialectExplainOption) databaseVersion -> true, true),
+                Arguments.of("explain analyze unsupported", (DialectExplainOption) databaseVersion -> false, false),
+                Arguments.of("explain analyze version supported", (DialectExplainOption) "8.0.18"::equals, true));
+    }
 }

@@ -19,10 +19,6 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-import org.apache.shardingsphere.mcp.support.database.capability.DatabaseVersionUtil;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 
 /**
  * MCP database capability option for MySQL.
@@ -30,17 +26,11 @@ import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapa
 public final class MySQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public MySQLMCPDatabaseCapabilityOption() {
-        super("MySQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false);
+        super("MySQL");
     }
     
     @Override
     public IdentifierCasePolicySet getIdentifierCasePolicySet() {
         return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
-    }
-    
-    @Override
-    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return DatabaseVersionUtil.isVersionAtLeast(databaseVersion, 8, 0, 18);
     }
 }

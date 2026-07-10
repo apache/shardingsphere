@@ -21,7 +21,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -65,6 +67,16 @@ class FirebirdDatabaseMetaDataTest {
         assertFalse(actual.isSchemaAvailable());
         assertTrue(actual.getDefaultSystemSchema().isPresent());
         assertThat(actual.getDefaultSystemSchema().get(), is("system_tables"));
+        assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
+        assertTrue(actual.isCrossSchemaQuerySupported());
+    }
+    
+    @Test
+    void assertGetIndexOption() {
+        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
+        assertFalse(actual.isSchemaUniquenessLevel());
+        assertThat(actual.getIndexNameMaxLength(), is(Integer.MAX_VALUE));
+        assertTrue(actual.isIndexMetaDataSupported());
     }
     
     @Test
@@ -80,6 +92,8 @@ class FirebirdDatabaseMetaDataTest {
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.firebirdsql.ds.FBXADataSource"));
+        assertTrue(actual.isSupportTransaction());
+        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test

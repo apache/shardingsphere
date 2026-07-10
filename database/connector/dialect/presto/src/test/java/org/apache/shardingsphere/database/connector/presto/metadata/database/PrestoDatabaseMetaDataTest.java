@@ -21,8 +21,11 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.presto.metadata.database.option.PrestoFunctionOption;
@@ -64,6 +67,21 @@ class PrestoDatabaseMetaDataTest {
         assertTrue(actual.getDefaultSchema().isPresent());
         assertThat(actual.getDefaultSchema().get(), is("default"));
         assertFalse(actual.getDefaultSystemSchema().isPresent());
+        assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
+        assertTrue(actual.isCrossSchemaQuerySupported());
+    }
+    
+    @Test
+    void assertGetTransactionOption() {
+        DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
+        assertTrue(actual.isSupportTransaction());
+        assertFalse(actual.isSupportSavepoint());
+    }
+    
+    @Test
+    void assertGetExplainOption() {
+        DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
+        assertTrue(actual.isExplainAnalyzeSupported(""));
     }
     
     @Test

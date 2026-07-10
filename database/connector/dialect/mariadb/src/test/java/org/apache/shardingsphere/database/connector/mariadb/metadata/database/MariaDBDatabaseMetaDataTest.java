@@ -22,8 +22,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -73,6 +77,21 @@ class MariaDBDatabaseMetaDataTest {
     }
     
     @Test
+    void assertGetSchemaOption() {
+        DialectSchemaOption actual = metaData.getSchemaOption();
+        assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
+        assertFalse(actual.isCrossSchemaQuerySupported());
+    }
+    
+    @Test
+    void assertGetIndexOption() {
+        DialectIndexOption actual = metaData.getIndexOption();
+        assertFalse(actual.isSchemaUniquenessLevel());
+        assertThat(actual.getIndexNameMaxLength(), is(Integer.MAX_VALUE));
+        assertTrue(actual.isIndexMetaDataSupported());
+    }
+    
+    @Test
     void assertGetConnectionOption() {
         DialectConnectionOption actual = metaData.getConnectionOption();
         assertTrue(actual.isInstanceConnectionAvailable());
@@ -92,6 +111,8 @@ class MariaDBDatabaseMetaDataTest {
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.mariadb.jdbc.MariaDbDataSource"));
+        assertTrue(actual.isSupportTransaction());
+        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test
@@ -117,5 +138,11 @@ class MariaDBDatabaseMetaDataTest {
     @Test
     void assertGetProtocolVersionOption() {
         assertThat(metaData.getProtocolVersionOption().getDefaultVersion(), is("5.7.22"));
+    }
+    
+    @Test
+    void assertGetExplainOption() {
+        DialectExplainOption actual = metaData.getExplainOption();
+        assertFalse(actual.isExplainAnalyzeSupported("10.11.0"));
     }
 }

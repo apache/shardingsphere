@@ -22,8 +22,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -31,9 +35,13 @@ import org.apache.shardingsphere.database.connector.mysql.metadata.database.opti
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLFunctionOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Connection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -73,6 +81,21 @@ class MySQLDatabaseMetaDataTest {
     }
     
     @Test
+    void assertGetSchemaOption() {
+        DialectSchemaOption actual = dialectDatabaseMetaData.getSchemaOption();
+        assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
+        assertFalse(actual.isCrossSchemaQuerySupported());
+    }
+    
+    @Test
+    void assertGetIndexOption() {
+        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
+        assertFalse(actual.isSchemaUniquenessLevel());
+        assertThat(actual.getIndexNameMaxLength(), is(Integer.MAX_VALUE));
+        assertTrue(actual.isIndexMetaDataSupported());
+    }
+    
+    @Test
     void assertGetConnectionOption() {
         DialectConnectionOption actual = dialectDatabaseMetaData.getConnectionOption();
         assertTrue(actual.isInstanceConnectionAvailable());
@@ -93,6 +116,8 @@ class MySQLDatabaseMetaDataTest {
         assertThat(actual.getXaDriverClassNames().size(), is(2));
         assertTrue(actual.getXaDriverClassNames().contains("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"));
         assertTrue(actual.getXaDriverClassNames().contains("com.mysql.cj.jdbc.MysqlXADataSource"));
+        assertTrue(actual.isSupportTransaction());
+        assertTrue(actual.isSupportSavepoint());
     }
     
     @Test
@@ -114,8 +139,27 @@ class MySQLDatabaseMetaDataTest {
         assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is("5.7.22"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getExplainOptionArguments")
+    void assertGetExplainOption(final String name, final String databaseVersion, final boolean expected) {
+        DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
+        assertThat(actual.isExplainAnalyzeSupported(databaseVersion), is(expected));
+    }
+    
     @Test
     void assertGetFunctionOption() {
         assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(MySQLFunctionOption.class));
+    }
+    
+    private static Stream<Arguments> getExplainOptionArguments() {
+        return Stream.of(
+                Arguments.of("null version", null, false),
+                Arguments.of("major is less than target", "7.0.0", false),
+                Arguments.of("major is greater than target", "9.0.0", true),
+                Arguments.of("patch is less than target", "8.0.17", false),
+                Arguments.of("minor is greater than target", "8.1.0", true),
+                Arguments.of("missing patch is less than target", "8.0", false),
+                Arguments.of("patch equals target with suffix", " 8.0.18-log ", true),
+                Arguments.of("missing minor and patch default to zero", "8", false));
     }
 }

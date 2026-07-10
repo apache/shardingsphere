@@ -53,4 +53,22 @@ public interface DialectSchemaOption {
      * @return default system schema name
      */
     Optional<String> getDefaultSystemSchema();
+    
+    /**
+     * Get schema semantics.
+     *
+     * @return schema semantics
+     */
+    default DialectSchemaSemantics getSchemaSemantics() {
+        return DialectSchemaSemantics.NATIVE_SCHEMA;
+    }
+    
+    /**
+     * Judge whether cross-schema query is supported.
+     *
+     * @return whether cross-schema query is supported
+     */
+    default boolean isCrossSchemaQuerySupported() {
+        return DialectSchemaSemantics.NATIVE_SCHEMA == getSchemaSemantics();
+    }
 }

@@ -49,43 +49,44 @@ public final class MCPDatabaseCapability {
     public MCPDatabaseCapability(final String databaseName, final String databaseVersion, final MCPDatabaseCapabilityOption option) {
         this.databaseName = databaseName;
         databaseType = option.getType();
-        supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(option);
-        supportedStatementClasses = createSupportedStatementClasses(databaseVersion, option);
-        transactionCapability = option.getTransactionCapability();
-        defaultSchemaSemantics = option.getDefaultSchemaSemantics();
-        schemaExecutionSemantics = option.getSchemaExecutionSemantics();
-        supportsCrossSchemaSql = option.isCrossSchemaQuerySupported();
-        supportsExplainAnalyze = option.isExplainAnalyzeSupported(databaseVersion);
+        MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(option.getType());
+        supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(databaseDialect);
+        transactionCapability = databaseDialect.getTransactionCapability();
+        supportsExplainAnalyze = databaseDialect.isExplainAnalyzeSupported(databaseVersion);
+        supportedStatementClasses = createSupportedStatementClasses(transactionCapability, supportsExplainAnalyze);
+        defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
+        supportsCrossSchemaSql = databaseDialect.isCrossSchemaQuerySupported();
+        schemaExecutionSemantics = supportsCrossSchemaSql ? SchemaExecutionSemantics.BEST_EFFORT : SchemaExecutionSemantics.FIXED_TO_DATABASE;
     }
     
-    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final MCPDatabaseCapabilityOption option) {
+    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final MCPDatabaseDialect databaseDialect) {
         Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(16, 1F);
         result.add(SupportedMCPMetadataObjectType.SCHEMA);
         result.add(SupportedMCPMetadataObjectType.TABLE);
         result.add(SupportedMCPMetadataObjectType.VIEW);
         result.add(SupportedMCPMetadataObjectType.COLUMN);
-        if (option.isIndexSupported()) {
+        if (databaseDialect.isIndexSupported()) {
             result.add(SupportedMCPMetadataObjectType.INDEX);
         }
-        if (MCPDatabaseDialect.of(option.getType()).isSequenceSupported()) {
+        if (databaseDialect.isSequenceSupported()) {
             result.add(SupportedMCPMetadataObjectType.SEQUENCE);
         }
         return result;
     }
     
-    private Set<SupportedMCPStatement> createSupportedStatementClasses(final String databaseVersion, final MCPDatabaseCapabilityOption option) {
+    private Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean supportsExplainAnalyze) {
         Set<SupportedMCPStatement> result = new LinkedHashSet<>(16, 1F);
         result.add(SupportedMCPStatement.QUERY);
         result.add(SupportedMCPStatement.DML);
         result.add(SupportedMCPStatement.DDL);
         result.add(SupportedMCPStatement.DCL);
-        if (TransactionCapability.NONE != option.getTransactionCapability()) {
+        if (TransactionCapability.NONE != transactionCapability) {
             result.add(SupportedMCPStatement.TRANSACTION_CONTROL);
         }
-        if (TransactionCapability.LOCAL_WITH_SAVEPOINT == option.getTransactionCapability()) {
+        if (TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability) {
             result.add(SupportedMCPStatement.SAVEPOINT);
         }
-        if (option.isExplainAnalyzeSupported(databaseVersion)) {
+        if (supportsExplainAnalyze) {
             result.add(SupportedMCPStatement.EXPLAIN_ANALYZE);
         }
         return result;

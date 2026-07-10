@@ -73,4 +73,14 @@ class DefaultSchemaOptionTest {
     void assertIsSchemaUnavailable() {
         assertFalse(new DefaultSchemaOption(false, "foo_schema").isSchemaAvailable());
     }
+    
+    @Test
+    void assertGetSchemaSemantics() {
+        assertThat(new DefaultSchemaOption(false, "foo_schema", DialectSchemaSemantics.DATABASE_AS_SCHEMA, false).getSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
+    }
+    
+    @Test
+    void assertIsCrossSchemaQuerySupported() {
+        assertFalse(new DefaultSchemaOption(false, "foo_schema", DialectSchemaSemantics.DATABASE_AS_SCHEMA, false).isCrossSchemaQuerySupported());
+    }
 }

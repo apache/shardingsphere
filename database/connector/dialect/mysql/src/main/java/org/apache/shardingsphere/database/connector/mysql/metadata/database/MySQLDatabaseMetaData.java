@@ -24,9 +24,14 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLDataTypeOption;
@@ -35,12 +40,17 @@ import org.apache.shardingsphere.database.connector.mysql.metadata.database.opti
 
 import java.sql.Connection;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Database meta data of MySQL.
  */
 public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
+    
+    private static final Pattern VERSION_PATTERN = Pattern.compile("(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?.*");
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -68,6 +78,16 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
+    public DialectSchemaOption getSchemaOption() {
+        return new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false);
+    }
+    
+    @Override
+    public DialectIndexOption getIndexOption() {
+        return new DialectIndexOption(false, Integer.MAX_VALUE, true);
+    }
+    
+    @Override
     public DialectConnectionOption getConnectionOption() {
         return new DialectConnectionOption(true, true);
     }
@@ -91,6 +111,28 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectProtocolVersionOption getProtocolVersionOption() {
         return new DialectProtocolVersionOption("5.7.22");
+    }
+    
+    @Override
+    public DialectExplainOption getExplainOption() {
+        return MySQLDatabaseMetaData::isExplainAnalyzeSupported;
+    }
+    
+    private static boolean isExplainAnalyzeSupported(final String databaseVersion) {
+        Matcher matcher = VERSION_PATTERN.matcher(Objects.toString(databaseVersion, "").trim());
+        if (!matcher.matches()) {
+            return false;
+        }
+        int actualMajorVersion = Integer.parseInt(matcher.group(1));
+        int actualMinorVersion = null == matcher.group(2) ? 0 : Integer.parseInt(matcher.group(2));
+        int actualPatchVersion = null == matcher.group(3) ? 0 : Integer.parseInt(matcher.group(3));
+        if (8 != actualMajorVersion) {
+            return actualMajorVersion > 8;
+        }
+        if (0 != actualMinorVersion) {
+            return actualMinorVersion > 0;
+        }
+        return actualPatchVersion >= 18;
     }
     
     @Override

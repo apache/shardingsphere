@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.capability.dialect;
-
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain;
 
 /**
- * MCP database capability option for MariaDB.
+ * Dialect explain option.
  */
-public final class MariaDBMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+@FunctionalInterface
+public interface DialectExplainOption {
     
-    public MariaDBMCPDatabaseCapabilityOption() {
-        super("MariaDB");
-    }
-    
-    @Override
-    public IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
-    }
-    
+    /**
+     * Judge whether EXPLAIN ANALYZE is supported for database version.
+     *
+     * @param databaseVersion database version
+     * @return whether EXPLAIN ANALYZE is supported
+     */
+    boolean isExplainAnalyzeSupported(String databaseVersion);
 }

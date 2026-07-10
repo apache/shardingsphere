@@ -21,6 +21,13 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+
+import java.sql.Connection;
+import java.util.Collections;
 
 /**
  * Database meta data of ClickHouse.
@@ -45,6 +52,16 @@ public final class ClickHouseDatabaseMetaData implements DialectDatabaseMetaData
     @Override
     public boolean isCaseSensitive() {
         return true;
+    }
+    
+    @Override
+    public DialectSchemaOption getSchemaOption() {
+        return new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false);
+    }
+    
+    @Override
+    public DialectTransactionOption getTransactionOption() {
+        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.emptyList(), false, false);
     }
     
     @Override

@@ -19,10 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.exception.QueryDidNotReturnResultSetException;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -407,12 +404,9 @@ class MCPJdbcStatementExecutorTest {
     }
     
     private static MCPDatabaseCapability createDatabaseCapability(final SchemaExecutionSemantics schemaExecutionSemantics) {
-        MCPDatabaseCapabilityOption option = mock(MCPDatabaseCapabilityOption.class);
-        when(option.getType()).thenReturn("FixtureDB");
-        when(option.getTransactionCapability()).thenReturn(TransactionCapability.NONE);
-        when(option.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.NATIVE_SCHEMA);
-        when(option.getSchemaExecutionSemantics()).thenReturn(schemaExecutionSemantics);
-        return new MCPDatabaseCapability("logic_db", "", option);
+        MCPDatabaseCapability result = mock(MCPDatabaseCapability.class);
+        when(result.getSchemaExecutionSemantics()).thenReturn(schemaExecutionSemantics);
+        return result;
     }
     
     private static Connection createStatementConnection(final boolean hasResultSet, final int updateCount, final ResultSet resultSet) throws SQLException {

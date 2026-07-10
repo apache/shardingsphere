@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
@@ -70,7 +71,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public DialectIndexOption getIndexOption() {
-        return new DialectIndexOption(true, INDEX_NAME_MAX_LENGTH);
+        return new DialectIndexOption(true, INDEX_NAME_MAX_LENGTH, true);
     }
     
     @Override
@@ -81,6 +82,11 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     @Override
     public Optional<DialectSequenceOption> getSequenceOption() {
         return Optional.of(new DialectSequenceOption("SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences"));
+    }
+    
+    @Override
+    public DialectExplainOption getExplainOption() {
+        return databaseVersion -> true;
     }
     
     @Override

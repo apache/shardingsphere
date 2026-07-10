@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.capability.dialect;
-
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema;
 
 /**
- * MCP database capability option for MariaDB.
+ * Dialect schema semantics.
  */
-public final class MariaDBMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public enum DialectSchemaSemantics {
     
-    public MariaDBMCPDatabaseCapabilityOption() {
-        super("MariaDB");
-    }
+    NATIVE_SCHEMA,
     
-    @Override
-    public IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
-    }
-    
+    DATABASE_AS_SCHEMA
 }
