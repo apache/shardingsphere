@@ -77,7 +77,6 @@ class DialectDatabaseMetaDataTest {
         DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
         assertFalse(actual.isSchemaUniquenessLevel());
         assertThat(actual.getIndexNameMaxLength(), is(Integer.MAX_VALUE));
-        assertFalse(actual.isIndexMetaDataSupported());
     }
     
     @Test

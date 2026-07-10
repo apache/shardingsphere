@@ -88,7 +88,6 @@ class MariaDBDatabaseMetaDataTest {
         DialectIndexOption actual = metaData.getIndexOption();
         assertFalse(actual.isSchemaUniquenessLevel());
         assertThat(actual.getIndexNameMaxLength(), is(Integer.MAX_VALUE));
-        assertTrue(actual.isIndexMetaDataSupported());
     }
     
     @Test

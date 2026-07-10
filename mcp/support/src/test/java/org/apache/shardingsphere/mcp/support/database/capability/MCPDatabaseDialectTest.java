@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
@@ -135,24 +134,6 @@ class MCPDatabaseDialectTest {
     @MethodSource("getTransactionCapabilityArguments")
     void assertGetTransactionCapability(final String name, final boolean transactionSupported, final boolean savepointSupported, final TransactionCapability expected) {
         assertThat(MCPDatabaseDialect.of("Fixture").getTransactionCapability(transactionSupported, savepointSupported), is(expected));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("isIndexSupportedArguments")
-    void assertIsIndexSupported(final String name, final boolean indexSupported) {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
-            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
-            when(dialectDatabaseMetaData.getIndexOption()).thenReturn(new DialectIndexOption(false, Integer.MAX_VALUE, indexSupported));
-            assertThat(MCPDatabaseDialect.of("Fixture").isIndexSupported(), is(indexSupported));
-        }
-    }
-    
-    @Test
-    void assertIsIndexSupportedWithUnknownDatabaseType() {
-        assertFalse(MCPDatabaseDialect.of("FixtureDB").isIndexSupported());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -329,12 +310,6 @@ class MCPDatabaseDialectTest {
                 Arguments.of("not supported", false, false, TransactionCapability.NONE),
                 Arguments.of("local only", true, false, TransactionCapability.LOCAL),
                 Arguments.of("local with savepoint", true, true, TransactionCapability.LOCAL_WITH_SAVEPOINT));
-    }
-    
-    private static Stream<Arguments> isIndexSupportedArguments() {
-        return Stream.of(
-                Arguments.of("index supported", true),
-                Arguments.of("index unsupported", false));
     }
     
     private static Stream<Arguments> isCrossSchemaQuerySupportedArguments() {

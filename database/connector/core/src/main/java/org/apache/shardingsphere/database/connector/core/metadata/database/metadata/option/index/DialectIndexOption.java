@@ -18,26 +18,16 @@
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Dialect index option.
  */
 @Getter
+@RequiredArgsConstructor
 public final class DialectIndexOption {
     
     private final boolean isSchemaUniquenessLevel;
     
     private final int indexNameMaxLength;
-    
-    private final boolean isIndexMetaDataSupported;
-    
-    public DialectIndexOption(final boolean isSchemaUniquenessLevel, final int indexNameMaxLength) {
-        this(isSchemaUniquenessLevel, indexNameMaxLength, false);
-    }
-    
-    public DialectIndexOption(final boolean isSchemaUniquenessLevel, final int indexNameMaxLength, final boolean isIndexMetaDataSupported) {
-        this.isSchemaUniquenessLevel = isSchemaUniquenessLevel;
-        this.indexNameMaxLength = indexNameMaxLength;
-        this.isIndexMetaDataSupported = isIndexMetaDataSupported;
-    }
 }

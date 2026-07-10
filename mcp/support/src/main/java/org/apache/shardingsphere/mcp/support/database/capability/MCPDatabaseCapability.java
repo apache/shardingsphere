@@ -65,9 +65,7 @@ public final class MCPDatabaseCapability {
         result.add(SupportedMCPMetadataObjectType.TABLE);
         result.add(SupportedMCPMetadataObjectType.VIEW);
         result.add(SupportedMCPMetadataObjectType.COLUMN);
-        if (databaseDialect.isIndexSupported()) {
-            result.add(SupportedMCPMetadataObjectType.INDEX);
-        }
+        result.add(SupportedMCPMetadataObjectType.INDEX);
         if (databaseDialect.isSequenceSupported()) {
             result.add(SupportedMCPMetadataObjectType.SEQUENCE);
         }

@@ -84,7 +84,6 @@ class OracleDatabaseMetaDataTest {
         DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
         assertTrue(actual.isSchemaUniquenessLevel());
         assertThat(actual.getIndexNameMaxLength(), is(30));
-        assertTrue(actual.isIndexMetaDataSupported());
     }
     
     @Test

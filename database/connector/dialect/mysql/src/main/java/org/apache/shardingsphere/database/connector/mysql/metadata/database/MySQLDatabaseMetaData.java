@@ -79,7 +79,7 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectIndexOption getIndexOption() {
-        return new DialectIndexOption(false, Integer.MAX_VALUE, true);
+        return new DialectIndexOption(false, Integer.MAX_VALUE);
     }
     
     @Override

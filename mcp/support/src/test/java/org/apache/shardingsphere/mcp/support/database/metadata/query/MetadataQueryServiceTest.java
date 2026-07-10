@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.database.metadata.query;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -108,6 +109,8 @@ class MetadataQueryServiceTest {
     
     private void mockDialectDatabaseMetaData(final DatabaseType databaseType, final boolean sequenceSupported) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
+        when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null));
+        when(result.getExplainOption()).thenReturn(() -> false);
         when(result.getSequenceOption()).thenReturn(
                 sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(result));
@@ -268,9 +271,8 @@ class MetadataQueryServiceTest {
     }
     
     @Test
-    void assertQueryIndexesWithUnsupportedIndexType() {
-        assertThat(assertThrows(MCPUnsupportedException.class, () -> metadataQueryService.queryIndexes("warehouse", "warehouse", "facts")).getMessage(),
-                is("Index resources are not supported for the current database."));
+    void assertQueryIndexesWithoutIndexMetadata() {
+        assertTrue(metadataQueryService.queryIndexes("warehouse", "warehouse", "facts").isEmpty());
     }
     
     @Test
@@ -281,9 +283,8 @@ class MetadataQueryServiceTest {
     }
     
     @Test
-    void assertQueryIndexWithUnsupportedIndexType() {
-        assertThat(assertThrows(MCPUnsupportedException.class, () -> metadataQueryService.queryIndex("warehouse", "warehouse", "facts", "facts_idx")).getMessage(),
-                is("Index resources are not supported for the current database."));
+    void assertQueryIndexWithoutIndexMetadata() {
+        assertFalse(metadataQueryService.queryIndex("warehouse", "warehouse", "facts", "facts_idx").isPresent());
     }
     
     @Test

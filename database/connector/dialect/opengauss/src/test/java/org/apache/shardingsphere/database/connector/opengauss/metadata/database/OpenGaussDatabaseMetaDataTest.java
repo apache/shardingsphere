@@ -100,7 +100,6 @@ class OpenGaussDatabaseMetaDataTest {
         DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
         assertTrue(actual.isSchemaUniquenessLevel());
         assertThat(actual.getIndexNameMaxLength(), is(63));
-        assertTrue(actual.isIndexMetaDataSupported());
     }
     
     @Test

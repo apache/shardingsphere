@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -161,6 +162,8 @@ public final class MCPJdbcMetadataLoader {
                     result.add(indexName);
                 }
             }
+        } catch (final SQLFeatureNotSupportedException ignored) {
+            return result;
         }
         return result;
     }

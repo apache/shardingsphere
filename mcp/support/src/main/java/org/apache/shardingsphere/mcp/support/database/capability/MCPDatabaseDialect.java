@@ -143,15 +143,6 @@ public final class MCPDatabaseDialect {
     }
     
     /**
-     * Judge whether index metadata is supported.
-     *
-     * @return whether index metadata is supported
-     */
-    public boolean isIndexSupported() {
-        return dialectDatabaseMetaData.map(each -> each.getIndexOption().isIndexMetaDataSupported()).orElse(false);
-    }
-    
-    /**
      * Judge whether cross-schema query is supported.
      *
      * @return whether cross-schema query is supported

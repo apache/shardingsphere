@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -123,6 +124,8 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
     private void mockDialectDatabaseMetaData(final DatabaseType databaseType, final boolean sequenceSupported,
                                              final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
+        when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null));
+        when(result.getExplainOption()).thenReturn(() -> false);
         when(result.getSequenceOption()).thenReturn(sequenceSupported ? Optional.of(new DialectSequenceOption(SEQUENCE_METADATA_QUERY)) : Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(result));
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(result);

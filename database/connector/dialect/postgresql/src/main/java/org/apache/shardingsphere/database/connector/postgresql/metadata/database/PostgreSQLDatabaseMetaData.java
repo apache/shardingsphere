@@ -71,7 +71,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public DialectIndexOption getIndexOption() {
-        return new DialectIndexOption(true, INDEX_NAME_MAX_LENGTH, true);
+        return new DialectIndexOption(true, INDEX_NAME_MAX_LENGTH);
     }
     
     @Override
