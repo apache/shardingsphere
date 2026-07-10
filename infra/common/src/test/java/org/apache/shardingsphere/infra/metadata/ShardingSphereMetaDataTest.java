@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -62,6 +63,10 @@ import static org.mockito.Mockito.withSettings;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShardingSphereMetaDataTest {
     
+    private final DatabaseType postgreSQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private final DatabaseType oracleDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
     @SuppressWarnings("resource")
     @Test
     void assertAddDatabase() {
@@ -73,6 +78,16 @@ class ShardingSphereMetaDataTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), configProps);
         metaData.addDatabase("foo_db", databaseType, configProps);
         assertThat(metaData.getDatabase("foo_db"), is(database));
+    }
+    
+    @Test
+    void assertAddDatabaseWithInsensitiveLookup() {
+        ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
+        ShardingSphereDatabase database = mockDatabase("foo_db", postgreSQLDatabaseType);
+        when(ShardingSphereDatabaseFactory.create("foo_db", postgreSQLDatabaseType, configProps)).thenReturn(database);
+        ShardingSphereMetaData metaData = createMetaData(postgreSQLDatabaseType);
+        metaData.addDatabase("foo_db", postgreSQLDatabaseType, configProps);
+        assertTrue(metaData.containsDatabase("FOO_DB"));
     }
     
     @Test
@@ -95,6 +110,13 @@ class ShardingSphereMetaDataTest {
         verify(staticDataSourceRuleAttribute).cleanStorageNodeDataSources();
     }
     
+    @Test
+    void assertDropDatabaseWithInsensitiveLookup() {
+        ShardingSphereMetaData metaData = createMetaData(postgreSQLDatabaseType, mockDatabase("foo_db", postgreSQLDatabaseType));
+        metaData.dropDatabase("FOO_DB");
+        assertFalse(metaData.containsDatabase("foo_db"));
+    }
+    
     @SuppressWarnings("resource")
     @Test
     void assertContainsDatabase() {
@@ -103,6 +125,21 @@ class ShardingSphereMetaDataTest {
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), configProps);
         assertTrue(metaData.containsDatabase("foo_db"));
+    }
+    
+    @Test
+    void assertContainsDatabaseWithInsensitiveLookup() {
+        assertTrue(createMetaData(postgreSQLDatabaseType, mockDatabase("foo_db", postgreSQLDatabaseType)).containsDatabase("FOO_DB"));
+    }
+    
+    @Test
+    void assertContainsDatabaseWithOracleRule() {
+        assertTrue(createMetaData(oracleDatabaseType, mockDatabase("FOO_DB", oracleDatabaseType)).containsDatabase("foo_db"));
+    }
+    
+    @Test
+    void assertContainsLowerCaseLogicalDatabaseWithOracleProtocol() {
+        assertTrue(createMetaData(oracleDatabaseType, mockDatabase("foo_db", oracleDatabaseType)).containsDatabase("FOO_DB"));
     }
     
     @SuppressWarnings("resource")
@@ -134,6 +171,24 @@ class ShardingSphereMetaDataTest {
         assertThat(metaData.getDatabase("foo_db"), is(database));
     }
     
+    @Test
+    void assertGetDatabaseWithInsensitiveLookup() {
+        ShardingSphereDatabase database = mockDatabase("foo_db", postgreSQLDatabaseType);
+        assertThat(createMetaData(postgreSQLDatabaseType, database).getDatabase("FOO_DB"), is(database));
+    }
+    
+    @Test
+    void assertGetDatabaseWithOracleRule() {
+        ShardingSphereDatabase database = mockDatabase("FOO_DB", oracleDatabaseType);
+        assertThat(createMetaData(oracleDatabaseType, database).getDatabase("foo_db"), is(database));
+    }
+    
+    @Test
+    void assertGetLowerCaseLogicalDatabaseWithOracleProtocol() {
+        ShardingSphereDatabase database = mockDatabase("foo_db", oracleDatabaseType);
+        assertThat(createMetaData(oracleDatabaseType, database).getDatabase("FOO_DB"), is(database));
+    }
+    
     @SuppressWarnings("resource")
     @Test
     void assertPutDatabase() {
@@ -145,6 +200,21 @@ class ShardingSphereMetaDataTest {
     }
     
     @Test
+    void assertPutDatabaseWithInsensitiveLookup() {
+        ShardingSphereMetaData metaData = createMetaData(postgreSQLDatabaseType);
+        ShardingSphereDatabase database = mockDatabase("foo_db", postgreSQLDatabaseType);
+        metaData.putDatabase(database);
+        assertThat(metaData.getDatabase("FOO_DB"), is(database));
+    }
+    
+    @Test
+    void assertLegacyConstructorUsesInsensitiveLookup() {
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(mockDatabase("foo_db", postgreSQLDatabaseType)),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        assertTrue(metaData.containsDatabase("FOO_DB"));
+    }
+    
+    @Test
     void assertCloseClosesAllRules() throws Exception {
         GlobalRule closableGlobalRule = mock(GlobalRule.class, withSettings().extraInterfaces(AutoCloseable.class));
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class), new MockedDataSource(), mock(ShardingSphereRule.class));
@@ -152,6 +222,24 @@ class ShardingSphereMetaDataTest {
                 Collections.singleton(database), mock(), new RuleMetaData(Collections.singleton(closableGlobalRule)), new ConfigurationProperties(new Properties()));
         metaData.close();
         verify((AutoCloseable) closableGlobalRule).close();
+    }
+    
+    private ShardingSphereMetaData createMetaData(final DatabaseType databaseType, final ShardingSphereDatabase database) {
+        return new ShardingSphereMetaData(Collections.singleton(database),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()), databaseType);
+    }
+    
+    private ShardingSphereMetaData createMetaData(final DatabaseType databaseType) {
+        return new ShardingSphereMetaData(Collections.emptyList(),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()), databaseType);
+    }
+    
+    private ShardingSphereDatabase mockDatabase(final String databaseName, final DatabaseType databaseType) {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        when(result.getName()).thenReturn(databaseName);
+        when(result.getProtocolType()).thenReturn(databaseType);
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        return result;
     }
     
     private ShardingSphereDatabase mockDatabase(final ResourceMetaData resourceMetaData, final DataSource dataSource, final ShardingSphereRule... rules) {

@@ -28,10 +28,15 @@ import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensit
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
@@ -50,6 +55,10 @@ import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -59,6 +68,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -80,6 +90,12 @@ import static org.mockito.Mockito.when;
 class ShardingSphereDatabaseTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final DatabaseType postgreSQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private final DatabaseType oracleDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
+    private final DatabaseType mySQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Test
     void assertGetAllSchemas() {
@@ -329,5 +345,155 @@ class ShardingSphereDatabaseTest {
             dataSources.put(each, new MockedDataSource());
         }
         return new ResourceMetaData(dataSources);
+    }
+    
+    private ResourceMetaData createResourceMetaData() {
+        return new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap());
+    }
+    
+    @Test
+    void assertContainsSchemaByString() {
+        assertTrue(createDatabase(postgreSQLDatabaseType, "foo_schema").containsSchema("FOO_SCHEMA"));
+    }
+    
+    @Test
+    void assertGetSchemaByString() {
+        ShardingSphereSchema schema = createSchema("foo_schema", postgreSQLDatabaseType);
+        assertThat(createDatabase(postgreSQLDatabaseType, schema).getSchema("FOO_SCHEMA"), is(schema));
+    }
+    
+    @Test
+    void assertAddUpperCaseSchema() {
+        ShardingSphereSchema schema = createSchema("foo_schema", postgreSQLDatabaseType);
+        ShardingSphereDatabase database = createDatabase(postgreSQLDatabaseType);
+        database.addSchema(schema);
+        assertThat(database.getSchema("FOO_SCHEMA"), is(schema));
+    }
+    
+    @Test
+    void assertDropUpperCaseSchema() {
+        ShardingSphereDatabase database = createDatabase(postgreSQLDatabaseType, "foo_schema");
+        database.dropSchema("FOO_SCHEMA");
+        assertFalse(database.containsSchema("foo_schema"));
+    }
+    
+    @Test
+    void assertContainsSchemaWithOracleRule() {
+        assertTrue(createDatabase(oracleDatabaseType, "FOO_SCHEMA").containsSchema("foo_schema"));
+    }
+    
+    @Test
+    void assertContainsProtocolDefaultSchemaWithOracleStorageRule() {
+        ShardingSphereSchema schema = new ShardingSphereSchema("test_db", mySQLDatabaseType,
+                Collections.singleton(new ShardingSphereTable("T_ORDER", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("test_db", mySQLDatabaseType, createOracleResourceMetaData(),
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema), new ConfigurationProperties(new Properties()));
+        assertTrue(database.containsSchema("TEST_DB"));
+        assertTrue(database.getSchema("test_db").containsTable("t_order"));
+    }
+    
+    @Test
+    void assertAttachIdentifierContextToSchema() {
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType,
+                Collections.singleton(new ShardingSphereTable("Foo_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
+        ShardingSphereDatabase database = createDatabase(postgreSQLDatabaseType, schema);
+        assertFalse(database.getSchema("foo_schema").containsTable("FOO_TBL"));
+    }
+    
+    @Test
+    void assertDefaultPropsUseInsensitiveLookup() {
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", postgreSQLDatabaseType, createResourceMetaData(),
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema("foo_schema", postgreSQLDatabaseType)), new ConfigurationProperties(new Properties()));
+        assertTrue(database.containsSchema("FOO_SCHEMA"));
+    }
+    
+    @Test
+    void assertRefreshIdentifierContextWithUpperCaseSchema() {
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", java.sql.Types.INTEGER, false, true, false, true, false, false);
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
+        ShardingSphereDatabase database = createDatabase(postgreSQLDatabaseType, schema);
+        Properties props = new Properties();
+        props.setProperty(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name());
+        database.refreshIdentifierContext(new ConfigurationProperties(props));
+        assertTrue(database.containsSchema("FOO_SCHEMA"));
+        assertTrue(database.getSchema("foo_schema").containsTable("FOO_TBL"));
+        assertTrue(database.getSchema("foo_schema").getTable("foo_tbl").containsColumn("FOO_COL"));
+    }
+    
+    private ShardingSphereDatabase createDatabase(final DatabaseType databaseType, final String schemaName) {
+        return createDatabase(databaseType, createSchema(schemaName, databaseType));
+    }
+    
+    private ShardingSphereDatabase createDatabase(final DatabaseType databaseType, final ShardingSphereSchema schema) {
+        return createDatabase(databaseType, new ConfigurationProperties(new Properties()), schema);
+    }
+    
+    private ShardingSphereDatabase createDatabase(final DatabaseType databaseType, final ConfigurationProperties props, final ShardingSphereSchema schema) {
+        return new ShardingSphereDatabase("foo_db", databaseType, createResourceMetaData(), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema), props);
+    }
+    
+    private ShardingSphereDatabase createDatabase(final DatabaseType databaseType) {
+        return new ShardingSphereDatabase("foo_db", databaseType, createResourceMetaData(),
+                new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+    }
+    
+    private ShardingSphereSchema createSchema(final String schemaName, final DatabaseType databaseType) {
+        return new ShardingSphereSchema(schemaName, databaseType);
+    }
+    
+    private ResourceMetaData createOracleResourceMetaData() {
+        Map<String, Object> props = new LinkedHashMap<>(2, 1F);
+        props.put("url", "jdbc:oracle:thin:@localhost:1521:xe");
+        props.put("username", "root");
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(1, 1F);
+        storageUnits.put("ds_0", new StorageUnit(new StorageNode("ds_0"), new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props), new FixtureDataSource()));
+        return new ResourceMetaData(Collections.emptyMap(), storageUnits);
+    }
+    
+    private static final class FixtureDataSource implements DataSource {
+        
+        @Override
+        public Connection getConnection() throws SQLException {
+            throw new SQLFeatureNotSupportedException("Not supported in fixture.");
+        }
+        
+        @Override
+        public Connection getConnection(final String username, final String password) throws SQLException {
+            throw new SQLFeatureNotSupportedException("Not supported in fixture.");
+        }
+        
+        @Override
+        public PrintWriter getLogWriter() {
+            return null;
+        }
+        
+        @Override
+        public void setLogWriter(final PrintWriter out) {
+        }
+        
+        @Override
+        public void setLoginTimeout(final int seconds) {
+        }
+        
+        @Override
+        public int getLoginTimeout() {
+            return 0;
+        }
+        
+        @Override
+        public Logger getParentLogger() {
+            return Logger.getGlobal();
+        }
+        
+        @Override
+        public <T> T unwrap(final Class<T> iface) throws SQLException {
+            throw new SQLFeatureNotSupportedException("Not supported in fixture.");
+        }
+        
+        @Override
+        public boolean isWrapperFor(final Class<?> iface) {
+            return false;
+        }
     }
 }

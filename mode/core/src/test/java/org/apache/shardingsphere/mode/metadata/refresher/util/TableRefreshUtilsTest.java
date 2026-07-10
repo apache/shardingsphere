@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -74,6 +76,38 @@ class TableRefreshUtilsTest {
         ShardingSphereDatabase database = createDatabase();
         assertThat(TableRefreshUtils.getActualViewNames(database, "foo_schema", Arrays.asList(new IdentifierValue("foo_view"), new IdentifierValue("bar_view"))),
                 is(Arrays.asList("Foo_View", "Bar_View")));
+    }
+    
+    @Test
+    void assertGetActualViewNameUsesExistingViewName() {
+        assertThat(TableRefreshUtils.getActualViewName(createDatabase(), "foo_schema", new IdentifierValue("foo_view")), is("Foo_View"));
+    }
+    
+    @Test
+    void assertGetActualIndexNameUsesExistingIndexName() {
+        assertThat(TableRefreshUtils.getActualIndexName(createDatabase(), "foo_schema", "foo_tbl", new IdentifierValue("idx_foo")), is("Idx_Foo"));
+    }
+    
+    @Test
+    void assertGetActualColumnNamesUsesExistingColumnNames() {
+        assertThat(TableRefreshUtils.getActualColumnNames(createDatabase(), "foo_schema", "foo_tbl",
+                Arrays.asList(new IdentifierValue("order_id"), new IdentifierValue("user_id"))),
+                is(Arrays.asList("Order_ID", "User_ID")));
+    }
+    
+    @Test
+    void assertFindActualTableNameByIndexUsesExistingIndexName() {
+        assertThat(TableRefreshUtils.findActualTableNameByIndex(createDatabase(), "foo_schema", new IdentifierValue("idx_foo")).get(), is("Foo_Tbl"));
+    }
+    
+    @Test
+    void assertGetTableLoadCandidateNameUsesNormalizedRule() {
+        assertThat(TableRefreshUtils.getTableLoadCandidateName(createDatabase(), new IdentifierValue("Foo_Tbl")), is("foo_tbl"));
+    }
+    
+    @Test
+    void assertGetViewLoadCandidateNameUsesNormalizedRule() {
+        assertThat(TableRefreshUtils.getViewLoadCandidateName(createDatabase(), new IdentifierValue("Foo_View")), is("foo_view"));
     }
     
     @Test
@@ -218,7 +252,11 @@ class TableRefreshUtilsTest {
     
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereSchema schema = new ShardingSphereSchema("Foo_Schema", fixtureDatabaseType,
-                Arrays.asList(new ShardingSphereTable("Foo_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
+                Arrays.asList(new ShardingSphereTable("Foo_Tbl",
+                        Arrays.asList(new ShardingSphereColumn("Order_ID", 0, false, false, false, true, false, true),
+                                new ShardingSphereColumn("User_ID", 0, false, false, false, true, false, true)),
+                        Collections.singletonList(new ShardingSphereIndex("Idx_Foo", Collections.singletonList("Order_ID"), false)),
+                        Collections.emptyList()),
                         new ShardingSphereTable("Bar_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())),
                 Arrays.asList(new ShardingSphereView("Foo_View", "SELECT 1"), new ShardingSphereView("Bar_View", "SELECT 1")));
         return new ShardingSphereDatabase("foo_db", fixtureDatabaseType, new ResourceMetaData(Collections.emptyMap()),
