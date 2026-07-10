@@ -189,6 +189,8 @@ Choose the feedback mode from the `Verdict Matrix` before writing the GitHub-fac
 - Do not run `git diff --check`, editor whitespace lint, or other generic whitespace diagnostics as routine review verification.
   Use them only when repository workflows explicitly require them, the user asks for whitespace review, the review target is formatting rules, or whitespace has direct semantic impact.
 - Do not report Spotless-stable whitespace, including formatter-preserved blank-line indentation, as a blocker.
+- Before publishing any formatting, whitespace, import-only, or formatter-only finding, record the repository-declared gate command and result that proves it.
+  If the only failing evidence is a generic lint while Spotless and Checkstyle pass or preserve the changed whitespace, withdraw the finding.
 - Include import-only, whitespace-only, and formatter-only files in `Reviewed Scope` when GitHub lists them.
 - Do not report them as blockers or rollback requests unless they hide behavior, fail style gates, touch broad unrelated areas, or violate explicit scope rules.
 
