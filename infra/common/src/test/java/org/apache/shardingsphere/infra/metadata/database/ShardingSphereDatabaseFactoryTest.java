@@ -61,6 +61,8 @@ class ShardingSphereDatabaseFactoryTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
+    private final DatabaseType postgreSQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     private final DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
@@ -135,6 +137,12 @@ class ShardingSphereDatabaseFactoryTest {
         assertThat(actual.getAllSchemas().size(), is(1));
         assertThat(actual.getRuleMetaData().getRules().size(), is(1));
         assertTrue(actual.containsSchema("foo_schema"));
+    }
+    
+    @Test
+    void assertCreateSystemDatabaseUsesProtocolAwareLookup() {
+        ShardingSphereDatabase database = ShardingSphereDatabaseFactory.create("foo_db", postgreSQLDatabaseType, new ConfigurationProperties(new Properties()));
+        assertTrue(database.containsSchema("PUBLIC"));
     }
     
     private static Stream<Arguments> createWithSystemDatabaseArguments() {
