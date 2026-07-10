@@ -24,12 +24,11 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.DatabaseMetadataFixture;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestScopeFixture;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
@@ -103,7 +102,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithSequence() {
-        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
+            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
             MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
                     Map.of("database", "runtime_db", "query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.SEQUENCE.name()))));
             Map<String, Object> actualPayload = actual.toPayload();
@@ -324,26 +324,31 @@ class SearchMetadataToolHandlerTest {
         return createSearchRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata());
     }
     
-    private MCPRuntimeContext createSearchRuntimeContext(final List<MCPDatabaseMetadata> databaseMetadata) {
+    private MCPRuntimeContext createSearchRuntimeContext(final List<DatabaseMetadataFixture> databaseMetadata) {
         MCPRuntimeContext result = ResourceTestDataFactory.createRuntimeContext(databaseMetadata);
         result.getSessionManager().createSession("session-1");
         return result;
     }
     
-    private List<MCPDatabaseMetadata> createDuplicatedTableMetadata() {
+    private RequestScopeFixture createSearchRequestScope() {
+        List<DatabaseMetadataFixture> databaseMetadata = ResourceTestDataFactory.createDatabaseMetadata();
+        return ResourceTestDataFactory.createRequestScopeFixture(createSearchRuntimeContext(databaseMetadata), databaseMetadata);
+    }
+    
+    private List<DatabaseMetadataFixture> createDuplicatedTableMetadata() {
         return List.of(createDatabaseMetadata("bar_db", "orders"), createDatabaseMetadata("baz_db", "orders"), createDatabaseMetadata("foo_db", "orders_archive"));
     }
     
-    private List<MCPDatabaseMetadata> createLargeDatabaseMetadata() {
-        List<MCPTableMetadata> tables = new LinkedList<>();
+    private List<DatabaseMetadataFixture> createLargeDatabaseMetadata() {
+        List<ResourceTestDataFactory.TableMetadataFixture> tables = new LinkedList<>();
         for (int index = 0; index < 101; index++) {
-            tables.add(new MCPTableMetadata("large_db", "public", "table_" + index, List.of(), List.of()));
+            tables.add(ResourceTestDataFactory.createTable("table_" + index, List.of(), List.of()));
         }
-        return List.of(new MCPDatabaseMetadata("large_db", "MySQL", "", List.of(new MCPSchemaMetadata("large_db", "public", tables, List.of(), List.of()))));
+        return List.of(ResourceTestDataFactory.createDatabase("large_db", "MySQL", "", List.of(ResourceTestDataFactory.createSchema("public", tables, List.of(), List.of()))));
     }
     
-    private MCPDatabaseMetadata createDatabaseMetadata(final String databaseName, final String tableName) {
-        return new MCPDatabaseMetadata(databaseName, "MySQL", "", List.of(
-                new MCPSchemaMetadata(databaseName, "public", List.of(new MCPTableMetadata(databaseName, "public", tableName, List.of(), List.of())), List.of(), List.of())));
+    private DatabaseMetadataFixture createDatabaseMetadata(final String databaseName, final String tableName) {
+        return ResourceTestDataFactory.createDatabase(databaseName, "MySQL", "",
+                List.of(ResourceTestDataFactory.createSchema("public", List.of(ResourceTestDataFactory.createTable(tableName, List.of(), List.of())), List.of(), List.of())));
     }
 }

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
@@ -29,18 +26,12 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescript
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestScopeFixture;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.metadata.MetadataResourceHandler;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.support.database.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
@@ -77,7 +68,8 @@ class CoreResourceHandlerSurfaceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
-        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
+        try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
+            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
             MCPResponse actual = handle(handlerCase.getHandler(), requestContext, parseUriVariables(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri()));
             Map<String, Object> actualPayload = actual.toPayload();
             if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
@@ -208,34 +200,6 @@ class CoreResourceHandlerSurfaceTest {
     private List<String> extractMetadataNames(final Map<String, Object> payload) {
         List<String> result = new LinkedList<>();
         for (Object each : getMetadataItems(payload)) {
-            if (each instanceof MCPDatabaseMetadata) {
-                result.add(((MCPDatabaseMetadata) each).getDatabase());
-                continue;
-            }
-            if (each instanceof MCPSchemaMetadata) {
-                result.add(((MCPSchemaMetadata) each).getSchema());
-                continue;
-            }
-            if (each instanceof MCPTableMetadata) {
-                result.add(((MCPTableMetadata) each).getTable());
-                continue;
-            }
-            if (each instanceof MCPViewMetadata) {
-                result.add(((MCPViewMetadata) each).getView());
-                continue;
-            }
-            if (each instanceof MCPColumnMetadata) {
-                result.add(((MCPColumnMetadata) each).getColumn());
-                continue;
-            }
-            if (each instanceof MCPIndexMetadata) {
-                result.add(((MCPIndexMetadata) each).getIndex());
-                continue;
-            }
-            if (each instanceof MCPSequenceMetadata) {
-                result.add(((MCPSequenceMetadata) each).getSequence());
-                continue;
-            }
             if (each instanceof Map) {
                 result.add(extractMetadataName((Map<?, ?>) each));
             }
@@ -244,6 +208,11 @@ class CoreResourceHandlerSurfaceTest {
     }
     
     private String extractMetadataName(final Map<?, ?> metadata) {
+        for (String each : List.of("sequence", "index", "column", "view", "table", "schema", "database")) {
+            if (metadata.containsKey(each)) {
+                return String.valueOf(metadata.get(each));
+            }
+        }
         if (metadata.containsKey("name")) {
             return String.valueOf(metadata.get("name"));
         }
@@ -388,28 +357,56 @@ class CoreResourceHandlerSurfaceTest {
         return Collections.singletonList(metadata);
     }
     
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class HandlerCase {
         
         private final String description;
         
-        @Getter(AccessLevel.PRIVATE)
         private final MCPResourceHandler<?> handler;
         
-        @Getter(AccessLevel.PRIVATE)
         private final String expectedUriTemplate;
         
-        @Getter(AccessLevel.PRIVATE)
         private final String resourceUri;
         
-        @Getter(AccessLevel.PRIVATE)
         private final HandlerResultType expectedType;
         
-        @Getter(AccessLevel.PRIVATE)
         private final String expectedDatabase;
         
-        @Getter(AccessLevel.PRIVATE)
         private final List<String> expectedObjectNames;
+        
+        private HandlerCase(final String description, final MCPResourceHandler<?> handler, final String expectedUriTemplate, final String resourceUri,
+                            final HandlerResultType expectedType, final String expectedDatabase, final List<String> expectedObjectNames) {
+            this.description = description;
+            this.handler = handler;
+            this.expectedUriTemplate = expectedUriTemplate;
+            this.resourceUri = resourceUri;
+            this.expectedType = expectedType;
+            this.expectedDatabase = expectedDatabase;
+            this.expectedObjectNames = expectedObjectNames;
+        }
+        
+        private MCPResourceHandler<?> getHandler() {
+            return handler;
+        }
+        
+        private String getExpectedUriTemplate() {
+            return expectedUriTemplate;
+        }
+        
+        private String getResourceUri() {
+            return resourceUri;
+        }
+        
+        private HandlerResultType getExpectedType() {
+            return expectedType;
+        }
+        
+        private String getExpectedDatabase() {
+            return expectedDatabase;
+        }
+        
+        private List<String> getExpectedObjectNames() {
+            return expectedObjectNames;
+        }
         
         @Override
         public String toString() {

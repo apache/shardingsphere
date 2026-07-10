@@ -17,33 +17,24 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.MockedStatic;
 
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 class MCPJdbcMetadataLoaderSequenceTest extends AbstractMCPJdbcMetadataLoaderTest {
     
@@ -51,7 +42,7 @@ class MCPJdbcMetadataLoaderSequenceTest extends AbstractMCPJdbcMetadataLoaderTes
     @MethodSource("loadWithoutSequenceQueryArguments")
     void assertLoadWithoutSequenceQuery(final String name, final String databaseType) throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(createConnectionWithoutSchema(databaseType));
-        MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
+        Collection<ShardingSphereSchema> actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
     }
@@ -61,18 +52,9 @@ class MCPJdbcMetadataLoaderSequenceTest extends AbstractMCPJdbcMetadataLoaderTes
         Connection connection = createConnectionWithMetadata("PostgreSQL", List.of(), List.of(), Map.of(), Map.of(),
                 List.of(Map.of("SEQUENCE_SCHEMA", "PG_CATALOG", "SEQUENCE_NAME", "order_seq")));
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DatabaseType databaseTypeFromSPI = mock(DatabaseType.class);
-            when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
-            typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, "PostgreSQL")).thenReturn(Optional.of(databaseTypeFromSPI));
-            DialectSystemDatabase dialectSystemDatabase = mock(DialectSystemDatabase.class);
-            when(dialectSystemDatabase.getSystemSchemas()).thenReturn(List.of("pg_catalog"));
-            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectSystemDatabase));
-            MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
-            assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
-        }
+        Collection<ShardingSphereSchema> actual = load(Map.of("logic_db", runtimeDatabaseConfiguration), List.of("PostgreSQL"),
+                Map.of("PostgreSQL", List.of("pg_catalog"))).findMetadata("logic_db").orElseThrow();
+        assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
     }
     
     @Test
@@ -80,7 +62,7 @@ class MCPJdbcMetadataLoaderSequenceTest extends AbstractMCPJdbcMetadataLoaderTes
         Connection connection = createConnectionWithMetadata("PostgreSQL", List.of(), List.of(), Map.of(), Map.of(),
                 List.of(Map.of("SEQUENCE_SCHEMA", "public", "SEQUENCE_NAME", "")));
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
-        MCPDatabaseMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
+        Collection<ShardingSphereSchema> actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.SEQUENCE, ""));
     }
     
@@ -96,13 +78,13 @@ class MCPJdbcMetadataLoaderSequenceTest extends AbstractMCPJdbcMetadataLoaderTes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("loadSequenceDialectArguments")
+    @MethodSource("loadSequenceDatabaseArguments")
     void assertLoadWithDialectSequenceMetadata(final String name, final String databaseType, final String sequenceSchema,
-                                               final String sequenceName, final String sequenceQuery) throws SQLException {
+                                               final String sequenceName) throws SQLException {
         String jdbcUrl = "jdbc:mock:sequence:" + name.replace(' ', '-');
-        Driver mockDriver = new MockDriver(jdbcUrl, createConnectionWithSequenceMetadata(databaseType, sequenceSchema, sequenceName, sequenceQuery));
+        Driver mockDriver = new MockDriver(jdbcUrl, createConnectionWithSequenceMetadata(databaseType, sequenceSchema, sequenceName));
         try (MockDriverRegistration ignored = MockDriverRegistration.register(mockDriver)) {
-            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration(jdbcUrl, "", "", MockDriver.class.getName())));
+            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration(jdbcUrl, "", "", MockDriver.class.getName())), List.of(databaseType));
             assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), SupportedMCPMetadataObjectType.SEQUENCE, sequenceName));
         }
     }

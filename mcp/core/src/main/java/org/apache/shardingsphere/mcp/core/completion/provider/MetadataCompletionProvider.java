@@ -19,17 +19,17 @@ package org.apache.shardingsphere.mcp.core.completion.provider;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
@@ -105,10 +105,8 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
                 || Objects.toString(contextArguments.get("database"), "").isEmpty()) {
             return Map.of();
         }
-        return handlerContext.getMetadataQueryFacade().queryDatabase(contextArguments.get("database"))
-                .filter(optional -> 1 == optional.getSchemas().size())
-                .map(optional -> Map.<String, Object>of("schema", optional.getSchemas().iterator().next().getSchema()))
-                .orElseGet(Map::of);
+        List<ShardingSphereSchema> schemas = handlerContext.getMetadataQueryFacade().querySchemas(contextArguments.get("database"));
+        return 1 == schemas.size() ? Map.of("schema", schemas.iterator().next().getName()) : Map.of();
     }
     
     private void mergeInferredContextArguments(final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments) {
@@ -157,7 +155,7 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
     private List<MCPCompletionCandidate> completeSchemas(final MCPDatabaseHandlerContext handlerContext, final Map<String, String> contextArguments) {
         String database = contextArguments.getOrDefault("database", "");
         return database.isEmpty() ? List.of()
-                : handlerContext.getMetadataQueryFacade().querySchemas(database).stream().map(MCPSchemaMetadata::getSchema)
+                : handlerContext.getMetadataQueryFacade().querySchemas(database).stream().map(ShardingSphereSchema::getName)
                         .map(each -> new MCPCompletionCandidate(each, "schema", "metadata")).toList();
     }
     
@@ -165,7 +163,7 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         String database = contextArguments.getOrDefault("database", "");
         String schema = getSchema(contextArguments);
         return database.isEmpty() || schema.isEmpty() ? List.of()
-                : handlerContext.getMetadataQueryFacade().queryTables(database, schema).stream().map(MCPTableMetadata::getTable)
+                : handlerContext.getMetadataQueryFacade().queryTables(database, schema).stream().map(ShardingSphereTable::getName)
                         .map(each -> new MCPCompletionCandidate(each, "logical table", "metadata")).toList();
     }
     
@@ -174,7 +172,7 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         String schema = getSchema(contextArguments);
         String table = contextArguments.getOrDefault("table", "");
         return database.isEmpty() || schema.isEmpty() || table.isEmpty() ? List.of()
-                : handlerContext.getMetadataQueryFacade().queryTableColumns(database, schema, table).stream().map(MCPColumnMetadata::getColumn)
+                : handlerContext.getMetadataQueryFacade().queryTableColumns(database, schema, table).stream().map(ShardingSphereColumn::getName)
                         .map(each -> new MCPCompletionCandidate(each, "column", "metadata")).toList();
     }
     
@@ -186,7 +184,7 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
             return List.of();
         }
         try {
-            return handlerContext.getMetadataQueryFacade().queryIndexes(database, schema, table).stream().map(MCPIndexMetadata::getIndex)
+            return handlerContext.getMetadataQueryFacade().queryIndexes(database, schema, table).stream().map(ShardingSphereIndex::getName)
                     .map(each -> new MCPCompletionCandidate(each, "index", "metadata")).toList();
         } catch (final MCPUnsupportedException ignored) {
             return List.of();
@@ -200,7 +198,7 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
             return List.of();
         }
         try {
-            return handlerContext.getMetadataQueryFacade().querySequences(database, schema).stream().map(MCPSequenceMetadata::getSequence)
+            return handlerContext.getMetadataQueryFacade().querySequences(database, schema).stream().map(ShardingSphereSequence::getName)
                     .map(each -> new MCPCompletionCandidate(each, "sequence", "metadata")).toList();
         } catch (final MCPUnsupportedException ignored) {
             return List.of();

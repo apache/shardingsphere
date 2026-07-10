@@ -19,28 +19,32 @@ package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.SequenceMetaDataLoader;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -49,30 +53,31 @@ import java.util.Set;
 public final class MCPJdbcMetadataLoader {
     
     /**
-     * Load database metadata.
+     * Load schema metadata.
      *
      * @param databaseName database name
      * @param runtimeDatabaseConfig runtime database configuration
      * @param databaseProfile runtime database profile
-     * @return database metadata
+     * @return schema metadata
      * @throws RuntimeDatabaseConnectionException when metadata loading fails
      */
-    public MCPDatabaseMetadata load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final RuntimeDatabaseProfile databaseProfile) {
+    public Collection<ShardingSphereSchema> load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final RuntimeDatabaseProfile databaseProfile) {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
-            return loadDatabaseMetadata(databaseName, databaseProfile, connection, connection.getMetaData());
+            return loadSchemas(databaseName, databaseProfile, connection, connection.getMetaData());
         } catch (final SQLException ex) {
             throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
         }
     }
     
-    private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final RuntimeDatabaseProfile databaseProfile,
-                                                     final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private Collection<ShardingSphereSchema> loadSchemas(final String databaseName, final RuntimeDatabaseProfile databaseProfile,
+                                                         final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
+        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, databaseProfile.getDatabaseType());
         MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(databaseProfile.getDatabaseType());
         SchemaSemantics defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
-        DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, databaseProfile.getDatabaseType(), databaseProfile.getDatabaseVersion());
+        DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(protocolType);
         loadTables(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, databaseMetaData);
         loadViews(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, databaseMetaData);
-        loadSequences(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, connection);
+        loadSequences(databaseName, defaultSchemaSemantics, protocolType, accumulator, connection);
         return accumulator.build();
     }
     
@@ -85,12 +90,12 @@ public final class MCPJdbcMetadataLoader {
                 if (databaseDialect.isSystemSchema(schemaName, catalogName, defaultSchemaSemantics)) {
                     continue;
                 }
-                String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
                 String tableName = Objects.toString(tables.getString("TABLE_NAME"), "").trim();
                 if (tableName.isEmpty()) {
                     continue;
                 }
-                TableMetadataAccumulator tableMetadata = accumulator.getSchemaAccumulator(normalizedSchemaName).getTableAccumulator(tableName);
+                TableMetadataAccumulator tableMetadata = accumulator.getSchemaAccumulator(
+                        normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName)).getTableAccumulator(tableName, TableType.TABLE);
                 for (String each : loadColumns(databaseMetaData, catalogName, schemaName, tableName)) {
                     tableMetadata.addColumn(each);
                 }
@@ -110,12 +115,12 @@ public final class MCPJdbcMetadataLoader {
                 if (databaseDialect.isSystemSchema(schemaName, catalogName, defaultSchemaSemantics)) {
                     continue;
                 }
-                String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
                 String viewName = Objects.toString(views.getString("TABLE_NAME"), "").trim();
                 if (viewName.isEmpty()) {
                     continue;
                 }
-                ViewMetadataAccumulator viewMetadata = accumulator.getSchemaAccumulator(normalizedSchemaName).getViewAccumulator(viewName);
+                TableMetadataAccumulator viewMetadata = accumulator.getSchemaAccumulator(
+                        normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName)).getTableAccumulator(viewName, TableType.VIEW);
                 for (String each : loadColumns(databaseMetaData, catalogName, schemaName, viewName)) {
                     viewMetadata.addColumn(each);
                 }
@@ -123,23 +128,12 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
-    private void loadSequences(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
+    private void loadSequences(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final DatabaseType protocolType,
                                final DatabaseMetadataAccumulator accumulator, final Connection connection) throws SQLException {
-        Optional<String> sequenceQuery = databaseDialect.getSequenceQuery();
-        if (sequenceQuery.isEmpty()) {
-            return;
-        }
-        try (Statement statement = connection.createStatement(); ResultSet sequences = statement.executeQuery(sequenceQuery.get())) {
-            while (sequences.next()) {
-                String schemaName = Objects.toString(sequences.getString("SEQUENCE_SCHEMA"), "").trim();
-                if (databaseDialect.isSystemSchema(schemaName)) {
-                    continue;
-                }
-                String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
-                String sequenceName = Objects.toString(sequences.getString("SEQUENCE_NAME"), "").trim();
-                if (!sequenceName.isEmpty()) {
-                    accumulator.getSchemaAccumulator(normalizedSchemaName).addSequence(sequenceName);
-                }
+        for (Entry<String, Collection<String>> entry : new SequenceMetaDataLoader(protocolType).load(connection).entrySet()) {
+            SchemaMetadataAccumulator schema = accumulator.getSchemaAccumulator(normalizeSchemaName(databaseName, defaultSchemaSemantics, entry.getKey()));
+            for (String each : entry.getValue()) {
+                schema.addSequence(each);
             }
         }
     }
@@ -187,123 +181,83 @@ public final class MCPJdbcMetadataLoader {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class DatabaseMetadataAccumulator {
         
-        private final String database;
-        
-        private final String databaseType;
-        
-        private final String databaseVersion;
+        private final DatabaseType protocolType;
         
         private final Map<String, SchemaMetadataAccumulator> schemaAccumulators = new LinkedHashMap<>(16, 1F);
         
         private SchemaMetadataAccumulator getSchemaAccumulator(final String schema) {
             SchemaMetadataAccumulator result = schemaAccumulators.get(schema);
             if (null == result) {
-                result = new SchemaMetadataAccumulator(database, schema);
+                result = new SchemaMetadataAccumulator(schema, protocolType);
                 schemaAccumulators.put(schema, result);
             }
             return result;
         }
         
-        private MCPDatabaseMetadata build() {
-            List<MCPSchemaMetadata> schemas = new LinkedList<>();
+        private Collection<ShardingSphereSchema> build() {
+            List<ShardingSphereSchema> result = new LinkedList<>();
             for (SchemaMetadataAccumulator each : schemaAccumulators.values()) {
-                schemas.add(each.build());
+                result.add(each.build());
             }
-            return new MCPDatabaseMetadata(database, databaseType, databaseVersion, schemas);
+            return result;
         }
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class SchemaMetadataAccumulator {
         
-        private final String database;
-        
         private final String schema;
+        
+        private final DatabaseType protocolType;
         
         private final Map<String, TableMetadataAccumulator> tableAccumulators = new LinkedHashMap<>(16, 1F);
         
-        private final Map<String, ViewMetadataAccumulator> viewAccumulators = new LinkedHashMap<>(16, 1F);
+        private final Map<String, ShardingSphereSequence> sequences = new LinkedHashMap<>(16, 1F);
         
-        private final Map<String, MCPSequenceMetadata> sequences = new LinkedHashMap<>(16, 1F);
-        
-        private TableMetadataAccumulator getTableAccumulator(final String table) {
-            TableMetadataAccumulator result = tableAccumulators.get(table);
+        private TableMetadataAccumulator getTableAccumulator(final String name, final TableType type) {
+            TableMetadataAccumulator result = tableAccumulators.get(name);
             if (null == result) {
-                result = new TableMetadataAccumulator(database, schema, table);
-                tableAccumulators.put(table, result);
-            }
-            return result;
-        }
-        
-        private ViewMetadataAccumulator getViewAccumulator(final String view) {
-            ViewMetadataAccumulator result = viewAccumulators.get(view);
-            if (null == result) {
-                result = new ViewMetadataAccumulator(database, schema, view);
-                viewAccumulators.put(view, result);
+                result = new TableMetadataAccumulator(name, type);
+                tableAccumulators.put(name, result);
             }
             return result;
         }
         
         private void addSequence(final String sequence) {
-            sequences.putIfAbsent(sequence, new MCPSequenceMetadata(database, schema, sequence));
+            sequences.putIfAbsent(sequence, new ShardingSphereSequence(sequence));
         }
         
-        private MCPSchemaMetadata build() {
-            List<MCPTableMetadata> tables = new LinkedList<>();
+        private ShardingSphereSchema build() {
+            List<ShardingSphereTable> tables = new LinkedList<>();
             for (TableMetadataAccumulator each : tableAccumulators.values()) {
                 tables.add(each.build());
             }
-            List<MCPViewMetadata> views = new LinkedList<>();
-            for (ViewMetadataAccumulator each : viewAccumulators.values()) {
-                views.add(each.build());
-            }
-            return new MCPSchemaMetadata(database, schema, tables, views, new LinkedList<>(sequences.values()));
+            return new ShardingSphereSchema(schema, protocolType, tables, Collections.emptyList(), sequences.values());
         }
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class TableMetadataAccumulator {
         
-        private final String database;
+        private final String name;
         
-        private final String schema;
+        private final TableType type;
         
-        private final String table;
+        private final Map<String, ShardingSphereColumn> columns = new LinkedHashMap<>(16, 1F);
         
-        private final Map<String, MCPColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
-        
-        private final Map<String, MCPIndexMetadata> indexes = new LinkedHashMap<>(16, 1F);
+        private final Map<String, ShardingSphereIndex> indexes = new LinkedHashMap<>(16, 1F);
         
         private void addColumn(final String column) {
-            columns.putIfAbsent(column, new MCPColumnMetadata(database, schema, table, "", column));
+            columns.putIfAbsent(column, new ShardingSphereColumn(column, Types.OTHER, false, false, false, true, false, true));
         }
         
         private void addIndex(final String index) {
-            indexes.putIfAbsent(index, new MCPIndexMetadata(database, schema, table, index));
+            indexes.putIfAbsent(index, new ShardingSphereIndex(index, Collections.emptyList(), false));
         }
         
-        private MCPTableMetadata build() {
-            return new MCPTableMetadata(database, schema, table, new LinkedList<>(columns.values()), new LinkedList<>(indexes.values()));
-        }
-    }
-    
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private static final class ViewMetadataAccumulator {
-        
-        private final String database;
-        
-        private final String schema;
-        
-        private final String view;
-        
-        private final Map<String, MCPColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
-        
-        private void addColumn(final String column) {
-            columns.putIfAbsent(column, new MCPColumnMetadata(database, schema, "", view, column));
-        }
-        
-        private MCPViewMetadata build() {
-            return new MCPViewMetadata(database, schema, view, new LinkedList<>(columns.values()));
+        private ShardingSphereTable build() {
+            Collection<ShardingSphereIndex> actualIndexes = TableType.TABLE == type ? new LinkedList<>(indexes.values()) : Collections.emptyList();
+            return new ShardingSphereTable(name, new LinkedList<>(columns.values()), actualIndexes, Collections.emptyList(), type);
         }
     }
 }

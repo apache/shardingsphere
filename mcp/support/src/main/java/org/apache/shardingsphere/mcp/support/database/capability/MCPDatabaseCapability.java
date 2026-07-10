@@ -67,7 +67,7 @@ public final class MCPDatabaseCapability {
         if (option.isIndexSupported()) {
             result.add(SupportedMCPMetadataObjectType.INDEX);
         }
-        if (option.isSequenceSupported()) {
+        if (MCPDatabaseDialect.of(option.getType()).isSequenceSupported()) {
             result.add(SupportedMCPMetadataObjectType.SEQUENCE);
         }
         return result;

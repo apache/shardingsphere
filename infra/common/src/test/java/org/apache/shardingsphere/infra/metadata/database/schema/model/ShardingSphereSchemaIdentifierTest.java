@@ -92,6 +92,22 @@ class ShardingSphereSchemaIdentifierTest {
     }
     
     @Test
+    void assertContainsSequence() {
+        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
+        assertTrue(schema.containsSequence("FOO_SEQ"));
+    }
+    
+    @Test
+    void assertGetSequence() {
+        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
+        assertThat(schema.getSequence("FOO_SEQ"), is(sequence));
+    }
+    
+    @Test
     void assertAttachIdentifierContext() {
         ShardingSphereTable table = new ShardingSphereTable("Foo_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());

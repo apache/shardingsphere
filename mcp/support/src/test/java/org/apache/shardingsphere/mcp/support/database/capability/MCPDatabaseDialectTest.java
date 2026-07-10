@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
@@ -136,11 +137,28 @@ class MCPDatabaseDialectTest {
         assertFalse(actual);
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getSequenceQueryArguments")
-    void assertGetSequenceQuery(final String name, final String databaseType, final String expected) {
-        String actual = MCPDatabaseDialect.of(databaseType).getSequenceQuery().orElse("");
-        assertThat(actual, is(expected));
+    @Test
+    void assertIsSequenceSupported() {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(Optional.of(new DialectSequenceOption("SELECT 1")));
+            assertTrue(MCPDatabaseDialect.of("Fixture").isSequenceSupported());
+        }
+    }
+    
+    @Test
+    void assertIsSequenceSupportedAbsent() {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(Optional.empty());
+            assertFalse(MCPDatabaseDialect.of("Fixture").isSequenceSupported());
+        }
     }
     
     @Test
@@ -237,14 +255,6 @@ class MCPDatabaseDialectTest {
                 Arguments.of("mysql", "MySQL", SchemaSemantics.DATABASE_AS_SCHEMA),
                 Arguments.of("postgresql", "PostgreSQL", SchemaSemantics.NATIVE_SCHEMA),
                 Arguments.of("unknown", "FixtureDB", SchemaSemantics.NATIVE_SCHEMA));
-    }
-    
-    private static Stream<Arguments> getSequenceQueryArguments() {
-        return Stream.of(
-                Arguments.of("postgresql", "PostgreSQL", "SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences"),
-                Arguments.of("sql server", "SQLServer",
-                        "SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id"),
-                Arguments.of("mysql", "MySQL", ""));
     }
     
 }

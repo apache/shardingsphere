@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.mcp.core.completion.provider;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -37,7 +38,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -102,7 +102,7 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteWithEmptySchemaDefaulted() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata()));
         when(metadataQueryFacade.queryTables("logic_db", "public")).thenReturn(List.of(createTableMetadata()));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("table", Map.of("database", "logic_db", "schema", "")));
@@ -114,7 +114,7 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteWithSingleDatabaseDefaulted() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata()));
         when(metadataQueryFacade.queryTables("logic_db", "public")).thenReturn(List.of(createTableMetadata()));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade, List.of(createDatabaseProfile("logic_db"))),
                 createRequestContext("table", Map.of()));
@@ -157,7 +157,8 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteColumn() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.queryTableColumns("logic_db", "public", "t_order")).thenReturn(List.of(new MCPColumnMetadata("logic_db", "public", "t_order", "", "order_id")));
+        when(metadataQueryFacade.queryTableColumns("logic_db", "public", "t_order"))
+                .thenReturn(List.of(new ShardingSphereColumn("order_id", java.sql.Types.OTHER, false, false, false, true, false, true)));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("column", Map.of("database", "logic_db", "schema", "public", "table", "t_order")));
         assertCandidate(actual, "order_id");
@@ -167,7 +168,7 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteIndex() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.queryIndexes("logic_db", "public", "t_order")).thenReturn(List.of(new MCPIndexMetadata("logic_db", "public", "t_order", "idx_order_id")));
+        when(metadataQueryFacade.queryIndexes("logic_db", "public", "t_order")).thenReturn(List.of(new ShardingSphereIndex("idx_order_id", List.of(), false)));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("index", Map.of("database", "logic_db", "schema", "public", "table", "t_order")));
         assertCandidate(actual, "idx_order_id");
@@ -177,7 +178,7 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteSequence() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.querySequences("logic_db", "public")).thenReturn(List.of(new MCPSequenceMetadata("logic_db", "public", "order_seq")));
+        when(metadataQueryFacade.querySequences("logic_db", "public")).thenReturn(List.of(new ShardingSphereSequence("order_seq")));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("sequence", Map.of("database", "logic_db", "schema", "public")));
         assertCandidate(actual, "order_seq");
@@ -262,16 +263,16 @@ class MetadataCompletionProviderTest {
         return new RuntimeDatabaseProfile(database, "FixtureDB", "1.0");
     }
     
-    private MCPDatabaseMetadata createDatabaseMetadata() {
-        return new MCPDatabaseMetadata("logic_db", "FixtureDB", "1.0", List.of(createSchemaMetadata()));
+    private RuntimeDatabaseProfile createDatabaseMetadata() {
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0");
     }
     
-    private MCPSchemaMetadata createSchemaMetadata() {
-        return new MCPSchemaMetadata("logic_db", "public", List.of(createTableMetadata()), List.of(), List.of());
+    private ShardingSphereSchema createSchemaMetadata() {
+        return new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(createTableMetadata()), List.of());
     }
     
-    private MCPTableMetadata createTableMetadata() {
-        return new MCPTableMetadata("logic_db", "public", "t_order", List.of(), List.of());
+    private ShardingSphereTable createTableMetadata() {
+        return new ShardingSphereTable("t_order", List.of(), List.of(), List.of(), TableType.TABLE);
     }
     
     private void assertCandidate(final MCPCompletionProviderResult actual, final String expectedValue) {

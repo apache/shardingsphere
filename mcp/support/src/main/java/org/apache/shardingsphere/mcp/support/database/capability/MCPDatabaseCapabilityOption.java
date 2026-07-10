@@ -22,8 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-import java.util.Optional;
-
 /**
  * MCP database capability option.
  */
@@ -74,28 +72,12 @@ public interface MCPDatabaseCapabilityOption extends TypedSPI {
     boolean isExplainAnalyzeSupported(String databaseVersion);
     
     /**
-     * Judge whether sequence metadata is supported.
-     *
-     * @return whether sequence metadata is supported
-     */
-    boolean isSequenceSupported();
-    
-    /**
      * Get identifier case policy set.
      *
      * @return identifier case policy set
      */
     default IdentifierCasePolicySet getIdentifierCasePolicySet() {
         return IdentifierCasePolicyFactory.newSensitivePolicySet();
-    }
-    
-    /**
-     * Get sequence metadata query.
-     *
-     * @return sequence metadata query
-     */
-    default Optional<String> getSequenceQuery() {
-        return Optional.empty();
     }
     
     @Override

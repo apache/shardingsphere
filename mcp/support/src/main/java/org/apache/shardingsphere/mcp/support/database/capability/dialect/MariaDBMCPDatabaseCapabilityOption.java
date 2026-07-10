@@ -23,29 +23,19 @@ import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecution
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 
-import java.util.Optional;
-
 /**
  * MCP database capability option for MariaDB.
  */
 public final class MariaDBMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
-    private static final String SEQUENCE_QUERY =
-            "SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'";
-    
     public MariaDBMCPDatabaseCapabilityOption() {
         super("MariaDB", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, true);
+                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false);
     }
     
     @Override
     public IdentifierCasePolicySet getIdentifierCasePolicySet() {
         return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
-    }
-    
-    @Override
-    public Optional<String> getSequenceQuery() {
-        return Optional.of(SEQUENCE_QUERY);
     }
     
 }

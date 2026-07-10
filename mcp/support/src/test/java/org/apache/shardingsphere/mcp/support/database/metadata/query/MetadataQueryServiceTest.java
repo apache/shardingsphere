@@ -17,24 +17,33 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.query;
 
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.context.RequestScopedMetadataContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
 import java.util.List;
 import java.util.Map;
@@ -46,46 +55,88 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class MetadataQueryServiceTest {
     
-    private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = DatabaseTestDataFactory.createRuntimeDatabases();
+    private Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
-    private final MCPDatabaseCapabilityProvider databaseCapabilityProvider = SupportDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(runtimeDatabases);
+    private MockedStatic<DatabaseTypeFactory> databaseTypeFactory;
     
-    private final RequestScopedMetadataContext metadataContext = new RequestScopedMetadataContext(runtimeDatabases, databaseCapabilityProvider);
+    private MockedStatic<TypedSPILoader> typedSPILoader;
     
-    private final MetadataQueryService metadataQueryService = new MetadataQueryService(databaseCapabilityProvider, metadataContext);
+    private MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader;
+    
+    private RequestScopedMetadataContext metadataContext;
+    
+    private MetadataQueryService metadataQueryService;
+    
+    @BeforeEach
+    void setUp() {
+        runtimeDatabases = DatabaseTestDataFactory.createRuntimeDatabases();
+        databaseTypeFactory = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+        typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+        databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class);
+        mockDatabaseType("MySQL", false);
+        mockDatabaseType("PostgreSQL", true);
+        mockDatabaseType("Hive", false);
+        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(runtimeDatabases);
+        metadataContext = new RequestScopedMetadataContext(runtimeDatabases, databaseCapabilityProvider);
+        metadataQueryService = new MetadataQueryService(databaseCapabilityProvider, metadataContext);
+    }
     
     @AfterEach
     void closeRequestContext() {
         metadataContext.close();
+        databaseTypedSPILoader.close();
+        typedSPILoader.close();
+        databaseTypeFactory.close();
+    }
+    
+    private void mockDatabaseType(final String databaseType, final boolean sequenceSupported) {
+        DatabaseType databaseTypeFromSPI = mock(DatabaseType.class);
+        when(databaseTypeFromSPI.getType()).thenReturn(databaseType);
+        when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
+        typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, databaseType)).thenReturn(databaseTypeFromSPI);
+        mockDialectDatabaseMetaData(databaseTypeFromSPI, sequenceSupported);
+        databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseTypeFromSPI)).thenReturn(Optional.empty());
+    }
+    
+    private void mockDialectDatabaseMetaData(final DatabaseType databaseType, final boolean sequenceSupported) {
+        DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
+        when(result.getSequenceOption()).thenReturn(
+                sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());
+        databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(result));
+        databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(result);
     }
     
     @Test
     void assertQueryDatabases() {
-        List<MCPDatabaseMetadata> actual = metadataQueryService.queryDatabases();
+        List<RuntimeDatabaseProfile> actual = metadataQueryService.queryDatabases();
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0).getDatabase(), is("logic_db"));
-        assertTrue(actual.get(0).getSchemas().isEmpty());
         assertThat(actual.get(1).getDatabase(), is("runtime_db"));
         assertThat(actual.get(2).getDatabase(), is("warehouse"));
     }
     
     @Test
     void assertQueryDatabase() {
-        Optional<MCPDatabaseMetadata> actual = metadataQueryService.queryDatabase("logic_db");
+        Optional<RuntimeDatabaseProfile> actual = metadataQueryService.queryDatabase("logic_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabase(), is("logic_db"));
-        assertThat(actual.get().getSchemas().get(0).getSchema(), is("public"));
+        assertThat(actual.get().getDatabaseType(), is("MySQL"));
     }
     
     @Test
     void assertQuerySchemas() {
-        List<MCPSchemaMetadata> actual = metadataQueryService.querySchemas("logic_db");
+        List<ShardingSphereSchema> actual = metadataQueryService.querySchemas("logic_db");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getSchema(), is("public"));
-        assertTrue(actual.get(0).getTables().isEmpty());
+        assertThat(actual.get(0).getName(), is("public"));
+        assertThat(countTables(actual.get(0), TableType.TABLE), is(2L));
     }
     
     @Test
@@ -95,11 +146,11 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQuerySchema() {
-        Optional<MCPSchemaMetadata> actual = metadataQueryService.querySchema("logic_db", "public");
+        Optional<ShardingSphereSchema> actual = metadataQueryService.querySchema("logic_db", "public");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getSchema(), is("public"));
-        assertThat(actual.get().getTables().size(), is(2));
-        assertThat(actual.get().getViews().size(), is(1));
+        assertThat(actual.get().getName(), is("public"));
+        assertThat(countTables(actual.get(), TableType.TABLE), is(2L));
+        assertThat(countTables(actual.get(), TableType.VIEW), is(1L));
     }
     
     @Test
@@ -109,11 +160,11 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryTablesBySchema() {
-        List<MCPTableMetadata> actual = metadataQueryService.queryTables("logic_db", "public");
+        List<ShardingSphereTable> actual = metadataQueryService.queryTables("logic_db", "public");
         assertThat(actual.size(), is(2));
-        assertThat(actual.get(0).getTable(), is("order_items"));
-        assertThat(actual.get(1).getTable(), is("orders"));
-        assertTrue(actual.get(1).getColumns().isEmpty());
+        assertThat(actual.get(0).getName(), is("order_items"));
+        assertThat(actual.get(1).getName(), is("orders"));
+        assertThat(actual.get(1).getAllColumns().size(), is(1));
     }
     
     @Test
@@ -123,11 +174,11 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryTable() {
-        Optional<MCPTableMetadata> actual = metadataQueryService.queryTable("logic_db", "public", "orders");
+        Optional<ShardingSphereTable> actual = metadataQueryService.queryTable("logic_db", "public", "orders");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getTable(), is("orders"));
-        assertThat(actual.get().getColumns().size(), is(1));
-        assertThat(actual.get().getIndexes().size(), is(1));
+        assertThat(actual.get().getName(), is("orders"));
+        assertThat(actual.get().getAllColumns().size(), is(1));
+        assertThat(actual.get().getAllIndexes().size(), is(1));
     }
     
     @Test
@@ -137,9 +188,9 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryTableColumns() {
-        List<MCPColumnMetadata> actual = metadataQueryService.queryTableColumns("logic_db", "public", "orders");
+        List<ShardingSphereColumn> actual = metadataQueryService.queryTableColumns("logic_db", "public", "orders");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getColumn(), is("order_id"));
+        assertThat(actual.get(0).getName(), is("order_id"));
     }
     
     @Test
@@ -149,10 +200,9 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryTableColumn() {
-        Optional<MCPColumnMetadata> actual = metadataQueryService.queryTableColumn("logic_db", "public", "orders", "order_id");
+        Optional<ShardingSphereColumn> actual = metadataQueryService.queryTableColumn("logic_db", "public", "orders", "order_id");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getColumn(), is("order_id"));
-        assertThat(actual.get().getTable(), is("orders"));
+        assertThat(actual.get().getName(), is("order_id"));
     }
     
     @Test
@@ -162,10 +212,10 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryViews() {
-        List<MCPViewMetadata> actual = metadataQueryService.queryViews("logic_db", "public");
+        List<ShardingSphereTable> actual = metadataQueryService.queryViews("logic_db", "public");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getView(), is("orders_view"));
-        assertTrue(actual.get(0).getColumns().isEmpty());
+        assertThat(actual.get(0).getName(), is("orders_view"));
+        assertThat(actual.get(0).getAllColumns().size(), is(1));
     }
     
     @Test
@@ -175,10 +225,10 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryView() {
-        Optional<MCPViewMetadata> actual = metadataQueryService.queryView("logic_db", "public", "orders_view");
+        Optional<ShardingSphereTable> actual = metadataQueryService.queryView("logic_db", "public", "orders_view");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getView(), is("orders_view"));
-        assertThat(actual.get().getColumns().size(), is(1));
+        assertThat(actual.get().getName(), is("orders_view"));
+        assertThat(actual.get().getAllColumns().size(), is(1));
     }
     
     @Test
@@ -188,10 +238,9 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryViewColumns() {
-        List<MCPColumnMetadata> actual = metadataQueryService.queryViewColumns("logic_db", "public", "orders_view");
+        List<ShardingSphereColumn> actual = metadataQueryService.queryViewColumns("logic_db", "public", "orders_view");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getColumn(), is("order_id"));
-        assertThat(actual.get(0).getView(), is("orders_view"));
+        assertThat(actual.get(0).getName(), is("order_id"));
     }
     
     @Test
@@ -201,10 +250,9 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryViewColumn() {
-        Optional<MCPColumnMetadata> actual = metadataQueryService.queryViewColumn("logic_db", "public", "orders_view", "order_id");
+        Optional<ShardingSphereColumn> actual = metadataQueryService.queryViewColumn("logic_db", "public", "orders_view", "order_id");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getColumn(), is("order_id"));
-        assertThat(actual.get().getView(), is("orders_view"));
+        assertThat(actual.get().getName(), is("order_id"));
     }
     
     @Test
@@ -214,9 +262,9 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryIndexes() {
-        List<MCPIndexMetadata> actual = metadataQueryService.queryIndexes("logic_db", "public", "orders");
+        List<ShardingSphereIndex> actual = metadataQueryService.queryIndexes("logic_db", "public", "orders");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getIndex(), is("order_idx"));
+        assertThat(actual.get(0).getName(), is("order_idx"));
     }
     
     @Test
@@ -227,9 +275,9 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryIndex() {
-        Optional<MCPIndexMetadata> actual = metadataQueryService.queryIndex("logic_db", "public", "orders", "order_idx");
+        Optional<ShardingSphereIndex> actual = metadataQueryService.queryIndex("logic_db", "public", "orders", "order_idx");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getIndex(), is("order_idx"));
+        assertThat(actual.get().getName(), is("order_idx"));
     }
     
     @Test
@@ -240,9 +288,9 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQuerySequences() {
-        List<MCPSequenceMetadata> actual = metadataQueryService.querySequences("runtime_db", "public");
+        List<ShardingSphereSequence> actual = metadataQueryService.querySequences("runtime_db", "public");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getSequence(), is("order_seq"));
+        assertThat(actual.get(0).getName(), is("order_seq"));
     }
     
     @Test
@@ -253,9 +301,9 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQuerySequence() {
-        Optional<MCPSequenceMetadata> actual = metadataQueryService.querySequence("runtime_db", "public", "order_seq");
+        Optional<ShardingSphereSequence> actual = metadataQueryService.querySequence("runtime_db", "public", "order_seq");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getSequence(), is("order_seq"));
+        assertThat(actual.get().getName(), is("order_seq"));
     }
     
     @Test
@@ -268,6 +316,10 @@ class MetadataQueryServiceTest {
     @MethodSource("supportedMetadataObjectTypeArguments")
     void assertIsSupportedMetadataObjectType(final String name, final String databaseName, final SupportedMCPMetadataObjectType objectType, final boolean expected) {
         assertThat(metadataQueryService.isSupportedMetadataObjectType(databaseName, objectType), is(expected));
+    }
+    
+    private long countTables(final ShardingSphereSchema schema, final TableType tableType) {
+        return schema.getAllTables().stream().filter(each -> tableType == each.getType()).count();
     }
     
     private static Stream<Arguments> supportedMetadataObjectTypeArguments() {
