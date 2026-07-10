@@ -38,6 +38,7 @@
 1. Sharding: Fix AUTO_INTERVAL sharding failure under JVM default locales that use comma decimal separators - [#38806](https://github.com/apache/shardingsphere/pull/38806)
 1. DistSQL: Fix case-sensitive storage unit matching in `SHOW RULES USED STORAGE UNIT` - [#38848](https://github.com/apache/shardingsphere/pull/38848)
 1. Sharding: Compute the Snowflake key generator epoch in UTC instead of the JVM default timezone - [#38932](https://github.com/apache/shardingsphere/pull/38932)
+1. Proxy: Fix MySQL BLOB data corruption when string-like prepared statement parameters target BLOB columns - [#39072](https://github.com/apache/shardingsphere/pull/39072)
 
 ### Enhancements
 
