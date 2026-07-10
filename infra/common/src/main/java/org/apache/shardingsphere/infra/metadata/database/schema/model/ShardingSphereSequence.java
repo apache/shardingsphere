@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.metadata.model;
+package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * MCP index metadata.
+ * ShardingSphere sequence.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MCPIndexMetadata {
+@ToString
+public final class ShardingSphereSequence {
     
-    private final String database;
-    
-    private final String schema;
-    
-    private final String table;
-    
-    private final String index;
+    private final String name;
 }

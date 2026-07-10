@@ -27,6 +27,6 @@ import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapa
 public final class HiveMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public HiveMCPDatabaseCapabilityOption() {
-        super("Hive", TransactionCapability.NONE, false, SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, false);
+        super("Hive", TransactionCapability.NONE, false, SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false);
     }
 }

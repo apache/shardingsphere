@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.database.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationResult;
 import org.junit.jupiter.api.Test;
@@ -206,8 +206,8 @@ class RuntimeDatabaseValidationServiceTest {
         return new RuntimeDatabaseConfiguration("jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
     }
     
-    private static MCPDatabaseMetadata createMetadata(final String schemaName) {
-        return new MCPDatabaseMetadata("logic_db", "FixtureDB", "1.0", List.of(new MCPSchemaMetadata("logic_db", schemaName, List.of(), List.of(), List.of())));
+    private static List<ShardingSphereSchema> createMetadata(final String schemaName) {
+        return List.of(new ShardingSphereSchema(schemaName, mock(DatabaseType.class)));
     }
     
     private static Map<String, Object> createRecoveryPayload(final RuntimeDatabaseConnectionException cause) {

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -168,6 +169,15 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return generated key option
      */
     default Optional<DialectGeneratedKeyOption> getGeneratedKeyOption() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get sequence option.
+     *
+     * @return sequence option
+     */
+    default Optional<DialectSequenceOption> getSequenceOption() {
         return Optional.empty();
     }
     

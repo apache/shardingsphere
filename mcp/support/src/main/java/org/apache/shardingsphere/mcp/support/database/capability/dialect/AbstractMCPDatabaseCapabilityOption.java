@@ -44,19 +44,16 @@ abstract class AbstractMCPDatabaseCapabilityOption implements MCPDatabaseCapabil
     
     private final boolean crossSchemaQuerySupported;
     
-    private final boolean sequenceSupported;
-    
     protected AbstractMCPDatabaseCapabilityOption(final String type, final TransactionCapability transactionCapability, final boolean indexSupported,
                                                   final SchemaSemantics defaultSchemaSemantics, final SchemaExecutionSemantics schemaExecutionSemantics,
-                                                  final boolean crossSchemaQuerySupported, final boolean sequenceSupported) {
+                                                  final boolean crossSchemaQuerySupported) {
         this(type, Collections.emptyList(), transactionCapability, indexSupported, defaultSchemaSemantics, schemaExecutionSemantics,
-                crossSchemaQuerySupported, sequenceSupported);
+                crossSchemaQuerySupported);
     }
     
     protected AbstractMCPDatabaseCapabilityOption(final String type, final Collection<String> typeAliases, final TransactionCapability transactionCapability,
                                                   final boolean indexSupported, final SchemaSemantics defaultSchemaSemantics,
-                                                  final SchemaExecutionSemantics schemaExecutionSemantics, final boolean crossSchemaQuerySupported,
-                                                  final boolean sequenceSupported) {
+                                                  final SchemaExecutionSemantics schemaExecutionSemantics, final boolean crossSchemaQuerySupported) {
         this.type = type;
         this.typeAliases = typeAliases.stream().map(each -> (Object) each).toList();
         this.transactionCapability = transactionCapability;
@@ -64,7 +61,6 @@ abstract class AbstractMCPDatabaseCapabilityOption implements MCPDatabaseCapabil
         this.defaultSchemaSemantics = defaultSchemaSemantics;
         this.schemaExecutionSemantics = schemaExecutionSemantics;
         this.crossSchemaQuerySupported = crossSchemaQuerySupported;
-        this.sequenceSupported = sequenceSupported;
     }
     
     @Override
@@ -90,11 +86,6 @@ abstract class AbstractMCPDatabaseCapabilityOption implements MCPDatabaseCapabil
     @Override
     public final boolean isCrossSchemaQuerySupported() {
         return crossSchemaQuerySupported;
-    }
-    
-    @Override
-    public final boolean isSequenceSupported() {
-        return sequenceSupported;
     }
     
     @Override

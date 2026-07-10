@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.junit.jupiter.api.Test;
@@ -102,8 +101,8 @@ class SearchMetadataPayloadBuilderTest {
         MCPFeatureCapabilityFacade capabilityFacade = mock(MCPFeatureCapabilityFacade.class);
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(result.getCapabilityFacade()).thenReturn(capabilityFacade);
-        when(metadataQueryFacade.queryDatabases()).thenReturn(List.of(mock(MCPDatabaseMetadata.class)));
-        when(metadataQueryFacade.querySchema("logic_db", "public")).thenReturn(Optional.of(mock(MCPSchemaMetadata.class)));
+        when(metadataQueryFacade.queryDatabases()).thenReturn(List.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0")));
+        when(metadataQueryFacade.querySchema("logic_db", "public")).thenReturn(Optional.of(mock(ShardingSphereSchema.class)));
         when(capabilityFacade.findDatabaseProfile("logic_db")).thenReturn(Optional.of(mock(RuntimeDatabaseProfile.class)));
         return result;
     }

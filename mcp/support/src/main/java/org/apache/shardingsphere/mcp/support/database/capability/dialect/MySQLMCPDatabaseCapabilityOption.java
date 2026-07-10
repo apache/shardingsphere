@@ -31,7 +31,7 @@ public final class MySQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseC
     
     public MySQLMCPDatabaseCapabilityOption() {
         super("MySQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, false);
+                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false);
     }
     
     @Override

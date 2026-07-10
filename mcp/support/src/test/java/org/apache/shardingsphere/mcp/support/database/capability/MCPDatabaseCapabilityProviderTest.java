@@ -17,12 +17,19 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -41,7 +48,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPDatabaseCapabilityProviderTest {
@@ -82,7 +91,7 @@ class MCPDatabaseCapabilityProviderTest {
     void assertProvideWithCapabilityMatrix(final String name, final String databaseType, final boolean expectedTransactionControl,
                                            final boolean expectedSavepoint, final boolean expectedIndexSupport, final boolean expectedSequenceSupport,
                                            final SchemaExecutionSemantics expectedSchemaExecutionSemantics) {
-        Optional<MCPDatabaseCapability> actual = createCapabilityProvider(databaseType).provide("logic_db");
+        Optional<MCPDatabaseCapability> actual = createCapabilityProvider(databaseType, "", expectedSequenceSupport).provide("logic_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get().isSupportsTransactionControl(), is(expectedTransactionControl));
         assertThat(actual.get().isSupportsSavepoint(), is(expectedSavepoint));
@@ -102,15 +111,41 @@ class MCPDatabaseCapabilityProviderTest {
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider() {
-        return SupportDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive")));
-    }
-    
-    private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType) {
-        return createCapabilityProvider(databaseType, "");
+        return createCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive")), Map.of("MySQL", false, "Hive", false));
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType, final String databaseVersion) {
-        return SupportDatabaseTypeFactoryMocker.createDatabaseCapabilityProvider(Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", databaseType, databaseVersion)));
+        return createCapabilityProvider(databaseType, databaseVersion, false);
+    }
+    
+    private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType, final String databaseVersion, final boolean sequenceSupported) {
+        return createCapabilityProvider(Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", databaseType, databaseVersion)),
+                Map.of(databaseType, sequenceSupported));
+    }
+    
+    private MCPDatabaseCapabilityProvider createCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
+                                                                   final Map<String, Boolean> sequenceSupportByDatabaseType) {
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            for (Entry<String, Boolean> entry : sequenceSupportByDatabaseType.entrySet()) {
+                mockDatabaseType(entry.getKey(), entry.getValue(), typedSPILoader, databaseTypedSPILoader);
+            }
+            return new MCPDatabaseCapabilityProvider(runtimeDatabases);
+        }
+    }
+    
+    private void mockDatabaseType(final String databaseType, final boolean sequenceSupported, final MockedStatic<TypedSPILoader> typedSPILoader,
+                                  final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
+        DatabaseType databaseTypeFromSPI = mock(DatabaseType.class);
+        when(databaseTypeFromSPI.getType()).thenReturn(databaseType);
+        when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(
+                sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());
+        databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectDatabaseMetaData));
     }
     
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final Map<String, String> databaseTypes) {

@@ -21,24 +21,14 @@ import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecution
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 
-import java.util.Optional;
-
 /**
  * MCP database capability option for PostgreSQL.
  */
 public final class PostgreSQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
-    private static final String SEQUENCE_QUERY =
-            "SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences";
-    
     public PostgreSQLMCPDatabaseCapabilityOption() {
         super("PostgreSQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
-    }
-    
-    @Override
-    public Optional<String> getSequenceQuery() {
-        return Optional.of(SEQUENCE_QUERY);
+                SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true);
     }
     
     @Override

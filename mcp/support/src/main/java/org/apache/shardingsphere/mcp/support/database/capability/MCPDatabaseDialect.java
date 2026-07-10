@@ -141,8 +141,8 @@ public final class MCPDatabaseDialect {
      *
      * @return sequence metadata query
      */
-    public Optional<String> getSequenceQuery() {
-        return option.flatMap(MCPDatabaseCapabilityOption::getSequenceQuery);
+    public boolean isSequenceSupported() {
+        return dialectDatabaseMetaData.flatMap(DialectDatabaseMetaData::getSequenceOption).isPresent();
     }
     
     /**

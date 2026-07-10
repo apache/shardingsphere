@@ -69,20 +69,22 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
         MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
         ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(descriptor.getUriTemplate());
+        boolean detailResource = isDetailResource(metadata);
+        List<?> payloadItems = new MetadataResourcePayloadMapper(databaseContext.getMetadataQueryFacade(), uriVariables, detailResource).map(metadata, items);
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
-        if (isDetailResource(metadata)) {
-            if (items.isEmpty()) {
+        if (detailResource) {
+            if (payloadItems.isEmpty()) {
                 appendEmptyStateGuidance(navigationPayload, metadata, databaseContext, uriVariables);
             }
-            return new MCPMapResponse(createDetailPayload(metadata, items, navigationPayload));
+            return new MCPMapResponse(createDetailPayload(metadata, payloadItems, navigationPayload));
         }
-        List<?> returnedItems = capListItems(items);
-        appendListSizeMetadata(navigationPayload, items.size(), returnedItems.size());
-        navigationPayload.put(MCPPayloadFieldNames.SUMMARY, createListSummary(metadata, items.size(), returnedItems.size()));
-        if (items.isEmpty()) {
+        List<?> returnedItems = capListItems(payloadItems);
+        appendListSizeMetadata(navigationPayload, payloadItems.size(), returnedItems.size());
+        navigationPayload.put(MCPPayloadFieldNames.SUMMARY, createListSummary(metadata, payloadItems.size(), returnedItems.size()));
+        if (payloadItems.isEmpty()) {
             appendEmptyStateGuidance(navigationPayload, metadata, databaseContext, uriVariables);
-        } else if (isTruncated(items, returnedItems)) {
-            appendLargeResultGuidance(navigationPayload, metadata, uriVariables, items.size());
+        } else if (isTruncated(payloadItems, returnedItems)) {
+            appendLargeResultGuidance(navigationPayload, metadata, uriVariables, payloadItems.size());
         }
         return new MCPItemsResponse(returnedItems, navigationPayload);
     }

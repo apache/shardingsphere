@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -56,7 +56,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext handlerContext, final MCPUriVariables uriVariables) {
-        List<MCPDatabaseMetadata> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
+        List<RuntimeDatabaseProfile> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
         boolean hasConfiguredDatabase = !databases.isEmpty();
         Map<String, Object> result = new LinkedHashMap<>(15, 1F);
         result.put("response_mode", MCPResponseMode.RUNTIME);
@@ -164,13 +164,13 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
                 "Ask the operator to configure at least one runtimeDatabases entry before metadata discovery or SQL execution.", List.of("runtimeDatabases")), 1));
     }
     
-    private Map<String, Object> createDatabaseStatus(final MCPDatabaseHandlerContext handlerContext, final MCPDatabaseMetadata database) {
+    private Map<String, Object> createDatabaseStatus(final MCPDatabaseHandlerContext handlerContext, final RuntimeDatabaseProfile database) {
         Optional<MCPDatabaseCapability> capability = handlerContext.getCapabilityFacade().provide(database.getDatabase());
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("database", database.getDatabase());
         result.put("database_type", database.getDatabaseType());
         result.put("driver_category", database.getDatabaseType().toLowerCase());
-        result.put("schema_count", database.getSchemas().size());
+        result.put("schema_count", 0);
         result.put("metadata_visibility", "ready");
         result.put("capabilities", capability.map(this::createCapabilityStatus).orElseGet(this::createUnavailableCapabilityStatus));
         result.put("capability_visibility", capability.isPresent() ? "ready" : "unavailable");

@@ -17,215 +17,34 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShardingSphereSchemaTest {
+class ShardingSphereSchemaIdentifierTest {
     
     private final DatabaseType postgreSQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     private final DatabaseType oracleDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
     
     @Test
-    void assertGetAllTables() {
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        assertThat(new HashSet<>(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList())
-                .getAllTables()), is(Collections.singleton(table)));
-    }
-    
-    @Test
     void assertContainsTable() {
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        assertTrue(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList()).containsTable("foo_tbl"));
-    }
-    
-    @Test
-    void assertGetTable() {
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        assertThat(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList()).getTable("foo_tbl"), is(table));
-    }
-    
-    @Test
-    void assertPutTable() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", postgreSQLDatabaseType);
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        schema.putTable(table);
-        assertThat(schema.getTable("foo_tbl"), is(table));
-    }
-    
-    @Test
-    void assertRemoveTable() {
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
-        schema.removeTable("foo_tbl");
-        assertNull(schema.getTable("foo_tbl"));
-    }
-    
-    @Test
-    void assertGetAllViews() {
-        ShardingSphereView view = new ShardingSphereView("foo_view", "SELECT 1");
-        assertThat(new HashSet<>(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(), Collections.singleton(view))
-                .getAllViews()), is(Collections.singleton(view)));
-    }
-    
-    @Test
-    void assertContainsView() {
-        ShardingSphereView view = new ShardingSphereView("foo_view", "SELECT 1");
-        assertTrue(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(), Collections.singleton(view)).containsView("foo_view"));
-    }
-    
-    @Test
-    void assertGetView() {
-        ShardingSphereView view = new ShardingSphereView("foo_view", "SELECT 1");
-        assertThat(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(), Collections.singleton(view)).getView("foo_view"), is(view));
-    }
-    
-    @Test
-    void assertPutView() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList());
-        schema.putView(new ShardingSphereView("foo_view", "SELECT * FROM test_table"));
-        assertTrue(schema.containsView("foo_view"));
-    }
-    
-    @Test
-    void assertRemoveView() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(),
-                Collections.singleton(new ShardingSphereView("foo_view", "SELECT * FROM test_table")));
-        schema.removeView("foo_view");
-        assertFalse(schema.containsView("foo_view"));
-    }
-    
-    @Test
-    void assertGetAllSequences() {
-        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
-        assertThat(new HashSet<>(new ShardingSphereSchema("foo_db", databaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence))
-                .getAllSequences()), is(Collections.singleton(sequence)));
-    }
-    
-    @Test
-    void assertContainsSequence() {
-        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
-        assertTrue(new ShardingSphereSchema("foo_db", databaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence)).containsSequence("foo_seq"));
-    }
-    
-    @Test
-    void assertGetSequence() {
-        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
-        assertThat(new ShardingSphereSchema("foo_db", databaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence)).getSequence("foo_seq"), is(sequence));
-    }
-    
-    @Test
-    void assertPutSequence() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType);
-        schema.putSequence(new ShardingSphereSequence("foo_seq"));
-        assertTrue(schema.containsSequence("foo_seq"));
-    }
-    
-    @Test
-    void assertRemoveSequence() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.emptyList(), Collections.emptyList(),
-                Collections.singleton(new ShardingSphereSequence("foo_seq")));
-        schema.removeSequence("foo_seq");
-        assertFalse(schema.containsSequence("foo_seq"));
-    }
-    
-    @Test
-    void assertContainsIndex() {
-        ShardingSphereTable table = new ShardingSphereTable(
-                "foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("col_idx", Collections.emptyList(), false)), Collections.emptyList());
-        assertTrue(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList()).containsIndex("foo_tbl", "col_idx"));
-    }
-    
-    @Test
-    void assertContainsIndexWithIndexNotExists() {
-        ShardingSphereTable table = new ShardingSphereTable(
-                "foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("col_idx", Collections.emptyList(), false)), Collections.emptyList());
-        assertFalse(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList()).containsIndex("foo_tbl", "foo_idx"));
-    }
-    
-    @Test
-    void assertContainsIndexWithTableNotExists() {
-        assertFalse(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType).containsIndex("nonexistent_tbl", "nonexistent_idx"));
-    }
-    
-    @Test
-    void assertGetVisibleColumnNamesWhenTableNotExists() {
-        assertTrue(new ShardingSphereSchema("foo_tbl", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList()).getVisibleColumnNames("nonexistent_tbl").isEmpty());
-    }
-    
-    @Test
-    void assertGetVisibleColumnNamesWhenContainsKey() {
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singletonList(
-                new ShardingSphereColumn("foo_col", 0, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertThat(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList()).getVisibleColumnNames("foo_tbl"),
-                is(Collections.singletonList("foo_col")));
-    }
-    
-    @Test
-    void assertGetVisibleColumnNamesWhenNotContainsKey() {
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singletonList(
-                new ShardingSphereColumn("foo_col", 0, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
-        assertTrue(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList()).getVisibleColumnNames("foo_tbl").isEmpty());
-    }
-    
-    @Test
-    void assertGetVisibleColumnAndIndexMapWhenContainsTable() {
-        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", 0, false, false, false, true, false, false);
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singletonList(column), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
-        Map<String, Integer> actual = schema.getVisibleColumnAndIndexMap("foo_tbl");
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("foo_col"));
-    }
-    
-    @Test
-    void assertGetVisibleColumnAndIndexMapWhenNotContainsTable() {
-        assertTrue(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType).getVisibleColumnAndIndexMap("nonexistent_tbl").isEmpty());
-    }
-    
-    @Test
-    void assertIsEmptyWithEmptyTable() {
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        assertFalse(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList()).isEmpty());
-    }
-    
-    @Test
-    void assertIsEmptyWithEmptyView() {
-        ShardingSphereView view = new ShardingSphereView("foo_view", "");
-        assertFalse(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(), Collections.singleton(view)).isEmpty());
-    }
-    
-    @Test
-    void assertIsEmptyWithEmptySequence() {
-        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
-        assertFalse(new ShardingSphereSchema("foo_db", databaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence)).isEmpty());
-    }
-    
-    @Test
-    void assertIsEmpty() {
-        assertTrue(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType).isEmpty());
-    }
-    
-    @Test
-    void assertContainsUpperCaseTable() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
         schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
@@ -241,7 +60,7 @@ class ShardingSphereSchemaTest {
     }
     
     @Test
-    void assertGetUpperCaseTable() {
+    void assertGetTable() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
         schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
@@ -249,7 +68,7 @@ class ShardingSphereSchemaTest {
     }
     
     @Test
-    void assertContainsUpperCaseView() {
+    void assertContainsView() {
         ShardingSphereView view = new ShardingSphereView("foo_view", "SELECT 1");
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.singleton(view));
         schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
@@ -265,11 +84,27 @@ class ShardingSphereSchemaTest {
     }
     
     @Test
-    void assertGetUpperCaseView() {
+    void assertGetView() {
         ShardingSphereView view = new ShardingSphereView("foo_view", "SELECT 1");
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.singleton(view));
         schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
         assertThat(schema.getView("FOO_VIEW"), is(view));
+    }
+    
+    @Test
+    void assertContainsSequence() {
+        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
+        assertTrue(schema.containsSequence("FOO_SEQ"));
+    }
+    
+    @Test
+    void assertGetSequence() {
+        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
+        assertThat(schema.getSequence("FOO_SEQ"), is(sequence));
     }
     
     @Test
