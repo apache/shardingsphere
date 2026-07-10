@@ -268,14 +268,12 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        String databaseName = null == ctx.schemaName() ? extractDatabaseName(ctx.STRING_().getText()) : new IdentifierValue(ctx.schemaName().getText()).getValue();
-        return new CreateDatabaseStatement(getDatabaseType(), databaseName, false);
+        return new CreateDatabaseStatement(getDatabaseType(), extractDatabaseName(ctx.STRING_().getText()), false);
     }
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        String databaseName = null == ctx.schemaName() ? extractDatabaseName(ctx.STRING_().getText()) : new IdentifierValue(ctx.schemaName().getText()).getValue();
-        return new DropDatabaseStatement(getDatabaseType(), databaseName, false);
+        return new DropDatabaseStatement(getDatabaseType(), null, false);
     }
     
     private String extractDatabaseName(final String filespec) {
