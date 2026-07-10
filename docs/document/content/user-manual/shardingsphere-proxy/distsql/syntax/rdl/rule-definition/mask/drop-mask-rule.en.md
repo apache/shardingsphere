@@ -13,7 +13,7 @@ The `DROP MASK RULE` syntax is used to drop existing mask rule.
 {{% tab name="Grammar" %}}
 ```sql
 DropMaskRule ::=
-  'DROP' 'MASK' 'RULE' ifExists? ruleName (',' ruleName)*
+  'DROP' 'MASK' 'TABLE'? 'RULE' ifExists? ruleName (',' ruleName)*
 
 ifExists ::=
   'IF' 'EXISTS'
@@ -29,7 +29,7 @@ ruleName ::=
 
 ### Supplement
 
-- `ifExists` clause used for avoid `Mask rule not exists` error.
+- `ifExists` clause is used to avoid `Mask rule not exists` error.
 
 ### Example
 
@@ -47,7 +47,7 @@ DROP MASK RULE IF EXISTS t_mask, t_mask_1;
 
 ### Reserved words
 
-`DROP`, `MASK`, `RULE`
+`DROP`, `MASK`, `TABLE`, `RULE`
 
 ### Related links
 

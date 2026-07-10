@@ -5,7 +5,7 @@ weight = 4
 
 ## Description
 
-The `ENABLE/DISABLE COMPUTE NODE` syntax is used enable/disable a specified proxy instance
+The `ENABLE/DISABLE COMPUTE NODE` syntax is used to enable/disable a specified proxy instance
 
 ### Syntax
 

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.service;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -30,13 +32,13 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSu
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Broadcast workflow planning service.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class BroadcastWorkflowPlanningService {
     
     private static final List<String> INTERACTION_STEPS = List.of(
@@ -60,11 +62,6 @@ public final class BroadcastWorkflowPlanningService {
     public BroadcastWorkflowPlanningService() {
         ruleInspectionService = new BroadcastRuleInspectionService();
         ruleDistSQLPlanningService = new BroadcastRuleDistSQLPlanningService();
-    }
-    
-    BroadcastWorkflowPlanningService(final BroadcastRuleInspectionService ruleInspectionService, final BroadcastRuleDistSQLPlanningService ruleDistSQLPlanningService) {
-        this.ruleInspectionService = ruleInspectionService;
-        this.ruleDistSQLPlanningService = ruleDistSQLPlanningService;
     }
     
     /**
@@ -113,7 +110,8 @@ public final class BroadcastWorkflowPlanningService {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!ensureSupportedIdentifier("database", request.getDatabase(), snapshot) || !ensureSupportedIdentifiers("tables", request.getTargetTables(), snapshot)) {
+        if (!planningSupport.ensureSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, "discovering")
+                || !planningSupport.ensureSupportedIdentifiers("tables", request.getTargetTables(), snapshot, "discovering")) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -126,25 +124,6 @@ public final class BroadcastWorkflowPlanningService {
             return false;
         }
         return true;
-    }
-    
-    private boolean ensureSupportedIdentifiers(final String fieldName, final Collection<String> identifiers, final WorkflowContextSnapshot snapshot) {
-        for (String each : identifiers) {
-            if (!ensureSupportedIdentifier(fieldName, each, snapshot)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
-        if (WorkflowSQLUtils.isSupportedIdentifier(identifier)) {
-            return true;
-        }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "discovering",
-                String.format("%s identifier `%s` contains unsupported characters.", fieldName, identifier),
-                "Use a reviewable logical identifier without NUL or line terminators.", false, Map.of("field", fieldName, "identifier", identifier)));
-        return false;
     }
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final BroadcastWorkflowRequest request, final List<Map<String, Object>> broadcastRules,

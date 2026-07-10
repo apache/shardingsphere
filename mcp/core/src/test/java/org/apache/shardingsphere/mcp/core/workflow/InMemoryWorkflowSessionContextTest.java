@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
@@ -204,13 +206,10 @@ class InMemoryWorkflowSessionContextTest {
         }
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class MutableClock extends Clock {
         
         private Instant currentInstant;
-        
-        private MutableClock(final Instant currentInstant) {
-            this.currentInstant = currentInstant;
-        }
         
         @Override
         public ZoneId getZone() {

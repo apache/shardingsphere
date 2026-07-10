@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
-import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.McpSyncClient;
-import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
-import io.modelcontextprotocol.client.transport.ServerParameters;
-import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
-import io.modelcontextprotocol.spec.ProtocolVersions;
-import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
@@ -36,7 +31,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPStdioLogbackConfiguration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
@@ -46,18 +40,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -73,21 +62,13 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     
     protected static final String MASK_PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
     
-    protected static final String STDIO_LOGBACK_CONFIG_FILE_NAME = "mcp-e2e-sdk-stdio-logback.xml";
-    
+    @Getter(AccessLevel.PROTECTED)
     private GenericContainer<?> container;
     
+    @Getter(AccessLevel.PROTECTED)
     private String physicalSchemaName;
     
     private MySQLRuntimeFixture sharedRuntimeFixture;
-    
-    protected GenericContainer<?> getContainer() {
-        return container;
-    }
-    
-    protected String getPhysicalSchemaName() {
-        return physicalSchemaName;
-    }
     
     @AfterEach
     void tearDownContainer() {
@@ -174,7 +155,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected static Stream<Arguments> transports() {
-        return runtimeTransports().map(each -> Arguments.of(getTransportName(each), each));
+        return ProductionRuntimeTransportCases.transports();
     }
     
     protected static Stream<Arguments> dualTransports() {
@@ -182,43 +163,15 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected static Stream<Arguments> semanticPrimaryTransport() {
-        return semanticPrimaryRuntimeTransports().map(each -> Arguments.of(getTransportName(each), each));
+        return ProductionRuntimeTransportCases.semanticPrimaryTransport();
     }
     
     protected static Stream<Arguments> assertReadSingleMetadataResourceCases() {
-        return semanticPrimaryRuntimeTransports().flatMap(each -> Stream.of(
-                Arguments.of(getTransportName(each) + " database detail", each, "shardingsphere://databases/logic_db", "database", LOGICAL_DATABASE_NAME),
-                Arguments.of(getTransportName(each) + " schema detail", each, "shardingsphere://databases/logic_db/schemas/logic_db", "schema", LOGICAL_DATABASE_NAME),
-                Arguments.of(getTransportName(each) + " table column detail", each,
-                        "shardingsphere://databases/logic_db/schemas/logic_db/tables/orders/columns/status", "column", "status"),
-                Arguments.of(getTransportName(each) + " view detail", each, "shardingsphere://databases/logic_db/schemas/logic_db/views/active_orders", "view", "active_orders"),
-                Arguments.of(getTransportName(each) + " view column detail", each,
-                        "shardingsphere://databases/logic_db/schemas/logic_db/views/active_orders/columns/status", "column", "status"),
-                Arguments.of(getTransportName(each) + " index detail", each,
-                        "shardingsphere://databases/logic_db/schemas/logic_db/tables/orders/indexes/idx_orders_status", "index", "idx_orders_status")));
+        return ProductionRuntimeTransportCases.assertReadSingleMetadataResourceCases(LOGICAL_DATABASE_NAME);
     }
     
     protected static Stream<Arguments> assertReadCollectionMetadataResourceCases() {
-        return semanticPrimaryRuntimeTransports().flatMap(each -> Stream.of(
-                Arguments.of(getTransportName(each) + " schemas list", each, "shardingsphere://databases/logic_db/schemas", "schema", List.of(LOGICAL_DATABASE_NAME)),
-                Arguments.of(getTransportName(each) + " tables list", each,
-                        "shardingsphere://databases/logic_db/schemas/logic_db/tables", "table", List.of("order_items", "orders")),
-                Arguments.of(getTransportName(each) + " table columns list", each,
-                        "shardingsphere://databases/logic_db/schemas/logic_db/tables/orders/columns", "column", List.of("amount", "order_id", "status")),
-                Arguments.of(getTransportName(each) + " view columns list", each,
-                        "shardingsphere://databases/logic_db/schemas/logic_db/views/active_orders/columns", "column", List.of("order_id", "status"))));
-    }
-    
-    protected static Stream<RuntimeTransport> runtimeTransports() {
-        return Stream.of(RuntimeTransport.HTTP, RuntimeTransport.STDIO);
-    }
-    
-    private static Stream<RuntimeTransport> semanticPrimaryRuntimeTransports() {
-        return Stream.of(RuntimeTransport.HTTP);
-    }
-    
-    protected static String getTransportName(final RuntimeTransport transport) {
-        return RuntimeTransport.HTTP == transport ? "http" : "stdio";
+        return ProductionRuntimeTransportCases.assertReadCollectionMetadataResourceCases(LOGICAL_DATABASE_NAME);
     }
     
     protected Map<String, RuntimeDatabaseConfiguration> createPreparedProgrammaticRuntimeDatabases() throws IOException {
@@ -227,21 +180,6 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
             return MySQLRuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(container);
         } catch (final SQLException ex) {
             throw new IOException("Failed to initialize MySQL programmatic runtime databases.", ex);
-        }
-    }
-    
-    protected Map<String, RuntimeDatabaseConfiguration> createMismatchedRuntimeDatabases() throws IOException {
-        prepareRuntime();
-        RuntimeDatabaseConfiguration runtimeDatabase = MySQLRuntimeTestSupport.createRuntimeDatabases(container, LOGICAL_DATABASE_NAME).get(LOGICAL_DATABASE_NAME);
-        return Map.of(LOGICAL_DATABASE_NAME, new RuntimeDatabaseConfiguration("PostgreSQL", runtimeDatabase.getJdbcUrl(), runtimeDatabase.getUsername(),
-                runtimeDatabase.getPassword(), runtimeDatabase.getDriverClassName()));
-    }
-    
-    protected void openAndCloseInteractionClient(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient(runtimeDatabases)) {
-            interactionClient.listResources();
-        } catch (final IOException | InterruptedException ex) {
-            throw new IllegalStateException(ex);
         }
     }
     
@@ -284,23 +222,23 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertThat(String.valueOf(getMap(actual.get("recovery")).get("category")), is(expectedCategory));
     }
     
-    protected void assertAiNativeCapabilities(final Map<String, Object> capabilities) {
-        assertTrue(capabilities.containsKey("model_first_summary"));
-        assertTrue(capabilities.containsKey("model_contract"));
-        assertTrue(capabilities.containsKey("surface_summary"));
-        assertTrue(capabilities.containsKey("field_naming_contract"));
-        assertTrue(capabilities.containsKey("next_action_contract"));
-        assertTrue(capabilities.containsKey("common_flows"));
-        assertTrue(capabilities.containsKey("security_hints"));
-        assertFalse(capabilities.containsKey("fingerprints"));
-        assertFalse(((List<?>) capabilities.get("common_flows")).isEmpty());
-        Map<String, Object> modelFirstSummary = getMap(capabilities.get("model_first_summary"));
+    protected void assertAiNativeGuidance(final Map<String, Object> guidance) {
+        assertTrue(guidance.containsKey("model_first_summary"));
+        assertTrue(guidance.containsKey("model_contract"));
+        assertTrue(guidance.containsKey("surface_summary"));
+        assertTrue(guidance.containsKey("field_naming_contract"));
+        assertTrue(guidance.containsKey("next_action_contract"));
+        assertTrue(guidance.containsKey("common_flows"));
+        assertTrue(guidance.containsKey("security_hints"));
+        assertFalse(guidance.containsKey("fingerprints"));
+        assertFalse(((List<?>) guidance.get("common_flows")).isEmpty());
+        Map<String, Object> modelFirstSummary = getMap(guidance.get("model_first_summary"));
         assertThat(getMap(modelFirstSummary.get("official_discovery_methods")).get("tools"), is("tools/list"));
-        assertThat(modelFirstSummary.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
+        assertThat(modelFirstSummary.get("guidance_resource"), is("shardingsphere://guidance"));
         assertThat(getMap(modelFirstSummary.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
         assertThat(getMap(getMap(modelFirstSummary.get("sql_tool_selection")).get("read_only")).get("tool"), is("database_gateway_execute_query"));
         assertThat(getMap(getMap(modelFirstSummary.get("workflow_rule")).get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
-        Map<String, Object> surfaceSummary = getMap(capabilities.get("surface_summary"));
+        Map<String, Object> surfaceSummary = getMap(guidance.get("surface_summary"));
         assertThat(getMap(surfaceSummary.get("official_discovery_methods")).get("resources"), is("resources/list"));
         assertThat(surfaceSummary.get("preflight_validation_tool"), is("database_gateway_validate_runtime_database"));
         assertThat(surfaceSummary.get("read_only_sql_tool"), is("database_gateway_execute_query"));
@@ -331,7 +269,15 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertThat(String.valueOf(actual.get("preview_semantics")), is("classification_only"));
         assertFalse((Boolean) actual.get("would_execute"));
         List<Map<String, Object>> nextActions = getMapList(actual.get("next_actions"));
-        assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("tool_call")));
+        assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("ask_user", "tool_call")));
+        Map<String, Object> askUserAction = nextActions.getFirst();
+        assertThat(askUserAction.get("order"), is(1));
+        assertThat(askUserAction.get("required_inputs"), is(List.of("execution_approved")));
+        Map<String, Object> toolCallAction = nextActions.get(1);
+        assertThat(toolCallAction.get("order"), is(2));
+        assertThat(toolCallAction.get("tool_name"), is("database_gateway_execute_update"));
+        assertThat(toolCallAction.get("depends_on"), is(List.of(1)));
+        assertThat(getMap(toolCallAction.get("arguments")).get("execution_mode"), is("execute"));
     }
     
     protected void assertAiNativeSqlResult(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
@@ -345,33 +291,13 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests) throws IOException {
-        return McpClient.sync(createClientTransport(transport))
-                .clientInfo(new McpSchema.Implementation("mcp-e2e-elicitation", "MCP E2E Elicitation", "1.0.0"))
-                .capabilities(McpSchema.ClientCapabilities.builder().elicitation().build())
-                .requestTimeout(Duration.ofSeconds(30L))
-                .initializationTimeout(Duration.ofSeconds(30L))
-                .elicitation(request -> createElicitationResult(elicitationRequests, request))
-                .build();
+        return ProductionMCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, this::createElicitationResult);
     }
     
-    protected McpClientTransport createClientTransport(final RuntimeTransport transport) throws IOException {
+    private McpClientTransport createClientTransport(final RuntimeTransport transport) throws IOException {
         return RuntimeTransport.HTTP == transport
-                ? createHttpClientTransport()
-                : createStdioClientTransport();
-    }
-    
-    protected McpClientTransport createHttpClientTransport() throws IOException {
-        URI endpointUri = getHttpEndpointUri();
-        return HttpClientStreamableHttpTransport.builder(String.format("%s://%s:%d", endpointUri.getScheme(), endpointUri.getHost(), endpointUri.getPort()))
-                .endpoint(endpointUri.getPath()).build();
-    }
-    
-    protected StdioClientTransport createStdioClientTransport() throws IOException {
-        Path configFile = getConfigFile();
-        return new ProtocolAwareStdioClientTransport(ServerParameters.builder(Paths.get(System.getProperty("java.home"), "bin", "java").toString())
-                .args("-Dlogback.configurationFile=" + MCPStdioLogbackConfiguration.createForConfig(configFile, STDIO_LOGBACK_CONFIG_FILE_NAME),
-                        "-cp", System.getProperty("java.class.path"), MCPBootstrap.class.getName(), configFile.toString())
-                .build());
+                ? ProductionMCPClientTransportFactory.createHttpClientTransport(getHttpEndpointUri())
+                : ProductionMCPClientTransportFactory.createStdioClientTransport(getConfigFile());
     }
     
     protected McpSchema.ElicitResult createElicitationResult(final List<McpSchema.ElicitRequest> elicitationRequests,
@@ -384,20 +310,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected void assertElicitationRequest(final List<McpSchema.ElicitRequest> actualRequests) {
-        assertThat(actualRequests.size(), is(1));
-        McpSchema.ElicitRequest actual = actualRequests.getFirst();
-        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.TOOL), is(MASK_PLAN_TOOL_NAME));
-        assertFalse(String.valueOf(actual.meta().get(MCPShardingSphereMetadataKeys.PLAN_ID)).isBlank());
-        Map<String, Object> actualRequestedSchema = actual.requestedSchema();
-        assertThat(actualRequestedSchema.get("type"), is("object"));
-        assertFalse((Boolean) actualRequestedSchema.get("additionalProperties"));
-        Map<String, Object> actualProperties = castToMap(actualRequestedSchema.get("properties"));
-        assertTrue(actualProperties.containsKey("field_1"));
-        assertTrue(actualProperties.containsKey("field_2"));
-        assertThat(String.valueOf(castToMap(actualProperties.get("field_1")).get("description")), is("Please provide property `from-x`."));
-        assertThat(String.valueOf(castToMap(actualProperties.get("field_2")).get("description")), is("Please provide property `to-y`."));
-        assertFalse(actualProperties.keySet().stream().map(String::valueOf).anyMatch(each -> each.contains("secret") || each.contains("password") || each.contains("token")));
-        assertThat(getStringList(actualRequestedSchema.get("required")), hasItems("field_1", "field_2"));
+        ProductionMCPClientTransportFactory.assertElicitationRequest(actualRequests);
     }
     
     @SuppressWarnings("unchecked")
@@ -422,28 +335,12 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         return ((List<?>) value).stream().map(String::valueOf).toList();
     }
     
-    protected static final class ProtocolAwareStdioClientTransport extends StdioClientTransport {
-        
-        protected ProtocolAwareStdioClientTransport(final ServerParameters params) {
-            super(params, MCPTransportJsonMapperFactory.create());
-        }
-        
-        @Override
-        public List<String> protocolVersions() {
-            return List.of(ProtocolVersions.MCP_2025_06_18, ProtocolVersions.MCP_2025_11_25);
-        }
-    }
-    
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class MySQLRuntimeFixture implements AutoCloseable {
         
         private final GenericContainer<?> container;
         
         private final String physicalSchemaName;
-        
-        private MySQLRuntimeFixture(final GenericContainer<?> container, final String physicalSchemaName) {
-            this.container = container;
-            this.physicalSchemaName = physicalSchemaName;
-        }
         
         private GenericContainer<?> container() {
             return container;

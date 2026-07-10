@@ -194,12 +194,13 @@ class OpenGaussComBatchBindExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        when(schema.getName()).thenReturn("public");
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("foo_ds"));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
-        when(result.getDefaultSchemaName()).thenReturn("public");
+        lenient().when(result.getDefaultSchemaName()).thenReturn("public");
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(result.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(result.getSchema("public")).thenReturn(schema);

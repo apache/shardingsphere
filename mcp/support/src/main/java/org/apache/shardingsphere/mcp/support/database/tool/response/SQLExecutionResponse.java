@@ -174,7 +174,7 @@ public final class SQLExecutionResponse implements MCPResponse {
     
     @Override
     public Map<String, Object> toPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(32, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(33, 1F);
         result.put("response_mode", responseMode);
         result.put("result_kind", resultKind.name().toLowerCase(Locale.ENGLISH));
         if (!executionMode.isEmpty()) {
@@ -183,6 +183,7 @@ public final class SQLExecutionResponse implements MCPResponse {
         result.put("statement_class", statementClass.name().toLowerCase(Locale.ENGLISH));
         result.put("statement_type", statementType);
         result.put("status", status);
+        result.put(MCPPayloadFieldNames.SUMMARY, createSummary());
         if (!normalizedSql.isEmpty()) {
             result.put("normalized_sql", normalizedSql);
         }
@@ -203,6 +204,19 @@ public final class SQLExecutionResponse implements MCPResponse {
         result.put("truncated", truncated);
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActions());
         return result;
+    }
+    
+    private String createSummary() {
+        return switch (resultKind) {
+            case RESULT_SET -> createResultSetSummary();
+            case UPDATE_COUNT -> String.format("Executed %s statement and affected %d row(s).", statementType, affectedRows);
+            case STATEMENT_ACK -> message.isEmpty() ? String.format("Executed %s statement.", statementType) : message;
+        };
+    }
+    
+    private String createResultSetSummary() {
+        String result = String.format("Executed %s statement and returned %d row(s).", statementType, rows.size());
+        return truncated ? result + " Result was truncated." : result;
     }
     
     private List<Map<String, Object>> createNextActions() {

@@ -16,7 +16,7 @@ The `UNLOCK CLUSTER` syntax is used to release the lock applied to the `CLUSTER`
 UnlockCluster ::=
   'UNLOCK' 'CLUSTER' ('TIMEOUT' timeoutMillis)?
 
-timeoutmillis ::=
+timeoutMillis ::=
   long
 ```
 
@@ -44,7 +44,7 @@ UNLOCK CLUSTER;
 UNLOCK CLUSTER TIMEOUT 2000;
 ```
 
-### Reserved words
+### Reserved word
 
 `UNLOCK`,`CLUSTER`
 

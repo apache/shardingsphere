@@ -128,7 +128,7 @@ class RuntimeDatabaseValidationServiceTest {
     void assertValidateWithInvisibleDatabase() {
         MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
         MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("MySQL", InvisibleDatabaseDriver.JDBC_URL, "demo", "", InvisibleDatabaseDriver.class.getName());
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration(InvisibleDatabaseDriver.JDBC_URL, "demo", "", InvisibleDatabaseDriver.class.getName());
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("public"));
         RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
@@ -199,15 +199,15 @@ class RuntimeDatabaseValidationServiceTest {
     }
     
     private static RuntimeDatabaseProfile createProfile() {
-        return new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0.36");
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0");
     }
     
     private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration() {
-        return new RuntimeDatabaseConfiguration("MySQL", "jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
+        return new RuntimeDatabaseConfiguration("jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
     }
     
     private static MCPDatabaseMetadata createMetadata(final String schemaName) {
-        return new MCPDatabaseMetadata("logic_db", "MySQL", "8.0.36", List.of(new MCPSchemaMetadata("logic_db", schemaName, List.of(), List.of(), List.of())));
+        return new MCPDatabaseMetadata("logic_db", "FixtureDB", "1.0", List.of(new MCPSchemaMetadata("logic_db", schemaName, List.of(), List.of(), List.of())));
     }
     
     private static Map<String, Object> createRecoveryPayload(final RuntimeDatabaseConnectionException cause) {

@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 
 import java.util.Collections;
@@ -35,21 +36,18 @@ import java.util.Optional;
  * Session attribution resolver.
  */
 @Getter
+@AllArgsConstructor
 public final class SessionAttributionResolver {
     
     private final SessionAttributionSourceConfiguration config;
     
-    public SessionAttributionResolver(final SessionAttributionSourceConfiguration config) {
-        this.config = config;
-    }
-    
     /**
-     * Resolve session attribution from HTTP request.
+     * Resolve session identity from HTTP request.
      *
      * @param request HTTP request
-     * @return session attribution
+     * @return session identity
      */
-    public Optional<MCPSessionAttribution> resolve(final HttpServletRequest request) {
+    public Optional<MCPSessionIdentity> resolve(final HttpServletRequest request) {
         if (!isEnabled()) {
             return Optional.empty();
         }
@@ -57,17 +55,17 @@ public final class SessionAttributionResolver {
         if (subject.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new MCPSessionAttribution(subject, getHeaderValue(request, config.getSourceHeader()),
+        return Optional.of(new MCPSessionIdentity(subject, getHeaderValue(request, config.getSourceHeader()),
                 resolveAttributes(Collections.list(request.getHeaderNames()), name -> getHeaderValue(request, name))));
     }
     
     /**
-     * Resolve session attribution from header map.
+     * Resolve session identity from header map.
      *
      * @param headers headers
-     * @return session attribution
+     * @return session identity
      */
-    public Optional<MCPSessionAttribution> resolve(final Map<String, List<String>> headers) {
+    public Optional<MCPSessionIdentity> resolve(final Map<String, List<String>> headers) {
         if (!isEnabled()) {
             return Optional.empty();
         }
@@ -75,7 +73,7 @@ public final class SessionAttributionResolver {
         if (subject.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new MCPSessionAttribution(subject, getHeaderValue(headers, config.getSourceHeader()),
+        return Optional.of(new MCPSessionIdentity(subject, getHeaderValue(headers, config.getSourceHeader()),
                 resolveAttributes(headers.keySet(), name -> getHeaderValue(headers, name))));
     }
     

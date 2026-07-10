@@ -48,7 +48,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamableServerTransportProvider {
@@ -60,6 +59,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     private static final String PROTOCOL_HEADER = HttpHeaders.PROTOCOL_VERSION;
     
     private static final String JSON_CONTENT_TYPE = "application/json";
+    
+    private static final String EVENT_STREAM_CONTENT_TYPE = "text/event-stream";
     
     private final HttpServletStreamableServerTransportProvider delegate;
     
@@ -73,8 +74,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final SessionAttributionResolver sessionAttributionResolver;
     
-    private final Map<String, String> sessionProtocolVersions;
-    
     private final AtomicBoolean closed;
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final HttpTransportConfiguration config) {
@@ -84,8 +83,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         this.jsonMapper = jsonMapper;
         this.sessionManager = sessionManager;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
-        sessionProtocolVersions = new ConcurrentHashMap<>();
-        sessionManager.addSessionCloseListener(sessionProtocolVersions::remove);
         closed = new AtomicBoolean();
     }
     
@@ -107,7 +104,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(actualInitializeRequest);
             String sessionId = result.session().getId();
             sessionManager.createSession(sessionId);
-            sessionProtocolVersions.put(sessionId, actualInitializeRequest.protocolVersion());
             return result;
         });
     }
@@ -135,8 +131,25 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     @Override
-    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        serviceRequest(request, response);
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        setUtf8Encoding(request, response);
+        if (!isEventStreamAccepted(request)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Accept must include text/event-stream.");
+            return;
+        }
+        if (validateTransportSecurity(request, response)) {
+            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "HTTP GET event streams are not supported.");
+        }
+    }
+    
+    private boolean isEventStreamAccepted(final HttpServletRequest request) {
+        String acceptHeader = Objects.toString(request.getHeader(HttpHeaders.ACCEPT), "");
+        for (String each : acceptHeader.split(",")) {
+            if (EVENT_STREAM_CONTENT_TYPE.equalsIgnoreCase(each.split(";", 2)[0].trim())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void serviceWithApplicationClassLoader(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
@@ -157,7 +170,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
         SessionAwareHttpServletResponse actualResponse = withInitializeProtocolHeader(response);
         serviceRequest(request, actualResponse);
-        bindSessionAttribution(request, actualResponse);
+        bindSessionIdentity(request, actualResponse);
     }
     
     private boolean isJsonContentType(final HttpServletRequest request) {
@@ -234,12 +247,12 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
     }
     
-    private void bindSessionAttribution(final HttpServletRequest request, final SessionAwareHttpServletResponse response) {
+    private void bindSessionIdentity(final HttpServletRequest request, final SessionAwareHttpServletResponse response) {
         String sessionId = response.getSessionId();
         if (sessionId.isEmpty()) {
             return;
         }
-        sessionAttributionResolver.resolve(request).ifPresent(sessionAttribution -> sessionManager.bindSessionAttribution(sessionId, sessionAttribution));
+        sessionAttributionResolver.resolve(request).ifPresent(sessionIdentity -> sessionManager.bindSessionIdentity(sessionId, sessionIdentity));
     }
     
     private SessionAwareHttpServletResponse withInitializeProtocolHeader(final HttpServletResponse response) {
@@ -262,12 +275,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     private void addNegotiatedProtocolHeader(final SessionAwareHttpServletResponse response, final String name, final String sessionId) {
         if (SESSION_HEADER.equalsIgnoreCase(name)) {
             response.setSessionId(sessionId);
-            response.setHeader(PROTOCOL_HEADER, findNegotiatedProtocolVersion(sessionId));
+            response.setHeader(PROTOCOL_HEADER, MCPTransportConstants.PROTOCOL_VERSION);
         }
-    }
-    
-    private String findNegotiatedProtocolVersion(final String sessionId) {
-        return sessionProtocolVersions.getOrDefault(Objects.toString(sessionId, ""), MCPTransportConstants.PROTOCOL_VERSION);
     }
     
     private abstract static class SessionAwareHttpServletResponse extends HttpServletResponseWrapper {

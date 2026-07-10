@@ -57,7 +57,7 @@ class SeataTest {
             .waitingFor(Wait.forHttp("/health").forPort(8091).forStatusCode(HttpStatus.SC_OK).forResponsePredicate("\"ok\""::equals));
     
     @Container
-    private final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:18.1-trixie")
+    private final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:18.4-trixie")
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/sh/postgres.sh").toAbsolutePath()),
                     "/docker-entrypoint-initdb.d/postgres.sh");

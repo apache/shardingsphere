@@ -66,6 +66,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -343,9 +344,9 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
         ExpressionSegment right;
         String operator;
         if (null != ctx.ALL()) {
-            operator = null == ctx.SAFE_EQ_() ? ctx.comparisonOperator().getText() + " ALL" : ctx.SAFE_EQ_().getText();
+            operator = null == ctx.SAFE_EQ_() ? getComparisonOperator(ctx.comparisonOperator().getText()) + " ALL" : ctx.SAFE_EQ_().getText();
         } else {
-            operator = null == ctx.SAFE_EQ_() ? ctx.comparisonOperator().getText() : ctx.SAFE_EQ_().getText();
+            operator = null == ctx.SAFE_EQ_() ? getComparisonOperator(ctx.comparisonOperator().getText()) : ctx.SAFE_EQ_().getText();
         }
         if (null != ctx.predicate()) {
             right = (ExpressionSegment) visit(ctx.predicate());
@@ -355,6 +356,10 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
         }
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+    }
+    
+    private String getComparisonOperator(final String operator) {
+        return "==".equals(operator) ? "=" : operator;
     }
     
     @Override
@@ -472,6 +477,9 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
         if (null != ctx.functionCall()) {
             return visit(ctx.functionCall());
         }
+        if (null != ctx.LBT_()) {
+            return createSubscriptExpression(ctx);
+        }
         if (null != ctx.collateClause()) {
             ExpressionSegment expr = null == ctx.simpleExpr() ? null : (ExpressionSegment) visit(ctx.simpleExpr(0));
             return new CollateExpression(startIndex, stopIndex, (SimpleExpressionSegment) visit(ctx.collateClause()), expr);
@@ -490,6 +498,11 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
             }
             return new NotExpression(startIndex, stopIndex, (ExpressionSegment) expression, "!".equalsIgnoreCase(ctx.notOperator().getText()));
         }
+        if (null != ctx.PLUS_() || null != ctx.MINUS_() || null != ctx.TILDE_()) {
+            ExpressionSegment expression = (ExpressionSegment) visit(ctx.simpleExpr(0));
+            String operator = getUnaryOperator(ctx);
+            return new UnaryOperationExpression(startIndex, stopIndex, expression, operator, getOriginalText(ctx));
+        }
         if (null != ctx.LP_() && 1 == ctx.expr().size()) {
             return visit(ctx.expr(0));
         }
@@ -500,6 +513,20 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, ctx.OR_().getText(), text);
         }
         return visitRemainSimpleExpr(ctx);
+    }
+    
+    private String getUnaryOperator(final SimpleExprContext ctx) {
+        if (null != ctx.PLUS_()) {
+            return ctx.PLUS_().getText();
+        }
+        return null != ctx.MINUS_() ? ctx.MINUS_().getText() : ctx.TILDE_().getText();
+    }
+    
+    private FunctionSegment createSubscriptExpression(final SimpleExprContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "[]", getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr(0)));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        return result;
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {

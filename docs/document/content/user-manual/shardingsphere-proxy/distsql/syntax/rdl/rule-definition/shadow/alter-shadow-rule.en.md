@@ -16,16 +16,16 @@ AlterShadowRule ::=
   'ALTER' 'SHADOW' 'RULE' shadowRuleDefinition (',' shadowRuleDefinition)*
 
 shadowRuleDefinition ::=
-  ruleName '(' storageUnitMapping shadowTableRule (',' shadowTableRule)* ')'
+  ruleName '(' storageUnitMapping ',' shadowTableRule (',' shadowTableRule)* ')'
     
 storageUnitMapping ::=
   'SOURCE' '=' storageUnitName ',' 'SHADOW' '=' storageUnitName
 
 shadowTableRule ::=
-  tableName '(' shadowAlgorithm ')'
+  tableName '(' shadowAlgorithm (',' shadowAlgorithm)* ')'
     
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefinition ')'
+  'TYPE' '(' 'NAME' '=' shadowAlgorithmType (',' propertiesDefinition)? ')'
 
 ruleName ::=
   identifier
@@ -43,7 +43,7 @@ shadowAlgorithmType ::=
   string
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string

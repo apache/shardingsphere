@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -47,16 +46,12 @@ public final class ShardingSphereSchema {
     @Getter
     private final DatabaseType protocolType;
     
-    @Getter(AccessLevel.NONE)
     private DatabaseIdentifierContext identifierContext;
     
-    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereTable> tableIndex;
     
-    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereTable> logicalTableIndex;
     
-    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereView> viewIndex;
     
     /**
@@ -182,6 +177,12 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
+        if (null != tableIndex.remove(tableName)) {
+            if (null != logicalTableIndex) {
+                logicalTableIndex.remove(tableName);
+            }
+            return;
+        }
         Optional<ShardingSphereTable> table = findTable(new IdentifierValue(tableName, QuoteCharacter.NONE));
         if (table.isPresent()) {
             tableIndex.remove(table.get().getName());
@@ -265,6 +266,9 @@ public final class ShardingSphereSchema {
      * @param viewName view name
      */
     public void removeView(final String viewName) {
+        if (null != viewIndex.remove(viewName)) {
+            return;
+        }
         ShardingSphereView view = getView(viewName);
         if (null == view) {
             return;

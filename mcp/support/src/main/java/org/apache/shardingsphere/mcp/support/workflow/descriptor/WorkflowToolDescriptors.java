@@ -17,46 +17,17 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.descriptor;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Shared workflow tool descriptors.
+ * Shared workflow tool names.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowToolDescriptors {
     
     public static final String APPLY_TOOL_NAME = "database_gateway_apply_workflow";
     
     public static final String VALIDATE_TOOL_NAME = "database_gateway_validate_workflow";
     
-    private WorkflowToolDescriptors() {
-    }
-    
-    /**
-     * Create workflow planning descriptor.
-     *
-     * @param toolName tool name
-     * @return MCP tool descriptor
-     */
-    public static MCPToolDescriptor createPlanning(final String toolName) {
-        return MCPDescriptorCatalogIndex.getRequiredToolDescriptor(toolName);
-    }
-    
-    /**
-     * Create workflow execution descriptor.
-     *
-     * @return MCP tool descriptor
-     */
-    public static MCPToolDescriptor createExecution() {
-        return MCPDescriptorCatalogIndex.getRequiredToolDescriptor(APPLY_TOOL_NAME);
-    }
-    
-    /**
-     * Create workflow validation descriptor.
-     *
-     * @return MCP tool descriptor
-     */
-    public static MCPToolDescriptor createValidation() {
-        return MCPDescriptorCatalogIndex.getRequiredToolDescriptor(VALIDATE_TOOL_NAME);
-    }
 }

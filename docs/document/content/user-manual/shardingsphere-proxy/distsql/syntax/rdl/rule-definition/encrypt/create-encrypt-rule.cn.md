@@ -22,19 +22,22 @@ encryptDefinition ::=
   ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)*  ')' ')'
 
 columnDefinition ::=
-  '(' 'NAME' '=' columnName ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
+  '(' 'NAME' '=' columnName ',' 'CIPHER' '=' cipherColumnName (',' ('ASSISTED_QUERY' | 'ASSISTED_QUERY_COLUMN') '=' assistedQueryColumnName)? (',' ('LIKE_QUERY' | 'LIKE_QUERY_COLUMN') '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')'
 
 encryptAlgorithmDefinition ::=
-  'ENCRYPT_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
+  'ENCRYPT_ALGORITHM' '(' algorithmDefinition ')'
 
 assistedQueryAlgorithmDefinition ::=
-  'ASSISTED_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
+  'ASSISTED_QUERY_ALGORITHM' '(' algorithmDefinition ')'
 
 likeQueryAlgorithmDefinition ::=
-  'LIKE_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
+  'LIKE_QUERY_ALGORITHM' '(' algorithmDefinition ')'
+
+algorithmDefinition ::=
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 ruleName ::=
   identifier
@@ -68,7 +71,7 @@ value ::=
 
 ### 补充说明
 
-- `CIPHER` 指定密文数据列，`ASSISTED_QUERY` 指定辅助查询列，`LIKE_QUERY` 指定模糊查询列；
+- `CIPHER` 指定密文数据列，`ASSISTED_QUERY` 或 `ASSISTED_QUERY_COLUMN` 指定辅助查询列，`LIKE_QUERY` 或 `LIKE_QUERY_COLUMN` 指定模糊查询列；
 - `algorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/common-config/builtin-algorithm/encrypt/)；
 - 重复的 `ruleName` 将无法被创建；
 - `ifNotExists` 子句用于避免出现 `Duplicate encrypt rule` 错误。
@@ -80,13 +83,13 @@ value ::=
 ```sql
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id,CIPHER=user_cipher,ASSISTED_QUERY=assisted_query_user,LIKE_QUERY=like_query_user,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE'))),
-(NAME=order_id,CIPHER =order_cipher,ASSISTED_QUERY=assisted_query_order,LIKE_QUERY=like_query_order,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE')))
+(NAME=user_id,CIPHER=user_cipher,ASSISTED_QUERY=assisted_query_user,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5'))),
+(NAME=order_id,CIPHER =order_cipher,ASSISTED_QUERY=assisted_query_order,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')))
 )),
 t_encrypt_2 (
 COLUMNS(
-(NAME=user_id,CIPHER=user_cipher,ASSISTED_QUERY=assisted_query_user,LIKE_QUERY=like_query_user,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE'))),
-(NAME=order_id, CIPHER=order_cipher,ASSISTED_QUERY=assisted_query_order,LIKE_QUERY=like_query_order,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE')))
+(NAME=user_id,CIPHER=user_cipher,ASSISTED_QUERY=assisted_query_user,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5'))),
+(NAME=order_id, CIPHER=order_cipher,ASSISTED_QUERY=assisted_query_order,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')))
 ));
 ```
 
@@ -95,19 +98,19 @@ COLUMNS(
 ```sql
 CREATE ENCRYPT RULE IF NOT EXISTS t_encrypt (
 COLUMNS(
-(NAME=user_id,CIPHER=user_cipher,ASSISTED_QUERY=assisted_query_user,LIKE_QUERY=like_query_user,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE'))),
-(NAME=order_id,CIPHER =order_cipher,ASSISTED_QUERY=assisted_query_order,LIKE_QUERY=like_query_order,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE')))
+(NAME=user_id,CIPHER=user_cipher,ASSISTED_QUERY=assisted_query_user,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5'))),
+(NAME=order_id,CIPHER =order_cipher,ASSISTED_QUERY=assisted_query_order,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')))
 )),
 t_encrypt_2 (
 COLUMNS(
-(NAME=user_id,CIPHER=user_cipher,ASSISTED_QUERY=assisted_query_user,LIKE_QUERY=like_query_user,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE'))),
-(NAME=order_id,CIPHER=order_cipher,ASSISTED_QUERY=assisted_query_order,LIKE_QUERY=like_query_order,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE')))
+(NAME=user_id,CIPHER=user_cipher,ASSISTED_QUERY=assisted_query_user,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5'))),
+(NAME=order_id,CIPHER=order_cipher,ASSISTED_QUERY=assisted_query_order,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')))
 ));
 ```
 
 ### 保留字
 
-`CREATE`、`ENCRYPT`、`RULE`、`COLUMNS`、`NAME`、`CIPHER`、`ASSISTED_QUERY`、`LIKE_QUERY`、`ENCRYPT_ALGORITHM`、`ASSISTED_QUERY_ALGORITHM`、`LIKE_QUERY_ALGORITHM`、`TYPE`、`TRUE`、`FALSE`
+`CREATE`、`ENCRYPT`、`RULE`、`COLUMNS`、`NAME`、`CIPHER`、`ASSISTED_QUERY`、`ASSISTED_QUERY_COLUMN`、`LIKE_QUERY`、`LIKE_QUERY_COLUMN`、`ENCRYPT_ALGORITHM`、`ASSISTED_QUERY_ALGORITHM`、`LIKE_QUERY_ALGORITHM`、`TYPE`、`TRUE`、`FALSE`
 
 ### 相关链接
 

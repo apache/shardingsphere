@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMeta
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +85,8 @@ class SearchMetadataToolServiceTest {
         MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("", "", "", Set.of()));
         assertThat(actual.getItems().size(), is(4));
         assertThat(actual.getTotalMatchCount(), is(4));
+        assertThat(actual.getReturnedCount(), is(4));
+        assertFalse(actual.isTruncated());
         assertThat(actual.getSearchContext().get("object_types"), is(List.of("database")));
         assertTrue((Boolean) actual.getSearchContext().get("broad_search_guarded"));
         assertThat(actual.getSearchContext().get("recommended_narrowing_arguments"), is(List.of("database", "query", "object_types")));
@@ -93,8 +94,19 @@ class SearchMetadataToolServiceTest {
     }
     
     @Test
+    void assertExecuteSearchCapsLargeResult() {
+        MetadataSearchResult actual = execute(createLargeDatabaseMetadata(),
+                new MetadataSearchRequest("large_db", "", "", Set.of(SupportedMCPMetadataObjectType.TABLE)));
+        assertThat(actual.getItems().size(), is(100));
+        assertThat(actual.getTotalMatchCount(), is(101));
+        assertThat(actual.getReturnedCount(), is(100));
+        assertTrue(actual.isTruncated());
+        assertThat(actual.getLargeResultThreshold(), is(100));
+    }
+    
+    @Test
     void assertExecuteSearchWithCompleteResult() {
-        Set<SupportedMCPMetadataObjectType> objectTypes = new LinkedHashSet<>(List.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW));
+        Set<SupportedMCPMetadataObjectType> objectTypes = Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW);
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
                 new MetadataSearchRequest("logic_db", "", "order", objectTypes));
         assertThat(actual.getItems().size(), is(4));
@@ -340,6 +352,14 @@ class SearchMetadataToolServiceTest {
     private List<MCPDatabaseMetadata> createDatabaseMetadataWithEmptySchema() {
         return List.of(new MCPDatabaseMetadata("schema_less_db", "PostgreSQL", "",
                 List.of(new MCPSchemaMetadata("schema_less_db", "", List.of(new MCPTableMetadata("schema_less_db", "", "schema_less_orders", List.of(), List.of())), List.of(), List.of()))));
+    }
+    
+    private List<MCPDatabaseMetadata> createLargeDatabaseMetadata() {
+        List<MCPTableMetadata> tables = new LinkedList<>();
+        for (int index = 0; index < 101; index++) {
+            tables.add(new MCPTableMetadata("large_db", "public", "table_" + index, List.of(), List.of()));
+        }
+        return List.of(new MCPDatabaseMetadata("large_db", "MySQL", "", List.of(new MCPSchemaMetadata("large_db", "public", tables, List.of(), List.of()))));
     }
     
     private List<MCPDatabaseMetadata> createDatabaseMetadataWithUnsafeUriName() {

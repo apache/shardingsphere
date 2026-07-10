@@ -37,17 +37,17 @@ class ShardingRuleComponentCleanupWorkflowPlanningServiceTest {
     
     @Test
     void assertPlan() {
-        ShardingWorkflowPlanningService delegate = mock(ShardingWorkflowPlanningService.class);
+        ShardingWorkflowPlanningKernel kernel = mock(ShardingWorkflowPlanningKernel.class);
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         WorkflowContextSnapshot expected = new WorkflowContextSnapshot();
-        when(delegate.planComponentCleanup(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), any())).thenReturn(expected);
+        when(kernel.planComponentCleanup(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), any())).thenReturn(expected);
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setComponentName("unused_algorithm");
-        WorkflowContextSnapshot actual = new ShardingRuleComponentCleanupWorkflowPlanningService(delegate)
+        WorkflowContextSnapshot actual = new ShardingRuleComponentCleanupWorkflowPlanningService(kernel)
                 .plan(workflowSessionContext, queryFacade, "session-1", new ShardingRuleComponentCleanupWorkflowRequest(request));
         ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
-        verify(delegate).planComponentCleanup(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), requestCaptor.capture());
+        verify(kernel).planComponentCleanup(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(actual, is(expected));
         assertThat(requestCaptor.getValue().getComponentName(), is("unused_algorithm"));
     }

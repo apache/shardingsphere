@@ -154,7 +154,8 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.getDefaultSchemaName()).thenReturn("public");
+        when(schema.getName()).thenReturn("public");
+        lenient().when(database.getDefaultSchemaName()).thenReturn("public");
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(database.getSchema("public")).thenReturn(schema);

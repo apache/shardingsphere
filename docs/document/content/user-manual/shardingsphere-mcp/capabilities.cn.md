@@ -48,13 +48,13 @@ weight = 2
 | 任务 | 自然语言示例 | 连接目标 | 用户关注点 |
 | --- | --- | --- | --- |
 | 查看可访问的数据库 | “列出当前可以访问的数据库。” | Proxy 或数据库直连 | 确认数据库名称是否和配置一致。 |
-| 查看模式或命名空间 | “查看 `<database-name>` 中有哪些模式。” | Proxy 或数据库直连 | 多模式数据库应先确认目标模式。 |
-| 查看表或视图 | “列出目标模式中的表和视图。” | Proxy 或数据库直连 | Proxy 连接展示的是逻辑对象。 |
-| 查看列信息 | “查看 `<table-name>` 有哪些列，以及列类型是什么。” | Proxy 或数据库直连 | 列类型以连接目标可见元数据为准。 |
-| 查看索引 | “查看 `<table-name>` 的索引。” | Proxy 或数据库直连 | Proxy 连接下索引信息可能不同于底层物理库完整结构。 |
-| 查看序列 | “列出目标模式中的序列。” | Proxy 或数据库直连 | 仅在连接目标支持序列元数据时可用。 |
-| 查看存储单元 | “列出 `<database-name>` 的存储单元。” | 仅 Proxy | 基于 `SHOW STORAGE UNITS FROM <database-name>`；敏感连接属性会被脱敏或省略。 |
-| 查看存储单元使用情况 | “哪些规则正在使用存储单元 `write_ds`？” | 仅 Proxy | 基于 `SHOW RULES USED STORAGE UNIT <storage-unit> FROM <database-name>`。 |
+| 查看模式或命名空间 | “查看 `logic_db` 中有哪些模式。” | Proxy 或数据库直连 | 多模式数据库应先确认目标模式。 |
+| 查看表或视图 | “列出 `public` 中的表和视图。” | Proxy 或数据库直连 | Proxy 连接展示的是逻辑对象。 |
+| 查看列信息 | “查看 `orders` 有哪些列，以及列类型是什么。” | Proxy 或数据库直连 | 列类型以连接目标可见元数据为准。 |
+| 查看索引 | “查看 `orders` 的索引。” | Proxy 或数据库直连 | Proxy 连接下索引信息可能不同于底层物理库完整结构。 |
+| 查看序列 | “列出 `public` 中的序列。” | Proxy 或数据库直连 | 仅在连接目标支持序列元数据时可用。 |
+| 查看存储单元 | “列出 `logic_db` 的存储单元。” | 仅 Proxy | 基于 `SHOW STORAGE UNITS FROM logic_db`；敏感连接属性会被脱敏或省略。 |
+| 查看存储单元使用情况 | “哪些规则正在使用存储单元 `write_ds`？” | 仅 Proxy | 基于 `SHOW RULES USED STORAGE UNIT write_ds FROM logic_db`。 |
 | 查看单表映射 | “单表 `t_user` 在哪个存储单元？” | 仅 Proxy | 基于 `SHOW SINGLE TABLE` 和 `SHOW SINGLE TABLES`；新增单表默认位置可读取默认单表存储单元资源。 |
 
 ## 元数据搜索

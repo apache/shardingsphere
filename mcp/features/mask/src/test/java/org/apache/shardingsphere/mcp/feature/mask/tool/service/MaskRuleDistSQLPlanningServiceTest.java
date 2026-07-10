@@ -35,7 +35,7 @@ class MaskRuleDistSQLPlanningServiceTest {
     void assertPlanMaskRuleWithCreate() {
         RuleArtifact actual = service.planMaskRule(createRequest("create"));
         assertThat(actual.getOperationType(), is("create"));
-        assertTrue(actual.getSql().startsWith("CREATE MASK RULE orders"));
+        assertTrue(actual.getSql().startsWith("CREATE MASK RULE `orders`"));
         assertTrue(actual.getSql().contains("TYPE(NAME='mask_from_x_to_y'"));
     }
     
@@ -65,7 +65,7 @@ class MaskRuleDistSQLPlanningServiceTest {
         request.setTable("key");
         RuleArtifact actual = service.planMaskRule(request);
         assertTrue(actual.getSql().startsWith("CREATE MASK RULE `key`"));
-        assertTrue(actual.getSql().contains("NAME=phone"));
+        assertTrue(actual.getSql().contains("NAME=`phone`"));
     }
     
     @Test
@@ -89,7 +89,7 @@ class MaskRuleDistSQLPlanningServiceTest {
     void assertPlanMaskDropRuleWithoutRemainingColumns() {
         RuleArtifact actual = service.planMaskDropRule(createRequest("drop"));
         assertThat(actual.getOperationType(), is("drop"));
-        assertThat(actual.getSql(), is("DROP MASK RULE orders"));
+        assertThat(actual.getSql(), is("DROP MASK RULE `orders`"));
     }
     
     private WorkflowRequest createRequest(final String operationType) {

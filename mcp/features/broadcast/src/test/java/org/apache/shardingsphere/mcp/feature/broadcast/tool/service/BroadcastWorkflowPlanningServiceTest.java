@@ -44,7 +44,7 @@ class BroadcastWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), queryFacade, "session-1", createRequest("create", "t_order,t_order_item"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("broadcast.rule"));
-        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("CREATE BROADCAST TABLE RULE t_order, t_order_item"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("CREATE BROADCAST TABLE RULE `t_order`, `t_order_item`"));
         assertFalse(actual.getDdlArtifacts().iterator().hasNext());
         assertFalse(actual.getIndexPlans().iterator().hasNext());
     }
@@ -54,7 +54,7 @@ class BroadcastWorkflowPlanningServiceTest {
         MCPFeatureQueryFacade queryFacade = mockQueryFacade(List.of(Map.of("broadcast_table", "t_order")));
         WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), queryFacade, "session-1", createRequest("drop", "t_order"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
-        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP BROADCAST TABLE RULE t_order"));
+        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP BROADCAST TABLE RULE `t_order`"));
     }
     
     @Test
@@ -113,7 +113,7 @@ class BroadcastWorkflowPlanningServiceTest {
     
     private MCPFeatureQueryFacade mockQueryFacade(final List<Map<String, Object>> broadcastRules) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("MySQL");
+        when(result.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(broadcastRules);
         return result;
     }

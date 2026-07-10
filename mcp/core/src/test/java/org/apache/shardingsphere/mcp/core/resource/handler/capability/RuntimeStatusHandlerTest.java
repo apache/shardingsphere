@@ -38,10 +38,12 @@ class RuntimeStatusHandlerTest {
         try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), "http"))) {
             Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
             assertThat(actual.get("response_mode"), is("runtime"));
+            assertThat(actual.get("summary"), is("Runtime is ready with 3 configured logical database(s)."));
             assertThat(actual.get("server_status"), is("ready"));
             assertThat(actual.get("status"), is("available"));
             assertThat(actual.get("transport"), is("http"));
             assertThat(actual.get("active_transport"), is("http"));
+            assertThat(((Map<?, ?>) actual.get("transport_security_summary")).get("recommended_exposure"), is("loopback_or_trusted_gateway"));
             assertThat(actual.get("configured_database_count"), is(3));
             assertTrue(((List<?>) actual.get("databases")).stream().map(each -> ((Map<?, ?>) each).get("database")).anyMatch("logic_db"::equals));
             assertThat(((Map<?, ?>) actual.get("redaction_summary")).get("marker"), is("******"));
@@ -50,7 +52,7 @@ class RuntimeStatusHandlerTest {
             assertFalse(actual.containsKey("capability_fingerprint"));
             assertRuntimeCapability((List<?>) actual.get("databases"), "logic_db");
             assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities", "shardingsphere://databases")));
-            assertThat(actual.get("next_actions"), is(List.of()));
+            assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("resource_uri"), is("shardingsphere://databases"));
         }
     }
     
@@ -60,6 +62,7 @@ class RuntimeStatusHandlerTest {
             Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
             assertThat(actual.get("transport"), is("stdio"));
             assertThat(actual.get("active_transport"), is("stdio"));
+            assertThat(((Map<?, ?>) actual.get("transport_security_summary")).get("recommended_exposure"), is("local_stdio_session"));
         }
     }
     
@@ -68,6 +71,7 @@ class RuntimeStatusHandlerTest {
         try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of(), "http"))) {
             Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
             assertThat(actual.get("server_status"), is("configuration_required"));
+            assertThat(actual.get("summary"), is("Runtime requires at least one configured logical database before metadata discovery or SQL execution."));
             assertThat(actual.get("status"), is("configuration_required"));
             assertThat(actual.get("configured_database_count"), is(0));
             assertThat(((List<?>) actual.get("databases")).size(), is(0));
@@ -98,8 +102,10 @@ class RuntimeStatusHandlerTest {
         assertTrue(actualSafeCategories.contains("database_not_visible"));
         List<?> actualOperatorNextActions = (List<?>) actualDiagnostics.get("operator_next_actions");
         assertThat(actualOperatorNextActions.size(), is(8));
-        assertThat(((Map<?, ?>) actualOperatorNextActions.get(4)).get("category"), is("invalid_configuration"));
-        assertTrue((Boolean) ((Map<?, ?>) actualOperatorNextActions.get(4)).get("secret_safe"));
+        Map<?, ?> actualInvalidConfigurationAction = (Map<?, ?>) actualOperatorNextActions.get(4);
+        assertThat(actualInvalidConfigurationAction.get("category"), is("invalid_configuration"));
+        assertThat(actualInvalidConfigurationAction.get("operator_action"), is("Fix runtimeDatabases JDBC URL, driver, or binding configuration."));
+        assertTrue((Boolean) actualInvalidConfigurationAction.get("secret_safe"));
         assertThat(((Map<?, ?>) actualOperatorNextActions.get(7)).get("category"), is("database_not_visible"));
     }
     

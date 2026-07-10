@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.metadata.identifier;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -49,11 +49,11 @@ public final class DatabaseIdentifierContextFactory {
      * @return default identifier context
      */
     public static DatabaseIdentifierContext createDefault() {
-        return new DatabaseIdentifierContext(IdentifierCaseRuleSets.newInsensitiveRuleSet());
+        return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet());
     }
     
     /**
-     * Create identifier context with protocol-aware identifier rules.
+     * Create identifier context with protocol-aware identifier policies.
      *
      * @param protocolType protocol type
      * @param props configuration properties
@@ -61,14 +61,14 @@ public final class DatabaseIdentifierContextFactory {
      */
     public static DatabaseIdentifierContext create(final DatabaseType protocolType, final ConfigurationProperties props) {
         ConfigurationProperties actualProps = getProps(props);
-        IdentifierCaseRuleResolver resolver = new IdentifierCaseRuleResolver();
-        IdentifierCaseRuleSet protocolRuleSet = resolver.resolve(protocolType, actualProps, null);
-        IdentifierCaseRuleSet scopeAwareRuleSet = createScopeAwareRuleSet(protocolRuleSet, protocolRuleSet);
-        return new DatabaseIdentifierContext(scopeAwareRuleSet, false);
+        IdentifierCasePolicyResolver resolver = new IdentifierCasePolicyResolver();
+        IdentifierCasePolicySet protocolPolicySet = resolver.resolve(protocolType, actualProps, null);
+        IdentifierCasePolicySet scopeAwarePolicySet = createScopeAwarePolicySet(protocolPolicySet, protocolPolicySet);
+        return new DatabaseIdentifierContext(scopeAwarePolicySet, false);
     }
     
     /**
-     * Create identifier context with protocol-aware identifier rules.
+     * Create identifier context with protocol-aware identifier policies.
      *
      * @param protocolType protocol type
      * @param resourceMetaData resource meta data
@@ -77,16 +77,16 @@ public final class DatabaseIdentifierContextFactory {
      */
     public static DatabaseIdentifierContext create(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
         ConfigurationProperties actualProps = getProps(props);
-        IdentifierCaseRuleResolver resolver = new IdentifierCaseRuleResolver();
-        IdentifierCaseRuleSet protocolRuleSet = resolver.resolve(protocolType, actualProps, getFirstDataSource(resourceMetaData));
-        Optional<DatabaseType> storageDatabaseType = getIdentifierRuleDatabaseType(resourceMetaData);
-        IdentifierCaseRuleSet storageRuleSet = resolver.resolve(storageDatabaseType.orElse(protocolType), actualProps, getFirstDataSource(resourceMetaData));
-        IdentifierCaseRuleSet scopeAwareRuleSet = createScopeAwareRuleSet(protocolRuleSet, storageRuleSet);
-        return new DatabaseIdentifierContext(scopeAwareRuleSet, isHeterogeneous(protocolType, getStorageDatabaseTypes(resourceMetaData)));
+        IdentifierCasePolicyResolver resolver = new IdentifierCasePolicyResolver();
+        IdentifierCasePolicySet protocolPolicySet = resolver.resolve(protocolType, actualProps, getFirstDataSource(resourceMetaData));
+        Optional<DatabaseType> storageDatabaseType = getIdentifierPolicyDatabaseType(resourceMetaData);
+        IdentifierCasePolicySet storagePolicySet = resolver.resolve(storageDatabaseType.orElse(protocolType), actualProps, getFirstDataSource(resourceMetaData));
+        IdentifierCasePolicySet scopeAwarePolicySet = createScopeAwarePolicySet(protocolPolicySet, storagePolicySet);
+        return new DatabaseIdentifierContext(scopeAwarePolicySet, isHeterogeneous(protocolType, getStorageDatabaseTypes(resourceMetaData)));
     }
     
     /**
-     * Refresh identifier context with protocol-aware identifier rules.
+     * Refresh identifier context with protocol-aware identifier policies.
      *
      * @param identifierContext identifier context
      * @param protocolType protocol type
@@ -94,13 +94,13 @@ public final class DatabaseIdentifierContextFactory {
      */
     public static void refresh(final DatabaseIdentifierContext identifierContext, final DatabaseType protocolType, final ConfigurationProperties props) {
         ConfigurationProperties actualProps = getProps(props);
-        IdentifierCaseRuleResolver resolver = new IdentifierCaseRuleResolver();
-        IdentifierCaseRuleSet protocolRuleSet = resolver.resolve(protocolType, actualProps, null);
-        identifierContext.refresh(createScopeAwareRuleSet(protocolRuleSet, protocolRuleSet), false);
+        IdentifierCasePolicyResolver resolver = new IdentifierCasePolicyResolver();
+        IdentifierCasePolicySet protocolPolicySet = resolver.resolve(protocolType, actualProps, null);
+        identifierContext.refresh(createScopeAwarePolicySet(protocolPolicySet, protocolPolicySet), false);
     }
     
     /**
-     * Refresh identifier context with protocol-aware identifier rules.
+     * Refresh identifier context with protocol-aware identifier policies.
      *
      * @param identifierContext identifier context
      * @param protocolType protocol type
@@ -109,11 +109,11 @@ public final class DatabaseIdentifierContextFactory {
      */
     public static void refresh(final DatabaseIdentifierContext identifierContext, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
         ConfigurationProperties actualProps = getProps(props);
-        IdentifierCaseRuleResolver resolver = new IdentifierCaseRuleResolver();
-        IdentifierCaseRuleSet protocolRuleSet = resolver.resolve(protocolType, actualProps, getFirstDataSource(resourceMetaData));
-        Optional<DatabaseType> storageDatabaseType = getIdentifierRuleDatabaseType(resourceMetaData);
-        IdentifierCaseRuleSet storageRuleSet = resolver.resolve(storageDatabaseType.orElse(protocolType), actualProps, getFirstDataSource(resourceMetaData));
-        identifierContext.refresh(createScopeAwareRuleSet(protocolRuleSet, storageRuleSet), isHeterogeneous(protocolType, getStorageDatabaseTypes(resourceMetaData)));
+        IdentifierCasePolicyResolver resolver = new IdentifierCasePolicyResolver();
+        IdentifierCasePolicySet protocolPolicySet = resolver.resolve(protocolType, actualProps, getFirstDataSource(resourceMetaData));
+        Optional<DatabaseType> storageDatabaseType = getIdentifierPolicyDatabaseType(resourceMetaData);
+        IdentifierCasePolicySet storagePolicySet = resolver.resolve(storageDatabaseType.orElse(protocolType), actualProps, getFirstDataSource(resourceMetaData));
+        identifierContext.refresh(createScopeAwarePolicySet(protocolPolicySet, storagePolicySet), isHeterogeneous(protocolType, getStorageDatabaseTypes(resourceMetaData)));
     }
     
     private static ConfigurationProperties getProps(final ConfigurationProperties props) {
@@ -127,30 +127,30 @@ public final class DatabaseIdentifierContextFactory {
         return resourceMetaData.getStorageUnits().values().iterator().next().getDataSource();
     }
     
-    private static IdentifierCaseRuleSet createScopeAwareRuleSet(final IdentifierCaseRuleSet protocolRuleSet, final IdentifierCaseRuleSet storageRuleSet) {
-        IdentifierCaseRuleSet databaseRuleSet = IdentifierCaseRuleSets.newInsensitiveRuleSet();
-        IdentifierCaseRuleSet storageObjectRuleSet = IdentifierCaseRuleSets.newQuotedInsensitiveRuleSet();
-        Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
+    private static IdentifierCasePolicySet createScopeAwarePolicySet(final IdentifierCasePolicySet protocolPolicySet, final IdentifierCasePolicySet storagePolicySet) {
+        IdentifierCasePolicySet databasePolicySet = IdentifierCasePolicyFactory.newInsensitivePolicySet();
+        IdentifierCasePolicySet storageObjectPolicySet = IdentifierCasePolicyFactory.newQuotedInsensitivePolicySet();
+        Map<IdentifierScope, IdentifierCasePolicy> scopedPolicies = new EnumMap<>(IdentifierScope.class);
         for (IdentifierScope each : IdentifierScope.values()) {
             if (IdentifierScope.DATABASE == each) {
-                scopedRules.put(each, databaseRuleSet.getRule(each));
+                scopedPolicies.put(each, databasePolicySet.getPolicy(each));
                 continue;
             }
             if (isStorageObjectScope(each)) {
-                scopedRules.put(each, storageObjectRuleSet.getRule(each));
+                scopedPolicies.put(each, storageObjectPolicySet.getPolicy(each));
                 continue;
             }
-            scopedRules.put(each, IdentifierScope.SCHEMA == each ? protocolRuleSet.getRule(each) : storageRuleSet.getRule(each));
+            scopedPolicies.put(each, IdentifierScope.SCHEMA == each ? protocolPolicySet.getPolicy(each) : storagePolicySet.getPolicy(each));
         }
-        scopedRules.put(IdentifierScope.LOGICAL_TABLE, protocolRuleSet.getRule(IdentifierScope.LOGICAL_TABLE));
-        return new IdentifierCaseRuleSet(storageRuleSet.getRule(IdentifierScope.TABLE), scopedRules);
+        scopedPolicies.put(IdentifierScope.LOGICAL_TABLE, protocolPolicySet.getPolicy(IdentifierScope.LOGICAL_TABLE));
+        return new IdentifierCasePolicySet(storagePolicySet.getPolicy(IdentifierScope.TABLE), scopedPolicies);
     }
     
     private static boolean isStorageObjectScope(final IdentifierScope identifierScope) {
         return IdentifierScope.COLUMN == identifierScope || IdentifierScope.INDEX == identifierScope || IdentifierScope.CONSTRAINT == identifierScope;
     }
     
-    private static Optional<DatabaseType> getIdentifierRuleDatabaseType(final ResourceMetaData resourceMetaData) {
+    private static Optional<DatabaseType> getIdentifierPolicyDatabaseType(final ResourceMetaData resourceMetaData) {
         Collection<DatabaseType> storageDatabaseTypes = getStorageDatabaseTypes(resourceMetaData);
         return storageDatabaseTypes.stream().findFirst();
     }
@@ -168,6 +168,10 @@ public final class DatabaseIdentifierContextFactory {
     
     private static boolean isHeterogeneous(final DatabaseType protocolType, final Collection<DatabaseType> storageDatabaseTypes) {
         return null != protocolType && null != protocolType.getType() && storageDatabaseTypes.stream()
-                .anyMatch(each -> null != each && null != each.getType() && !protocolType.getType().equalsIgnoreCase(each.getType()));
+                .anyMatch(each -> null != each && null != each.getType() && !isSameProtocolType(protocolType, each));
+    }
+    
+    private static boolean isSameProtocolType(final DatabaseType protocolType, final DatabaseType storageType) {
+        return protocolType.getType().equalsIgnoreCase(storageType.getType());
     }
 }

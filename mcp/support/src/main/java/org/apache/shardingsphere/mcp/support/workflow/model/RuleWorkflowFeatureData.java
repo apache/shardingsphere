@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -28,14 +29,12 @@ import java.util.Map;
  * Rule workflow feature-scoped state.
  */
 @Getter
+@NoArgsConstructor
 public final class RuleWorkflowFeatureData implements WorkflowFeatureData {
     
     private final List<Map<String, Object>> beforeRules = new LinkedList<>();
     
     private final List<Map<String, Object>> expectedRules = new LinkedList<>();
-    
-    public RuleWorkflowFeatureData() {
-    }
     
     public RuleWorkflowFeatureData(final List<Map<String, Object>> beforeRules, final List<Map<String, Object>> expectedRules) {
         this.beforeRules.addAll(copyRules(beforeRules));

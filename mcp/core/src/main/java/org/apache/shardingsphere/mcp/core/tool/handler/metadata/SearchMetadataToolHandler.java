@@ -74,9 +74,15 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     }
     
     private Map<String, Object> createSearchPayloadMetadata(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request, final MetadataSearchResult searchResult) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        result.put(MCPPayloadFieldNames.SUMMARY, createSummary(searchResult));
         result.put("search_context", searchResult.getSearchContext());
         result.put("total_match_count", searchResult.getTotalMatchCount());
+        result.put("returned_count", searchResult.getReturnedCount());
+        result.put("truncated", searchResult.isTruncated());
+        if (searchResult.isTruncated()) {
+            result.put("large_result_guidance", createLargeResultGuidance(searchResult));
+        }
         if (searchResult.getItems().isEmpty()) {
             result.put("empty_state", createEmptyState(databaseContext, request));
             result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(createEmptySearchNextAction(request)));
@@ -93,11 +99,28 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         return result;
     }
     
+    private String createSummary(final MetadataSearchResult searchResult) {
+        return String.format("Metadata search returned %d of %d matches.", searchResult.getReturnedCount(), searchResult.getTotalMatchCount());
+    }
+    
+    private Map<String, Object> createLargeResultGuidance(final MetadataSearchResult searchResult) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("state", "metadata_search_result_truncated");
+        result.put("threshold", searchResult.getLargeResultThreshold());
+        result.put("narrowing_arguments", List.of("database", "schema", "query", "object_types"));
+        result.put(MCPPayloadFieldNames.REASON, "Search matched more metadata objects than returned; narrow the search before reading specific resources.");
+        return result;
+    }
+    
     private List<Map<String, Object>> createResultNextActions(final MetadataSearchResult searchResult, final List<String> duplicatedNames) {
         List<Map<String, Object>> result = new LinkedList<>();
         if (isBroadSearchGuarded(searchResult)) {
             result.add(MCPNextActionUtils.askUser("Blank cross-database metadata search listed databases only. Choose a database, query, or object type before searching deeper metadata.",
                     List.of("database", "query", "object_types")));
+        }
+        if (searchResult.isTruncated() && !isBroadSearchGuarded(searchResult)) {
+            result.add(MCPNextActionUtils.askUser("Metadata search results were truncated. Choose database, schema, query, or object type before reading specific resources.",
+                    List.of("database", "schema", "query", "object_types")));
         }
         if (!duplicatedNames.isEmpty()) {
             result.add(MCPNextActionUtils.askUser("Multiple metadata hits share the same name. Ask the user to choose database, schema, or object type before using a specific resource.",

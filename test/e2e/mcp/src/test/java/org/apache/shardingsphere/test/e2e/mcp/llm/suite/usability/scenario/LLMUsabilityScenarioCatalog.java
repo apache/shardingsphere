@@ -91,6 +91,29 @@ public final class LLMUsabilityScenarioCatalog {
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         workflowActions, workflowRequiredActions),
                 List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule"), List.of(), false, false));
+        result.add(createScenario("natural-mask-rule-md5-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
+                List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural", "workflow", "mask"),
+                new LLME2EScenario("natural-mask-rule-md5-" + runtimeKind, SYSTEM_PROMPT,
+                        "A user asks you to create a mask rule for logical database `" + databaseName + "`, schema `" + schemaName + "`, table `" + tableName
+                                + "`, and column `status` with the MD5 mask algorithm. Use the planning response plan_id for follow-up workflow calls, keep execution manual-only, "
+                                + "validate the workflow with the returned plan_id, and finish by verifying `" + query + "`.",
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
+                        List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_validate_workflow",
+                                "database_gateway_execute_query"),
+                        List.of("database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_validate_workflow", "database_gateway_execute_query")),
+                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule"), List.of(), false, false));
+        result.add(createScenario("natural-encrypt-rule-md5-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
+                List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural", "workflow", "encrypt"),
+                new LLME2EScenario("natural-encrypt-rule-md5-" + runtimeKind, SYSTEM_PROMPT,
+                        "A user asks you to identify and create an encrypt rule now for logical database `" + databaseName + "`, schema `" + schemaName + "`, table `" + tableName
+                                + "`, and column `status` using the MD5 encrypt algorithm with cipher column `status_cipher`. The user wants irreversible hashing, no equality, and no like. "
+                                + "Use the planning response plan_id for follow-up workflow calls, keep execution manual-only, validate the workflow with the returned plan_id, "
+                                + "and finish by verifying `" + query + "`.",
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
+                        List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_encrypt_rule", "database_gateway_apply_workflow", "database_gateway_validate_workflow",
+                                "database_gateway_execute_query"),
+                        List.of("database_gateway_plan_encrypt_rule", "database_gateway_apply_workflow", "database_gateway_validate_workflow", "database_gateway_execute_query")),
+                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_encrypt_rule"), List.of(), false, false));
         result.add(createScenario("natural-table-resource-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural", "resource"),
                 new LLME2EScenario("natural-table-resource-" + runtimeKind, SYSTEM_PROMPT,
@@ -132,12 +155,14 @@ public final class LLMUsabilityScenarioCatalog {
         result.add(createScenario("extended-resource-list-discovery-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "resource-discovery"),
                 new LLME2EScenario("extended-resource-list-discovery-" + runtimeKind, SYSTEM_PROMPT,
-                        "Discover the available metadata resources, read exact table resource `" + tableResourceUri
+                        "Discover the available MCP tools, resource templates, and metadata resources, read exact table resource `" + tableResourceUri
                                 + "`, and verify `" + query + "`. Do not read placeholder URI text from tool schema descriptions." + toolContext,
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders),
-                        List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
-                        List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
-                List.of(MCPInteractionActionNames.LIST_RESOURCES), List.of(tableResourceUri), true, false));
+                        List.of(MCPInteractionActionNames.LIST_TOOLS, MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
+                                MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
+                        List.of(MCPInteractionActionNames.LIST_TOOLS, MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
+                                MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
+                List.of(MCPInteractionActionNames.LIST_TOOLS), List.of(tableResourceUri), true, false));
         result.add(createScenario("extended-runtime-status-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "runtime-diagnostics"),
                 new LLME2EScenario("extended-runtime-status-" + runtimeKind, SYSTEM_PROMPT,

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +32,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceMetaDataTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertGetAllInstanceDataSourceNames() {
@@ -48,5 +52,11 @@ class ResourceMetaDataTest {
     void assertGetDataSourceMap() {
         assertThat(new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource())).getDataSourceMap().size(), is(1));
         assertTrue(new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource())).getDataSourceMap().containsKey("foo_ds"));
+    }
+    
+    @Test
+    void assertNewWithStorageTypeFromURL() {
+        ResourceMetaData actual = new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        assertThat(actual.getStorageUnits().get("foo_ds").getStorageType(), is(databaseType));
     }
 }

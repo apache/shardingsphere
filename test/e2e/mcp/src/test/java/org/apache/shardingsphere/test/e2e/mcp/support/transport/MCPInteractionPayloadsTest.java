@@ -127,6 +127,20 @@ class MCPInteractionPayloadsTest {
     }
     
     @Test
+    void assertGetJsonRpcErrorPayloadPreservesErrorData() {
+        Map<String, Object> actual = MCPInteractionPayloads.getJsonRpcErrorPayload(Map.of("error", Map.of(
+                "message", "Tool not found",
+                "data", Map.of(
+                        "message", "Nested recovery message",
+                        "response_mode", "recovery",
+                        "recovery", Map.of("next_actions", List.of(Map.of("type", "tool_call", "tool_name", "database_gateway_search_metadata")))))));
+        assertThat(actual.get("error_code"), is("json_rpc_error"));
+        assertThat(actual.get("message"), is("Tool not found"));
+        assertThat(actual.get("response_mode"), is("recovery"));
+        assertThat(actual.get("recovery"), is(Map.of("next_actions", List.of(Map.of("type", "tool_call", "tool_name", "database_gateway_search_metadata")))));
+    }
+    
+    @Test
     void assertGetJsonRpcErrorPayloadWithoutError() {
         assertTrue(MCPInteractionPayloads.getJsonRpcErrorPayload(Map.of()).isEmpty());
     }

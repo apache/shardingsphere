@@ -16,7 +16,7 @@ StopMigration ::=
   'STOP' 'MIGRATION' migrationJobId 
 
 migrationJobId ::=
-  string
+  integer | identifier | string
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}

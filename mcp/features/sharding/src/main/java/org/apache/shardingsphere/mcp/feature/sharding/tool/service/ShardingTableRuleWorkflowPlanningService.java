@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingTableRuleWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -26,24 +27,13 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 /**
  * Sharding table rule workflow planning service.
  */
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ShardingTableRuleWorkflowPlanningService {
     
-    private final Planner planner;
+    private final ShardingWorkflowPlanningKernel kernel;
     
     public ShardingTableRuleWorkflowPlanningService() {
         this(new ShardingWorkflowPlanningKernel());
-    }
-    
-    public ShardingTableRuleWorkflowPlanningService(final ShardingWorkflowPlanningService delegate) {
-        this(delegate::planTableRule);
-    }
-    
-    ShardingTableRuleWorkflowPlanningService(final ShardingWorkflowPlanningKernel kernel) {
-        this(kernel::planTableRule);
-    }
-    
-    private ShardingTableRuleWorkflowPlanningService(final Planner planner) {
-        this.planner = planner;
     }
     
     /**
@@ -57,12 +47,6 @@ public final class ShardingTableRuleWorkflowPlanningService {
      */
     public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                         final String sessionId, final ShardingTableRuleWorkflowRequest request) {
-        return planner.plan(workflowSessionContext, queryFacade, sessionId, request.toWorkflowRequest());
-    }
-    
-    @FunctionalInterface
-    private interface Planner {
-        
-        WorkflowContextSnapshot plan(WorkflowSessionContext workflowSessionContext, MCPFeatureQueryFacade queryFacade, String sessionId, ShardingWorkflowRequest request);
+        return kernel.planTableRule(workflowSessionContext, queryFacade, sessionId, request.toWorkflowRequest());
     }
 }

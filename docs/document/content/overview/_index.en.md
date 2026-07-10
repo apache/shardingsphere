@@ -26,7 +26,7 @@ ShardingSphere-JDBC is a lightweight Java framework that provides additional ser
 #### ShardingSphere-Proxy
 
 [![Nightly-Download](https://img.shields.io/badge/nightly--builds-download-orange.svg)](https://nightlies.apache.org/shardingsphere/)
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](/cn/downloads/)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](/en/downloads/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://hub.docker.com/r/apache/shardingsphere-proxy)
 
 ShardingSphere-Proxy is a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.

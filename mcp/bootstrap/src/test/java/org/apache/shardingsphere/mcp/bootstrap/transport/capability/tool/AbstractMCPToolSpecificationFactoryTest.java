@@ -122,6 +122,25 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         return result;
     }
     
+    protected SyncToolSpecification createToolSpecification(final String activeTransport) {
+        return createToolSpecification(createRuntimeContext(activeTransport));
+    }
+    
+    protected SyncToolSpecification createToolSpecification(final MCPRuntimeContext runtimeContext) {
+        return new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().getFirst();
+    }
+    
+    protected McpSyncServerExchange createExchange() {
+        McpSyncServerExchange result = mock(McpSyncServerExchange.class);
+        when(result.sessionId()).thenReturn("session-id");
+        return result;
+    }
+    
+    protected CallToolResult callTool(final SyncToolSpecification toolSpecification, final McpSyncServerExchange exchange, final String toolName,
+                                      final Map<String, Object> arguments) {
+        return toolSpecification.callHandler().apply(exchange, new CallToolRequest(toolName, arguments));
+    }
+    
     protected void assertStructuredFallback(final CallToolResult actual, final String expectedReason, final boolean expectedFormMode, final boolean expectedUrlMode,
                                             final String expectedInteraction) {
         Map<String, Object> actualPayload = getStructuredContent(actual);
@@ -160,10 +179,7 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
-            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
-            McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
-            when(exchange.sessionId()).thenReturn("session-id");
-            return actualSpecification.callHandler().apply(exchange, new CallToolRequest(toolName, Map.of()));
+            return callTool(createToolSpecification(runtimeContext), createExchange(), toolName, Map.of());
         }
     }
     

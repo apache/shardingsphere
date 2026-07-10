@@ -101,11 +101,11 @@ public final class InsertValueContext {
     }
     
     private int getParameterIndex(final ParameterMarkerExpressionSegment paramMarkerExpression) {
-        int result = paramMarkerExpression.getParameterMarkerIndex() - parametersOffset;
-        if (result >= 0 && result < parameterMarkerExpressions.size()) {
+        int result = getParameterMarkerIndex(paramMarkerExpression.getParameterMarkerIndex());
+        if (result >= 0) {
             return result;
         }
-        result = getParameterMarkerIndex(paramMarkerExpression.getParameterMarkerIndex());
+        result = paramMarkerExpression.getParameterMarkerIndex() - parametersOffset;
         Preconditions.checkArgument(result >= 0, "Can not get parameter index.");
         return result;
     }

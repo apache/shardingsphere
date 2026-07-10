@@ -57,6 +57,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transacti
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -106,7 +107,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseAttachCharset(attachPacket.getEncoding()));
         login(currentAuthResult.getDatabase(), currentAuthResult.getUsername(), attachPacket, rule);
         context.writeAndFlush(new FirebirdGenericResponsePacket());
-        return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase());
+        return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase(), currentAuthResult.getConnectionAttributes());
     }
     
     private Charset parseAttachCharset(final String encoding) {
@@ -150,7 +151,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
             acceptPacket.setAcceptDataPacket(authData.getSalt(), authData.getPublicKeyHex(), plugin, 0, "");
         }
         context.writeAndFlush(acceptPacket);
-        currentAuthResult = AuthenticationResultBuilder.continued(username, connectPacket.getHost(), connectPacket.getDatabase());
+        currentAuthResult = AuthenticationResultBuilder.continued(username, connectPacket.getHost(), connectPacket.getDatabase(), Collections.emptyMap());
         return currentAuthResult;
     }
     

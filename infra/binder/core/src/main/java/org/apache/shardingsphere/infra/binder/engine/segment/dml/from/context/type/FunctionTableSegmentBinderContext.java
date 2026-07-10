@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -30,14 +32,25 @@ import java.util.Optional;
  */
 public final class FunctionTableSegmentBinderContext implements TableSegmentBinderContext {
     
+    private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
+    
+    public FunctionTableSegmentBinderContext() {
+        columnLabelProjectionSegments = Collections.emptyMap();
+    }
+    
+    public FunctionTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments) {
+        columnLabelProjectionSegments = new CaseInsensitiveMap<>(projectionSegments.size(), 1F);
+        projectionSegments.forEach(each -> columnLabelProjectionSegments.put(each.getColumnLabel(), each));
+    }
+    
     @Override
     public Optional<ProjectionSegment> findProjectionSegmentByColumnLabel(final String columnLabel) {
-        return Optional.empty();
+        return Optional.ofNullable(columnLabelProjectionSegments.get(columnLabel));
     }
     
     @Override
     public Collection<ProjectionSegment> getProjectionSegments() {
-        return Collections.emptyList();
+        return columnLabelProjectionSegments.values();
     }
     
     @Override

@@ -50,12 +50,16 @@ public final class MCPErrorResponse implements MCPResponse {
     
     @Override
     public Map<String, Object> toPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("response_mode", MCPResponseMode.RECOVERY);
+        result.put(MCPPayloadFieldNames.SUMMARY, message.isEmpty() ? "Recovery guidance is available." : message);
         result.put("request_id", requestId);
         result.put(MCPPayloadFieldNames.MESSAGE, message);
         if (!recovery.isEmpty()) {
             result.put(MCPPayloadFieldNames.RECOVERY, createRecoveryPayload());
+            if (recovery.containsKey(MCPPayloadFieldNames.NEXT_ACTIONS)) {
+                result.put(MCPPayloadFieldNames.NEXT_ACTIONS, recovery.get(MCPPayloadFieldNames.NEXT_ACTIONS));
+            }
         }
         return result;
     }

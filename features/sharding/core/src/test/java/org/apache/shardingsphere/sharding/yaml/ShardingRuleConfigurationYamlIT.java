@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
-import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -36,8 +34,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheOptionsConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 import java.util.ArrayList;
@@ -46,7 +42,6 @@ import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
@@ -85,7 +80,6 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         result.getShardingAlgorithms().put("table_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
         result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
-        result.setShardingCache(new ShardingCacheConfiguration(512, new ShardingCacheOptionsConfiguration(true, 65536, 262144)));
         return result;
     }
     
@@ -103,7 +97,6 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertTOrderItem(actual);
         assertBindingTable(actual);
         assertKeyGenerateStrategies(actual);
-        assertShardingCache(actual);
         assertThat(actual.getDefaultShardingColumn(), is("order_id"));
     }
     
@@ -148,15 +141,6 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertThat(actual.getKeyGenerateStrategies().get("id_sequence").getKeyGenerateType(), is("sequence"));
         assertThat(actual.getKeyGenerateStrategies().get("id_sequence").getKeyGeneratorName(), is("snowflake"));
         assertThat(actual.getKeyGenerateStrategies().get("id_sequence").getKeyGenerateSequence(), is("sequence_name"));
-    }
-    
-    private void assertShardingCache(final YamlShardingRuleConfiguration actual) {
-        YamlShardingCacheConfiguration actualShardingCache = actual.getShardingCache();
-        assertThat(actualShardingCache.getAllowedMaxSqlLength(), is(512));
-        YamlShardingCacheOptionsConfiguration actualRouteCacheConfig = actualShardingCache.getRouteCache();
-        assertThat(actualRouteCacheConfig.getInitialCapacity(), is(65536));
-        assertThat(actualRouteCacheConfig.getMaximumSize(), is(262144));
-        assertTrue(actualRouteCacheConfig.isSoftValues());
     }
     
     private static KeyGenerateStrategiesConfiguration createColumnKeyGenerateStrategyRuleConfiguration() {

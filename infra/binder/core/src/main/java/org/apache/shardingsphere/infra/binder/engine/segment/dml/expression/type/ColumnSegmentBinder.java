@@ -87,13 +87,41 @@ public final class ColumnSegmentBinder {
         if (isUnparenthesizedFunction(segment, binderContext)) {
             return segment;
         }
-        ColumnSegment result = copy(segment);
-        Collection<TableSegmentBinderContext> tableSegmentBinderContexts = getTableSegmentBinderContexts(segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
-        ColumnSegmentInfo columnSegmentInfo = getColumnSegmentInfo(segment, parentSegmentType, tableSegmentBinderContexts, outerTableBinderContexts, binderContext);
+        ColumnSegment columnSegment = createNestedObjectColumnSegment(segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts).orElse(segment);
+        ColumnSegment result = copy(columnSegment);
+        Collection<TableSegmentBinderContext> tableSegmentBinderContexts =
+                getTableSegmentBinderContexts(columnSegment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        ColumnSegmentInfo columnSegmentInfo = getColumnSegmentInfo(columnSegment, parentSegmentType, tableSegmentBinderContexts, outerTableBinderContexts, binderContext);
         Optional<ColumnSegment> inputColumnSegment = columnSegmentInfo.getInputColumnSegment();
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
-        segment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
-        result.setColumnBoundInfo(createColumnSegmentBoundInfo(segment, inputColumnSegment.orElse(null), columnSegmentInfo.getTableSourceType()));
+        columnSegment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
+        result.setColumnBoundInfo(createColumnSegmentBoundInfo(columnSegment, inputColumnSegment.orElse(null), columnSegmentInfo.getTableSourceType()));
+        return result;
+    }
+    
+    private static Optional<ColumnSegment> createNestedObjectColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType,
+                                                                           final SQLStatementBinderContext binderContext,
+                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        if (!segment.getOwner().isPresent()) {
+            return Optional.empty();
+        }
+        OwnerSegment owner = segment.getOwner().get();
+        if (!getTableBinderContextByOwner(owner.getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts, binderContext.getExternalTableBinderContexts()).isEmpty()) {
+            return Optional.empty();
+        }
+        ColumnSegment candidate = createNestedObjectColumnSegment(segment, owner);
+        Collection<TableSegmentBinderContext> candidateTableBinderContexts = owner.getOwner()
+                .map(optional -> getTableBinderContextByOwner(optional.getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts, binderContext.getExternalTableBinderContexts()))
+                .orElseGet(tableBinderContexts::values);
+        return getInputInfoFromTableBinderContexts(candidateTableBinderContexts, candidate, parentSegmentType).getInputColumnSegment().map(optional -> candidate);
+    }
+    
+    private static ColumnSegment createNestedObjectColumnSegment(final ColumnSegment segment, final OwnerSegment owner) {
+        int startIndex = owner.getOwner().map(OwnerSegment::getStartIndex).orElse(owner.getStartIndex());
+        ColumnSegment result = new ColumnSegment(startIndex, segment.getStopIndex(), owner.getIdentifier());
+        result.setNestedObjectAttributes(Collections.singletonList(segment.getIdentifier()));
+        owner.getOwner().ifPresent(result::setOwner);
         return result;
     }
     

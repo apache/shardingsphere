@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 
 import io.modelcontextprotocol.spec.HttpHeaders;
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.SessionAttributionResolver;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -36,10 +36,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ShardingSphereServerTransportSecurityValidatorTest {
     
     @Test
-    void assertValidateHeadersWithMatchedSessionAttribution() {
+    void assertValidateHeadersWithMatchedSessionIdentity() {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
         sessionManager.createSession("session-1");
-        sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("subject", "gateway", Map.of()));
+        sessionManager.bindSessionIdentity("session-1", new MCPSessionIdentity("subject", "gateway", Map.of()));
         ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(),
                 new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
         assertDoesNotThrow(() -> actual.validateHeaders(Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("subject"),
@@ -47,10 +47,10 @@ class ShardingSphereServerTransportSecurityValidatorTest {
     }
     
     @Test
-    void assertValidateHeadersWithMismatchedSessionAttribution() {
+    void assertValidateHeadersWithMismatchedSessionIdentity() {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
         sessionManager.createSession("session-1");
-        sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("subject", "gateway", Map.of()));
+        sessionManager.bindSessionIdentity("session-1", new MCPSessionIdentity("subject", "gateway", Map.of()));
         ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(),
                 new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
         MCPTransportSecurityException exception = assertThrows(MCPTransportSecurityException.class, () -> actual.validateHeaders(
@@ -61,7 +61,7 @@ class ShardingSphereServerTransportSecurityValidatorTest {
     }
     
     @Test
-    void assertValidateHeadersWithUnboundSessionAttribution() {
+    void assertValidateHeadersWithUnboundSessionIdentity() {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
         sessionManager.createSession("session-1");
         ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(),
@@ -71,6 +71,6 @@ class ShardingSphereServerTransportSecurityValidatorTest {
         assertThat(exception.getStatusCode(), is(400));
         assertThat(exception.getMessage(), is("Session attribution is not bound for this MCP session."));
         assertThat(exception.getCategory(), is("session_attribution_mismatch"));
-        assertThat(sessionManager.findSessionAttribution("session-1"), is(Optional.empty()));
+        assertThat(sessionManager.findSessionIdentity("session-1"), is(Optional.empty()));
     }
 }

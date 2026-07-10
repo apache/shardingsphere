@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementObjectName {
     
     private final String objectName;
     
     private final int nextIndex;
-    
-    SQLStatementObjectName(final String objectName, final int nextIndex) {
-        this.objectName = objectName;
-        this.nextIndex = nextIndex;
-    }
     
     String objectName() {
         return objectName;

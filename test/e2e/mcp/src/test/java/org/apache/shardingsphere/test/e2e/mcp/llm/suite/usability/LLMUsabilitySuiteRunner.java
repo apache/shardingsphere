@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLM
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
+import org.junit.jupiter.api.Assumptions;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +35,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -46,7 +48,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final class LLMUsabilitySuiteRunner {
     
-    private static final Set<String> INFRASTRUCTURE_FAILURE_TYPES = Set.of("model_service_unavailable", "mcp_runtime_unavailable");
+    private static final String MODEL_SERVICE_UNAVAILABLE_FAILURE_TYPE = "model_service_unavailable";
+    
+    private static final Set<String> INFRASTRUCTURE_FAILURE_TYPES = Set.of(MODEL_SERVICE_UNAVAILABLE_FAILURE_TYPE, "mcp_runtime_unavailable");
     
     private static final Set<String> KNOWN_ACTION_ORIGINS = Set.of(
             MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
@@ -62,14 +66,18 @@ final class LLMUsabilitySuiteRunner {
     
     void assertCoreSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
                          final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
-        EvaluatedSuite evaluatedSuite = evaluateSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
-        assertFullScore(evaluatedSuite.scorecard(), evaluatedSuite.scenarios());
-        assertDeterministicContract(evaluatedSuite);
+        assertSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
     }
     
     void assertExtendedSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
                              final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
+        assertSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
+    }
+    
+    private void assertSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
+                             final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
         EvaluatedSuite evaluatedSuite = evaluateSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
+        assumeModelServiceAvailable(evaluatedSuite.scorecard());
         assertFullScore(evaluatedSuite.scorecard(), evaluatedSuite.scenarios());
         assertDeterministicContract(evaluatedSuite);
     }
@@ -89,6 +97,24 @@ final class LLMUsabilitySuiteRunner {
         Path suiteDirectory = configuration.getArtifactRoot().resolve(configuration.getRunId()).resolve(suiteId);
         reportWriter.writeScorecard(suiteDirectory, scorecard);
         return new EvaluatedSuite(scenarios, evaluatedScenarios, scorecard);
+    }
+    
+    private void assumeModelServiceAvailable(final LLMUsabilityScorecard scorecard) {
+        Optional<LLMUsabilityScenarioResult> modelServiceFailure = findFailure(scorecard, MODEL_SERVICE_UNAVAILABLE_FAILURE_TYPE);
+        if (modelServiceFailure.isEmpty()) {
+            return;
+        }
+        LLMUsabilityScenarioResult failure = modelServiceFailure.get();
+        Assumptions.assumeTrue(false, () -> failure.getScenarioId() + " skipped because the model service was unavailable: " + failure.getMessage());
+    }
+    
+    private Optional<LLMUsabilityScenarioResult> findFailure(final LLMUsabilityScorecard scorecard, final String failureType) {
+        for (LLMUsabilityScenarioResult each : scorecard.getScenarioResults()) {
+            if (!each.isSuccess() && failureType.equals(each.getFailureType())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     private void assertFullScore(final LLMUsabilityScorecard scorecard, final List<LLMUsabilityScenario> scenarios) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -30,6 +31,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
+@RequiredArgsConstructor
 public final class PartitionValuesSegment implements SQLSegment {
     
     private final int startIndex;
@@ -41,12 +43,6 @@ public final class PartitionValuesSegment implements SQLSegment {
     private final Collection<ExpressionSegment> values = new LinkedList<>();
     
     private boolean isMaxValue;
-    
-    public PartitionValuesSegment(final int startIndex, final int stopIndex, final PartitionValuesType valuesType) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.valuesType = valuesType;
-    }
     
     /**
      * Partition values type.

@@ -49,6 +49,9 @@ Replace `/path/to/apache-shardingsphere-mcp` with the actual distribution direct
 | `shardingsphere://capabilities`                      | Runtime databases, connection targets, feature plugins, and side-effect boundaries.           | Determine which database tasks the current MCP Server supports.          |
 | `shardingsphere://databases/{database}/capabilities` | SQL, transaction, schema, and metadata-object capabilities of the specified runtime database. | Determine available operations and limits for one database.              |
 
+When a client cannot choose a database, schema, table, column, algorithm, storage unit, or workflow `plan_id`, call `completion/complete` for one argument at a time.
+If completion reports missing context or no candidates, follow the returned meta `next_actions`; those actions usually point to the nearest resource or resource template to read before retrying completion.
+
 ## Resources
 
 | Resource URI or template                                                                 | Purpose                                                                                                                                    |
@@ -73,6 +76,8 @@ Replace `/path/to/apache-shardingsphere-mcp` with the actual distribution direct
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns`            | Lists columns for one view.                                                                                                                |
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}`   | Reads one view column.                                                                                                                     |
 | `shardingsphere://workflows/{plan_id}`                                                   | Reads the current governance change plan, clarification questions, artifacts, and next actions.                                            |
+
+Workflow resources and workflow tools include a short `summary` plus structured `next_actions` so clients can continue preview, apply, manual execution, validation, or recovery without reading every nested field first.
 
 ## Tools
 
@@ -141,8 +146,8 @@ Read the database list:
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
-  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>' \
+  -H 'MCP-Session-Id: demo-session-id' \
+  -H 'MCP-Protocol-Version: 2025-11-25' \
   --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://databases"}}'
 ```
 
@@ -152,8 +157,8 @@ Call the metadata search tool:
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
-  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>' \
+  -H 'MCP-Session-Id: demo-session-id' \
+  -H 'MCP-Protocol-Version: 2025-11-25' \
   --data '{
     "jsonrpc":"2.0",
     "id":"tool-1",
@@ -161,8 +166,8 @@ curl -sS http://127.0.0.1:18088/mcp \
     "params":{
       "name":"database_gateway_search_metadata",
       "arguments":{
-        "database":"<logic-database>",
-        "query":"<metadata-keyword>",
+        "database":"logic_db",
+        "query":"orders",
         "object_types":["table","view"]
       }
     }

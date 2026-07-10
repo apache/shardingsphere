@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.postgresql;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -41,9 +42,18 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
     
     @Override
     public String getColumnNameFromExpression(final ExpressionSegment expressionSegment) {
-        return expressionSegment instanceof ExpressionProjectionSegment && ((ExpressionProjectionSegment) expressionSegment).getExpr() instanceof FunctionSegment
-                ? ((FunctionSegment) ((ExpressionProjectionSegment) expressionSegment).getExpr()).getFunctionName()
-                : "?column?";
+        if (!(expressionSegment instanceof ExpressionProjectionSegment)) {
+            return "?column?";
+        }
+        ExpressionSegment innerExpressionSegment = ((ExpressionProjectionSegment) expressionSegment).getExpr();
+        if (innerExpressionSegment instanceof FunctionSegment) {
+            return ((FunctionSegment) innerExpressionSegment).getFunctionName();
+        }
+        if (innerExpressionSegment instanceof AggregationProjectionSegment) {
+            AggregationProjectionSegment aggregationProjectionSegment = (AggregationProjectionSegment) innerExpressionSegment;
+            return getColumnNameFromFunction(aggregationProjectionSegment.getType().name(), aggregationProjectionSegment.getExpression());
+        }
+        return "?column?";
     }
     
     @Override

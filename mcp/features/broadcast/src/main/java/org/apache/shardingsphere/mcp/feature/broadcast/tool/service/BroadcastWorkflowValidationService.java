@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.service;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -40,6 +42,7 @@ import java.util.Map;
 /**
  * Broadcast workflow validation service.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class BroadcastWorkflowValidationService implements MCPWorkflowRuntimeHandler {
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
@@ -53,22 +56,11 @@ public final class BroadcastWorkflowValidationService implements MCPWorkflowRunt
         workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
     }
     
-    BroadcastWorkflowValidationService(final BroadcastRuleInspectionService ruleInspectionService, final WorkflowSynchronizationSupport workflowSynchronizationSupport) {
-        this.ruleInspectionService = ruleInspectionService;
-        this.workflowSynchronizationSupport = workflowSynchronizationSupport;
-    }
-    
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
                                         final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId,
                                         final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
-        if (!rejectedResponse.isEmpty()) {
-            return rejectedResponse;
-        }
-        ValidationReport validationReport = createValidationReport(snapshot, queryFacade);
-        snapshot.setValidationReport(validationReport);
-        return validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
+        return validationSupport.validateAndFinalize(workflowSessionContext, sessionId, snapshot, () -> createValidationReport(snapshot, queryFacade));
     }
     
     @Override

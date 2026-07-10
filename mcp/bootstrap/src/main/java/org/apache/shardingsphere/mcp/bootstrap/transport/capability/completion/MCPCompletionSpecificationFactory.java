@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescr
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -65,7 +64,7 @@ public final class MCPCompletionSpecificationFactory {
                                             final MCPCompletionTargetDescriptor descriptor) {
         String argumentName = request.argument().name();
         String prefix = Objects.toString(request.argument().value(), "");
-        Map<String, String> contextArguments = new LinkedHashMap<>(null == request.context() || null == request.context().arguments() ? Map.of() : request.context().arguments());
+        Map<String, String> contextArguments = null == request.context() || null == request.context().arguments() ? Map.of() : request.context().arguments();
         try {
             MCPCompletionResult result = completionService.complete(exchange.sessionId(), descriptor, argumentName, prefix, contextArguments);
             return new McpSchema.CompleteResult(new McpSchema.CompleteResult.CompleteCompletion(result.getValues(), result.getTotal(), result.isHasMore()), result.getMeta());

@@ -60,7 +60,7 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
             return database.getAllSchemas();
         }
         Collection<ShardingSphereSchema> result = new LinkedList<>(database.getAllSchemas());
-        String tableName = TableRefreshUtils.getTableLoadCandidateName(database, sqlStatement.getTable().getTableName().getIdentifier(), props);
+        String tableName = TableRefreshUtils.getTableLoadCandidateName(database, sqlStatement.getTable().getTableName().getIdentifier());
         result.add(new ShardingSphereSchema(schemaName, database.getProtocolType(),
                 Collections.singleton(new ShardingSphereTable(tableName, Collections.emptyList(), indexes, Collections.emptyList())), Collections.emptyList()));
         return result;

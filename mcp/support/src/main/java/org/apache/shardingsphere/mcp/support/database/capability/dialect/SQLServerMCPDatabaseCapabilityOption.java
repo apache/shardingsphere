@@ -17,17 +17,40 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * MCP database capability option for SQLServer.
  */
 public final class SQLServerMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
+    private static final String SEQUENCE_QUERY =
+            "SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id";
+    
     public SQLServerMCPDatabaseCapabilityOption() {
         super("SQLServer", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                 SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
+    }
+    
+    @Override
+    public QuoteCharacter getIdentifierQuoteCharacter() {
+        return QuoteCharacter.BRACKETS;
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return List.of("information_schema", "sys");
+    }
+    
+    @Override
+    public Optional<String> getSequenceQuery() {
+        return Optional.of(SEQUENCE_QUERY);
     }
 }

@@ -6,6 +6,10 @@
 1. DistSQL: Add DistSQL to manage sharding key generators - [#38576](https://github.com/apache/shardingsphere/pull/38576)
 1. SHARDING: Adjustment sharding api to support column-level auto-increment and global auto-increment for key generate strategy -[#38528](https://github.com/apache/shardingsphere/pull/38528)
 
+### New Features
+
+1. MCP: Add standalone ShardingSphere-MCP Server - [#38541](https://github.com/apache/shardingsphere/pull/38541)
+
 ### Bug Fixes
 
 1. SQL Parser: Preserve unary NOT as NotExpression for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
@@ -24,13 +28,16 @@
 1. Proxy: Reject unsupported MySQL and Doris temporary table DDL before backend execution - [#38829](https://github.com/apache/shardingsphere/pull/38829)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
+1. Infra: Avoid retaining transient multi-object lookup keys in `OrderedSPILoader` - [#38980](https://github.com/apache/shardingsphere/pull/38980)
 1. Pipeline: Fix MySQL JSON literal decoding in migration - [#38622](https://github.com/apache/shardingsphere/pull/38622)
 1. Pipeline: Fix MySQL zero-value temporal binlog decoding with fractional precision in migration - [#38629](https://github.com/apache/shardingsphere/pull/38629)
 1. Pipeline: Fix escape MySQL JSON binlog control characters - [#38800](https://github.com/apache/shardingsphere/pull/38800)
 1. Sharding: Support ORDER BY MySQL VARBINARY column by wrapping byte[] values in a Comparable adapter - [#38699](https://github.com/apache/shardingsphere/pull/38699)
+1. Proxy: Fix incorrect generated key handling for explicit auto-increment values - [#38810](https://github.com/apache/shardingsphere/pull/38810)
 1. Sharding: Fix generated actual index names exceeding database identifier length limits while preserving legacy generated index name compatibility - [#38449](https://github.com/apache/shardingsphere/pull/38449)
 1. Sharding: Fix AUTO_INTERVAL sharding failure under JVM default locales that use comma decimal separators - [#38806](https://github.com/apache/shardingsphere/pull/38806)
 1. DistSQL: Fix case-sensitive storage unit matching in `SHOW RULES USED STORAGE UNIT` - [#38848](https://github.com/apache/shardingsphere/pull/38848)
+1. Sharding: Compute the Snowflake key generator epoch in UTC instead of the JVM default timezone - [#38932](https://github.com/apache/shardingsphere/pull/38932)
 
 ### Enhancements
 
@@ -51,12 +58,14 @@
 1. SQL Parser: Support Oracle model, pivot, XML and hierarchical query parsing and binding - [#38689](https://github.com/apache/shardingsphere/pull/38689)
 1. SQL Parser: Preserve temporal literal text and raw value for MySQL and Oracle date-time literal parsing - [#38886](https://github.com/apache/shardingsphere/pull/38886)
 1. SQL Parser: Support oracle insert into returning into item statement parse - [#38902](https://github.com/apache/shardingsphere/pull/38902)
+1. SQL Parser: Enhance Hive SQL parser to support CTE, lateral view, table sampling, transform and set operations - [#39008](https://github.com/apache/shardingsphere/pull/39008)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. Metadata: Support parsing query properties from Oracle JDBC URLs - [#38901](https://github.com/apache/shardingsphere/pull/38901)
 1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute SQL - [#38337](https://github.com/apache/shardingsphere/pull/38337)
 1. JDBC: Support safe close statement manager - [#38473](https://github.com/apache/shardingsphere/pull/38473)
 1. JDBC: Bump the ClickHouse JDBC Driver used by optional modules to version `0.9.8` - [#38878](https://github.com/apache/shardingsphere/pull/38878)
+1. JDBC: Supports the use of local transactions for Presto in ShardingSphere JDBC- [#38941](https://github.com/apache/shardingsphere/pull/38941)
 1. Proxy: Support non column projection for MySQL prepared statement in Proxy - [#38507](https://github.com/apache/shardingsphere/pull/38507)
 1. Proxy: Support driverClassName config in proxy storage unit to solve mysql and mariadb jdbc url conflict - [#38582](https://github.com/apache/shardingsphere/pull/38582)
 1. Proxy: Support Firebird prepared statement cache reuse for held connections - [#38644](https://github.com/apache/shardingsphere/pull/38644)
@@ -65,8 +74,10 @@
 1. JDBC & Proxy: Add a check to verify database name naming conventions. - [#38883](https://github.com/apache/shardingsphere/pull/38883)
 1. Encrypt: Support SqlServer update statement for Specifying a table alias as the target object when use encrypt feature - [#38733](https://github.com/apache/shardingsphere/pull/38733)
 1. Encrypt: Support SqlServer update statement for Specifying a view as the target object when use encrypt feature - [#38896](https://github.com/apache/shardingsphere/pull/38896)
+1. Encrypt: Support SqlServer for Using the UPDATE statement with information from another table  when use encrypt feature - [#38926](https://github.com/apache/shardingsphere/pull/38926)
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
 1. Proxy Native: Support building Proxy Native via GraalVM CE for JDK 25 - [#38682](https://github.com/apache/shardingsphere/pull/38682)
+1. SQL Parser: Support SQLServer table variable declaration parse - [#38904](https://github.com/apache/shardingsphere/pull/38904)
 
 ## Release 5.5.3
 

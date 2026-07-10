@@ -97,31 +97,21 @@ class TableRefreshUtilsTest {
     @Test
     void assertGetActualTableNameUsesExistingTableName() {
         ShardingSphereDatabase database = createDatabase();
-        assertThat(TableRefreshUtils.getActualTableName(database, "foo_schema", new IdentifierValue("foo_tbl"),
-                new ConfigurationProperties(new Properties())), is("Foo_Tbl"));
-    }
-    
-    @Test
-    void assertGetActualTableNameWithSensitiveProps() {
-        ShardingSphereDatabase database = createDatabase();
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        assertThat(TableRefreshUtils.getActualTableName(database, "Foo_Schema", new IdentifierValue("Foo_Tbl", QuoteCharacter.QUOTE),
-                new ConfigurationProperties(props)), is("Foo_Tbl"));
+        assertThat(TableRefreshUtils.getActualTableName(database, "foo_schema", new IdentifierValue("foo_tbl")), is("Foo_Tbl"));
     }
     
     @Test
     void assertGetActualTableNamesUsesExistingTableNames() {
         ShardingSphereDatabase database = createDatabase();
-        assertThat(TableRefreshUtils.getActualTableNames(database, "foo_schema", Arrays.asList(new IdentifierValue("foo_tbl"), new IdentifierValue("bar_tbl")),
-                new ConfigurationProperties(new Properties())), is(Arrays.asList("Foo_Tbl", "Bar_Tbl")));
+        assertThat(TableRefreshUtils.getActualTableNames(database, "foo_schema", Arrays.asList(new IdentifierValue("foo_tbl"), new IdentifierValue("bar_tbl"))),
+                is(Arrays.asList("Foo_Tbl", "Bar_Tbl")));
     }
     
     @Test
     void assertGetActualViewNamesUsesExistingViewNames() {
         ShardingSphereDatabase database = createDatabase();
-        assertThat(TableRefreshUtils.getActualViewNames(database, "foo_schema", Arrays.asList(new IdentifierValue("foo_view"), new IdentifierValue("bar_view")),
-                new ConfigurationProperties(new Properties())), is(Arrays.asList("Foo_View", "Bar_View")));
+        assertThat(TableRefreshUtils.getActualViewNames(database, "foo_schema", Arrays.asList(new IdentifierValue("foo_view"), new IdentifierValue("bar_view"))),
+                is(Arrays.asList("Foo_View", "Bar_View")));
     }
     
     @Test

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -35,16 +37,13 @@ import java.util.Map;
 /**
  * Broadcast table rule handler.
  */
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
     private final BroadcastRuleInspectionService ruleInspectionService;
     
     public BroadcastTableRuleHandler() {
         ruleInspectionService = new BroadcastRuleInspectionService();
-    }
-    
-    BroadcastTableRuleHandler(final BroadcastRuleInspectionService ruleInspectionService) {
-        this.ruleInspectionService = ruleInspectionService;
     }
     
     @Override

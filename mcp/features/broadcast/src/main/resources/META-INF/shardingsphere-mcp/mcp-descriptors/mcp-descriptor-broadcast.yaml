@@ -114,6 +114,15 @@ prompts:
         - "Ask when database or logical broadcast table names are unclear."
         - "Ask before applying generated broadcast rule DistSQL that changes runtime state."
 
+completionTargets:
+  - referenceType: prompt
+    reference: plan_broadcast_rule
+    arguments:
+      - database
+      - table
+      - plan_id
+    maxValues: 50
+
 resourceNavigation:
   - from: shardingsphere://features/broadcast/databases/{database}/rules
     to: database_gateway_plan_broadcast_rule
@@ -214,6 +223,9 @@ tools:
           enum:
             - planning
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow planning summary."
         plan_id:
           type: string
           description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
@@ -311,6 +323,7 @@ tools:
       additionalProperties: true
       examples:
         - response_mode: planning
+          summary: Workflow plan `broadcast-rule-20260606-001` for broadcast.rule is ready for preview.
           plan_id: broadcast-rule-20260606-001
           status: planned
           workflow_kind: broadcast.rule
@@ -334,7 +347,7 @@ tools:
           distsql_artifacts:
             - operation_type: create
               artifact_type: rule_distsql
-              sql: CREATE BROADCAST TABLE RULE t_order
+              sql: CREATE BROADCAST TABLE RULE `t_order`
           next_actions:
             - order: 1
               type: tool_call
@@ -350,6 +363,8 @@ tools:
       destructiveHint: false
       idempotentHint: false
       openWorldHint: false
+    runtime:
+      workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: broadcast.rule
       org.apache.shardingsphere/artifact-categories:

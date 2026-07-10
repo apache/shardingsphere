@@ -19,11 +19,13 @@ package org.apache.shardingsphere.mode.metadata.manager.database;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -40,9 +42,11 @@ import org.mockito.Mock;
 
 import java.sql.Types;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -136,6 +140,16 @@ class DatabaseMetaDataManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getAllTables()).thenReturn(Collections.emptyList());
         databaseMetaDataManager.dropSchema("foo_db", "foo_schema");
         verify(metaDataContexts.getMetaData().getDatabase("foo_db")).dropSchema("foo_schema");
+    }
+    
+    @Test
+    void assertDropExistedSchemaShouldNotNPEAfterSchemaDropped() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType);
+        ShardingSphereDatabase realDatabase = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class),
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema), new ConfigurationProperties(new Properties()));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(realDatabase);
+        assertDoesNotThrow(() -> databaseMetaDataManager.dropSchema("foo_db", "foo_schema"));
     }
     
     @Test

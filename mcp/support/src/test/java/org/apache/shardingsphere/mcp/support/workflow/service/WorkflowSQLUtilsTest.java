@@ -22,7 +22,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -35,11 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowSQLUtilsTest {
-    
-    @Test
-    void assertIsSafeIdentifier() {
-        assertTrue(WorkflowSQLUtils.isSafeIdentifier("orders_01"));
-    }
     
     @Test
     void assertCheckSafeIdentifierAllowsSafeIdentifier() {
@@ -74,6 +68,11 @@ class WorkflowSQLUtilsTest {
     void assertCanonicalizeIdentifierFoldsPostgreSQLUnquotedIdentifier() {
         assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "Phone"), is("phone"));
         assertThat(WorkflowSQLUtils.canonicalizeIdentifier("openGauss", "Phone"), is("phone"));
+    }
+    
+    @Test
+    void assertCanonicalizeIdentifierKeepsMySQLUnquotedIdentifier() {
+        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("MySQL", "Phone"), is("Phone"));
     }
     
     @Test
@@ -136,6 +135,24 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierQuotesSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("orders_01");
+        assertThat(actualValue, is("`orders_01`"));
+    }
+    
+    @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierQuotesDelimitedSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("`orders`");
+        assertThat(actualValue, is("`orders`"));
+    }
+    
+    @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierReturnsEmptyForBlankIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("");
+        assertThat(actualValue, is(""));
+    }
+    
+    @Test
     void assertFormatSQLIdentifierUsesMysqlQuoteStyle() {
         String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "order detail");
         assertThat(actualValue, is("`order detail`"));
@@ -173,6 +190,12 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertFormatSQLIdentifierUsesSQLServerQuoteStyle() {
+        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("SQLServer", "order detail");
+        assertThat(actualValue, is("[order detail]"));
+    }
+    
+    @Test
     void assertFormatSQLIdentifierPreservesDelimitedSafeIdentifier() {
         String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "\"orders\"");
         assertThat(actualValue, is("\"orders\""));
@@ -194,8 +217,12 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertIsSameIdentifierKeepsPostgreSQLExistingQuotedIdentifierDistinct() {
+    void assertIsSameIdentifierRejectsUnquotedPostgreSQLQuotedName() {
         assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "Phone"));
+    }
+    
+    @Test
+    void assertIsSameIdentifierMatchesQuotedPostgreSQLName() {
         assertTrue(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "\"Phone\"", "Phone"));
     }
     
@@ -227,14 +254,6 @@ class WorkflowSQLUtilsTest {
     void assertCreateAlgorithmFragmentReturnsEmptyForBlankType() {
         String actualFragment = WorkflowSQLUtils.createAlgorithmFragment(" ", Map.of("aes-key-value", "123456"));
         assertThat(actualFragment, is(""));
-    }
-    
-    @Test
-    void assertParsePropertyEntriesSkipsMalformedEntriesAndTrimsValues() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.parsePropertyEntries(List.of("aes-key-value = 123456 ", " malformed ", " iv = abc "));
-        assertThat(actualEntries.size(), is(2));
-        assertThat(actualEntries.get("aes-key-value"), is("123456"));
-        assertThat(actualEntries.get("iv"), is("abc"));
     }
     
     @Test

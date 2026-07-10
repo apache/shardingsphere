@@ -1,5 +1,5 @@
 +++
-title = "COUNT SINGLE_TABLE RULE"
+title = "COUNT SINGLE TABLE"
 weight = 3
 +++
 
@@ -10,7 +10,7 @@ weight = 3
 ### 语法
 
 {{< tabs >}}
-{{% tab name="Grammar" %}}
+{{% tab name="语法" %}}
 ```sql
 CountSingleTable::=
   'COUNT' 'SINGLE' 'TABLE' ('FROM' databaseName)?
@@ -19,7 +19,7 @@ databaseName ::=
   identifier
 ```
 {{% /tab %}}
-{{% tab name="Railroad diagram" %}}
+{{% tab name="铁路图" %}}
 <iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
 {{% /tab %}}
 {{< /tabs >}}
@@ -31,26 +31,27 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列        | 说明         |
-|----------|------------|
-| database | 单表所在的数据库名称 |
-| count    | 单表个数       |
+| 列         | 说明          |
+|-----------|---------------|
+| rule_name | 单表规则名称    |
+| database  | 单表所在的数据库名称 |
+| count     | 单表个数        |
 
 ### 示例
 
-- 查询当前逻辑库中的单表规则个数
+- 查询指定逻辑库中的单表规则个数
 
 ```sql
-COUNT SINGLE TABLE
+COUNT SINGLE TABLE FROM sharding_db;
 ```
 
 ```sql
-mysql> COUNT SINGLE TABLE;
-+----------+--------+
-| database | count  |
-+----------+--------+
-| ds       | 2      |
-+----------+--------+
+mysql> COUNT SINGLE TABLE FROM sharding_db;
++-----------+-------------+-------+
+| rule_name | database    | count |
++-----------+-------------+-------+
+| single    | sharding_db | 2     |
++-----------+-------------+-------+
 1 row in set (0.02 sec)
 ```
 
@@ -61,4 +62,3 @@ mysql> COUNT SINGLE TABLE;
 ### 相关链接
 
 - [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-

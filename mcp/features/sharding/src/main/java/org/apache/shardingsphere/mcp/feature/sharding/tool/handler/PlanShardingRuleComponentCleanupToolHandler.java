@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingRuleComponentCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingRuleComponentCleanupWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
 /**
  * Tool handler for sharding rule component cleanup planning.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class PlanShardingRuleComponentCleanupToolHandler extends AbstractShardingPlanningToolHandler {
     
     private final ShardingPlanningRequestBinder requestBinder = new ShardingPlanningRequestBinder();
@@ -37,10 +39,6 @@ public final class PlanShardingRuleComponentCleanupToolHandler extends AbstractS
     
     public PlanShardingRuleComponentCleanupToolHandler() {
         planningService = new ShardingRuleComponentCleanupWorkflowPlanningService();
-    }
-    
-    PlanShardingRuleComponentCleanupToolHandler(final ShardingWorkflowPlanningService planningService) {
-        this.planningService = new ShardingRuleComponentCleanupWorkflowPlanningService(planningService);
     }
     
     @Override

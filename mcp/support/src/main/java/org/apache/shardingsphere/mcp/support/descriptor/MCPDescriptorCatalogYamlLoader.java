@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPDescriptorCatalog;
@@ -26,12 +28,10 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.stream.Stream;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPDescriptorCatalogYamlLoader {
     
     private static final String MCP_DESCRIPTOR_DIRECTORY = "META-INF/shardingsphere-mcp/mcp-descriptors";
-    
-    private MCPDescriptorCatalogYamlLoader() {
-    }
     
     static Collection<YamlMCPDescriptorCatalog> load() {
         try (Stream<String> resources = ClasspathResourceDirectoryReader.read(MCP_DESCRIPTOR_DIRECTORY)) {

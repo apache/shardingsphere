@@ -52,7 +52,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
-import org.apache.shardingsphere.sharding.cache.ShardingCache;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.rule.attribute.ShardingDataNodeRuleAttribute;
@@ -113,8 +112,6 @@ public final class ShardingRule implements DatabaseRule {
     
     private final String defaultShardingColumn;
     
-    private final ShardingCache shardingCache;
-    
     private final RuleAttributes attributes;
     
     private final ShardingRuleChecker shardingRuleChecker = new ShardingRuleChecker(this);
@@ -142,7 +139,6 @@ public final class ShardingRule implements DatabaseRule {
         if (defaultKeyGenerateAlgorithm instanceof ComputeNodeInstanceContextAware && -1 == computeNodeInstanceContext.getWorkerId()) {
             ((ComputeNodeInstanceContextAware) defaultKeyGenerateAlgorithm).setComputeNodeInstanceContext(computeNodeInstanceContext);
         }
-        shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
         // TODO check sharding rule configuration according to aggregated data sources
         Map<String, DataSource> aggregatedDataSources = new RuleMetaData(builtRules).findAttribute(AggregatedDataSourceRuleAttribute.class)
                 .map(AggregatedDataSourceRuleAttribute::getAggregatedDataSources).orElseGet(() -> PhysicalDataSourceAggregator.getAggregatedDataSources(dataSources, builtRules));
@@ -589,15 +585,6 @@ public final class ShardingRule implements DatabaseRule {
                                                                        final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
         return findBindingTableRule(logicTable).map(optional -> optional.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables))
                 .orElseGet(Collections::emptyMap);
-    }
-    
-    /**
-     * Is sharding cache enabled.
-     *
-     * @return is sharding cache enabled
-     */
-    public boolean isShardingCacheEnabled() {
-        return null != shardingCache;
     }
     
     private boolean isJoinConditionContainsShardingColumns(final Collection<String> tableNames, final Collection<WhereSegment> whereSegments) {

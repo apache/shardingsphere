@@ -18,6 +18,7 @@
     {"excludeClasses": "JdkLogger"},
 
     {"includeClasses": "com.oracle.svm.core.**"},
+    {"includeClasses": "com.sun.management.internal.OperatingSystemImpl"},
     {"includeClasses": "java.lang.*"},
     {"includeClasses": "java.lang.reflect.*"},
     {"includeClasses": "org.apache.shardingsphere.**"},

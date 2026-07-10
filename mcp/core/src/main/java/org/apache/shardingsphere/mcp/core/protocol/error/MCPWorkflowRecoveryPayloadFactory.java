@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecution
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 import java.util.List;
@@ -37,11 +38,11 @@ import java.util.Map;
 final class MCPWorkflowRecoveryPayloadFactory {
     
     static Map<String, Object> createMissingExecutionModeRecovery(final MCPExecutionModeRequiredException cause) {
-        return "database_gateway_apply_workflow".equals(cause.getToolName()) ? createMissingWorkflowExecutionModeRecovery(cause) : createMissingUpdateExecutionModeRecovery(cause);
+        return WorkflowToolDescriptors.APPLY_TOOL_NAME.equals(cause.getToolName()) ? createMissingWorkflowExecutionModeRecovery(cause) : createMissingUpdateExecutionModeRecovery(cause);
     }
     
     static Map<String, Object> createInvalidExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
-        return "database_gateway_apply_workflow".equals(cause.getToolName()) ? createInvalidWorkflowExecutionModeRecovery(cause) : createInvalidUpdateExecutionModeRecovery(cause);
+        return WorkflowToolDescriptors.APPLY_TOOL_NAME.equals(cause.getToolName()) ? createInvalidWorkflowExecutionModeRecovery(cause) : createInvalidUpdateExecutionModeRecovery(cause);
     }
     
     static Map<String, Object> createInvalidApprovedStepsRecovery(final MCPInvalidApprovedStepsException cause) {
@@ -53,7 +54,7 @@ final class MCPWorkflowRecoveryPayloadFactory {
         result.put(MCPPayloadFieldNames.ALLOWED_VALUES, cause.getAllowedValues());
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(
-                "database_gateway_apply_workflow", "Preview again, then copy only visible approval_step values into approved_steps.", suggestedArguments)));
+                WorkflowToolDescriptors.APPLY_TOOL_NAME, "Preview again, then copy only visible approval_step values into approved_steps.", suggestedArguments)));
         result.put("ask_user_when_uncertain", true);
         return result;
     }

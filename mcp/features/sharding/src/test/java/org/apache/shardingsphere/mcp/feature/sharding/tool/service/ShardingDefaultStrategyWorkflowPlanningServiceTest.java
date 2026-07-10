@@ -37,17 +37,17 @@ class ShardingDefaultStrategyWorkflowPlanningServiceTest {
     
     @Test
     void assertPlan() {
-        ShardingWorkflowPlanningService delegate = mock(ShardingWorkflowPlanningService.class);
+        ShardingWorkflowPlanningKernel kernel = mock(ShardingWorkflowPlanningKernel.class);
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         WorkflowContextSnapshot expected = new WorkflowContextSnapshot();
-        when(delegate.planDefaultStrategy(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), any())).thenReturn(expected);
+        when(kernel.planDefaultStrategy(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), any())).thenReturn(expected);
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setDefaultStrategyType("DATABASE");
-        WorkflowContextSnapshot actual = new ShardingDefaultStrategyWorkflowPlanningService(delegate)
+        WorkflowContextSnapshot actual = new ShardingDefaultStrategyWorkflowPlanningService(kernel)
                 .plan(workflowSessionContext, queryFacade, "session-1", new ShardingDefaultStrategyWorkflowRequest(request));
         ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
-        verify(delegate).planDefaultStrategy(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), requestCaptor.capture());
+        verify(kernel).planDefaultStrategy(eq(workflowSessionContext), eq(queryFacade), eq("session-1"), requestCaptor.capture());
         assertThat(actual, is(expected));
         assertThat(requestCaptor.getValue().getDefaultStrategyType(), is("DATABASE"));
     }

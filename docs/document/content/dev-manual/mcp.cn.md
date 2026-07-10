@@ -67,13 +67,15 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 - 实现 `MCPToolHandler<T extends MCPHandlerContext>`。
 - 声明 context type。
 - 声明 canonical tool name。
+- `handle(...)` 只返回成功的 `MCPResponse`；参数非法、资源不存在、查询失败、超时、不支持等受控失败应抛出 `ShardingSphereMCPException` 子类或明确的运行时异常，由 runtime 转换为 MCP tool 错误结果。
 - 在 descriptor 中维护 input schema、output schema、annotations、相关 resources、follow-up tools 和副作用说明。
 
 对外新增 resource：
 
 - 实现 `MCPResourceHandler<T extends MCPHandlerContext>`。
 - 声明 context type。
-- 声明 canonical URI template。
+- 声明 canonical resource URI template。固定 URI 也是没有变量的 URI template。
+- `handle(...)` 只返回成功的 `MCPResponse`；失败不要在 handler 中手工构造错误 response，由 runtime 转换为 MCP resource 读取错误。
 - 在 descriptor 中维护 URI 参数含义、对象范围、MIME type、title、description、annotations 和关系元数据。
 
 运行时代码需要 descriptor 时，应使用 canonical tool name 或 resource URI template，通过 `MCPDescriptorCatalogIndex` 从 catalog 解析。

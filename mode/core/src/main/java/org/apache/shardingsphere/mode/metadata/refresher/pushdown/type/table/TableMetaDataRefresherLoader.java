@@ -77,7 +77,7 @@ public final class TableMetaDataRefresherLoader {
     private ShardingSphereTable loadTable(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName,
                                           final IdentifierValue tableIdentifierValue, final ConfigurationProperties props, final boolean fallbackWhenMissing,
                                           final Collection<ShardingSphereSchema> revisionCandidateSchemas) throws SQLException {
-        String candidateTableName = TableRefreshUtils.getTableLoadCandidateName(database, tableIdentifierValue, props);
+        String candidateTableName = TableRefreshUtils.getTableLoadCandidateName(database, tableIdentifierValue);
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         boolean singleTable = TableRefreshUtils.isSingleTable(candidateTableName, database);
         if (singleTable) {

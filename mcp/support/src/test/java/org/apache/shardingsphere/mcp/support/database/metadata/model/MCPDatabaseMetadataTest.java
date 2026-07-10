@@ -31,8 +31,8 @@ class MCPDatabaseMetadataTest {
     void assertCreateSummary() {
         MCPDatabaseMetadata actual = createDatabaseMetadata().createSummary();
         assertThat(actual.getDatabase(), is("foo_db"));
-        assertThat(actual.getDatabaseType(), is("MySQL"));
-        assertThat(actual.getDatabaseVersion(), is("8.0"));
+        assertThat(actual.getDatabaseType(), is("FixtureDB"));
+        assertThat(actual.getDatabaseVersion(), is("1.0"));
         assertTrue(actual.getSchemas().isEmpty());
     }
     
@@ -40,8 +40,8 @@ class MCPDatabaseMetadataTest {
     void assertCreateDetail() {
         MCPDatabaseMetadata actual = createDatabaseMetadata().createDetail();
         assertThat(actual.getDatabase(), is("foo_db"));
-        assertThat(actual.getDatabaseType(), is("MySQL"));
-        assertThat(actual.getDatabaseVersion(), is("8.0"));
+        assertThat(actual.getDatabaseType(), is("FixtureDB"));
+        assertThat(actual.getDatabaseVersion(), is("1.0"));
         assertThat(actual.getSchemas().get(0).getSchema(), is("bar_schema"));
         assertThat(actual.getSchemas().get(1).getSchema(), is("foo_schema"));
         assertThat(actual.getSchemas().get(1).getTables().get(0).getTable(), is("bar_table"));
@@ -49,7 +49,7 @@ class MCPDatabaseMetadataTest {
     }
     
     private MCPDatabaseMetadata createDatabaseMetadata() {
-        return new MCPDatabaseMetadata("foo_db", "MySQL", "8.0", List.of(new MCPSchemaMetadata("foo_db", "foo_schema",
+        return new MCPDatabaseMetadata("foo_db", "FixtureDB", "1.0", List.of(new MCPSchemaMetadata("foo_db", "foo_schema",
                 List.of(new MCPTableMetadata("foo_db", "foo_schema", "foo_table", List.of(new MCPColumnMetadata("foo_db", "foo_schema", "foo_table", "", "foo_column")), List.of()),
                         new MCPTableMetadata("foo_db", "foo_schema", "bar_table", List.of(), List.of())),
                 List.of(new MCPViewMetadata("foo_db", "foo_schema", "foo_view", List.of())),

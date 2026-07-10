@@ -61,11 +61,11 @@ public final class ResourceDefinitionRegistry {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
-            String uriOrTemplate = each.getResourceUriTemplate();
-            ShardingSpherePreconditions.checkState(null != uriOrTemplate && !uriOrTemplate.isBlank(),
-                    () -> new IllegalArgumentException(String.format("Resource URI or URI template is required for `%s`.", each.getClass().getName())));
+            String uriTemplate = each.getResourceUriTemplate();
+            ShardingSpherePreconditions.checkState(null != uriTemplate && !uriTemplate.isBlank(),
+                    () -> new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
-            result.put(new MCPUriPattern(uriOrTemplate), each);
+            result.put(new MCPUriPattern(uriTemplate), each);
         }
         return result;
     }

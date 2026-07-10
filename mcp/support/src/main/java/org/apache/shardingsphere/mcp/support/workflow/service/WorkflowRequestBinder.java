@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -29,10 +31,8 @@ import java.util.function.Supplier;
 /**
  * Workflow request binder.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowRequestBinder {
-    
-    private WorkflowRequestBinder() {
-    }
     
     /**
      * Bind workflow planning request from MCP arguments.

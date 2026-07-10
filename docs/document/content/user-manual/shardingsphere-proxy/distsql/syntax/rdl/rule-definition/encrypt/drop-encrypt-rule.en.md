@@ -29,7 +29,7 @@ ruleName ::=
 
 ### Supplement
 
-- `ifExists` clause is used for avoid `Encrypt rule not exists` error.
+- `ifExists` clause is used to avoid `Encrypt rule not exists` error.
 
 ### Example
 

@@ -40,7 +40,7 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 
 - Searches logical database metadata.
 - Narrows scope by `database`, `schema`, `query`, and `object_types`.
-- `object_types` supports `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence`.
+- `object_types` supports `database`, `schema`, `storage_unit`, `table`, `view`, `column`, `index`, and `sequence`.
 
 `database_gateway_validate_runtime_database`
 
@@ -60,7 +60,7 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 `database_gateway_execute_update`
 
 - Previews or executes one supported side-effecting SQL statement.
-- `execution_mode=preview` only classifies the SQL and previews the side-effect scope.
+- `execution_mode=preview` only classifies the SQL and previews the side-effect scope; it is not a database dry run.
 - `execution_mode=execute` executes the SQL after review.
 - Multiple statements and banned commands are rejected.
 
@@ -101,6 +101,12 @@ Runtime and capability:
 - `shardingsphere://databases`
 - `shardingsphere://databases/{database}`
 - `shardingsphere://databases/{database}/capabilities`
+- `shardingsphere://databases/{database}/storage-units`
+- `shardingsphere://databases/{database}/storage-units/{storageUnit}`
+- `shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules`
+- `shardingsphere://databases/{database}/single-tables`
+- `shardingsphere://databases/{database}/single-tables/{table}`
+- `shardingsphere://databases/{database}/single-table/default-storage-unit`
 
 Metadata:
 
@@ -132,6 +138,7 @@ Feature resources:
 - `shardingsphere://features/mask/databases/{database}/rules`
 - `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
 - `shardingsphere://features/broadcast/databases/{database}/rules`
+- `shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule`
 - `shardingsphere://features/broadcast/databases/{database}/rule-count`
 - `shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins`
 - `shardingsphere://features/readwrite-splitting/databases/{database}/rules`
@@ -193,7 +200,9 @@ Feature resources:
 ## Completions
 
 Completions suggest runtime names, metadata identifiers, algorithms, and workflow `plan_id` values in the current session.
-Before choosing uncertain database, schema, table, column, algorithm, or `plan_id` values, clients should call `completion/complete` or read the nearest MCP resource.
+Before choosing uncertain database, schema, table, column, storage unit, algorithm, or `plan_id` values, clients should call `completion/complete` or read the nearest MCP resource.
+When a completion response includes meta `next_actions`, clients should follow those actions before guessing a value or switching to another tool.
+Use `resources/templates/list` to discover URI variables for the nearest resource before retrying completion with additional context.
 
 ## Responses and recovery
 
@@ -213,5 +222,7 @@ Large-result payloads use:
 
 Recoverable error payloads keep `message` and add `recovery` hints.
 Common recovery cases include missing arguments, unsupported tools or resources, invalid enum values, workflow state errors, and unsafe SQL tool selection.
+Model-facing business payloads that require continuation include a top-level `summary` and structured `next_actions`.
+Workflow planning, apply, manual-only export, and validation responses use these fields to guide the next tool call, user question, resource read, completion call, or terminal stop.
 
 JSON-RPC numeric error codes are the MCP protocol error contract.

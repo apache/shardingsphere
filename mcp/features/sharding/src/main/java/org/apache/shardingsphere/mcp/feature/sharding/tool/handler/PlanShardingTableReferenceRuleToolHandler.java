@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingTableReferenceRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingTableReferenceRuleWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
 /**
  * Tool handler for sharding table reference rule planning.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class PlanShardingTableReferenceRuleToolHandler extends AbstractShardingPlanningToolHandler {
     
     private final ShardingPlanningRequestBinder requestBinder = new ShardingPlanningRequestBinder();
@@ -37,10 +39,6 @@ public final class PlanShardingTableReferenceRuleToolHandler extends AbstractSha
     
     public PlanShardingTableReferenceRuleToolHandler() {
         planningService = new ShardingTableReferenceRuleWorkflowPlanningService();
-    }
-    
-    PlanShardingTableReferenceRuleToolHandler(final ShardingWorkflowPlanningService planningService) {
-        this.planningService = new ShardingTableReferenceRuleWorkflowPlanningService(planningService);
     }
     
     @Override

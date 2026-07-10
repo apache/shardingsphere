@@ -46,14 +46,18 @@ class LLMMCPToolDefinitionFactoryTest {
     @Test
     void assertProtocolBridgeToolDefinitionsKeepBridgeSchemas() {
         List<String> bridgeToolNames = List.of(
+                MCPInteractionActionNames.LIST_TOOLS,
                 MCPInteractionActionNames.LIST_RESOURCES,
+                MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
                 MCPInteractionActionNames.READ_RESOURCE,
                 MCPInteractionActionNames.LIST_PROMPTS,
                 MCPInteractionActionNames.GET_PROMPT,
                 MCPInteractionActionNames.COMPLETE);
         List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().create(bridgeToolNames);
         assertThat(getToolNames(actual), is(bridgeToolNames));
+        assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_TOOLS)));
         assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_RESOURCES)));
+        assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES)));
         assertReadResourceBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.READ_RESOURCE)));
         assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_PROMPTS)));
         assertGetPromptBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.GET_PROMPT)));

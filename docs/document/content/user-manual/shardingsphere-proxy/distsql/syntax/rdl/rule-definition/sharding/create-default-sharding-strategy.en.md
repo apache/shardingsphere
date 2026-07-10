@@ -19,16 +19,16 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 shardingStrategy ::=
-  'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' '=' columnName | 'SHARDING_COLUMNS' '=' columnNames) ',' 'SHARDING_ALGORITHM' '=' algorithmDefinition
+  'TYPE' '=' 'NONE'
+  | 'TYPE' '=' 'STANDARD' ',' 'SHARDING_COLUMN' '=' columnName ',' shardingAlgorithm
+  | 'TYPE' '=' 'COMPLEX' ',' 'SHARDING_COLUMNS' '=' columnName ',' columnName (',' columnName)* ',' shardingAlgorithm
+  | 'TYPE' '=' 'HINT' ',' shardingAlgorithm
 
-strategyType ::=
-  string
+shardingAlgorithm ::=
+  'SHARDING_ALGORITHM' '(' algorithmDefinition ')'
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'  
-
-columnNames ::=
-  columnName (',' columnName)+
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 columnName ::=
   identifier
@@ -37,7 +37,7 @@ algorithmType ::=
   string
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string
@@ -56,7 +56,7 @@ value ::=
 - When using the complex sharding algorithm, multiple sharding columns need to be specified using `SHARDING_COLUMNS`;
 - `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer
   to [Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/);
-- `ifNotExists` clause is used for avoid `Duplicate default sharding strategy` error.
+- `ifNotExists` clause is used to avoid `Duplicate default sharding strategy` error.
 
 ### Example
 

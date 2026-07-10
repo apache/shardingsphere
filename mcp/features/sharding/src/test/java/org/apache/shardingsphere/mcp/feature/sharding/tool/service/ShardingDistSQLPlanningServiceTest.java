@@ -33,10 +33,10 @@ class ShardingDistSQLPlanningServiceTest {
     @Test
     void assertPlanTableRuleCreate() {
         RuleArtifact actual = new ShardingDistSQLPlanningService().planTableRule(createTableRuleRequest(), "create");
-        assertThat(actual.getSql(), is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
-                + "TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, "
+        assertThat(actual.getSql(), is("CREATE SHARDING TABLE RULE `t_order`(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+                + "TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=`order_id`, "
                 + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))), "
-                + "KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))"));
+                + "KEY_GENERATE_STRATEGY(COLUMN=`id`, TYPE(NAME='snowflake')))"));
         assertNoForbiddenArtifacts(actual.getSql());
     }
     
@@ -60,10 +60,10 @@ class ShardingDistSQLPlanningServiceTest {
         request.setStrategyType("complex");
         request.setShardingColumns("order_id, user_id");
         assertThat(new ShardingDistSQLPlanningService().planTableRule(request, "create").getSql(),
-                is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
-                        + "TABLE_STRATEGY(TYPE='complex', SHARDING_COLUMNS=order_id, user_id, "
+                is("CREATE SHARDING TABLE RULE `t_order`(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+                        + "TABLE_STRATEGY(TYPE='complex', SHARDING_COLUMNS=`order_id`, `user_id`, "
                         + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))), "
-                        + "KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))"));
+                        + "KEY_GENERATE_STRATEGY(COLUMN=`id`, TYPE(NAME='snowflake')))"));
     }
     
     @Test
@@ -72,9 +72,9 @@ class ShardingDistSQLPlanningServiceTest {
         request.setColumn("");
         request.setStrategyType("hint");
         assertThat(new ShardingDistSQLPlanningService().planTableRule(request, "create").getSql(),
-                is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+                is("CREATE SHARDING TABLE RULE `t_order`(DATANODES('ds_${0..1}.t_order_${0..1}'), "
                         + "TABLE_STRATEGY(TYPE='hint', SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))), "
-                        + "KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))"));
+                        + "KEY_GENERATE_STRATEGY(COLUMN=`id`, TYPE(NAME='snowflake')))"));
     }
     
     @Test
@@ -84,7 +84,7 @@ class ShardingDistSQLPlanningServiceTest {
         request.setStrategyType("none");
         request.setAlgorithmType("");
         assertThat(new ShardingDistSQLPlanningService().planTableRule(request, "create").getSql(),
-                is("CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))"));
+                is("CREATE SHARDING TABLE RULE `t_order`(DATANODES('ds_${0..1}.t_order_${0..1}'), KEY_GENERATE_STRATEGY(COLUMN=`id`, TYPE(NAME='snowflake')))"));
     }
     
     @Test
@@ -99,13 +99,13 @@ class ShardingDistSQLPlanningServiceTest {
         request.setKeyGeneratorType("SNOWFLAKE");
         request.putKeyGeneratorProperties(Map.of("worker-id", "1"));
         assertThat(new ShardingDistSQLPlanningService().planTableRule(request, "create").getSql(),
-                is("CREATE SHARDING TABLE RULE t_order(STORAGE_UNITS(ds_0, ds_1), SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')), "
-                        + "KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake', PROPERTIES('worker-id'='1'))))"));
+                is("CREATE SHARDING TABLE RULE `t_order`(STORAGE_UNITS(`ds_0`, `ds_1`), SHARDING_COLUMN=`order_id`, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')), "
+                        + "KEY_GENERATE_STRATEGY(COLUMN=`id`, TYPE(NAME='snowflake', PROPERTIES('worker-id'='1'))))"));
     }
     
     @Test
     void assertPlanTableRuleDrop() {
-        assertThat(new ShardingDistSQLPlanningService().planTableRule(createTableRuleRequest(), "drop").getSql(), is("DROP SHARDING TABLE RULE t_order"));
+        assertThat(new ShardingDistSQLPlanningService().planTableRule(createTableRuleRequest(), "drop").getSql(), is("DROP SHARDING TABLE RULE `t_order`"));
     }
     
     @Test
@@ -114,7 +114,7 @@ class ShardingDistSQLPlanningServiceTest {
         request.setRuleName("ref_rule");
         request.getReferenceTables().addAll(List.of("t_order", "t_order_item"));
         assertThat(new ShardingDistSQLPlanningService().planTableReferenceRule(request, "create").getSql(),
-                is("CREATE SHARDING TABLE REFERENCE RULE ref_rule(t_order, t_order_item)"));
+                is("CREATE SHARDING TABLE REFERENCE RULE `ref_rule`(`t_order`, `t_order_item`)"));
     }
     
     @Test
@@ -122,7 +122,7 @@ class ShardingDistSQLPlanningServiceTest {
         ShardingWorkflowRequest request = createTableRuleRequest();
         request.setDefaultStrategyType("DATABASE");
         assertThat(new ShardingDistSQLPlanningService().planDefaultStrategy(request, "create").getSql(),
-                is("CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='standard', SHARDING_COLUMN=order_id, "
+                is("CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='standard', SHARDING_COLUMN=`order_id`, "
                         + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"));
     }
     
@@ -134,7 +134,7 @@ class ShardingDistSQLPlanningServiceTest {
         request.setStrategyType("complex");
         request.setShardingColumns("order_id, user_id");
         assertThat(new ShardingDistSQLPlanningService().planDefaultStrategy(request, "create").getSql(),
-                is("CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='complex', SHARDING_COLUMNS=order_id, user_id, "
+                is("CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='complex', SHARDING_COLUMNS=`order_id`, `user_id`, "
                         + "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"));
     }
     
@@ -166,7 +166,7 @@ class ShardingDistSQLPlanningServiceTest {
         request.setKeyGeneratorType("SNOWFLAKE");
         request.putKeyGeneratorProperties(Map.of("worker-id", "1"));
         assertThat(new ShardingDistSQLPlanningService().planKeyGenerator(request, "create").getSql(),
-                is("CREATE SHARDING KEY GENERATOR snowflake_generator(TYPE(NAME='snowflake', PROPERTIES('worker-id'='1')))"));
+                is("CREATE SHARDING KEY GENERATOR `snowflake_generator`(TYPE(NAME='snowflake', PROPERTIES('worker-id'='1')))"));
     }
     
     @Test
@@ -175,7 +175,7 @@ class ShardingDistSQLPlanningServiceTest {
         request.setKeyGenerateStrategyName("order_key_strategy");
         request.setKeyGenerateColumn("");
         assertThat(new ShardingDistSQLPlanningService().planKeyGenerateStrategy(request, "create").getSql(),
-                is("CREATE SHARDING KEY GENERATE STRATEGY order_key_strategy(TABLE=t_order, COLUMN=order_id, TYPE(NAME='snowflake'))"));
+                is("CREATE SHARDING KEY GENERATE STRATEGY `order_key_strategy`(TABLE=`t_order`, COLUMN=`order_id`, TYPE(NAME='snowflake'))"));
     }
     
     @Test
@@ -183,7 +183,7 @@ class ShardingDistSQLPlanningServiceTest {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setComponentType("key_generator");
         request.setComponentName("snowflake_generator");
-        assertThat(new ShardingDistSQLPlanningService().planComponentCleanup(request).getSql(), is("DROP SHARDING KEY GENERATOR snowflake_generator"));
+        assertThat(new ShardingDistSQLPlanningService().planComponentCleanup(request).getSql(), is("DROP SHARDING KEY GENERATOR `snowflake_generator`"));
     }
     
     private ShardingWorkflowRequest createTableRuleRequest() {

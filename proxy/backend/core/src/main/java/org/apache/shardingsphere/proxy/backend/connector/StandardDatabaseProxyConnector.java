@@ -78,7 +78,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -261,7 +260,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     private ResponseHeader doExecuteFederation() throws SQLException {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData();
-        boolean isReturnGeneratedKeys = sqlStatement instanceof InsertStatement && dialectDatabaseMetaData.getGeneratedKeyOption().isPresent();
+        boolean isReturnGeneratedKeys = ProxySQLExecutor.isReturnGeneratedKeys(queryContext.getSqlStatementContext(), dialectDatabaseMetaData, queryContext.getParameters());
         DatabaseType protocolType = database.getProtocolType();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
                 sqlStatement, this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
@@ -300,9 +299,10 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         int columnCount = getColumnCount(sqlStatementContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
+        Collection<ShardingSphereDatabase> databases = queryContext.getMetaData().getAllDatabases();
         ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(queryResultSample.getMetaData().getResultSetMetaData(), database, sqlStatementContext);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.add(createQueryHeader(queryHeaderBuilderEngine, sqlStatementContext, resultSetMetaData, database, columnIndex));
+            result.add(createQueryHeader(queryHeaderBuilderEngine, sqlStatementContext, resultSetMetaData, database, databases, columnIndex));
         }
         return result;
     }
@@ -314,10 +314,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     }
     
     private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final SQLStatementContext sqlStatementContext,
-                                          final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        return containsDerivedProjections
-                ? queryHeaderBuilderEngine.build(((SelectStatementContext) sqlStatementContext).getProjectionsContext(), resultSetMetaData, database, columnIndex)
-                : queryHeaderBuilderEngine.build(resultSetMetaData, database, columnIndex);
+                                          final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database,
+                                          final Collection<ShardingSphereDatabase> databases, final int columnIndex) throws SQLException {
+        return queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, database, databases, columnIndex);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
@@ -331,7 +330,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
                 ? ((InsertStatementContext) queryContext.getSqlStatementContext()).getGeneratedKeyContext()
                 : Optional.empty();
         Collection<Comparable<?>> autoIncrementGeneratedValues = generatedKeyContext.filter(GeneratedKeyContext::isSupportAutoIncrement)
+                .filter(GeneratedKeyContext::isGenerated)
                 .map(GeneratedKeyContext::getGeneratedValues).orElseGet(Collections::emptyList);
+        
         UpdateResponseHeader result = new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement(), updateResults, autoIncrementGeneratedValues);
         if (isNeedAccumulate()) {
             result.mergeUpdateCount();

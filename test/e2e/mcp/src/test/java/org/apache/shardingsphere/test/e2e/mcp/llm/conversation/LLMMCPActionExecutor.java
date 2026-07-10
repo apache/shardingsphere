@@ -41,8 +41,14 @@ final class LLMMCPActionExecutor {
     }
     
     private Map<String, Object> execute(final String actionName, final Map<String, Object> args) throws IOException, InterruptedException {
+        if (MCPInteractionActionNames.LIST_TOOLS.equals(actionName)) {
+            return Map.of("tools", mcpInteractionClient.listTools());
+        }
         if (MCPInteractionActionNames.LIST_RESOURCES.equals(actionName)) {
             return mcpInteractionClient.listResources();
+        }
+        if (MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES.equals(actionName)) {
+            return mcpInteractionClient.listResourceTemplates();
         }
         if (MCPInteractionActionNames.READ_RESOURCE.equals(actionName)) {
             return readResource(args);

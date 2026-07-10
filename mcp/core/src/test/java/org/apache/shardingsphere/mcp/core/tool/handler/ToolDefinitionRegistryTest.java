@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
@@ -140,6 +141,20 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
+    void assertDispatchWithIntegerAboveMaximum() {
+        MCPInvalidToolArgumentException actual = assertThrows(MCPInvalidToolArgumentException.class,
+                () -> dispatch("database_gateway_execute_update", Map.of("database", "logic_db", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1",
+                        "execution_mode", "preview", "max_rows", 5001)));
+        assertThat(actual.getMessage(), is("max_rows must be an integer between 0 and 5000."));
+        assertThat(actual.getSourceTool(), is("database_gateway_execute_update"));
+        assertThat(actual.getTargetTool(), is("database_gateway_execute_update"));
+        assertThat(actual.getArgumentPath(), is("max_rows"));
+        assertThat(actual.getMinimumValue(), is(0));
+        assertThat(actual.getMaximumValue(), is(5000));
+        assertThat(actual.getSuggestedValue(), is(100));
+    }
+    
+    @Test
     void assertDispatchWithInvalidEnumArgument() {
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
                 () -> dispatch("database_gateway_search_metadata", Map.of("query", "order", "object_types", List.of("TABLE"))));
@@ -201,6 +216,19 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
+    void assertValidateWithSchemaAdditionalProperties() {
+        MCPToolDescriptor descriptor = createAdditionalPropertiesFixtureToolDescriptor();
+        MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
+                () -> new MCPToolArgumentContract(descriptor.getName(), descriptor.getInputSchema()).validate(Map.of("options", Map.of("mode", 1))));
+        assertThat(actual.getMessage(), is("options.mode must be a string."));
+        assertThat(actual.getToolName(), is("fixture_tool"));
+        assertThat(actual.getArgumentPath(), is("options.mode"));
+        assertThat(actual.getCategory(), is("invalid_argument_type"));
+        assertThat(actual.getExpectedType(), is("string"));
+        assertThat(actual.getSuggestedArguments(), is(Map.of()));
+    }
+    
+    @Test
     void assertGetSupportedToolsWithNoToolHandlers() {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(Collections.emptyList());
@@ -220,6 +248,12 @@ class ToolDefinitionRegistryTest {
     
     private static MCPToolDescriptor createNestedFixtureToolDescriptor() {
         Map<String, Object> optionSchema = Map.of("type", "object", "properties", Map.of("mode", Map.of("type", "string")), "required", List.of(), "additionalProperties", false);
+        return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of("type", "object", "properties", Map.of("options", optionSchema), "required", List.of(),
+                "additionalProperties", false), Collections.emptyMap(), new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
+    }
+    
+    private static MCPToolDescriptor createAdditionalPropertiesFixtureToolDescriptor() {
+        Map<String, Object> optionSchema = Map.of("type", "object", "additionalProperties", Map.of("type", "string"));
         return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of("type", "object", "properties", Map.of("options", optionSchema), "required", List.of(),
                 "additionalProperties", false), Collections.emptyMap(), new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
     }

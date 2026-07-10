@@ -114,11 +114,23 @@ prompts:
         - database_gateway_validate_workflow
         - database_gateway_plan_encrypt_rule
         - database_gateway_plan_mask_rule
+        - database_gateway_plan_broadcast_rule
+        - database_gateway_plan_readwrite_splitting_rule
+        - database_gateway_plan_readwrite_splitting_status
+        - database_gateway_plan_shadow_rule
+        - database_gateway_plan_default_shadow_algorithm
+        - database_gateway_plan_shadow_algorithm_cleanup
+        - database_gateway_plan_sharding_table_rule
+        - database_gateway_plan_sharding_table_reference_rule
+        - database_gateway_plan_sharding_default_strategy
+        - database_gateway_plan_sharding_key_generator
+        - database_gateway_plan_sharding_key_generate_strategy
+        - database_gateway_plan_sharding_rule_component_cleanup
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_validate_workflow confirms the current plan or after a replacement plan is created."
         - "Stop when the plan_id is unavailable and the matching planning tool needs fresh user inputs."
       org.apache.shardingsphere/ask-user-conditions:
-        - "Ask which workflow kind to re-plan when the failure summary does not identify encrypt or mask."
+        - "Ask which workflow kind to re-plan when the failure summary or recovery payload does not identify the matching planning tool."
         - "Ask before applying recovered artifacts that would change runtime state."
 
 completionTargets:
@@ -128,12 +140,20 @@ completionTargets:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: prompt
     reference: safe_sql_execution
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: prompt
     reference: recover_workflow
     arguments:
@@ -205,6 +225,9 @@ tools:
             - manual_only
             - recovery
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow apply summary."
         plan_id:
           type: string
           description: "Workflow plan identifier that was applied."
@@ -347,6 +370,9 @@ tools:
               reason:
                 type: string
                 description: "Why the model should take the action."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
               required_inputs:
                 type: array
                 description: "User inputs required when type is ask_user."
@@ -355,6 +381,7 @@ tools:
                 description: "Action order values that must complete before this action."
       examples:
         - response_mode: preview
+          summary: Previewed 0 workflow artifacts. Nothing has been applied.
           plan_id: encrypt-rule-20260505-001
           execution_mode: preview
           applied_artifacts: []
@@ -406,6 +433,9 @@ tools:
           enum:
             - validation
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow validation summary."
         plan_id:
           type: string
           description: "Workflow plan identifier that was validated."
@@ -517,6 +547,7 @@ tools:
                 description: "Action order values that must complete before this action."
       examples:
         - response_mode: validation
+          summary: Workflow validation passed for plan `encrypt-rule-20260505-001`.
           plan_id: encrypt-rule-20260505-001
           status: passed
           sections: []

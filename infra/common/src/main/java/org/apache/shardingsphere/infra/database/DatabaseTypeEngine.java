@@ -19,20 +19,17 @@ package org.apache.shardingsphere.infra.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.DialectJdbcUrlFetcher;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -101,25 +98,10 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getStorageType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeFactory.get(connection.getMetaData().getURL());
-        } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
-            return findStorageType(dataSource).orElseThrow(() -> new SQLWrapperException(sqlFeatureNotSupportedException));
+            return DatabaseTypeFactory.get(connection.getMetaData());
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
-    }
-    
-    private static Optional<DatabaseType> findStorageType(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            for (DialectJdbcUrlFetcher each : ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)) {
-                if (connection.isWrapperFor(each.getConnectionClass())) {
-                    return Optional.of(DatabaseTypeFactory.get(each.fetch(connection)));
-                }
-            }
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
-        }
-        return Optional.empty();
     }
     
     /**

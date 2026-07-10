@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
@@ -30,10 +32,8 @@ import org.testcontainers.containers.GenericContainer;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -85,7 +85,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     
     protected final HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> headers,
                                                                final Map<String, Object> initializeRequestParams) throws IOException, InterruptedException {
-        return sendJsonRpcRequest(httpClient, headers, "init-1", "initialize", initializeRequestParams);
+        return MCPHttpTransportTestSupport.sendJsonRpcRequest(httpClient, getEndpointUri(), headers, "init-1", "initialize", initializeRequestParams);
     }
     
     protected final HttpResponse<String> sendInitializedNotification(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
@@ -95,36 +95,32 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     
     protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,
                                                              final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
-        return sendJsonRpcRequest(httpClient, createSessionHeaders(sessionId), toolName + "-1", "tools/call", Map.of("name", toolName, "arguments", arguments));
+        return MCPHttpTransportTestSupport.sendJsonRpcRequest(httpClient, getEndpointUri(), createSessionHeaders(sessionId), toolName + "-1", "tools/call",
+                Map.of("name", toolName, "arguments", arguments));
     }
     
     protected final HttpResponse<String> sendResourceReadRequest(final HttpClient httpClient, final String sessionId,
                                                                  final String resourceUri) throws IOException, InterruptedException {
-        return sendJsonRpcRequest(httpClient, createSessionHeaders(sessionId), "resource-1", "resources/read", Map.of("uri", resourceUri));
+        return MCPHttpTransportTestSupport.sendJsonRpcRequest(httpClient, getEndpointUri(), createSessionHeaders(sessionId), "resource-1", "resources/read", Map.of("uri", resourceUri));
     }
     
     protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(getEndpointUri()).DELETE();
-        applyHeaders(requestBuilder, headers);
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+        return MCPHttpTransportTestSupport.sendDeleteRequest(httpClient, getEndpointUri(), headers);
     }
     
     protected final HttpResponse<String> sendRawPostRequest(final HttpClient httpClient, final Map<String, String> headers,
                                                             final String requestBody) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = MCPHttpTransportTestSupport.createJsonRequestBuilder(getEndpointUri())
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody));
-        applyHeaders(requestBuilder, headers);
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+        return MCPHttpTransportTestSupport.sendRawPostRequest(httpClient, getEndpointUri(), headers, requestBody);
     }
     
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
         Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
-        return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getStructuredContent(payload);
+        return MCPInteractionPayloads.getStructuredContent(payload);
     }
     
     protected final Map<String, Object> getFirstResourcePayload(final String responseBody) {
         Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
-        return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getFirstResourcePayload(payload);
+        return MCPInteractionPayloads.getFirstResourcePayload(payload);
     }
     
     protected final Map<String, Object> parseJsonBody(final String responseBody) {
@@ -142,6 +138,21 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
         return result;
     }
     
+    protected final String createMaskRulePlan(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_mask_rule", Map.of(
+                "database", "logic_db",
+                "schema", "logic_db",
+                "table", "orders",
+                "column", "status",
+                "operation_type", "create",
+                "algorithm_type", "KEEP_FIRST_N_LAST_M",
+                "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("status")), is("planned"));
+        return String.valueOf(payload.get("plan_id"));
+    }
+    
     protected final URI getEndpointUri() throws IOException {
         return getHttpEndpointUri();
     }
@@ -151,10 +162,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     }
     
     protected final Map<String, String> createSessionHeaders(final String sessionId) {
-        Map<String, String> result = new LinkedHashMap<>(2, 1F);
-        result.put("MCP-Session-Id", sessionId);
-        result.put("MCP-Protocol-Version", getProtocolVersion());
-        return result;
+        return MCPHttpTransportTestSupport.createSessionHeaders(sessionId, getProtocolVersion());
     }
     
     @Override
@@ -218,25 +226,12 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
         }
     }
     
-    private HttpResponse<String> sendJsonRpcRequest(final HttpClient httpClient, final Map<String, String> headers, final String requestId,
-                                                    final String method, final Map<String, Object> params) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, headers, MCPHttpTransportTestSupport.createJsonRpcRequestBody(requestId, method, params));
-    }
-    
-    private void applyHeaders(final HttpRequest.Builder requestBuilder, final Map<String, String> headers) {
-        headers.forEach(requestBuilder::setHeader);
-    }
-    
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class ProgrammaticRuntimeFixture implements AutoCloseable {
         
         private final GenericContainer<?> container;
         
         private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
-        
-        private ProgrammaticRuntimeFixture(final GenericContainer<?> container, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-            this.container = container;
-            this.runtimeDatabases = runtimeDatabases;
-        }
         
         private GenericContainer<?> container() {
             return container;

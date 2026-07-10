@@ -38,7 +38,7 @@ Write a Docker Compose file to start ClickHouse.
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:25.12.1.649
+    image: clickhouse/clickhouse-server:26.6.1.1193
     environment:
       CLICKHOUSE_SKIP_USER_SETUP: "1"
     ports:

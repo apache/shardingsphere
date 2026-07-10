@@ -4,7 +4,7 @@ weight = 3
 +++
 
 ShardingSphere-MCP 使用 YAML 文件配置传输方式和 MCP Server 可以连接的数据库。
-发行包默认读取 `conf/mcp-http.yaml`，也内置 `conf/mcp-stdio.yaml`。
+发行包默认读取 `conf/mcp-http.yaml`，也内置 `conf/mcp-stdio.yaml` 和 `conf/mcp-http-docker.yaml`。
 
 ## 传输方式
 
@@ -62,26 +62,25 @@ transport:
 
 ## 数据库配置
 
-`runtimeDatabases` 定义 MCP Server 可以连接并对外暴露的数据库。
+`runtimeDatabases` 定义 MCP Server 可以连接并对外暴露的数据库。Server 启动时可以省略或为空，此时不提供依赖数据库的能力。
 每个条目的 key 是用户在自然语言任务中引用的数据库名称，通常对应 ShardingSphere-Proxy 暴露的逻辑库。
+MCP Server 会从 `jdbcUrl` 解析数据库类型；请使用与该 JDBC URL 匹配的驱动类。
 
 ```yaml
 runtimeDatabases:
-  "<logic-database>":
-    databaseType: MySQL
-    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
-    username: "<proxy-username>"
-    password: "<proxy-password>"
+  "logic_db":
+    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db"
+    username: "root"
+    password: ""
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-| *名称*                  | *说明*                                                                                                |
-|-----------------------|-----------------------------------------------------------------------------------------------------|
-| `databaseType` (+)    | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它影响元数据识别和 SQL 能力判断，不表示连接目标一定是数据库直连或 ShardingSphere-Proxy。 |
-| `jdbcUrl` (+)         | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。                                 |
-| `username` (+)        | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。                                                       |
-| `password` (?)        | 连接运行时数据库的密码。                                                                                        |
-| `driverClassName` (+) | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。                                                 |
+| *名称*                  | *说明*                                                                                   |
+|-----------------------|----------------------------------------------------------------------------------------|
+| `jdbcUrl` (+)         | MCP Server 连接运行时数据库并解析数据库类型的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。 |
+| `username` (+)        | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。                                      |
+| `password` (?)        | 连接运行时数据库的密码。                                                                       |
+| `driverClassName` (+) | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。                                |
 
 说明：
 
@@ -94,6 +93,7 @@ runtimeDatabases:
 - 数据库直连时，用户看到的是目标数据库自身的元数据，不代表 ShardingSphere 规则状态。
 - 模式、表、视图、索引和序列等元数据依赖连接目标的 JDBC 元数据；Proxy 和数据库直连的可见结果可能不同。
 - 如果目标 JDBC 驱动没有随发行包提供，请把驱动 jar 放入 `plugins/`。
+- `logic_db` 和 `127.0.0.1:3307` 等示例值只用于说明。运行时 YAML 文件会拒绝未替换的尖括号占位符语法。
 
 ## 敏感值占位符
 

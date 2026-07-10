@@ -39,7 +39,7 @@ public final class MCPDatabaseCapabilityProvider implements MCPFeatureCapability
     private final Map<String, MCPDatabaseCapability> databaseCapabilities;
     
     public MCPDatabaseCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        databaseProfiles = new LinkedHashMap<>(new MCPJdbcDatabaseProfileLoader().load(runtimeDatabases));
+        databaseProfiles = new MCPJdbcDatabaseProfileLoader().load(runtimeDatabases);
         databaseCapabilities = createDatabaseCapabilities(databaseProfiles);
     }
     

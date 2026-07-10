@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUs
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.opentest4j.TestAbortedException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,6 +37,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LLMUsabilitySuiteRunnerTest {
@@ -59,13 +61,30 @@ class LLMUsabilitySuiteRunnerTest {
         assertTrue(Files.isRegularFile(tempDir.resolve("run-id").resolve("extended-suite").resolve("scorecard.json")));
     }
     
+    @Test
+    void assertAssertCoreSuiteWithModelServiceUnavailable() {
+        LLME2EConfiguration configuration = createConfiguration();
+        TestAbortedException actual = assertThrows(TestAbortedException.class,
+                () -> new LLMUsabilitySuiteRunner().assertCoreSuite("core-suite", () -> List.of(createScenario(LLMUsabilityScenario.NATURAL_TASK_TAG)),
+                        scenario -> createConversationResult(configuration, scenario, LLME2EAssertionReport.failure("model_service_unavailable",
+                                "Model completion request failed with status 400.")),
+                        configuration));
+        assertTrue(actual.getMessage().contains("skipped because the model service was unavailable"));
+        assertTrue(Files.isRegularFile(tempDir.resolve("run-id").resolve("core-suite").resolve("scorecard.json")));
+    }
+    
     private LLMConversationExecutor.ConversationResult createConversationResult(final LLME2EConfiguration configuration, final LLME2EScenario scenario) throws IOException {
+        return createConversationResult(configuration, scenario, LLME2EAssertionReport.isSuccess("ok"));
+    }
+    
+    private LLMConversationExecutor.ConversationResult createConversationResult(final LLME2EConfiguration configuration, final LLME2EScenario scenario,
+                                                                                final LLME2EAssertionReport assertionReport) throws IOException {
         Path artifactDirectory = configuration.getArtifactRoot().resolve(configuration.getRunId()).resolve(scenario.getScenarioId());
         createArtifactFiles(artifactDirectory);
         List<MCPInteractionTraceRecord> trace = List.of(new MCPInteractionTraceRecord(1, "tool_call", MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
                 "database_gateway_execute_query", Map.of(), Map.of("result_kind", "result_set"), true, 0L));
         LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle(scenario.getScenarioId(), scenario.getSystemPrompt(), scenario.getUserPrompt(), "provider", "model",
-                "{}", List.of("raw-output"), trace, List.of("runtime-log"), LLME2EAssertionReport.isSuccess("ok"));
+                "{}", List.of("raw-output"), trace, List.of("runtime-log"), assertionReport);
         return new LLMConversationExecutor.ConversationResult(artifactBundle, artifactDirectory);
     }
     

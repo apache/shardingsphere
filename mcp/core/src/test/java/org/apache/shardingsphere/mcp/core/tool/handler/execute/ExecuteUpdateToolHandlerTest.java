@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -113,6 +114,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.toPayload().get("status"), is("PREVIEWED"));
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
         assertThat(actual.toPayload().get("side_effect_scope"), is(List.of("physical-data")));
+        assertThat(actual.toPayload().get("summary"), is("Previewed UPDATE statement with side-effect scope physical-data. It has not been executed."));
         assertThat(actual.toPayload().get("review_summary"), is("Previewed UPDATE statement with side-effect scope physical-data. It has not been executed."));
         assertThat(actual.toPayload().get("review_guidance"),
                 is("Review normalized_sql and side_effect_scope before execution. "
@@ -121,15 +123,34 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("sql"), is("server_generated"));
         assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("execution_mode"), is("server_defaulted"));
         List<?> actualNextActions = (List<?>) actual.toPayload().get("next_actions");
-        assertThat(actualNextActions.size(), is(1));
-        assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("type"), is("tool_call"));
-        assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("order"), is(1));
-        assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("tool_name"), is("database_gateway_execute_update"));
-        assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("reason"),
+        assertThat(actualNextActions.size(), is(2));
+        Map<?, ?> actualAskUserAction = (Map<?, ?>) actualNextActions.getFirst();
+        assertThat(actualAskUserAction.get("type"), is("ask_user"));
+        assertThat(actualAskUserAction.get("order"), is(1));
+        assertThat(actualAskUserAction.get("required_inputs"), is(List.of("execution_approved")));
+        Map<?, ?> actualToolCallAction = (Map<?, ?>) actualNextActions.get(1);
+        assertThat(actualToolCallAction.get("type"), is("tool_call"));
+        assertThat(actualToolCallAction.get("order"), is(2));
+        assertThat(actualToolCallAction.get("tool_name"), is("database_gateway_execute_update"));
+        assertThat(actualToolCallAction.get("depends_on"), is(List.of(1)));
+        assertThat(actualToolCallAction.get("reason"),
                 is("Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability."));
-        assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.getFirst()).get("arguments")).get("execution_mode"), is("execute"));
+        assertThat(((Map<?, ?>) actualToolCallAction.get("arguments")).get("execution_mode"), is("execute"));
         assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("resources_to_read")).getFirst()).get("uri"), is("shardingsphere://databases/logic_db/capabilities"));
         assertFalse(actual.toPayload().containsKey("ask_user_when_uncertain"));
+        verifyNoInteractions(executionFacade);
+    }
+    
+    @Test
+    void assertRejectPreviewWithInvalidTimeout() {
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        MCPInvalidToolArgumentException actual = assertThrows(MCPInvalidToolArgumentException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
+                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "preview", "timeout_ms", 300001))));
+        assertThat(actual.getMessage(), is("timeout_ms must be an integer between 0 and 300000."));
+        assertThat(actual.getArgumentPath(), is("timeout_ms"));
+        assertThat(actual.getSuggestedValue(), is(0));
         verifyNoInteractions(executionFacade);
     }
     

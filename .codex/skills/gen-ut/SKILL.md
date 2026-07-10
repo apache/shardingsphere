@@ -42,6 +42,9 @@ Missing input handling:
 - `Gate reuse state`: persisted mapping from logical gate names (for example `target-test`, `coverage`, `rule-scan`) to the latest green digest for that gate.
 - `Latest green target-test digest`: compatibility alias for the `target-test` entry in `Gate reuse state`.
 - `Consolidated hard-gate scan`: one script execution that enforces `R8`, `R14`, and all file-content-based `R15` rules while still reporting results per rule.
+- `SUT-owned behavior`: branches, state changes, call choices, returned values, or exception handling that the target class itself decides.
+- `Collaborator-owned behavior`: rules a dependency computes, classifies, parses, loads, matches, or defaults, such as SPI, registry, factory, parser, loader, metadata option, driver option, dialect default, exception classification, message parsing, or SQLState parsing.
+- `Testing through layers`: a unit test for the target class whose inputs, branch triggers, or assertions encode collaborator-owned behavior instead of mocking the collaborator result consumed by the target class.
 
 Module resolution order:
 1. If the user explicitly provides modules, use them first.
@@ -74,6 +77,8 @@ Module resolution order:
 
 - `R4`: branch list and mapping
   - Before coding, `MUST` enumerate branches/paths of target public methods and build branch-to-test mappings.
+  - Branch mapping `MUST` classify each planned branch trigger and assertion as `SUT-owned behavior` or `Collaborator-owned behavior`.
+  - Branch mapping `MUST NOT` count collaborator-owned rules as target-class branches; when the target class only consumes a collaborator result, map the target branch from the consumed result, not from a real collaborator implementation that happens to produce it.
   - Branch mapping scope `MUST` exclude Lombok-generated methods without custom logic.
   - By default, one branch/path maps to one test method.
   - Whether to keep additional tests on the same branch is determined by `R13`.
@@ -98,6 +103,8 @@ Module resolution order:
   - If such tests are added without explicit request, they `MUST` be removed before completion.
   - If not instantiated via SPI, `MUST` record the reason before implementation.
   - Test dependencies `SHOULD` use Mockito mocks by default.
+  - When a target-class branch depends on collaborator-owned behavior, tests `MUST` mock the nearest stable collaborator boundary to return the needed result and `MUST NOT` choose a real collaborator implementation only to trigger the branch.
+  - Simple value objects, pure data fixtures, and explicitly scoped integration, contract, or E2E tests are exceptions to the collaborator-boundary mocking rule.
   - Reflection access `MUST` use `Plugins.getMemberAccessor()`, and field access only.
 
 - `R7`: related test class strategy
@@ -116,6 +123,7 @@ Module resolution order:
     - D. parameter sample count is at least 3;
     - E. parameterized test body does not require dispatch logic via `switch`.
   - "Declared assertion differences" means differences explicitly recorded in the delivery report.
+  - Scenarios whose differences mainly encode collaborator-owned behavior are not high-fit target-class parameterization candidates, even when the method and assertion skeletons are otherwise consistent.
   - If a candidate requires `switch` in a `@ParameterizedTest` body to distinguish argument rows, it is not high-fit and `MUST NOT` be refactored to parameterized form.
   - High-fit candidates `MUST` be refactored directly to parameterized form.
   - For high-fit candidates, a "do not recommend refactor" conclusion is allowed only when refactoring causes significant readability/diagnosability regression, and the exception `MUST` include a `Necessity reason tag` with concrete evidence.
@@ -161,6 +169,7 @@ Module resolution order:
   - Each retained item `MUST` carry a `KEEP:<id>:<reason>` tag and be recorded in the delivery report; items without tags are treated as redundant.
   - Each test method `MUST` provide unique value: cover a new branch/path, or add assertion differences.
   - If deleting a test method does not change line/branch coverage and has no assertion differences, `MUST` delete it.
+  - If a test method, mock setup, data row, or assertion only verifies collaborator-owned behavior, it `MUST` be removed from the target-class unit test; if collaborator coverage is missing, report the need for a separate collaborator-focused test scope instead of editing outside `R3`.
   - Unless scenario requires otherwise, `SHOULD` use Mockito default return values instead of extra stubs.
 
 - `R14`: boolean assertion hard gate
@@ -195,6 +204,7 @@ Module resolution order:
     - Use the baseline summary to identify current branch-miss lines, existing `R15` risks, and likely `R8-CANDIDATES` before editing.
     - `SHOULD` fix deterministic precheck warnings from the baseline summary before the first standalone target-test run; these warnings are advisory only and do not replace final `checkstyle` / `spotless` / hard-gate verification.
 5. Decide whether `R12` is triggered; if not, output `R4` branch mapping.
+   - Before outputting `R4`, record the target-class ownership boundary: `SUT owns`, `Collaborator owns`, and the mocked collaborator boundary used for each collaborator-owned result consumed by the target.
    - For parser / utility classes that return context or value objects, `SHOULD` align planned assertions with the returned object's public API before the first target-test run, to avoid internal-branch coverage assertions that do not match externally observable behavior.
 6. Execute `R8` parameterized optimization analysis, output `R8-CANDIDATES`, and apply required refactoring.
 7. Execute `R9` dead-code checks and record evidence.

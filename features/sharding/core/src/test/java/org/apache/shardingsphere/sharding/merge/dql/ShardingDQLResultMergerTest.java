@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.merge.dql;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -72,6 +71,8 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -159,8 +160,26 @@ class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createSQLServerDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, isA(TopAndRowNumberDecoratorMergedResult.class));
-        assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), isA(IteratorStreamMergedResult.class));
+        assertThat(actual, isA(LimitDecoratorMergedResult.class));
+        assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), isA(IteratorStreamMergedResult.class));
+    }
+    
+    @Test
+    void assertBuildIteratorStreamMergedResultWithSQLServerOffsetFetch() throws SQLException {
+        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(sqlserverDatabaseType);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        SelectStatement selectStatement = buildSelectStatement(sqlserverDatabaseType);
+        selectStatement = withProjections(selectStatement, new ProjectionsSegment(0, 0));
+        selectStatement = withLimit(selectStatement, new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 10L), new NumberLiteralLimitValueSegment(0, 0, 10L)));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        MergedResult actual = resultMerger.merge(createTwentyQueryResults(), selectStatementContext, createSQLServerDatabase(), mock(ConnectionContext.class));
+        assertThat(actual, isA(LimitDecoratorMergedResult.class));
+        assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), isA(IteratorStreamMergedResult.class));
+        for (int i = 0; i < 10; i++) {
+            assertTrue(actual.next());
+        }
+        assertFalse(actual.next());
     }
     
     @Test
@@ -481,6 +500,16 @@ class ShardingDQLResultMergerTest {
         result.add(mock(QueryResult.class, RETURNS_DEEP_STUBS));
         result.add(mock(QueryResult.class, RETURNS_DEEP_STUBS));
         result.add(mock(QueryResult.class, RETURNS_DEEP_STUBS));
+        return result;
+    }
+    
+    private List<QueryResult> createTwentyQueryResults() throws SQLException {
+        List<QueryResult> result = new LinkedList<>();
+        for (int i = 0; i < 20; i++) {
+            QueryResult queryResult = createQueryResult();
+            when(queryResult.next()).thenReturn(true, true, false);
+            result.add(queryResult);
+        }
         return result;
     }
     

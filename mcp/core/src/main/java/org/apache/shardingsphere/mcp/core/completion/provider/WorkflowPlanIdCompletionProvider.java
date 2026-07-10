@@ -21,11 +21,13 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -50,11 +52,14 @@ public final class WorkflowPlanIdCompletionProvider implements MCPCompletionProv
     
     @Override
     public MCPCompletionProviderResult complete(final MCPWorkflowHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
-        return new MCPCompletionProviderResult(completePlanIds(handlerContext, requestContext.getSessionId()));
+        return new MCPCompletionProviderResult(completePlanIds(handlerContext, requestContext));
     }
     
-    private List<MCPCompletionCandidate> completePlanIds(final MCPWorkflowHandlerContext handlerContext, final String sessionId) {
-        return handlerContext.getWorkflowSessionContext().list(sessionId).stream().filter(this::isCompletionEligiblePlan)
+    private List<MCPCompletionCandidate> completePlanIds(final MCPWorkflowHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
+        Collection<String> workflowKinds = MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(requestContext.getDescriptor());
+        return handlerContext.getWorkflowSessionContext().list(requestContext.getSessionId()).stream()
+                .filter(this::isCompletionEligiblePlan)
+                .filter(each -> isAllowedWorkflowKind(each, workflowKinds))
                 .map(each -> new MCPCompletionCandidate(each.getPlanId(), String.format("%s %s", each.getWorkflowKind(), each.getStatus()), "workflow-session", each.getUpdateTime(),
                         "recent-plan-first-for-plan_id"))
                 .toList();
@@ -62,5 +67,9 @@ public final class WorkflowPlanIdCompletionProvider implements MCPCompletionProv
     
     private boolean isCompletionEligiblePlan(final WorkflowContextSnapshot snapshot) {
         return COMPLETION_ELIGIBLE_WORKFLOW_STATUSES.contains(Objects.toString(snapshot.getStatus(), ""));
+    }
+    
+    private boolean isAllowedWorkflowKind(final WorkflowContextSnapshot snapshot, final Collection<String> workflowKinds) {
+        return workflowKinds.isEmpty() || workflowKinds.contains(Objects.toString(snapshot.getWorkflowKind(), ""));
     }
 }

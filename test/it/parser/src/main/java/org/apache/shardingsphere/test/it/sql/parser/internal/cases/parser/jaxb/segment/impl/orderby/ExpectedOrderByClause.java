@@ -37,6 +37,9 @@ public final class ExpectedOrderByClause extends AbstractExpectedSQLSegment {
     @XmlAttribute(name = "with-rollup")
     private boolean withRollup;
     
+    @XmlAttribute(name = "contains-grouping-extension")
+    private boolean containsGroupingExtension;
+    
     @XmlElement(name = "column-item")
     private final List<ExpectedColumnOrderByItem> columnItems = new LinkedList<>();
     

@@ -91,7 +91,7 @@ public final class MCPToolElicitationFallbackResponseFactory {
         result.put("order", 1);
         result.put("type", "terminal");
         result.put("title", "Collect sensitive inputs through configured secure channels.");
-        result.put(MCPPayloadFieldNames.REASON, "MCP form elicitation is limited to non-sensitive STDIO continuations; URL mode is not implemented in this release.");
+        result.put(MCPPayloadFieldNames.REASON, "MCP form elicitation is limited to non-sensitive STDIO continuations; URL mode is not implemented by the MCP runtime.");
         return List.of(result);
     }
     

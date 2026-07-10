@@ -1,5 +1,5 @@
 +++
-title = "SHOW BROADCAST TABLE RULE"
+title = "SHOW BROADCAST TABLE RULES"
 weight = 1
 +++
 

@@ -14,7 +14,7 @@ It generates shadow rule DistSQL only. It does not create shadow databases or ph
 
 ## Natural language examples
 
-- List configured shadow rules and shadow algorithm plugins in `<logic-database>`.
+- List configured shadow rules and shadow algorithm plugins in `logic_db`.
 - Plan a shadow rule for table `t_order` using source storage unit `ds_0`, shadow storage unit `ds_shadow`, and a column-match algorithm.
 - Drop unused shadow algorithm `shadow_by_user_id` only if Proxy-visible state proves it is unused.
 

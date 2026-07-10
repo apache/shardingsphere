@@ -55,7 +55,7 @@ class SystemSchemasTest {
     
     @Container
     @AutoClose
-    private final GenericContainer<?> postgres = new GenericContainer<>("postgres:18.1-trixie")
+    private final GenericContainer<?> postgres = new GenericContainer<>("postgres:18.4-trixie")
             .withEnv("POSTGRES_PASSWORD", "example")
             .withNetwork(network)
             .withNetworkAliases("some-postgres");

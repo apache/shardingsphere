@@ -139,11 +139,12 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
         when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("postgres"))).thenReturn(true);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(databaseType);
-        when(database.getDefaultSchemaName()).thenReturn("public");
+        lenient().when(database.getDefaultSchemaName()).thenReturn("public");
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getName()).thenReturn("public");
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.getSchema("public")).thenReturn(schema);

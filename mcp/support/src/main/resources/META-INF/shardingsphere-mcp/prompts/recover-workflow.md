@@ -26,11 +26,11 @@ Model path:
 2. If plan_id is missing or an MCP response says it is unknown or unavailable, call the matching planning tool again.
 3. Use database_gateway_validate_workflow when the plan has been applied and the user asks whether runtime state matches the plan.
 4. Use database_gateway_apply_workflow only after reviewing plan artifacts or an execution_mode=preview response with the user.
-5. Preserve user-provided corrections when re-planning with database_gateway_plan_encrypt_rule or database_gateway_plan_mask_rule.
+5. Preserve user-provided corrections when re-planning with the matching database_gateway_plan_* tool.
 6. Before choosing uncertain plan_id or workflow handles, use completion/complete or read the nearest workflow resource; do not guess current-session identifiers.
 
 Ask-user conditions:
-- Ask which workflow kind to re-plan when the failure summary does not identify encrypt or mask.
+- Ask which workflow kind to re-plan when the failure summary or recovery payload does not identify the matching planning tool.
 - Ask before applying recovered artifacts that would change runtime state.
 
 Stop conditions:

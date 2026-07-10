@@ -35,16 +35,6 @@ import java.util.Objects;
 public final class EncryptAlgorithmRecommendationService {
     
     /**
-     * Find encrypt capability map.
-     *
-     * @param algorithmType algorithm type
-     * @return capability map
-     */
-    public static Map<String, Boolean> findEncryptCapability(final String algorithmType) {
-        return EncryptAlgorithmCatalog.findCapability(algorithmType);
-    }
-    
-    /**
      * Recommend encrypt algorithms.
      *
      * @param request workflow request
@@ -195,6 +185,10 @@ public final class EncryptAlgorithmRecommendationService {
     
     private boolean isKnownUnsupported(final String algorithmType, final String capabilityName) {
         return EncryptAlgorithmCatalog.isCapabilityConfirmed(algorithmType) && Boolean.FALSE.equals(findEncryptCapability(algorithmType).get(capabilityName));
+    }
+    
+    private static Map<String, Boolean> findEncryptCapability(final String algorithmType) {
+        return EncryptAlgorithmCatalog.findCapability(algorithmType);
     }
     
     private void addSpecifiedCapabilityConflictIssue(final List<WorkflowIssue> issues, final String message, final String userAction) {

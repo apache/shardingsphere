@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.protocol;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * MCP model-facing payload field names.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPPayloadFieldNames {
     
     public static final String ALLOWED_VALUES = "allowed_values";
@@ -58,10 +62,12 @@ public final class MCPPayloadFieldNames {
     
     public static final String SECRET = "secret";
     
+    public static final String SELF_RESOURCE = "self_resource";
+    
     public static final String SOURCE_FIELD = "source_field";
+    
+    public static final String SUMMARY = "summary";
     
     public static final String URI = "uri";
     
-    private MCPPayloadFieldNames() {
-    }
 }

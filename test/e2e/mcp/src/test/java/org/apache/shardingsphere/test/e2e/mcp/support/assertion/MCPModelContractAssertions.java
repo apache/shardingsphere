@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.assertion;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,28 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Assertions for model-facing MCP contracts.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPModelContractAssertions {
-    
-    private static final Set<String> REMOVED_MODEL_FACING_FIELDS = Set.of(
-            "target_tool", "target_resource", "required_arguments", "action_kind", "suggested_next_tool", "suggested_next_tools", "recommended_next_tool",
-            "recommended_recovery", "suggested_next_action", "approved_by_user", "requires_user_approval", "approval_required", "user_overrides");
-    
-    private static final Map<String, Set<String>> NEXT_ACTION_REQUIRED_FIELDS = Map.of(
-            "resource_read", Set.of("order", "type", "title", "resource_uri"),
-            "tool_call", Set.of("order", "type", "title", "tool_name", "arguments"),
-            "completion", Set.of("order", "type", "title", "ref", "argument"),
-            "ask_user", Set.of("order", "type", "title", "question"),
-            "terminal", Set.of("order", "type", "title"));
-    
-    private static final Map<String, Set<String>> NEXT_ACTION_ALLOWED_FIELDS = Map.of(
-            "resource_read", Set.of("order", "type", "title", "resource_uri", "reason", "depends_on"),
-            "tool_call", Set.of("order", "type", "title", "tool_name", "arguments", "reason", "depends_on"),
-            "completion", Set.of("order", "type", "title", "ref", "argument", "context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on"),
-            "ask_user", Set.of("order", "type", "title", "question", "required_inputs", "reason", "depends_on"),
-            "terminal", Set.of("order", "type", "title", "reason", "depends_on"));
-    
-    private MCPModelContractAssertions() {
-    }
     
     /**
      * Assert that all concrete next_actions lists use the canonical action shape.
@@ -67,8 +51,8 @@ public final class MCPModelContractAssertions {
     
     private static void assertCanonicalNextActionListMap(final Map<?, ?> value) {
         assertNoRemovedModelFacingFields(value);
-        if (value.containsKey("next_actions") && !isNextActionsSchema(value.get("next_actions"))) {
-            assertNextActions(value.get("next_actions"));
+        if (value.containsKey(MCPPayloadFieldNames.NEXT_ACTIONS) && !isNextActionsSchema(value.get(MCPPayloadFieldNames.NEXT_ACTIONS))) {
+            assertNextActions(value.get(MCPPayloadFieldNames.NEXT_ACTIONS));
         }
         for (Object each : value.values()) {
             assertCanonicalNextActionLists(each);
@@ -77,7 +61,7 @@ public final class MCPModelContractAssertions {
     
     private static void assertNoRemovedModelFacingFields(final Map<?, ?> value) {
         for (Object each : value.keySet()) {
-            assertFalse(REMOVED_MODEL_FACING_FIELDS.contains(String.valueOf(each)), () -> "Removed model-facing field returned: " + each);
+            assertFalse(MCPModelFacingPayloadContract.isRemovedFieldName(String.valueOf(each)), () -> "Removed model-facing field returned: " + each);
         }
     }
     
@@ -95,12 +79,14 @@ public final class MCPModelContractAssertions {
     
     private static void assertNextAction(final Map<?, ?> action) {
         String type = String.valueOf(action.get("type"));
-        assertTrue(NEXT_ACTION_REQUIRED_FIELDS.containsKey(type), () -> "Unknown next_actions type: " + type);
-        for (String each : NEXT_ACTION_REQUIRED_FIELDS.get(type)) {
+        Collection<String> requiredFields = MCPModelFacingPayloadContract.getNextActionRequiredFields(type);
+        assertFalse(requiredFields.isEmpty(), () -> "Unknown next_actions type: " + type);
+        for (String each : requiredFields) {
             assertTrue(action.containsKey(each), () -> String.format("next_actions `%s` must contain `%s`.", type, each));
         }
         for (Object each : action.keySet()) {
-            assertTrue(NEXT_ACTION_ALLOWED_FIELDS.get(type).contains(String.valueOf(each)), () -> String.format("next_actions `%s` contains unsupported field `%s`.", type, each));
+            assertTrue(MCPModelFacingPayloadContract.getNextActionAllowedFields(type).contains(String.valueOf(each)),
+                    () -> String.format("next_actions `%s` contains unsupported field `%s`.", type, each));
         }
     }
 }
