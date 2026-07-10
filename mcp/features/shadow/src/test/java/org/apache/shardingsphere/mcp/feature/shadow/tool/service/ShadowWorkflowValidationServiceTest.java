@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 class ShadowWorkflowValidationServiceTest {
     
     @Test
-    void assertValidateRule() throws ReflectiveOperationException {
+    void assertValidateRule() {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(Map.of(
@@ -66,7 +66,7 @@ class ShadowWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateCleanupFailure() throws ReflectiveOperationException {
+    void assertValidateCleanupFailure() {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
@@ -105,11 +105,15 @@ class ShadowWorkflowValidationServiceTest {
         }
     }
     
-    private ShadowWorkflowValidationService createService(final ShadowInspectionService inspectionService) throws ReflectiveOperationException {
+    private ShadowWorkflowValidationService createService(final ShadowInspectionService inspectionService) {
         ShadowWorkflowValidationService result = new ShadowWorkflowValidationService();
-        setField(result, "inspectionService", inspectionService);
-        setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
-        return result;
+        try {
+            setField(result, "inspectionService", inspectionService);
+            setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {

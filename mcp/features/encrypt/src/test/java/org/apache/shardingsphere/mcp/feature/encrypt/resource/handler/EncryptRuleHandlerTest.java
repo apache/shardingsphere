@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleIns
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.MockedConstruction;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +33,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,18 +50,18 @@ class EncryptRuleHandlerTest {
     }
     
     @Test
-    void assertHandle() throws ReflectiveOperationException {
-        EncryptRuleHandler handler = new EncryptRuleHandler();
-        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+    void assertHandle() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(ruleInspectionService.queryEncryptRules(queryFacade, "logic_db", "orders")).thenReturn(List.of(Map.of("logic_column", "phone")));
-        Plugins.getMemberAccessor().set(EncryptRuleHandler.class.getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
-        MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
-        verify(ruleInspectionService).queryEncryptRules(queryFacade, "logic_db", "orders");
-        assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-        assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"));
-        assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is("shardingsphere://features/encrypt/databases/logic_db/rules"));
+        try (
+                MockedConstruction<EncryptRuleInspectionService> mockedConstruction = mockConstruction(EncryptRuleInspectionService.class,
+                        (mock, context) -> when(mock.queryEncryptRules(queryFacade, "logic_db", "orders")).thenReturn(List.of(Map.of("logic_column", "phone"))))) {
+            MCPResponse actual = new EncryptRuleHandler().handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
+            verify(mockedConstruction.constructed().getFirst()).queryEncryptRules(queryFacade, "logic_db", "orders");
+            assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
+            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is("shardingsphere://features/encrypt/databases/logic_db/rules"));
+        }
     }
 }

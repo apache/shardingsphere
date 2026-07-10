@@ -104,22 +104,11 @@ public final class SearchMetadataPayloadBuilder {
             result.add(MCPNextActionUtils.askUser("Multiple metadata hits share the same name. Ask the user to choose database, schema, or object type before using a specific resource.",
                     List.of("database", "schema", "object_types")));
         }
-        return addOrder(result);
+        return MCPNextActionUtils.ordered(result);
     }
     
     private static boolean isBroadSearchGuarded(final MetadataSearchResult searchResult) {
         return Boolean.TRUE.equals(searchResult.getSearchContext().get("broad_search_guarded"));
-    }
-    
-    private static List<Map<String, Object>> addOrder(final List<Map<String, Object>> actions) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        int order = 1;
-        for (Map<String, Object> each : actions) {
-            Map<String, Object> action = new LinkedHashMap<>(each);
-            action.put("order", order++);
-            result.add(action);
-        }
-        return result;
     }
     
     private static List<String> findDuplicatedNames(final List<MetadataSearchHit> items, final String query) {

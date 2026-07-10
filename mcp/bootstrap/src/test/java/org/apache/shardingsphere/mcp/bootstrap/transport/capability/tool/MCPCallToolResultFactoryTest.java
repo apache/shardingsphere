@@ -25,27 +25,18 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ResourceLink;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
-import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.handler.PlanEncryptRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.mask.tool.handler.PlanMaskRuleToolHandler;
-import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
@@ -54,11 +45,10 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -67,10 +57,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTest {
     
@@ -109,14 +96,14 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
     }
     
     @Test
-    void assertCreateWithMaskWorkflowPlanSchema() throws ReflectiveOperationException {
+    void assertCreateWithMaskWorkflowPlanSchema() {
         CallToolResult actual = createRealDescriptorCallToolResult(MaskFeatureDefinition.PLAN_TOOL_NAME, createMaskPlanResponse());
         assertFalse(actual.isError(), () -> String.valueOf(actual.structuredContent()));
         assertThat(getStructuredContent(actual).get("status"), is("planned"));
     }
     
     @Test
-    void assertCreateWithEncryptWorkflowPlanSchema() throws ReflectiveOperationException {
+    void assertCreateWithEncryptWorkflowPlanSchema() {
         CallToolResult actual = createRealDescriptorCallToolResult(EncryptFeatureDefinition.PLAN_TOOL_NAME, createEncryptPlanResponse());
         assertFalse(actual.isError(), () -> String.valueOf(actual.structuredContent()));
         assertThat(getStructuredContent(actual).get("status"), is("planned"));
@@ -221,12 +208,12 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         return new MCPCallToolResultFactory().create(descriptor, response);
     }
     
-    private MCPResponse createMaskPlanResponse() throws ReflectiveOperationException {
-        PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
-        MaskWorkflowPlanningService planningService = mock(MaskWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createMaskSnapshot());
-        setField(handler, "planningService", planningService);
-        return handler.handle(createWorkflowContext(), new MCPToolCall("session-id", Map.of("database", "logic_db", "table", "orders", "column", "phone")));
+    private MCPResponse createMaskPlanResponse() {
+        WorkflowContextSnapshot snapshot = createMaskSnapshot();
+        Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        payload.put("masked_property_preview", Map.of("primary",
+                new MaskAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
+        return new MCPMapResponse(payload);
     }
     
     private WorkflowContextSnapshot createMaskSnapshot() {
@@ -240,12 +227,12 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         return result;
     }
     
-    private MCPResponse createEncryptPlanResponse() throws ReflectiveOperationException {
-        PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
-        EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createEncryptSnapshot());
-        setField(handler, "planningService", planningService);
-        return handler.handle(createWorkflowContext(), new MCPToolCall("session-id", Map.of("database", "logic_db", "table", "orders", "column", "phone")));
+    private MCPResponse createEncryptPlanResponse() {
+        WorkflowContextSnapshot snapshot = createEncryptSnapshot();
+        Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        payload.put("masked_property_preview", Map.of("primary",
+                new EncryptAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
+        return new MCPMapResponse(payload);
     }
     
     private WorkflowContextSnapshot createEncryptSnapshot() {
@@ -285,22 +272,6 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         result.setDeliveryMode("interactive");
         result.setExecutionMode("review-then-execute");
         return result;
-    }
-    
-    private MCPWorkflowHandlerContext createWorkflowContext() {
-        MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
-        when(result.getDatabaseContext()).thenReturn(databaseContext);
-        when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(databaseContext.getMetadataQueryFacade()).thenReturn(mock(MCPMetadataQueryFacade.class));
-        when(databaseContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
-        return result;
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     @SuppressWarnings("unchecked")

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleIns
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.MockedConstruction;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +33,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,17 +50,17 @@ class EncryptAlgorithmsHandlerTest {
     }
     
     @Test
-    void assertHandle() throws ReflectiveOperationException {
-        EncryptAlgorithmsHandler handler = new EncryptAlgorithmsHandler();
-        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+    void assertHandle() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(ruleInspectionService.queryEncryptAlgorithms(queryFacade)).thenReturn(List.of(Map.of("type", "AES")));
-        Plugins.getMemberAccessor().set(EncryptAlgorithmsHandler.class.getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
-        MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of()));
-        verify(ruleInspectionService).queryEncryptAlgorithms(queryFacade);
-        assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-        assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/algorithms"));
+        try (
+                MockedConstruction<EncryptRuleInspectionService> mockedConstruction = mockConstruction(EncryptRuleInspectionService.class,
+                        (mock, context) -> when(mock.queryEncryptAlgorithms(queryFacade)).thenReturn(List.of(Map.of("type", "AES"))))) {
+            MCPResponse actual = new EncryptAlgorithmsHandler().handle(databaseContext, new MCPUriVariables(Map.of()));
+            verify(mockedConstruction.constructed().getFirst()).queryEncryptAlgorithms(queryFacade);
+            assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
+            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/algorithms"));
+        }
     }
 }

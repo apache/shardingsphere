@@ -78,7 +78,7 @@ final class LLMUsabilitySuiteRunner {
                              final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
         EvaluatedSuite evaluatedSuite = evaluateSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
         assumeModelServiceAvailable(evaluatedSuite.scorecard());
-        assertFullScore(evaluatedSuite.scorecard(), evaluatedSuite.scenarios());
+        assertFullScore(evaluatedSuite);
         assertDeterministicContract(evaluatedSuite);
     }
     
@@ -117,11 +117,12 @@ final class LLMUsabilitySuiteRunner {
         return Optional.empty();
     }
     
-    private void assertFullScore(final LLMUsabilityScorecard scorecard, final List<LLMUsabilityScenario> scenarios) {
-        String actualFailureSummary = createFailureSummary(scorecard);
+    private void assertFullScore(final EvaluatedSuite evaluatedSuite) {
+        LLMUsabilityScorecard scorecard = evaluatedSuite.scorecard();
+        String actualFailureSummary = createFailureSummary(evaluatedSuite);
         assertThat(actualFailureSummary, scorecard.getOverallScore(), is(100.0D));
         assertTrue(scorecard.isFullScore(), actualFailureSummary);
-        assertThat(actualFailureSummary, scorecard.getScenarioResults().size(), is(scenarios.size()));
+        assertThat(actualFailureSummary, scorecard.getScenarioResults().size(), is(evaluatedSuite.scenarios().size()));
         assertThat(actualFailureSummary, scorecard.getTaskSuccessRate(), is(1.0D));
         assertThat(actualFailureSummary, scorecard.getNaturalTaskSuccessRate(), is(1.0D));
         assertThat(actualFailureSummary, scorecard.getProtocolContractSuccessRate(), is(1.0D));
@@ -133,10 +134,10 @@ final class LLMUsabilitySuiteRunner {
         assertThat(actualFailureSummary, scorecard.getApprovalViolationRate(), is(0.0D));
         assertThat(actualFailureSummary, scorecard.getNativeToolCallRate(), is(1.0D));
         assertThat(actualFailureSummary, scorecard.getHarnessRecoveryRate(), is(0.0D));
-        if (hasResourceHitExpectation(scenarios)) {
+        if (hasResourceHitExpectation(evaluatedSuite.scenarios())) {
             assertThat(actualFailureSummary, scorecard.getResourceHitRate(), is(1.0D));
         }
-        if (hasRecoveryExpectation(scenarios)) {
+        if (hasRecoveryExpectation(evaluatedSuite.scenarios())) {
             assertThat(actualFailureSummary, scorecard.getRecoveryRate(), is(1.0D));
         }
     }
@@ -257,7 +258,8 @@ final class LLMUsabilitySuiteRunner {
         return false;
     }
     
-    private String createFailureSummary(final LLMUsabilityScorecard scorecard) {
+    private String createFailureSummary(final EvaluatedSuite evaluatedSuite) {
+        LLMUsabilityScorecard scorecard = evaluatedSuite.scorecard();
         StringBuilder result = new StringBuilder("LLM usability suite did not meet the baseline.");
         result.append(" overallScore=").append(scorecard.getOverallScore());
         result.append(", fullScore=").append(scorecard.isFullScore());
@@ -268,16 +270,19 @@ final class LLMUsabilitySuiteRunner {
         result.append(", recoveryRate=").append(scorecard.getRecoveryRate());
         result.append(", nativeToolCallRate=").append(scorecard.getNativeToolCallRate());
         result.append(", harnessRecoveryRate=").append(scorecard.getHarnessRecoveryRate());
-        for (LLMUsabilityScenarioResult each : scorecard.getScenarioResults()) {
-            if (each.isSuccess()) {
+        for (EvaluatedScenario each : evaluatedSuite.evaluatedScenarios()) {
+            LLMUsabilityScenarioResult scenarioResult = each.scenarioResult();
+            if (scenarioResult.isSuccess()) {
                 continue;
             }
             result.append(" [");
-            result.append(each.getScenarioId());
+            result.append(scenarioResult.getScenarioId());
             result.append(": ");
-            result.append(each.getFailureType());
+            result.append(scenarioResult.getFailureType());
             result.append(" - ");
-            result.append(each.getMessage());
+            result.append(scenarioResult.getMessage());
+            result.append(", artifactDirectory=");
+            result.append(each.artifactDirectory());
             result.append(']');
         }
         return result.toString();

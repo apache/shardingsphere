@@ -50,7 +50,7 @@ final class MCPWorkflowRecoveryPayloadFactory {
                 "invalid_enum_value", "Retry database_gateway_apply_workflow with execution_mode=preview, review the returned preview_artifacts, "
                         + "then pass explicit approved_steps copied from visible preview_artifacts.approval_step values.");
         Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(cause.getSuggestedArguments(), Map.of(WorkflowFieldNames.EXECUTION_MODE, "preview"));
-        result.put(MCPPayloadFieldNames.FIELD, "approved_steps");
+        result.put(MCPPayloadFieldNames.FIELD, WorkflowFieldNames.APPROVED_STEPS);
         result.put(MCPPayloadFieldNames.ALLOWED_VALUES, cause.getAllowedValues());
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(

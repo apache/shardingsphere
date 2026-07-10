@@ -53,6 +53,8 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       Production changes must have an independent production reason, such as fixing behavior, clarifying a real contract, reducing production duplication,
       or exposing a construction path that production code legitimately supports.
       Prefer test-local fixtures, mocks, existing public constructors, factories, builders, SPI loaders, or production APIs when construction is incidental to the behavior under test.
+      Do not split a simple production class into a public no-argument constructor plus a package-private collaborator constructor merely to replace an internally created collaborator in tests.
+      For simple handlers, adapters, or payload builders with one or two locally created collaborators, keep the production construction shape and adapt or remove the test unless there is an independent production boundary reason.
       If a change is only needed by tests, do not make the production change.
     - New internal abstractions must reduce cognitive complexity instead of merely wrapping branches in more types.
       For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.

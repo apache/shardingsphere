@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -148,9 +149,11 @@ class StreamableHttpMCPServerTest {
     
     private StreamableHttpMCPServlet createTransportServlet() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        StreamableHttpMCPServlet result = new StreamableHttpMCPServlet(sessionManager, MCPTransportJsonMapperFactory.create(), createConfig(0));
         try {
-            StreamableHttpMCPServlet result = new StreamableHttpMCPServlet(sessionManager, MCPTransportJsonMapperFactory.create(), createConfig(0));
-            setField(result, "delegate", mock(HttpServletStreamableServerTransportProvider.class));
+            setField(result, "delegate", delegate);
             setField(result, "sessionExecutionCoordinator", new MCPSessionExecutionCoordinator(sessionManager));
             return result;
         } catch (final ReflectiveOperationException ex) {

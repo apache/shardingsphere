@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 class EncryptWorkflowValidationServiceTest {
     
     @Test
-    void assertValidateRejectsDifferentSession() throws ReflectiveOperationException {
+    void assertValidateRejectsDifferentSession() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(createSnapshot("plan-1", "session-1", "executed", "create"));
         Map<String, Object> actual = createService(mock(EncryptRuleInspectionService.class))
@@ -71,7 +71,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateHappyPath() throws ReflectiveOperationException {
+    void assertValidateHappyPath() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         workflowSessionContext.save(snapshot);
@@ -144,7 +144,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertSynchronize() throws ReflectiveOperationException {
+    void assertSynchronize() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(createRuleRow()));
@@ -167,7 +167,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateDropWorkflowAfterRuleRemoval() throws ReflectiveOperationException {
+    void assertValidateDropWorkflowAfterRuleRemoval() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
         workflowSessionContext.save(snapshot);
@@ -180,7 +180,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateWhenRuleMissing() throws ReflectiveOperationException {
+    void assertValidateWhenRuleMissing() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         workflowSessionContext.save(snapshot);
@@ -193,7 +193,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateWhenRuleMappingMismatch() throws ReflectiveOperationException {
+    void assertValidateWhenRuleMappingMismatch() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         workflowSessionContext.save(snapshot);
@@ -210,7 +210,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateExpectedStateMasksSecretPropertyMismatch() throws ReflectiveOperationException {
+    void assertValidateExpectedStateMasksSecretPropertyMismatch() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", ""));
@@ -235,7 +235,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateExpectedStateAcceptsResolvedReferencedProperty() throws ReflectiveOperationException {
+    void assertValidateExpectedStateAcceptsResolvedReferencedProperty() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().getPrimaryAlgorithmProperties().put("aes-key-value", "secret_reference:primary.aes-key-value");
         snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
@@ -262,7 +262,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateExpectedStateDetectsUnresolvedReferencedProperty() throws ReflectiveOperationException {
+    void assertValidateExpectedStateDetectsUnresolvedReferencedProperty() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().getPrimaryAlgorithmProperties().put("aes-key-value", "secret_reference:primary.aes-key-value");
         snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
@@ -288,7 +288,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateExpectedStateDetectsMissingNonTargetRule() throws ReflectiveOperationException {
+    void assertValidateExpectedStateDetectsMissingNonTargetRule() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(
@@ -304,7 +304,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateExpectedStateDetectsUnexpectedExtraRule() throws ReflectiveOperationException {
+    void assertValidateExpectedStateDetectsUnexpectedExtraRule() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(createRuleRow())));
@@ -319,11 +319,15 @@ class EncryptWorkflowValidationServiceTest {
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("logic_column=email"));
     }
     
-    private EncryptWorkflowValidationService createService(final EncryptRuleInspectionService ruleInspectionService) throws ReflectiveOperationException {
+    private EncryptWorkflowValidationService createService(final EncryptRuleInspectionService ruleInspectionService) {
         EncryptWorkflowValidationService result = new EncryptWorkflowValidationService();
-        setField(result, "ruleInspectionService", ruleInspectionService);
-        setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
-        return result;
+        try {
+            setField(result, "ruleInspectionService", ruleInspectionService);
+            setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {

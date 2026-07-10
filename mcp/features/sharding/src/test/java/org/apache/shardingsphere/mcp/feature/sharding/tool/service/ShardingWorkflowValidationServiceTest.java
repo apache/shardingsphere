@@ -57,7 +57,7 @@ import static org.mockito.Mockito.when;
 class ShardingWorkflowValidationServiceTest {
     
     @Test
-    void assertValidateRejectsDifferentSession() throws ReflectiveOperationException {
+    void assertValidateRejectsDifferentSession() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(createSnapshot("plan-1", "session-1", "executed", "create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, createTableRuleRequest()));
         Map<String, Object> actual = createService(mock(ShardingInspectionService.class)).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
@@ -67,7 +67,7 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateTableRuleHappyPath() throws ReflectiveOperationException {
+    void assertValidateTableRuleHappyPath() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
                 ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, createTableRuleRequest());
@@ -135,7 +135,7 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateTableRuleMismatch() throws ReflectiveOperationException {
+    void assertValidateTableRuleMismatch() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
                 ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, createTableRuleRequest());
@@ -149,7 +149,7 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateDefaultStrategyDrop() throws ReflectiveOperationException {
+    void assertValidateDefaultStrategyDrop() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         ShardingWorkflowRequest request = createTableRuleRequest();
         request.setDefaultStrategyType("DATABASE");
@@ -164,7 +164,7 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateCleanupHappyPath() throws ReflectiveOperationException {
+    void assertValidateCleanupHappyPath() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop",
                 ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND, createCleanupRequest());
@@ -188,11 +188,15 @@ class ShardingWorkflowValidationServiceTest {
         assertThat(actual.getIssueCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
     
-    private ShardingWorkflowValidationService createService(final ShardingInspectionService inspectionService) throws ReflectiveOperationException {
+    private ShardingWorkflowValidationService createService(final ShardingInspectionService inspectionService) {
         ShardingWorkflowValidationService result = new ShardingWorkflowValidationService();
-        setField(result, "inspectionService", inspectionService);
-        setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
-        return result;
+        try {
+            setField(result, "inspectionService", inspectionService);
+            setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {

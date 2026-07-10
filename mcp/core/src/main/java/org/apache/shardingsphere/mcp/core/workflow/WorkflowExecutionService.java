@@ -62,7 +62,7 @@ public final class WorkflowExecutionService {
     
     private static final List<String> EXECUTION_MODES = List.of(EXECUTION_MODE_PREVIEW, EXECUTION_MODE_REVIEW_THEN_EXECUTE, EXECUTION_MODE_MANUAL_ONLY);
     
-    private static final List<String> APPROVED_STEPS = List.of(
+    private static final List<String> ALLOWED_APPROVAL_STEPS = List.of(
             WorkflowArtifactPayloadUtils.STEP_DDL, WorkflowArtifactPayloadUtils.STEP_INDEX_DDL, WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL);
     
     /**
@@ -142,8 +142,8 @@ public final class WorkflowExecutionService {
             return;
         }
         for (String each : approvedSteps) {
-            if (!APPROVED_STEPS.contains(each)) {
-                throw new MCPInvalidApprovedStepsException(APPROVED_STEPS, createPreviewSuggestedArguments(snapshot));
+            if (!ALLOWED_APPROVAL_STEPS.contains(each)) {
+                throw new MCPInvalidApprovedStepsException(ALLOWED_APPROVAL_STEPS, createPreviewSuggestedArguments(snapshot));
             }
         }
     }

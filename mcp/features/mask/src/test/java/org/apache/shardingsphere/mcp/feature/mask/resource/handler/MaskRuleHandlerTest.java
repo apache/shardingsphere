@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectio
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.MockedConstruction;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +33,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,18 +50,18 @@ class MaskRuleHandlerTest {
     }
     
     @Test
-    void assertHandle() throws ReflectiveOperationException {
-        MaskRuleHandler handler = new MaskRuleHandler();
-        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
+    void assertHandle() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(ruleInspectionService.queryMaskRules(queryFacade, "logic_db", "orders")).thenReturn(List.of(Map.of("column", "phone")));
-        Plugins.getMemberAccessor().set(MaskRuleHandler.class.getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
-        MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
-        verify(ruleInspectionService).queryMaskRules(queryFacade, "logic_db", "orders");
-        assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-        assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));
-        assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is("shardingsphere://features/mask/databases/logic_db/rules"));
+        try (
+                MockedConstruction<MaskRuleInspectionService> mockedConstruction = mockConstruction(MaskRuleInspectionService.class,
+                        (mock, context) -> when(mock.queryMaskRules(queryFacade, "logic_db", "orders")).thenReturn(List.of(Map.of("column", "phone"))))) {
+            MCPResponse actual = new MaskRuleHandler().handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
+            verify(mockedConstruction.constructed().getFirst()).queryMaskRules(queryFacade, "logic_db", "orders");
+            assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
+            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is("shardingsphere://features/mask/databases/logic_db/rules"));
+        }
     }
 }

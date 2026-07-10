@@ -110,7 +110,7 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsPlanningRuntimeWithoutWorkflowKind() {
         String toolName = "database_gateway_test_plan_rule";
-        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", true, false, true, true),
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, createPlanningToolAnnotations(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMetaWithoutWorkflowKind())),
                 List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
                 "Tool `database_gateway_test_plan_rule` metadata must declare `org.apache.shardingsphere/workflow-kind`.");
@@ -118,14 +118,38 @@ class MCPDescriptorCatalogValidatorTest {
     
     @Test
     void assertValidateRejectsDuplicatePlanningWorkflowKind() {
-        MCPToolDescriptor firstTool = createToolDescriptor("database_gateway_test_plan_rule", new MCPToolAnnotations("Test Tool", true, false, true, true),
+        MCPToolDescriptor firstTool = createToolDescriptor("database_gateway_test_plan_rule", createPlanningToolAnnotations(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"));
-        MCPToolDescriptor secondTool = createToolDescriptor("database_gateway_test_plan_rule_again", new MCPToolAnnotations("Test Tool", true, false, true, true),
+        MCPToolDescriptor secondTool = createToolDescriptor("database_gateway_test_plan_rule_again", createPlanningToolAnnotations(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"));
         assertValidationError(createToolRuntimeCatalog(List.of(), List.of(firstTool, secondTool), List.of(
                 new MCPToolRuntimeDescriptor(firstTool.getName(), "plan", List.of()),
                 new MCPToolRuntimeDescriptor(secondTool.getName(), "plan", List.of()))),
                 "Planning workflow kind `test.rule` is used by both `database_gateway_test_plan_rule` and `database_gateway_test_plan_rule_again`.");
+    }
+    
+    @Test
+    void assertValidateRejectsPlanningToolReadOnlyHint() {
+        String toolName = "database_gateway_test_plan_rule";
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", true, false, false, true),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
+                "Planning tool `database_gateway_test_plan_rule` annotations.readOnlyHint must be false.");
+    }
+    
+    @Test
+    void assertValidateRejectsPlanningToolDestructiveHint() {
+        String toolName = "database_gateway_test_plan_rule";
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", false, true, false, true),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
+                "Planning tool `database_gateway_test_plan_rule` annotations.destructiveHint must be false.");
+    }
+    
+    @Test
+    void assertValidateRejectsPlanningToolIdempotentHint() {
+        String toolName = "database_gateway_test_plan_rule";
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", false, false, true, true),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
+                "Planning tool `database_gateway_test_plan_rule` annotations.idempotentHint must be false.");
     }
     
     @Test
@@ -281,6 +305,10 @@ class MCPDescriptorCatalogValidatorTest {
     
     private MCPToolDescriptor createToolDescriptor(final String toolName, final MCPToolAnnotations annotations, final Map<String, Object> outputSchema, final Map<String, Object> meta) {
         return new MCPToolDescriptor(toolName, "Test Tool", "Run a test tool.", createInputSchema(), outputSchema, annotations, meta);
+    }
+    
+    private MCPToolAnnotations createPlanningToolAnnotations() {
+        return new MCPToolAnnotations("Test Tool", false, false, false, true);
     }
     
     private Map<String, Object> createInputSchema() {
