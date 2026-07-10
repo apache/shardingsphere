@@ -96,4 +96,26 @@ class FirebirdRollbackTransactionCommandExecutorTest {
             assertTrue(mocked.constructed().isEmpty());
         }
     }
+    
+    @Test
+    void assertExecuteTwiceWithSameTransactionHandle() throws SQLException {
+        when(packet.getTransactionId()).thenReturn(1);
+        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
+            new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();
+            assertThrows(InvalidTransactionHandleException.class, () -> new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute());
+        }
+    }
+    
+    @Test
+    void assertExecuteWithRolledBackTransactionHandleAfterNewTransaction() throws SQLException {
+        when(packet.getTransactionId()).thenReturn(1);
+        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
+            new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();
+            FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+            assertThrows(InvalidTransactionHandleException.class, () -> new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute());
+            when(packet.getTransactionId()).thenReturn(2);
+            Collection<DatabasePacket> actual = new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();
+            assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
+        }
+    }
 }

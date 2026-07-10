@@ -42,17 +42,18 @@ public final class FirebirdRollbackTransactionCommandExecutor implements Command
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        validateTransactionHandle();
+        int transactionHandle = packet.getTransactionId();
+        validateTransactionHandle(transactionHandle);
         if (!connectionSession.isAutoCommit()) {
             ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
             transactionManager.rollback();
         }
+        FirebirdTransactionIdGenerator.getInstance().closeTransaction(connectionSession.getConnectionId(), transactionHandle);
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
     
-    private void validateTransactionHandle() {
-        int transactionHandle = packet.getTransactionId();
-        if (transactionHandle <= 0 || transactionHandle > FirebirdTransactionIdGenerator.getInstance().getTransactionId(connectionSession.getConnectionId())) {
+    private void validateTransactionHandle(final int transactionHandle) {
+        if (!FirebirdTransactionIdGenerator.getInstance().isTransactionActive(connectionSession.getConnectionId(), transactionHandle)) {
             throw new InvalidTransactionHandleException(transactionHandle);
         }
     }
