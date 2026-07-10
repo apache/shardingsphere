@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class LightweightExpressionEvaluatorTest {
+class AggregationWrapperExpressionEvaluatorTest {
     
     @Test
     void assertEvaluateIfNullWithMemoryRowFallback() {
@@ -49,7 +49,7 @@ class LightweightExpressionEvaluatorTest {
         MemoryQueryResultRow memoryRow = mock(MemoryQueryResultRow.class);
         when(memoryRow.getCell(1)).thenReturn(null);
         
-        Object actual = LightweightExpressionEvaluator.evaluate(functionSegment, Collections.singletonList(derivedAggr), memoryRow);
+        Object actual = AggregationWrapperExpressionEvaluator.evaluate(functionSegment, Collections.singletonList(derivedAggr), memoryRow);
         assertThat(actual, CoreMatchers.is(0));
     }
     
@@ -63,7 +63,7 @@ class LightweightExpressionEvaluatorTest {
         AggregationProjection derivedAggr = new AggregationProjection(AggregationType.SUM, aggrSegment, new IdentifierValue("EXPR_DERIVED_0"), null);
         derivedAggr.setIndex(2);
         
-        Object actual = LightweightExpressionEvaluator.evaluate(functionSegment, Collections.singletonList(derivedAggr), Arrays.asList("other", 50));
+        Object actual = AggregationWrapperExpressionEvaluator.evaluate(functionSegment, Collections.singletonList(derivedAggr), Arrays.asList("other", 50));
         assertThat(actual, CoreMatchers.is(50));
     }
 }

@@ -38,6 +38,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +60,7 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         expressions = sqlStatement.getProjections().getProjections().stream().filter(each -> !(each instanceof ShorthandProjectionSegment))
-                .map(each -> new ProjectionEngine(null).createProjection(each))
+                .map(each -> new ProjectionEngine(null).createProjection(each, new LinkedHashMap<>()))
                 .filter(Optional::isPresent).map(each -> each.get().getAlias().isPresent() ? each.get().getAlias().get() : each.get().getExpression()).collect(Collectors.toList());
         mergedResult = new TransparentMergedResult(getQueryResult());
     }

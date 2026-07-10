@@ -24,8 +24,10 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.Ord
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -38,7 +40,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Projections context engine.
@@ -60,18 +65,19 @@ public final class ProjectionsContextEngine {
      * @return projections context
      */
     public ProjectionsContext createProjectionsContext(final ProjectionsSegment projectionsSegment, final GroupByContext groupByContext, final OrderByContext orderByContext) {
-        Collection<Projection> projections = getProjections(projectionsSegment);
+        Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = new LinkedHashMap<>();
+        Collection<Projection> projections = getProjections(projectionsSegment, expressionDerivedAggregations);
         ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);
         result.getProjections().addAll(getDerivedGroupByColumns(groupByContext, projections));
         result.getProjections().addAll(getDerivedOrderByColumns(orderByContext, projections));
-        result.getExpressionDerivedAggregations().putAll(projectionEngine.getExpressionDerivedAggregations());
+        result.getExpressionDerivedAggregations().putAll(expressionDerivedAggregations);
         return result;
     }
     
-    private Collection<Projection> getProjections(final ProjectionsSegment projectionsSegment) {
+    private Collection<Projection> getProjections(final ProjectionsSegment projectionsSegment, final Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations) {
         Collection<Projection> result = new LinkedList<>();
         for (ProjectionSegment each : projectionsSegment.getProjections()) {
-            projectionEngine.createProjection(each).ifPresent(result::add);
+            projectionEngine.createProjection(each, expressionDerivedAggregations).ifPresent(result::add);
         }
         return result;
     }

@@ -164,7 +164,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         for (Entry<ExpressionProjection, List<AggregationProjection>> entry : expressionDerivedAggregations.entrySet()) {
             ExpressionProjection expressionProjection = entry.getKey();
             
-            Object evaluatedValue = LightweightExpressionEvaluator.evaluate(
+            Object evaluatedValue = AggregationWrapperExpressionEvaluator.evaluate(
                     expressionProjection.getExpressionSegment().getExpr(),
                     entry.getValue(),
                     currentRow);

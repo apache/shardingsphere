@@ -24,14 +24,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 /**
- * Lightweight expression evaluator for post-merge aggregations.
+ * Evaluates supported aggregation wrapper projections (e.g., IFNULL, COALESCE) using merged aggregation columns.
  */
-public final class LightweightExpressionEvaluator {
+public final class AggregationWrapperExpressionEvaluator {
     
     /**
      * Evaluate expression with memory query result row.
@@ -65,21 +64,21 @@ public final class LightweightExpressionEvaluator {
         if (expression instanceof FunctionSegment) {
             return evaluateFunction((FunctionSegment) expression, derivedAggregations, valueProvider);
         }
-        return null;
+        throw new IllegalArgumentException(String.format("Unsupported aggregation wrapper expression segment type: %s", expression.getClass().getName()));
     }
     
     private static Object evaluateFunction(final FunctionSegment functionSegment, final List<AggregationProjection> derivedAggregations, final Function<Integer, Object> valueProvider) {
         String functionName = functionSegment.getFunctionName();
         if ("IFNULL".equalsIgnoreCase(functionName) || "COALESCE".equalsIgnoreCase(functionName)) {
-            List<ExpressionSegment> parameters = new ArrayList<>(functionSegment.getParameters());
-            for (ExpressionSegment each : parameters) {
+            for (ExpressionSegment each : functionSegment.getParameters()) {
                 Object value = evaluate(each, derivedAggregations, valueProvider);
                 if (null != value) {
                     return value;
                 }
             }
+            return null;
         }
-        return null;
+        throw new IllegalArgumentException(String.format("Unsupported aggregation wrapper function: %s", functionName));
     }
     
     private static Object getMergedAggregationValue(final AggregationProjectionSegment segment, final List<AggregationProjection> derivedAggregations, final Function<Integer, Object> valueProvider) {
@@ -88,6 +87,6 @@ public final class LightweightExpressionEvaluator {
                 return valueProvider.apply(each.getIndex());
             }
         }
-        return null;
+        throw new IllegalArgumentException(String.format("Cannot find merged aggregation value for expression: %s", segment.getText()));
     }
 }

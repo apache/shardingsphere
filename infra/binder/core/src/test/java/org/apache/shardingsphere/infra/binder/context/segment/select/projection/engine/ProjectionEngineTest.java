@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -60,14 +61,14 @@ class ProjectionEngineTest {
     
     @Test
     void assertCreateProjectionWhenProjectionSegmentNotMatched() {
-        assertFalse(new ProjectionEngine(databaseType).createProjection(null).isPresent());
+        assertFalse(new ProjectionEngine(databaseType).createProjection(null, new LinkedHashMap<>()).isPresent());
     }
     
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegment() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
         shorthandProjectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
-        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(shorthandProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(shorthandProjectionSegment, new LinkedHashMap<>());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(ShorthandProjection.class));
     }
@@ -76,7 +77,7 @@ class ProjectionEngineTest {
     void assertCreateProjectionWhenProjectionSegmentInstanceOfColumnProjectionSegment() {
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(new ColumnSegment(0, 10, new IdentifierValue("name")));
         columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
-        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(columnProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(columnProjectionSegment, new LinkedHashMap<>());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(ColumnProjection.class));
     }
@@ -84,7 +85,7 @@ class ProjectionEngineTest {
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfExpressionProjectionSegment() {
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 10, "text");
-        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(expressionProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(expressionProjectionSegment, new LinkedHashMap<>());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(ExpressionProjection.class));
     }
@@ -92,7 +93,7 @@ class ProjectionEngineTest {
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegment() {
         AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "distinctExpression");
-        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationDistinctProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationDistinctProjectionSegment, new LinkedHashMap<>());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(AggregationDistinctProjection.class));
     }
@@ -100,7 +101,7 @@ class ProjectionEngineTest {
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegment() {
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.COUNT, "COUNT(1)");
-        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment, new LinkedHashMap<>());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(AggregationProjection.class));
     }
@@ -108,7 +109,7 @@ class ProjectionEngineTest {
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegmentAndAggregationTypeIsAvg() {
         AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.AVG, "(1)", "distinctExpression");
-        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationDistinctProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationDistinctProjectionSegment, new LinkedHashMap<>());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(AggregationDistinctProjection.class));
     }
@@ -116,7 +117,7 @@ class ProjectionEngineTest {
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegmentAndAggregationTypeIsAvg() {
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.AVG, "AVG(1)");
-        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment, new LinkedHashMap<>());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(AggregationProjection.class));
     }
@@ -126,7 +127,7 @@ class ProjectionEngineTest {
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 25, AggregationType.MAX, "MAX(id) OVER ()");
         aggregationProjectionSegment.setWindow(new WindowItemSegment(8, 25));
         aggregationProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("max_id")));
-        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment, new LinkedHashMap<>());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(ExpressionProjection.class));
         assertThat(Objects.requireNonNull(actual.get().getAlias().map(IdentifierValue::getValue).orElse(null)), is("max_id"));
@@ -136,7 +137,7 @@ class ProjectionEngineTest {
     void assertCreateProjectionWhenProjectionSegmentInstanceOfParameterMarkerExpressionSegment() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(7, 7, 0);
         parameterMarkerExpressionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
-        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(parameterMarkerExpressionSegment);
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(parameterMarkerExpressionSegment, new LinkedHashMap<>());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(ParameterMarkerProjection.class));
         assertThat(Objects.requireNonNull(actual.get().getAlias().map(IdentifierValue::getValue).orElse(null)), is("alias"));
@@ -153,10 +154,10 @@ class ProjectionEngineTest {
         ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 50, "IFNULL(SUM(price), SUM(price))", functionSegment);
         
         ProjectionEngine engine = new ProjectionEngine(databaseType);
-        Optional<Projection> actual = engine.createProjection(expressionSegment);
+        Map<ExpressionProjection, List<AggregationProjection>> derived = new LinkedHashMap<>();
+        Optional<Projection> actual = engine.createProjection(expressionSegment, derived);
         
         assertTrue(actual.isPresent());
-        Map<ExpressionProjection, List<AggregationProjection>> derived = engine.getExpressionDerivedAggregations();
         assertThat(derived.size(), is(1));
         assertThat(derived.values().iterator().next().size(), is(1));
     }
@@ -170,10 +171,11 @@ class ProjectionEngineTest {
         ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 14, "SUM(price) + 1", binaryExpr);
         
         ProjectionEngine engine = new ProjectionEngine(databaseType);
-        Optional<Projection> actual = engine.createProjection(expressionSegment);
+        Map<ExpressionProjection, List<AggregationProjection>> derived = new LinkedHashMap<>();
+        Optional<Projection> actual = engine.createProjection(expressionSegment, derived);
         
         assertTrue(actual.isPresent());
-        assertTrue(engine.getExpressionDerivedAggregations().isEmpty());
+        assertTrue(derived.isEmpty());
     }
     
     @Test
@@ -188,9 +190,10 @@ class ProjectionEngineTest {
         ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 31, "IFNULL(MAX(id) OVER (), 0)", functionSegment);
         
         ProjectionEngine engine = new ProjectionEngine(databaseType);
-        Optional<Projection> actual = engine.createProjection(expressionSegment);
+        Map<ExpressionProjection, List<AggregationProjection>> derived = new LinkedHashMap<>();
+        Optional<Projection> actual = engine.createProjection(expressionSegment, derived);
         
         assertTrue(actual.isPresent());
-        assertTrue(engine.getExpressionDerivedAggregations().isEmpty());
+        assertTrue(derived.isEmpty());
     }
 }

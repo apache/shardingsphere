@@ -192,14 +192,14 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         List<Projection> expandProjections = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
         
         for (Entry<ExpressionProjection, List<AggregationProjection>> exprEntry : expressionDerivedAggregations.entrySet()) {
-            Object evaluatedValue = LightweightExpressionEvaluator.evaluate(
+            Object evaluatedValue = AggregationWrapperExpressionEvaluator.evaluate(
                     exprEntry.getKey().getExpressionSegment().getExpr(),
                     exprEntry.getValue(),
                     row);
             
             int columnIndex = expandProjections.indexOf(exprEntry.getKey()) + 1;
             
-            if (columnIndex > 0 && null != evaluatedValue) {
+            if (columnIndex > 0) {
                 row.setCell(columnIndex, evaluatedValue);
             }
         }

@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,7 +73,7 @@ class OpenGaussProjectionIdentifierExtractorTest {
     void assertGetColumnLabelFromWindowAggregationProjection() {
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 0, AggregationType.MAX, "pg_catalog.max(ref_0.c36) over ()");
         aggregationProjectionSegment.setWindow(new WindowItemSegment(19, 27));
-        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment, new LinkedHashMap<>());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(ExpressionProjection.class));
         assertThat(actual.get().getColumnLabel(), is("max"));

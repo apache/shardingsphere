@@ -90,6 +90,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -279,7 +280,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         Collection<Projection> result = new LinkedList<>();
         Collection<ProjectionSegment> projections = returningSegment.getProjections().getProjections();
         for (ProjectionSegment each : projections) {
-            Projection projection = projectionEngine.createProjection(each).orElse(null);
+            Projection projection = projectionEngine.createProjection(each, new LinkedHashMap<>()).orElse(null);
             if (projection instanceof ShorthandProjection) {
                 result.addAll(processShorthandProjection(sqlStatementContext, schema, (ShorthandProjection) projection));
             } else if (!(projection instanceof DerivedProjection) && null != projection) {
