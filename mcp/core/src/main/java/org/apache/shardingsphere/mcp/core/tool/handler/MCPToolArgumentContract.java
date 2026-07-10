@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgum
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMissingToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 import java.math.BigInteger;
 import java.util.Collection;
@@ -39,8 +40,6 @@ import java.util.Objects;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MCPToolArgumentContract {
-    
-    private static final String APPROVED_STEPS = "approved_steps";
     
     private static final String TYPE = "type";
     
@@ -234,7 +233,7 @@ final class MCPToolArgumentContract {
         if (MCPPayloadFieldNames.EXECUTION_MODE.equals(argumentName)) {
             return new MCPInvalidExecutionModeException(toolName, allowedValues, createExecutionModeSuggestedArguments(arguments, allowedValues));
         }
-        if (argumentName.startsWith(APPROVED_STEPS + "[")) {
+        if (argumentName.startsWith(WorkflowFieldNames.APPROVED_STEPS + "[")) {
             return new MCPInvalidApprovedStepsException(allowedValues, createApprovedStepsSuggestedArguments(arguments));
         }
         return createContractViolationException(arguments, argumentName, "invalid_enum_value", "", allowedValues);
@@ -272,7 +271,7 @@ final class MCPToolArgumentContract {
     
     private Map<String, Object> createApprovedStepsSuggestedArguments(final Map<String, Object> arguments) {
         Map<String, Object> result = new LinkedHashMap<>(arguments);
-        result.remove(APPROVED_STEPS);
+        result.remove(WorkflowFieldNames.APPROVED_STEPS);
         String suggestedExecutionMode = findSafestExecutionMode(getEnumValues(findProperty(inputSchema, MCPPayloadFieldNames.EXECUTION_MODE)));
         if (!suggestedExecutionMode.isEmpty()) {
             result.put(MCPPayloadFieldNames.EXECUTION_MODE, suggestedExecutionMode);

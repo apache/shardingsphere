@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
@@ -155,6 +156,7 @@ public final class MCPToolDescriptorCatalogValidator {
         }
         if (null != runtimeDescriptor && "plan".equals(runtimeDescriptor.getWorkflowRole())) {
             validatePlanningWorkflowDescriptor(descriptor);
+            validatePlanningToolAnnotations(descriptor);
         }
     }
     
@@ -295,6 +297,16 @@ public final class MCPToolDescriptorCatalogValidator {
             ShardingSpherePreconditions.checkState(null == previousToolName, () -> new IllegalStateException(
                     String.format("Planning workflow kind `%s` is used by both `%s` and `%s`.", workflowKind, previousToolName, each.getToolName())));
         }
+    }
+    
+    private static void validatePlanningToolAnnotations(final MCPToolDescriptor descriptor) {
+        MCPToolAnnotations annotations = descriptor.getAnnotations();
+        ShardingSpherePreconditions.checkState(!annotations.isReadOnlyHint(),
+                () -> new IllegalStateException(String.format("Planning tool `%s` annotations.readOnlyHint must be false.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState(!annotations.isDestructiveHint(),
+                () -> new IllegalStateException(String.format("Planning tool `%s` annotations.destructiveHint must be false.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState(!annotations.isIdempotentHint(),
+                () -> new IllegalStateException(String.format("Planning tool `%s` annotations.idempotentHint must be false.", descriptor.getName())));
     }
     
     private static void validateDestructiveToolDescriptor(final MCPToolDescriptor descriptor, final MCPToolRuntimeDescriptor runtimeDescriptor) {

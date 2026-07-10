@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -171,10 +172,21 @@ public final class MCPNextActionUtils {
      */
     @SafeVarargs
     public static List<Map<String, Object>> ordered(final Map<String, Object>... actions) {
-        List<Map<String, Object>> result = new ArrayList<>(actions.length);
-        for (int index = 0; index < actions.length; index++) {
-            Map<String, Object> action = new LinkedHashMap<>(actions[index]);
-            action.put("order", index + 1);
+        return ordered(Arrays.asList(actions));
+    }
+    
+    /**
+     * Add 1-based order values to actions.
+     *
+     * @param actions actions
+     * @return ordered actions
+     */
+    public static List<Map<String, Object>> ordered(final Collection<Map<String, Object>> actions) {
+        List<Map<String, Object>> result = new ArrayList<>(actions.size());
+        int index = 0;
+        for (Map<String, Object> each : actions) {
+            Map<String, Object> action = new LinkedHashMap<>(each);
+            action.put("order", ++index);
             result.add(action);
         }
         return result;

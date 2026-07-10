@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 class EncryptWorkflowPlanningServiceTest {
     
     @Test
-    void assertPlanRejectsMissingPlanningContext() throws ReflectiveOperationException {
+    void assertPlanRejectsMissingPlanningContext() {
         EncryptWorkflowPlanningService service = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class));
         WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), "session-1",
@@ -69,7 +69,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRejectsMissingTableAndColumn() throws ReflectiveOperationException {
+    void assertPlanRejectsMissingTableAndColumn() {
         EncryptWorkflowPlanningService service = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class));
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
@@ -83,7 +83,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRejectsMissingLogicalColumn() throws ReflectiveOperationException {
+    void assertPlanRejectsMissingLogicalColumn() {
         MCPMetadataQueryFacade metadataQueryFacade = createMetadataQueryFacade();
         when(metadataQueryFacade.queryTableColumn(any(), any(), any(), any())).thenReturn(Optional.empty());
         EncryptWorkflowPlanningService service = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
@@ -94,7 +94,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRejectsLifecycleMismatchForCreate() throws ReflectiveOperationException {
+    void assertPlanRejectsLifecycleMismatchForCreate() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         EncryptWorkflowPlanningService service = createService(ruleInspectionService, mock(EncryptAlgorithmRecommendationService.class),
@@ -106,7 +106,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanDropWorkflow() throws ReflectiveOperationException {
+    void assertPlanDropWorkflow() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
@@ -125,7 +125,7 @@ class EncryptWorkflowPlanningServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertPlanWithNaturalLanguageInferenceArguments")
     void assertPlanWithNaturalLanguageInference(final String name, final String naturalLanguageIntent, final boolean ruleExists,
-                                                final String expectedOperationType, final String expectedFieldSemantics, final String expectedStatus) throws ReflectiveOperationException {
+                                                final String expectedOperationType, final String expectedFieldSemantics, final String expectedStatus) {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("logic_column", "phone")) : List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(Map.of("type", "AES", "supports_like", false)));
@@ -143,7 +143,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanStopsOnBlockingAlgorithmIssue() throws ReflectiveOperationException {
+    void assertPlanStopsOnBlockingAlgorithmIssue() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
@@ -161,7 +161,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRequiresExplicitCipherColumn() throws ReflectiveOperationException {
+    void assertPlanRequiresExplicitCipherColumn() {
         EncryptWorkflowRequest request = createRequest("create");
         request.getOptions().setCipherColumnName("");
         WorkflowContextSnapshot actual = planWithPrimaryCandidate(request);
@@ -171,7 +171,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRequiresExplicitEqualityInputs() throws ReflectiveOperationException {
+    void assertPlanRequiresExplicitEqualityInputs() {
         EncryptWorkflowRequest request = createRequest("create");
         request.getOptions().setRequiresEqualityFilter(true);
         request.getOptions().setAssistedQueryColumnName("");
@@ -183,7 +183,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanDoesNotApplyLikeQueryCandidateWithoutExplicitInput() throws ReflectiveOperationException {
+    void assertPlanDoesNotApplyLikeQueryCandidateWithoutExplicitInput() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(
@@ -201,7 +201,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanCreatesRuleArtifactsOnly() throws ReflectiveOperationException {
+    void assertPlanCreatesRuleArtifactsOnly() {
         EncryptWorkflowRequest request = createRequest("create");
         WorkflowContextSnapshot actual = planWithPrimaryCandidate(request);
         assertThat(actual.getStatus(), is("planned"));
@@ -211,7 +211,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanEncryptRuleWithReservedColumnAndDefaultDigest() throws ReflectiveOperationException {
+    void assertPlanEncryptRuleWithReservedColumnAndDefaultDigest() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         EncryptWorkflowRequest request = createRequest("create");
@@ -230,7 +230,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRejectsAddingColumnToExistingTableRule() throws ReflectiveOperationException {
+    void assertPlanRejectsAddingColumnToExistingTableRule() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
@@ -244,7 +244,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRejectsDroppingColumnFromExistingTableRule() throws ReflectiveOperationException {
+    void assertPlanRejectsDroppingColumnFromExistingTableRule() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(
                 Map.of("logic_column", "phone", "cipher_column", "phone_cipher"),
@@ -258,7 +258,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRejectsUnsupportedOperationType() throws ReflectiveOperationException {
+    void assertPlanRejectsUnsupportedOperationType() {
         EncryptWorkflowRequest request = createRequest("replace");
         WorkflowContextSnapshot actual = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class))
@@ -271,7 +271,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRequiresMissingProperties() throws ReflectiveOperationException {
+    void assertPlanRequiresMissingProperties() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         EncryptAlgorithmPropertyTemplateService propertyTemplateService = mock(EncryptAlgorithmPropertyTemplateService.class);
@@ -283,7 +283,7 @@ class EncryptWorkflowPlanningServiceTest {
         assertThat(actual.getClarifiedIntent().getClarificationMessages().getFirst(), is("Please provide property `aes-key-value`."));
     }
     
-    private WorkflowContextSnapshot planWithPrimaryCandidate(final EncryptWorkflowRequest request) throws ReflectiveOperationException {
+    private WorkflowContextSnapshot planWithPrimaryCandidate(final EncryptWorkflowRequest request) {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         return createService(ruleInspectionService, createPrimaryCandidateRecommendation(), createEmptyPropertyTemplateService(), new EncryptRuleDistSQLPlanningService())
@@ -360,13 +360,17 @@ class EncryptWorkflowPlanningServiceTest {
     private EncryptWorkflowPlanningService createService(final EncryptRuleInspectionService ruleInspectionService,
                                                          final EncryptAlgorithmRecommendationService algorithmRecommendationService,
                                                          final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService,
-                                                         final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService) throws ReflectiveOperationException {
+                                                         final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService) {
         EncryptWorkflowPlanningService result = new EncryptWorkflowPlanningService();
-        setField(result, "ruleInspectionService", ruleInspectionService);
-        setField(result, "algorithmRecommendationService", algorithmRecommendationService);
-        setField(result, "algorithmPropertyTemplateService", algorithmPropertyTemplateService);
-        setField(result, "ruleDistSQLPlanningService", ruleDistSQLPlanningService);
-        return result;
+        try {
+            setField(result, "ruleInspectionService", ruleInspectionService);
+            setField(result, "algorithmRecommendationService", algorithmRecommendationService);
+            setField(result, "algorithmPropertyTemplateService", algorithmPropertyTemplateService);
+            setField(result, "ruleDistSQLPlanningService", ruleDistSQLPlanningService);
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {

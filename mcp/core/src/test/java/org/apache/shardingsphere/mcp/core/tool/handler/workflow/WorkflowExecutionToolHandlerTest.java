@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -64,7 +65,7 @@ class WorkflowExecutionToolHandlerTest {
         WorkflowExecutionToolHandler handler = createExecutionToolHandler(executionService, new WorkflowRuntimeDefinitionRegistry(List.of(
                 WorkflowHandlerTestFixture.createDefinition("encrypt.rule", mock(MCPWorkflowValidationHandler.class), workflowApplySynchronizationHandler, workflowApplyArtifactValidator))));
         MCPResponse actual = handler.handle(fixture.workflowContext(), new MCPToolCall("session-1",
-                Map.of("plan_id", "plan-1", "approved_steps", List.of("ddl"), "execution_mode", "manual-only")));
+                Map.of(WorkflowFieldNames.PLAN_ID, "plan-1", WorkflowFieldNames.APPROVED_STEPS, List.of("ddl"), WorkflowFieldNames.EXECUTION_MODE, "manual-only")));
         verify(executionService).apply(eq(fixture.workflowSessionContext()), eq(fixture.metadataQueryFacade()), eq(fixture.queryFacade()), eq(fixture.executionFacade()),
                 eq(workflowApplySynchronizationHandler), eq(workflowApplyArtifactValidator), eq("session-1"), eq(snapshot), eq(List.of("ddl")), eq("manual-only"));
         assertThat(actual.toPayload().get("status"), is("completed"));
@@ -76,7 +77,7 @@ class WorkflowExecutionToolHandlerTest {
         WorkflowHandlerTestFixture.Context fixture = WorkflowHandlerTestFixture.createContext(snapshot);
         WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(WorkflowHandlerTestFixture.createDefinition("encrypt.rule"))));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> handler.handle(fixture.workflowContext(), new MCPToolCall("session-1", Map.of("plan_id", "plan-1", "execution_mode", "manual-only"))));
+                () -> handler.handle(fixture.workflowContext(), new MCPToolCall("session-1", Map.of(WorkflowFieldNames.PLAN_ID, "plan-1", WorkflowFieldNames.EXECUTION_MODE, "manual-only"))));
         assertThat(actual.getMessage(), is("Workflow kind is required for plan_id `plan-1`."));
     }
     
@@ -86,7 +87,7 @@ class WorkflowExecutionToolHandlerTest {
         WorkflowHandlerTestFixture.Context fixture = WorkflowHandlerTestFixture.createContext(snapshot);
         WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(WorkflowHandlerTestFixture.createDefinition("encrypt.rule"))));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> handler.handle(fixture.workflowContext(), new MCPToolCall("session-1", Map.of("plan_id", "plan-1"))));
+                () -> handler.handle(fixture.workflowContext(), new MCPToolCall("session-1", Map.of(WorkflowFieldNames.PLAN_ID, "plan-1"))));
         assertThat(actual.getMessage(), is("database_gateway_apply_workflow execution_mode is required."));
     }
     

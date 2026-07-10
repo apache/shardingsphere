@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -38,9 +37,8 @@ import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.MockedConstruction;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -51,105 +49,104 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EncryptToolHandlerTest {
     
     @Test
-    void assertHandlePlanEncryptRule() throws ReflectiveOperationException {
-        PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
-        EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
-        setField(handler, "planningService", planningService);
-        setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "table", "orders",
-                "column", "phone",
-                "algorithm_type", "AES",
-                "cipher_column_name", "phone_cipher",
-                "structured_intent_evidence", Map.of("field_semantics", "phone", "requires_decrypt", true))));
-        assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
-        ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
-        assertThat(actualRequest.getAlgorithmType(), is("AES"));
-        assertThat(actualRequest.getFieldSemantics(), is("phone"));
-        assertThat(actualRequest.getOptions().getCipherColumnName(), is("phone_cipher"));
+    void assertHandlePlanEncryptRule() {
+        try (MockedConstruction<EncryptWorkflowPlanningService> mockedConstruction = mockConstruction(EncryptWorkflowPlanningService.class)) {
+            PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
+            EncryptWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
+            when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "table", "orders",
+                    "column", "phone",
+                    "algorithm_type", "AES",
+                    "cipher_column_name", "phone_cipher",
+                    "structured_intent_evidence", Map.of("field_semantics", "phone", "requires_decrypt", true))));
+            assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
+            ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
+            verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
+            assertThat(actualRequest.getAlgorithmType(), is("AES"));
+            assertThat(actualRequest.getFieldSemantics(), is("phone"));
+            assertThat(actualRequest.getOptions().getCipherColumnName(), is("phone_cipher"));
+        }
     }
     
     @Test
-    void assertHandlePlanEncryptRuleWithMaskedArtifacts() throws ReflectiveOperationException {
-        PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
-        EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
-        setField(handler, "planningService", planningService);
-        setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
-        MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "table", "orders",
-                "column", "phone")));
-        Map<String, Object> actualPayload = actual.toPayload();
-        assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("aes-key-value"), is("******"));
-        assertFalse(actualPayload.containsKey("derived_column_plan"));
-        assertFalse(actualPayload.containsKey("ddl_artifacts"));
-        assertFalse(actualPayload.containsKey("index_plan"));
-        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("******"));
-        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
-        List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
-        assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/algorithms"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/databases/logic_db/rules"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/encrypt/algorithms"), is("algorithm"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/encrypt/databases/logic_db/rules"), is("rule"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"), is("rule"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
-        assertThat(actualNextAction.get("type"), is("tool_call"));
-        assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
-        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("plan_id"), is("plan-1"));
-        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
+    void assertHandlePlanEncryptRuleWithMaskedArtifacts() {
+        try (MockedConstruction<EncryptWorkflowPlanningService> mockedConstruction = mockConstruction(EncryptWorkflowPlanningService.class)) {
+            PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
+            when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
+            MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "table", "orders",
+                    "column", "phone")));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("aes-key-value"), is("******"));
+            assertFalse(actualPayload.containsKey("derived_column_plan"));
+            assertFalse(actualPayload.containsKey("ddl_artifacts"));
+            assertFalse(actualPayload.containsKey("index_plan"));
+            assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("******"));
+            List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+            List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
+            assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/algorithms"));
+            assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/databases/logic_db/rules"));
+            assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/encrypt/algorithms"), is("algorithm"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/encrypt/databases/logic_db/rules"), is("rule"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"), is("rule"));
+            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
+            assertThat(actualNextAction.get("type"), is("tool_call"));
+            assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
+            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("plan_id"), is("plan-1"));
+            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
+        }
     }
     
     @Test
-    void assertHandlePlanEncryptRuleWithSecretReferences() throws ReflectiveOperationException {
-        PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
-        EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
-        setField(handler, "planningService", planningService);
-        setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "primary_algorithm_properties", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1")),
-                "assisted_query_algorithm_properties", Map.of("salt", Map.of("secret_ref", "placeholder://secret-value-2")),
-                "like_query_algorithm_properties", Map.of("token", Map.of("secret_ref", "placeholder://secret-value-3")))));
-        ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
-        assertThat(actualRequest.getPrimaryAlgorithmProperties().get("aes-key-value"), is("secret_reference:primary.aes-key-value"));
-        assertFalse(actualRequest.getSecretReferences("primary").get("aes-key-value").isMalformed());
-        assertThat(actualRequest.getOptions().getAssistedQueryAlgorithmProperties().get("salt"), is("secret_reference:assisted_query.salt"));
-        assertFalse(actualRequest.getSecretReferences("assisted_query").get("salt").isMalformed());
-        assertThat(actualRequest.getOptions().getLikeQueryAlgorithmProperties().get("token"), is("secret_reference:like_query.token"));
-        assertFalse(actualRequest.getSecretReferences("like_query").get("token").isMalformed());
+    void assertHandlePlanEncryptRuleWithSecretReferences() {
+        try (MockedConstruction<EncryptWorkflowPlanningService> mockedConstruction = mockConstruction(EncryptWorkflowPlanningService.class)) {
+            PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
+            EncryptWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
+            when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "primary_algorithm_properties", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1")),
+                    "assisted_query_algorithm_properties", Map.of("salt", Map.of("secret_ref", "placeholder://secret-value-2")),
+                    "like_query_algorithm_properties", Map.of("token", Map.of("secret_ref", "placeholder://secret-value-3")))));
+            ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
+            verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
+            assertThat(actualRequest.getPrimaryAlgorithmProperties().get("aes-key-value"), is("secret_reference:primary.aes-key-value"));
+            assertFalse(actualRequest.getSecretReferences("primary").get("aes-key-value").isMalformed());
+            assertThat(actualRequest.getOptions().getAssistedQueryAlgorithmProperties().get("salt"), is("secret_reference:assisted_query.salt"));
+            assertFalse(actualRequest.getSecretReferences("assisted_query").get("salt").isMalformed());
+            assertThat(actualRequest.getOptions().getLikeQueryAlgorithmProperties().get("token"), is("secret_reference:like_query.token"));
+            assertFalse(actualRequest.getSecretReferences("like_query").get("token").isMalformed());
+        }
     }
     
     @Test
-    void assertHandlePlanEncryptRuleMasksPropertiesBeforeRequirementsCollected() throws ReflectiveOperationException {
-        PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
-        EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createClarifyingSnapshot());
-        setField(handler, "planningService", planningService);
-        setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
-        MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "table", "orders",
-                "column", "phone")));
-        Map<String, Object> actualPayload = actual.toPayload();
-        assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("aes-key-value"), is("******"));
-        assertFalse(String.valueOf(actualPayload).contains("recovery-secret-value"));
+    void assertHandlePlanEncryptRuleMasksPropertiesBeforeRequirementsCollected() {
+        try (MockedConstruction<EncryptWorkflowPlanningService> mockedConstruction = mockConstruction(EncryptWorkflowPlanningService.class)) {
+            PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
+            when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any(), any())).thenReturn(createClarifyingSnapshot());
+            MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "table", "orders",
+                    "column", "phone")));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("aes-key-value"), is("******"));
+            assertFalse(String.valueOf(actualPayload).contains("recovery-secret-value"));
+        }
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status) {
@@ -194,11 +191,6 @@ class EncryptToolHandlerTest {
         result.setDeliveryMode("interactive");
         result.setExecutionMode("review-then-execute");
         return result;
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     private List<String> extractResourceUris(final List<?> resources) {

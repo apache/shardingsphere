@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.TestWorkflowSessionContext;
-import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -37,9 +36,8 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.MockedConstruction;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -50,81 +48,81 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MaskToolHandlerTest {
     
     @Test
-    void assertHandlePlanMaskRule() throws ReflectiveOperationException {
-        PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
-        MaskWorkflowPlanningService planningService = mock(MaskWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
-        setField(handler, "planningService", planningService);
-        setField(handler, "propertyTemplateService", new MaskAlgorithmPropertyTemplateService());
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "table", "orders",
-                "column", "phone",
-                "algorithm_type", "KEEP_FIRST_N_LAST_M",
-                "structured_intent_evidence", Map.of("field_semantics", "phone"))));
-        assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
-        ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        WorkflowRequest actualRequest = requestCaptor.getValue();
-        assertThat(actualRequest.getAlgorithmType(), is("KEEP_FIRST_N_LAST_M"));
-        assertThat(actualRequest.getFieldSemantics(), is("phone"));
+    void assertHandlePlanMaskRule() {
+        try (MockedConstruction<MaskWorkflowPlanningService> mockedConstruction = mockConstruction(MaskWorkflowPlanningService.class)) {
+            PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
+            MaskWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
+            when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "table", "orders",
+                    "column", "phone",
+                    "algorithm_type", "KEEP_FIRST_N_LAST_M",
+                    "structured_intent_evidence", Map.of("field_semantics", "phone"))));
+            assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
+            ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
+            verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            WorkflowRequest actualRequest = requestCaptor.getValue();
+            assertThat(actualRequest.getAlgorithmType(), is("KEEP_FIRST_N_LAST_M"));
+            assertThat(actualRequest.getFieldSemantics(), is("phone"));
+        }
     }
     
     @Test
-    void assertHandlePlanMaskRuleWithMaskedArtifacts() throws ReflectiveOperationException {
-        PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
-        MaskWorkflowPlanningService planningService = mock(MaskWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
-        setField(handler, "planningService", planningService);
-        setField(handler, "propertyTemplateService", new MaskAlgorithmPropertyTemplateService());
-        MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "table", "orders",
-                "column", "phone")));
-        Map<String, Object> actualPayload = actual.toPayload();
-        assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("first-n"), is("3"));
-        assertFalse(actualPayload.containsKey("ddl_artifacts"));
-        assertFalse(actualPayload.containsKey("index_plan"));
-        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("keep_first_n_last_m"));
-        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
-        List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
-        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/rules"));
-        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/mask/algorithms"), is("algorithm"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/mask/databases/logic_db/rules"), is("rule"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/mask/databases/logic_db/tables/orders/rules"), is("rule"));
-        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
-        assertThat(actualNextAction.get("type"), is("tool_call"));
-        assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
-        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("plan_id"), is("plan-1"));
-        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
+    void assertHandlePlanMaskRuleWithMaskedArtifacts() {
+        try (MockedConstruction<MaskWorkflowPlanningService> mockedConstruction = mockConstruction(MaskWorkflowPlanningService.class)) {
+            PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
+            when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
+            MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "table", "orders",
+                    "column", "phone")));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("first-n"), is("3"));
+            assertFalse(actualPayload.containsKey("ddl_artifacts"));
+            assertFalse(actualPayload.containsKey("index_plan"));
+            assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("keep_first_n_last_m"));
+            List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+            List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
+            assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
+            assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/rules"));
+            assertTrue(actualResourceUris.contains("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/mask/algorithms"), is("algorithm"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/mask/databases/logic_db/rules"), is("rule"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/mask/databases/logic_db/tables/orders/rules"), is("rule"));
+            assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
+            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
+            assertThat(actualNextAction.get("type"), is("tool_call"));
+            assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
+            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("plan_id"), is("plan-1"));
+            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
+        }
     }
     
     @Test
-    void assertHandlePlanMaskRuleWithSecretReference() throws ReflectiveOperationException {
-        PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
-        MaskWorkflowPlanningService planningService = mock(MaskWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
-        setField(handler, "planningService", planningService);
-        setField(handler, "propertyTemplateService", new MaskAlgorithmPropertyTemplateService());
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "primary_algorithm_properties", Map.of("replace-char", Map.of("secret_ref", "placeholder://secret-value-1")))));
-        ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        WorkflowRequest actualRequest = requestCaptor.getValue();
-        assertThat(actualRequest.getPrimaryAlgorithmProperties().get("replace-char"), is("secret_reference:primary.replace-char"));
-        assertFalse(actualRequest.getSecretReferences("primary").get("replace-char").isMalformed());
+    void assertHandlePlanMaskRuleWithSecretReference() {
+        try (MockedConstruction<MaskWorkflowPlanningService> mockedConstruction = mockConstruction(MaskWorkflowPlanningService.class)) {
+            PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
+            MaskWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
+            when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "primary_algorithm_properties", Map.of("replace-char", Map.of("secret_ref", "placeholder://secret-value-1")))));
+            ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
+            verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            WorkflowRequest actualRequest = requestCaptor.getValue();
+            assertThat(actualRequest.getPrimaryAlgorithmProperties().get("replace-char"), is("secret_reference:primary.replace-char"));
+            assertFalse(actualRequest.getSecretReferences("primary").get("replace-char").isMalformed());
+        }
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status) {
@@ -160,11 +158,6 @@ class MaskToolHandlerTest {
         result.setDeliveryMode("interactive");
         result.setExecutionMode("review-then-execute");
         return result;
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     private List<String> extractResourceUris(final List<?> resources) {

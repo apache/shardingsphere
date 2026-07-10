@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server;
 
-import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncCompletionSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncPromptSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecification;
@@ -58,7 +57,7 @@ import static org.mockito.Mockito.when;
 class MCPSyncServerFactoryTest {
     
     @Test
-    void assertCreateWithTransportProvider() throws ReflectiveOperationException {
+    void assertCreateWithTransportProvider() {
         TestServerTransportProvider transportProvider = new TestServerTransportProvider();
         McpSyncServer actual = createFactory().create(transportProvider);
         assertNotNull(transportProvider.sessionFactory);
@@ -73,7 +72,7 @@ class MCPSyncServerFactoryTest {
     }
     
     @Test
-    void assertCreateWithStreamableTransportProvider() throws ReflectiveOperationException {
+    void assertCreateWithStreamableTransportProvider() {
         TestStreamableTransportProvider transportProvider = new TestStreamableTransportProvider();
         McpSyncServer actual = createFactory().create(transportProvider);
         assertNotNull(transportProvider.sessionFactory);
@@ -84,7 +83,7 @@ class MCPSyncServerFactoryTest {
     }
     
     @Test
-    void assertCreateExposesOfficialDiscoveryDescriptors() throws ReflectiveOperationException {
+    void assertCreateExposesOfficialDiscoveryDescriptors() {
         TestServerTransportProvider transportProvider = new TestServerTransportProvider();
         McpSyncServer actual = createFactory().create(transportProvider);
         assertToolDiscoveryDescriptor(actual.listTools().get(0));
@@ -95,7 +94,7 @@ class MCPSyncServerFactoryTest {
     }
     
     @Test
-    void assertCreateAdvertisesImplementedCapabilitiesAndSdkLoggingOnly() throws ReflectiveOperationException {
+    void assertCreateAdvertisesImplementedCapabilitiesAndSdkLoggingOnly() {
         TestServerTransportProvider transportProvider = new TestServerTransportProvider();
         McpSyncServer actual = createFactory().create(transportProvider);
         McpSchema.ServerCapabilities actualCapabilities = actual.getServerCapabilities();
@@ -112,7 +111,7 @@ class MCPSyncServerFactoryTest {
         actual.closeGracefully();
     }
     
-    private MCPSyncServerFactory createFactory() throws ReflectiveOperationException {
+    private MCPSyncServerFactory createFactory() {
         MCPToolSpecificationFactory toolSpecificationFactory = mock(MCPToolSpecificationFactory.class);
         MCPResourceSpecificationFactory resourceSpecificationFactory = mock(MCPResourceSpecificationFactory.class);
         MCPPromptSpecificationFactory promptSpecificationFactory = mock(MCPPromptSpecificationFactory.class);
@@ -131,15 +130,18 @@ class MCPSyncServerFactoryTest {
                 (exchange, request) -> new McpSchema.GetPromptResult("Inspect metadata", List.of()))));
         when(completionSpecificationFactory.createCompletionSpecifications()).thenReturn(List.of(new SyncCompletionSpecification(new McpSchema.PromptReference("inspect_metadata"),
                 (exchange, request) -> new McpSchema.CompleteResult(new McpSchema.CompleteResult.CompleteCompletion(List.of(), 0, false)))));
-        McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         when(runtimeContext.getSessionManager()).thenReturn(mock(MCPSessionManager.class));
-        MCPSyncServerFactory result = new MCPSyncServerFactory(runtimeContext, jsonMapper);
-        setField(result, "toolSpecificationFactory", toolSpecificationFactory);
-        setField(result, "resourceSpecificationFactory", resourceSpecificationFactory);
-        setField(result, "promptSpecificationFactory", promptSpecificationFactory);
-        setField(result, "completionSpecificationFactory", completionSpecificationFactory);
-        return result;
+        MCPSyncServerFactory result = new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create());
+        try {
+            setField(result, "toolSpecificationFactory", toolSpecificationFactory);
+            setField(result, "resourceSpecificationFactory", resourceSpecificationFactory);
+            setField(result, "promptSpecificationFactory", promptSpecificationFactory);
+            setField(result, "completionSpecificationFactory", completionSpecificationFactory);
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private McpSchema.CallToolResult createFixtureToolResult() {

@@ -159,7 +159,7 @@ public final class WorkflowApplyResponseBuilder {
         boolean manualOnly = EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode);
         result.put("manual_only", manualOnly);
         if (!manualOnly && !previewArtifacts.isEmpty()) {
-            result.put("approval_field", "approved_steps");
+            result.put("approval_field", WorkflowFieldNames.APPROVED_STEPS);
             result.put("approval_values", previewArtifacts.stream().map(each -> (String) each.get("approval_step")).distinct().toList());
         }
         return result;
@@ -191,7 +191,7 @@ public final class WorkflowApplyResponseBuilder {
                     createPreviewNextActionReason(applyExecutionMode), createExecutionArguments(snapshot, applyExecutionMode)));
         }
         return MCPNextActionUtils.ordered(
-                MCPNextActionUtils.askUser(createPreviewNextActionReason(applyExecutionMode), List.of("approved_steps")),
+                MCPNextActionUtils.askUser(createPreviewNextActionReason(applyExecutionMode), List.of(WorkflowFieldNames.APPROVED_STEPS)),
                 MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(WorkflowToolDescriptors.APPLY_TOOL_NAME,
                         "Apply reviewed workflow artifacts after merging approved_steps from action 1 into the arguments.",
                         createExecutionArguments(snapshot, applyExecutionMode)), 1));

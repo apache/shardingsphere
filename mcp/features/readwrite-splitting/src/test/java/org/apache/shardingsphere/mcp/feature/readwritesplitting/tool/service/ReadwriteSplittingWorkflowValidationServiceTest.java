@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 class ReadwriteSplittingWorkflowValidationServiceTest {
     
     @Test
-    void assertValidateRejectsDifferentSession() throws ReflectiveOperationException {
+    void assertValidateRejectsDifferentSession() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(createRuleSnapshot("plan-1", "session-1", "executed", "create"));
         Map<String, Object> actual = createRuleService(mock(ReadwriteSplittingInspectionService.class))
@@ -66,7 +66,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateRuleHappyPath() throws ReflectiveOperationException {
+    void assertValidateRuleHappyPath() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "create");
         workflowSessionContext.save(snapshot);
@@ -112,7 +112,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateRuleMismatch() throws ReflectiveOperationException {
+    void assertValidateRuleMismatch() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "create");
         workflowSessionContext.save(snapshot);
@@ -125,7 +125,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateDropWorkflowAfterRuleRemoval() throws ReflectiveOperationException {
+    void assertValidateDropWorkflowAfterRuleRemoval() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "drop");
         workflowSessionContext.save(snapshot);
@@ -137,7 +137,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateStatusHappyPath() throws ReflectiveOperationException {
+    void assertValidateStatusHappyPath() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createStatusSnapshot("plan-1", "session-1", "executed", "enable");
         workflowSessionContext.save(snapshot);
@@ -162,18 +162,26 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
         assertThat(actual.getIssueCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
     
-    private ReadwriteSplittingRuleWorkflowValidationService createRuleService(final ReadwriteSplittingInspectionService inspectionService) throws ReflectiveOperationException {
+    private ReadwriteSplittingRuleWorkflowValidationService createRuleService(final ReadwriteSplittingInspectionService inspectionService) {
         ReadwriteSplittingRuleWorkflowValidationService result = new ReadwriteSplittingRuleWorkflowValidationService();
-        setField(result, "inspectionService", inspectionService);
-        setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
-        return result;
+        try {
+            setField(result, "inspectionService", inspectionService);
+            setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
-    private ReadwriteSplittingStatusWorkflowValidationService createStatusService(final ReadwriteSplittingInspectionService inspectionService) throws ReflectiveOperationException {
+    private ReadwriteSplittingStatusWorkflowValidationService createStatusService(final ReadwriteSplittingInspectionService inspectionService) {
         ReadwriteSplittingStatusWorkflowValidationService result = new ReadwriteSplittingStatusWorkflowValidationService();
-        setField(result, "inspectionService", inspectionService);
-        setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
-        return result;
+        try {
+            setField(result, "inspectionService", inspectionService);
+            setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {

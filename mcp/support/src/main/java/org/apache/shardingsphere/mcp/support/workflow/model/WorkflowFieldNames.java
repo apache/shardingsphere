@@ -28,6 +28,8 @@ public final class WorkflowFieldNames {
     
     public static final String ALGORITHM_TYPE = "algorithm_type";
     
+    public static final String APPROVED_STEPS = "approved_steps";
+    
     public static final String ASSISTED_QUERY_ALGORITHM_PROPERTIES = "assisted_query_algorithm_properties";
     
     public static final String ASSISTED_QUERY_ALGORITHM_TYPE = "assisted_query_algorithm_type";

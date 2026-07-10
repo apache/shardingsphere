@@ -73,6 +73,18 @@ class LLMUsabilitySuiteRunnerTest {
         assertTrue(Files.isRegularFile(tempDir.resolve("run-id").resolve("core-suite").resolve("scorecard.json")));
     }
     
+    @Test
+    void assertFailureSummaryIncludesArtifactDirectory() {
+        LLME2EConfiguration configuration = createConfiguration();
+        AssertionError actual = assertThrows(AssertionError.class,
+                () -> new LLMUsabilitySuiteRunner().assertCoreSuite("core-suite", () -> List.of(createScenario(LLMUsabilityScenario.NATURAL_TASK_TAG)),
+                        scenario -> createConversationResult(configuration, scenario, LLME2EAssertionReport.failure("answer_mismatch", "Wrong answer.")),
+                        configuration));
+        Path artifactDirectory = tempDir.resolve("run-id").resolve("scenario-" + LLMUsabilityScenario.NATURAL_TASK_TAG);
+        assertTrue(actual.getMessage().contains("answer_mismatch - Wrong answer."));
+        assertTrue(actual.getMessage().contains("artifactDirectory=" + artifactDirectory));
+    }
+    
     private LLMConversationExecutor.ConversationResult createConversationResult(final LLME2EConfiguration configuration, final LLME2EScenario scenario) throws IOException {
         return createConversationResult(configuration, scenario, LLME2EAssertionReport.isSuccess("ok"));
     }

@@ -78,7 +78,7 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
         WorkflowRuntimeDefinition workflowRuntimeDefinition = workflowRuntimeDefinitionRegistry.getRequired(workflowKind);
         return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(),
                 databaseContext.getExecutionFacade(), workflowRuntimeDefinition.getApplySynchronizationHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(), toolCall.getSessionId(),
-                snapshot, toolArguments.getStringCollectionArgument("approved_steps"), executionMode));
+                snapshot, toolArguments.getStringCollectionArgument(WorkflowFieldNames.APPROVED_STEPS), executionMode));
     }
     
     private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {

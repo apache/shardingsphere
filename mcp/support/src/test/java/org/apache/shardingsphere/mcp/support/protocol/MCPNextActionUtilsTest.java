@@ -122,6 +122,15 @@ class MCPNextActionUtilsTest {
     }
     
     @Test
+    void assertOrderedCollectionCopiesActions() {
+        Map<String, Object> action = Map.of("type", "terminal");
+        List<Map<String, Object>> actual = MCPNextActionUtils.ordered(List.of(action, Map.of("type", "tool_call")));
+        assertThat(actual.get(0).get("order"), is(1));
+        assertThat(actual.get(1).get("order"), is(2));
+        assertFalse(action.containsKey("order"));
+    }
+    
+    @Test
     void assertDependsOnCopiesAction() {
         Map<String, Object> action = Map.of("type", "tool_call");
         Map<String, Object> actual = MCPNextActionUtils.dependsOn(action, 1);

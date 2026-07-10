@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 class MaskWorkflowValidationServiceTest {
     
     @Test
-    void assertValidateRejectsDifferentSession() throws ReflectiveOperationException {
+    void assertValidateRejectsDifferentSession() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(createSnapshot("plan-1", "session-1", "executed", "create"));
         Map<String, Object> actual = createService(mock(MaskRuleInspectionService.class))
@@ -69,7 +69,7 @@ class MaskWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateHappyPath() throws ReflectiveOperationException {
+    void assertValidateHappyPath() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
@@ -120,7 +120,7 @@ class MaskWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertSynchronize() throws ReflectiveOperationException {
+    void assertSynchronize() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
@@ -145,7 +145,7 @@ class MaskWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateDropWorkflowAfterRuleRemoval() throws ReflectiveOperationException {
+    void assertValidateDropWorkflowAfterRuleRemoval() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
         workflowSessionContext.save(snapshot);
@@ -158,7 +158,7 @@ class MaskWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateWhenAlgorithmMismatch() throws ReflectiveOperationException {
+    void assertValidateWhenAlgorithmMismatch() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
@@ -172,7 +172,7 @@ class MaskWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateExpectedStateDetectsPropertyMismatch() throws ReflectiveOperationException {
+    void assertValidateExpectedStateDetectsPropertyMismatch() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
@@ -192,7 +192,7 @@ class MaskWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateExpectedStateAcceptsResolvedReferencedProperty() throws ReflectiveOperationException {
+    void assertValidateExpectedStateAcceptsResolvedReferencedProperty() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().getPrimaryAlgorithmProperties().put("replace-char", "secret_reference:primary.replace-char");
         snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("replace-char", SecretReferenceValue.create());
@@ -217,7 +217,7 @@ class MaskWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateExpectedStateDetectsUnresolvedReferencedProperty() throws ReflectiveOperationException {
+    void assertValidateExpectedStateDetectsUnresolvedReferencedProperty() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().getPrimaryAlgorithmProperties().put("replace-char", "secret_reference:primary.replace-char");
         snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("replace-char", SecretReferenceValue.create());
@@ -241,7 +241,7 @@ class MaskWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateExpectedStateDetectsMissingNonTargetRule() throws ReflectiveOperationException {
+    void assertValidateExpectedStateDetectsMissingNonTargetRule() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(
@@ -256,11 +256,15 @@ class MaskWorkflowValidationServiceTest {
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("column=email"));
     }
     
-    private MaskWorkflowValidationService createService(final MaskRuleInspectionService ruleInspectionService) throws ReflectiveOperationException {
+    private MaskWorkflowValidationService createService(final MaskRuleInspectionService ruleInspectionService) {
         MaskWorkflowValidationService result = new MaskWorkflowValidationService();
-        setField(result, "ruleInspectionService", ruleInspectionService);
-        setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
-        return result;
+        try {
+            setField(result, "ruleInspectionService", ruleInspectionService);
+            setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {

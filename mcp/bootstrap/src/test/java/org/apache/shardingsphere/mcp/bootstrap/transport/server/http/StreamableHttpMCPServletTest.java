@@ -37,8 +37,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.ArgumentCaptor;
+import org.mockito.internal.configuration.plugins.Plugins;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -63,14 +63,14 @@ class StreamableHttpMCPServletTest {
     private static final String ACCEPT = "application/json, text/event-stream";
     
     @Test
-    void assertProtocolVersions() throws ReflectiveOperationException {
+    void assertProtocolVersions() {
         StreamableHttpMCPServlet actual = createServlet(mock(HttpServletStreamableServerTransportProvider.class), mock(MCPSessionManager.class),
                 mock(MCPSessionExecutionCoordinator.class));
         assertThat(actual.protocolVersions(), is(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
     }
     
     @Test
-    void assertSetSessionFactoryWithSupportedProtocolVersion() throws ReflectiveOperationException {
+    void assertSetSessionFactoryWithSupportedProtocolVersion() {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         McpStreamableServerSession.Factory sessionFactory = mock(McpStreamableServerSession.Factory.class);
@@ -93,7 +93,7 @@ class StreamableHttpMCPServletTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("unsupportedProtocolVersions")
-    void assertSetSessionFactoryWithNegotiatedProtocolVersion(final String name, final String requestedProtocolVersion) throws ReflectiveOperationException {
+    void assertSetSessionFactoryWithNegotiatedProtocolVersion(final String name, final String requestedProtocolVersion) {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         McpStreamableServerSession.Factory sessionFactory = mock(McpStreamableServerSession.Factory.class);
@@ -128,7 +128,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertNotifyClients() throws ReflectiveOperationException {
+    void assertNotifyClients() {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         Mono<Void> expected = Mono.empty();
         when(delegate.notifyClients("notifications/tools/list_changed", Map.of("status", "ok"))).thenReturn(expected);
@@ -137,7 +137,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertNotifyClient() throws ReflectiveOperationException {
+    void assertNotifyClient() {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         Mono<Void> expected = Mono.empty();
         when(delegate.notifyClient("session-id", "notifications/resources/list_changed", Map.of("status", "ok"))).thenReturn(expected);
@@ -147,7 +147,7 @@ class StreamableHttpMCPServletTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("requestMethods")
-    void assertServiceSetUtf8Encoding(final String name, final String requestMethod) throws ServletException, IOException, ReflectiveOperationException {
+    void assertServiceSetUtf8Encoding(final String name, final String requestMethod) throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn(requestMethod);
@@ -168,7 +168,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServiceGetWithoutAcceptHeaderAndUtf8Encoding() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServiceGetWithoutAcceptHeaderAndUtf8Encoding() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
@@ -184,7 +184,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertRejectUnsupportedEventStreamGet() throws ServletException, IOException, ReflectiveOperationException {
+    void assertRejectUnsupportedEventStreamGet() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
@@ -200,7 +200,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServicePostWithSessionHeaderSet() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServicePostWithSessionHeaderSet() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
@@ -219,7 +219,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServicePostBindSessionIdentity() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServicePostBindSessionIdentity() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -243,7 +243,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServicePostWithJsonContentType() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServicePostWithJsonContentType() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
@@ -257,7 +257,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServicePostRejectUnsupportedContentType() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServicePostRejectUnsupportedContentType() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
@@ -270,7 +270,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServicePostWithNegotiatedProtocolHeader() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServicePostWithNegotiatedProtocolHeader() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
@@ -287,7 +287,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServicePostWithSessionHeaderAdded() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServicePostWithSessionHeaderAdded() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
@@ -306,7 +306,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServicePostWithoutSessionHeader() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServicePostWithoutSessionHeader() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
@@ -328,7 +328,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServiceDeleteCloseSessionWhenStatusOk() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServiceDeleteCloseSessionWhenStatusOk() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = mock(MCPSessionExecutionCoordinator.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -345,7 +345,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServiceDeleteSkipCloseSessionWhenStatusNotOk() throws ServletException, IOException, ReflectiveOperationException {
+    void assertServiceDeleteSkipCloseSessionWhenStatusNotOk() throws ServletException, IOException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = mock(MCPSessionExecutionCoordinator.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -362,7 +362,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertCloseGracefully() throws ReflectiveOperationException {
+    void assertCloseGracefully() {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = mock(MCPSessionExecutionCoordinator.class);
         when(delegate.closeGracefully()).thenReturn(Mono.empty());
@@ -374,7 +374,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertDestroy() throws ReflectiveOperationException {
+    void assertDestroy() {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = mock(MCPSessionExecutionCoordinator.class);
         when(delegate.closeGracefully()).thenReturn(Mono.empty());
@@ -385,17 +385,21 @@ class StreamableHttpMCPServletTest {
     }
     
     private StreamableHttpMCPServlet createServlet(final HttpServletStreamableServerTransportProvider delegate, final MCPSessionManager sessionManager,
-                                                   final MCPSessionExecutionCoordinator sessionExecutionCoordinator) throws ReflectiveOperationException {
+                                                   final MCPSessionExecutionCoordinator sessionExecutionCoordinator) {
         return createServlet(delegate, sessionManager, sessionExecutionCoordinator,
                 new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"));
     }
     
     private StreamableHttpMCPServlet createServlet(final HttpServletStreamableServerTransportProvider delegate, final MCPSessionManager sessionManager,
-                                                   final MCPSessionExecutionCoordinator sessionExecutionCoordinator, final HttpTransportConfiguration config) throws ReflectiveOperationException {
+                                                   final MCPSessionExecutionCoordinator sessionExecutionCoordinator, final HttpTransportConfiguration config) {
         StreamableHttpMCPServlet result = new StreamableHttpMCPServlet(sessionManager, MCPTransportJsonMapperFactory.create(), config);
-        setField(result, "delegate", delegate);
-        setField(result, "sessionExecutionCoordinator", sessionExecutionCoordinator);
-        return result;
+        try {
+            setField(result, "delegate", delegate);
+            setField(result, "sessionExecutionCoordinator", sessionExecutionCoordinator);
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
     }
     
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
