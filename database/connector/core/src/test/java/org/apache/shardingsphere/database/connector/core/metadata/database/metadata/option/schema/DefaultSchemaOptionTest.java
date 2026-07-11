@@ -37,41 +37,41 @@ class DefaultSchemaOptionTest {
     void assertGetSchema() throws SQLException {
         Connection successConnection = mock(Connection.class);
         when(successConnection.getSchema()).thenReturn("actual_schema");
-        assertThat(new DefaultSchemaOption(true, "foo_schema").getSchema(successConnection), is("actual_schema"));
+        assertThat(new DefaultSchemaOption(true, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).getSchema(successConnection), is("actual_schema"));
     }
     
     @Test
     void assertGetSchemaWithException() throws SQLException {
         Connection connection = mock(Connection.class);
         when(connection.getSchema()).thenThrow(SQLException.class);
-        assertNull(new DefaultSchemaOption(false, null).getSchema(connection));
+        assertNull(new DefaultSchemaOption(false, null, DialectSchemaSemantics.NATIVE_SCHEMA).getSchema(connection));
     }
     
     @Test
     void assertGetDefaultSchemaWithSchemaAvailable() {
-        Optional<String> defaultSchema = new DefaultSchemaOption(true, "foo_schema").getDefaultSchema();
+        Optional<String> defaultSchema = new DefaultSchemaOption(true, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).getDefaultSchema();
         assertTrue(defaultSchema.isPresent());
         assertThat(defaultSchema.get(), is("foo_schema"));
     }
     
     @Test
     void assertGetDefaultSchemaWithSchemaUnavailable() {
-        assertFalse(new DefaultSchemaOption(false, null).getDefaultSchema().isPresent());
+        assertFalse(new DefaultSchemaOption(false, null, DialectSchemaSemantics.NATIVE_SCHEMA).getDefaultSchema().isPresent());
     }
     
     @Test
     void assertGetDefaultSystemSchema() {
-        assertFalse(new DefaultSchemaOption(true, "foo_schema").getDefaultSystemSchema().isPresent());
+        assertFalse(new DefaultSchemaOption(true, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).getDefaultSystemSchema().isPresent());
     }
     
     @Test
     void assertIsSchemaAvailable() {
-        assertTrue(new DefaultSchemaOption(true, "foo_schema").isSchemaAvailable());
+        assertTrue(new DefaultSchemaOption(true, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).isSchemaAvailable());
     }
     
     @Test
     void assertIsSchemaUnavailable() {
-        assertFalse(new DefaultSchemaOption(false, "foo_schema").isSchemaAvailable());
+        assertFalse(new DefaultSchemaOption(false, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).isSchemaAvailable());
     }
     
     @Test

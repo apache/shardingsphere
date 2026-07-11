@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.connector.postgresql.metadata.databas
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 
 import java.sql.Connection;
 import java.util.Optional;
@@ -28,7 +29,7 @@ import java.util.Optional;
  */
 public final class PostgreSQLSchemaOption implements DialectSchemaOption {
     
-    private final DialectSchemaOption delegate = new DefaultSchemaOption(true, "public");
+    private final DialectSchemaOption delegate = new DefaultSchemaOption(true, "public", DialectSchemaSemantics.NATIVE_SCHEMA);
     
     @Override
     public boolean isSchemaAvailable() {

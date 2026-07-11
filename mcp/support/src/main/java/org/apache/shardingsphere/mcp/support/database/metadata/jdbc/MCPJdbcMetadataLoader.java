@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.SequenceMetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -74,7 +74,7 @@ public final class MCPJdbcMetadataLoader {
                                                          final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
         DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, databaseProfile.getDatabaseType());
         MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(databaseProfile.getDatabaseType());
-        SchemaSemantics defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
+        DialectSchemaSemantics defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
         DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(protocolType);
         loadTables(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, databaseMetaData);
         loadViews(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, databaseMetaData);
@@ -82,7 +82,7 @@ public final class MCPJdbcMetadataLoader {
         return accumulator.build();
     }
     
-    private void loadTables(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
+    private void loadTables(final String databaseName, final DialectSchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
                             final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
@@ -107,7 +107,7 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
-    private void loadViews(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
+    private void loadViews(final String databaseName, final DialectSchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
                            final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
         try (ResultSet views = databaseMetaData.getTables(null, null, "%", new String[]{"VIEW"})) {
             while (views.next()) {
@@ -129,7 +129,7 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
-    private void loadSequences(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final DatabaseType protocolType,
+    private void loadSequences(final String databaseName, final DialectSchemaSemantics defaultSchemaSemantics, final DatabaseType protocolType,
                                final DatabaseMetadataAccumulator accumulator, final Connection connection) throws SQLException {
         for (Entry<String, Collection<String>> entry : new SequenceMetaDataLoader(protocolType).load(connection).entrySet()) {
             SchemaMetadataAccumulator schema = accumulator.getSchemaAccumulator(normalizeSchemaName(databaseName, defaultSchemaSemantics, entry.getKey()));
@@ -173,12 +173,12 @@ public final class MCPJdbcMetadataLoader {
         return result.isEmpty() ? null : result;
     }
     
-    private String normalizeSchemaName(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final String schemaName) {
+    private String normalizeSchemaName(final String databaseName, final DialectSchemaSemantics defaultSchemaSemantics, final String schemaName) {
         String result = Objects.toString(schemaName, "").trim();
         if (!result.isEmpty()) {
             return result;
         }
-        return SchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics ? databaseName : result;
+        return DialectSchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics ? databaseName : result;
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

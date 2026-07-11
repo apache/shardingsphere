@@ -121,13 +121,13 @@ class MCPDatabaseDialectTest {
             DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
             DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
             when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA));
-            assertThat(MCPDatabaseDialect.of("Fixture").getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
+            assertThat(MCPDatabaseDialect.of("Fixture").getDefaultSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
         }
     }
     
     @Test
     void assertGetDefaultSchemaSemanticsWithUnknownDatabaseType() {
-        assertThat(MCPDatabaseDialect.of("FixtureDB").getDefaultSchemaSemantics(), is(SchemaSemantics.NATIVE_SCHEMA));
+        assertThat(MCPDatabaseDialect.of("FixtureDB").getDefaultSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -221,7 +221,7 @@ class MCPDatabaseDialectTest {
             mockDialectDatabaseMetaDataAbsent(databaseType, databaseTypedSPILoader);
             DialectSystemDatabase dialectSystemDatabase = mockDialectSystemDatabase(databaseType, databaseTypedSPILoader);
             when(dialectSystemDatabase.getSystemSchemas()).thenReturn(List.of("fixture_system"));
-            boolean actual = MCPDatabaseDialect.of("Fixture").isSystemSchema("", "fixture_system", SchemaSemantics.DATABASE_AS_SCHEMA);
+            boolean actual = MCPDatabaseDialect.of("Fixture").isSystemSchema("", "fixture_system", DialectSchemaSemantics.DATABASE_AS_SCHEMA);
             assertTrue(actual);
         }
     }

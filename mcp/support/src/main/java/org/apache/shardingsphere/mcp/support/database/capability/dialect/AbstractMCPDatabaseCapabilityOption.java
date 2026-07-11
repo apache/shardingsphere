@@ -19,9 +19,6 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * Common base implementation for MCP database capability options.
  */
@@ -29,24 +26,12 @@ abstract class AbstractMCPDatabaseCapabilityOption implements MCPDatabaseCapabil
     
     private final String type;
     
-    private final Collection<Object> typeAliases;
-    
     protected AbstractMCPDatabaseCapabilityOption(final String type) {
-        this(type, Collections.emptyList());
-    }
-    
-    protected AbstractMCPDatabaseCapabilityOption(final String type, final Collection<String> typeAliases) {
         this.type = type;
-        this.typeAliases = typeAliases.stream().map(each -> (Object) each).toList();
     }
     
     @Override
     public final String getType() {
         return type;
-    }
-    
-    @Override
-    public final Collection<Object> getTypeAliases() {
-        return typeAliases;
     }
 }

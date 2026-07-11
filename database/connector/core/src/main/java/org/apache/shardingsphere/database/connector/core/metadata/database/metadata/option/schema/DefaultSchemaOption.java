@@ -32,10 +32,6 @@ public final class DefaultSchemaOption implements DialectSchemaOption {
     
     private final DialectSchemaSemantics schemaSemantics;
     
-    public DefaultSchemaOption(final boolean schemaAvailable, final String defaultSchema) {
-        this(schemaAvailable, defaultSchema, DialectSchemaSemantics.NATIVE_SCHEMA);
-    }
-    
     public DefaultSchemaOption(final boolean schemaAvailable, final String defaultSchema, final DialectSchemaSemantics schemaSemantics) {
         this.schemaAvailable = schemaAvailable;
         this.defaultSchema = defaultSchema;

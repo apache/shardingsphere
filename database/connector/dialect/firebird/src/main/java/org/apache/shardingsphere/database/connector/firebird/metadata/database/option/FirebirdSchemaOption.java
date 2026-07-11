@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.database.
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 
 import java.sql.Connection;
 import java.util.Optional;
@@ -28,7 +29,7 @@ import java.util.Optional;
  */
 public final class FirebirdSchemaOption implements DialectSchemaOption {
     
-    private final DialectSchemaOption delegate = new DefaultSchemaOption(false, null);
+    private final DialectSchemaOption delegate = new DefaultSchemaOption(false, null, DialectSchemaSemantics.NATIVE_SCHEMA);
     
     @Override
     public boolean isSchemaAvailable() {

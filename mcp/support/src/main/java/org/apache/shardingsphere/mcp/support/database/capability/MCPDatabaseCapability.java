@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.support.database.capability;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -38,7 +39,7 @@ public final class MCPDatabaseCapability {
     
     private final TransactionCapability transactionCapability;
     
-    private final SchemaSemantics defaultSchemaSemantics;
+    private final DialectSchemaSemantics defaultSchemaSemantics;
     
     private final SchemaExecutionSemantics schemaExecutionSemantics;
     
@@ -56,8 +57,8 @@ public final class MCPDatabaseCapability {
         schemaExecutionSemantics = createSchemaExecutionSemantics(defaultSchemaSemantics);
     }
     
-    private static SchemaExecutionSemantics createSchemaExecutionSemantics(final SchemaSemantics defaultSchemaSemantics) {
-        return SchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics ? SchemaExecutionSemantics.FIXED_TO_DATABASE : SchemaExecutionSemantics.BEST_EFFORT;
+    private static SchemaExecutionSemantics createSchemaExecutionSemantics(final DialectSchemaSemantics defaultSchemaSemantics) {
+        return DialectSchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics ? SchemaExecutionSemantics.FIXED_TO_DATABASE : SchemaExecutionSemantics.BEST_EFFORT;
     }
     
     private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final MCPDatabaseDialect databaseDialect) {

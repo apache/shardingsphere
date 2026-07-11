@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mcp.support.database.response;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumSet;
@@ -45,7 +45,7 @@ class MCPDatabaseCapabilityResponseTest {
                 SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT, SupportedMCPStatement.EXPLAIN));
         when(actualCapability.isSupportsTransactionControl()).thenReturn(true);
         when(actualCapability.isSupportsSavepoint()).thenReturn(true);
-        when(actualCapability.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.DATABASE_AS_SCHEMA);
+        when(actualCapability.getDefaultSchemaSemantics()).thenReturn(DialectSchemaSemantics.DATABASE_AS_SCHEMA);
         when(actualCapability.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
         when(actualCapability.isSupportsExplain()).thenReturn(true);
         Map<String, Object> actual = new MCPDatabaseCapabilityResponse(actualCapability).toPayload();
@@ -59,7 +59,7 @@ class MCPDatabaseCapabilityResponseTest {
                         SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT, SupportedMCPStatement.EXPLAIN)),
                 Map.entry("supportsTransactionControl", true),
                 Map.entry("supportsSavepoint", true),
-                Map.entry("defaultSchemaSemantics", SchemaSemantics.DATABASE_AS_SCHEMA),
+                Map.entry("defaultSchemaSemantics", DialectSchemaSemantics.DATABASE_AS_SCHEMA),
                 Map.entry("schemaExecutionSemantics", SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Map.entry("supportsCrossSchemaSql", false),
                 Map.entry("supportsExplain", true),

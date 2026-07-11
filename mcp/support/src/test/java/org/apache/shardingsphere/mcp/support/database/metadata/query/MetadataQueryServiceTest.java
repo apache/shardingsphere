@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.database.metadata.query;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -109,7 +110,7 @@ class MetadataQueryServiceTest {
     
     private void mockDialectDatabaseMetaData(final DatabaseType databaseType, final boolean sequenceSupported) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
-        when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null));
+        when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.NATIVE_SCHEMA));
         when(result.getExplainOption()).thenReturn(() -> false);
         when(result.getSequenceOption()).thenReturn(
                 sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());

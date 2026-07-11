@@ -56,22 +56,7 @@ public final class ClassificationResult {
     private final Optional<SupportedMCPStatement> explainedStatementClass;
     
     public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName) {
-        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, null);
-    }
-    
-    /**
-     * Create statement classification result with the inner statement class explained by EXPLAIN.
-     *
-     * @param statementClass statement class
-     * @param statementType statement type
-     * @param normalizedSql normalized SQL
-     * @param targetObjectName target object name
-     * @param savepointName savepoint name
-     * @param explainedStatementClass inner statement class explained by EXPLAIN
-     */
-    public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,
-                                final SupportedMCPStatement explainedStatementClass) {
-        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, explainedStatementClass, targetObjectName.isEmpty() ? List.of() : List.of(targetObjectName));
+        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, null, targetObjectName.isEmpty() ? List.of() : List.of(targetObjectName));
     }
     
     ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,

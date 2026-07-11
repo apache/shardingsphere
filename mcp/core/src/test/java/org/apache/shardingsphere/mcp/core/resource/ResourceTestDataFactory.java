@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
@@ -230,7 +231,7 @@ public final class ResourceTestDataFactory {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(
                 new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, List.of()));
-        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(true, null));
+        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(true, null, DialectSchemaSemantics.NATIVE_SCHEMA));
         when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(
                 sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());
         when(dialectDatabaseMetaData.getExplainOption()).thenReturn(() -> true);

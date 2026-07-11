@@ -120,12 +120,8 @@ public final class MCPDatabaseDialect {
      *
      * @return default schema semantics
      */
-    public SchemaSemantics getDefaultSchemaSemantics() {
-        return dialectDatabaseMetaData.map(each -> toSchemaSemantics(each.getSchemaOption().getSchemaSemantics())).orElse(SchemaSemantics.NATIVE_SCHEMA);
-    }
-    
-    private static SchemaSemantics toSchemaSemantics(final DialectSchemaSemantics schemaSemantics) {
-        return DialectSchemaSemantics.DATABASE_AS_SCHEMA == schemaSemantics ? SchemaSemantics.DATABASE_AS_SCHEMA : SchemaSemantics.NATIVE_SCHEMA;
+    public DialectSchemaSemantics getDefaultSchemaSemantics() {
+        return dialectDatabaseMetaData.map(each -> each.getSchemaOption().getSchemaSemantics()).orElse(DialectSchemaSemantics.NATIVE_SCHEMA);
     }
     
     /**
@@ -195,8 +191,8 @@ public final class MCPDatabaseDialect {
      * @param defaultSchemaSemantics default schema semantics
      * @return whether schema or catalog is a system schema
      */
-    public boolean isSystemSchema(final String schemaName, final String catalogName, final SchemaSemantics defaultSchemaSemantics) {
-        return isSystemSchema(schemaName) || SchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics && isSystemSchema(catalogName);
+    public boolean isSystemSchema(final String schemaName, final String catalogName, final DialectSchemaSemantics defaultSchemaSemantics) {
+        return isSystemSchema(schemaName) || DialectSchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics && isSystemSchema(catalogName);
     }
     
     private Collection<String> getSystemSchemas() {
