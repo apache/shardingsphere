@@ -24,7 +24,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
@@ -72,11 +71,6 @@ public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectSchemaOption getSchemaOption() {
         return delegate.getSchemaOption();
-    }
-    
-    @Override
-    public DialectIndexOption getIndexOption() {
-        return delegate.getIndexOption();
     }
     
     @Override

@@ -73,8 +73,9 @@ class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRu
     void assertExecuteExplainSelectWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
-                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "EXPLAIN SELECT * FROM orders WHERE order_id = 1", "max_rows", 10));
+            Map<String, Object> actual = interactionClient.call("database_gateway_execute_explain_query",
+                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT * FROM orders WHERE order_id = 1",
+                            "explain_sql", "EXPLAIN SELECT * FROM orders WHERE order_id = 1", "max_rows", 10));
             assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
             assertThat(String.valueOf(actual.get("statement_type")), is("EXPLAIN"));
             assertFalse(((List<?>) actual.get("rows")).isEmpty());
@@ -105,15 +106,13 @@ class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRu
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("semanticPrimaryTransport")
-    void assertExecuteExplainUpdateWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    void assertRejectExplainUpdateWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
-                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql",
-                            "EXPLAIN UPDATE orders SET status = 'DONE' WHERE order_id = 1"));
-            assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
-            assertThat(String.valueOf(actual.get("statement_type")), is("EXPLAIN"));
-            assertFalse(((List<?>) actual.get("rows")).isEmpty());
+            Map<String, Object> actual = interactionClient.call("database_gateway_execute_explain_query",
+                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "UPDATE orders SET status = 'DONE' WHERE order_id = 1",
+                            "explain_sql", "EXPLAIN UPDATE orders SET status = 'DONE' WHERE order_id = 1"));
+            assertRecoveryResponse(actual, "database_gateway_execute_explain_query only supports QUERY statements as the explained SQL.");
         }
     }
     

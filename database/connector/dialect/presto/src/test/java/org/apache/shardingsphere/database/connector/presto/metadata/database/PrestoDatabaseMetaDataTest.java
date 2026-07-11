@@ -24,14 +24,11 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.presto.metadata.database.option.PrestoFunctionOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
-
-import java.sql.Connection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -69,20 +66,6 @@ class PrestoDatabaseMetaDataTest {
         assertThat(actual.getDefaultSchema().get(), is("default"));
         assertFalse(actual.getDefaultSystemSchema().isPresent());
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
-    }
-    
-    @Test
-    void assertGetTransactionOption() {
-        DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
-        assertFalse(actual.isSupportGlobalCSN());
-        assertFalse(actual.isDDLNeedImplicitCommit());
-        assertFalse(actual.isSupportAutoCommitInNestedTransaction());
-        assertFalse(actual.isSupportDDLInXATransaction());
-        assertTrue(actual.isSupportMetaDataRefreshInTransaction());
-        assertThat(actual.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
-        assertFalse(actual.isReturnRollbackStatementWhenCommitFailed());
-        assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
-        assertTrue(actual.getXaDriverClassNames().isEmpty());
     }
     
     @Test

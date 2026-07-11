@@ -24,7 +24,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.altertable.DialectAddColumnOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
@@ -60,11 +59,6 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     @Override
     public DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(false, "dbo", DialectSchemaSemantics.NATIVE_SCHEMA);
-    }
-    
-    @Override
-    public DialectIndexOption getIndexOption() {
-        return new DialectIndexOption(false, Integer.MAX_VALUE);
     }
     
     @Override

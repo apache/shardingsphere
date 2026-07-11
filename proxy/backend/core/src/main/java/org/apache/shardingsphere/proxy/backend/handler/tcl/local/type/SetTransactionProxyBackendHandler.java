@@ -66,8 +66,7 @@ public final class SetTransactionProxyBackendHandler implements ProxyBackendHand
         if (!sqlStatement.getIsolationLevel().isPresent()) {
             return;
         }
-        int defaultIsolationLevel = dialectDatabaseMetaData.getTransactionOption().getDefaultIsolationLevel();
-        connectionSession.setDefaultIsolationLevel(TransactionUtils.getTransactionIsolationLevel(defaultIsolationLevel));
+        connectionSession.setDefaultIsolationLevel(TransactionUtils.getTransactionIsolationLevel(dialectDatabaseMetaData.getTransactionOption().getDefaultIsolationLevel()));
         connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().get());
     }
 }

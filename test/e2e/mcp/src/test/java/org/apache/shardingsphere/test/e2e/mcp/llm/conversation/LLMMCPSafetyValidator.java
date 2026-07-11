@@ -42,10 +42,17 @@ final class LLMMCPSafetyValidator {
         if (MCPInteractionActionNames.GET_PROMPT.equals(actionName) && Objects.toString(arguments.get("name"), "").trim().isEmpty()) {
             return Optional.of(new LLMMCPToolCallValidationFailure(MCPInteractionActionNames.PROMPT_GET_KIND, "invalid_tool_arguments", "Model returned an empty prompt name."));
         }
-        if ("database_gateway_execute_query".equals(actionName) && !isReadOnlyQuery(arguments)) {
+        if ("database_gateway_execute_query".equals(actionName) && isExplain(arguments)) {
+            return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "invalid_tool_arguments",
+                    "Model routed EXPLAIN SQL to database_gateway_execute_query instead of database_gateway_execute_explain_query."));
+        }
+        if ("database_gateway_execute_query".equals(actionName) && !isQuery(arguments)) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_attempted", "Model attempted a non-read-only SQL statement."));
         }
-        if ("database_gateway_execute_update".equals(actionName) && isReadOnlyQuery(arguments)) {
+        if ("database_gateway_execute_explain_query".equals(actionName) && !isQuery(arguments)) {
+            return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_attempted", "Model attempted to explain a non-read-only SQL statement."));
+        }
+        if ("database_gateway_execute_update".equals(actionName) && isQuery(arguments)) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "invalid_tool_arguments", "Model routed a read-only SQL statement to the side-effecting SQL tool."));
         }
         if ("database_gateway_execute_update".equals(actionName) && !EXECUTION_MODE_PREVIEW.equals(Objects.toString(arguments.get("execution_mode"), ""))) {
@@ -59,14 +66,19 @@ final class LLMMCPSafetyValidator {
         return Optional.empty();
     }
     
-    private boolean isReadOnlyQuery(final Map<String, Object> arguments) {
+    private boolean isQuery(final Map<String, Object> arguments) {
         String sql = Objects.toString(arguments.get("sql"), "").trim();
         try {
-            SupportedMCPStatement statementClass = statementClassifier.classify(sql).getStatementClass();
-            return SupportedMCPStatement.QUERY == statementClass || SupportedMCPStatement.EXPLAIN == statementClass;
+            return SupportedMCPStatement.QUERY == statementClassifier.classify(sql).getStatementClass();
         } catch (final MCPInvalidRequestException | MCPUnsupportedException | IllegalArgumentException ignored) {
             return false;
         }
+    }
+    
+    private boolean isExplain(final Map<String, Object> arguments) {
+        String sql = Objects.toString(arguments.get("sql"), "").trim();
+        return "EXPLAIN".equalsIgnoreCase(sql) || 7 < sql.length() && sql.regionMatches(true, 0, "EXPLAIN", 0, 7)
+                && (Character.isWhitespace(sql.charAt(7)) || '(' == sql.charAt(7));
     }
     
     private boolean isSafeWorkflowExecutionMode(final Map<String, Object> arguments) {

@@ -184,25 +184,4 @@ class ExecuteUpdateToolHandlerTest {
         verifyNoInteractions(executionFacade);
     }
     
-    @Test
-    void assertRejectExplain() {
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "sql", "EXPLAIN SELECT * FROM orders", "execution_mode", "execute"))));
-        assertThat(actual.getMessage(), is("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL."));
-        verifyNoInteractions(executionFacade);
-    }
-    
-    @Test
-    void assertRejectExplainUpdate() {
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "sql", "EXPLAIN UPDATE orders SET status = 'PAID'", "execution_mode", "execute"))));
-        assertThat(actual.getMessage(), is("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL."));
-        verifyNoInteractions(executionFacade);
-    }
 }

@@ -36,7 +36,7 @@ public final class ExplainSQLSyntaxException extends MCPInvalidRequestException 
     
     private final String explainSql;
     
-    public ExplainSQLSyntaxException(final String database, final String schema, final String sql, final String explainSql, final MCPInvalidRequestException cause) {
+    public ExplainSQLSyntaxException(final String database, final String schema, final String sql, final String explainSql, final RuntimeException cause) {
         super("Generated explain_sql is not valid for the target database.", cause);
         this.database = database;
         this.schema = schema;

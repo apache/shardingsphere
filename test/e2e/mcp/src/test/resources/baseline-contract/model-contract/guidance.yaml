@@ -34,6 +34,9 @@ model_first_summary:
   - {intent: read_only_sql, first_action: 'read_resource shardingsphere://databases/{database}/capabilities',
     next_step: call_tool database_gateway_execute_query, stop_rule: Stop after reporting
       the result rows.}
+  - {intent: explain_query, first_action: 'read_resource shardingsphere://databases/{database}/capabilities',
+    next_step: 'generate database-native EXPLAIN SQL, then call_tool database_gateway_execute_explain_query',
+    stop_rule: Stop after reporting the execution plan rows.}
   - {intent: rule_workflow, first_action: call_tool matching database_gateway_plan_*
       workflow tool without plan_id for a new plan, next_step: call_tool database_gateway_apply_workflow
       execution_mode=preview with the returned plan_id, stop_rule: Use workflow apply
@@ -57,8 +60,11 @@ model_first_summary:
       only a configured runtime database name., secret_rule: Connection details stay
       in administrator runtime configuration and are not tool arguments.}
   sql_tool_selection:
-    read_only: {tool: database_gateway_execute_query, statement_rule: Use for one
-        SELECT or EXPLAIN ANALYZE statement.}
+    read_only: {tool: database_gateway_execute_query, statement_rule: Use for one SELECT
+        statement.}
+    explain: {tool: database_gateway_execute_explain_query, statement_rule: Use for
+        an execution plan of one SELECT statement., candidate_rule: Generate database-native
+        EXPLAIN SQL in explain_sql and never use EXPLAIN ANALYZE.}
     side_effecting:
       tool: database_gateway_execute_update
       first_mode: preview
@@ -99,8 +105,10 @@ model_contract:
   preflight_rule: Use database_gateway_validate_runtime_database with a configured
     database name before onboarding or troubleshooting runtime connectivity.
   sql_tool_selection: {read_only: Use database_gateway_execute_query for one classifier-approved
-      SELECT or EXPLAIN ANALYZE statement., side_effecting: Use database_gateway_execute_update
-      with execution_mode=preview before execution.}
+      SELECT statement., explain: Use database_gateway_execute_explain_query with
+      the original SELECT and a model-generated database-native EXPLAIN SQL; do not
+      use EXPLAIN ANALYZE., side_effecting: Use database_gateway_execute_update with
+      execution_mode=preview before execution.}
   workflow_session_rule: Reuse the current-session plan_id returned by a planning
     tool; re-plan when the plan is unavailable.
   side_effect_rule: Preview before side effects and continue only when the requested
@@ -124,6 +132,7 @@ surface_summary:
   metadata_search_tool: database_gateway_search_metadata
   preflight_validation_tool: database_gateway_validate_runtime_database
   read_only_sql_tool: database_gateway_execute_query
+  explain_sql_tool: database_gateway_execute_explain_query
   side_effect_sql_tool: database_gateway_execute_update
   workflow_tools: [database_gateway_apply_workflow, database_gateway_validate_workflow]
   side_effect_rule: Preview first and continue only when the requested side effect
@@ -177,9 +186,15 @@ common_flows:
 - flow_id: read_only_sql
   steps: ['read_resource shardingsphere://databases/{database}/capabilities', call_tool
       database_gateway_execute_query]
-  stop_condition: Use one SELECT or EXPLAIN ANALYZE statement and stop after the result
-    is reported.
+  stop_condition: Use one SELECT statement and stop after the result is reported.
   referenced_tools: [database_gateway_execute_query]
+  referenced_resources: ['shardingsphere://databases/{database}/capabilities']
+- flow_id: explain_query
+  steps: ['read_resource shardingsphere://databases/{database}/capabilities', generate
+      database-native EXPLAIN SQL without ANALYZE, call_tool database_gateway_execute_explain_query]
+  stop_condition: Use the original SELECT as sql, the generated EXPLAIN as explain_sql,
+    and stop after the plan rows are reported.
+  referenced_tools: [database_gateway_execute_explain_query]
   referenced_resources: ['shardingsphere://databases/{database}/capabilities']
 - flow_id: side_effecting_sql
   steps: [call_tool database_gateway_execute_update execution_mode=preview, call_tool

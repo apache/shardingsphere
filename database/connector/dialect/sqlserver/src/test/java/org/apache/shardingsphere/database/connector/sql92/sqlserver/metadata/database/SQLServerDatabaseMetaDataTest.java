@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
@@ -71,13 +70,6 @@ class SQLServerDatabaseMetaDataTest {
         assertThat(actual.getDefaultSchema(), is(Optional.of("dbo")));
         assertThat(actual.getDefaultSystemSchema(), is(Optional.empty()));
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
-    }
-    
-    @Test
-    void assertGetIndexOption() {
-        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
-        assertFalse(actual.isSchemaUniquenessLevel());
-        assertThat(actual.getIndexNameMaxLength(), is(Integer.MAX_VALUE));
     }
     
     @Test

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
@@ -82,13 +81,6 @@ class MySQLDatabaseMetaDataTest {
     }
     
     @Test
-    void assertGetIndexOption() {
-        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
-        assertFalse(actual.isSchemaUniquenessLevel());
-        assertThat(actual.getIndexNameMaxLength(), is(Integer.MAX_VALUE));
-    }
-    
-    @Test
     void assertGetConnectionOption() {
         DialectConnectionOption actual = dialectDatabaseMetaData.getConnectionOption();
         assertTrue(actual.isInstanceConnectionAvailable());
@@ -134,5 +126,4 @@ class MySQLDatabaseMetaDataTest {
     void assertGetFunctionOption() {
         assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(MySQLFunctionOption.class));
     }
-    
 }

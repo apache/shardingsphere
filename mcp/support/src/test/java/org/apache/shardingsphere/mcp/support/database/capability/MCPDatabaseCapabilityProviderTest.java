@@ -105,26 +105,11 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().isSupportsCrossSchemaSql(), is(SchemaExecutionSemantics.BEST_EFFORT == expectedSchemaExecutionSemantics));
     }
     
-    @Test
-    void assertProvideWithExplainSupport() {
-        Optional<MCPDatabaseCapability> actual = createCapabilityProvider("MySQL", "8.0.32").provide("logic_db");
-        assertTrue(actual.isPresent());
-        assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX));
-        assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
-        assertFalse(actual.get().isSupportsCrossSchemaSql());
-        assertTrue(actual.get().isSupportsExplain());
-    }
-    
     private MCPDatabaseCapabilityProvider createCapabilityProvider() {
         Map<String, CapabilityFixture> capabilityFixtures = Map.of(
                 "MySQL", new CapabilityFixture(true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA),
                 "Hive", new CapabilityFixture(false, false, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA));
         return createCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive"), capabilityFixtures), capabilityFixtures);
-    }
-    
-    private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType, final String databaseVersion) {
-        return createCapabilityProvider(databaseType, databaseVersion,
-                new CapabilityFixture(true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA));
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType, final String databaseVersion, final CapabilityFixture capabilityFixture) {

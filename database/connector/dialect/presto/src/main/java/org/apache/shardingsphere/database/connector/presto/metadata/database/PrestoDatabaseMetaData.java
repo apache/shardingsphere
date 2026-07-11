@@ -25,11 +25,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.presto.metadata.database.option.PrestoFunctionOption;
-
-import java.sql.Connection;
-import java.util.Collections;
 
 /**
  * Database meta data of Presto.
@@ -54,11 +50,6 @@ public final class PrestoDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(false, "default", DialectSchemaSemantics.NATIVE_SCHEMA);
-    }
-    
-    @Override
-    public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.emptyList());
     }
     
     @Override

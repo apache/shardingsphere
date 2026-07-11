@@ -25,7 +25,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
@@ -74,11 +73,6 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA);
-    }
-    
-    @Override
-    public DialectIndexOption getIndexOption() {
-        return new DialectIndexOption(false, Integer.MAX_VALUE);
     }
     
     @Override

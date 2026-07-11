@@ -60,7 +60,7 @@ public final class StatementClassifier {
         SQLStatementStructure statementStructure = structureResolver.resolve(actualSql);
         SupportedMCPStatement statementClass = statementClassResolver.resolve(statementStructure);
         safetyValidator.checkStructuredStatement(statementClass, statementStructure);
-        return new ClassificationResult(statementClass, statementStructure.statementType(), actualSql, targetResolver.resolve(statementStructure), "", null,
+        return new ClassificationResult(statementClass, statementStructure.statementType(), actualSql, targetResolver.resolve(statementStructure), "",
                 targetResolver.resolveAll(statementStructure));
     }
     

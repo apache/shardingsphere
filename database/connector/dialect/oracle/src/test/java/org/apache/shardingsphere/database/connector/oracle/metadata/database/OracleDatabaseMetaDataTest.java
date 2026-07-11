@@ -100,16 +100,16 @@ class OracleDatabaseMetaDataTest {
     
     @Test
     void assertGetTransactionOption() {
-        DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
-        assertFalse(actual.isSupportGlobalCSN());
-        assertFalse(actual.isDDLNeedImplicitCommit());
-        assertFalse(actual.isSupportAutoCommitInNestedTransaction());
-        assertFalse(actual.isSupportDDLInXATransaction());
-        assertTrue(actual.isSupportMetaDataRefreshInTransaction());
-        assertThat(actual.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
-        assertFalse(actual.isReturnRollbackStatementWhenCommitFailed());
-        assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
-        assertThat(actual.getXaDriverClassNames(), is(Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource")));
+        DialectTransactionOption actualTransactionOption = dialectDatabaseMetaData.getTransactionOption();
+        assertFalse(actualTransactionOption.isSupportGlobalCSN());
+        assertFalse(actualTransactionOption.isDDLNeedImplicitCommit());
+        assertFalse(actualTransactionOption.isSupportAutoCommitInNestedTransaction());
+        assertFalse(actualTransactionOption.isSupportDDLInXATransaction());
+        assertTrue(actualTransactionOption.isSupportMetaDataRefreshInTransaction());
+        assertThat(actualTransactionOption.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
+        assertFalse(actualTransactionOption.isReturnRollbackStatementWhenCommitFailed());
+        assertFalse(actualTransactionOption.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
+        assertThat(actualTransactionOption.getXaDriverClassNames(), is(Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource")));
     }
     
     @Test

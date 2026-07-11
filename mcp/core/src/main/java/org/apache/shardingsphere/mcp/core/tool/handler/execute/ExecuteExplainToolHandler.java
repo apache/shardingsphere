@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -25,16 +24,12 @@ import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 
-import java.sql.SQLSyntaxErrorException;
-
 /**
  * Execute model-assisted EXPLAIN SQL tool handler.
  */
 public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
     
     private static final String TOOL_NAME = "database_gateway_execute_explain_query";
-    
-    private final ExplainSQLCandidateValidator validator = new ExplainSQLCandidateValidator();
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
@@ -51,29 +46,10 @@ public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPDataba
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String sql = toolArguments.getStringArgument("sql");
         String explainSql = toolArguments.getStringArgument("explain_sql");
-        ClassificationResult classificationResult = validator.validate(sql, explainSql);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
         String schema = SQLExecutionToolHandlerSupport.resolveSchema(databaseContext, toolArguments);
         SQLExecutionRequest executionRequest = SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(toolCall, toolArguments,
                 schema, explainSql, TOOL_NAME);
-        try {
-            return ((MCPSQLExecutionFacade) databaseContext.getExecutionFacade()).execute(executionRequest, classificationResult);
-        } catch (final MCPInvalidRequestException ex) {
-            if (hasSQLSyntaxCause(ex)) {
-                throw new ExplainSQLSyntaxException(toolArguments.getStringArgument("database"), schema, sql, explainSql, ex);
-            }
-            throw ex;
-        }
-    }
-    
-    private boolean hasSQLSyntaxCause(final Throwable cause) {
-        Throwable current = cause;
-        while (null != current) {
-            if (current instanceof SQLSyntaxErrorException) {
-                return true;
-            }
-            current = current.getCause();
-        }
-        return false;
+        return databaseContext.getExecutionFacade().executeExplain(executionRequest, sql);
     }
 }

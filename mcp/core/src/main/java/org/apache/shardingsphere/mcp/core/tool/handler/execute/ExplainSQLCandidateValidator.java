@@ -37,7 +37,7 @@ final class ExplainSQLCandidateValidator {
         List<SQLStatementToken> tokens = scanner.tokenize(actualExplainSql);
         checkExplainCandidate(tokens, sql, actualExplainSql);
         return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, explainedStatement.getTargetObjectName().orElse(""), "",
-                SupportedMCPStatement.QUERY, explainedStatement.getReferencedObjectNames());
+                explainedStatement.getReferencedObjectNames());
     }
     
     private void checkExplainCandidate(final List<SQLStatementToken> tokens, final String sql, final String explainSql) {

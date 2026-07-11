@@ -53,21 +53,18 @@ public final class ClassificationResult {
     
     private final String savepointName;
     
-    private final Optional<SupportedMCPStatement> explainedStatementClass;
-    
     public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName) {
-        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, null, targetObjectName.isEmpty() ? List.of() : List.of(targetObjectName));
+        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, targetObjectName.isEmpty() ? List.of() : List.of(targetObjectName));
     }
     
     ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,
-                         final SupportedMCPStatement explainedStatementClass, final Collection<String> referencedObjectNames) {
+                         final Collection<String> referencedObjectNames) {
         this.statementClass = statementClass;
         this.statementType = statementType;
         this.normalizedSql = normalizedSql;
         this.targetObjectName = targetObjectName;
         this.referencedObjectNames = referencedObjectNames;
         this.savepointName = savepointName;
-        this.explainedStatementClass = Optional.ofNullable(explainedStatementClass);
     }
     
     /**
@@ -115,7 +112,7 @@ public final class ClassificationResult {
         if (isRuleDistSQL()) {
             return "rule-metadata";
         }
-        return switch (explainedStatementClass.orElse(statementClass)) {
+        return switch (statementClass) {
             case DML -> "physical-data";
             case DDL -> "physical-structure";
             case DCL -> "privilege-metadata";

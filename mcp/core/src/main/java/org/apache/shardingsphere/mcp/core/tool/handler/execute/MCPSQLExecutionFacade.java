@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -36,6 +37,8 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFac
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 
+import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -75,12 +78,41 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         }
     }
     
-    SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+    private SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         try {
             return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest, classificationResult));
         } catch (final MCPSessionNotExistedException ex) {
             throw recordFailure(executionRequest, classificationResult.getTraceStatementMarker(), ex);
         }
+    }
+    
+    @Override
+    public SQLExecutionResponse executeExplain(final SQLExecutionRequest executionRequest, final String sql) {
+        ClassificationResult classificationResult = new ExplainSQLCandidateValidator().validate(sql, executionRequest.getSql());
+        try {
+            return execute(executionRequest, classificationResult);
+        } catch (final MCPInvalidRequestException | MCPQueryFailedException ex) {
+            if (hasSQLSyntaxCause(ex)) {
+                throw new ExplainSQLSyntaxException(executionRequest.getDatabase(), executionRequest.getSchema(), sql, executionRequest.getSql(), ex);
+            }
+            throw ex;
+        }
+    }
+    
+    private boolean hasSQLSyntaxCause(final Throwable cause) {
+        Throwable current = cause;
+        while (null != current) {
+            if (current instanceof SQLException && isSQLSyntaxError((SQLException) current)) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+    
+    private boolean isSQLSyntaxError(final SQLException cause) {
+        String sqlState = cause.getSQLState();
+        return cause instanceof SQLSyntaxErrorException || "37000".equals(sqlState) || "42000".equals(sqlState) || "42601".equals(sqlState);
     }
     
     private ClassificationResult classify(final SQLExecutionRequest executionRequest) {

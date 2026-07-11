@@ -33,7 +33,8 @@ resources:
   name: logical-databases
   _meta:
     org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_search_metadata, database_gateway_execute_query]
+    org.apache.shardingsphere/related-tools: [database_gateway_search_metadata, database_gateway_execute_query,
+      database_gateway_execute_explain_query]
 - uri: shardingsphere://features/encrypt/algorithms
   name: encrypt-algorithms
   _meta:
@@ -102,7 +103,8 @@ resourceTemplates:
   name: database-capabilities
   _meta:
     org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/related-tools: [database_gateway_execute_query, database_gateway_execute_update]
+    org.apache.shardingsphere/related-tools: [database_gateway_execute_query, database_gateway_execute_explain_query,
+      database_gateway_execute_update]
     org.apache.shardingsphere/uri-variables:
     - {name: database, required: true}
 - uriTemplate: shardingsphere://databases/{database}/storage-units
@@ -573,6 +575,9 @@ tools:
     idempotentHint: true, openWorldHint: true}
 - name: database_gateway_execute_query
   annotations: {title: Execute Query SQL, readOnlyHint: true, destructiveHint: false,
+    idempotentHint: true, openWorldHint: true}
+- name: database_gateway_execute_explain_query
+  annotations: {title: Execute Explain Query SQL, readOnlyHint: true, destructiveHint: false,
     idempotentHint: true, openWorldHint: true}
 - name: database_gateway_execute_update
   annotations: {title: Preview or Execute Side-Effecting SQL, readOnlyHint: false,
