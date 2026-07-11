@@ -199,11 +199,11 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
     }
     
     private ReadwriteSplittingRuleWorkflowPlanningService createRuleService() {
-        return new ReadwriteSplittingRuleWorkflowPlanningService(new ReadwriteSplittingInspectionService(), new ReadwriteSplittingRuleDistSQLPlanningService());
+        return new ReadwriteSplittingRuleWorkflowPlanningService();
     }
     
     private ReadwriteSplittingStatusWorkflowPlanningService createStatusService() {
-        return new ReadwriteSplittingStatusWorkflowPlanningService(new ReadwriteSplittingInspectionService(), new ReadwriteSplittingStatusDistSQLPlanningService());
+        return new ReadwriteSplittingStatusWorkflowPlanningService();
     }
     
     private MCPFeatureQueryFacade mockRuleQueryFacade(final List<Map<String, Object>> rules) {

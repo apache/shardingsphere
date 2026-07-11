@@ -21,21 +21,9 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.TestWorkflowSessionContext;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingDefaultStrategyWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingKeyGenerateStrategyWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingKeyGeneratorWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingRuleComponentCleanupWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingTableReferenceRuleWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingTableRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingDefaultStrategyWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingKeyGenerateStrategyWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingKeyGeneratorWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingRuleComponentCleanupWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingTableReferenceRuleWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingTableRuleWorkflowPlanningService;
+import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
@@ -47,6 +35,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedConstruction;
 
 import java.util.List;
 import java.util.Map;
@@ -57,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,113 +54,127 @@ class ShardingToolHandlerTest {
     
     @Test
     void assertHandlePlanTableRule() {
-        ShardingTableRuleWorkflowPlanningService planningService = mock(ShardingTableRuleWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
-                createRequest(), "CREATE SHARDING TABLE RULE `t_order`(DATANODES('ds_${0..1}.t_order_${0..1}'))"));
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = new PlanShardingTableRuleToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "algorithm_type", "INLINE",
-                "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"),
-                "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id", "sharding_columns", "order_id, user_id"))));
-        Map<String, Object> actualPayload = actual.toPayload();
-        assertFalse(actualPayload.containsKey("ddl_artifacts"));
-        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/algorithm-plugins"), is("algorithm"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/key-generate-algorithm-plugins"), is("algorithm"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/table-rules"), is("rule"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/table-nodes"), is("rule"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/tables/t_order/table-rule"), is("rule"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/tables/t_order/nodes"), is("rule"));
-        ArgumentCaptor<ShardingTableRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingTableRuleWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        ShardingWorkflowRequest actualRequest = requestCaptor.getValue().toWorkflowRequest();
-        assertThat(actualRequest.getTable(), is("t_order"));
-        assertThat(actualRequest.getShardingColumns(), is("order_id, user_id"));
-        assertThat(actualRequest.getAlgorithmType(), is("INLINE"));
-        assertThat(actualRequest.getPrimaryAlgorithmProperties(), is(Map.of("algorithm-expression", "t_order_${order_id % 2}")));
+        try (
+                MockedConstruction<ShardingWorkflowPlanningService> mocked = mockConstruction(ShardingWorkflowPlanningService.class,
+                        (mock, context) -> when(mock.planTableRule(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                                createRequest(), "CREATE SHARDING TABLE RULE `t_order`(DATANODES('ds_${0..1}.t_order_${0..1}'))")))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = new PlanShardingTableRuleToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "algorithm_type", "INLINE",
+                    "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"),
+                    "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id", "sharding_columns", "order_id, user_id"))));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertFalse(actualPayload.containsKey("ddl_artifacts"));
+            List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/algorithm-plugins"), is("algorithm"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/key-generate-algorithm-plugins"), is("algorithm"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/table-rules"), is("rule"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/table-nodes"), is("rule"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/tables/t_order/table-rule"), is("rule"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/sharding/databases/logic_db/tables/t_order/nodes"), is("rule"));
+            ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).planTableRule(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getTable(), is("t_order"));
+            assertThat(requestCaptor.getValue().getShardingColumns(), is("order_id, user_id"));
+            assertThat(requestCaptor.getValue().getAlgorithmType(), is("INLINE"));
+            assertThat(requestCaptor.getValue().getPrimaryAlgorithmProperties(), is(Map.of("algorithm-expression", "t_order_${order_id % 2}")));
+        }
     }
     
     @Test
     void assertHandlePlanTableReferenceRule() {
-        ShardingTableReferenceRuleWorkflowPlanningService planningService = mock(ShardingTableReferenceRuleWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND,
-                createRequest(), "CREATE SHARDING TABLE REFERENCE RULE `ref_rule`(`t_order`, `t_order_item`)"));
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        new PlanShardingTableReferenceRuleToolHandler(planningService)
-                .handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "rule", "ref_rule", "reference_tables", "t_order,t_order_item")));
-        ArgumentCaptor<ShardingTableReferenceRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingTableReferenceRuleWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        assertThat(requestCaptor.getValue().toWorkflowRequest().getReferenceTables(), is(List.of("t_order", "t_order_item")));
+        try (
+                MockedConstruction<ShardingWorkflowPlanningService> mocked = mockConstruction(ShardingWorkflowPlanningService.class,
+                        (mock, context) -> when(mock.planTableReferenceRule(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND,
+                                createRequest(), "CREATE SHARDING TABLE REFERENCE RULE `ref_rule`(`t_order`, `t_order_item`)")))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            new PlanShardingTableReferenceRuleToolHandler()
+                    .handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "rule", "ref_rule", "reference_tables", "t_order,t_order_item")));
+            ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).planTableReferenceRule(
+                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getReferenceTables(), is(List.of("t_order", "t_order_item")));
+        }
     }
     
     @Test
     void assertHandlePlanDefaultStrategy() {
-        ShardingDefaultStrategyWorkflowPlanningService planningService = mock(ShardingDefaultStrategyWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
-                createRequest(), "CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='none')"));
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = new PlanShardingDefaultStrategyToolHandler(planningService)
-                .handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "default_strategy_type", "DATABASE", "strategy_type", "none")));
-        ArgumentCaptor<ShardingDefaultStrategyWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingDefaultStrategyWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        assertThat(requestCaptor.getValue().toWorkflowRequest().getDefaultStrategyType(), is("DATABASE"));
-        assertThat(actual.toPayload().get("workflow_kind"), is("sharding.default.strategy"));
+        try (
+                MockedConstruction<ShardingWorkflowPlanningService> mocked = mockConstruction(ShardingWorkflowPlanningService.class,
+                        (mock, context) -> when(mock.planDefaultStrategy(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
+                                createRequest(), "CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='none')")))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = new PlanShardingDefaultStrategyToolHandler()
+                    .handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "default_strategy_type", "DATABASE", "strategy_type", "none")));
+            ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).planDefaultStrategy(
+                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getDefaultStrategyType(), is("DATABASE"));
+            assertThat(actual.toPayload().get("workflow_kind"), is("sharding.default.strategy"));
+        }
     }
     
     @Test
     void assertHandlePlanKeyGenerator() {
-        ShardingKeyGeneratorWorkflowPlanningService planningService = mock(ShardingKeyGeneratorWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND,
-                createRequest(), "CREATE SHARDING KEY GENERATOR `snowflake_generator`(TYPE(NAME='snowflake'))"));
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        new PlanShardingKeyGeneratorToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db", "key_generator", "snowflake_generator", "key_generator_type", "SNOWFLAKE", "key_generator_properties", Map.of("worker-id", "1"))));
-        ArgumentCaptor<ShardingKeyGeneratorWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingKeyGeneratorWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        ShardingWorkflowRequest actualRequest = requestCaptor.getValue().toWorkflowRequest();
-        assertThat(actualRequest.getKeyGeneratorName(), is("snowflake_generator"));
-        assertThat(actualRequest.getKeyGeneratorProperties(), is(Map.of("worker-id", "1")));
+        try (
+                MockedConstruction<ShardingWorkflowPlanningService> mocked = mockConstruction(ShardingWorkflowPlanningService.class,
+                        (mock, context) -> when(mock.planKeyGenerator(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND,
+                                createRequest(), "CREATE SHARDING KEY GENERATOR `snowflake_generator`(TYPE(NAME='snowflake'))")))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            new PlanShardingKeyGeneratorToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db", "key_generator", "snowflake_generator", "key_generator_type", "SNOWFLAKE", "key_generator_properties", Map.of("worker-id", "1"))));
+            ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).planKeyGenerator(
+                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getKeyGeneratorName(), is("snowflake_generator"));
+            assertThat(requestCaptor.getValue().getKeyGeneratorProperties(), is(Map.of("worker-id", "1")));
+        }
     }
     
     @Test
     void assertHandlePlanKeyGenerateStrategy() {
-        ShardingKeyGenerateStrategyWorkflowPlanningService planningService = mock(ShardingKeyGenerateStrategyWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
-                createRequest(), "CREATE SHARDING KEY GENERATE STRATEGY `order_key_strategy`(TABLE=`t_order`, COLUMN=`id`, GENERATOR=`snowflake_generator`)"));
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        new PlanShardingKeyGenerateStrategyToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db", "key_generate_strategy", "order_key_strategy", "table", "t_order", "column", "id", "key_generator", "snowflake_generator")));
-        ArgumentCaptor<ShardingKeyGenerateStrategyWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingKeyGenerateStrategyWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        ShardingWorkflowRequest actualRequest = requestCaptor.getValue().toWorkflowRequest();
-        assertThat(actualRequest.getKeyGenerateStrategyName(), is("order_key_strategy"));
-        assertThat(actualRequest.getKeyGeneratorName(), is("snowflake_generator"));
+        try (
+                MockedConstruction<ShardingWorkflowPlanningService> mocked = mockConstruction(ShardingWorkflowPlanningService.class,
+                        (mock, context) -> when(mock.planKeyGenerateStrategy(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
+                                createRequest(), "CREATE SHARDING KEY GENERATE STRATEGY `order_key_strategy`(TABLE=`t_order`, COLUMN=`id`, GENERATOR=`snowflake_generator`)")))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            new PlanShardingKeyGenerateStrategyToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db", "key_generate_strategy", "order_key_strategy", "table", "t_order", "column", "id", "key_generator", "snowflake_generator")));
+            ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).planKeyGenerateStrategy(
+                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getKeyGenerateStrategyName(), is("order_key_strategy"));
+            assertThat(requestCaptor.getValue().getKeyGeneratorName(), is("snowflake_generator"));
+        }
     }
     
     @Test
     void assertHandlePlanComponentCleanup() {
-        ShardingRuleComponentCleanupWorkflowPlanningService planningService = mock(ShardingRuleComponentCleanupWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND,
-                createRequest(), "DROP SHARDING ALGORITHM `unused_algorithm`"));
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = new PlanShardingRuleComponentCleanupToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db", "component_type", "algorithm", "component_name", "unused_algorithm")));
-        ArgumentCaptor<ShardingRuleComponentCleanupWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingRuleComponentCleanupWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        assertThat(requestCaptor.getValue().toWorkflowRequest().getComponentName(), is("unused_algorithm"));
-        assertThat(actual.toPayload().get("workflow_kind"), is("sharding.component.cleanup"));
-        List<?> actualResourcesToRead = (List<?>) actual.toPayload().get("resources_to_read");
-        List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
-        assertThat(actualResourceUris, is(List.of(
-                "shardingsphere://features/sharding/databases/logic_db/algorithms",
-                "shardingsphere://features/sharding/databases/logic_db/key-generators",
-                "shardingsphere://features/sharding/databases/logic_db/auditors",
-                "shardingsphere://features/sharding/databases/logic_db/unused-algorithms",
-                "shardingsphere://features/sharding/databases/logic_db/unused-key-generators",
-                "shardingsphere://features/sharding/databases/logic_db/unused-auditors")));
-        for (String each : actualResourceUris) {
-            assertThat(findResourceKind(actualResourcesToRead, each), is("rule"));
+        try (
+                MockedConstruction<ShardingWorkflowPlanningService> mocked = mockConstruction(ShardingWorkflowPlanningService.class,
+                        (mock, context) -> when(mock.planComponentCleanup(any(), any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND,
+                                createRequest(), "DROP SHARDING ALGORITHM `unused_algorithm`")))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = new PlanShardingRuleComponentCleanupToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db", "component_type", "algorithm", "component_name", "unused_algorithm")));
+            ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).planComponentCleanup(
+                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getComponentName(), is("unused_algorithm"));
+            assertThat(actual.toPayload().get("workflow_kind"), is("sharding.component.cleanup"));
+            List<?> actualResourcesToRead = (List<?>) actual.toPayload().get("resources_to_read");
+            List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
+            assertThat(actualResourceUris, is(List.of(
+                    "shardingsphere://features/sharding/databases/logic_db/algorithms",
+                    "shardingsphere://features/sharding/databases/logic_db/key-generators",
+                    "shardingsphere://features/sharding/databases/logic_db/auditors",
+                    "shardingsphere://features/sharding/databases/logic_db/unused-algorithms",
+                    "shardingsphere://features/sharding/databases/logic_db/unused-key-generators",
+                    "shardingsphere://features/sharding/databases/logic_db/unused-auditors")));
+            for (String each : actualResourceUris) {
+                assertThat(findResourceKind(actualResourcesToRead, each), is("rule"));
+            }
         }
     }
     
@@ -214,15 +218,13 @@ class ShardingToolHandlerTest {
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(result.getDatabaseContext()).thenReturn(databaseContext);
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        return new WorkflowContextFixture(result, workflowSessionContext, queryFacade, executionFacade);
+        return new WorkflowContextFixture(result, workflowSessionContext, queryFacade);
     }
     
     private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
-                                          MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
+                                          MCPFeatureQueryFacade queryFacade) {
     }
 }

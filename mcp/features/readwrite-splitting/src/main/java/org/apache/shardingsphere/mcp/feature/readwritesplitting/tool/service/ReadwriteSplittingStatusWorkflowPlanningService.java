@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -39,7 +37,6 @@ import java.util.Map;
 /**
  * Readwrite-splitting status workflow planning service.
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ReadwriteSplittingStatusWorkflowPlanningService {
     
     private static final List<String> INTERACTION_STEPS = List.of(
@@ -56,14 +53,9 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
     
     private final ReadwriteSplittingWorkflowIntentResolver intentResolver = new ReadwriteSplittingWorkflowIntentResolver();
     
-    private final ReadwriteSplittingInspectionService inspectionService;
+    private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
-    private final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService;
-    
-    public ReadwriteSplittingStatusWorkflowPlanningService() {
-        inspectionService = new ReadwriteSplittingInspectionService();
-        distSQLPlanningService = new ReadwriteSplittingStatusDistSQLPlanningService();
-    }
+    private final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService = new ReadwriteSplittingStatusDistSQLPlanningService();
     
     /**
      * Plan readwrite-splitting storage-unit status workflow.

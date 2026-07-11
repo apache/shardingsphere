@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 
 import java.util.List;
@@ -33,11 +32,7 @@ public final class ShardingGovernanceResourceHandler extends AbstractShardingRes
     private final ResourceKind resourceKind;
     
     private ShardingGovernanceResourceHandler(final String resourceUriTemplate, final ResourceKind resourceKind) {
-        this(resourceUriTemplate, resourceKind, new ShardingInspectionService());
-    }
-    
-    ShardingGovernanceResourceHandler(final String resourceUriTemplate, final ResourceKind resourceKind, final ShardingInspectionService inspectionService) {
-        super(resourceUriTemplate, inspectionService);
+        super(resourceUriTemplate);
         this.resourceKind = resourceKind;
     }
     

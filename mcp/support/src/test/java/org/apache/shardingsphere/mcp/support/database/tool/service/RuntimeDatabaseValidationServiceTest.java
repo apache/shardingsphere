@@ -26,11 +26,14 @@ import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatab
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationResult;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedConstruction;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -52,52 +55,62 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class RuntimeDatabaseValidationServiceTest {
     
+    private MockedConstruction<MCPJdbcDatabaseProfileLoader> mockedProfileLoaders;
+    
+    private MockedConstruction<MCPJdbcMetadataLoader> mockedMetadataLoaders;
+    
+    @BeforeEach
+    void setUp() {
+        mockedProfileLoaders = mockConstruction(MCPJdbcDatabaseProfileLoader.class);
+        mockedMetadataLoaders = mockConstruction(MCPJdbcMetadataLoader.class);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        mockedMetadataLoaders.close();
+        mockedProfileLoaders.close();
+    }
+    
     @Test
     void assertValidateWithMissingDatabase() {
-        MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
-        MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
-        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
-                .validate(new RuntimeDatabaseValidationRequest(""),
-                        ignored -> Optional.empty(),
-                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest(""),
+                ignored -> Optional.empty(), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("failed"));
         assertThat(actualPayload.get("category"), is("invalid_configuration"));
         assertThat(actualPayload.get("recovery"), is(Map.of("category", "invalid_configuration")));
         assertThat(((Map<?, ?>) ((List<?>) actualPayload.get("checks")).get(0)).get("name"), is("configuration"));
         assertThat(((Map<?, ?>) ((List<?>) actualPayload.get("checks")).get(1)).get("status"), is("skipped"));
-        verifyNoInteractions(profileLoader, metadataLoader);
+        verifyNoInteractions(getProfileLoader(), getMetadataLoader());
     }
     
     @Test
     void assertValidateWithUnknownDatabase() {
-        MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
-        MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
-        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
-                .validate(new RuntimeDatabaseValidationRequest("logic_db"),
-                        ignored -> Optional.empty(),
-                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
+                ignored -> Optional.empty(), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("failed"));
         assertThat(actualPayload.get("category"), is("invalid_configuration"));
         assertThat(((Map<?, ?>) ((List<?>) actualPayload.get("checks")).get(0)).get("status"), is("failed"));
-        verifyNoInteractions(profileLoader, metadataLoader);
+        verifyNoInteractions(getProfileLoader(), getMetadataLoader());
     }
     
     @Test
     void assertValidateWithConfiguredDatabase() {
-        MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
-        MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        MCPJdbcDatabaseProfileLoader profileLoader = getProfileLoader();
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration();
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
-        when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("logic_db"));
-        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService(profileLoader, metadataLoader);
+        when(getMetadataLoader().load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("logic_db"));
         RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
                 ignored -> Optional.of(runtimeDatabaseConfig),
                 RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
@@ -110,15 +123,14 @@ class RuntimeDatabaseValidationServiceTest {
     
     @Test
     void assertValidateWithVisibleDatabase() {
-        MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
-        MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        MCPJdbcDatabaseProfileLoader profileLoader = getProfileLoader();
+        MCPJdbcMetadataLoader metadataLoader = getMetadataLoader();
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration();
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("logic_db"));
-        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
-                .validate(new RuntimeDatabaseValidationRequest("logic_db"),
-                        ignored -> Optional.of(runtimeDatabaseConfig),
-                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
+                ignored -> Optional.of(runtimeDatabaseConfig), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("ready"));
         assertThat(((Map<?, ?>) ((List<?>) actualPayload.get("checks")).get(4)).get("status"), is("passed"));
@@ -126,15 +138,14 @@ class RuntimeDatabaseValidationServiceTest {
     
     @Test
     void assertValidateWithInvisibleDatabase() {
-        MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
-        MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        MCPJdbcDatabaseProfileLoader profileLoader = getProfileLoader();
+        MCPJdbcMetadataLoader metadataLoader = getMetadataLoader();
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration(InvisibleDatabaseDriver.JDBC_URL, "demo", "", InvisibleDatabaseDriver.class.getName());
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("public"));
-        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
-                .validate(new RuntimeDatabaseValidationRequest("logic_db"),
-                        ignored -> Optional.of(runtimeDatabaseConfig),
-                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
+                ignored -> Optional.of(runtimeDatabaseConfig), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("failed"));
         assertThat(actualPayload.get("category"), is(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE));
@@ -144,16 +155,15 @@ class RuntimeDatabaseValidationServiceTest {
     
     @Test
     void assertValidateWithMetadataReadFailure() {
-        MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
-        MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        MCPJdbcDatabaseProfileLoader profileLoader = getProfileLoader();
+        MCPJdbcMetadataLoader metadataLoader = getMetadataLoader();
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration();
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class)))
                 .thenThrow(RuntimeDatabaseConnectionException.connectionFailed("logic_db", new SQLException("Broken connection")));
-        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
-                .validate(new RuntimeDatabaseValidationRequest("logic_db"),
-                        ignored -> Optional.of(runtimeDatabaseConfig),
-                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
+                ignored -> Optional.of(runtimeDatabaseConfig), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("status"), is("failed"));
         assertThat(actualPayload.get("category"), is(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED));
@@ -165,14 +175,12 @@ class RuntimeDatabaseValidationServiceTest {
     @MethodSource("assertValidateFailsDuringProfileLoadCases")
     void assertValidateFailsDuringProfileLoad(final String name, final RuntimeDatabaseConnectionException cause, final String expectedDriverStatus,
                                               final String expectedConnectivityStatus, final String expectedCategory) {
-        MCPJdbcDatabaseProfileLoader profileLoader = mock(MCPJdbcDatabaseProfileLoader.class);
-        MCPJdbcMetadataLoader metadataLoader = mock(MCPJdbcMetadataLoader.class);
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        MCPJdbcDatabaseProfileLoader profileLoader = getProfileLoader();
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration();
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenThrow(cause);
-        RuntimeDatabaseValidationResult actual = new RuntimeDatabaseValidationService(profileLoader, metadataLoader)
-                .validate(new RuntimeDatabaseValidationRequest("logic_db"),
-                        ignored -> Optional.of(runtimeDatabaseConfig),
-                        RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
+                ignored -> Optional.of(runtimeDatabaseConfig), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
         List<?> checks = (List<?>) actualPayload.get("checks");
         assertThat(actualPayload.get("status"), is("failed"));
@@ -181,7 +189,15 @@ class RuntimeDatabaseValidationServiceTest {
         assertThat(((Map<?, ?>) checks.get(2)).get("status"), is(expectedConnectivityStatus));
         assertThat(((Map<?, ?>) checks.get(3)).get("status"), is("skipped"));
         assertThat(((Map<?, ?>) checks.get(4)).get("status"), is("skipped"));
-        verifyNoInteractions(metadataLoader);
+        verifyNoInteractions(getMetadataLoader());
+    }
+    
+    private MCPJdbcDatabaseProfileLoader getProfileLoader() {
+        return mockedProfileLoaders.constructed().getFirst();
+    }
+    
+    private MCPJdbcMetadataLoader getMetadataLoader() {
+        return mockedMetadataLoaders.constructed().getFirst();
     }
     
     private static Stream<Arguments> assertValidateFailsDuringProfileLoadCases() {

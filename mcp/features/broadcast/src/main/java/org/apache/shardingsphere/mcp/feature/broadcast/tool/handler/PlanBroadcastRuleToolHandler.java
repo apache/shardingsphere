@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.handler;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -37,14 +35,9 @@ import java.util.Map;
 /**
  * Tool handler for broadcast workflow planning.
  */
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
     
-    private final BroadcastWorkflowPlanningService planningService;
-    
-    public PlanBroadcastRuleToolHandler() {
-        planningService = new BroadcastWorkflowPlanningService();
-    }
+    private final BroadcastWorkflowPlanningService planningService = new BroadcastWorkflowPlanningService();
     
     @Override
     public Class<MCPWorkflowHandlerContext> getContextType() {

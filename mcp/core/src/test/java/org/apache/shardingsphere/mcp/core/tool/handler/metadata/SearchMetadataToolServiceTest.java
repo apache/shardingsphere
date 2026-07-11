@@ -282,7 +282,7 @@ class SearchMetadataToolServiceTest {
     private MetadataSearchResult execute(final List<DatabaseMetadataFixture> databaseMetadata, final MetadataSearchRequest request) {
         try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(databaseMetadata)) {
             MCPRequestScope requestScope = requestScopeFixture.getRequestScope();
-            return new SearchMetadataToolService(requestScope.getMetadataQueryFacade()).execute(request);
+            return new SearchMetadataToolService(requestScope.getMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class)).execute(request);
         }
     }
     

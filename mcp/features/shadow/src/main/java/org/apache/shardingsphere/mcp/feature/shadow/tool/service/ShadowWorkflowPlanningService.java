@@ -77,27 +77,13 @@ public final class ShadowWorkflowPlanningService {
     
     private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
-    private final ShadowInspectionService inspectionService;
+    private final ShadowInspectionService inspectionService = new ShadowInspectionService();
     
-    private final ShadowAlgorithmRecommendationService algorithmRecommendationService;
+    private final ShadowAlgorithmRecommendationService algorithmRecommendationService = new ShadowAlgorithmRecommendationService();
     
-    private final ShadowAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+    private final ShadowAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new ShadowAlgorithmPropertyTemplateService();
     
-    private final ShadowDistSQLPlanningService distSQLPlanningService;
-    
-    public ShadowWorkflowPlanningService() {
-        inspectionService = new ShadowInspectionService();
-        algorithmRecommendationService = new ShadowAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new ShadowAlgorithmPropertyTemplateService();
-        distSQLPlanningService = new ShadowDistSQLPlanningService();
-    }
-    
-    ShadowWorkflowPlanningService(final ShadowInspectionService inspectionService, final ShadowDistSQLPlanningService distSQLPlanningService) {
-        this.inspectionService = inspectionService;
-        algorithmRecommendationService = new ShadowAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new ShadowAlgorithmPropertyTemplateService();
-        this.distSQLPlanningService = distSQLPlanningService;
-    }
+    private final ShadowDistSQLPlanningService distSQLPlanningService = new ShadowDistSQLPlanningService();
     
     /**
      * Plan shadow rule workflow.

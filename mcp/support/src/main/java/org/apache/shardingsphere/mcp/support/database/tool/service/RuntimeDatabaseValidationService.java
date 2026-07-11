@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.database.tool.service;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcMetadataLoader;
@@ -43,18 +42,13 @@ import java.util.function.Function;
 /**
  * Runtime database validation service.
  */
-@RequiredArgsConstructor
 public final class RuntimeDatabaseValidationService {
     
     private static final String VALIDATION_BINDING_DATABASE = "__preflight_validation__";
     
-    private final MCPJdbcDatabaseProfileLoader profileLoader;
+    private final MCPJdbcDatabaseProfileLoader profileLoader = new MCPJdbcDatabaseProfileLoader();
     
-    private final MCPJdbcMetadataLoader metadataLoader;
-    
-    public RuntimeDatabaseValidationService() {
-        this(new MCPJdbcDatabaseProfileLoader(), new MCPJdbcMetadataLoader());
-    }
+    private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
     
     /**
      * Validate runtime database.

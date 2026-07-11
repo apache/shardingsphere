@@ -129,7 +129,7 @@ class BroadcastWorkflowPlanningServiceTest {
     }
     
     private BroadcastWorkflowPlanningService createService() {
-        return new BroadcastWorkflowPlanningService(new BroadcastRuleInspectionService(), new BroadcastRuleDistSQLPlanningService());
+        return new BroadcastWorkflowPlanningService();
     }
     
     private MCPFeatureQueryFacade mockQueryFacade(final List<Map<String, Object>> broadcastRules) {

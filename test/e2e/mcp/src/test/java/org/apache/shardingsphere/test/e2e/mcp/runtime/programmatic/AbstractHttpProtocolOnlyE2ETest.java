@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.AfterEach;
 
@@ -72,7 +73,7 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
     }
     
     protected final HttpResponse<String> sendInitializeRequest(final HttpClient httpClient) throws IOException, InterruptedException {
-        return sendInitializeRequest(httpClient, MCPHttpTransportTestSupport.createInitializeRequestParams(CLIENT_NAME));
+        return sendInitializeRequest(httpClient, MCPInteractionProtocolSupport.createInitializeRequestParams(CLIENT_NAME));
     }
     
     protected final HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, Object> initializeRequestParams) throws IOException, InterruptedException {
@@ -86,7 +87,7 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
     
     protected final HttpResponse<String> sendInitializedNotification(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
         return sendRawPostRequest(httpClient, createSessionHeaders(sessionId),
-                MCPHttpTransportTestSupport.createJsonRpcNotificationBody("notifications/initialized", Map.of()));
+                MCPInteractionProtocolSupport.createJsonRpcNotificationBody("notifications/initialized", Map.of()));
     }
     
     protected final HttpResponse<String> sendCapabilitiesRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
@@ -132,7 +133,7 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
     }
     
     protected final String getProtocolVersion() {
-        return MCPHttpTransportTestSupport.PROTOCOL_VERSION;
+        return MCPInteractionProtocolSupport.PROTOCOL_VERSION;
     }
     
     protected final Map<String, String> createSessionHeaders(final String sessionId) {

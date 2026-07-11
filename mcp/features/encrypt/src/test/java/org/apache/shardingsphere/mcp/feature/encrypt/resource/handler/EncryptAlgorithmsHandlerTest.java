@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -38,16 +37,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EncryptAlgorithmsHandlerTest {
-    
-    @Test
-    void assertGetContextType() {
-        assertThat(new EncryptAlgorithmsHandler().getContextType(), is(MCPDatabaseHandlerContext.class));
-    }
-    
-    @Test
-    void assertGetResourceUriTemplate() {
-        assertThat(new EncryptAlgorithmsHandler().getResourceUriTemplate(), is(EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI));
-    }
     
     @Test
     void assertHandle() {

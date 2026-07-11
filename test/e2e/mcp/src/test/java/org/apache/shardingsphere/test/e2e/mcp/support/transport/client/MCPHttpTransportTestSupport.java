@@ -36,8 +36,6 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPHttpTransportTestSupport {
     
-    public static final String PROTOCOL_VERSION = MCPInteractionProtocolSupport.PROTOCOL_VERSION;
-    
     private static final String CONTENT_TYPE = "application/json";
     
     private static final String ACCEPT = "application/json, text/event-stream";
@@ -164,40 +162,7 @@ public final class MCPHttpTransportTestSupport {
      */
     public static HttpResponse<String> sendJsonRpcRequest(final HttpClient httpClient, final URI endpointUri, final Map<String, String> headers, final String requestId,
                                                           final String method, final Map<String, Object> params) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, endpointUri, headers, createJsonRpcRequestBody(requestId, method, params));
-    }
-    
-    /**
-     * Create initialize request parameters.
-     *
-     * @param clientName MCP client name
-     * @return initialize request parameters
-     */
-    public static Map<String, Object> createInitializeRequestParams(final String clientName) {
-        return MCPInteractionProtocolSupport.createInitializeRequestParams(clientName);
-    }
-    
-    /**
-     * Create a JSON-RPC request body.
-     *
-     * @param requestId request id
-     * @param method method name
-     * @param params request parameters
-     * @return JSON-RPC request body
-     */
-    public static String createJsonRpcRequestBody(final String requestId, final String method, final Map<String, Object> params) {
-        return MCPInteractionProtocolSupport.createJsonRpcRequestBody(requestId, method, params);
-    }
-    
-    /**
-     * Create a JSON-RPC notification body.
-     *
-     * @param method notification method
-     * @param params notification parameters
-     * @return JSON notification body
-     */
-    public static String createJsonRpcNotificationBody(final String method, final Map<String, Object> params) {
-        return MCPInteractionProtocolSupport.createJsonRpcNotificationBody(method, params);
+        return sendRawPostRequest(httpClient, endpointUri, headers, MCPInteractionProtocolSupport.createJsonRpcRequestBody(requestId, method, params));
     }
     
     private static void applyHeaders(final HttpRequest.Builder requestBuilder, final Map<String, String> headers) {

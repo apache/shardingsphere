@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.shadow.resource.handler;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -35,18 +35,14 @@ import java.util.Map;
 /**
  * Shadow resource handler.
  */
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowResourceHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
     private final String resourceUriTemplate;
     
     private final ResourceKind resourceKind;
     
-    private final ShadowInspectionService inspectionService;
-    
-    private ShadowResourceHandler(final String resourceUriTemplate, final ResourceKind resourceKind) {
-        this(resourceUriTemplate, resourceKind, new ShadowInspectionService());
-    }
+    private final ShadowInspectionService inspectionService = new ShadowInspectionService();
     
     /**
      * Create rules resource handler.

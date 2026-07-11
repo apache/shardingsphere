@@ -327,8 +327,9 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         return value instanceof Map ? castToMap(value) : Map.of();
     }
     
+    @SuppressWarnings("unchecked")
     protected List<Map<String, Object>> getMapList(final Object value) {
-        return MCPPayloadAssertions.getMapList(value);
+        return ((List<?>) value).stream().map(each -> (Map<String, Object>) each).toList();
     }
     
     protected List<String> getStringList(final Object value) {

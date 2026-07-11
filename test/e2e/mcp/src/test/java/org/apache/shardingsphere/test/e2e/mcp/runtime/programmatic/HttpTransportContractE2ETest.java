@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadat
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -55,7 +56,7 @@ class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntime
         HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(getEndpointUri())
                 .header("mcp-session-id", sessionId)
                 .header("mcp-protocol-version", getProtocolVersion())
-                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                .POST(HttpRequest.BodyPublishers.ofString(MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                         "resource-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"))))
                 .build();
         HttpResponse<String> actual = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -137,7 +138,7 @@ class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntime
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId),
-                MCPHttpTransportTestSupport.createJsonRpcRequestBody("tools-list-1", "tools/list", Map.of()));
+                MCPInteractionProtocolSupport.createJsonRpcRequestBody("tools-list-1", "tools/list", Map.of()));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualResult = getResultPayload(actual);
         assertModelFacingPayloadContract(actualResult);
@@ -202,23 +203,23 @@ class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntime
     }
     
     private HttpResponse<String> sendResourceListRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "resources-list-1", "resources/list", Map.of()));
     }
     
     private HttpResponse<String> sendResourceTemplateListRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "resource-templates-list-1", "resources/templates/list", Map.of()));
     }
     
     private HttpResponse<String> sendPromptListRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "prompts-list-1", "prompts/list", Map.of()));
     }
     
     private HttpResponse<String> sendPromptGetRequest(final HttpClient httpClient, final String sessionId, final String promptName,
                                                       final Map<String, Object> arguments) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "prompt-1", "prompts/get", Map.of("name", promptName, "arguments", arguments)));
     }
     
@@ -230,7 +231,7 @@ class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntime
         if (!contextArguments.isEmpty()) {
             params.put("context", Map.of("arguments", contextArguments));
         }
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "completion-1", "completion/complete", params));
     }
     

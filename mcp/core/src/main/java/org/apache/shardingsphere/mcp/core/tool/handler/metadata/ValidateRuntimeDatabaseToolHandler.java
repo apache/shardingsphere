@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -33,16 +32,11 @@ import java.util.Map;
 /**
  * Handler for runtime database validation tool.
  */
-@RequiredArgsConstructor
 public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
     
     public static final String TOOL_NAME = "database_gateway_validate_runtime_database";
     
-    private final RuntimeDatabaseValidationService validationService;
-    
-    public ValidateRuntimeDatabaseToolHandler() {
-        this(new RuntimeDatabaseValidationService());
-    }
+    private final RuntimeDatabaseValidationService validationService = new RuntimeDatabaseValidationService();
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {

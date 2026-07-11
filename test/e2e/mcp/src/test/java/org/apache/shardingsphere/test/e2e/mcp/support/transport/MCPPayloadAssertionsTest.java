@@ -58,16 +58,6 @@ class MCPPayloadAssertionsTest {
     }
     
     @Test
-    void assertGetMap() {
-        assertThat(MCPPayloadAssertions.getMap(Map.of("name", "orders")), is(Map.of("name", "orders")));
-    }
-    
-    @Test
-    void assertGetMapList() {
-        assertThat(MCPPayloadAssertions.getMapList(List.of(Map.of("name", "orders"))), is(List.of(Map.of("name", "orders"))));
-    }
-    
-    @Test
     void assertAssertToolDefinition() {
         MCPPayloadAssertions.assertToolDefinition(List.of(Map.of(
                 "name", "database_gateway_execute_query",

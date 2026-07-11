@@ -101,28 +101,6 @@ public final class MCPPayloadAssertions {
     }
     
     /**
-     * Get map payload.
-     *
-     * @param value payload value
-     * @return map payload
-     */
-    @SuppressWarnings("unchecked")
-    public static Map<String, Object> getMap(final Object value) {
-        return (Map<String, Object>) value;
-    }
-    
-    /**
-     * Get map list payload.
-     *
-     * @param value payload value
-     * @return map list payload
-     */
-    @SuppressWarnings("unchecked")
-    public static List<Map<String, Object>> getMapList(final Object value) {
-        return ((List<?>) value).stream().map(each -> (Map<String, Object>) each).toList();
-    }
-    
-    /**
      * Assert tool definition.
      *
      * @param tools tool definitions
@@ -144,5 +122,10 @@ public final class MCPPayloadAssertions {
             assertTrue(actualRequiredFields.contains(expectedRequiredField));
         }
         assertThat(String.valueOf(actualProperty.get("type")), is(expectedPropertyType));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> getMap(final Object value) {
+        return (Map<String, Object>) value;
     }
 }

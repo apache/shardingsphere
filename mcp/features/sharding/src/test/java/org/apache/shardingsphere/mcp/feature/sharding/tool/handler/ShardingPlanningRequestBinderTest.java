@@ -34,7 +34,7 @@ class ShardingPlanningRequestBinderTest {
                 "database", "logic_db",
                 "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id", "algorithm_type", "INLINE"),
                 "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"),
-                "auditors", "dml_auditor")).toWorkflowRequest();
+                "auditors", "dml_auditor"));
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getTable(), is("t_order"));
         assertThat(actual.getAlgorithmType(), is("INLINE"));
@@ -45,7 +45,7 @@ class ShardingPlanningRequestBinderTest {
     @Test
     void assertBindTableReferenceRule() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindTableReferenceRule(Map.of(
-                "database", "logic_db", "rule", "ref_rule", "reference_tables", "t_order,t_order_item")).toWorkflowRequest();
+                "database", "logic_db", "rule", "ref_rule", "reference_tables", "t_order,t_order_item"));
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getRuleName(), is("ref_rule"));
         assertThat(actual.getReferenceTables(), is(List.of("t_order", "t_order_item")));
@@ -55,7 +55,7 @@ class ShardingPlanningRequestBinderTest {
     void assertBindDefaultStrategy() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindDefaultStrategy(Map.of(
                 "database", "logic_db", "default_strategy_type", "DATABASE", "structured_intent_evidence", Map.of("column", "order_id"),
-                "algorithm_properties", Map.of("algorithm-expression", "ds_${order_id % 2}"))).toWorkflowRequest();
+                "algorithm_properties", Map.of("algorithm-expression", "ds_${order_id % 2}")));
         assertThat(actual.getDefaultStrategyType(), is("DATABASE"));
         assertThat(actual.getColumn(), is("order_id"));
         assertThat(actual.getPrimaryAlgorithmProperties(), is(Map.of("algorithm-expression", "ds_${order_id % 2}")));
@@ -66,7 +66,7 @@ class ShardingPlanningRequestBinderTest {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindKeyGenerator(Map.of(
                 "database", "logic_db", "key_generator", "snowflake_generator",
                 "key_generator_type", "SNOWFLAKE",
-                "key_generator_properties", Map.of("worker-id", "1"))).toWorkflowRequest();
+                "key_generator_properties", Map.of("worker-id", "1")));
         assertThat(actual.getKeyGeneratorName(), is("snowflake_generator"));
         assertThat(actual.getKeyGeneratorType(), is("SNOWFLAKE"));
         assertThat(actual.getKeyGeneratorProperties(), is(Map.of("worker-id", "1")));
@@ -76,7 +76,7 @@ class ShardingPlanningRequestBinderTest {
     void assertBindKeyGenerateStrategy() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindKeyGenerateStrategy(Map.of(
                 "database", "logic_db", "key_generate_strategy", "order_key_strategy", "structured_intent_evidence",
-                Map.of("table", "t_order", "column", "id", "key_generator", "snowflake_generator"))).toWorkflowRequest();
+                Map.of("table", "t_order", "column", "id", "key_generator", "snowflake_generator")));
         assertThat(actual.getKeyGenerateStrategyName(), is("order_key_strategy"));
         assertThat(actual.getTable(), is("t_order"));
         assertThat(actual.getKeyGeneratorName(), is("snowflake_generator"));
@@ -85,7 +85,7 @@ class ShardingPlanningRequestBinderTest {
     @Test
     void assertBindRuleComponentCleanup() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindRuleComponentCleanup(Map.of(
-                "database", "logic_db", "component_type", "algorithm", "component_name", "unused_algorithm")).toWorkflowRequest();
+                "database", "logic_db", "component_type", "algorithm", "component_name", "unused_algorithm"));
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getComponentType(), is("algorithm"));
         assertThat(actual.getComponentName(), is("unused_algorithm"));

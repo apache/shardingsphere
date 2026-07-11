@@ -39,6 +39,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedConstruction;
 
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,52 +58,60 @@ class ShadowToolHandlerTest {
     
     @Test
     void assertHandlePlanRule() {
-        ShadowWorkflowPlanningService planningService = mock(ShadowWorkflowPlanningService.class);
-        when(planningService.planRule(any(), any(), any(), any())).thenReturn(createSnapshot(createRuleRequest(), ShadowFeatureDefinition.RULE_WORKFLOW_KIND.getValue()));
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = new PlanShadowRuleToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "algorithm_type", "SQL_HINT",
-                "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order"))));
-        Map<String, Object> actualPayload = actual.toPayload();
-        assertFalse(actualPayload.containsKey("ddl_artifacts"));
-        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/algorithm-plugins"), is("algorithm"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/rules"), is("rule"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/table-rules"), is("rule"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/tables/t_order/rules"), is("rule"));
-        ArgumentCaptor<ShadowRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowRuleWorkflowRequest.class);
-        verify(planningService).planRule(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        assertThat(requestCaptor.getValue().getTableName(), is("t_order"));
-        assertThat(requestCaptor.getValue().getAlgorithmType(), is("SQL_HINT"));
+        try (
+                MockedConstruction<ShadowWorkflowPlanningService> mocked = mockConstruction(ShadowWorkflowPlanningService.class,
+                        (mock, context) -> when(mock.planRule(any(), any(), any(), any())).thenReturn(createSnapshot(createRuleRequest(), ShadowFeatureDefinition.RULE_WORKFLOW_KIND.getValue())))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = new PlanShadowRuleToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "algorithm_type", "SQL_HINT",
+                    "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order"))));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertFalse(actualPayload.containsKey("ddl_artifacts"));
+            List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/algorithm-plugins"), is("algorithm"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/rules"), is("rule"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/table-rules"), is("rule"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/tables/t_order/rules"), is("rule"));
+            ArgumentCaptor<ShadowRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowRuleWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).planRule(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getTableName(), is("t_order"));
+            assertThat(requestCaptor.getValue().getAlgorithmType(), is("SQL_HINT"));
+        }
     }
     
     @Test
     void assertHandlePlanDefaultAlgorithm() {
-        ShadowWorkflowPlanningService planningService = mock(ShadowWorkflowPlanningService.class);
-        when(planningService.planDefaultAlgorithm(any(), any(), any(), any())).thenReturn(createSnapshot(new ShadowDefaultAlgorithmWorkflowRequest(),
-                ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND.getValue()));
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = new PlanDefaultShadowAlgorithmToolHandler(planningService)
-                .handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "algorithm_type", "SQL_HINT")));
-        ArgumentCaptor<ShadowDefaultAlgorithmWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowDefaultAlgorithmWorkflowRequest.class);
-        verify(planningService).planDefaultAlgorithm(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        assertThat(requestCaptor.getValue().getAlgorithmType(), is("SQL_HINT"));
-        assertThat(actual.toPayload().get("workflow_kind"), is("shadow.default"));
+        try (
+                MockedConstruction<ShadowWorkflowPlanningService> mocked =
+                        mockConstruction(ShadowWorkflowPlanningService.class, (mock, context) -> when(mock.planDefaultAlgorithm(any(), any(), any(), any())).thenReturn(createSnapshot(
+                                new ShadowDefaultAlgorithmWorkflowRequest(), ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND.getValue())))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = new PlanDefaultShadowAlgorithmToolHandler()
+                    .handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "algorithm_type", "SQL_HINT")));
+            ArgumentCaptor<ShadowDefaultAlgorithmWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowDefaultAlgorithmWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).planDefaultAlgorithm(
+                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getAlgorithmType(), is("SQL_HINT"));
+            assertThat(actual.toPayload().get("workflow_kind"), is("shadow.default"));
+        }
     }
     
     @Test
     void assertHandlePlanCleanup() {
-        ShadowWorkflowPlanningService planningService = mock(ShadowWorkflowPlanningService.class);
-        when(planningService.planAlgorithmCleanup(any(), any(), any(), any())).thenReturn(createSnapshot(new ShadowAlgorithmCleanupWorkflowRequest(),
-                ShadowFeatureDefinition.ALGORITHM_CLEANUP_WORKFLOW_KIND.getValue()));
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = new PlanShadowAlgorithmCleanupToolHandler(planningService)
-                .handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "algorithm_name", "unused_algorithm")));
-        ArgumentCaptor<ShadowAlgorithmCleanupWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowAlgorithmCleanupWorkflowRequest.class);
-        verify(planningService).planAlgorithmCleanup(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        assertThat(requestCaptor.getValue().getAlgorithmName(), is("unused_algorithm"));
-        assertThat(actual.toPayload().get("workflow_kind"), is("shadow.cleanup"));
+        try (
+                MockedConstruction<ShadowWorkflowPlanningService> mocked =
+                        mockConstruction(ShadowWorkflowPlanningService.class, (mock, context) -> when(mock.planAlgorithmCleanup(any(), any(), any(), any())).thenReturn(createSnapshot(
+                                new ShadowAlgorithmCleanupWorkflowRequest(), ShadowFeatureDefinition.ALGORITHM_CLEANUP_WORKFLOW_KIND.getValue())))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = new PlanShadowAlgorithmCleanupToolHandler()
+                    .handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "algorithm_name", "unused_algorithm")));
+            ArgumentCaptor<ShadowAlgorithmCleanupWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowAlgorithmCleanupWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).planAlgorithmCleanup(
+                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getAlgorithmName(), is("unused_algorithm"));
+            assertThat(actual.toPayload().get("workflow_kind"), is("shadow.cleanup"));
+        }
     }
     
     private ShadowRuleWorkflowRequest createRuleRequest() {

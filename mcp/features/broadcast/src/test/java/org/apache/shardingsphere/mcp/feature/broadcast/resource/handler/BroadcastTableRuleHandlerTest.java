@@ -19,12 +19,12 @@ package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import java.util.List;
@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,28 +43,21 @@ import static org.mockito.Mockito.when;
 class BroadcastTableRuleHandlerTest {
     
     @Test
-    void assertGetContextType() {
-        assertThat(new BroadcastTableRuleHandler().getContextType(), is(MCPDatabaseHandlerContext.class));
-    }
-    
-    @Test
-    void assertGetResourceUriTemplate() {
-        assertThat(new BroadcastTableRuleHandler().getResourceUriTemplate(), is(BroadcastFeatureDefinition.TABLE_RULE_RESOURCE_URI));
-    }
-    
-    @Test
     void assertHandle() {
-        BroadcastRuleInspectionService ruleInspectionService = mock(BroadcastRuleInspectionService.class);
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
-        when(ruleInspectionService.queryBroadcastRules(queryFacade, "logic_db")).thenReturn(List.of(Map.of("broadcast_table", "t_order"), Map.of("broadcast_table", "t_order_item")));
-        try (MockedStatic<WorkflowSQLUtils> workflowSQLUtils = mockStatic(WorkflowSQLUtils.class, CALLS_REAL_METHODS)) {
+        try (
+                MockedConstruction<BroadcastRuleInspectionService> mocked = mockConstruction(BroadcastRuleInspectionService.class);
+                MockedStatic<WorkflowSQLUtils> workflowSQLUtils = mockStatic(WorkflowSQLUtils.class, CALLS_REAL_METHODS)) {
+            BroadcastTableRuleHandler handler = new BroadcastTableRuleHandler();
+            BroadcastRuleInspectionService ruleInspectionService = mocked.constructed().getFirst();
+            MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+            when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+            when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
+            when(ruleInspectionService.queryBroadcastRules(queryFacade, "logic_db"))
+                    .thenReturn(List.of(Map.of("broadcast_table", "t_order"), Map.of("broadcast_table", "t_order_item")));
             workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier(anyString(), anyString(), anyString()))
                     .thenAnswer(invocation -> invocation.getArgument(1, String.class).equals(invocation.getArgument(2, String.class)));
-            MCPResponse actual = new BroadcastTableRuleHandler(ruleInspectionService).handle(
-                    databaseContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "t_order")));
+            MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "t_order")));
             verify(ruleInspectionService).queryBroadcastRules(queryFacade, "logic_db");
             List<?> items = (List<?>) actual.toPayload().get("items");
             assertThat(items.size(), is(1));

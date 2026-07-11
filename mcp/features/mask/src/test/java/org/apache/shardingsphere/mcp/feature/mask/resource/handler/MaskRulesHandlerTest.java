@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -38,16 +37,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MaskRulesHandlerTest {
-    
-    @Test
-    void assertGetContextType() {
-        assertThat(new MaskRulesHandler().getContextType(), is(MCPDatabaseHandlerContext.class));
-    }
-    
-    @Test
-    void assertGetResourceUriTemplate() {
-        assertThat(new MaskRulesHandler().getResourceUriTemplate(), is(MaskFeatureDefinition.RULES_RESOURCE_URI));
-    }
     
     @Test
     void assertHandle() {

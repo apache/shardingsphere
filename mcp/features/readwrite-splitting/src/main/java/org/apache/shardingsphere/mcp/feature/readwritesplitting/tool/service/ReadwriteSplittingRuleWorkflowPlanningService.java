@@ -57,28 +57,13 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
     
     private final ReadwriteSplittingWorkflowIntentResolver intentResolver = new ReadwriteSplittingWorkflowIntentResolver();
     
-    private final ReadwriteSplittingInspectionService inspectionService;
+    private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
-    private final ReadwriteSplittingAlgorithmRecommendationService algorithmRecommendationService;
+    private final ReadwriteSplittingAlgorithmRecommendationService algorithmRecommendationService = new ReadwriteSplittingAlgorithmRecommendationService();
     
-    private final ReadwriteSplittingAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+    private final ReadwriteSplittingAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new ReadwriteSplittingAlgorithmPropertyTemplateService();
     
-    private final ReadwriteSplittingRuleDistSQLPlanningService distSQLPlanningService;
-    
-    public ReadwriteSplittingRuleWorkflowPlanningService() {
-        inspectionService = new ReadwriteSplittingInspectionService();
-        algorithmRecommendationService = new ReadwriteSplittingAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new ReadwriteSplittingAlgorithmPropertyTemplateService();
-        distSQLPlanningService = new ReadwriteSplittingRuleDistSQLPlanningService();
-    }
-    
-    ReadwriteSplittingRuleWorkflowPlanningService(final ReadwriteSplittingInspectionService inspectionService,
-                                                  final ReadwriteSplittingRuleDistSQLPlanningService distSQLPlanningService) {
-        this.inspectionService = inspectionService;
-        algorithmRecommendationService = new ReadwriteSplittingAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new ReadwriteSplittingAlgorithmPropertyTemplateService();
-        this.distSQLPlanningService = distSQLPlanningService;
-    }
+    private final ReadwriteSplittingRuleDistSQLPlanningService distSQLPlanningService = new ReadwriteSplittingRuleDistSQLPlanningService();
     
     /**
      * Plan readwrite-splitting rule workflow.

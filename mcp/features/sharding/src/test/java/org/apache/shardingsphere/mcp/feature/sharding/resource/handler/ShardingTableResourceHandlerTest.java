@@ -25,9 +25,11 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedConstruction;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,59 +37,54 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 class ShardingTableResourceHandlerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertHandleArguments")
-    void assertHandle(final String name, final ShardingTableResourceHandler handler, final MCPUriVariables uriVariables, final List<Map<String, Object>> rows,
-                      final String expectedSelfUri) {
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
-        MCPResponse actual = handler.handle(databaseContext, uriVariables);
-        assertThat(((List<?>) actual.toPayload().get("items")).size(), is(rows.size()));
-        assertThat(actual.toPayload().get("self_uri"), is(expectedSelfUri));
+    void assertHandle(final String name, final Supplier<ShardingTableResourceHandler> handlerSupplier, final MCPUriVariables uriVariables,
+                      final List<Map<String, Object>> rows, final String expectedSelfUri) {
+        try (
+                MockedConstruction<ShardingInspectionService> ignored = mockConstruction(
+                        ShardingInspectionService.class, (mock, context) -> stubInspectionService(mock, rows))) {
+            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+            when(databaseContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
+            MCPResponse actual = handlerSupplier.get().handle(databaseContext, uriVariables);
+            assertThat(((List<?>) actual.toPayload().get("items")).size(), is(rows.size()));
+            assertThat(actual.toPayload().get("self_uri"), is(expectedSelfUri));
+        }
     }
     
     private static Stream<Arguments> assertHandleArguments() {
         List<Map<String, Object>> rows = List.of(Map.of("name", "t_order"));
-        ShardingInspectionService service = createInspectionService(rows);
         return Stream.of(
-                createArguments("table rules", "shardingsphere://features/sharding/databases/{database}/table-rules",
-                        ShardingTableResourceHandler.ResourceKind.TABLE_RULES, Map.of("database", "logic_db"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/table-rules", service),
-                createArguments("table rule", "shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule",
-                        ShardingTableResourceHandler.ResourceKind.TABLE_RULE, Map.of("database", "logic_db", "table", "t_order"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/tables/t_order/table-rule", service),
-                createArguments("table nodes", "shardingsphere://features/sharding/databases/{database}/table-nodes",
-                        ShardingTableResourceHandler.ResourceKind.TABLE_NODES, Map.of("database", "logic_db"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/table-nodes", service),
-                createArguments("table node", "shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes",
-                        ShardingTableResourceHandler.ResourceKind.TABLE_NODE, Map.of("database", "logic_db", "table", "t_order"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/tables/t_order/nodes", service),
-                createArguments("table reference rules", "shardingsphere://features/sharding/databases/{database}/table-reference-rules",
-                        ShardingTableResourceHandler.ResourceKind.TABLE_REFERENCE_RULES, Map.of("database", "logic_db"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/table-reference-rules", service),
-                createArguments("table reference rule", "shardingsphere://features/sharding/databases/{database}/table-reference-rules/{rule}",
-                        ShardingTableResourceHandler.ResourceKind.TABLE_REFERENCE_RULE, Map.of("database", "logic_db", "rule", "ref_rule"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/table-reference-rules/ref_rule", service));
+                createArguments("table rules", ShardingTableResourceHandler::tableRules, Map.of("database", "logic_db"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/table-rules"),
+                createArguments("table rule", ShardingTableResourceHandler::tableRule, Map.of("database", "logic_db", "table", "t_order"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/tables/t_order/table-rule"),
+                createArguments("table nodes", ShardingTableResourceHandler::tableNodes, Map.of("database", "logic_db"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/table-nodes"),
+                createArguments("table node", ShardingTableResourceHandler::tableNode, Map.of("database", "logic_db", "table", "t_order"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/tables/t_order/nodes"),
+                createArguments("table reference rules", ShardingTableResourceHandler::tableReferenceRules, Map.of("database", "logic_db"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/table-reference-rules"),
+                createArguments("table reference rule", ShardingTableResourceHandler::tableReferenceRule, Map.of("database", "logic_db", "rule", "ref_rule"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/table-reference-rules/ref_rule"));
     }
     
-    private static Arguments createArguments(final String name, final String resourceUriTemplate, final ShardingTableResourceHandler.ResourceKind resourceKind,
-                                             final Map<String, String> uriVariables, final List<Map<String, Object>> rows, final String expectedSelfUri,
-                                             final ShardingInspectionService service) {
-        return Arguments.of(name, new ShardingTableResourceHandler(resourceUriTemplate, resourceKind, service), new MCPUriVariables(uriVariables), rows, expectedSelfUri);
+    private static Arguments createArguments(final String name, final Supplier<ShardingTableResourceHandler> handlerSupplier,
+                                             final Map<String, String> uriVariables, final List<Map<String, Object>> rows, final String expectedSelfUri) {
+        return Arguments.of(name, handlerSupplier, new MCPUriVariables(uriVariables), rows, expectedSelfUri);
     }
     
-    private static ShardingInspectionService createInspectionService(final List<Map<String, Object>> rows) {
-        ShardingInspectionService result = mock(ShardingInspectionService.class);
-        when(result.queryTableRules(any(), eq("logic_db"))).thenReturn(rows);
-        when(result.queryTableRule(any(), eq("logic_db"), eq("t_order"))).thenReturn(rows);
-        when(result.queryTableNodes(any(), eq("logic_db"))).thenReturn(rows);
-        when(result.queryTableNode(any(), eq("logic_db"), eq("t_order"))).thenReturn(rows);
-        when(result.queryTableReferenceRules(any(), eq("logic_db"))).thenReturn(rows);
-        when(result.queryTableReferenceRule(any(), eq("logic_db"), eq("ref_rule"))).thenReturn(rows);
-        return result;
+    private static void stubInspectionService(final ShardingInspectionService inspectionService, final List<Map<String, Object>> rows) {
+        when(inspectionService.queryTableRules(any(), eq("logic_db"))).thenReturn(rows);
+        when(inspectionService.queryTableRule(any(), eq("logic_db"), eq("t_order"))).thenReturn(rows);
+        when(inspectionService.queryTableNodes(any(), eq("logic_db"))).thenReturn(rows);
+        when(inspectionService.queryTableNode(any(), eq("logic_db"), eq("t_order"))).thenReturn(rows);
+        when(inspectionService.queryTableReferenceRules(any(), eq("logic_db"))).thenReturn(rows);
+        when(inspectionService.queryTableReferenceRule(any(), eq("logic_db"), eq("ref_rule"))).thenReturn(rows);
     }
 }

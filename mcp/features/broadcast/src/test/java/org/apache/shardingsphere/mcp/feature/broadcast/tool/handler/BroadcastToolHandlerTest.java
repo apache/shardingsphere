@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedConstruction;
 
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,38 +54,42 @@ class BroadcastToolHandlerTest {
     
     @Test
     void assertHandlePlanBroadcastRule() {
-        BroadcastWorkflowPlanningService planningService = mock(BroadcastWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("planned"));
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = new PlanBroadcastRuleToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "tables", "t_order",
-                "structured_intent_evidence", Map.of("tables", "t_order_item"))));
-        assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
-        ArgumentCaptor<BroadcastWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(BroadcastWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        assertThat(requestCaptor.getValue().getTargetTables(), is(List.of("t_order")));
+        try (
+                MockedConstruction<BroadcastWorkflowPlanningService> mocked = mockConstruction(BroadcastWorkflowPlanningService.class,
+                        (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createSnapshot("planned")))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = new PlanBroadcastRuleToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "tables", "t_order",
+                    "structured_intent_evidence", Map.of("tables", "t_order_item"))));
+            assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
+            ArgumentCaptor<BroadcastWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(BroadcastWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getTargetTables(), is(List.of("t_order")));
+        }
     }
     
     @Test
     void assertHandlePlanBroadcastRuleWithArtifacts() {
-        BroadcastWorkflowPlanningService planningService = mock(BroadcastWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("planned"));
-        MCPResponse actual = new PlanBroadcastRuleToolHandler(planningService).handle(createWorkflowContextFixture().workflowContext,
-                new MCPToolCall("session-1", Map.of("database", "logic_db", "table", "t_order")));
-        Map<String, Object> actualPayload = actual.toPayload();
-        assertFalse(actualPayload.containsKey("ddl_artifacts"));
-        assertFalse(actualPayload.containsKey("index_plan"));
-        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("CREATE BROADCAST TABLE RULE"));
-        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
-        List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
-        assertTrue(actualResourceUris.contains("shardingsphere://features/broadcast/databases/logic_db/rules"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/broadcast/databases/logic_db/rules"), is("rule"));
-        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/t_order/columns"));
-        assertThat(((Map<?, ?>) actualPayload.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
-        assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
-        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
+        try (
+                MockedConstruction<BroadcastWorkflowPlanningService> ignored = mockConstruction(BroadcastWorkflowPlanningService.class,
+                        (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createSnapshot("planned")))) {
+            MCPResponse actual = new PlanBroadcastRuleToolHandler().handle(createWorkflowContextFixture().workflowContext,
+                    new MCPToolCall("session-1", Map.of("database", "logic_db", "table", "t_order")));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertFalse(actualPayload.containsKey("ddl_artifacts"));
+            assertFalse(actualPayload.containsKey("index_plan"));
+            assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("CREATE BROADCAST TABLE RULE"));
+            List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+            List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
+            assertTrue(actualResourceUris.contains("shardingsphere://features/broadcast/databases/logic_db/rules"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/broadcast/databases/logic_db/rules"), is("rule"));
+            assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/t_order/columns"));
+            assertThat(((Map<?, ?>) actualPayload.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
+            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst();
+            assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
+            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
+        }
     }
     
     private WorkflowContextSnapshot createSnapshot(final String status) {

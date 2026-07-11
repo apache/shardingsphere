@@ -35,13 +35,14 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
-class ShardingWorkflowPlanningKernelTest {
+class ShardingWorkflowPlanningServiceTest {
     
-    private final ShardingWorkflowPlanningKernel kernel = new ShardingWorkflowPlanningKernel();
+    private final ShardingWorkflowPlanningService planningService = new ShardingWorkflowPlanningService();
     
     @Test
     void assertPlanTableRuleClarifiesMissingDatabase() {
-        WorkflowContextSnapshot actual = kernel.planTableRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", new ShardingWorkflowRequest());
+        WorkflowContextSnapshot actual = planningService.planTableRule(
+                new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", new ShardingWorkflowRequest());
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
         assertThat(actual.getInteractionPlan().getCurrentStep(), is(WorkflowLifecycle.STEP_CLARIFYING));
         assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide logical database first.")));
@@ -52,12 +53,44 @@ class ShardingWorkflowPlanningKernelTest {
     void assertPlanTableRuleRejectsUnsupportedOperation() {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setOperationType("replace");
-        WorkflowContextSnapshot actual = kernel.planTableRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = planningService.planTableRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(actual.getInteractionPlan().getCurrentStep(), is(WorkflowLifecycle.STEP_FAILED));
         assertThat(actual.getClarifiedIntent().getOperationType(), is(""));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         assertRuleDistSQLOnlyPayloadDoesNotExpose(actual, "replace");
+    }
+    
+    @Test
+    void assertPlanTableReferenceRuleClarifiesMissingInputs() {
+        ShardingWorkflowRequest request = createDatabaseRequest();
+        WorkflowContextSnapshot actual = planningService.planTableReferenceRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        assertThat(actual.getWorkflowKind().getValue(), is("sharding.table.reference"));
+        assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide table reference rule name.")));
+    }
+    
+    @Test
+    void assertPlanDefaultStrategyClarifiesMissingInputs() {
+        ShardingWorkflowRequest request = createDatabaseRequest();
+        WorkflowContextSnapshot actual = planningService.planDefaultStrategy(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        assertThat(actual.getWorkflowKind().getValue(), is("sharding.default.strategy"));
+        assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide DATABASE or TABLE default strategy type.")));
+    }
+    
+    @Test
+    void assertPlanKeyGeneratorClarifiesMissingInputs() {
+        ShardingWorkflowRequest request = createDatabaseRequest();
+        WorkflowContextSnapshot actual = planningService.planKeyGenerator(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        assertThat(actual.getWorkflowKind().getValue(), is("sharding.key.generator"));
+        assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide key generator name.")));
+    }
+    
+    @Test
+    void assertPlanKeyGenerateStrategyClarifiesMissingInputs() {
+        ShardingWorkflowRequest request = createDatabaseRequest();
+        WorkflowContextSnapshot actual = planningService.planKeyGenerateStrategy(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        assertThat(actual.getWorkflowKind().getValue(), is("sharding.key.generate.strategy"));
+        assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide key generate strategy name.")));
     }
     
     @Test
@@ -67,11 +100,17 @@ class ShardingWorkflowPlanningKernelTest {
         request.setComponentType("algorithm");
         request.setComponentName("inline_algorithm");
         request.setOperationType("create");
-        WorkflowContextSnapshot actual = kernel.planComponentCleanup(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = planningService.planComponentCleanup(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(actual.getInteractionPlan().getCurrentStep(), is(WorkflowLifecycle.STEP_FAILED));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         assertThat(actual.getIssues().getFirst().getDetails(), is(Map.of("operation_type", "create")));
+    }
+    
+    private ShardingWorkflowRequest createDatabaseRequest() {
+        ShardingWorkflowRequest result = new ShardingWorkflowRequest();
+        result.setDatabase("logic_db");
+        return result;
     }
     
     private void assertRuleDistSQLOnlyPayloadDoesNotExpose(final WorkflowContextSnapshot snapshot, final String term) {

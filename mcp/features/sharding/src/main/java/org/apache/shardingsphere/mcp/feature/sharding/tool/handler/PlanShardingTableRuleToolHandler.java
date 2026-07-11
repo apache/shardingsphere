@@ -17,29 +17,21 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingTableRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingTableRuleWorkflowPlanningService;
+import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
 /**
  * Tool handler for sharding table rule planning.
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class PlanShardingTableRuleToolHandler extends AbstractShardingPlanningToolHandler {
     
     private final ShardingPlanningRequestBinder requestBinder = new ShardingPlanningRequestBinder();
     
-    private final ShardingTableRuleWorkflowPlanningService planningService;
-    
-    public PlanShardingTableRuleToolHandler() {
-        planningService = new ShardingTableRuleWorkflowPlanningService();
-    }
+    private final ShardingWorkflowPlanningService planningService = new ShardingWorkflowPlanningService();
     
     @Override
     public String getToolName() {
@@ -48,12 +40,11 @@ public final class PlanShardingTableRuleToolHandler extends AbstractShardingPlan
     
     @Override
     protected ShardingWorkflowRequest bindRequest(final MCPToolCall toolCall) {
-        return requestBinder.bindTableRule(toolCall.getArguments()).toWorkflowRequest();
+        return requestBinder.bindTableRule(toolCall.getArguments());
     }
     
     @Override
     protected WorkflowContextSnapshot plan(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall, final ShardingWorkflowRequest request) {
-        return planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(),
-                new ShardingTableRuleWorkflowRequest(request));
+        return planningService.planTableRule(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
     }
 }

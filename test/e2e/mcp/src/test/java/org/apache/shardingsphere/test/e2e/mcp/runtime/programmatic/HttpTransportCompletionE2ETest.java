@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
@@ -152,7 +152,7 @@ class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRunti
         if (!contextArguments.isEmpty()) {
             params.put("context", Map.of("arguments", contextArguments));
         }
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "completion-1", "completion/complete", params));
     }
     

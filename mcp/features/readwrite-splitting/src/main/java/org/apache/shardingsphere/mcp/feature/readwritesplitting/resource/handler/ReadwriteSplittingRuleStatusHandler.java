@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -32,14 +30,9 @@ import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 /**
  * Readwrite-splitting single rule status handler.
  */
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ReadwriteSplittingRuleStatusHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
-    private final ReadwriteSplittingInspectionService inspectionService;
-    
-    public ReadwriteSplittingRuleStatusHandler() {
-        inspectionService = new ReadwriteSplittingInspectionService();
-    }
+    private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {

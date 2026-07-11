@@ -63,9 +63,7 @@ final class MetadataSearchCollector {
                 continue;
             }
             if (SupportedMCPMetadataObjectType.STORAGE_UNIT == each) {
-                if (null != queryFacade) {
-                    result.addAll(queryStorageUnitSearchHits(databaseName));
-                }
+                result.addAll(queryStorageUnitSearchHits(databaseName));
                 continue;
             }
             if (metadataQueryFacade.isSupportedMetadataObjectType(databaseName, each)) {
