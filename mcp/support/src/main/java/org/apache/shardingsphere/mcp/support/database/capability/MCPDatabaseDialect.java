@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
@@ -28,32 +30,23 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * MCP database dialect capabilities.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPDatabaseDialect {
     
-    private final String databaseType;
+    private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
-    private final Optional<DialectDatabaseMetaData> dialectDatabaseMetaData;
-    
-    private final Optional<SystemDatabase> systemDatabase;
+    private final SystemDatabase systemDatabase;
     
     private final Optional<MCPDatabaseCapabilityOption> option;
-    
-    private MCPDatabaseDialect(final String databaseType, final Optional<DialectDatabaseMetaData> dialectDatabaseMetaData, final Optional<SystemDatabase> systemDatabase,
-                               final Optional<MCPDatabaseCapabilityOption> option) {
-        this.databaseType = databaseType;
-        this.dialectDatabaseMetaData = dialectDatabaseMetaData;
-        this.systemDatabase = systemDatabase;
-        this.option = option;
-    }
     
     /**
      * Create MCP database dialect capabilities.
@@ -63,17 +56,12 @@ public final class MCPDatabaseDialect {
      */
     public static MCPDatabaseDialect of(final String databaseType) {
         String actualDatabaseType = trimToEmpty(databaseType);
-        Optional<DatabaseType> databaseTypeFromSPI = actualDatabaseType.isEmpty()
-                ? Optional.empty()
-                : TypedSPILoader.findService(DatabaseType.class, actualDatabaseType);
-        Optional<MCPDatabaseCapabilityOption> option = actualDatabaseType.isEmpty()
-                ? Optional.empty()
-                : TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, actualDatabaseType);
-        return new MCPDatabaseDialect(actualDatabaseType, databaseTypeFromSPI.flatMap(MCPDatabaseDialect::findDialectDatabaseMetaData), databaseTypeFromSPI.map(SystemDatabase::new), option);
-    }
-    
-    private static Optional<DialectDatabaseMetaData> findDialectDatabaseMetaData(final DatabaseType databaseType) {
-        return DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType);
+        DatabaseType databaseTypeFromSPI = TypedSPILoader.findService(DatabaseType.class, actualDatabaseType)
+                .orElseThrow(() -> new ServiceProviderNotFoundException(DatabaseType.class, actualDatabaseType));
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)
+                .orElseThrow(() -> new ServiceProviderNotFoundException(DialectDatabaseMetaData.class, actualDatabaseType));
+        return new MCPDatabaseDialect(dialectDatabaseMetaData, new SystemDatabase(databaseTypeFromSPI),
+                TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, actualDatabaseType));
     }
     
     /**
@@ -82,11 +70,7 @@ public final class MCPDatabaseDialect {
      * @return identifier quote character
      */
     public QuoteCharacter getIdentifierQuoteCharacter() {
-        return dialectDatabaseMetaData.map(DialectDatabaseMetaData::getQuoteCharacter).orElseGet(this::getFallbackIdentifierQuoteCharacter);
-    }
-    
-    private QuoteCharacter getFallbackIdentifierQuoteCharacter() {
-        return databaseType.isEmpty() ? QuoteCharacter.BACK_QUOTE : QuoteCharacter.QUOTE;
+        return dialectDatabaseMetaData.getQuoteCharacter();
     }
     
     /**
@@ -100,12 +84,8 @@ public final class MCPDatabaseDialect {
     }
     
     private IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return findDialectIdentifierCasePolicySet()
+        return createDialectIdentifierCasePolicySet(dialectDatabaseMetaData)
                 .orElseGet(() -> option.map(MCPDatabaseCapabilityOption::getIdentifierCasePolicySet).orElseGet(IdentifierCasePolicyFactory::newSensitivePolicySet));
-    }
-    
-    private Optional<IdentifierCasePolicySet> findDialectIdentifierCasePolicySet() {
-        return dialectDatabaseMetaData.flatMap(MCPDatabaseDialect::createDialectIdentifierCasePolicySet);
     }
     
     private static Optional<IdentifierCasePolicySet> createDialectIdentifierCasePolicySet(final DialectDatabaseMetaData dialectDatabaseMetaData) {
@@ -121,7 +101,7 @@ public final class MCPDatabaseDialect {
      * @return default schema semantics
      */
     public DialectSchemaSemantics getDefaultSchemaSemantics() {
-        return dialectDatabaseMetaData.map(each -> each.getSchemaOption().getSchemaSemantics()).orElse(DialectSchemaSemantics.NATIVE_SCHEMA);
+        return dialectDatabaseMetaData.getSchemaOption().getSchemaSemantics();
     }
     
     /**
@@ -144,11 +124,7 @@ public final class MCPDatabaseDialect {
      * @return whether unquoted identifiers are folded
      */
     public boolean isUnquotedIdentifierCaseFolded() {
-        return isFoldedDialectIdentifierPattern();
-    }
-    
-    private boolean isFoldedDialectIdentifierPattern() {
-        return dialectDatabaseMetaData.map(each -> IdentifierPatternType.KEEP_ORIGIN != each.getIdentifierPatternType()).orElse(false);
+        return IdentifierPatternType.KEEP_ORIGIN != dialectDatabaseMetaData.getIdentifierPatternType();
     }
     
     /**
@@ -157,7 +133,7 @@ public final class MCPDatabaseDialect {
      * @return sequence metadata query
      */
     public boolean isSequenceSupported() {
-        return dialectDatabaseMetaData.flatMap(DialectDatabaseMetaData::getSequenceOption).isPresent();
+        return dialectDatabaseMetaData.getSequenceOption().isPresent();
     }
     
     /**
@@ -171,7 +147,7 @@ public final class MCPDatabaseDialect {
         if (actualSchemaName.isEmpty()) {
             return false;
         }
-        return containsSystemSchema(getSystemSchemas(), actualSchemaName);
+        return containsSystemSchema(systemDatabase.getSystemSchemas(), actualSchemaName);
     }
     
     /**
@@ -184,10 +160,6 @@ public final class MCPDatabaseDialect {
      */
     public boolean isSystemSchema(final String schemaName, final String catalogName, final DialectSchemaSemantics defaultSchemaSemantics) {
         return isSystemSchema(schemaName) || DialectSchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics && isSystemSchema(catalogName);
-    }
-    
-    private Collection<String> getSystemSchemas() {
-        return systemDatabase.map(SystemDatabase::getSystemSchemas).filter(each -> !each.isEmpty()).orElseGet(List::of);
     }
     
     private static boolean containsSystemSchema(final Collection<String> systemSchemas, final String schemaName) {

@@ -88,6 +88,14 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
     }
     
+    @Test
+    void assertProvideWithoutCapabilityOption() {
+        MCPDatabaseCapabilityProvider provider = createCapabilityProvider("FixtureDB", "",
+                new CapabilityFixture(false, false, false, DialectSchemaSemantics.NATIVE_SCHEMA));
+        assertThat(provider.findDatabaseProfile("logic_db").orElseThrow().getDatabaseType(), is("FixtureDB"));
+        assertFalse(provider.provide("logic_db").isPresent());
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideCapabilityMatrixArguments")
     void assertProvideWithCapabilityMatrix(final String name, final String databaseType, final boolean expectedTransactionControl,

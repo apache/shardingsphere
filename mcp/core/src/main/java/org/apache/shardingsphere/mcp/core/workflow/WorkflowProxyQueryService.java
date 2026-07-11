@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableExcept
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -72,7 +73,8 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     @Override
     public String getDatabaseType(final String databaseName) {
-        return databaseCapabilityProvider.provide(WorkflowSQLUtils.normalizeIdentifier(databaseName)).map(MCPDatabaseCapability::getDatabaseType).orElse("");
+        return databaseCapabilityProvider.provide(WorkflowSQLUtils.normalizeIdentifier(databaseName)).map(MCPDatabaseCapability::getDatabaseType)
+                .orElseThrow(DatabaseCapabilityNotFoundException::new);
     }
     
     @Override

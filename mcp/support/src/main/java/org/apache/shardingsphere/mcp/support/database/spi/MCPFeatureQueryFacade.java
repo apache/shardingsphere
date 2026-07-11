@@ -49,9 +49,7 @@ public interface MCPFeatureQueryFacade {
      * @param databaseName database name
      * @return database type
      */
-    default String getDatabaseType(final String databaseName) {
-        return "";
-    }
+    String getDatabaseType(String databaseName);
     
     /**
      * Query column definition.

@@ -110,6 +110,7 @@ class WorkflowPlanningSupportTest {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
         when(metadataQueryFacade.queryTable("logic_db", "public", "orders-detail")).thenReturn(Optional.of(createTableMetadata("orders-detail", "Phone Number")));
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders-detail", "Phone Number")).thenReturn(Optional.of(createColumnMetadata("Phone Number")));
         boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
@@ -133,12 +134,17 @@ class WorkflowPlanningSupportTest {
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders", "phone")));
         when(metadataQueryFacade.queryTable("logic_db", "public", "orders")).thenReturn(Optional.of(createTableMetadata("orders", "phone")));
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(createColumnMetadata("phone")));
-        boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
-        assertTrue(actual);
-        assertThat(request.getSchema(), is("public"));
-        assertThat(clarifiedIntent.getInferredValues().get("schema"), is("public"));
-        assertTrue(clarifiedIntent.getClarificationMessages().isEmpty());
-        assertTrue(snapshot.getIssues().isEmpty());
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockIdentifierPatternType("MySQL", IdentifierPatternType.KEEP_ORIGIN, typedSPILoader, databaseTypedSPILoader);
+            boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+            assertTrue(actual);
+            assertThat(request.getSchema(), is("public"));
+            assertThat(clarifiedIntent.getInferredValues().get("schema"), is("public"));
+            assertTrue(clarifiedIntent.getClarificationMessages().isEmpty());
+            assertTrue(snapshot.getIssues().isEmpty());
+        }
     }
     
     @Test

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
@@ -34,7 +35,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Validator for workflow planning context.
@@ -91,8 +91,9 @@ public final class WorkflowPlanningContextValidator {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
-        Optional<RuntimeDatabaseProfile> databaseProfile = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()));
-        String databaseType = databaseProfile.map(RuntimeDatabaseProfile::getDatabaseType).orElse("");
+        RuntimeDatabaseProfile databaseProfile = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()))
+                .orElseThrow(DatabaseCapabilityNotFoundException::new);
+        String databaseType = databaseProfile.getDatabaseType();
         request.setSchema(resolveSchema(metadataQueryFacade, request, clarifiedIntent, databaseType));
         if (!ensureSupportedIdentifiers(WorkflowFieldNames.SCHEMA, List.of(request.getSchema()), snapshot, "discovering")) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);

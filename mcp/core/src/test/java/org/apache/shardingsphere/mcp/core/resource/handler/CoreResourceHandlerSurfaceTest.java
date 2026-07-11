@@ -102,7 +102,8 @@ class CoreResourceHandlerSurfaceTest {
     
     @Test
     void assertHandleWithoutIndexMetadata() {
-        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
+        try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
+            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
             MCPResponse actual = new MetadataResourceHandler(
                     "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                     (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().queryIndexes(
