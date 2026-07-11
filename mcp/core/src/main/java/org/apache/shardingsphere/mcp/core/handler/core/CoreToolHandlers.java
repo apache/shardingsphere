@@ -20,13 +20,14 @@ package org.apache.shardingsphere.mcp.core.handler.core;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteExplainToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteQueryToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteUpdateToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.metadata.ValidateRuntimeDatabaseToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.workflow.WorkflowExecutionToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.workflow.WorkflowValidationToolHandler;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 
 import java.util.Collection;
 import java.util.List;
@@ -43,6 +44,7 @@ final class CoreToolHandlers {
                 new SearchMetadataToolHandler(),
                 new ValidateRuntimeDatabaseToolHandler(),
                 new ExecuteQueryToolHandler(),
+                new ExecuteExplainToolHandler(),
                 new ExecuteUpdateToolHandler(),
                 new WorkflowExecutionToolHandler(workflowRuntimeDefinitionRegistry),
                 new WorkflowValidationToolHandler(workflowRuntimeDefinitionRegistry));

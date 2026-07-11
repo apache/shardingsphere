@@ -23,13 +23,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.when;
 
 class MCPJdbcMetadataLoaderTest extends AbstractMCPJdbcMetadataLoaderTest {
     
@@ -65,5 +74,17 @@ class MCPJdbcMetadataLoaderTest extends AbstractMCPJdbcMetadataLoaderTest {
         assertTrue(containsMetadata(schemas, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertTrue(containsMetadata(schemas, SupportedMCPMetadataObjectType.VIEW, "active_orders"));
         assertThat(schemas.size(), is(1));
+    }
+    
+    @Test
+    void assertLoadWithoutIndexMetadataSupport() throws SQLException {
+        Connection connection = createStandardPostgreSQLMetadataConnection();
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        when(databaseMetaData.getIndexInfo(isNull(), nullable(String.class), anyString(), eq(false), eq(false)))
+                .thenThrow(new SQLFeatureNotSupportedException("unsupported"));
+        LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration(connection)));
+        Collection<ShardingSphereSchema> schemas = actual.findMetadata("logic_db").orElseThrow();
+        assertTrue(containsMetadata(schemas, SupportedMCPMetadataObjectType.TABLE, "orders"));
+        assertFalse(containsMetadata(schemas, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"));
     }
 }

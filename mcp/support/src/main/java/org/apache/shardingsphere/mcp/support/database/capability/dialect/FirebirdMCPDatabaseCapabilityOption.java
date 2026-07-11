@@ -17,17 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
-
 /**
  * MCP database capability option for Firebird.
  */
 public final class FirebirdMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public FirebirdMCPDatabaseCapabilityOption() {
-        super("Firebird", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true);
+        super("Firebird", false);
     }
 }

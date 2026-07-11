@@ -95,7 +95,7 @@ class WorkflowPlanningContextValidatorTest {
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata() {
-        return new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0");
+        return new RuntimeDatabaseProfile("logic_db", "MySQL", "8.0", true, true);
     }
     
     private ShardingSphereSchema createSchemaMetadata() {

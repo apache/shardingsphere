@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.mcp.support.database.response;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -36,16 +38,25 @@ import static org.mockito.Mockito.when;
 
 class MCPDatabaseCapabilityResponseTest {
     
-    @Test
-    void assertToPayload() {
-        MCPDatabaseCapabilityOption option = mock(MCPDatabaseCapabilityOption.class);
-        when(option.getType()).thenReturn("FixtureDB");
-        when(option.isIndexSupported()).thenReturn(true);
-        when(option.getTransactionCapability()).thenReturn(TransactionCapability.LOCAL_WITH_SAVEPOINT);
-        when(option.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.DATABASE_AS_SCHEMA);
-        when(option.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
-        when(option.isExplainAnalyzeSupported("1.0")).thenReturn(true);
-        MCPDatabaseCapability actualCapability = new MCPDatabaseCapability("logic_db", "1.0", option);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertToPayloadArguments")
+    void assertToPayload(final String name, final boolean supportsExplain, final String explainExecutionSemantics) {
+        MCPDatabaseCapability actualCapability = mock(MCPDatabaseCapability.class);
+        when(actualCapability.getDatabaseName()).thenReturn("logic_db");
+        when(actualCapability.getDatabaseType()).thenReturn("FixtureDB");
+        when(actualCapability.getSupportedMetadataObjectTypes()).thenReturn(EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
+                SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX));
+        Set<SupportedMCPStatement> supportedStatementClasses = EnumSet.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL,
+                SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT);
+        if (supportsExplain) {
+            supportedStatementClasses.add(SupportedMCPStatement.EXPLAIN);
+        }
+        when(actualCapability.getSupportedStatementClasses()).thenReturn(supportedStatementClasses);
+        when(actualCapability.isSupportsTransactionControl()).thenReturn(true);
+        when(actualCapability.isSupportsSavepoint()).thenReturn(true);
+        when(actualCapability.getDefaultSchemaSemantics()).thenReturn(DialectSchemaSemantics.DATABASE_AS_SCHEMA);
+        when(actualCapability.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
+        when(actualCapability.isSupportsExplain()).thenReturn(supportsExplain);
         Map<String, Object> actual = new MCPDatabaseCapabilityResponse(actualCapability).toPayload();
         assertThat(actual, is(Map.ofEntries(
                 Map.entry("response_mode", "detail"),
@@ -53,14 +64,20 @@ class MCPDatabaseCapabilityResponseTest {
                 Map.entry("databaseType", "FixtureDB"),
                 Map.entry("supportedObjectTypes", EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
                         SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX)),
-                Map.entry("supportedStatementClasses", EnumSet.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL,
-                        SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT, SupportedMCPStatement.EXPLAIN_ANALYZE)),
+                Map.entry("supportedStatementClasses", supportedStatementClasses),
                 Map.entry("supportsTransactionControl", true),
                 Map.entry("supportsSavepoint", true),
-                Map.entry("defaultSchemaSemantics", SchemaSemantics.DATABASE_AS_SCHEMA),
+                Map.entry("defaultSchemaSemantics", DialectSchemaSemantics.DATABASE_AS_SCHEMA),
                 Map.entry("schemaExecutionSemantics", SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Map.entry("supportsCrossSchemaSql", false),
-                Map.entry("supportsExplainAnalyze", true),
-                Map.entry("explainAnalyzeExecutionRisk", "EXPLAIN ANALYZE may execute the underlying SELECT on this engine; use it only when the user accepts runtime execution cost."))));
+                Map.entry("supportsExplain", supportsExplain),
+                Map.entry("explainExecutionSemantics", explainExecutionSemantics))));
+    }
+    
+    private static Stream<Arguments> assertToPayloadArguments() {
+        return Stream.of(
+                Arguments.of("supported", true,
+                        "database_gateway_execute_explain_query executes model-generated database-native EXPLAIN SQL for one classifier-approved SELECT. EXPLAIN ANALYZE is not supported."),
+                Arguments.of("unsupported", false, "database_gateway_execute_explain_query is not supported for this database type."));
     }
 }

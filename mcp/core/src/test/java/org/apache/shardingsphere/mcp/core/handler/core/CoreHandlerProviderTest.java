@@ -34,8 +34,8 @@ class CoreHandlerProviderTest {
     void assertGetToolHandlers() {
         Collection<MCPToolHandler<?>> actual = new CoreHandlerProvider().getToolHandlers();
         assertThat(actual.stream().map(MCPToolHandler::getToolName).toList(),
-                is(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query", "database_gateway_execute_update",
-                        "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
+                is(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query", "database_gateway_execute_explain_query",
+                        "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
     }
     
     @Test

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
@@ -119,8 +120,22 @@ public final class MCPDatabaseDialect {
      *
      * @return default schema semantics
      */
-    public SchemaSemantics getDefaultSchemaSemantics() {
-        return option.map(MCPDatabaseCapabilityOption::getDefaultSchemaSemantics).orElse(SchemaSemantics.NATIVE_SCHEMA);
+    public DialectSchemaSemantics getDefaultSchemaSemantics() {
+        return dialectDatabaseMetaData.map(each -> each.getSchemaOption().getSchemaSemantics()).orElse(DialectSchemaSemantics.NATIVE_SCHEMA);
+    }
+    
+    /**
+     * Get transaction capability.
+     *
+     * @param supportsTransaction whether transaction is supported
+     * @param supportsSavepoint whether savepoint is supported
+     * @return transaction capability
+     */
+    public TransactionCapability getTransactionCapability(final boolean supportsTransaction, final boolean supportsSavepoint) {
+        if (!supportsTransaction) {
+            return TransactionCapability.NONE;
+        }
+        return supportsSavepoint ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
     }
     
     /**
@@ -167,8 +182,8 @@ public final class MCPDatabaseDialect {
      * @param defaultSchemaSemantics default schema semantics
      * @return whether schema or catalog is a system schema
      */
-    public boolean isSystemSchema(final String schemaName, final String catalogName, final SchemaSemantics defaultSchemaSemantics) {
-        return isSystemSchema(schemaName) || SchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics && isSystemSchema(catalogName);
+    public boolean isSystemSchema(final String schemaName, final String catalogName, final DialectSchemaSemantics defaultSchemaSemantics) {
+        return isSystemSchema(schemaName) || DialectSchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics && isSystemSchema(catalogName);
     }
     
     private Collection<String> getSystemSchemas() {

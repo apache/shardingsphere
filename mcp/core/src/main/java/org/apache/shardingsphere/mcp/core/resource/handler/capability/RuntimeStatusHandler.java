@@ -183,7 +183,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     private Map<String, Object> createCapabilityStatus(final MCPDatabaseCapability capability) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("available", true);
-        result.put("supports_explain_analyze", capability.isSupportsExplainAnalyze());
+        result.put("supports_explain", capability.isSupportsExplain());
         result.put("supported_statement_classes", capability.getSupportedStatementClasses().stream().map(Enum::name).toList());
         result.put("supported_metadata_object_types", capability.getSupportedMetadataObjectTypes().stream().map(Enum::name).toList());
         return result;

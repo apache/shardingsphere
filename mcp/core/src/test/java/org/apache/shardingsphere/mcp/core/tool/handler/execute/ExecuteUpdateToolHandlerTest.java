@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
@@ -185,28 +184,4 @@ class ExecuteUpdateToolHandlerTest {
         verifyNoInteractions(executionFacade);
     }
     
-    @Test
-    void assertRejectExplainAnalyze() {
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "sql", "EXPLAIN ANALYZE SELECT * FROM orders", "execution_mode", "execute"))));
-        assertThat(actual.getMessage(), is("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL."));
-        verifyNoInteractions(executionFacade);
-    }
-    
-    @Test
-    void assertHandleSideEffectingExplainAnalyze() {
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(SupportedMCPStatement.EXPLAIN_ANALYZE,
-                "EXPLAIN ANALYZE", List.of(), List.of(), false));
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "sql", "EXPLAIN ANALYZE UPDATE orders SET status = 'PAID'", "execution_mode", "execute")));
-        assertThat(actual.toPayload().get("execution_mode"), is("execute"));
-        assertThat(actual.toPayload().get("statement_class"), is("explain_analyze"));
-        verify(executionFacade).execute(any());
-    }
 }

@@ -101,16 +101,19 @@ class CoreResourceHandlerSurfaceTest {
     }
     
     @Test
-    void assertHandleWithUnsupportedIndexResource() {
+    void assertHandleWithoutIndexMetadata() {
         try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
-            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
+            MCPResponse actual = new MetadataResourceHandler(
                     "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                     (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().queryIndexes(
                             uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table")))
                     .handle(requestContext,
                             parseUriVariables("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
-                                    "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes")));
-            assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
+                                    "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(actual, isA(MCPItemsResponse.class));
+            assertThat(actualPayload.get("count"), is(0));
+            assertThat(actualPayload.get("self_uri"), is("shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
         }
     }
     

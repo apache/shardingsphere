@@ -125,6 +125,13 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       Record the reason in the plan, review note, final response, or nearby code rationale.
 - **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.
 
+### Constructor Design Rules
+- Before adding or changing a constructor, inspect nearby production code and follow the module's existing conventions for visibility, Lombok, validation, and tests.
+- Keep only constructors with distinct production semantics or real framework, SPI, reflection, or serialization requirements.
+- Do not add or keep constructor overloads only for fewer arguments, test convenience, new-code backward compatibility, or future flexibility.
+- When a new semantic parameter is required, update callers to pass it explicitly instead of adding a default-forwarding overload.
+- Before handoff, scan changed files and call sites for unused or compatibility constructors and delete them.
+
 ### Performance Standards
 - **Algorithm Awareness**: account for time and space complexity.
 - **Resource Management**: optimize memory usage and I/O behavior.

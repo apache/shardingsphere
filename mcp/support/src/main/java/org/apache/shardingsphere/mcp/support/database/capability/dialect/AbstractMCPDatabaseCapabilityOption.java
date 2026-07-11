@@ -17,81 +17,19 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Common base implementation for MCP database capability options.
  */
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 abstract class AbstractMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
     private final String type;
     
-    private final Collection<Object> typeAliases;
-    
-    private final TransactionCapability transactionCapability;
-    
-    private final boolean indexSupported;
-    
-    private final SchemaSemantics defaultSchemaSemantics;
-    
-    private final SchemaExecutionSemantics schemaExecutionSemantics;
-    
-    private final boolean crossSchemaQuerySupported;
-    
-    protected AbstractMCPDatabaseCapabilityOption(final String type, final TransactionCapability transactionCapability, final boolean indexSupported,
-                                                  final SchemaSemantics defaultSchemaSemantics, final SchemaExecutionSemantics schemaExecutionSemantics,
-                                                  final boolean crossSchemaQuerySupported) {
-        this(type, Collections.emptyList(), transactionCapability, indexSupported, defaultSchemaSemantics, schemaExecutionSemantics,
-                crossSchemaQuerySupported);
-    }
-    
-    protected AbstractMCPDatabaseCapabilityOption(final String type, final Collection<String> typeAliases, final TransactionCapability transactionCapability,
-                                                  final boolean indexSupported, final SchemaSemantics defaultSchemaSemantics,
-                                                  final SchemaExecutionSemantics schemaExecutionSemantics, final boolean crossSchemaQuerySupported) {
-        this.type = type;
-        this.typeAliases = typeAliases.stream().map(each -> (Object) each).toList();
-        this.transactionCapability = transactionCapability;
-        this.indexSupported = indexSupported;
-        this.defaultSchemaSemantics = defaultSchemaSemantics;
-        this.schemaExecutionSemantics = schemaExecutionSemantics;
-        this.crossSchemaQuerySupported = crossSchemaQuerySupported;
-    }
-    
-    @Override
-    public final TransactionCapability getTransactionCapability() {
-        return transactionCapability;
-    }
-    
-    @Override
-    public final boolean isIndexSupported() {
-        return indexSupported;
-    }
-    
-    @Override
-    public final SchemaSemantics getDefaultSchemaSemantics() {
-        return defaultSchemaSemantics;
-    }
-    
-    @Override
-    public final SchemaExecutionSemantics getSchemaExecutionSemantics() {
-        return schemaExecutionSemantics;
-    }
-    
-    @Override
-    public final boolean isCrossSchemaQuerySupported() {
-        return crossSchemaQuerySupported;
-    }
-    
-    @Override
-    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return false;
-    }
+    private final boolean explainSupported;
     
     @Override
     public final String getType() {
@@ -99,7 +37,7 @@ abstract class AbstractMCPDatabaseCapabilityOption implements MCPDatabaseCapabil
     }
     
     @Override
-    public final Collection<Object> getTypeAliases() {
-        return typeAliases;
+    public final boolean isExplainSupported() {
+        return explainSupported;
     }
 }

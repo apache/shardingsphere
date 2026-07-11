@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
-
 /**
  * MCP database capability option for ClickHouse.
  */
 public final class ClickHouseMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public ClickHouseMCPDatabaseCapabilityOption() {
-        super("ClickHouse", TransactionCapability.NONE, false, SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false);
+        super("ClickHouse", false);
     }
 }

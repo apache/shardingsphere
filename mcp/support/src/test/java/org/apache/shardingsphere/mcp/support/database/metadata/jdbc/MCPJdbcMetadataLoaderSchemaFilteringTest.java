@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,7 @@ class MCPJdbcMetadataLoaderSchemaFilteringTest extends AbstractMCPJdbcMetadataLo
     void assertLoadWithoutSchemaObjects() throws SQLException {
         Driver mockDriver = new MockDriver("jdbc:mock:no-schema", createConnectionWithoutSchema("MySQL"));
         try (MockDriverRegistration ignored = MockDriverRegistration.register(mockDriver)) {
-            LoadedMetadataCatalog actual = load(Map.of("logic_db", new RuntimeDatabaseConfiguration("jdbc:mock:no-schema", "", "", MockDriver.class.getName())));
+            LoadedMetadataCatalog actual = loadWithDatabaseAsSchema(Map.of("logic_db", new RuntimeDatabaseConfiguration("jdbc:mock:no-schema", "", "", MockDriver.class.getName())));
             Collection<ShardingSphereSchema> schemas = actual.findMetadata("logic_db").orElseThrow();
             assertThat(schemas.size(), is(1));
             assertThat(schemas.iterator().next().getName(), is("logic_db"));
@@ -79,7 +80,7 @@ class MCPJdbcMetadataLoaderSchemaFilteringTest extends AbstractMCPJdbcMetadataLo
                 .thenThrow(new SQLException("system catalog should be skipped"));
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         Collection<ShardingSphereSchema> actual = load(Map.of("logic_db", runtimeDatabaseConfiguration), List.of(),
-                Map.of("MySQL", List.of("information_schema"))).findMetadata("logic_db").orElseThrow();
+                Map.of("MySQL", List.of("information_schema")), Map.of("MySQL", DialectSchemaSemantics.DATABASE_AS_SCHEMA)).findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "GLOBAL_STATUS"));
         assertThat(actual.iterator().next().getName(), is("logic_db"));
@@ -104,7 +105,7 @@ class MCPJdbcMetadataLoaderSchemaFilteringTest extends AbstractMCPJdbcMetadataLo
         ResultSet orderIndexes = mockResultSet("INDEX_NAME", "idx_orders_status");
         when(databaseMetaData.getIndexInfo(eq("orders"), isNull(), eq("orders"), eq(false), eq(false))).thenReturn(orderIndexes);
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
-        Collection<ShardingSphereSchema> actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
+        Collection<ShardingSphereSchema> actual = loadWithDatabaseAsSchema(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertThat(actual.iterator().next().getName(), is("logic_db"));
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"));
@@ -171,5 +172,9 @@ class MCPJdbcMetadataLoaderSchemaFilteringTest extends AbstractMCPJdbcMetadataLo
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         Collection<ShardingSphereSchema> actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertThat(countMetadata(actual, SupportedMCPMetadataObjectType.VIEW, "active_orders"), is(1));
+    }
+    
+    private LoadedMetadataCatalog loadWithDatabaseAsSchema(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        return load(runtimeDatabases, List.of(), Map.of(), Map.of("MySQL", DialectSchemaSemantics.DATABASE_AS_SCHEMA));
     }
 }

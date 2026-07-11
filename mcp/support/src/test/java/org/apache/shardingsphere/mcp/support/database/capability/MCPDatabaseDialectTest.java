@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
@@ -110,11 +112,27 @@ class MCPDatabaseDialectTest {
         }
     }
     
+    @Test
+    void assertGetDefaultSchemaSemantics() {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA));
+            assertThat(MCPDatabaseDialect.of("Fixture").getDefaultSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
+        }
+    }
+    
+    @Test
+    void assertGetDefaultSchemaSemanticsWithUnknownDatabaseType() {
+        assertThat(MCPDatabaseDialect.of("FixtureDB").getDefaultSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
+    }
+    
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getDefaultSchemaSemanticsArguments")
-    void assertGetDefaultSchemaSemantics(final String name, final String databaseType, final SchemaSemantics expected) {
-        SchemaSemantics actual = MCPDatabaseDialect.of(databaseType).getDefaultSchemaSemantics();
-        assertThat(actual, is(expected));
+    @MethodSource("getTransactionCapabilityArguments")
+    void assertGetTransactionCapability(final String name, final boolean transactionSupported, final boolean savepointSupported, final TransactionCapability expected) {
+        assertThat(MCPDatabaseDialect.of("Fixture").getTransactionCapability(transactionSupported, savepointSupported), is(expected));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -184,7 +202,7 @@ class MCPDatabaseDialectTest {
             mockDialectDatabaseMetaDataAbsent(databaseType, databaseTypedSPILoader);
             DialectSystemDatabase dialectSystemDatabase = mockDialectSystemDatabase(databaseType, databaseTypedSPILoader);
             when(dialectSystemDatabase.getSystemSchemas()).thenReturn(List.of("fixture_system"));
-            boolean actual = MCPDatabaseDialect.of("Fixture").isSystemSchema("", "fixture_system", SchemaSemantics.DATABASE_AS_SCHEMA);
+            boolean actual = MCPDatabaseDialect.of("Fixture").isSystemSchema("", "fixture_system", DialectSchemaSemantics.DATABASE_AS_SCHEMA);
             assertTrue(actual);
         }
     }
@@ -250,11 +268,11 @@ class MCPDatabaseDialectTest {
         return result;
     }
     
-    private static Stream<Arguments> getDefaultSchemaSemanticsArguments() {
+    private static Stream<Arguments> getTransactionCapabilityArguments() {
         return Stream.of(
-                Arguments.of("mysql", "MySQL", SchemaSemantics.DATABASE_AS_SCHEMA),
-                Arguments.of("postgresql", "PostgreSQL", SchemaSemantics.NATIVE_SCHEMA),
-                Arguments.of("unknown", "FixtureDB", SchemaSemantics.NATIVE_SCHEMA));
+                Arguments.of("not supported", false, false, TransactionCapability.NONE),
+                Arguments.of("local only", true, false, TransactionCapability.LOCAL),
+                Arguments.of("local with savepoint", true, true, TransactionCapability.LOCAL_WITH_SAVEPOINT));
     }
     
 }

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.trace.SQLExecutionTraceFactory;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
@@ -35,6 +37,8 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFac
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 
+import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -68,22 +72,61 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     @Override
     public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest) {
         try {
-            return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest));
+            return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest, classify(executionRequest)));
         } catch (final MCPSessionNotExistedException ex) {
             throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         }
     }
     
-    private SQLExecutionResponse executeInternal(final SQLExecutionRequest executionRequest) {
-        Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
-        ShardingSpherePreconditions.checkState(databaseCapability.isPresent(), () -> recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException()));
-        MCPDatabaseCapability actualDatabaseCapability = databaseCapability.orElseThrow();
-        ClassificationResult classificationResult;
+    private SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         try {
-            classificationResult = statementClassifier.classify(executionRequest.getSql());
+            return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest, classificationResult));
+        } catch (final MCPSessionNotExistedException ex) {
+            throw recordFailure(executionRequest, classificationResult.getTraceStatementMarker(), ex);
+        }
+    }
+    
+    @Override
+    public SQLExecutionResponse executeExplain(final SQLExecutionRequest executionRequest, final String sql) {
+        ClassificationResult classificationResult = new ExplainSQLCandidateValidator().validate(sql, executionRequest.getSql());
+        try {
+            return execute(executionRequest, classificationResult);
+        } catch (final MCPInvalidRequestException | MCPQueryFailedException ex) {
+            if (hasSQLSyntaxCause(ex)) {
+                throw new ExplainSQLSyntaxException(executionRequest.getDatabase(), executionRequest.getSchema(), sql, executionRequest.getSql(), ex);
+            }
+            throw ex;
+        }
+    }
+    
+    private boolean hasSQLSyntaxCause(final Throwable cause) {
+        Throwable current = cause;
+        while (null != current) {
+            if (current instanceof SQLException && isSQLSyntaxError((SQLException) current)) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+    
+    private boolean isSQLSyntaxError(final SQLException cause) {
+        String sqlState = cause.getSQLState();
+        return cause instanceof SQLSyntaxErrorException || "37000".equals(sqlState) || "42000".equals(sqlState) || "42601".equals(sqlState);
+    }
+    
+    private ClassificationResult classify(final SQLExecutionRequest executionRequest) {
+        try {
+            return statementClassifier.classify(executionRequest.getSql());
         } catch (final MCPUnsupportedException | IllegalArgumentException ex) {
             throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         }
+    }
+    
+    private SQLExecutionResponse executeInternal(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+        Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
+        ShardingSpherePreconditions.checkState(databaseCapability.isPresent(), () -> recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException()));
+        MCPDatabaseCapability actualDatabaseCapability = databaseCapability.orElseThrow();
         ShardingSpherePreconditions.checkContains(actualDatabaseCapability.getSupportedStatementClasses(), classificationResult.getStatementClass(),
                 () -> recordFailure(executionRequest, classificationResult.getTraceStatementMarker(), new StatementClassNotSupportedException()));
         checkCrossSchemaSql(executionRequest, actualDatabaseCapability, classificationResult);
@@ -94,14 +137,11 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
                     return recordSuccess(executionRequest, transactionStatementExecutor.execute(
                             executionRequest.getSessionId(), executionRequest.getDatabase(), actualDatabaseCapability, classificationResult), classificationResult.getTraceStatementMarker());
                 case QUERY:
+                case EXPLAIN:
                 case DML:
                 case DDL:
                 case DCL:
                     return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, actualDatabaseCapability), classificationResult.getTraceStatementMarker());
-                case EXPLAIN_ANALYZE:
-                    ShardingSpherePreconditions.checkState(actualDatabaseCapability.isSupportsExplainAnalyze(), () -> new MCPUnsupportedException("EXPLAIN ANALYZE is not supported."));
-                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, actualDatabaseCapability),
-                            classificationResult.getTraceStatementMarker());
                 default:
                     throw new StatementClassNotSupportedException();
             }
@@ -118,7 +158,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     }
     
     private void checkCrossSchemaSql(final SQLExecutionRequest executionRequest, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
-        if (databaseCapability.isSupportsCrossSchemaSql()) {
+        if (SchemaExecutionSemantics.BEST_EFFORT == databaseCapability.getSchemaExecutionSemantics()) {
             return;
         }
         for (String each : classificationResult.getReferencedObjectNames()) {

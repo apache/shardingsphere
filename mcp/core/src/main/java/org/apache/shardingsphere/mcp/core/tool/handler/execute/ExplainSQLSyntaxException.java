@@ -15,25 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
+package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
 /**
- * Runtime database profile.
+ * Exception for rejected model-generated EXPLAIN SQL syntax.
  */
-@RequiredArgsConstructor
 @Getter
-public final class RuntimeDatabaseProfile {
+public final class ExplainSQLSyntaxException extends MCPInvalidRequestException {
+    
+    private static final long serialVersionUID = 2267318188070094144L;
     
     private final String database;
     
-    private final String databaseType;
+    private final String schema;
     
-    private final String databaseVersion;
+    private final String sql;
     
-    private final boolean supportsTransaction;
+    private final String explainSql;
     
-    private final boolean supportsSavepoint;
+    public ExplainSQLSyntaxException(final String database, final String schema, final String sql, final String explainSql, final RuntimeException cause) {
+        super("Generated explain_sql is not valid for the target database.", cause);
+        this.database = database;
+        this.schema = schema;
+        this.sql = sql;
+        this.explainSql = explainSql;
+    }
 }

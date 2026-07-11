@@ -62,7 +62,7 @@ public final class MCPDatabaseCapabilityProvider implements MCPFeatureCapability
         Map<String, MCPDatabaseCapability> result = new LinkedHashMap<>(databaseProfiles.size(), 1F);
         for (RuntimeDatabaseProfile each : databaseProfiles.values()) {
             TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, each.getDatabaseType())
-                    .ifPresent(optional -> result.put(each.getDatabase(), new MCPDatabaseCapability(each.getDatabase(), each.getDatabaseVersion(), optional)));
+                    .ifPresent(optional -> result.put(each.getDatabase(), new MCPDatabaseCapability(each.getDatabase(), each.isSupportsTransaction(), each.isSupportsSavepoint(), optional)));
         }
         return result;
     }

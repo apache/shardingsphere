@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.capability;
+package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema;
 
 /**
- * Default schema semantics exposed by database-level capability.
+ * Dialect schema semantics.
  */
-public enum SchemaSemantics {
+public enum DialectSchemaSemantics {
     
-    NATIVE_SCHEMA, DATABASE_AS_SCHEMA
+    NATIVE_SCHEMA,
+    
+    DATABASE_AS_SCHEMA
 }

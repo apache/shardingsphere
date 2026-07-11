@@ -32,4 +32,13 @@ public interface MCPFeatureExecutionFacade {
      * @return execution response
      */
     SQLExecutionResponse execute(SQLExecutionRequest executionRequest);
+    
+    /**
+     * Execute database-native EXPLAIN SQL for an original query.
+     *
+     * @param executionRequest EXPLAIN SQL execution request
+     * @param sql original query SQL
+     * @return execution response
+     */
+    SQLExecutionResponse executeExplain(SQLExecutionRequest executionRequest, String sql);
 }

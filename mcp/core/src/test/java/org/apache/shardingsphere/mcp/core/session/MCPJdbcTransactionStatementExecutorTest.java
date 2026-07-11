@@ -24,9 +24,6 @@ import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationRes
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -134,20 +131,18 @@ class MCPJdbcTransactionStatementExecutorTest {
     }
     
     private MCPDatabaseCapability createCapability() {
-        return createCapability("logic_db", TransactionCapability.LOCAL_WITH_SAVEPOINT);
+        return createCapability(TransactionCapability.LOCAL_WITH_SAVEPOINT);
     }
     
-    private MCPDatabaseCapability createCapability(final String databaseName, final TransactionCapability transactionCapability) {
-        MCPDatabaseCapabilityOption option = mock(MCPDatabaseCapabilityOption.class);
-        when(option.getType()).thenReturn("FixtureDB");
-        when(option.getTransactionCapability()).thenReturn(transactionCapability);
-        when(option.getDefaultSchemaSemantics()).thenReturn(SchemaSemantics.NATIVE_SCHEMA);
-        when(option.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
-        return new MCPDatabaseCapability(databaseName, "", option);
+    private MCPDatabaseCapability createCapability(final TransactionCapability transactionCapability) {
+        MCPDatabaseCapability result = mock(MCPDatabaseCapability.class);
+        when(result.isSupportsTransactionControl()).thenReturn(TransactionCapability.NONE != transactionCapability);
+        when(result.isSupportsSavepoint()).thenReturn(TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability);
+        return result;
     }
     
     private MCPDatabaseCapability createCapabilityWithoutSavepoint() {
-        return createCapability("warehouse", TransactionCapability.LOCAL);
+        return createCapability(TransactionCapability.LOCAL);
     }
     
     private void prepareTransactionState(final String sql, final MCPSessionManager sessionManager, final Connection connection, final Savepoint savepoint) throws SQLException {

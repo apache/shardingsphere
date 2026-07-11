@@ -65,7 +65,7 @@ final class SQLStatementSafetyValidator {
                 || upperSql.startsWith("COPY ")
                 || upperSql.startsWith("LOAD ")
                 || upperSql.startsWith("CALL ")
-                || scanner.containsMySQLExecutableComment(sql)
+                || scanner.containsExecutableComment(sql)
                 || scanner.containsUserVariableAssignment(sql)
                 || containsBannedDialectPattern(scanner.tokenize(sql));
     }

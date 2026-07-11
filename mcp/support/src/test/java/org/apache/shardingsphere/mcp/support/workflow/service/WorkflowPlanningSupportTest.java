@@ -366,7 +366,7 @@ class WorkflowPlanningSupportTest {
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata(final String databaseType) {
-        return new RuntimeDatabaseProfile("logic_db", databaseType, "8.0");
+        return new RuntimeDatabaseProfile("logic_db", databaseType, "8.0", true, true);
     }
     
     private ShardingSphereSchema createSchemaMetadata(final String schemaName, final String tableName, final String columnName) {

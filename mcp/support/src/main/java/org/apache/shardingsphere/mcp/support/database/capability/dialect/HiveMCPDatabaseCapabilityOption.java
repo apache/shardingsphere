@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
-
 /**
  * MCP database capability option for Hive.
  */
 public final class HiveMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public HiveMCPDatabaseCapabilityOption() {
-        super("Hive", TransactionCapability.NONE, false, SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false);
+        super("Hive", false);
     }
 }

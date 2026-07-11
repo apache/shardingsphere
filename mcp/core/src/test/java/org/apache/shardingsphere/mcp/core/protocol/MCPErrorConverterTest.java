@@ -40,6 +40,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolExce
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationResult;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
@@ -265,7 +266,7 @@ class MCPErrorConverterTest {
     @Test
     void assertConvertUnsupportedMessageWithoutRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPUnsupportedException(
-                "database_gateway_execute_query only supports classifier-approved QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL.")).toPayload();
+                "database_gateway_execute_query only supports classifier-approved QUERY statements.")).toPayload();
         assertFalse(actual.containsKey("recovery"));
     }
     
@@ -274,7 +275,8 @@ class MCPErrorConverterTest {
         ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'PAID'", "orders", "");
         Map<String, Object> suggestedArguments = Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID'", "execution_mode", "preview");
         Map<String, Object> actual = MCPErrorConverter.convert(new SQLToolMismatchException(
-                "database_gateway_execute_query only supports classifier-approved QUERY and EXPLAIN_ANALYZE statements. Use database_gateway_execute_update for side-effecting SQL.",
+                "database_gateway_execute_query only supports classifier-approved QUERY statements. "
+                        + "Use database_gateway_execute_explain_query for EXPLAIN diagnostics or database_gateway_execute_update for side-effecting SQL.",
                 "database_gateway_execute_query", "database_gateway_execute_update", classificationResult, suggestedArguments)).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("unsafe_sql_attempted"));
@@ -283,6 +285,20 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("normalized_sql"), is("UPDATE orders SET status = 'PAID'"));
         assertThat(actualRecovery.get("suggested_arguments"), is(suggestedArguments));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).getFirst()).get("arguments"), is(suggestedArguments));
+    }
+    
+    @Test
+    void assertConvertExplainSQLSyntaxWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new ExplainSQLSyntaxException("logic_db", "public", "SELECT * FROM orders", "EXPLAIN BROKEN SELECT * FROM orders",
+                new MCPInvalidRequestException("bad explain", new SQLSyntaxErrorException("bad explain")))).toPayload();
+        assertThat(actual.get("message"), is("Generated explain_sql is not valid for the target database."));
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("invalid_explain_sql"));
+        assertThat(actualRecovery.get("rejected_explain_sql"), is("EXPLAIN BROKEN SELECT * FROM orders"));
+        assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders")));
+        Map<?, ?> actualRetryAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1);
+        assertThat(actualRetryAction.get("tool_name"), is("database_gateway_execute_explain_query"));
+        assertFalse((Boolean) actualRecovery.get("ask_user_when_uncertain"));
     }
     
     @Test

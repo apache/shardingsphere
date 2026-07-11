@@ -199,7 +199,7 @@ class RuntimeDatabaseValidationServiceTest {
     }
     
     private static RuntimeDatabaseProfile createProfile() {
-        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0");
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true);
     }
     
     private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration() {
