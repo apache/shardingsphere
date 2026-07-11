@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -45,9 +46,13 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class WorkflowPlanningContextValidatorTest {
@@ -58,11 +63,14 @@ class WorkflowPlanningContextValidatorTest {
     void assertEnsurePlanningContextRejectsMissingDatabase() {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        boolean actual = validator.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), new WorkflowRequest(), clarifiedIntent, snapshot);
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        boolean actual = validator.ensurePlanningContext(metadataQueryFacade, queryFacade, new WorkflowRequest(), clarifiedIntent, snapshot);
         assertFalse(actual);
         assertThat(snapshot.getStatus(), is("clarifying"));
         assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please provide logical database first.")));
         assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
+        verifyNoInteractions(metadataQueryFacade, queryFacade);
     }
     
     @Test
@@ -71,8 +79,41 @@ class WorkflowPlanningContextValidatorTest {
         request.setDatabase("logic_db");
         request.setTable("orders");
         request.setColumn("phone");
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         assertThrows(DatabaseCapabilityNotFoundException.class,
-                () -> validator.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), request, new ClarifiedIntent(), new WorkflowContextSnapshot()));
+                () -> validator.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), queryFacade, request, new ClarifiedIntent(), new WorkflowContextSnapshot()));
+        verifyNoInteractions(queryFacade);
+    }
+    
+    @Test
+    void assertEnsurePlanningContextRejectsUnsupportedIdentifier() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setTable("orders\ndrop");
+        request.setColumn("phone");
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        assertFalse(validator.ensurePlanningContext(metadataQueryFacade, queryFacade, request, new ClarifiedIntent(), snapshot));
+        assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER));
+        verifyNoInteractions(metadataQueryFacade, queryFacade);
+    }
+    
+    @Test
+    void assertEnsurePlanningContextRejectsDatabaseWithoutCapability() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setTable("orders");
+        request.setColumn("phone");
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.getDatabaseType("logic_db")).thenThrow(new DatabaseCapabilityNotFoundException());
+        assertThrows(DatabaseCapabilityNotFoundException.class,
+                () -> validator.ensurePlanningContext(metadataQueryFacade, queryFacade, request, new ClarifiedIntent(), new WorkflowContextSnapshot()));
+        verify(metadataQueryFacade, never()).querySchemas(anyString());
+        verify(metadataQueryFacade, never()).queryTable(anyString(), anyString(), anyString());
+        verify(metadataQueryFacade, never()).queryTableColumn(anyString(), anyString(), anyString(), anyString());
     }
     
     @Test
@@ -88,6 +129,8 @@ class WorkflowPlanningContextValidatorTest {
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata()));
         when(metadataQueryFacade.queryTable("logic_db", "public", "orders")).thenReturn(Optional.of(createTableMetadata()));
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(createColumnMetadata()));
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.getDatabaseType("logic_db")).thenReturn("Fixture");
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
@@ -96,7 +139,7 @@ class WorkflowPlanningContextValidatorTest {
             DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
             when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(dialectDatabaseMetaData));
-            boolean actual = validator.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+            boolean actual = validator.ensurePlanningContext(metadataQueryFacade, queryFacade, request, clarifiedIntent, snapshot);
             assertTrue(actual);
             assertThat(request.getSchema(), is("public"));
             assertThat(clarifiedIntent.getInferredValues().get("schema"), is("public"));

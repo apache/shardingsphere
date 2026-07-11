@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
@@ -66,7 +67,7 @@ class WorkflowPlanningSupportTest {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         WorkflowRequest request = new WorkflowRequest();
-        boolean actual = planningSupport.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), request, clarifiedIntent, snapshot);
+        boolean actual = planningSupport.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), request, clarifiedIntent, snapshot);
         assertFalse(actual);
         assertThat(snapshot.getStatus(), is("clarifying"));
         assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please provide logical database first.")));
@@ -79,7 +80,7 @@ class WorkflowPlanningSupportTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         WorkflowRequest request = new WorkflowRequest();
         request.setDatabase("``");
-        boolean actual = planningSupport.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), request, clarifiedIntent, snapshot);
+        boolean actual = planningSupport.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), request, clarifiedIntent, snapshot);
         assertFalse(actual);
         assertThat(snapshot.getStatus(), is("clarifying"));
         assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please provide logical database first.")));
@@ -94,7 +95,7 @@ class WorkflowPlanningSupportTest {
         request.setDatabase("logic_db");
         request.setTable("orders\ndrop");
         request.setColumn("phone");
-        boolean actual = planningSupport.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), request, clarifiedIntent, snapshot);
+        boolean actual = planningSupport.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), request, clarifiedIntent, snapshot);
         assertFalse(actual);
         assertThat(snapshot.getStatus(), is("failed"));
         assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER));
@@ -113,7 +114,7 @@ class WorkflowPlanningSupportTest {
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
         when(metadataQueryFacade.queryTable("logic_db", "public", "orders-detail")).thenReturn(Optional.of(createTableMetadata("orders-detail", "Phone Number")));
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders-detail", "Phone Number")).thenReturn(Optional.of(createColumnMetadata("Phone Number")));
-        boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+        boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, createQueryFacade("MySQL"), request, clarifiedIntent, snapshot);
         assertTrue(actual);
         assertThat(request.getDatabase(), is("`logic_db`"));
         assertThat(request.getSchema(), is("`public`"));
@@ -138,7 +139,7 @@ class WorkflowPlanningSupportTest {
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             mockIdentifierPatternType("MySQL", IdentifierPatternType.KEEP_ORIGIN, typedSPILoader, databaseTypedSPILoader);
-            boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+            boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, createQueryFacade("MySQL"), request, clarifiedIntent, snapshot);
             assertTrue(actual);
             assertThat(request.getSchema(), is("public"));
             assertThat(clarifiedIntent.getInferredValues().get("schema"), is("public"));
@@ -164,7 +165,7 @@ class WorkflowPlanningSupportTest {
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             mockIdentifierPatternType("PostgreSQL", IdentifierPatternType.LOWER_CASE, typedSPILoader, databaseTypedSPILoader);
-            boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+            boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, createQueryFacade("PostgreSQL"), request, clarifiedIntent, snapshot);
             assertTrue(actual);
             assertTrue(snapshot.getIssues().isEmpty());
         }
@@ -187,7 +188,7 @@ class WorkflowPlanningSupportTest {
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             mockIdentifierPatternType("PostgreSQL", IdentifierPatternType.LOWER_CASE, typedSPILoader, databaseTypedSPILoader);
-            boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+            boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, createQueryFacade("PostgreSQL"), request, clarifiedIntent, snapshot);
             assertTrue(actual);
             assertTrue(snapshot.getIssues().isEmpty());
         }
@@ -210,7 +211,7 @@ class WorkflowPlanningSupportTest {
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             mockIdentifierPatternType("PostgreSQL", IdentifierPatternType.LOWER_CASE, typedSPILoader, databaseTypedSPILoader);
-            boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+            boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, createQueryFacade("PostgreSQL"), request, clarifiedIntent, snapshot);
             assertFalse(actual);
             assertThat(snapshot.getStatus(), is("clarifying"));
             assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please specify schema.")));
@@ -365,6 +366,12 @@ class WorkflowPlanningSupportTest {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(identifierPatternType);
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectDatabaseMetaData));
+    }
+    
+    private MCPFeatureQueryFacade createQueryFacade(final String databaseType) {
+        MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
+        when(result.getDatabaseType("logic_db")).thenReturn(databaseType);
+        return result;
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata() {
