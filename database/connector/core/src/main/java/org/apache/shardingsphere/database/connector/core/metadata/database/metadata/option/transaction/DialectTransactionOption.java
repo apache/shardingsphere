@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
  * Dialect transaction option.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DialectTransactionOption {
     
@@ -45,19 +47,4 @@ public final class DialectTransactionOption {
     private final boolean isAllowCommitAndRollbackOnlyWhenTransactionFailed;
     
     private final Collection<String> xaDriverClassNames;
-    
-    public DialectTransactionOption(final boolean isSupportGlobalCSN, final boolean isDDLNeedImplicitCommit, final boolean isSupportAutoCommitInNestedTransaction,
-                                    final boolean isSupportDDLInXATransaction, final boolean isSupportMetaDataRefreshInTransaction, final int defaultIsolationLevel,
-                                    final boolean isReturnRollbackStatementWhenCommitFailed, final boolean isAllowCommitAndRollbackOnlyWhenTransactionFailed,
-                                    final Collection<String> xaDriverClassNames) {
-        this.isSupportGlobalCSN = isSupportGlobalCSN;
-        this.isDDLNeedImplicitCommit = isDDLNeedImplicitCommit;
-        this.isSupportAutoCommitInNestedTransaction = isSupportAutoCommitInNestedTransaction;
-        this.isSupportDDLInXATransaction = isSupportDDLInXATransaction;
-        this.isSupportMetaDataRefreshInTransaction = isSupportMetaDataRefreshInTransaction;
-        this.defaultIsolationLevel = defaultIsolationLevel;
-        this.isReturnRollbackStatementWhenCommitFailed = isReturnRollbackStatementWhenCommitFailed;
-        this.isAllowCommitAndRollbackOnlyWhenTransactionFailed = isAllowCommitAndRollbackOnlyWhenTransactionFailed;
-        this.xaDriverClassNames = xaDriverClassNames;
-    }
 }
