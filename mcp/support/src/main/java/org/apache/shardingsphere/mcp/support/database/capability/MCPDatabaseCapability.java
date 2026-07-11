@@ -42,8 +42,6 @@ public final class MCPDatabaseCapability {
     
     private final SchemaExecutionSemantics schemaExecutionSemantics;
     
-    private final boolean supportsCrossSchemaSql;
-    
     private final boolean supportsExplain;
     
     public MCPDatabaseCapability(final String databaseName, final boolean supportsTransaction, final boolean supportsSavepoint, final MCPDatabaseCapabilityOption option) {
@@ -55,8 +53,11 @@ public final class MCPDatabaseCapability {
         supportsExplain = databaseDialect.isExplainSupported();
         supportedStatementClasses = createSupportedStatementClasses(transactionCapability, supportsExplain);
         defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
-        supportsCrossSchemaSql = databaseDialect.isCrossSchemaQuerySupported();
-        schemaExecutionSemantics = supportsCrossSchemaSql ? SchemaExecutionSemantics.BEST_EFFORT : SchemaExecutionSemantics.FIXED_TO_DATABASE;
+        schemaExecutionSemantics = createSchemaExecutionSemantics(defaultSchemaSemantics);
+    }
+    
+    private static SchemaExecutionSemantics createSchemaExecutionSemantics(final SchemaSemantics defaultSchemaSemantics) {
+        return SchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics ? SchemaExecutionSemantics.FIXED_TO_DATABASE : SchemaExecutionSemantics.BEST_EFFORT;
     }
     
     private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final MCPDatabaseDialect databaseDialect) {
@@ -106,5 +107,14 @@ public final class MCPDatabaseCapability {
      */
     public boolean isSupportsSavepoint() {
         return TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability;
+    }
+    
+    /**
+     * Judge whether cross-schema SQL is supported.
+     *
+     * @return whether cross-schema SQL is supported
+     */
+    public boolean isSupportsCrossSchemaSql() {
+        return SchemaExecutionSemantics.BEST_EFFORT == schemaExecutionSemantics;
     }
 }

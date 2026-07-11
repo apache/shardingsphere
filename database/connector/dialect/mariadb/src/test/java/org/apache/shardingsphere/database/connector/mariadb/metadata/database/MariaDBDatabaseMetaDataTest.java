@@ -80,7 +80,6 @@ class MariaDBDatabaseMetaDataTest {
     void assertGetSchemaOption() {
         DialectSchemaOption actual = metaData.getSchemaOption();
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
-        assertFalse(actual.isCrossSchemaQuerySupported());
     }
     
     @Test

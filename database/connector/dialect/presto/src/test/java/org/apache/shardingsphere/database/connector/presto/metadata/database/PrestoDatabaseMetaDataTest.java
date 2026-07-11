@@ -70,7 +70,6 @@ class PrestoDatabaseMetaDataTest {
         assertThat(actual.getDefaultSchema().get(), is("default"));
         assertFalse(actual.getDefaultSystemSchema().isPresent());
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
-        assertTrue(actual.isCrossSchemaQuerySupported());
     }
     
     @Test

@@ -68,7 +68,6 @@ class FirebirdDatabaseMetaDataTest {
         assertTrue(actual.getDefaultSystemSchema().isPresent());
         assertThat(actual.getDefaultSystemSchema().get(), is("system_tables"));
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
-        assertTrue(actual.isCrossSchemaQuerySupported());
     }
     
     @Test

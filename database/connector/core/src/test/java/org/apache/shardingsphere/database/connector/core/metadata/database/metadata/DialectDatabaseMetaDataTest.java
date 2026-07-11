@@ -64,7 +64,6 @@ class DialectDatabaseMetaDataTest {
         assertFalse(actual.isSchemaAvailable());
         assertThat(actual.getDefaultSchema(), is(Optional.empty()));
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
-        assertTrue(actual.isCrossSchemaQuerySupported());
     }
     
     @Test

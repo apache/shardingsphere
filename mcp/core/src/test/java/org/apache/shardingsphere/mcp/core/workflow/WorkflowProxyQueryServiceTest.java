@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.core.workflow;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
@@ -167,7 +169,7 @@ class WorkflowProxyQueryServiceTest {
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockQuoteCharacter("MySQL", QuoteCharacter.BACK_QUOTE, typedSPILoader, databaseTypedSPILoader);
+            mockDialectDatabaseMetaData("MySQL", QuoteCharacter.BACK_QUOTE, DialectSchemaSemantics.DATABASE_AS_SCHEMA, typedSPILoader, databaseTypedSPILoader);
             WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
             String actual = service.queryColumnDefinition("`logic_db`", "`public`", "order detail", "amount due");
             assertThat(actual, is("VARCHAR(4000)"));
@@ -190,7 +192,7 @@ class WorkflowProxyQueryServiceTest {
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockQuoteCharacter("PostgreSQL", QuoteCharacter.QUOTE, typedSPILoader, databaseTypedSPILoader);
+            mockDialectDatabaseMetaData("PostgreSQL", QuoteCharacter.QUOTE, DialectSchemaSemantics.NATIVE_SCHEMA, typedSPILoader, databaseTypedSPILoader);
             WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig), "PostgreSQL");
             String actual = service.queryColumnDefinition("\"logic_db\"", "\"public\"", "order detail", "amount due");
             assertThat(actual, is("VARCHAR(4000)"));
@@ -220,13 +222,16 @@ class WorkflowProxyQueryServiceTest {
         return result;
     }
     
-    private void mockQuoteCharacter(final String databaseType, final QuoteCharacter quoteCharacter,
-                                    final MockedStatic<TypedSPILoader> typedSPILoader, final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
+    private void mockDialectDatabaseMetaData(final String databaseType, final QuoteCharacter quoteCharacter, final DialectSchemaSemantics schemaSemantics,
+                                             final MockedStatic<TypedSPILoader> typedSPILoader, final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
         DatabaseType databaseTypeFromSPI = mock(DatabaseType.class);
         when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
         typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(quoteCharacter);
+        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, schemaSemantics));
+        when(dialectDatabaseMetaData.getExplainOption()).thenReturn(() -> false);
+        when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectDatabaseMetaData));
     }
     

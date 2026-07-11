@@ -76,7 +76,6 @@ class OracleDatabaseMetaDataTest {
         DialectSchemaOption actual = dialectDatabaseMetaData.getSchemaOption();
         assertThat(actual, isA(OracleSchemaOption.class));
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
-        assertTrue(actual.isCrossSchemaQuerySupported());
     }
     
     @Test

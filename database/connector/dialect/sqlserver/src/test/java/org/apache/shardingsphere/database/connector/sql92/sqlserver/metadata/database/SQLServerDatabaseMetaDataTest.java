@@ -71,7 +71,6 @@ class SQLServerDatabaseMetaDataTest {
         assertThat(actual.getDefaultSchema(), is(Optional.of("dbo")));
         assertThat(actual.getDefaultSystemSchema(), is(Optional.empty()));
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
-        assertTrue(actual.isCrossSchemaQuerySupported());
     }
     
     @Test

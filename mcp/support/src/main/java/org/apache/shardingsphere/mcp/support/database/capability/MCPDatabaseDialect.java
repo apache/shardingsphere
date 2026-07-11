@@ -143,15 +143,6 @@ public final class MCPDatabaseDialect {
     }
     
     /**
-     * Judge whether cross-schema query is supported.
-     *
-     * @return whether cross-schema query is supported
-     */
-    public boolean isCrossSchemaQuerySupported() {
-        return dialectDatabaseMetaData.map(each -> each.getSchemaOption().isCrossSchemaQuerySupported()).orElse(false);
-    }
-    
-    /**
      * Judge whether EXPLAIN is supported.
      *
      * @return whether EXPLAIN is supported

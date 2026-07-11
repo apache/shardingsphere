@@ -92,7 +92,6 @@ class OpenGaussDatabaseMetaDataTest {
         assertThat(actual.getDefaultSchema(), is(Optional.of("public")));
         assertThat(actual.getDefaultSystemSchema(), is(Optional.of("pg_catalog")));
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
-        assertTrue(actual.isCrossSchemaQuerySupported());
     }
     
     @Test

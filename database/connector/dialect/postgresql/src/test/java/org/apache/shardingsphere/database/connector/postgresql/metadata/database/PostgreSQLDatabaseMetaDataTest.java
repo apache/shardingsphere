@@ -77,7 +77,6 @@ class PostgreSQLDatabaseMetaDataTest {
     void assertGetDefaultSchema() {
         assertThat(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema(), is(Optional.of("public")));
         assertThat(dialectDatabaseMetaData.getSchemaOption().getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
-        assertTrue(dialectDatabaseMetaData.getSchemaOption().isCrossSchemaQuerySupported());
     }
     
     @Test

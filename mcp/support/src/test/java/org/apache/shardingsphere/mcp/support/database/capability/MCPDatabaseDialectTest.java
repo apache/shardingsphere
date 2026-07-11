@@ -120,7 +120,7 @@ class MCPDatabaseDialectTest {
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
             DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
-            when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false));
+            when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA));
             assertThat(MCPDatabaseDialect.of("Fixture").getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
         }
     }
@@ -134,24 +134,6 @@ class MCPDatabaseDialectTest {
     @MethodSource("getTransactionCapabilityArguments")
     void assertGetTransactionCapability(final String name, final boolean transactionSupported, final boolean savepointSupported, final TransactionCapability expected) {
         assertThat(MCPDatabaseDialect.of("Fixture").getTransactionCapability(transactionSupported, savepointSupported), is(expected));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("isCrossSchemaQuerySupportedArguments")
-    void assertIsCrossSchemaQuerySupported(final String name, final boolean crossSchemaQuerySupported) {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
-            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
-            when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.NATIVE_SCHEMA, crossSchemaQuerySupported));
-            assertThat(MCPDatabaseDialect.of("Fixture").isCrossSchemaQuerySupported(), is(crossSchemaQuerySupported));
-        }
-    }
-    
-    @Test
-    void assertIsCrossSchemaQuerySupportedWithUnknownDatabaseType() {
-        assertFalse(MCPDatabaseDialect.of("FixtureDB").isCrossSchemaQuerySupported());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -310,12 +292,6 @@ class MCPDatabaseDialectTest {
                 Arguments.of("not supported", false, false, TransactionCapability.NONE),
                 Arguments.of("local only", true, false, TransactionCapability.LOCAL),
                 Arguments.of("local with savepoint", true, true, TransactionCapability.LOCAL_WITH_SAVEPOINT));
-    }
-    
-    private static Stream<Arguments> isCrossSchemaQuerySupportedArguments() {
-        return Stream.of(
-                Arguments.of("cross schema supported", true),
-                Arguments.of("cross schema unsupported", false));
     }
     
     private static Stream<Arguments> isExplainSupportedArguments() {

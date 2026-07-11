@@ -32,18 +32,14 @@ public final class DefaultSchemaOption implements DialectSchemaOption {
     
     private final DialectSchemaSemantics schemaSemantics;
     
-    private final boolean crossSchemaQuerySupported;
-    
     public DefaultSchemaOption(final boolean schemaAvailable, final String defaultSchema) {
-        this(schemaAvailable, defaultSchema, DialectSchemaSemantics.NATIVE_SCHEMA, true);
+        this(schemaAvailable, defaultSchema, DialectSchemaSemantics.NATIVE_SCHEMA);
     }
     
-    public DefaultSchemaOption(final boolean schemaAvailable, final String defaultSchema, final DialectSchemaSemantics schemaSemantics,
-                               final boolean crossSchemaQuerySupported) {
+    public DefaultSchemaOption(final boolean schemaAvailable, final String defaultSchema, final DialectSchemaSemantics schemaSemantics) {
         this.schemaAvailable = schemaAvailable;
         this.defaultSchema = defaultSchema;
         this.schemaSemantics = schemaSemantics;
-        this.crossSchemaQuerySupported = crossSchemaQuerySupported;
     }
     
     @Override
@@ -74,10 +70,5 @@ public final class DefaultSchemaOption implements DialectSchemaOption {
     @Override
     public DialectSchemaSemantics getSchemaSemantics() {
         return schemaSemantics;
-    }
-    
-    @Override
-    public boolean isCrossSchemaQuerySupported() {
-        return crossSchemaQuerySupported;
     }
 }

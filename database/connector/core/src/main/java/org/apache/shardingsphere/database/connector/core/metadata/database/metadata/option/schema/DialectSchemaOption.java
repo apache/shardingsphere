@@ -63,12 +63,4 @@ public interface DialectSchemaOption {
         return DialectSchemaSemantics.NATIVE_SCHEMA;
     }
     
-    /**
-     * Judge whether cross-schema query is supported.
-     *
-     * @return whether cross-schema query is supported
-     */
-    default boolean isCrossSchemaQuerySupported() {
-        return DialectSchemaSemantics.NATIVE_SCHEMA == getSchemaSemantics();
-    }
 }

@@ -64,7 +64,6 @@ class HiveDatabaseMetaDataTest {
         assertThat(actual.getDefaultSchema().get(), is("default"));
         assertFalse(actual.getDefaultSystemSchema().isPresent());
         assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
-        assertFalse(actual.isCrossSchemaQuerySupported());
     }
     
     @Test

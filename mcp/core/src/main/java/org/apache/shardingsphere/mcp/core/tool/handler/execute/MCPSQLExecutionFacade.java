@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.trace.SQLExecutionTraceFactory;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
@@ -115,7 +116,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     }
     
     private void checkCrossSchemaSql(final SQLExecutionRequest executionRequest, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
-        if (databaseCapability.isSupportsCrossSchemaSql()) {
+        if (SchemaExecutionSemantics.BEST_EFFORT == databaseCapability.getSchemaExecutionSemantics()) {
             return;
         }
         for (String each : classificationResult.getReferencedObjectNames()) {

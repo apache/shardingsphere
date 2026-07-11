@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.trace.SQLExecutionTraceFactory;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
@@ -275,7 +276,7 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), true);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), SchemaExecutionSemantics.BEST_EFFORT);
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM other_db.orders", "other_db.orders", "", null,
                 List.of("other_db.orders"));
         SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
@@ -372,13 +373,13 @@ class MCPSQLExecutionFacadeTest {
     }
     
     private MCPDatabaseCapability createCapability(final Set<SupportedMCPStatement> supportedStatementClasses) {
-        return createCapability(supportedStatementClasses, false);
+        return createCapability(supportedStatementClasses, SchemaExecutionSemantics.FIXED_TO_DATABASE);
     }
     
-    private MCPDatabaseCapability createCapability(final Set<SupportedMCPStatement> supportedStatementClasses, final boolean supportsCrossSchemaSql) {
+    private MCPDatabaseCapability createCapability(final Set<SupportedMCPStatement> supportedStatementClasses, final SchemaExecutionSemantics schemaExecutionSemantics) {
         MCPDatabaseCapability result = mock(MCPDatabaseCapability.class);
         when(result.getSupportedStatementClasses()).thenReturn(supportedStatementClasses);
-        when(result.isSupportsCrossSchemaSql()).thenReturn(supportsCrossSchemaSql);
+        when(result.getSchemaExecutionSemantics()).thenReturn(schemaExecutionSemantics);
         return result;
     }
     

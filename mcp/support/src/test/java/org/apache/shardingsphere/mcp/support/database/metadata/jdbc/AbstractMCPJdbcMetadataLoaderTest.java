@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -85,6 +86,11 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
     
     protected LoadedMetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final Collection<String> sequenceSupportedDatabaseTypes,
                                          final Map<String, Collection<String>> systemSchemas) {
+        return load(runtimeDatabases, sequenceSupportedDatabaseTypes, systemSchemas, Collections.emptyMap());
+    }
+    
+    protected LoadedMetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final Collection<String> sequenceSupportedDatabaseTypes,
+                                         final Map<String, Collection<String>> systemSchemas, final Map<String, DialectSchemaSemantics> schemaSemantics) {
         try (
                 MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
@@ -92,7 +98,7 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
             MCPJdbcDatabaseProfileLoader databaseProfileLoader = new MCPJdbcDatabaseProfileLoader();
             MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
             Map<String, RuntimeDatabaseProfile> databaseProfiles = databaseProfileLoader.load(runtimeDatabases);
-            mockDatabaseTypedSPI(databaseProfiles.values(), sequenceSupportedDatabaseTypes, systemSchemas, typedSPILoader, databaseTypedSPILoader);
+            mockDatabaseTypedSPI(databaseProfiles.values(), sequenceSupportedDatabaseTypes, systemSchemas, schemaSemantics, typedSPILoader, databaseTypedSPILoader);
             Map<String, Collection<ShardingSphereSchema>> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
             for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
                 result.put(entry.getKey(), metadataLoader.load(entry.getKey(), entry.getValue(), databaseProfiles.get(entry.getKey())));
@@ -102,29 +108,30 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
     }
     
     private void mockDatabaseTypedSPI(final Collection<RuntimeDatabaseProfile> databaseProfiles, final Collection<String> sequenceSupportedDatabaseTypes,
-                                      final Map<String, Collection<String>> systemSchemas, final MockedStatic<TypedSPILoader> typedSPILoader,
-                                      final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
+                                      final Map<String, Collection<String>> systemSchemas, final Map<String, DialectSchemaSemantics> schemaSemantics,
+                                      final MockedStatic<TypedSPILoader> typedSPILoader, final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
         for (RuntimeDatabaseProfile each : databaseProfiles) {
-            mockDatabaseTypedSPI(each.getDatabaseType(), sequenceSupportedDatabaseTypes, systemSchemas, typedSPILoader, databaseTypedSPILoader);
+            mockDatabaseTypedSPI(each.getDatabaseType(), sequenceSupportedDatabaseTypes, systemSchemas, schemaSemantics, typedSPILoader, databaseTypedSPILoader);
         }
     }
     
     private void mockDatabaseTypedSPI(final String databaseType, final Collection<String> sequenceSupportedDatabaseTypes,
-                                      final Map<String, Collection<String>> systemSchemas, final MockedStatic<TypedSPILoader> typedSPILoader,
-                                      final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
+                                      final Map<String, Collection<String>> systemSchemas, final Map<String, DialectSchemaSemantics> schemaSemantics,
+                                      final MockedStatic<TypedSPILoader> typedSPILoader, final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
         DatabaseType databaseTypeFromSPI = mock(DatabaseType.class);
         when(databaseTypeFromSPI.getType()).thenReturn(databaseType);
         when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
         typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
         typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, databaseType)).thenReturn(databaseTypeFromSPI);
-        mockDialectDatabaseMetaData(databaseTypeFromSPI, sequenceSupportedDatabaseTypes.contains(databaseType), databaseTypedSPILoader);
+        mockDialectDatabaseMetaData(databaseTypeFromSPI, sequenceSupportedDatabaseTypes.contains(databaseType),
+                schemaSemantics.getOrDefault(databaseType, DialectSchemaSemantics.NATIVE_SCHEMA), databaseTypedSPILoader);
         mockDialectSystemDatabase(databaseTypeFromSPI, systemSchemas.getOrDefault(databaseType, List.of()), databaseTypedSPILoader);
     }
     
-    private void mockDialectDatabaseMetaData(final DatabaseType databaseType, final boolean sequenceSupported,
+    private void mockDialectDatabaseMetaData(final DatabaseType databaseType, final boolean sequenceSupported, final DialectSchemaSemantics schemaSemantics,
                                              final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
-        when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null));
+        when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, schemaSemantics));
         when(result.getExplainOption()).thenReturn(() -> false);
         when(result.getSequenceOption()).thenReturn(sequenceSupported ? Optional.of(new DialectSequenceOption(SEQUENCE_METADATA_QUERY)) : Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(result));

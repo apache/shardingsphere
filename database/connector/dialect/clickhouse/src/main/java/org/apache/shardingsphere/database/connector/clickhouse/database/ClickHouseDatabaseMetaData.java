@@ -52,7 +52,7 @@ public final class ClickHouseDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public DialectSchemaOption getSchemaOption() {
-        return new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA, false);
+        return new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA);
     }
     
     @Override
