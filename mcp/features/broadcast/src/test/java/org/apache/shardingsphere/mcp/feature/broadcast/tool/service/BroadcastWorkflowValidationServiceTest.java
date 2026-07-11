@@ -28,9 +28,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +41,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -67,13 +72,17 @@ class BroadcastWorkflowValidationServiceTest {
         when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
-        assertThat(actual.get("overall_status"), is("passed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
-        verifyNoInteractions(metadataQueryFacade);
-        verifyNoInteractions(executionFacade);
+        try (MockedStatic<WorkflowSQLUtils> workflowSQLUtils = mockStatic(WorkflowSQLUtils.class, CALLS_REAL_METHODS)) {
+            workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier(anyString(), anyString(), anyString()))
+                    .thenAnswer(invocation -> invocation.getArgument(1, String.class).equals(invocation.getArgument(2, String.class)));
+            Map<String, Object> actual = createService(ruleInspectionService)
+                    .validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
+            assertThat(actual.get("status"), is("validated"));
+            assertThat(actual.get("overall_status"), is("passed"));
+            assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+            verifyNoInteractions(metadataQueryFacade);
+            verifyNoInteractions(executionFacade);
+        }
     }
     
     @Test

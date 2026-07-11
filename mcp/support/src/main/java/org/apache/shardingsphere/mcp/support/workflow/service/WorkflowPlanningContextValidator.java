@@ -20,7 +20,8 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -34,7 +35,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Validator for workflow planning context.
@@ -71,12 +71,14 @@ public final class WorkflowPlanningContextValidator {
      * Ensure workflow planning context is complete and valid.
      *
      * @param metadataQueryFacade metadata query facade
+     * @param queryFacade query facade for database capability resolution
      * @param request workflow request
      * @param clarifiedIntent clarified intent
      * @param snapshot workflow snapshot
      * @return whether planning context is ready
+     * @throws DatabaseCapabilityNotFoundException when database profile or capability does not exist
      */
-    public boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
+    public boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade, final WorkflowRequest request,
                                          final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (isEmptyIdentifier(request.getDatabase())) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
@@ -91,8 +93,9 @@ public final class WorkflowPlanningContextValidator {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
-        Optional<RuntimeDatabaseProfile> databaseProfile = metadataQueryFacade.queryDatabase(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()));
-        String databaseType = databaseProfile.map(RuntimeDatabaseProfile::getDatabaseType).orElse("");
+        String databaseName = WorkflowSQLUtils.normalizeIdentifier(request.getDatabase());
+        metadataQueryFacade.queryDatabase(databaseName).orElseThrow(DatabaseCapabilityNotFoundException::new);
+        String databaseType = queryFacade.getDatabaseType(databaseName);
         request.setSchema(resolveSchema(metadataQueryFacade, request, clarifiedIntent, databaseType));
         if (!ensureSupportedIdentifiers(WorkflowFieldNames.SCHEMA, List.of(request.getSchema()), snapshot, "discovering")) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);

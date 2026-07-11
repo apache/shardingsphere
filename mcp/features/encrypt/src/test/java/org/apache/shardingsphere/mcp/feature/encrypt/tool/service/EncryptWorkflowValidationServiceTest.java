@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
@@ -38,6 +42,8 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -45,6 +51,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -52,6 +59,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -59,12 +67,33 @@ import static org.mockito.Mockito.when;
 
 class EncryptWorkflowValidationServiceTest {
     
+    private MockedStatic<TypedSPILoader> typedSPILoader;
+    
+    private MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader;
+    
+    @BeforeEach
+    void setUp() {
+        typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+        databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class);
+        DatabaseType databaseType = mock(DatabaseType.class);
+        typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, "FixtureDB")).thenReturn(Optional.of(databaseType));
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
+        databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(dialectDatabaseMetaData));
+    }
+    
+    @AfterEach
+    void tearDown() {
+        databaseTypedSPILoader.close();
+        typedSPILoader.close();
+    }
+    
     @Test
     void assertValidateRejectsDifferentSession() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(createSnapshot("plan-1", "session-1", "executed", "create"));
         Map<String, Object> actual = createService(mock(EncryptRuleInspectionService.class))
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-2",
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-2",
                         workflowSessionContext.getRequired("plan-1"));
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
@@ -77,8 +106,7 @@ class EncryptWorkflowValidationServiceTest {
         workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(createRuleRow()));
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actual = createService(ruleInspectionService)
@@ -124,15 +152,13 @@ class EncryptWorkflowValidationServiceTest {
         snapshot.setRequest(request);
         String sql = "CREATE ENCRYPT RULE `t_user` (COLUMNS((NAME=`phone`, CIPHER=`phone_cipher`, "
                 + "ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='******', 'digest-algorithm-name'='SHA-1'))))))";
-        try (MockedStatic<TypedSPILoader> ignored = mockStatic(TypedSPILoader.class)) {
-            ignored.when(() -> TypedSPILoader.checkService(EncryptAlgorithm.class, "AES", WorkflowSQLUtils.createProperties(request.getPrimaryAlgorithmProperties())))
-                    .thenThrow(new IllegalArgumentException("raw-secret"));
-            List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact(sql, sql)));
-            assertThat(actual.size(), is(1));
-            assertThat(actual.getFirst().get("message"), is("Generated encrypt DistSQL references encrypt algorithm `AES`, "
-                    + "but it cannot be loaded or initialized by EncryptAlgorithm SPI."));
-            assertFalse(String.valueOf(actual).contains("raw-secret"));
-        }
+        typedSPILoader.when(() -> TypedSPILoader.checkService(EncryptAlgorithm.class, "AES", WorkflowSQLUtils.createProperties(request.getPrimaryAlgorithmProperties())))
+                .thenThrow(new IllegalArgumentException("raw-secret"));
+        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact(sql, sql)));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.getFirst().get("message"), is("Generated encrypt DistSQL references encrypt algorithm `AES`, "
+                + "but it cannot be loaded or initialized by EncryptAlgorithm SPI."));
+        assertFalse(String.valueOf(actual).contains("raw-secret"));
     }
     
     @Test
@@ -150,7 +176,7 @@ class EncryptWorkflowValidationServiceTest {
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(createRuleRow()));
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        createService(ruleInspectionService).synchronize(snapshot, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1");
+        createService(ruleInspectionService).synchronize(snapshot, metadataQueryFacade, createQueryFacade(), executionFacade, "session-1");
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
     }
@@ -161,7 +187,7 @@ class EncryptWorkflowValidationServiceTest {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         WorkflowSynchronizationException actual = assertThrows(WorkflowSynchronizationException.class,
-                () -> createService(ruleInspectionService).synchronize(snapshot, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+                () -> createService(ruleInspectionService).synchronize(snapshot, mock(MCPMetadataQueryFacade.class), createQueryFacade(),
                         mock(MCPFeatureExecutionFacade.class), "session-1"));
         assertThat(actual.getIssueCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
@@ -174,7 +200,7 @@ class EncryptWorkflowValidationServiceTest {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
     }
@@ -187,7 +213,7 @@ class EncryptWorkflowValidationServiceTest {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(actual.get("overall_status"), is("failed"));
     }
@@ -203,7 +229,7 @@ class EncryptWorkflowValidationServiceTest {
                 "cipher_column", "phone_cipher_old",
                 "encryptor_type", "AES")));
         Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("cipher_column=phone_cipher"));
@@ -227,7 +253,7 @@ class EncryptWorkflowValidationServiceTest {
                 "encryptor_type", "AES",
                 "encryptor_props", Map.of("aes-key-value", "old-key"))));
         Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertFalse(String.valueOf(actual.get("mismatches")).contains("123456"));
         assertFalse(String.valueOf(actual.get("mismatches")).contains("old-key"));
@@ -253,7 +279,7 @@ class EncryptWorkflowValidationServiceTest {
                 "encryptor_type", "AES",
                 "encryptor_props", Map.of("aes-key-value", "raw-actual-secret"))));
         Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         assertThat(actual.get("overall_status"), is("passed"));
         assertThat(((List<?>) actual.get("mismatches")).size(), is(0));
@@ -280,7 +306,7 @@ class EncryptWorkflowValidationServiceTest {
                 "encryptor_type", "AES",
                 "encryptor_props", Map.of("aes-key-value", "secret_reference:primary.aes-key-value"))));
         Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("encryptor_props={aes-key-value=******}"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("encryptor_props={aes-key-value=******}"));
@@ -298,7 +324,7 @@ class EncryptWorkflowValidationServiceTest {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(createRuleRow()));
         Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("logic_column=email"));
     }
@@ -314,9 +340,15 @@ class EncryptWorkflowValidationServiceTest {
                 createRuleRow(),
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES")));
         Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("logic_column=email"));
+    }
+    
+    private MCPFeatureQueryFacade createQueryFacade() {
+        MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
+        when(result.getDatabaseType(any())).thenReturn("FixtureDB");
+        return result;
     }
     
     private EncryptWorkflowValidationService createService(final EncryptRuleInspectionService ruleInspectionService) {

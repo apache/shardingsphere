@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -100,7 +101,12 @@ class WorkflowSQLUtilsTest {
     
     @Test
     void assertCanonicalizeIdentifierKeepsMySQLUnquotedIdentifier() {
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("MySQL", "Phone"), is("Phone"));
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockIdentifierPatternType("MySQL", IdentifierPatternType.KEEP_ORIGIN, typedSPILoader, databaseTypedSPILoader);
+            assertThat(WorkflowSQLUtils.canonicalizeIdentifier("MySQL", "Phone"), is("Phone"));
+        }
     }
     
     @Test
@@ -211,9 +217,8 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertFormatSQLIdentifierUsesFallbackQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("", "order detail");
-        assertThat(actualValue, is("`order detail`"));
+    void assertFormatSQLIdentifierRejectsEmptyDatabaseType() {
+        assertThrows(ServiceProviderNotFoundException.class, () -> WorkflowSQLUtils.formatSQLIdentifier("", "order detail"));
     }
     
     @Test
@@ -251,7 +256,12 @@ class WorkflowSQLUtilsTest {
     
     @Test
     void assertIsSameIdentifierWithCaseInsensitiveDatabase() {
-        assertTrue(WorkflowSQLUtils.isSameIdentifier("MySQL", "Phone", "phone"));
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockIdentifierPatternType("MySQL", IdentifierPatternType.KEEP_ORIGIN, typedSPILoader, databaseTypedSPILoader);
+            assertTrue(WorkflowSQLUtils.isSameIdentifier("MySQL", "Phone", "phone"));
+        }
     }
     
     @Test

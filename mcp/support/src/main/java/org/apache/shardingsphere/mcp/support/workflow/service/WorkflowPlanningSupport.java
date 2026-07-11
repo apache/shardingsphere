@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
@@ -219,13 +221,15 @@ public final class WorkflowPlanningSupport {
      * Ensure workflow planning context is complete and valid.
      *
      * @param metadataQueryFacade metadata query facade
+     * @param queryFacade query facade for database capability resolution
      * @param request workflow request
      * @param clarifiedIntent clarified intent
      * @param snapshot workflow snapshot
      * @return whether planning context is ready
+     * @throws DatabaseCapabilityNotFoundException when database profile or capability does not exist
      */
-    public boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
+    public boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade, final WorkflowRequest request,
                                          final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
-        return contextValidator.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
+        return contextValidator.ensurePlanningContext(metadataQueryFacade, queryFacade, request, clarifiedIntent, snapshot);
     }
 }

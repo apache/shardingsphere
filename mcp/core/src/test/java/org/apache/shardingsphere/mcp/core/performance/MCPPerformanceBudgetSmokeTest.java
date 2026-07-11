@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.core.completion.provider.WorkflowPlanIdComp
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestScopeFixture;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadataToolHandler;
@@ -108,7 +109,8 @@ class MCPPerformanceBudgetSmokeTest {
     @Test
     void assertMetadataSearchBudget() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
+        try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
+            MCPRequestScope requestScope = requestScopeFixture.getRequestScope();
             SearchMetadataToolHandler handler = new SearchMetadataToolHandler();
             Map<String, Object> arguments = Map.of("query", "order", "object_types", List.of("table"));
             assertDoesNotThrow(() -> handler.handle(requestScope, new MCPToolCall("session-1", arguments)));

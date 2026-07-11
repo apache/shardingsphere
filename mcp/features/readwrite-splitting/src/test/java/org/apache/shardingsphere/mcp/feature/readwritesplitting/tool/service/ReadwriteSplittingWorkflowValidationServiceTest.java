@@ -35,6 +35,8 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchroniz
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -47,6 +49,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -54,12 +58,26 @@ import static org.mockito.Mockito.when;
 
 class ReadwriteSplittingWorkflowValidationServiceTest {
     
+    private MockedStatic<WorkflowSQLUtils> workflowSQLUtils;
+    
+    @BeforeEach
+    void setUp() {
+        workflowSQLUtils = mockStatic(WorkflowSQLUtils.class, CALLS_REAL_METHODS);
+        workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier(anyString(), anyString(), anyString()))
+                .thenAnswer(invocation -> invocation.getArgument(1, String.class).equals(invocation.getArgument(2, String.class)));
+    }
+    
+    @AfterEach
+    void tearDown() {
+        workflowSQLUtils.close();
+    }
+    
     @Test
     void assertValidateRejectsDifferentSession() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(createRuleSnapshot("plan-1", "session-1", "executed", "create"));
         Map<String, Object> actual = createRuleService(mock(ReadwriteSplittingInspectionService.class))
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-2",
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-2",
                         workflowSessionContext.getRequired("plan-1"));
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
@@ -72,8 +90,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
         workflowSessionContext.save(snapshot);
         ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
         when(inspectionService.queryRules(any(), any())).thenReturn(List.of(createRuleRow()));
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actual = createRuleService(inspectionService).validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
@@ -119,7 +136,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
         ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
         when(inspectionService.queryRules(any(), any())).thenReturn(List.of());
         Map<String, Object> actual = createRuleService(inspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
     }
@@ -132,7 +149,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
         ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
         when(inspectionService.queryRules(any(), any())).thenReturn(List.of());
         Map<String, Object> actual = createRuleService(inspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
     }
     
@@ -143,8 +160,7 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
         workflowSessionContext.save(snapshot);
         ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
         when(inspectionService.queryRuleStatus(any(), any(), any())).thenReturn(List.of(createStatusRow("ENABLED")));
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
         Map<String, Object> actual = createStatusService(inspectionService).validate(
                 workflowSessionContext, mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
@@ -157,9 +173,15 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
         ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
         when(inspectionService.queryRuleStatus(any(), any(), any())).thenReturn(List.of(createStatusRow("DISABLED")));
         WorkflowSynchronizationException actual = assertThrows(WorkflowSynchronizationException.class,
-                () -> createStatusService(inspectionService).synchronize(snapshot, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+                () -> createStatusService(inspectionService).synchronize(snapshot, mock(MCPMetadataQueryFacade.class), createQueryFacade(),
                         mock(MCPFeatureExecutionFacade.class), "session-1"));
         assertThat(actual.getIssueCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+    }
+    
+    private MCPFeatureQueryFacade createQueryFacade() {
+        MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
+        when(result.getDatabaseType(any())).thenReturn("FixtureDB");
+        return result;
     }
     
     private ReadwriteSplittingRuleWorkflowValidationService createRuleService(final ReadwriteSplittingInspectionService inspectionService) {
