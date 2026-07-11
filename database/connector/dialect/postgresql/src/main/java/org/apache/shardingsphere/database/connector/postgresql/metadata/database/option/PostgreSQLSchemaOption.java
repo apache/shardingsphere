@@ -50,4 +50,9 @@ public final class PostgreSQLSchemaOption implements DialectSchemaOption {
     public Optional<String> getDefaultSystemSchema() {
         return Optional.of("pg_catalog");
     }
+    
+    @Override
+    public DialectSchemaSemantics getSchemaSemantics() {
+        return delegate.getSchemaSemantics();
+    }
 }

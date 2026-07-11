@@ -55,4 +55,9 @@ public final class OracleSchemaOption implements DialectSchemaOption {
     public Optional<String> getDefaultSystemSchema() {
         return delegate.getDefaultSystemSchema();
     }
+    
+    @Override
+    public DialectSchemaSemantics getSchemaSemantics() {
+        return delegate.getSchemaSemantics();
+    }
 }

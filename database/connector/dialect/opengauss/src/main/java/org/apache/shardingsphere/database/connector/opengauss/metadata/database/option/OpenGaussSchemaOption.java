@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.connector.opengauss.metadata.database.option;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLSchemaOption;
 
 import java.sql.Connection;
@@ -48,5 +49,10 @@ public final class OpenGaussSchemaOption implements DialectSchemaOption {
     @Override
     public Optional<String> getDefaultSystemSchema() {
         return delegate.getDefaultSystemSchema();
+    }
+    
+    @Override
+    public DialectSchemaSemantics getSchemaSemantics() {
+        return delegate.getSchemaSemantics();
     }
 }

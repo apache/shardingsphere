@@ -50,4 +50,9 @@ public final class FirebirdSchemaOption implements DialectSchemaOption {
     public Optional<String> getDefaultSystemSchema() {
         return Optional.of("system_tables");
     }
+    
+    @Override
+    public DialectSchemaSemantics getSchemaSemantics() {
+        return delegate.getSchemaSemantics();
+    }
 }

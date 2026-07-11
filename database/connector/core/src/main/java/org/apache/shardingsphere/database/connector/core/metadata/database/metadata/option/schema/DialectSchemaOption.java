@@ -59,8 +59,5 @@ public interface DialectSchemaOption {
      *
      * @return schema semantics
      */
-    default DialectSchemaSemantics getSchemaSemantics() {
-        return DialectSchemaSemantics.NATIVE_SCHEMA;
-    }
-    
+    DialectSchemaSemantics getSchemaSemantics();
 }
