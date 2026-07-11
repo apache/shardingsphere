@@ -1144,11 +1144,9 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.substringFunction()) {
             return visit(ctx.substringFunction());
         }
-        // DORIS ADDED BEGIN
         if (null != ctx.splitByStringFunction()) {
             return visit(ctx.splitByStringFunction());
         }
-        // DORIS ADDED END
         if (null != ctx.extractFunction()) {
             return visit(ctx.extractFunction());
         }
@@ -1225,9 +1223,8 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     @Override
     public final ASTNode visitSplitByStringFunction(final SplitByStringFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.SPLIT_BY_STRING().getText(), getOriginalText(ctx));
-        for (ExprContext each : ctx.expr()) {
-            result.getParameters().add(new LiteralExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), each.getText()));
-        }
+        result.getParameters().add(new LiteralExpressionSegment(ctx.expr(0).getStart().getStartIndex(), ctx.expr(0).getStop().getStopIndex(), ctx.expr(0).getText()));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.expr(1).getStart().getStartIndex(), ctx.expr(1).getStop().getStopIndex(), ctx.expr(1).getText()));
         return result;
     }
     // DORIS ADDED END
