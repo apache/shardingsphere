@@ -42,6 +42,8 @@ final class ExplainSQLCandidateValidator {
         ShardingSpherePreconditions.checkState(SupportedMCPStatement.QUERY == explainedStatement.getStatementClass(),
                 () -> new MCPInvalidRequestException("database_gateway_execute_explain_query only supports QUERY statements as the explained SQL."));
         String actualExplainSql = scanner.normalizeSingleStatement(explainSql);
+        ShardingSpherePreconditions.checkState(!scanner.containsExecutableComment(actualExplainSql),
+                () -> new MCPInvalidRequestException("Executable comments are not supported by the MCP explain query tool."));
         List<SQLStatementToken> tokens = scanner.tokenize(actualExplainSql);
         checkExplainCandidate(tokens, explainedStatement.getNormalizedSql(), actualExplainSql);
         return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, explainedStatement.getTargetObjectName().orElse(""), "",

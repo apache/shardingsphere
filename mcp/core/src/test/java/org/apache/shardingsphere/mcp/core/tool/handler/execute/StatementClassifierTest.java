@@ -290,6 +290,8 @@ class StatementClassifierTest {
                         MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned mysql executable comment", "SELECT * FROM logic_db.foo_orders /*!50000 JOIN other_db.foo_order_items ON 1 = 1 */",
                         MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned mariadb executable comment", "SELECT * FROM logic_db.foo_orders /*M!100000 JOIN other_db.foo_order_items ON 1 = 1 */",
+                        MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned nextval function", "SELECT nextval('foo_seq')", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned setval function", "SELECT pg_catalog.setval('foo_seq', 1)", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned next value for sequence", "SELECT NEXT VALUE FOR foo_seq", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),

@@ -51,6 +51,13 @@ class ExplainSQLCandidateValidatorTest {
         assertThat(actual.getNormalizedSql(), is("EXPLAIN QUERY TREE SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'"));
     }
     
+    @Test
+    void assertValidateWithNonExecutableComments() {
+        ClassificationResult actual = validator.validate("SELECT '/*!80018 ANALYZE */' FROM foo_orders",
+                "EXPLAIN /* plan only */ SELECT '/*!80018 ANALYZE */' FROM foo_orders");
+        assertThat(actual.getNormalizedSql(), is("EXPLAIN /* plan only */ SELECT '/*!80018 ANALYZE */' FROM foo_orders"));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertValidateWithInvalidCandidateCases")
     void assertValidateWithInvalidCandidate(final String name, final String sql, final String explainSql, final String expectedMessage) {
@@ -67,6 +74,10 @@ class ExplainSQLCandidateValidatorTest {
                         "EXPLAIN ANALYZE is not supported by the MCP explain query tool."),
                 Arguments.of("explain analyse", "SELECT * FROM foo_orders", "EXPLAIN ANALYSE SELECT * FROM foo_orders",
                         "EXPLAIN ANALYZE is not supported by the MCP explain query tool."),
+                Arguments.of("mysql executable comment", "SELECT * FROM foo_orders", "EXPLAIN /*!80018 ANALYZE */ SELECT * FROM foo_orders",
+                        "Executable comments are not supported by the MCP explain query tool."),
+                Arguments.of("mariadb executable comment", "SELECT * FROM foo_orders", "EXPLAIN /*M!100000 ANALYZE */ SELECT * FROM foo_orders",
+                        "Executable comments are not supported by the MCP explain query tool."),
                 Arguments.of("explain plan for", "SELECT * FROM foo_orders", "EXPLAIN PLAN FOR SELECT * FROM foo_orders",
                         "EXPLAIN PLAN FOR workflows are not supported by the MCP explain query tool."),
                 Arguments.of("rewritten sql", "SELECT * FROM foo_orders", "EXPLAIN SELECT order_id FROM foo_orders",

@@ -1611,9 +1611,8 @@ tools:
             - statement_ack
         statement_class:
           type: string
-          description: "Statement class such as dml, ddl, dcl, transaction_control, savepoint, or explain_analyze."
+          description: "Statement class such as dml, ddl, dcl, transaction_control, or savepoint."
           enum:
-            - explain_analyze
             - dml
             - ddl
             - dcl

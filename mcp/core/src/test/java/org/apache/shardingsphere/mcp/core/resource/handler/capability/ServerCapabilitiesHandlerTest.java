@@ -297,6 +297,9 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(executeUpdateOutputProperties.containsKey("response_mode"));
         assertTrue(executeUpdateOutputProperties.containsKey("summary"));
         assertTrue(((List<?>) ((Map<?, ?>) executeUpdateOutputProperties.get("result_kind")).get("enum")).containsAll(List.of("preview", "result_set", "update_count", "statement_ack")));
+        Map<?, ?> executeUpdateStatementClass = (Map<?, ?>) executeUpdateOutputProperties.get("statement_class");
+        assertThat(executeUpdateStatementClass.get("enum"), is(List.of("dml", "ddl", "dcl", "transaction_control", "savepoint")));
+        assertFalse(((String) executeUpdateStatementClass.get("description")).contains("explain_analyze"));
         assertTrue(executeUpdateOutputProperties.containsKey("preview_semantics"));
         assertTrue(executeUpdateOutputProperties.containsKey("review_summary"));
         assertFalse(executeUpdateOutputProperties.containsKey("approval_summary"));

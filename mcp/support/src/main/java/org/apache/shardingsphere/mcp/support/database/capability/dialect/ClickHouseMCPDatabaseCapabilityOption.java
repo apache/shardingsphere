@@ -23,6 +23,6 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 public final class ClickHouseMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public ClickHouseMCPDatabaseCapabilityOption() {
-        super("ClickHouse", true);
+        super("ClickHouse", false);
     }
 }

@@ -211,7 +211,7 @@ final class SQLStatementScanner {
         return normalizeIdentifier(identifier).toUpperCase(Locale.ENGLISH);
     }
     
-    boolean containsMySQLExecutableComment(final String sql) {
+    boolean containsExecutableComment(final String sql) {
         int currentIndex = 0;
         while (currentIndex < sql.length()) {
             if (isLineCommentStart(sql, currentIndex)) {
@@ -219,7 +219,7 @@ final class SQLStatementScanner {
                 continue;
             }
             if (isBlockCommentStart(sql, currentIndex)) {
-                if (currentIndex + 2 < sql.length() && '!' == sql.charAt(currentIndex + 2)) {
+                if (isExecutableCommentStart(sql, currentIndex)) {
                     return true;
                 }
                 currentIndex = skipBlockComment(sql, currentIndex) + 1;
@@ -232,6 +232,13 @@ final class SQLStatementScanner {
             currentIndex++;
         }
         return false;
+    }
+    
+    private boolean isExecutableCommentStart(final String sql, final int startIndex) {
+        if (startIndex + 2 < sql.length() && '!' == sql.charAt(startIndex + 2)) {
+            return true;
+        }
+        return startIndex + 3 < sql.length() && 'M' == Character.toUpperCase(sql.charAt(startIndex + 2)) && '!' == sql.charAt(startIndex + 3);
     }
     
     boolean containsUserVariableAssignment(final String sql) {

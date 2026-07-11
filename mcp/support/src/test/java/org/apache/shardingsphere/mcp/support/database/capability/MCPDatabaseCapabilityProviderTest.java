@@ -187,8 +187,8 @@ class MCPDatabaseCapabilityProviderTest {
                 Arguments.of("sql server", "SQLServer", true, true, true, SchemaExecutionSemantics.BEST_EFFORT, false),
                 Arguments.of("mariadb", "MariaDB", true, true, true, SchemaExecutionSemantics.FIXED_TO_DATABASE, true),
                 Arguments.of("oracle", "Oracle", true, true, true, SchemaExecutionSemantics.BEST_EFFORT, false),
-                Arguments.of("clickhouse", "ClickHouse", false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE, true),
-                Arguments.of("hive", "Hive", false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE, true),
+                Arguments.of("clickhouse", "ClickHouse", false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE, false),
+                Arguments.of("hive", "Hive", false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE, false),
                 Arguments.of("presto", "Presto", true, false, false, SchemaExecutionSemantics.BEST_EFFORT, true),
                 Arguments.of("firebird", "Firebird", true, true, true, SchemaExecutionSemantics.BEST_EFFORT, false));
     }
