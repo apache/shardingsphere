@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -24,24 +28,16 @@ import java.util.Optional;
 /**
  * Default schema option.
  */
+@RequiredArgsConstructor
+@Getter
 public final class DefaultSchemaOption implements DialectSchemaOption {
     
     private final boolean schemaAvailable;
     
+    @Getter(AccessLevel.NONE)
     private final String defaultSchema;
     
     private final DialectSchemaSemantics schemaSemantics;
-    
-    public DefaultSchemaOption(final boolean schemaAvailable, final String defaultSchema, final DialectSchemaSemantics schemaSemantics) {
-        this.schemaAvailable = schemaAvailable;
-        this.defaultSchema = defaultSchema;
-        this.schemaSemantics = schemaSemantics;
-    }
-    
-    @Override
-    public boolean isSchemaAvailable() {
-        return schemaAvailable;
-    }
     
     @Override
     @SuppressWarnings("ReturnOfNull")
@@ -61,10 +57,5 @@ public final class DefaultSchemaOption implements DialectSchemaOption {
     @Override
     public Optional<String> getDefaultSystemSchema() {
         return Optional.empty();
-    }
-    
-    @Override
-    public DialectSchemaSemantics getSchemaSemantics() {
-        return schemaSemantics;
     }
 }
