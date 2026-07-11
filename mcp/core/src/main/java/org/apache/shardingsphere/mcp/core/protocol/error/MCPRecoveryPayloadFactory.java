@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLSt
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
@@ -50,6 +51,7 @@ final class MCPRecoveryPayloadFactory {
     
     private static final List<RecoveryMapping> RECOVERY_MAPPINGS = List.of(
             new RecoveryMapping(SQLToolMismatchException.class, cause -> MCPSQLRecoveryPayloadFactory.createSQLToolMismatchRecovery((SQLToolMismatchException) cause)),
+            new RecoveryMapping(ExplainSQLSyntaxException.class, cause -> MCPSQLRecoveryPayloadFactory.createExplainSQLSyntaxRecovery((ExplainSQLSyntaxException) cause)),
             new RecoveryMapping(RuleDistSQLExecutionException.class, cause -> MCPSQLRecoveryPayloadFactory.createRuleDistSQLExecutionRecovery((RuleDistSQLExecutionException) cause)),
             new RecoveryMapping(MetadataIntrospectionSQLStatementException.class,
                     cause -> MCPSQLRecoveryPayloadFactory.createMetadataIntrospectionSQLRecovery((MetadataIntrospectionSQLStatementException) cause)),

@@ -47,9 +47,8 @@ public final class MCPDatabaseCapabilityResponse implements MCPResponse {
         result.put("schemaExecutionSemantics", databaseCapability.getSchemaExecutionSemantics());
         result.put("supportsCrossSchemaSql", databaseCapability.isSupportsCrossSchemaSql());
         result.put("supportsExplain", databaseCapability.isSupportsExplain());
-        result.put("explainExecutionSemantics", databaseCapability.isSupportsExplain()
-                ? "EXPLAIN is available for read-only execution plan diagnostics."
-                : "EXPLAIN is not supported for this logical database.");
+        result.put("explainExecutionSemantics",
+                "database_gateway_execute_explain_query executes model-generated database-native EXPLAIN SQL for one classifier-approved SELECT. EXPLAIN ANALYZE is not supported.");
         return result;
     }
 }

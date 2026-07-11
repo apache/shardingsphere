@@ -90,6 +90,8 @@ final class MCPGuidancePayloadBuilder {
                         "Follow top-level next_actions when validation fails."),
                 createFirstCallRoute("read_only_sql", "read_resource shardingsphere://databases/{database}/capabilities", "call_tool database_gateway_execute_query",
                         "Stop after reporting the result rows."),
+                createFirstCallRoute("explain_query", "read_resource shardingsphere://databases/{database}/capabilities",
+                        "generate database-native EXPLAIN SQL, then call_tool database_gateway_execute_explain_query", "Stop after reporting the execution plan rows."),
                 createFirstCallRoute("rule_workflow", "call_tool matching database_gateway_plan_* workflow tool without plan_id for a new plan",
                         "call_tool database_gateway_apply_workflow execution_mode=preview with the returned plan_id",
                         "Use workflow apply and validation for natural-language rule changes before considering raw side-effect SQL."),
@@ -118,8 +120,9 @@ final class MCPGuidancePayloadBuilder {
         result.put("guidance_resource", GUIDANCE_RESOURCE_URI);
         result.put("metadata_first_resource", "shardingsphere://databases");
         result.put("preflight_rule", "Use database_gateway_validate_runtime_database with a configured database name before onboarding or troubleshooting runtime connectivity.");
-        Map<String, Object> sqlToolSelection = new LinkedHashMap<>(2, 1F);
-        sqlToolSelection.put("read_only", "Use database_gateway_execute_query for one classifier-approved SELECT or EXPLAIN statement.");
+        Map<String, Object> sqlToolSelection = new LinkedHashMap<>(3, 1F);
+        sqlToolSelection.put("read_only", "Use database_gateway_execute_query for one classifier-approved SELECT statement.");
+        sqlToolSelection.put("explain", "Use database_gateway_execute_explain_query with the original SELECT and a model-generated database-native EXPLAIN SQL; do not use EXPLAIN ANALYZE.");
         sqlToolSelection.put("side_effecting", "Use database_gateway_execute_update with execution_mode=preview before execution.");
         result.put("sql_tool_selection", sqlToolSelection);
         result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
@@ -141,6 +144,7 @@ final class MCPGuidancePayloadBuilder {
         result.put("metadata_search_tool", "database_gateway_search_metadata");
         result.put("preflight_validation_tool", PREFLIGHT_TOOL_NAME);
         result.put("read_only_sql_tool", "database_gateway_execute_query");
+        result.put("explain_sql_tool", "database_gateway_execute_explain_query");
         result.put("side_effect_sql_tool", "database_gateway_execute_update");
         result.put("workflow_tools", List.of(WorkflowToolDescriptors.APPLY_TOOL_NAME, WorkflowToolDescriptors.VALIDATE_TOOL_NAME));
         result.put("side_effect_rule", "Preview first and continue only when the requested side effect is still intended.");
@@ -185,8 +189,12 @@ final class MCPGuidancePayloadBuilder {
                         "Stop after the configured runtime database reports ready or returns structured recovery guidance.",
                         List.of(PREFLIGHT_TOOL_NAME), List.of("shardingsphere://databases")),
                 createCommonFlow("read_only_sql", List.of("read_resource shardingsphere://databases/{database}/capabilities", "call_tool database_gateway_execute_query"),
-                        "Use one SELECT or EXPLAIN statement and stop after the result is reported.",
+                        "Use one SELECT statement and stop after the result is reported.",
                         List.of("database_gateway_execute_query"), List.of("shardingsphere://databases/{database}/capabilities")),
+                createCommonFlow("explain_query", List.of("read_resource shardingsphere://databases/{database}/capabilities",
+                        "generate database-native EXPLAIN SQL without ANALYZE", "call_tool database_gateway_execute_explain_query"),
+                        "Use the original SELECT as sql, the generated EXPLAIN as explain_sql, and stop after the plan rows are reported.",
+                        List.of("database_gateway_execute_explain_query"), List.of("shardingsphere://databases/{database}/capabilities")),
                 createCommonFlow("side_effecting_sql", List.of("call_tool database_gateway_execute_update execution_mode=preview",
                         "call_tool database_gateway_execute_update execution_mode=execute"),
                         "Execute only after reviewing the previewed SQL and side-effect scope.", List.of("database_gateway_execute_update"), List.of()),
@@ -247,11 +255,16 @@ final class MCPGuidancePayloadBuilder {
     }
     
     private Map<String, Object> createSqlToolSelection() {
-        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         Map<String, Object> readOnly = new LinkedHashMap<>(2, 1F);
         readOnly.put("tool", "database_gateway_execute_query");
-        readOnly.put("statement_rule", "Use for one SELECT or EXPLAIN statement.");
+        readOnly.put("statement_rule", "Use for one SELECT statement.");
         result.put("read_only", readOnly);
+        Map<String, Object> explain = new LinkedHashMap<>(3, 1F);
+        explain.put("tool", "database_gateway_execute_explain_query");
+        explain.put("statement_rule", "Use for an execution plan of one SELECT statement.");
+        explain.put("candidate_rule", "Generate database-native EXPLAIN SQL in explain_sql and never use EXPLAIN ANALYZE.");
+        result.put("explain", explain);
         Map<String, Object> sideEffecting = new LinkedHashMap<>(4, 1F);
         sideEffecting.put("tool", "database_gateway_execute_update");
         sideEffecting.put("first_mode", "preview");

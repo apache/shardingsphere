@@ -230,7 +230,6 @@ class WorkflowProxyQueryServiceTest {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(quoteCharacter);
         when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, schemaSemantics));
-        when(dialectDatabaseMetaData.getExplainOption()).thenReturn(() -> false);
         when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectDatabaseMetaData));
     }

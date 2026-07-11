@@ -67,14 +67,6 @@ class StatementClassifierTest {
     }
     
     @Test
-    void assertClassifyExplainInnerStatementClass() {
-        ClassificationResult actualResult = statementClassifier.classify("EXPLAIN UPDATE foo_orders SET status = 'DONE'");
-        assertThat(actualResult.getStatementClass(), is(SupportedMCPStatement.EXPLAIN));
-        assertThat(actualResult.getExplainedStatementClass().orElseThrow(), is(SupportedMCPStatement.DML));
-        assertThat(actualResult.getTargetObjectName().orElse(""), is("foo_orders"));
-    }
-    
-    @Test
     void assertClassifyReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify(
                 "SELECT * FROM logic_db.foo_orders JOIN other_db.foo_order_items ON foo_orders.order_id = foo_order_items.order_id");
@@ -199,9 +191,7 @@ class StatementClassifierTest {
                 Arguments.of("rollback to savepoint", "ROLLBACK TO SAVEPOINT foo_sp_1", SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO SAVEPOINT",
                         "ROLLBACK TO SAVEPOINT foo_sp_1", "", "foo_sp_1"),
                 Arguments.of("rollback to savepoint name without optional keyword", "ROLLBACK TO foo_sp_1", SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO",
-                        "ROLLBACK TO foo_sp_1", "", "foo_sp_1"),
-                Arguments.of("explain", "EXPLAIN SELECT * FROM foo_orders", SupportedMCPStatement.EXPLAIN, "EXPLAIN",
-                        "EXPLAIN SELECT * FROM foo_orders", "foo_orders", ""));
+                        "ROLLBACK TO foo_sp_1", "", "foo_sp_1"));
     }
     
     private static Stream<Arguments> assertClassifyReferencedObjectNamesWithObjectListsCases() {
@@ -334,8 +324,8 @@ class StatementClassifierTest {
                         "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."),
                 Arguments.of("locking read lock in share mode", "SELECT * FROM foo_orders LOCK IN SHARE MODE", MCPLockingReadStatementException.class,
                         "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."),
-                Arguments.of("explain locking read", "EXPLAIN SELECT * FROM foo_orders FOR SHARE", MCPLockingReadStatementException.class,
-                        "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."),
+                Arguments.of("explain query", "EXPLAIN SELECT * FROM foo_orders", MCPUnsupportedSQLStatementException.class, "Statement is not supported by the MCP contract."),
+                Arguments.of("explain locking read", "EXPLAIN SELECT * FROM foo_orders FOR SHARE", MCPUnsupportedSQLStatementException.class, "Statement is not supported by the MCP contract."),
                 Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM foo_orders", MCPUnsupportedSQLStatementException.class, "Statement is not supported by the MCP contract."),
                 Arguments.of("metadata show", "SHOW", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
                 Arguments.of("metadata show tables", "SHOW TABLES", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),

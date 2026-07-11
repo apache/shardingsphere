@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedExcept
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
@@ -82,27 +81,12 @@ class ExecuteQueryToolHandlerTest {
     }
     
     @Test
-    void assertHandleExplain() {
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(SupportedMCPStatement.EXPLAIN, "EXPLAIN", List.of(), List.of(), false));
+    void assertRejectExplain() {
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "schema", "public", "sql", "EXPLAIN SELECT * FROM orders")));
-        assertThat(actual.toPayload().get("statement_class"), is("explain"));
-        verify(executionFacade).execute(any());
-    }
-    
-    @Test
-    void assertHandleExplainUpdate() {
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(SupportedMCPStatement.EXPLAIN, "EXPLAIN", List.of(), List.of(), false));
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "schema", "public", "sql", "EXPLAIN UPDATE orders SET status = 'PAID'")));
-        assertThat(actual.toPayload().get("statement_class"), is("explain"));
-        verify(executionFacade).execute(any());
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
+                Map.of("database", "logic_db", "schema", "public", "sql", "EXPLAIN SELECT * FROM orders"))));
+        assertThat(actual.getMessage(), is("Statement is not supported by the MCP contract."));
+        verifyNoInteractions(databaseContext);
     }
     
     @Test
@@ -124,7 +108,8 @@ class ExecuteQueryToolHandlerTest {
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'"))));
         assertThat(actual.getMessage(),
-                is("database_gateway_execute_query only supports classifier-approved QUERY and EXPLAIN statements. Use database_gateway_execute_update for side-effecting SQL."));
+                is("database_gateway_execute_query only supports classifier-approved QUERY statements. "
+                        + "Use database_gateway_execute_explain_query for EXPLAIN diagnostics or database_gateway_execute_update for side-effecting SQL."));
         verifyNoInteractions(executionFacade);
     }
     

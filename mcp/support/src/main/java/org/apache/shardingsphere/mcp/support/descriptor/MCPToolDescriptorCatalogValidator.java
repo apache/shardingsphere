@@ -51,6 +51,8 @@ public final class MCPToolDescriptorCatalogValidator {
     
     private static final String EXECUTE_QUERY = "database_gateway_execute_query";
     
+    private static final String EXECUTE_EXPLAIN = "database_gateway_execute_explain_query";
+    
     private static final String EXECUTE_UPDATE = "database_gateway_execute_update";
     
     private static final String VALIDATE_RUNTIME_DATABASE = "database_gateway_validate_runtime_database";
@@ -138,6 +140,10 @@ public final class MCPToolDescriptorCatalogValidator {
             validateExecuteQueryDescriptor(descriptor);
             return;
         }
+        if (EXECUTE_EXPLAIN.equals(descriptor.getName())) {
+            validateExecuteExplainDescriptor(descriptor);
+            return;
+        }
         if (EXECUTE_UPDATE.equals(descriptor.getName())) {
             validateExecuteUpdateDescriptor(descriptor);
             return;
@@ -193,6 +199,20 @@ public final class MCPToolDescriptorCatalogValidator {
     private static void validateExecuteQueryDescriptor(final MCPToolDescriptor descriptor) {
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor, List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "returned_row_count",
                 "applied_max_rows", "applied_timeout_ms", "truncated", MCPPayloadFieldNames.NEXT_ACTIONS));
+    }
+    
+    private static void validateExecuteExplainDescriptor(final MCPToolDescriptor descriptor) {
+        validateRequiredInput(descriptor, "database");
+        validateRequiredInput(descriptor, "sql");
+        validateRequiredInput(descriptor, "explain_sql");
+        validateExecuteQueryDescriptor(descriptor);
+    }
+    
+    private static void validateRequiredInput(final MCPToolDescriptor descriptor, final String fieldName) {
+        ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.findToolInputProperty(descriptor, fieldName).isPresent(),
+                () -> new IllegalStateException(String.format("Tool `%s` must declare `%s`.", descriptor.getName(), fieldName)));
+        ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.isRequiredToolInput(descriptor, fieldName),
+                () -> new IllegalStateException(String.format("Tool `%s` `%s` must be required.", descriptor.getName(), fieldName)));
     }
     
     private static void validateExecuteUpdateDescriptor(final MCPToolDescriptor descriptor) {

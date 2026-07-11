@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
@@ -84,12 +83,6 @@ class PrestoDatabaseMetaDataTest {
         assertFalse(actual.isReturnRollbackStatementWhenCommitFailed());
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertTrue(actual.getXaDriverClassNames().isEmpty());
-    }
-    
-    @Test
-    void assertGetExplainOption() {
-        DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
-        assertTrue(actual.isExplainSupported());
     }
     
     @Test

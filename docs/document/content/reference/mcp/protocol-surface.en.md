@@ -52,8 +52,16 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 
 `database_gateway_execute_query`
 
-- Executes one classifier-approved `SELECT` or `EXPLAIN ANALYZE`.
+- Executes one classifier-approved `SELECT`.
 - Rejects DML, DDL, DCL, transaction control, savepoints, and known side-effecting query forms.
+- `max_rows` range is `0..5000`; omitted or `0` uses the server default `100`.
+- `timeout_ms` range is `0..300000`; `0` means no explicit timeout.
+
+`database_gateway_execute_explain_query`
+
+- Executes one model-generated database-native `EXPLAIN` for one classifier-approved `SELECT`.
+- Requires the original `SELECT` as `sql` and the generated `EXPLAIN` as `explain_sql`.
+- Rejects `EXPLAIN ANALYZE`, `EXPLAIN PLAN FOR`, multiple statements, and side-effecting SQL.
 - `max_rows` range is `0..5000`; omitted or `0` uses the server default `100`.
 - `timeout_ms` range is `0..300000`; `0` means no explicit timeout.
 

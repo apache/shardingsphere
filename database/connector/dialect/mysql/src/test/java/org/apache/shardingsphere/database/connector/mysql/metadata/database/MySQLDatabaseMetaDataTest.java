@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
@@ -129,12 +128,6 @@ class MySQLDatabaseMetaDataTest {
     @Test
     void assertGetProtocolVersionOption() {
         assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is("5.7.22"));
-    }
-    
-    @Test
-    void assertGetExplainOption() {
-        DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
-        assertTrue(actual.isExplainSupported());
     }
     
     @Test

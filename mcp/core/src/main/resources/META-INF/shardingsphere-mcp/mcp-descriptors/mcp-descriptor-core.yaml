@@ -74,6 +74,7 @@ resources:
       relatedTools:
         - database_gateway_search_metadata
         - database_gateway_execute_query
+        - database_gateway_execute_explain_query
 resourceTemplates:
   - uriTemplate: shardingsphere://databases/{database}
     name: logical-database-detail
@@ -92,7 +93,7 @@ resourceTemplates:
   - uriTemplate: shardingsphere://databases/{database}/capabilities
     name: database-capabilities
     title: Database Capabilities
-    description: "Read statement, transaction, schema, and metadata-object capabilities for one logical database. Use before executing SQL or deciding whether EXPLAIN ANALYZE is available."
+    description: "Read statement, transaction, schema, and metadata-object capabilities for one logical database. Use before executing SQL or preparing a database-native EXPLAIN candidate."
     mimeType: application/json
     shardingSphereMetadata:
       uriVariables:
@@ -104,6 +105,7 @@ resourceTemplates:
       resourceKind: detail
       relatedTools:
         - database_gateway_execute_query
+        - database_gateway_execute_explain_query
         - database_gateway_execute_update
   - uriTemplate: shardingsphere://databases/{database}/storage-units
     name: storage-units
@@ -1227,7 +1229,7 @@ tools:
   - name: database_gateway_execute_query
     title: Execute Query SQL
     description: >-
-      Execute exactly one classifier-approved SELECT or EXPLAIN ANALYZE statement against a ShardingSphere logical database. Use for inspection only;
+      Execute exactly one classifier-approved SELECT statement against a ShardingSphere logical database. Use for inspection only;
       DML, DDL, DCL, transaction control, savepoints, and known side-effecting query forms are rejected.
     inputSchema:
       type: object
@@ -1240,7 +1242,7 @@ tools:
           description: "Optional schema or namespace hint for unqualified object names."
         sql:
           type: string
-          description: "One classifier-approved SELECT or EXPLAIN ANALYZE statement. Do not include multiple statements or mutating SQL."
+          description: "One classifier-approved SELECT statement. Do not include EXPLAIN, multiple statements, or mutating SQL."
         max_rows:
           type: integer
           description: "Optional maximum number of rows to return. Omit or pass 0 to use the server default of 100."
@@ -1279,10 +1281,9 @@ tools:
             - result_set
         statement_class:
           type: string
-          description: "Statement class: query or explain_analyze."
+          description: "Statement class: query."
           enum:
             - query
-            - explain_analyze
         statement_type:
           type: string
           description: "Database statement type reported by the execution classifier."
@@ -1368,6 +1369,167 @@ tools:
               reason: Return the result rows to the user.
     annotations:
       title: Execute Query SQL
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: true
+    meta:
+      org.apache.shardingsphere/related-resource-uris:
+        - "shardingsphere://databases/{database}/capabilities"
+        - "shardingsphere://databases/{database}/schemas"
+      org.apache.shardingsphere/rejected-statement-classes:
+        - DML
+        - DDL
+        - DCL
+        - TRANSACTION_CONTROL
+        - SAVEPOINT
+  - name: database_gateway_execute_explain_query
+    title: Execute Explain Query SQL
+    description: >-
+      Execute exactly one model-generated database-native EXPLAIN SQL for one classifier-approved SELECT statement. Pass the original SELECT as sql
+      and the generated EXPLAIN as explain_sql. EXPLAIN ANALYZE and EXPLAIN PLAN FOR workflows are rejected.
+    inputSchema:
+      type: object
+      properties:
+        database:
+          type: string
+          description: "ShardingSphere logical database name that provides the execution boundary."
+        schema:
+          type: string
+          description: "Optional schema or namespace hint for unqualified object names."
+        sql:
+          type: string
+          description: "Original classifier-approved SELECT statement to explain. Do not include EXPLAIN, multiple statements, or mutating SQL."
+        explain_sql:
+          type: string
+          description: "Database-native EXPLAIN SQL generated for sql. It must start with EXPLAIN, include sql without rewriting it, and must not use ANALYZE."
+        max_rows:
+          type: integer
+          description: "Optional maximum number of plan rows to return. Omit or pass 0 to use the server default of 100."
+          default: 100
+          minimum: 0
+          maximum: 5000
+          examples:
+            - 100
+        timeout_ms:
+          type: integer
+          description: "Optional execution timeout in milliseconds. Zero means no explicit timeout."
+          default: 0
+          minimum: 0
+          maximum: 300000
+          examples:
+            - 0
+      required:
+        - database
+        - sql
+        - explain_sql
+      additionalProperties: false
+    outputSchema:
+      type: object
+      properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for read-only SQL results."
+          enum:
+            - query
+        summary:
+          type: string
+          description: "Short model-facing SQL execution result summary."
+        result_kind:
+          type: string
+          description: "Result kind. database_gateway_execute_explain_query returns result_set for plan rows."
+          enum:
+            - result_set
+        statement_class:
+          type: string
+          description: "Statement class: explain."
+          enum:
+            - explain
+        statement_type:
+          type: string
+          description: "Database statement type reported by the execution classifier."
+        status:
+          type: string
+          description: "Execution status returned by the server."
+        normalized_sql:
+          type: string
+          description: "Classifier-normalized EXPLAIN SQL executed by the server."
+        columns:
+          type: array
+          description: "Returned column definitions."
+        rows:
+          type: array
+          description: "Returned plan rows."
+        row_objects:
+          type: array
+          description: "Object-shaped row view when column labels are unique."
+        row_object_status:
+          type: string
+          description: "Whether row_objects is available or why positional rows must be used, such as unnamed_columns, duplicate_column_labels, or omitted_large_result."
+        returned_row_count:
+          type: integer
+          description: "Number of result rows returned in this payload."
+        applied_max_rows:
+          type: integer
+          description: "Applied max_rows argument after defaulting and bounds enforcement."
+        applied_timeout_ms:
+          type: integer
+          description: "Applied timeout_ms argument; zero means the request used the server default."
+        truncated:
+          type: boolean
+          description: "Whether rows were truncated by max_rows or server limits."
+        next_actions:
+          type: array
+          description: "Ordered structured model-facing recommendations after SQL execution."
+          items:
+            type: object
+            properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
+              resource_uri:
+                type: string
+                description: "Canonical resource URI when type is resource_read."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              required_inputs:
+                type: array
+                description: "User inputs needed before continuing."
+      examples:
+        - response_mode: query
+          summary: Executed EXPLAIN statement and returned 0 row(s).
+          result_kind: result_set
+          statement_class: explain
+          statement_type: EXPLAIN
+          status: OK
+          columns: []
+          rows: []
+          row_objects: []
+          row_object_status: available
+          returned_row_count: 0
+          applied_max_rows: 10
+          applied_timeout_ms: 0
+          truncated: false
+          next_actions:
+            - order: 1
+              type: terminal
+              title: Stop
+              reason: Return the execution plan rows to the user.
+    annotations:
+      title: Execute Explain Query SQL
       readOnlyHint: true
       destructiveHint: false
       idempotentHint: true

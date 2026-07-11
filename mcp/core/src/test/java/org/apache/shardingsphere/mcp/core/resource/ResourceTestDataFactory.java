@@ -234,7 +234,6 @@ public final class ResourceTestDataFactory {
         when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(true, null, DialectSchemaSemantics.NATIVE_SCHEMA));
         when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(
                 sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());
-        when(dialectDatabaseMetaData.getExplainOption()).thenReturn(() -> true);
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectDatabaseMetaData));
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(dialectDatabaseMetaData);
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseTypeFromSPI)).thenReturn(Optional.empty());

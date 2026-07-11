@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExc
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
 import java.sql.SQLException;
@@ -48,6 +49,7 @@ public final class MCPErrorConverter {
     private static final List<ErrorMapping> ERROR_MAPPINGS = List.of(
             new ErrorMapping(UnsupportedToolException.class, "Unsupported tool."),
             new ErrorMapping(UnsupportedResourceUriException.class, "Unsupported resource URI."),
+            new ErrorMapping(ExplainSQLSyntaxException.class, "Generated explain_sql is not valid for the target database."),
             new ErrorMapping(MCPInvalidRequestException.class, "Invalid request."),
             new ErrorMapping(MCPNotFoundException.class, "MCP operation not found."),
             new ErrorMapping(MCPUnsupportedException.class, "Unsupported MCP operation."),

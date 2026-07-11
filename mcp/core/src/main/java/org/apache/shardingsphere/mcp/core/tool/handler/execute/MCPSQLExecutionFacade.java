@@ -69,22 +69,32 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     @Override
     public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest) {
         try {
-            return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest));
+            return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest, classify(executionRequest)));
         } catch (final MCPSessionNotExistedException ex) {
             throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         }
     }
     
-    private SQLExecutionResponse executeInternal(final SQLExecutionRequest executionRequest) {
-        Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
-        ShardingSpherePreconditions.checkState(databaseCapability.isPresent(), () -> recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException()));
-        MCPDatabaseCapability actualDatabaseCapability = databaseCapability.orElseThrow();
-        ClassificationResult classificationResult;
+    SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         try {
-            classificationResult = statementClassifier.classify(executionRequest.getSql());
+            return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest, classificationResult));
+        } catch (final MCPSessionNotExistedException ex) {
+            throw recordFailure(executionRequest, classificationResult.getTraceStatementMarker(), ex);
+        }
+    }
+    
+    private ClassificationResult classify(final SQLExecutionRequest executionRequest) {
+        try {
+            return statementClassifier.classify(executionRequest.getSql());
         } catch (final MCPUnsupportedException | IllegalArgumentException ex) {
             throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         }
+    }
+    
+    private SQLExecutionResponse executeInternal(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+        Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
+        ShardingSpherePreconditions.checkState(databaseCapability.isPresent(), () -> recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException()));
+        MCPDatabaseCapability actualDatabaseCapability = databaseCapability.orElseThrow();
         ShardingSpherePreconditions.checkContains(actualDatabaseCapability.getSupportedStatementClasses(), classificationResult.getStatementClass(),
                 () -> recordFailure(executionRequest, classificationResult.getTraceStatementMarker(), new StatementClassNotSupportedException()));
         checkCrossSchemaSql(executionRequest, actualDatabaseCapability, classificationResult);

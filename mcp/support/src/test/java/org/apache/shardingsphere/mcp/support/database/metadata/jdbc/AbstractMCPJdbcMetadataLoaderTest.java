@@ -132,7 +132,6 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
                                              final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
         when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, schemaSemantics));
-        when(result.getExplainOption()).thenReturn(() -> false);
         when(result.getSequenceOption()).thenReturn(sequenceSupported ? Optional.of(new DialectSequenceOption(SEQUENCE_METADATA_QUERY)) : Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(result));
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(result);

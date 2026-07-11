@@ -63,6 +63,7 @@ class MCPDatabaseCapabilityResponseTest {
                 Map.entry("schemaExecutionSemantics", SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Map.entry("supportsCrossSchemaSql", false),
                 Map.entry("supportsExplain", true),
-                Map.entry("explainExecutionSemantics", "EXPLAIN is available for read-only execution plan diagnostics."))));
+                Map.entry("explainExecutionSemantics",
+                        "database_gateway_execute_explain_query executes model-generated database-native EXPLAIN SQL for one classifier-approved SELECT. EXPLAIN ANALYZE is not supported."))));
     }
 }

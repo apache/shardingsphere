@@ -111,7 +111,6 @@ class MetadataQueryServiceTest {
     private void mockDialectDatabaseMetaData(final DatabaseType databaseType, final boolean sequenceSupported) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
         when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.NATIVE_SCHEMA));
-        when(result.getExplainOption()).thenReturn(() -> false);
         when(result.getSequenceOption()).thenReturn(
                 sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(result));

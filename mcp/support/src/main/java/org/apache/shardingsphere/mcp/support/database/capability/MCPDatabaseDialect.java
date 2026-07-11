@@ -139,15 +139,6 @@ public final class MCPDatabaseDialect {
     }
     
     /**
-     * Judge whether EXPLAIN is supported.
-     *
-     * @return whether EXPLAIN is supported
-     */
-    public boolean isExplainSupported() {
-        return dialectDatabaseMetaData.map(each -> each.getExplainOption().isExplainSupported()).orElse(false);
-    }
-    
-    /**
      * Judge whether unquoted identifiers are folded by database metadata lookup.
      *
      * @return whether unquoted identifiers are folded

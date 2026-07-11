@@ -39,7 +39,7 @@ public final class MCPToolOutputSchemaValidator {
     private static final Collection<String> CONTINUATION_MODES = List.of("none", "pagination", "metadata_search");
     
     private static final Collection<String> RECOVERY_CATEGORIES = List.of("not_found", "ambiguous", "empty_scope", "missing_context", "validation", "terminal",
-            "unsupported_target", "invalid_enum", "unsafe_sql", "stale_workflow", "unavailable_runtime", "terminal_operator_action");
+            "unsupported_target", "invalid_enum", "unsafe_sql", "invalid_explain_sql", "stale_workflow", "unavailable_runtime", "terminal_operator_action");
     
     /**
      * Validate one tool output schema.

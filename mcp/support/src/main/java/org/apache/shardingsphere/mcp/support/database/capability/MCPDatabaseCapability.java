@@ -43,16 +43,13 @@ public final class MCPDatabaseCapability {
     
     private final SchemaExecutionSemantics schemaExecutionSemantics;
     
-    private final boolean supportsExplain;
-    
     public MCPDatabaseCapability(final String databaseName, final boolean supportsTransaction, final boolean supportsSavepoint, final MCPDatabaseCapabilityOption option) {
         this.databaseName = databaseName;
         databaseType = option.getType();
         MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(option.getType());
         supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(databaseDialect);
         transactionCapability = databaseDialect.getTransactionCapability(supportsTransaction, supportsSavepoint);
-        supportsExplain = databaseDialect.isExplainSupported();
-        supportedStatementClasses = createSupportedStatementClasses(transactionCapability, supportsExplain);
+        supportedStatementClasses = createSupportedStatementClasses(transactionCapability);
         defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
         schemaExecutionSemantics = createSchemaExecutionSemantics(defaultSchemaSemantics);
     }
@@ -74,7 +71,7 @@ public final class MCPDatabaseCapability {
         return result;
     }
     
-    private Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean supportsExplain) {
+    private Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability) {
         Set<SupportedMCPStatement> result = new LinkedHashSet<>(16, 1F);
         result.add(SupportedMCPStatement.QUERY);
         result.add(SupportedMCPStatement.DML);
@@ -86,9 +83,7 @@ public final class MCPDatabaseCapability {
         if (TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability) {
             result.add(SupportedMCPStatement.SAVEPOINT);
         }
-        if (supportsExplain) {
-            result.add(SupportedMCPStatement.EXPLAIN);
-        }
+        result.add(SupportedMCPStatement.EXPLAIN);
         return result;
     }
     
@@ -108,6 +103,15 @@ public final class MCPDatabaseCapability {
      */
     public boolean isSupportsSavepoint() {
         return TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability;
+    }
+    
+    /**
+     * Judge whether EXPLAIN query is supported.
+     *
+     * @return whether EXPLAIN query is supported
+     */
+    public boolean isSupportsExplain() {
+        return supportedStatementClasses.contains(SupportedMCPStatement.EXPLAIN);
     }
     
     /**

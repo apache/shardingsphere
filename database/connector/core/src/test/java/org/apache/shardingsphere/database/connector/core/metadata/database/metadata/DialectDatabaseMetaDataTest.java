@@ -19,7 +19,6 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.explain.DialectExplainOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
@@ -117,12 +116,6 @@ class DialectDatabaseMetaDataTest {
     @Test
     void assertGetGeneratedKeyOption() {
         assertThat(dialectDatabaseMetaData.getGeneratedKeyOption(), is(Optional.empty()));
-    }
-    
-    @Test
-    void assertGetExplainOption() {
-        DialectExplainOption actual = dialectDatabaseMetaData.getExplainOption();
-        assertFalse(actual.isExplainSupported());
     }
     
     @Test

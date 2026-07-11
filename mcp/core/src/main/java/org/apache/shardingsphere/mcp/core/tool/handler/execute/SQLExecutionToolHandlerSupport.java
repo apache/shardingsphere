@@ -19,21 +19,24 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 
+import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class SQLExecutionToolHandlerSupport {
     
     static boolean isReadOnlyStatement(final ClassificationResult classificationResult) {
-        return SupportedMCPStatement.QUERY == classificationResult.getStatementClass() || SupportedMCPStatement.EXPLAIN == classificationResult.getStatementClass();
+        return SupportedMCPStatement.QUERY == classificationResult.getStatementClass();
     }
     
     static void checkExecutionArguments(final MCPToolArguments toolArguments, final String sourceTool) {
@@ -61,6 +64,19 @@ final class SQLExecutionToolHandlerSupport {
     
     static SQLExecutionRequest createReadOnlyExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
         return createExecutionRequest(toolCall, toolArguments, schema, sql, sourceTool, true);
+    }
+    
+    static String resolveSchema(final MCPDatabaseHandlerContext databaseContext, final MCPToolArguments toolArguments) {
+        String result = toolArguments.getStringArgument("schema");
+        if (!result.isEmpty()) {
+            return result;
+        }
+        String database = toolArguments.getStringArgument("database");
+        if (database.isEmpty()) {
+            return "";
+        }
+        List<ShardingSphereSchema> schemas = databaseContext.getMetadataQueryFacade().querySchemas(database);
+        return 1 == schemas.size() ? schemas.iterator().next().getName() : "";
     }
     
     private static int resolveMaxRows(final MCPToolArguments toolArguments, final String sourceTool) {

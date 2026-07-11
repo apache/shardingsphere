@@ -86,7 +86,7 @@ class MCPGuidancePayloadBuilderTest {
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(String.valueOf(actual.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
         Map<?, ?> actualSqlToolSelection = castToMap(actual.get("sql_tool_selection"));
-        assertThat(actualSqlToolSelection.keySet().stream().toList(), is(List.of("read_only", "side_effecting")));
+        assertThat(actualSqlToolSelection.keySet().stream().toList(), is(List.of("read_only", "explain", "side_effecting")));
         assertThat(actual.get("side_effect_rule"), is("Preview before side effects and continue only when the requested side effect is still intended."));
         assertThat(actual.get("completion_rule"),
                 is("Use completion/complete for one uncertain argument at a time; when completion reports missing context, follow meta.next_actions before guessing."));
@@ -116,6 +116,9 @@ class MCPGuidancePayloadBuilderTest {
         Map<?, ?> actualValidateRuntimeDatabase = findByKey(actual, "flow_id", "validate_runtime_database");
         assertTrue(((Collection<?>) actualValidateRuntimeDatabase.get("steps")).contains("call_tool database_gateway_validate_runtime_database"));
         assertThat(actualValidateRuntimeDatabase.get("referenced_tools"), is(List.of("database_gateway_validate_runtime_database")));
+        Map<?, ?> actualExplainQuery = findByKey(actual, "flow_id", "explain_query");
+        assertThat(actualExplainQuery.get("referenced_tools"), is(List.of("database_gateway_execute_explain_query")));
+        assertTrue(((Collection<?>) actualExplainQuery.get("steps")).contains("call_tool database_gateway_execute_explain_query"));
         Map<?, ?> actualCompleteArgument = findByKey(actual, "flow_id", "complete_uncertain_argument");
         assertTrue(((Collection<?>) actualCompleteArgument.get("steps")).contains("call completion/complete for one argument"));
         Map<?, ?> actualSideEffectingSql = findByKey(actual, "flow_id", "side_effecting_sql");

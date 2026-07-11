@@ -304,10 +304,10 @@ class MCPSQLExecutionFacadeTest {
         SQLExecutionRequest request = createExecutionRequest("EXPLAIN SELECT 1");
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", "EXPLAIN SELECT 1", "orders", "");
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createStatementClassifier(classification));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
-        StatementClassNotSupportedException actual = assertThrows(StatementClassNotSupportedException.class, () -> facade.execute(request));
+        StatementClassNotSupportedException actual = assertThrows(StatementClassNotSupportedException.class, () -> facade.execute(request, classification));
         assertThat(actual.getMessage(), is("Statement class is not supported."));
         verify(traceFactory).create("session-1", "logic_db", "EXPLAIN SELECT 1", false, "EXPLAIN");
         verifyNoInteractions(transactionExecutor, statementExecutor);
@@ -347,8 +347,8 @@ class MCPSQLExecutionFacadeTest {
         when(statementExecutor.execute(request, classification, capability)).thenReturn(response);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createStatementClassifier(classification));
-        SQLExecutionResponse actual = facade.execute(request);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
+        SQLExecutionResponse actual = facade.execute(request, classification);
         assertThat(actual, is(response));
         verify(statementExecutor).execute(request, classification, capability);
         verify(traceFactory).create("session-1", "logic_db", "EXPLAIN SELECT 1", true, "EXPLAIN");

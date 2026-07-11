@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.protocol.error;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationResult;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -52,6 +54,33 @@ final class MCPSQLRecoveryPayloadFactory {
         result.put("suggested_arguments", cause.getSuggestedArguments());
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(cause.getTargetTool(), createSQLToolMismatchActionReason(cause), cause.getSuggestedArguments())));
         result.put("ask_user_when_uncertain", false);
+        return result;
+    }
+    
+    static Map<String, Object> createExplainSQLSyntaxRecovery(final ExplainSQLSyntaxException cause) {
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery("invalid_explain_sql",
+                "Regenerate explain_sql for the same sql using database-native EXPLAIN syntax, then retry database_gateway_execute_explain_query. Do not use EXPLAIN ANALYZE.");
+        result.put("database", cause.getDatabase());
+        result.put("schema", cause.getSchema());
+        result.put("sql", cause.getSql());
+        result.put("rejected_explain_sql", cause.getExplainSql());
+        result.put("suggested_arguments", createExplainRetryArguments(cause));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(
+                MCPNextActionUtils.readResource(createDatabaseCapabilityUri(cause.getDatabase()), "Read explain tool semantics before regenerating explain_sql."),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_execute_explain_query",
+                        "Regenerate explain_sql from sql without changing sql, then retry the explain tool with the generated explain_sql.",
+                        createExplainRetryArguments(cause)), 1)));
+        result.put("ask_user_when_uncertain", false);
+        return result;
+    }
+    
+    private static Map<String, Object> createExplainRetryArguments(final ExplainSQLSyntaxException cause) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("database", cause.getDatabase());
+        if (!cause.getSchema().isEmpty()) {
+            result.put("schema", cause.getSchema());
+        }
+        result.put("sql", cause.getSql());
         return result;
     }
     
