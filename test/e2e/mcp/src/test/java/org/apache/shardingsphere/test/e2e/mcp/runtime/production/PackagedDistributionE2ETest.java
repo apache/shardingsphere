@@ -72,7 +72,8 @@ class PackagedDistributionE2ETest {
             "shardingsphere-mcp-feature-sharding");
     
     private static final List<String> CORE_TOOL_NAMES = List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database",
-            "database_gateway_execute_query", "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow");
+            "database_gateway_execute_query", "database_gateway_execute_explain_query", "database_gateway_execute_update",
+            "database_gateway_apply_workflow", "database_gateway_validate_workflow");
     
     private static final List<String> REMOVED_FEATURE_TOOL_NAMES = OfficialMCPToolNames.getAll().stream().filter(each -> !CORE_TOOL_NAMES.contains(each)).toList();
     

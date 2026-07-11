@@ -23,6 +23,6 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 public final class PrestoMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public PrestoMCPDatabaseCapabilityOption() {
-        super("Presto");
+        super("Presto", true);
     }
 }

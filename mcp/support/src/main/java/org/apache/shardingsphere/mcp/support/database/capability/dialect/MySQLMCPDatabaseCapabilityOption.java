@@ -26,7 +26,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 public final class MySQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public MySQLMCPDatabaseCapabilityOption() {
-        super("MySQL");
+        super("MySQL", true);
     }
     
     @Override

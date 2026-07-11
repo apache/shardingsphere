@@ -49,7 +49,7 @@ public final class MCPDatabaseCapability {
         MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(option.getType());
         supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(databaseDialect);
         transactionCapability = databaseDialect.getTransactionCapability(supportsTransaction, supportsSavepoint);
-        supportedStatementClasses = createSupportedStatementClasses(transactionCapability);
+        supportedStatementClasses = createSupportedStatementClasses(transactionCapability, option.isExplainSupported());
         defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
         schemaExecutionSemantics = createSchemaExecutionSemantics(defaultSchemaSemantics);
     }
@@ -71,7 +71,7 @@ public final class MCPDatabaseCapability {
         return result;
     }
     
-    private Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability) {
+    private Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean explainSupported) {
         Set<SupportedMCPStatement> result = new LinkedHashSet<>(16, 1F);
         result.add(SupportedMCPStatement.QUERY);
         result.add(SupportedMCPStatement.DML);
@@ -83,7 +83,9 @@ public final class MCPDatabaseCapability {
         if (TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability) {
             result.add(SupportedMCPStatement.SAVEPOINT);
         }
-        result.add(SupportedMCPStatement.EXPLAIN);
+        if (explainSupported) {
+            result.add(SupportedMCPStatement.EXPLAIN);
+        }
         return result;
     }
     

@@ -23,6 +23,6 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 public final class HiveMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public HiveMCPDatabaseCapabilityOption() {
-        super("Hive");
+        super("Hive", true);
     }
 }

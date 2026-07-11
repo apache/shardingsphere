@@ -22,8 +22,16 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
 import java.util.List;
+import java.util.Set;
 
 final class ExplainSQLCandidateValidator {
+    
+    private static final Set<String> STATEMENT_START_KEYWORDS = Set.of(
+            "EXPLAIN", "SELECT", "WITH", "VALUES", "INSERT", "UPDATE", "DELETE", "MERGE", "REPLACE", "UPSERT",
+            "CREATE", "ALTER", "DROP", "TRUNCATE", "RENAME", "ATTACH", "DETACH", "EXCHANGE", "UNDROP", "OPTIMIZE",
+            "GRANT", "REVOKE", "CALL", "EXEC", "EXECUTE", "DECLARE", "PREPARE", "DEALLOCATE", "DESCRIBE", "SHOW",
+            "DO", "COPY", "LOAD", "UNLOAD", "IMPORT", "EXPORT", "BEGIN", "START", "COMMIT", "ROLLBACK", "SAVEPOINT", "RELEASE",
+            "SET", "RESET", "USE", "PARALLEL");
     
     private final StatementClassifier statementClassifier = new StatementClassifier();
     
@@ -35,7 +43,7 @@ final class ExplainSQLCandidateValidator {
                 () -> new MCPInvalidRequestException("database_gateway_execute_explain_query only supports QUERY statements as the explained SQL."));
         String actualExplainSql = scanner.normalizeSingleStatement(explainSql);
         List<SQLStatementToken> tokens = scanner.tokenize(actualExplainSql);
-        checkExplainCandidate(tokens, sql, actualExplainSql);
+        checkExplainCandidate(tokens, explainedStatement.getNormalizedSql(), actualExplainSql);
         return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, explainedStatement.getTargetObjectName().orElse(""), "",
                 explainedStatement.getReferencedObjectNames());
     }
@@ -43,27 +51,36 @@ final class ExplainSQLCandidateValidator {
     private void checkExplainCandidate(final List<SQLStatementToken> tokens, final String sql, final String explainSql) {
         ShardingSpherePreconditions.checkState(!tokens.isEmpty() && scanner.isKeyword(tokens.get(0), "EXPLAIN"),
                 () -> new MCPInvalidRequestException("explain_sql must start with EXPLAIN."));
-        ShardingSpherePreconditions.checkState(!containsKeywordSequence(tokens, "EXPLAIN", "PLAN", "FOR"),
-                () -> new MCPInvalidRequestException("EXPLAIN PLAN FOR workflows are not supported by the MCP explain query tool."));
         String explainPrefix = extractExplainPrefix(explainSql, sql);
         List<SQLStatementToken> explainPrefixTokens = scanner.tokenize(explainPrefix);
-        ShardingSpherePreconditions.checkState(!containsKeyword(explainPrefixTokens, "ANALYZE"),
+        ShardingSpherePreconditions.checkState(!containsKeywordSequence(explainPrefixTokens, "EXPLAIN", "PLAN", "FOR"),
+                () -> new MCPInvalidRequestException("EXPLAIN PLAN FOR workflows are not supported by the MCP explain query tool."));
+        ShardingSpherePreconditions.checkState(!containsKeyword(explainPrefixTokens, "ANALYZE", "ANALYSE"),
                 () -> new MCPInvalidRequestException("EXPLAIN ANALYZE is not supported by the MCP explain query tool."));
         ShardingSpherePreconditions.checkState(!containsKeyword(explainPrefixTokens, "INTO"),
                 () -> new MCPInvalidRequestException("EXPLAIN output redirection is not supported by the MCP explain query tool."));
+        ShardingSpherePreconditions.checkState(!containsStatementStartKeyword(explainPrefixTokens),
+                () -> new MCPInvalidRequestException("explain_sql must not wrap the original sql argument in another statement."));
     }
     
     private String extractExplainPrefix(final String explainSql, final String sql) {
-        String normalizedExplainSql = normalizeForComparison(explainSql);
-        String normalizedSql = normalizeForComparison(sql);
-        ShardingSpherePreconditions.checkState(normalizedExplainSql.endsWith(normalizedSql),
+        ShardingSpherePreconditions.checkState(explainSql.endsWith(sql),
                 () -> new MCPInvalidRequestException("explain_sql must include the original sql argument without rewriting it."));
-        return normalizedExplainSql.substring(0, normalizedExplainSql.length() - normalizedSql.length());
+        return explainSql.substring(0, explainSql.length() - sql.length());
     }
     
-    private boolean containsKeyword(final List<SQLStatementToken> tokens, final String keyword) {
+    private boolean containsStatementStartKeyword(final List<SQLStatementToken> tokens) {
+        for (SQLStatementToken each : tokens.subList(1, tokens.size())) {
+            if (!each.quotedIdentifier() && STATEMENT_START_KEYWORDS.contains(each.upperText())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsKeyword(final List<SQLStatementToken> tokens, final String... keywords) {
         for (SQLStatementToken each : tokens) {
-            if (scanner.isKeyword(each, keyword)) {
+            if (scanner.isKeyword(each, keywords)) {
                 return true;
             }
         }
@@ -88,7 +105,4 @@ final class ExplainSQLCandidateValidator {
         return true;
     }
     
-    private String normalizeForComparison(final String sql) {
-        return scanner.normalizeSingleStatement(sql).replaceAll("\\s+", " ").trim();
-    }
 }

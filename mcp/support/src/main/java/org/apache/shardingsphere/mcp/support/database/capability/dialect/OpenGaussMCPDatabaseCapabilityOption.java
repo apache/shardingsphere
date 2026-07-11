@@ -23,6 +23,6 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 public final class OpenGaussMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public OpenGaussMCPDatabaseCapabilityOption() {
-        super("openGauss");
+        super("openGauss", true);
     }
 }

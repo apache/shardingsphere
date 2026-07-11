@@ -23,6 +23,6 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 public final class PostgreSQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public PostgreSQLMCPDatabaseCapabilityOption() {
-        super("PostgreSQL");
+        super("PostgreSQL", true);
     }
 }

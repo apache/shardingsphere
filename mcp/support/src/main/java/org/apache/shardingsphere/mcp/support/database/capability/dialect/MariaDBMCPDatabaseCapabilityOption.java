@@ -26,7 +26,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 public final class MariaDBMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public MariaDBMCPDatabaseCapabilityOption() {
-        super("MariaDB");
+        super("MariaDB", true);
     }
     
     @Override

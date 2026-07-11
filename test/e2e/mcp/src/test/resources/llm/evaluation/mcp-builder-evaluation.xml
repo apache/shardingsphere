@@ -78,7 +78,7 @@
       An operator asks for current order counts and an execution explanation on a configured runtime database. Explain how the model should
       answer using MCP while preserving a read-only SQL boundary.
     </question>
-    <answer>metadata_resources|database_gateway_execute_query|database_gateway_execute_explain_query|no_update_or_apply</answer>
+    <answer>metadata|database_gateway_execute_query|database_gateway_execute_explain_query|read_only</answer>
     <expected_answer>
       The model should confirm the target database and schema through metadata resources, call database_gateway_execute_query for the SELECT
       count, then generate database-native EXPLAIN SQL without ANALYZE and call database_gateway_execute_explain_query with the original SELECT

@@ -17,21 +17,27 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
 /**
  * Common base implementation for MCP database capability options.
  */
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 abstract class AbstractMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
     private final String type;
     
-    protected AbstractMCPDatabaseCapabilityOption(final String type) {
-        this.type = type;
-    }
+    private final boolean explainSupported;
     
     @Override
     public final String getType() {
         return type;
+    }
+    
+    @Override
+    public final boolean isExplainSupported() {
+        return explainSupported;
     }
 }

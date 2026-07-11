@@ -23,6 +23,6 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 public final class SQLServerMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public SQLServerMCPDatabaseCapabilityOption() {
-        super("SQLServer");
+        super("SQLServer", false);
     }
 }

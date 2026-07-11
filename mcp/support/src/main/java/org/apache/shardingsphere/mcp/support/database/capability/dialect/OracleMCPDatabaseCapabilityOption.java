@@ -23,6 +23,6 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 public final class OracleMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public OracleMCPDatabaseCapabilityOption() {
-        super("Oracle");
+        super("Oracle", false);
     }
 }

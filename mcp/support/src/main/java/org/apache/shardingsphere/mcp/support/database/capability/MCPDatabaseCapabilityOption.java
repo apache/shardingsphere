@@ -29,6 +29,13 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 public interface MCPDatabaseCapabilityOption extends TypedSPI {
     
     /**
+     * Judge whether MCP can execute a single database-native EXPLAIN statement and read its result set.
+     *
+     * @return whether MCP EXPLAIN execution is supported
+     */
+    boolean isExplainSupported();
+    
+    /**
      * Get identifier case policy set.
      *
      * @return identifier case policy set
