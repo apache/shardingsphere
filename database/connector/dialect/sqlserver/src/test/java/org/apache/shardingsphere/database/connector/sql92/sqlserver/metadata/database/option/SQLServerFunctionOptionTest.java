@@ -19,7 +19,10 @@ package org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.da
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
 
 class SQLServerFunctionOptionTest {
     
@@ -27,13 +30,9 @@ class SQLServerFunctionOptionTest {
     
     @Test
     void assertGetUnparenthesizedFunctionNames() {
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_TIMESTAMP"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_USER"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROWNUM"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROWNUM_"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROW_NUMBER"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SESSION_USER"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SYSTEM_USER"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("USER"));
+        assertThat(functionOption.getUnparenthesizedFunctionNames(), hasItems("CURRENT_TIMESTAMP", "CURRENT_USER", "SESSION_USER", "SYSTEM_USER", "USER"));
+        assertThat(functionOption.getUnparenthesizedFunctionNames(), not(hasItem("ROWNUM")));
+        assertThat(functionOption.getUnparenthesizedFunctionNames(), not(hasItem("ROWNUM_")));
+        assertThat(functionOption.getUnparenthesizedFunctionNames(), not(hasItem("ROW_NUMBER")));
     }
 }
