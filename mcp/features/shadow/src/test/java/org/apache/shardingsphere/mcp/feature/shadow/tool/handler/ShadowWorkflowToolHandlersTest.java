@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ShadowToolHandlerTest {
+class ShadowWorkflowToolHandlersTest {
     
     @Test
     void assertHandlePlanRule() {

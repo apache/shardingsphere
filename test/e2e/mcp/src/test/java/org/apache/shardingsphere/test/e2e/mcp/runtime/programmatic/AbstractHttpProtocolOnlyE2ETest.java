@@ -121,10 +121,6 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
         return MCPInteractionPayloads.parseJsonPayload(responseBody);
     }
     
-    protected final Map<String, Object> castToMap(final Object value) {
-        return MCPInteractionPayloads.castToMap(value);
-    }
-    
     protected final URI getEndpointUri() {
         if (null == httpServer) {
             throw new IllegalStateException("HTTP transport is not enabled for current protocol E2E test.");

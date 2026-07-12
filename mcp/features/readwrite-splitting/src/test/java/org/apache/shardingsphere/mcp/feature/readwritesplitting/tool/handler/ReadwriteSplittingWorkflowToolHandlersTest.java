@@ -55,7 +55,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ReadwriteSplittingToolHandlerTest {
+class ReadwriteSplittingWorkflowToolHandlersTest {
     
     @Test
     void assertHandlePlanRule() {

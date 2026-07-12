@@ -22,9 +22,8 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.MockedStatic;
 
-import java.lang.reflect.Field;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -36,6 +35,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
 class InMemoryWorkflowSessionContextTest {
     
@@ -71,8 +71,7 @@ class InMemoryWorkflowSessionContextTest {
     
     @Test
     void assertFindKeepsSnapshotForActiveSessionLifetime() {
-        MutableClock clock = new MutableClock(Instant.parse("2026-04-25T00:00:00Z"));
-        WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(clock);
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         workflowSessionContext.save(snapshot);
@@ -194,13 +193,9 @@ class InMemoryWorkflowSessionContextTest {
     }
     
     private WorkflowSessionContext createWorkflowSessionContext(final Clock clock) {
-        InMemoryWorkflowSessionContext result = new InMemoryWorkflowSessionContext();
-        try {
-            Field field = InMemoryWorkflowSessionContext.class.getDeclaredField("clock");
-            Plugins.getMemberAccessor().set(field, result, clock);
-            return result;
-        } catch (final ReflectiveOperationException ex) {
-            throw new AssertionError(ex);
+        try (MockedStatic<Clock> mockedClock = mockStatic(Clock.class)) {
+            mockedClock.when(Clock::systemUTC).thenReturn(clock);
+            return new InMemoryWorkflowSessionContext();
         }
     }
     

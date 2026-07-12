@@ -52,6 +52,75 @@ class MCPSessionExecutionCoordinatorTest {
     }
     
     @Test
+    void assertExecuteSerializesSameSession() throws InterruptedException, ExecutionException {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession("session-1");
+        MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
+        CountDownLatch firstExecutionStarted = new CountDownLatch(1);
+        CountDownLatch releaseFirstExecution = new CountDownLatch(1);
+        CountDownLatch secondExecutionAttempted = new CountDownLatch(1);
+        CountDownLatch secondExecutionStarted = new CountDownLatch(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        try {
+            Future<String> firstFuture = executorService.submit(() -> coordinator.executeWithSessionLock("session-1", () -> {
+                firstExecutionStarted.countDown();
+                awaitLatch(releaseFirstExecution);
+                return "first";
+            }));
+            assertTrue(firstExecutionStarted.await(1, TimeUnit.SECONDS));
+            assertFalse(firstFuture.isDone());
+            Future<String> secondFuture = executorService.submit(() -> {
+                secondExecutionAttempted.countDown();
+                return coordinator.executeWithSessionLock("session-1", () -> recordExecutionStarted(secondExecutionStarted, "second"));
+            });
+            assertFalse(secondFuture.isDone());
+            assertTrue(secondExecutionAttempted.await(1, TimeUnit.SECONDS));
+            assertFalse(secondExecutionStarted.await(200, TimeUnit.MILLISECONDS));
+            releaseFirstExecution.countDown();
+            assertThat(firstFuture.get(), is("first"));
+            assertThat(secondFuture.get(), is("second"));
+        } finally {
+            releaseFirstExecution.countDown();
+            executorService.shutdownNow();
+        }
+    }
+    
+    private String recordExecutionStarted(final CountDownLatch executionStarted, final String result) {
+        executionStarted.countDown();
+        return result;
+    }
+    
+    @Test
+    void assertExecuteAllowsDifferentSessionsConcurrently() throws InterruptedException, ExecutionException {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession("session-1");
+        sessionManager.createSession("session-2");
+        MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
+        CountDownLatch executionsStarted = new CountDownLatch(2);
+        CountDownLatch releaseExecutions = new CountDownLatch(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        try {
+            Future<String> firstFuture = executorService.submit(() -> coordinator.executeWithSessionLock("session-1", () -> executeConcurrently(executionsStarted, releaseExecutions, "first")));
+            Future<String> secondFuture = executorService.submit(() -> coordinator.executeWithSessionLock("session-2", () -> executeConcurrently(executionsStarted, releaseExecutions, "second")));
+            assertTrue(executionsStarted.await(1, TimeUnit.SECONDS));
+            assertFalse(firstFuture.isDone());
+            assertFalse(secondFuture.isDone());
+            releaseExecutions.countDown();
+            assertThat(firstFuture.get(), is("first"));
+            assertThat(secondFuture.get(), is("second"));
+        } finally {
+            releaseExecutions.countDown();
+            executorService.shutdownNow();
+        }
+    }
+    
+    private String executeConcurrently(final CountDownLatch executionsStarted, final CountDownLatch releaseExecutions, final String result) {
+        executionsStarted.countDown();
+        awaitLatch(releaseExecutions);
+        return result;
+    }
+    
+    @Test
     void assertCloseSessionWaitsForGuardedExecution() throws InterruptedException, ExecutionException {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
@@ -97,7 +166,9 @@ class MCPSessionExecutionCoordinatorTest {
     
     private void awaitLatch(final CountDownLatch latch) {
         try {
-            latch.await(1, TimeUnit.SECONDS);
+            if (!latch.await(1, TimeUnit.SECONDS)) {
+                throw new IllegalStateException("Timed out while waiting for test coordination.");
+            }
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException(ex);

@@ -138,6 +138,31 @@ class YamlMCPLaunchConfigurationSwapperTest {
     }
     
     @Test
+    void assertSwapToObjectWithMissingTransportType() {
+        YamlMCPLaunchConfiguration yamlConfig = YamlEngine.unmarshal("transport:\n"
+                + "  http:\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + createRuntimeDatabasesYaml(), YamlMCPLaunchConfiguration.class);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `transport.type` is required."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithStdioTransportAndHttpConfiguration() {
+        YamlMCPLaunchConfiguration yamlConfig = YamlEngine.unmarshal("transport:\n"
+                + "  type: STDIO\n"
+                + "  http:\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + createRuntimeDatabasesYaml(), YamlMCPLaunchConfiguration.class);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("transport.http is only valid when `transport.type` is STREAMABLE_HTTP."));
+    }
+    
+    @Test
     void assertSwapToObjectWithHttpDefaults() {
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal("transport:\n"
                 + "  type: STREAMABLE_HTTP\n"

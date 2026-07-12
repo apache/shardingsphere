@@ -46,7 +46,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 createExecuteSQLArguments("analytics_db", "analytics_db", "BEGIN"));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(payload.get("response_mode")), is("recovery"));
         assertThat(String.valueOf(payload.get("message")), is("Cross-database transaction switching is not supported."));
     }
@@ -72,13 +72,13 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         HttpResponse<String> update = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 createExecuteSQLArguments("logic_db", "logic_db", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         assertThat(update.statusCode(), is(200));
-        assertThat(String.valueOf(getStructuredContent(update.body()).get("affected_rows")), is("1"));
+        assertThat(String.valueOf(getToolCallPayload(update.body()).get("affected_rows")), is("1"));
         assertThat(sendDeleteRequest(httpClient, createSessionHeaders(sessionId)).statusCode(), is(200));
         String newSessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, newSessionId, "database_gateway_execute_query",
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "SELECT status FROM orders WHERE order_id = 1"));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(((List<?>) ((List<?>) payload.get("rows")).get(0)).get(0)), is("NEW"));
     }
     
@@ -90,7 +90,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
                                           final String expectedMessage) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", createExecuteSQLArguments(databaseName, databaseName, sql));
         assertThat(actual.statusCode(), is(200));
-        assertThat(String.valueOf(getStructuredContent(actual.body()).get("message")), is(expectedMessage));
+        assertThat(String.valueOf(getToolCallPayload(actual.body()).get("message")), is(expectedMessage));
     }
     
 }

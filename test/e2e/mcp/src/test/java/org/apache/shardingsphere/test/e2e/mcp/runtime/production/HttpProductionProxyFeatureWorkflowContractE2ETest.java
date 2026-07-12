@@ -79,19 +79,19 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             Map<String, Object> actualPlanResponse = interactionClient.call(scenario.toolName(), createPlanArguments(scenario));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             assertThat(String.valueOf(actualPlanResponse.get("current_step")), is("review"));
-            assertTrue(String.valueOf(getMapList(actualPlanResponse.get("distsql_artifacts"))).contains(scenario.expectedDistSQLToken()));
+            assertTrue(String.valueOf(getObjectListOrEmpty(actualPlanResponse.get("distsql_artifacts"))).contains(scenario.expectedDistSQLToken()));
             assertNoForbiddenArtifacts(actualPlanResponse);
             assertModelFacingPayloadContract(actualPlanResponse);
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
             Map<String, Object> actualManualApplyResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "manual-only"));
             assertThat(String.valueOf(actualManualApplyResponse.get("status")), is("awaiting-manual-execution"));
-            assertThat(getStringList(actualManualApplyResponse.get("executed_distsql")).size(), is(0));
+            assertThat(getStringListOrEmpty(actualManualApplyResponse.get("executed_distsql")).size(), is(0));
             assertNoForbiddenArtifacts(actualManualApplyResponse);
             assertModelFacingPayloadContract(actualManualApplyResponse);
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertThat(String.valueOf(actualValidationResponse.get("status")), is("failed"));
             assertThat(String.valueOf(actualValidationResponse.get("overall_status")), is("failed"));
-            assertFalse(getMapList(actualValidationResponse.get("issues")).isEmpty());
+            assertFalse(getObjectListOrEmpty(actualValidationResponse.get("issues")).isEmpty());
             assertModelFacingPayloadContract(actualValidationResponse);
         }
     }
@@ -106,7 +106,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             Map<String, Object> actualApplyResponse = interactionClient.call(APPLY_TOOL_NAME,
                     createReviewThenExecuteArguments(planId, getApprovedSteps(previewWorkflow(interactionClient, planId))));
             assertApplyCompleted(actualApplyResponse);
-            assertThat(getStringList(actualApplyResponse.get("executed_distsql")).size(), is(1));
+            assertThat(getStringListOrEmpty(actualApplyResponse.get("executed_distsql")).size(), is(1));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
             List<Map<String, Object>> actualRules = getPayloadItems(interactionClient.readResource(String.format(BROADCAST_RULES_RESOURCE_URI, getLogicalDatabaseName())));
             assertThat(actualRules.stream().map(each -> String.valueOf(each.get("broadcast_table"))).toList(), hasItem("orders"));
@@ -209,7 +209,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
         String planId = String.valueOf(actualPlanResponse.get("plan_id"));
         Map<String, Object> actualApplyResponse = applyReviewedWorkflow(interactionClient, planId);
         assertApplyCompleted(actualApplyResponse);
-        assertThat(getStringList(actualApplyResponse.get("executed_distsql")).size(), is(1));
+        assertThat(getStringListOrEmpty(actualApplyResponse.get("executed_distsql")).size(), is(1));
         assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
         assertDuplicateCreateFails(interactionClient, toolName, arguments);
     }
@@ -218,7 +218,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
                                             final Map<String, Object> arguments) throws IOException, InterruptedException {
         Map<String, Object> actual = interactionClient.call(toolName, arguments);
         assertThat(String.valueOf(actual.get("status")), is("failed"));
-        assertFalse(getMapList(actual.get("issues")).isEmpty());
+        assertFalse(getObjectListOrEmpty(actual.get("issues")).isEmpty());
         assertModelFacingPayloadContract(actual);
     }
     

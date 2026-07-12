@@ -50,7 +50,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ShardingToolHandlerTest {
+class ShardingWorkflowToolHandlersTest {
     
     @Test
     void assertHandlePlanTableRule() {

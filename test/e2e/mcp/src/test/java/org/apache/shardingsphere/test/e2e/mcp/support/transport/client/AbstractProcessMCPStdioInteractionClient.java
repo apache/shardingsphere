@@ -121,7 +121,7 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
                     + MCPInteractionPayloads.getJsonRpcErrorPayload(initializePayload).get("message")
                     + ".");
         }
-        Map<String, Object> initializeResult = MCPInteractionPayloads.getJsonRpcResult(initializePayload);
+        Map<String, Object> initializeResult = MCPInteractionPayloads.getRequiredJsonRpcResult(initializePayload);
         if (!MCPInteractionProtocolSupport.PROTOCOL_VERSION.equals(initializeResult.get("protocolVersion"))) {
             throw createRuntimeFailureException("Unexpected STDIO MCP protocol version: " + initializeResult + ".");
         }

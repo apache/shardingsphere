@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -152,7 +153,7 @@ class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRu
                     "column", "status",
                     "operation_type", "create",
                     "algorithm_type", "MASK_FROM_X_TO_Y")));
-            Map<String, Object> actualPayload = castStructuredContent(actual.structuredContent());
+            Map<String, Object> actualPayload = MCPInteractionPayloads.getRequiredObjectValue(actual.structuredContent(), "structuredContent");
             if (RuntimeTransport.HTTP == transport) {
                 assertThat(String.valueOf(actualPayload.get("status")), is("clarifying"));
                 assertThat(String.valueOf(actualPayload.get("fallback_reason")), is("remote_identity_required"));
@@ -161,8 +162,10 @@ class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRu
             }
             assertThat(String.valueOf(actualPayload.get("status")), is("planned"));
             assertThat(String.valueOf(actualPayload.get("current_step")), is("review"));
-            assertThat(String.valueOf(castToMap(castToMap(actualPayload.get("masked_property_preview")).get("primary")).get("from-x")), is("1"));
-            assertThat(String.valueOf(castToMap(castToMap(actualPayload.get("masked_property_preview")).get("primary")).get("to-y")), is("3"));
+            Map<String, Object> maskedPropertyPreview = MCPInteractionPayloads.getRequiredObject(actualPayload, "masked_property_preview");
+            Map<String, Object> primaryProperties = MCPInteractionPayloads.getRequiredObject(maskedPropertyPreview, "primary");
+            assertThat(String.valueOf(primaryProperties.get("from-x")), is("1"));
+            assertThat(String.valueOf(primaryProperties.get("to-y")), is("3"));
             assertElicitationRequest(actualElicitationRequests);
         }
     }
@@ -189,9 +192,9 @@ class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRu
             Map<String, Object> searchMetadataPayload = interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "orders", "object_types", List.of("table")));
             Map<String, Object> tableHit = MCPPayloadAssertions.findItem(searchMetadataPayload, "name", "orders");
-            String tableResourceUri = String.valueOf(getMap(tableHit.get("resource")).get("uri"));
+            String tableResourceUri = String.valueOf(getObjectOrEmpty(tableHit.get("resource")).get("uri"));
             assertThat(tableResourceUri, is("shardingsphere://databases/logic_db/schemas/logic_db/tables/orders"));
-            assertFalse(getMapList(tableHit.get("next_resources")).isEmpty());
+            assertFalse(getRequiredObjectList(tableHit.get("next_resources")).isEmpty());
             MCPPayloadAssertions.assertSingleItemValue(interactionClient.readResource(tableResourceUri), "table", "orders");
             assertAiNativeSqlPreview(interactionClient);
             assertAiNativeSqlResult(interactionClient);

@@ -30,6 +30,7 @@ import io.modelcontextprotocol.spec.ProtocolVersions;
 import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPStdioLogbackConfiguration;
 
 import java.io.IOException;
@@ -87,21 +88,16 @@ final class ProductionMCPClientTransportFactory {
         Map<String, Object> actualRequestedSchema = actual.requestedSchema();
         assertThat(actualRequestedSchema.get("type"), is("object"));
         assertFalse((Boolean) actualRequestedSchema.get("additionalProperties"));
-        Map<String, Object> actualProperties = castToMap(actualRequestedSchema.get("properties"));
+        Map<String, Object> actualProperties = MCPInteractionPayloads.getRequiredObject(actualRequestedSchema, "properties");
         assertTrue(actualProperties.containsKey("field_1"));
         assertTrue(actualProperties.containsKey("field_2"));
-        assertThat(String.valueOf(castToMap(actualProperties.get("field_1")).get("description")), is("Please provide property `from-x`."));
-        assertThat(String.valueOf(castToMap(actualProperties.get("field_2")).get("description")), is("Please provide property `to-y`."));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_1").get("description")), is("Please provide property `from-x`."));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_2").get("description")), is("Please provide property `to-y`."));
         assertFalse(actualProperties.keySet().stream().map(String::valueOf).anyMatch(each -> each.contains("secret") || each.contains("password") || each.contains("token")));
-        assertThat(getStringList(actualRequestedSchema.get("required")), hasItems("field_1", "field_2"));
+        assertThat(getRequiredStringList(actualRequestedSchema.get("required")), hasItems("field_1", "field_2"));
     }
     
-    @SuppressWarnings("unchecked")
-    private static Map<String, Object> castToMap(final Object value) {
-        return (Map<String, Object>) value;
-    }
-    
-    private static List<String> getStringList(final Object value) {
+    private static List<String> getRequiredStringList(final Object value) {
         return ((List<?>) value).stream().map(String::valueOf).toList();
     }
     

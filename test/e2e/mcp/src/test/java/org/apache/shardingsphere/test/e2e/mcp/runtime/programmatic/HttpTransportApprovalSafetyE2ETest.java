@@ -49,7 +49,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractSharedHttpProgrammaticR
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "execute"));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(payload.get("response_mode")), is("executed"));
         assertThat(String.valueOf(payload.get("result_kind")), is("update_count"));
         assertThat(String.valueOf(payload.get("affected_rows")), is("0"));
@@ -107,7 +107,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractSharedHttpProgrammaticR
         actualArguments.putAll(arguments);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME, actualArguments);
         assertThat(actual.statusCode(), is(200));
-        return getStructuredContent(actual.body());
+        return getToolCallPayload(actual.body());
     }
     
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {

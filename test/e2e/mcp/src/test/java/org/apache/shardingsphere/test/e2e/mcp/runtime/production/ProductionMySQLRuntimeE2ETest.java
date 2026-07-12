@@ -118,8 +118,8 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
             String requestId = "resources-read-unsupported-1";
             Map<String, Object> actual = interactionClient.sendRawRequest(requestId, "resources/read", Map.of("uri", "unsupported://resource"));
             assertJsonRpcErrorWithoutResult(actual, requestId);
-            assertFalse(getMap(actual.get("result")).containsKey("contents"));
-            assertThat(String.valueOf(getMap(actual.get("error")).get("message")), is("Resource not found"));
+            assertFalse(getObjectOrEmpty(actual.get("result")).containsKey("contents"));
+            assertThat(String.valueOf(getObjectOrEmpty(actual.get("error")).get("message")), is("Resource not found"));
         }
     }
     
@@ -131,7 +131,7 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
             String requestId = "tools-call-unsupported-1";
             Map<String, Object> actual = interactionClient.sendRawRequest(requestId, "tools/call", Map.of("name", "unsupported_tool", "arguments", Map.of()));
             assertJsonRpcErrorWithoutResult(actual, requestId);
-            assertFalse(getMap(actual.get("result")).containsKey("isError"));
+            assertFalse(getObjectOrEmpty(actual.get("result")).containsKey("isError"));
         }
     }
     
@@ -140,7 +140,7 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     void assertInitializeExposesMarkdownInstructionsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actualResult = getMap(interactionClient.getInitializePayload().get("result"));
+            Map<String, Object> actualResult = getObjectOrEmpty(interactionClient.getInitializePayload().get("result"));
             String actualInstructions = String.valueOf(actualResult.get("instructions"));
             assertThat(actualInstructions, is(MCPMarkdownResourceLoader.load(MCPTransportConstants.SERVER_INSTRUCTIONS_RESOURCE, "server instruction")));
             assertThat(actualInstructions.lines().findFirst().orElse(""), is("Apache ShardingSphere MCP."));

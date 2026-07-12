@@ -66,6 +66,7 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
             throw new IllegalStateException("Failed to initialize MCP session: "
                     + MCPInteractionPayloads.getJsonRpcErrorPayload(initializePayload).get("message"));
         }
+        MCPInteractionPayloads.getRequiredJsonRpcResult(initializePayload);
         sessionId = response.headers().firstValue("MCP-Session-Id")
                 .orElseThrow(() -> new IllegalStateException("MCP initialize response does not contain MCP-Session-Id header."));
         actualProtocolVersion = response.headers().firstValue("MCP-Protocol-Version").orElse(MCPInteractionProtocolSupport.PROTOCOL_VERSION);

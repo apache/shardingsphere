@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.session;
+package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationResult;
-import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPJdbcTransactionStatementExecutor;
-import org.apache.shardingsphere.mcp.core.tool.handler.execute.StatementClassifier;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;

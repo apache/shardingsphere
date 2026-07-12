@@ -33,20 +33,21 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.jupiter.api.Test;
+import org.mockito.AdditionalAnswers;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
-import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.when;
 
 class ShadowWorkflowValidationServiceTest {
@@ -112,19 +113,11 @@ class ShadowWorkflowValidationServiceTest {
     }
     
     private ShadowWorkflowValidationService createService(final ShadowInspectionService inspectionService) {
-        ShadowWorkflowValidationService result = new ShadowWorkflowValidationService();
-        try {
-            setField(result, "inspectionService", inspectionService);
-            setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
-            return result;
-        } catch (final ReflectiveOperationException ex) {
-            throw new AssertionError(ex);
+        try (
+                MockedConstruction<ShadowInspectionService> ignored = mockConstruction(
+                        ShadowInspectionService.class, withSettings().defaultAnswer(AdditionalAnswers.delegatesTo(inspectionService)))) {
+            return new ShadowWorkflowValidationService();
         }
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     private WorkflowContextSnapshot createRuleSnapshot() {

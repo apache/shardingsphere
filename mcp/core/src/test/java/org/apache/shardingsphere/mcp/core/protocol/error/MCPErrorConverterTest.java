@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.protocol;
+package org.apache.shardingsphere.mcp.core.protocol.error;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
@@ -37,7 +37,6 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLSt
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
-import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxException;

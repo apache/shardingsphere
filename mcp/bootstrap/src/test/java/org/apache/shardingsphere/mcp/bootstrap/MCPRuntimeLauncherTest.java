@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.mcp.bootstrap;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
@@ -27,8 +31,11 @@ import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -41,8 +48,32 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MCPRuntimeLauncherTest {
+    
+    private Logger logger;
+    
+    private Level originalLogLevel;
+    
+    private ListAppender<ILoggingEvent> appender;
+    
+    @BeforeEach
+    void setUp() {
+        logger = (Logger) LoggerFactory.getLogger(MCPRuntimeLauncher.class);
+        originalLogLevel = logger.getLevel();
+        logger.setLevel(Level.INFO);
+        appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        logger.detachAppender(appender);
+        logger.setLevel(originalLogLevel);
+        appender.stop();
+    }
     
     @Test
     void assertLaunchWithHttpTransport() throws IOException {
@@ -50,13 +81,19 @@ class MCPRuntimeLauncherTest {
                 MockedConstruction<MCPSessionManager> ignoredMockedSessionManager = mockConstruction(MCPSessionManager.class);
                 MockedConstruction<MCPDatabaseCapabilityProvider> ignoredMockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class,
-                        (mock, context) -> assertThat(((MCPRuntimeContext) context.arguments().get(1)).getActiveTransport(), is("http")));
+                        (mock, context) -> {
+                            assertThat(((MCPRuntimeContext) context.arguments().get(1)).getActiveTransport(), is("http"));
+                            when(mock.getLocalPort()).thenReturn(19090);
+                        });
                 MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class)) {
             MCPRuntimeServer actual = new MCPRuntimeLauncher("conf/mcp-http.yaml").launch(createLaunchConfiguration(true));
             assertThat(actual, is(mockedHttpServer.constructed().get(0)));
             assertThat(mockedHttpServer.constructed().size(), is(1));
             assertThat(mockedStdioServer.constructed().size(), is(0));
             verify(actual).start();
+            assertThat(appender.list.size(), is(1));
+            assertThat(appender.list.getFirst().getFormattedMessage(), is("ShardingSphere MCP Server started, transport=http, config=conf/mcp-http.yaml, databases=1, "
+                    + "endpoint=http://127.0.0.1:19090/mcp, session_attribution=disabled, logs=logs/mcp.log."));
         }
     }
     
@@ -74,6 +111,9 @@ class MCPRuntimeLauncherTest {
             assertThat(mockedHttpServer.constructed().size(), is(0));
             assertThat(mockedStdioServer.constructed().size(), is(1));
             verify(actual).start();
+            assertThat(appender.list.size(), is(1));
+            assertThat(appender.list.getFirst().getFormattedMessage(), is("ShardingSphere MCP Server started, transport=stdio, config=conf/mcp-http.yaml, databases=1, "
+                    + "logs=logs/mcp.log. Stdout is reserved for MCP protocol frames."));
         }
     }
     

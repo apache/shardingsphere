@@ -237,12 +237,13 @@ class PackagedDistributionE2ETest {
     private void assertRuntimeDiagnostics(final Map<String, Object> runtimeStatus, final RuntimeTransport transport) {
         assertThat(runtimeStatus.get("status"), is("available"));
         assertThat(runtimeStatus.get("active_transport"), is(getTransportName(transport)));
-        Map<String, Object> actualRedactionSummary = MCPInteractionPayloads.castToMap(runtimeStatus.get("redaction_summary"));
+        Map<String, Object> actualRedactionSummary = MCPInteractionPayloads.getRequiredObject(runtimeStatus, "redaction_summary");
         assertThat(actualRedactionSummary.get("marker"), is("******"));
-        Map<String, Object> actualDiagnostics = MCPInteractionPayloads.castToMap(runtimeStatus.get("diagnostics"));
+        Map<String, Object> actualDiagnostics = MCPInteractionPayloads.getRequiredObject(runtimeStatus, "diagnostics");
         assertThat(actualDiagnostics.get("current_category"), is("ready"));
         assertTrue(((List<?>) actualDiagnostics.get("safe_categories")).contains("invalid_configuration"));
-        assertTrue(MCPInteractionPayloads.castToList(actualDiagnostics.get("operator_next_actions")).stream().anyMatch(each -> "invalid_configuration".equals(each.get("category"))));
+        assertTrue(MCPInteractionPayloads.getRequiredObjectList(actualDiagnostics, "operator_next_actions").stream()
+                .anyMatch(each -> "invalid_configuration".equals(each.get("category"))));
         assertRuntimeStatusSecretSafe(runtimeStatus);
     }
     
@@ -302,7 +303,7 @@ class PackagedDistributionE2ETest {
     }
     
     private void assertDiscoveredResources(final Map<String, Object> payload) {
-        List<Map<String, Object>> actualResources = MCPInteractionPayloads.castToList(payload.get("resources"));
+        List<Map<String, Object>> actualResources = MCPInteractionPayloads.getRequiredObjectList(payload, "resources");
         assertTrue(actualResources.stream().anyMatch(each -> FIXTURE_RESOURCE_URI.equals(each.get("uri"))));
     }
     
@@ -312,7 +313,7 @@ class PackagedDistributionE2ETest {
     }
     
     private void assertFixtureResource(final Map<String, Object> payload) {
-        List<Map<String, Object>> actualItems = MCPInteractionPayloads.castToList(payload.get("items"));
+        List<Map<String, Object>> actualItems = MCPInteractionPayloads.getRequiredObjectList(payload, "items");
         assertThat(actualItems.size(), is(1));
         assertThat(actualItems.getFirst().get("feature"), is("test-fixture"));
         assertThat(actualItems.getFirst().get("status"), is("ready"));
@@ -337,6 +338,6 @@ class PackagedDistributionE2ETest {
     }
     
     private List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
-        return MCPInteractionPayloads.castToList(payload.get("items"));
+        return MCPInteractionPayloads.getRequiredObjectList(payload, "items");
     }
 }
