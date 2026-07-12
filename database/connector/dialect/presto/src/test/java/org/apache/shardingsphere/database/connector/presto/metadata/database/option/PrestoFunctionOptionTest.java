@@ -29,7 +29,7 @@ class PrestoFunctionOptionTest {
     
     @Test
     void assertGetIfNullFunctionName() {
-        assertThat(functionOption.getIfNullFunctionName(), is("IFNULL"));
+        assertThat(functionOption.getIfNullFunctionName(), is("COALESCE"));
     }
     
     @Test

@@ -33,7 +33,7 @@ public final class PrestoFunctionOption implements DialectFunctionOption {
     
     @Override
     public String getIfNullFunctionName() {
-        return "IFNULL";
+        return "COALESCE";
     }
     
     @Override
