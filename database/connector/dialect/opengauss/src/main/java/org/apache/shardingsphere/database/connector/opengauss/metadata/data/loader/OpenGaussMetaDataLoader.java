@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Ind
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -65,17 +66,21 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
                     + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
                     + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN (%s)";
     
+    private static final String VIEW_META_DATA_SQL = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN (%s) and table_name IN (%s)";
+    
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         try (Connection connection = material.getDataSource().getConnection()) {
             Collection<String> schemaNames = new SchemaMetaDataLoader(getType()).loadSchemaNames(connection);
             Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(connection, schemaNames);
             Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(connection, material.getActualTableNames(), schemaNames);
+            Map<String, Collection<String>> schemaViewNames = loadViewNames(connection, schemaNames, material.getActualTableNames());
             Collection<SchemaMetaData> result = new LinkedList<>();
             for (String each : schemaNames) {
                 Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
                 Multimap<String, ColumnMetaData> tableColumnMetaDataMap = schemaColumnMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
-                result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap)));
+                Collection<String> viewNames = schemaViewNames.getOrDefault(each, Collections.emptySet());
+                result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap, viewNames)));
             }
             return result;
         }
@@ -181,12 +186,33 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
         return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), isPrimaryKey, generated, caseSensitive, true, false, isNullable);
     }
     
-    private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Multimap<String, ColumnMetaData> tableColumnMetaDataMap) {
+    private Map<String, Collection<String>> loadViewNames(final Connection connection, final Collection<String> schemaNames, final Collection<String> tables) throws SQLException {
+        Map<String, Collection<String>> result = new LinkedHashMap<>(schemaNames.size(), 1F);
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(getViewMetaDataSQL(schemaNames, tables));
+                ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                String schemaName = resultSet.getString("table_schema");
+                Collection<String> viewMetaData = result.computeIfAbsent(schemaName, key -> new HashSet<>());
+                String tableName = resultSet.getString("table_name");
+                viewMetaData.add(tableName);
+            }
+        }
+        return result;
+    }
+    
+    private String getViewMetaDataSQL(final Collection<String> schemaNames, final Collection<String> tables) {
+        return String.format(VIEW_META_DATA_SQL, schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")),
+                tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+    
+    private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Multimap<String, ColumnMetaData> tableColumnMetaDataMap,
+                                                              final Collection<String> viewNames) {
         Collection<TableMetaData> result = new LinkedList<>();
         for (String each : tableColumnMetaDataMap.keySet()) {
             Collection<ColumnMetaData> columnMetaDataList = tableColumnMetaDataMap.get(each);
             Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.get(each);
-            result.add(new TableMetaData(each, columnMetaDataList, indexMetaDataList, Collections.emptyList()));
+            result.add(new TableMetaData(each, columnMetaDataList, indexMetaDataList, Collections.emptyList(), viewNames.contains(each) ? TableType.VIEW : TableType.TABLE));
         }
         return result;
     }

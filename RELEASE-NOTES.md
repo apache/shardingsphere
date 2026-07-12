@@ -43,6 +43,7 @@
 
 ### Enhancements
 
+1. Metadata: Support view table type in openGauss meta data loader - [#39097](https://github.com/apache/shardingsphere/pull/39097)
 1. Build: Support compiling and using ShardingSphere under OpenJDK 26 - [#38625](https://github.com/apache/shardingsphere/issues/38625)
 1. Metadata: Support Oracle dictionary views by adding SYS default system schema and YAML definitions - [#38388](https://github.com/apache/shardingsphere/pull/38388)
 1. SQL Parser: Support Hive OPTIMIZE Statement about iceberg statement parse - [#38877](https://github.com/apache/shardingsphere/pull/38877)

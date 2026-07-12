@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Ind
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -67,6 +68,10 @@ class OpenGaussMetaDataLoaderTest {
                     + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
                     + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN ('public')";
     
+    private static final String VIEW_META_DATA_SQL_WITHOUT_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') and table_name IN ()";
+    
+    private static final String VIEW_META_DATA_SQL_WITH_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') and table_name IN ('tbl')";
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
     
     private final DialectMetaDataLoader dialectMetaDataLoader = DatabaseTypedSPILoader.getService(DialectMetaDataLoader.class, databaseType);
@@ -75,7 +80,8 @@ class OpenGaussMetaDataLoaderTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadArguments")
     void assertLoad(final String name, final Collection<String> actualTableNames, final String tableMetaDataSQL,
-                    final Callable<ResultSet> tableMetaDataResultSetFactory, final Callable<ResultSet> advanceIndexMetaDataResultSetFactory) throws Exception {
+                    final Callable<ResultSet> tableMetaDataResultSetFactory, final Callable<ResultSet> advanceIndexMetaDataResultSetFactory,
+                    final String viewMetaDataSQL, final boolean hasView, final TableType expectedTableType) throws Exception {
         DataSource dataSource = mockDataSource();
         ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
@@ -87,8 +93,10 @@ class OpenGaussMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
         ResultSet advanceIndexResultSet = advanceIndexMetaDataResultSetFactory.call();
         when(dataSource.getConnection().prepareStatement(ADVANCE_INDEX_META_DATA_SQL).executeQuery()).thenReturn(advanceIndexResultSet);
+        ResultSet viewResultSet = mockViewMetaDataResultSet(hasView);
+        when(dataSource.getConnection().prepareStatement(viewMetaDataSQL).executeQuery()).thenReturn(viewResultSet);
         DataTypeRegistry.load(dataSource, "openGauss");
-        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db")));
+        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db")), expectedTableType);
     }
     
     private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
@@ -154,9 +162,18 @@ class OpenGaussMetaDataLoaderTest {
         return result;
     }
     
-    private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
+    private static ResultSet mockViewMetaDataResultSet(final boolean hasView) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(hasView, false);
+        when(result.getString("table_schema")).thenReturn("public");
+        when(result.getString("table_name")).thenReturn("tbl");
+        return result;
+    }
+    
+    private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList, final TableType expectedTableType) {
         assertThat(schemaMetaDataList.size(), is(1));
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
+        assertThat(actualTableMetaData.getType(), is(expectedTableType));
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false));
@@ -188,11 +205,14 @@ class OpenGaussMetaDataLoaderTest {
     private static Stream<Arguments> loadArguments() {
         return Stream.of(
                 Arguments.of("without tables", Collections.emptyList(), TABLE_META_DATA_SQL_WITHOUT_TABLES,
-                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(""), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet),
-                Arguments.of("with tables", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
-                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(""), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet),
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(""), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet,
+                        VIEW_META_DATA_SQL_WITHOUT_TABLES, false, TableType.TABLE),
+                Arguments.of("with view table", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(""), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet,
+                        VIEW_META_DATA_SQL_WITH_TABLES, true, TableType.VIEW),
                 Arguments.of("with unmatched advance index rows and null default", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
-                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(null), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSetWithUnmatchedRows));
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(null), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSetWithUnmatchedRows,
+                        VIEW_META_DATA_SQL_WITH_TABLES, false, TableType.TABLE));
     }
     
     private static ResultSet mockTableMetaDataResultSet(final String nameColumnDefault) throws SQLException {
