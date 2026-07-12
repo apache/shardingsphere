@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
@@ -73,25 +72,6 @@ public final class WorkflowSQLUtils {
             return result.substring(1, result.length() - 1).replace("]]", "]");
         }
         return result;
-    }
-    
-    /**
-     * Canonicalize a workflow identifier for metadata lookup or identifier comparison.
-     *
-     * @param databaseType database type
-     * @param identifier identifier to canonicalize
-     * @return canonicalized identifier
-     */
-    public static String canonicalizeIdentifier(final String databaseType, final String identifier) {
-        String rawIdentifier = trimToEmpty(identifier);
-        String result = normalizeIdentifier(rawIdentifier);
-        if (isDelimitedIdentifier(rawIdentifier) || isSpecialSQLIdentifier(result)) {
-            return result;
-        }
-        MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(databaseType);
-        return databaseDialect.isUnquotedIdentifierCaseFolded()
-                ? databaseDialect.getIdentifierCasePolicy(IdentifierScope.TABLE).normalize(result)
-                : result;
     }
     
     /**
@@ -162,18 +142,22 @@ public final class WorkflowSQLUtils {
     }
     
     /**
-     * Judge whether a workflow identifier token references an existing identifier for the target database type.
+     * Judge whether a workflow identifier token references an existing identifier under the target database policy.
      *
-     * @param databaseType database type
+     * @param identifierCasePolicy identifier case policy
      * @param identifier identifier token
      * @param existingIdentifier existing identifier
      * @return whether the identifier references the existing identifier
      */
-    public static boolean isSameIdentifier(final String databaseType, final String identifier, final String existingIdentifier) {
+    public static boolean isSameIdentifier(final IdentifierCasePolicy identifierCasePolicy, final String identifier, final String existingIdentifier) {
         String actualIdentifier = normalizeIdentifier(identifier);
         String actualExistingIdentifier = normalizeIdentifier(existingIdentifier);
-        IdentifierCasePolicy identifierCasePolicy = MCPDatabaseDialect.of(databaseType).getIdentifierCasePolicy(IdentifierScope.TABLE);
         return identifierCasePolicy.matches(actualExistingIdentifier, actualIdentifier, getQuoteCharacter(identifier));
+    }
+    
+    static boolean requiresExactIdentifierMatch(final String identifier) {
+        String rawIdentifier = trimToEmpty(identifier);
+        return isDelimitedIdentifier(rawIdentifier) || isSpecialSQLIdentifier(normalizeIdentifier(rawIdentifier));
     }
     
     /**

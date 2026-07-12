@@ -19,7 +19,8 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
@@ -75,48 +76,6 @@ class WorkflowSQLUtilsTest {
         assertThat(WorkflowSQLUtils.normalizeIdentifier("`bad table`"), is("bad table"));
         assertThat(WorkflowSQLUtils.normalizeIdentifier("\"Order Detail\""), is("Order Detail"));
         assertThat(WorkflowSQLUtils.normalizeIdentifier("[Order Detail]"), is("Order Detail"));
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierFoldsPostgreSQLUnquotedIdentifier() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockIdentifierPatternType("PostgreSQL", IdentifierPatternType.LOWER_CASE, typedSPILoader, databaseTypedSPILoader);
-            mockIdentifierPatternType("openGauss", IdentifierPatternType.LOWER_CASE, typedSPILoader, databaseTypedSPILoader);
-            assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "Phone"), is("phone"));
-            assertThat(WorkflowSQLUtils.canonicalizeIdentifier("openGauss", "Phone"), is("phone"));
-        }
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierFoldsUpperCaseUnquotedIdentifier() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockIdentifierPatternType("Oracle", IdentifierPatternType.UPPER_CASE, typedSPILoader, databaseTypedSPILoader);
-            assertThat(WorkflowSQLUtils.canonicalizeIdentifier("Oracle", "phone"), is("PHONE"));
-        }
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierKeepsMySQLUnquotedIdentifier() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockIdentifierPatternType("MySQL", IdentifierPatternType.KEEP_ORIGIN, typedSPILoader, databaseTypedSPILoader);
-            assertThat(WorkflowSQLUtils.canonicalizeIdentifier("MySQL", "Phone"), is("Phone"));
-        }
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierPreservesSpecialIdentifier() {
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "Phone Number"), is("Phone Number"));
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierPreservesDelimitedIdentifier() {
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "\"Phone\""), is("Phone"));
     }
     
     @Test
@@ -256,52 +215,27 @@ class WorkflowSQLUtilsTest {
     
     @Test
     void assertIsSameIdentifierWithCaseInsensitiveDatabase() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockIdentifierPatternType("MySQL", IdentifierPatternType.KEEP_ORIGIN, typedSPILoader, databaseTypedSPILoader);
-            assertTrue(WorkflowSQLUtils.isSameIdentifier("MySQL", "Phone", "phone"));
-        }
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE), "Phone", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierFoldsPostgreSQLUnquotedIdentifier() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockIdentifierPatternType("PostgreSQL", IdentifierPatternType.LOWER_CASE, typedSPILoader, databaseTypedSPILoader);
-            assertTrue(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "phone"));
-        }
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "Phone", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierPreservesPostgreSQLDelimitedIdentifier() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockIdentifierPatternType("PostgreSQL", IdentifierPatternType.LOWER_CASE, typedSPILoader, databaseTypedSPILoader);
-            assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "\"Phone\"", "phone"));
-        }
+        assertFalse(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "\"Phone\"", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierRejectsUnquotedPostgreSQLQuotedName() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockIdentifierPatternType("PostgreSQL", IdentifierPatternType.LOWER_CASE, typedSPILoader, databaseTypedSPILoader);
-            assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "Phone"));
-        }
+        assertFalse(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "Phone", "Phone"));
     }
     
     @Test
     void assertIsSameIdentifierMatchesQuotedPostgreSQLName() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockIdentifierPatternType("PostgreSQL", IdentifierPatternType.LOWER_CASE, typedSPILoader, databaseTypedSPILoader);
-            assertTrue(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "\"Phone\"", "Phone"));
-        }
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "\"Phone\"", "Phone"));
     }
     
     @Test
@@ -391,12 +325,6 @@ class WorkflowSQLUtilsTest {
                                            final MockedStatic<TypedSPILoader> typedSPILoader, final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
         DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, typedSPILoader, databaseTypedSPILoader);
         when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(quoteCharacter);
-    }
-    
-    private static void mockIdentifierPatternType(final String databaseType, final IdentifierPatternType identifierPatternType,
-                                                  final MockedStatic<TypedSPILoader> typedSPILoader, final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, typedSPILoader, databaseTypedSPILoader);
-        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(identifierPatternType);
     }
     
     private static DialectDatabaseMetaData mockDialectDatabaseMetaData(final String databaseType,

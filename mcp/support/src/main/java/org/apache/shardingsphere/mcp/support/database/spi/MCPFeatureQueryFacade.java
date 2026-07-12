@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.database.spi;
 
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -44,12 +46,23 @@ public interface MCPFeatureQueryFacade {
     List<Map<String, Object>> queryWithAnyDatabase(String sql);
     
     /**
-     * Get runtime database type.
+     * Check whether runtime database capability exists.
      *
      * @param databaseName database name
-     * @return database type
+     * @throws DatabaseCapabilityNotFoundException when database capability does not exist
      */
-    String getDatabaseType(String databaseName);
+    void checkDatabaseCapability(String databaseName);
+    
+    /**
+     * Judge whether an identifier references an existing identifier in a runtime database.
+     *
+     * @param databaseName database name
+     * @param identifier identifier
+     * @param existingIdentifier existing identifier
+     * @return whether the identifiers are the same
+     * @throws DatabaseCapabilityNotFoundException when database capability does not exist
+     */
+    boolean isSameIdentifier(String databaseName, String identifier, String existingIdentifier);
     
     /**
      * Query column definition.

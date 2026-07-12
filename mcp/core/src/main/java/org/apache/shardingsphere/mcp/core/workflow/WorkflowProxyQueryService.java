@@ -72,9 +72,13 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     }
     
     @Override
-    public String getDatabaseType(final String databaseName) {
-        return databaseCapabilityProvider.provide(WorkflowSQLUtils.normalizeIdentifier(databaseName)).map(MCPDatabaseCapability::getDatabaseType)
-                .orElseThrow(DatabaseCapabilityNotFoundException::new);
+    public void checkDatabaseCapability(final String databaseName) {
+        getDatabaseCapability(databaseName);
+    }
+    
+    @Override
+    public boolean isSameIdentifier(final String databaseName, final String identifier, final String existingIdentifier) {
+        return WorkflowSQLUtils.isSameIdentifier(getDatabaseCapability(databaseName).getIdentifierCasePolicy(), identifier, existingIdentifier);
     }
     
     @Override
@@ -106,6 +110,14 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
             throw new MCPUnavailableException(String.format("Database `%s` is not configured.", databaseName));
         }
         return runtimeDatabaseConfig.openConnection(databaseName);
+    }
+    
+    private String getDatabaseType(final String databaseName) {
+        return getDatabaseCapability(databaseName).getDatabaseType();
+    }
+    
+    private MCPDatabaseCapability getDatabaseCapability(final String databaseName) {
+        return databaseCapabilityProvider.provide(WorkflowSQLUtils.normalizeIdentifier(databaseName)).orElseThrow(DatabaseCapabilityNotFoundException::new);
     }
     
     private ResultSet executeQuery(final Connection connection, final Statement statement, final String schemaName, final String sql) throws SQLException {

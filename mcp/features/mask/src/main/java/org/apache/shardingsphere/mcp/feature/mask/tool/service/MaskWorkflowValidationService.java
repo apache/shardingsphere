@@ -116,21 +116,23 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         ValidationReport result = new ValidationReport();
-        String databaseType = queryFacade.getDatabaseType(snapshot.getRequest().getDatabase());
+        queryFacade.checkDatabaseCapability(snapshot.getRequest().getDatabase());
         List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(queryFacade, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
-        result.setRuleValidation(validateRules(snapshot, maskRules, result, databaseType));
+        result.setRuleValidation(validateRules(snapshot, maskRules, result, queryFacade));
         result.setOverallStatus(validationSupport.resolveOverallStatus(result.getRuleValidation()));
         return result;
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> maskRules,
-                                            final ValidationReport validationReport, final String databaseType) {
+                                            final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade) {
         Optional<RuleWorkflowFeatureData> ruleFeatureData = getRuleFeatureData(snapshot);
         if (ruleFeatureData.isPresent()) {
-            return validateExpectedRules(snapshot, ruleFeatureData.get().getExpectedRules(), maskRules, validationReport, databaseType);
+            return validateExpectedRules(snapshot, ruleFeatureData.get().getExpectedRules(), maskRules, validationReport, queryFacade);
         }
         Optional<Map<String, Object>> actualRule = maskRules.stream()
-                .filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, snapshot.getRequest().getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column"))).findFirst();
+                .filter(each -> queryFacade.isSameIdentifier(snapshot.getRequest().getDatabase(), snapshot.getRequest().getColumn(),
+                        WorkflowRuleValueUtils.getRuleValue(each, "column")))
+                .findFirst();
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             if (actualRule.isEmpty()) {
                 return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(), "Mask rule has been removed.");
@@ -162,8 +164,8 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     }
     
     private ValidationSection validateExpectedRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules, final List<Map<String, Object>> actualRules,
-                                                    final ValidationReport validationReport, final String databaseType) {
-        List<Map<String, Object>> mismatches = createExpectedRuleMismatches(snapshot, expectedRules, actualRules, databaseType);
+                                                    final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade) {
+        List<Map<String, Object>> mismatches = createExpectedRuleMismatches(snapshot, expectedRules, actualRules, queryFacade);
         if (!mismatches.isEmpty()) {
             validationReport.getMismatches().addAll(mismatches);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, actualRules), "Mask table rule state does not match the planned state.");
@@ -184,11 +186,12 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     }
     
     private List<Map<String, Object>> createExpectedRuleMismatches(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules,
-                                                                   final List<Map<String, Object>> actualRules, final String databaseType) {
+                                                                   final List<Map<String, Object>> actualRules, final MCPFeatureQueryFacade queryFacade) {
         List<Map<String, Object>> result = new LinkedList<>();
+        String databaseName = snapshot.getRequest().getDatabase();
         for (Map<String, Object> each : expectedRules) {
             String expectedColumn = WorkflowRuleValueUtils.getRuleValue(each, "column");
-            Optional<Map<String, Object>> actualRule = findRuleByColumn(actualRules, databaseType, expectedColumn);
+            Optional<Map<String, Object>> actualRule = findRuleByColumn(actualRules, queryFacade, databaseName, expectedColumn);
             if (actualRule.isEmpty()) {
                 result.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", formatFieldValue("column", expectedColumn), "",
                         "Expected mask rule column is missing.", "Re-apply the intended mask rule."));
@@ -198,7 +201,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         }
         for (Map<String, Object> each : actualRules) {
             String actualColumn = WorkflowRuleValueUtils.getRuleValue(each, "column");
-            if (findRuleByColumn(expectedRules, databaseType, actualColumn).isEmpty()) {
+            if (findRuleByColumn(expectedRules, queryFacade, databaseName, actualColumn).isEmpty()) {
                 result.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no extra mask rule column", formatFieldValue("column", actualColumn),
                         "Unexpected mask rule column exists.", "Inspect concurrent rule changes before retrying validation."));
             }
@@ -206,9 +209,10 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         return result;
     }
     
-    private Optional<Map<String, Object>> findRuleByColumn(final List<Map<String, Object>> rules, final String databaseType, final String column) {
+    private Optional<Map<String, Object>> findRuleByColumn(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade,
+                                                           final String databaseName, final String column) {
         return rules.stream()
-                .filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, column, WorkflowRuleValueUtils.getRuleValue(each, "column"))).findFirst();
+                .filter(each -> queryFacade.isSameIdentifier(databaseName, column, WorkflowRuleValueUtils.getRuleValue(each, "column"))).findFirst();
     }
     
     private void addExpectedRuleValueMismatches(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final Map<String, Object> expectedRule,

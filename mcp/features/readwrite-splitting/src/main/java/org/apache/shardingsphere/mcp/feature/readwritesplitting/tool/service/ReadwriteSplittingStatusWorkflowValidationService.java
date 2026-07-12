@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
@@ -71,17 +70,17 @@ public final class ReadwriteSplittingStatusWorkflowValidationService implements 
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         ValidationReport result = new ValidationReport();
         ReadwriteSplittingStatusWorkflowRequest request = (ReadwriteSplittingStatusWorkflowRequest) snapshot.getRequest();
-        String databaseType = queryFacade.getDatabaseType(request.getDatabase());
+        queryFacade.checkDatabaseCapability(request.getDatabase());
         List<Map<String, Object>> statuses = inspectionService.queryRuleStatus(queryFacade, request.getDatabase(), request.getRuleName());
-        result.setRuleValidation(validateStatus(request, statuses, result, databaseType));
+        result.setRuleValidation(validateStatus(request, statuses, result, queryFacade));
         result.setOverallStatus(validationSupport.resolveOverallStatus(result.getRuleValidation()));
         return result;
     }
     
     private ValidationSection validateStatus(final ReadwriteSplittingStatusWorkflowRequest request, final List<Map<String, Object>> statuses,
-                                             final ValidationReport validationReport, final String databaseType) {
+                                             final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade) {
         String expectedStatus = "ENABLE".equals(distSQLPlanningService.resolveStatusOperation(request)) ? "ENABLED" : "DISABLED";
-        boolean matched = statuses.stream().anyMatch(each -> matchesStatus(request, each, databaseType, expectedStatus));
+        boolean matched = statuses.stream().anyMatch(each -> matchesStatus(request, each, queryFacade, expectedStatus));
         if (!matched) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "status", expectedStatus, request.getStorageUnit(),
                     "Readwrite-splitting storage-unit status does not match the planned artifact.",
@@ -91,9 +90,10 @@ public final class ReadwriteSplittingStatusWorkflowValidationService implements 
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, statuses, "Readwrite-splitting status state matches the planned DistSQL artifact.");
     }
     
-    private boolean matchesStatus(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> status, final String databaseType, final String expectedStatus) {
-        return WorkflowSQLUtils.isSameIdentifier(databaseType, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(status, "name"))
-                && WorkflowSQLUtils.isSameIdentifier(databaseType, request.getStorageUnit(), WorkflowRuleValueUtils.getRuleValue(status, "storage_unit"))
+    private boolean matchesStatus(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> status,
+                                  final MCPFeatureQueryFacade queryFacade, final String expectedStatus) {
+        return queryFacade.isSameIdentifier(request.getDatabase(), request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(status, "name"))
+                && queryFacade.isSameIdentifier(request.getDatabase(), request.getStorageUnit(), WorkflowRuleValueUtils.getRuleValue(status, "storage_unit"))
                 && expectedStatus.equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(status, "status"));
     }
 }

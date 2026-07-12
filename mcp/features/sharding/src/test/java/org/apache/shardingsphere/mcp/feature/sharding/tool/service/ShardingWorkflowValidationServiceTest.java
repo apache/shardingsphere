@@ -49,7 +49,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -78,12 +77,9 @@ class ShardingWorkflowValidationServiceTest {
         MCPFeatureQueryFacade queryFacade = createQueryFacade();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        try (MockedStatic<WorkflowSQLUtils> workflowSQLUtils = mockStatic(WorkflowSQLUtils.class, CALLS_REAL_METHODS)) {
-            workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier("FixtureDB", "t_order", "t_order")).thenReturn(true);
-            Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
-            assertThat(actual.get("status"), is("validated"));
-            assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
-        }
+        Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
+        assertThat(actual.get("status"), is("validated"));
+        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
     }
@@ -210,7 +206,9 @@ class ShardingWorkflowValidationServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("FixtureDB");
+        when(result.isSameIdentifier("logic_db", "t_order", "t_order")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", "ref_rule", "ref_rule")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", "unused_algorithm", "unused_algorithm")).thenReturn(true);
         return result;
     }
     

@@ -24,11 +24,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 import java.util.List;
 import java.util.Map;
@@ -38,28 +34,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class ReadwriteSplittingWorkflowPlanningServiceTest {
-    
-    private MockedStatic<WorkflowSQLUtils> workflowSQLUtils;
-    
-    @BeforeEach
-    void setUp() {
-        workflowSQLUtils = mockStatic(WorkflowSQLUtils.class, CALLS_REAL_METHODS);
-        workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier(anyString(), anyString(), anyString()))
-                .thenAnswer(invocation -> invocation.getArgument(1, String.class).equals(invocation.getArgument(2, String.class)));
-    }
-    
-    @AfterEach
-    void tearDown() {
-        workflowSQLUtils.close();
-    }
     
     @Test
     void assertPlanCreateRule() {
@@ -208,14 +187,15 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
     
     private MCPFeatureQueryFacade mockRuleQueryFacade(final List<Map<String, Object>> rules) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("FixtureDB");
+        when(result.isSameIdentifier("logic_db", "readwrite_ds", "readwrite_ds")).thenReturn(true);
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(rules);
         return result;
     }
     
     private MCPFeatureQueryFacade mockStatusQueryFacade(final List<Map<String, Object>> statuses) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType("logic_db")).thenReturn("FixtureDB");
+        when(result.isSameIdentifier("logic_db", "readwrite_ds", "readwrite_ds")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", "read_ds_0", "read_ds_0")).thenReturn(true);
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(statuses);
         return result;
     }

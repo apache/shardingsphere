@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -75,9 +74,9 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
-        String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
+        queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
         List<Map<String, Object>> statuses = inspectionService.queryRuleStatus(queryFacade, mergedRequest.getDatabase(), mergedRequest.getRuleName());
-        if (!ensureTargetStatusRow(mergedRequest, statuses, result, databaseType)) {
+        if (!ensureTargetStatusRow(mergedRequest, statuses, result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         result.getRuleArtifacts().add(distSQLPlanningService.planStatus(mergedRequest));
@@ -134,8 +133,8 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
     }
     
     private boolean ensureTargetStatusRow(final ReadwriteSplittingStatusWorkflowRequest request, final List<Map<String, Object>> statuses,
-                                          final WorkflowContextSnapshot snapshot, final String databaseType) {
-        if (statuses.stream().anyMatch(each -> matchesStatusTarget(request, each, databaseType))) {
+                                          final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
+        if (statuses.stream().anyMatch(each -> matchesStatusTarget(request, each, queryFacade))) {
             return true;
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", "discovering",
@@ -145,8 +144,8 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         return false;
     }
     
-    private boolean matchesStatusTarget(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> status, final String databaseType) {
-        return WorkflowSQLUtils.isSameIdentifier(databaseType, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(status, "name"))
-                && WorkflowSQLUtils.isSameIdentifier(databaseType, request.getStorageUnit(), WorkflowRuleValueUtils.getRuleValue(status, "storage_unit"));
+    private boolean matchesStatusTarget(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> status, final MCPFeatureQueryFacade queryFacade) {
+        return queryFacade.isSameIdentifier(request.getDatabase(), request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(status, "name"))
+                && queryFacade.isSameIdentifier(request.getDatabase(), request.getStorageUnit(), WorkflowRuleValueUtils.getRuleValue(status, "storage_unit"));
     }
 }

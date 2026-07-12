@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -69,22 +66,13 @@ class EncryptWorkflowPlanningServiceTest {
     
     private MockedStatic<TypedSPILoader> typedSPILoader;
     
-    private MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader;
-    
     @BeforeEach
     void setUp() {
         typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-        databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class);
-        DatabaseType databaseType = mock(DatabaseType.class);
-        typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, "FixtureDB")).thenReturn(Optional.of(databaseType));
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
-        databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(dialectDatabaseMetaData));
     }
     
     @AfterEach
     void tearDown() {
-        databaseTypedSPILoader.close();
         typedSPILoader.close();
     }
     
@@ -115,7 +103,8 @@ class EncryptWorkflowPlanningServiceTest {
     @Test
     void assertPlanRejectsMissingLogicalColumn() {
         MCPMetadataQueryFacade metadataQueryFacade = createMetadataQueryFacade();
-        when(metadataQueryFacade.queryTableColumn(any(), any(), any(), any())).thenReturn(Optional.empty());
+        when(metadataQueryFacade.querySchemas(any())).thenReturn(List.of(
+                new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(new ShardingSphereTable("orders", List.of(), List.of(), List.of(), TableType.TABLE)), List.of())));
         EncryptWorkflowPlanningService service = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class));
         WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), metadataQueryFacade, createQueryFacade(), "session-1", createRequest("create"));
@@ -248,8 +237,11 @@ class EncryptWorkflowPlanningServiceTest {
         request.setTable("t_user");
         request.setColumn("name");
         request.getOptions().setCipherColumnName("name_cipher");
+        MCPMetadataQueryFacade metadataQueryFacade = createMetadataQueryFacade();
+        when(metadataQueryFacade.querySchemas(any())).thenReturn(List.of(new ShardingSphereSchema(
+                "public", mock(DatabaseType.class), List.of(createTableMetadata("t_user", "name")), List.of())));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), new EncryptAlgorithmPropertyTemplateService(),
-                new EncryptRuleDistSQLPlanningService()).plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", request);
+                new EncryptRuleDistSQLPlanningService()).plan(new TestWorkflowSessionContext(), metadataQueryFacade, createQueryFacade(), "session-1", request);
         String actualSQL = actual.getRuleArtifacts().getFirst().getSql();
         assertThat(actual.getStatus(), is("planned"));
         assertTrue(actualSQL.startsWith("CREATE ENCRYPT RULE `t_user`"));
@@ -362,7 +354,11 @@ class EncryptWorkflowPlanningServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType(any())).thenReturn("FixtureDB");
+        when(result.isSameIdentifier("logic_db", "public", "public")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", "orders", "orders")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", "phone", "phone")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", "t_user", "t_user")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", "name", "name")).thenReturn(true);
         return result;
     }
     
@@ -370,10 +366,6 @@ class EncryptWorkflowPlanningServiceTest {
         MCPMetadataQueryFacade result = mock(MCPMetadataQueryFacade.class);
         when(result.queryDatabase(any())).thenReturn(Optional.of(createDatabaseMetadata()));
         when(result.querySchemas(any())).thenReturn(List.of(createSchemaMetadata()));
-        when(result.queryTable(any(), any(), any())).thenReturn(Optional.of(createTableMetadata()));
-        when(result.queryTableColumn(any(), any(), any(), any())).thenReturn(Optional.of(createColumnMetadata()));
-        when(result.queryTableColumns(any(), any(), any())).thenReturn(List.of(createColumnMetadata()));
-        when(result.queryIndexes(any(), any(), any())).thenReturn(List.of());
         return result;
     }
     
@@ -386,11 +378,15 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     private ShardingSphereTable createTableMetadata() {
-        return new ShardingSphereTable("orders", List.of(createColumnMetadata()), List.of(), List.of(), TableType.TABLE);
+        return createTableMetadata("orders", "phone");
     }
     
-    private ShardingSphereColumn createColumnMetadata() {
-        return new ShardingSphereColumn("phone", java.sql.Types.OTHER, false, false, false, true, false, true);
+    private ShardingSphereTable createTableMetadata(final String tableName, final String columnName) {
+        return new ShardingSphereTable(tableName, List.of(createColumnMetadata(columnName)), List.of(), List.of(), TableType.TABLE);
+    }
+    
+    private ShardingSphereColumn createColumnMetadata(final String columnName) {
+        return new ShardingSphereColumn(columnName, java.sql.Types.OTHER, false, false, false, true, false, true);
     }
     
     private EncryptWorkflowPlanningService createService(final EncryptRuleInspectionService ruleInspectionService,

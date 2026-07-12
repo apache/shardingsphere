@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -74,9 +73,9 @@ public final class BroadcastWorkflowPlanningService {
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
-        String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
+        queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
         List<Map<String, Object>> existingRules = ruleInspectionService.queryBroadcastRules(queryFacade, mergedRequest.getDatabase());
-        if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result, databaseType)) {
+        if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         result.getRuleArtifacts().add(WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(clarifiedIntent.getOperationType())
@@ -119,18 +118,15 @@ public final class BroadcastWorkflowPlanningService {
     }
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final BroadcastWorkflowRequest request, final List<Map<String, Object>> broadcastRules,
-                                         final WorkflowContextSnapshot snapshot, final String databaseType) {
+                                         final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         boolean dropWorkflow = WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(clarifiedIntent.getOperationType());
         boolean result = true;
         for (String each : request.getTargetTables()) {
-            boolean ruleExists = containsBroadcastTable(broadcastRules, databaseType, each);
+            boolean ruleExists = broadcastRules.stream().anyMatch(rule -> queryFacade.isSameIdentifier(
+                    request.getDatabase(), each, WorkflowRuleValueUtils.getRuleValue(rule, "broadcast_table")));
             result = dropWorkflow ? ensureDropState(each, ruleExists, snapshot) && result : ensureCreateState(each, ruleExists, snapshot) && result;
         }
         return result;
-    }
-    
-    private boolean containsBroadcastTable(final List<Map<String, Object>> broadcastRules, final String databaseType, final String tableName) {
-        return broadcastRules.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, tableName, WorkflowRuleValueUtils.getRuleValue(each, "broadcast_table")));
     }
     
     private boolean ensureCreateState(final String tableName, final boolean ruleExists, final WorkflowContextSnapshot snapshot) {

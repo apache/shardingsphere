@@ -21,20 +21,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * MCP database dialect capabilities.
@@ -45,8 +39,6 @@ public final class MCPDatabaseDialect {
     private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
     private final SystemDatabase systemDatabase;
-    
-    private final Optional<MCPDatabaseCapabilityOption> option;
     
     /**
      * Create MCP database dialect capabilities.
@@ -60,8 +52,7 @@ public final class MCPDatabaseDialect {
                 .orElseThrow(() -> new ServiceProviderNotFoundException(DatabaseType.class, actualDatabaseType));
         DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)
                 .orElseThrow(() -> new ServiceProviderNotFoundException(DialectDatabaseMetaData.class, actualDatabaseType));
-        return new MCPDatabaseDialect(dialectDatabaseMetaData, new SystemDatabase(databaseTypeFromSPI),
-                TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, actualDatabaseType));
+        return new MCPDatabaseDialect(dialectDatabaseMetaData, new SystemDatabase(databaseTypeFromSPI));
     }
     
     /**
@@ -71,28 +62,6 @@ public final class MCPDatabaseDialect {
      */
     public QuoteCharacter getIdentifierQuoteCharacter() {
         return dialectDatabaseMetaData.getQuoteCharacter();
-    }
-    
-    /**
-     * Get identifier case policy.
-     *
-     * @param identifierScope identifier scope
-     * @return identifier case policy
-     */
-    public IdentifierCasePolicy getIdentifierCasePolicy(final IdentifierScope identifierScope) {
-        return getIdentifierCasePolicySet().getPolicy(identifierScope);
-    }
-    
-    private IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return createDialectIdentifierCasePolicySet(dialectDatabaseMetaData)
-                .orElseGet(() -> option.map(MCPDatabaseCapabilityOption::getIdentifierCasePolicySet).orElseGet(IdentifierCasePolicyFactory::newSensitivePolicySet));
-    }
-    
-    private static Optional<IdentifierCasePolicySet> createDialectIdentifierCasePolicySet(final DialectDatabaseMetaData dialectDatabaseMetaData) {
-        IdentifierPatternType identifierPatternType = dialectDatabaseMetaData.getIdentifierPatternType();
-        return IdentifierPatternType.KEEP_ORIGIN != identifierPatternType
-                ? Optional.of(IdentifierCasePolicyFactory.newDialectDefaultPolicySet(identifierPatternType, dialectDatabaseMetaData.isCaseSensitive()))
-                : Optional.empty();
     }
     
     /**
@@ -116,15 +85,6 @@ public final class MCPDatabaseDialect {
             return TransactionCapability.NONE;
         }
         return supportsSavepoint ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
-    }
-    
-    /**
-     * Judge whether unquoted identifiers are folded by database metadata lookup.
-     *
-     * @return whether unquoted identifiers are folded
-     */
-    public boolean isUnquotedIdentifierCaseFolded() {
-        return IdentifierPatternType.KEEP_ORIGIN != dialectDatabaseMetaData.getIdentifierPatternType();
     }
     
     /**

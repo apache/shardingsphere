@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -107,8 +106,8 @@ public final class ShadowWorkflowPlanningService {
         if (!isReadyForAlgorithmArtifactPlanning(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
-        String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
-        if (!ensureRuleLifecycle(result.getClarifiedIntent(), mergedRequest, inspectionService.queryRules(queryFacade, mergedRequest.getDatabase()), result, databaseType)) {
+        queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
+        if (!ensureRuleLifecycle(result.getClarifiedIntent(), mergedRequest, inspectionService.queryRules(queryFacade, mergedRequest.getDatabase()), result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         addRuleArtifact(result, mergedRequest, result.getClarifiedIntent().getOperationType());
@@ -166,7 +165,8 @@ public final class ShadowWorkflowPlanningService {
         List<Map<String, Object>> algorithms = inspectionService.queryAlgorithms(queryFacade, mergedRequest.getDatabase());
         List<Map<String, Object>> tableRules = inspectionService.queryTableRules(queryFacade, mergedRequest.getDatabase());
         List<Map<String, Object>> defaultAlgorithm = inspectionService.queryDefaultAlgorithm(queryFacade, mergedRequest.getDatabase());
-        if (!ensureAlgorithmCleanupState(mergedRequest, algorithms, tableRules, defaultAlgorithm, result, queryFacade.getDatabaseType(mergedRequest.getDatabase()))) {
+        queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
+        if (!ensureAlgorithmCleanupState(mergedRequest, algorithms, tableRules, defaultAlgorithm, result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         result.getRuleArtifacts().add(distSQLPlanningService.planDropAlgorithm(mergedRequest.getAlgorithmName()));
@@ -291,15 +291,17 @@ public final class ShadowWorkflowPlanningService {
     }
     
     private boolean ensureRuleLifecycle(final ClarifiedIntent clarifiedIntent, final ShadowRuleWorkflowRequest request, final List<Map<String, Object>> rules,
-                                        final WorkflowContextSnapshot snapshot, final String databaseType) {
+                                        final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         return planningSupport.ensureLifecycleState("Shadow rule", clarifiedIntent,
-                rules.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name"))), snapshot);
+                rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(
+                        request.getDatabase(), request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name"))),
+                snapshot);
     }
     
     private boolean ensureAlgorithmCleanupState(final ShadowAlgorithmCleanupWorkflowRequest request, final List<Map<String, Object>> algorithms,
                                                 final List<Map<String, Object>> tableRules, final List<Map<String, Object>> defaultAlgorithm,
-                                                final WorkflowContextSnapshot snapshot, final String databaseType) {
-        boolean configured = algorithms.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getAlgorithmName(),
+                                                final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
+        boolean configured = algorithms.stream().anyMatch(each -> queryFacade.isSameIdentifier(request.getDatabase(), request.getAlgorithmName(),
                 WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
         if (!configured) {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
@@ -307,7 +309,8 @@ public final class ShadowWorkflowPlanningService {
                     "Inspect configured shadow algorithms before cleanup.", false, Map.of("algorithm", request.getAlgorithmName())));
             return false;
         }
-        if (isReferencedByTableRule(request.getAlgorithmName(), tableRules, databaseType) || isDefaultAlgorithm(request.getAlgorithmName(), defaultAlgorithm, databaseType)) {
+        if (isReferencedByTableRule(queryFacade, request.getDatabase(), request.getAlgorithmName(), tableRules)
+                || isDefaultAlgorithm(queryFacade, request.getDatabase(), request.getAlgorithmName(), defaultAlgorithm)) {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
                     String.format("Shadow algorithm `%s` is still referenced.", request.getAlgorithmName()),
                     "Remove table-rule or default-algorithm references before cleanup.", false, Map.of("algorithm", request.getAlgorithmName())));
@@ -316,14 +319,16 @@ public final class ShadowWorkflowPlanningService {
         return true;
     }
     
-    private boolean isReferencedByTableRule(final String algorithmName, final List<Map<String, Object>> tableRules, final String databaseType) {
+    private boolean isReferencedByTableRule(final MCPFeatureQueryFacade queryFacade, final String databaseName,
+                                            final String algorithmName, final List<Map<String, Object>> tableRules) {
         return tableRules.stream().map(each -> WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name"))
                 .flatMap(each -> Arrays.stream(each.split(","))).map(String::trim).filter(each -> !each.isEmpty())
-                .anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, algorithmName, each));
+                .anyMatch(each -> queryFacade.isSameIdentifier(databaseName, algorithmName, each));
     }
     
-    private boolean isDefaultAlgorithm(final String algorithmName, final List<Map<String, Object>> defaultAlgorithm, final String databaseType) {
-        return defaultAlgorithm.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, algorithmName,
+    private boolean isDefaultAlgorithm(final MCPFeatureQueryFacade queryFacade, final String databaseName,
+                                       final String algorithmName, final List<Map<String, Object>> defaultAlgorithm) {
+        return defaultAlgorithm.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, algorithmName,
                 WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
     }
     
