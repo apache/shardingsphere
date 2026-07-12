@@ -17,12 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingDefaultStrategyWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingKeyGenerateStrategyWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingKeyGeneratorWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingRuleComponentCleanupWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingTableReferenceRuleWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingTableRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
@@ -45,8 +39,8 @@ public final class ShardingPlanningRequestBinder {
      * @param arguments raw MCP arguments
      * @return sharding table rule workflow request
      */
-    public ShardingTableRuleWorkflowRequest bindTableRule(final Map<String, Object> arguments) {
-        return new ShardingTableRuleWorkflowRequest(bind(arguments, this::bindTableRuleArguments, this::applyTableRuleEvidence));
+    public ShardingWorkflowRequest bindTableRule(final Map<String, Object> arguments) {
+        return bind(arguments, this::bindTableRuleArguments, this::applyTableRuleEvidence);
     }
     
     /**
@@ -55,8 +49,8 @@ public final class ShardingPlanningRequestBinder {
      * @param arguments raw MCP arguments
      * @return sharding table reference rule workflow request
      */
-    public ShardingTableReferenceRuleWorkflowRequest bindTableReferenceRule(final Map<String, Object> arguments) {
-        return new ShardingTableReferenceRuleWorkflowRequest(bind(arguments, this::bindTableReferenceRuleArguments, this::applyTableReferenceRuleEvidence));
+    public ShardingWorkflowRequest bindTableReferenceRule(final Map<String, Object> arguments) {
+        return bind(arguments, this::bindTableReferenceRuleArguments, this::applyTableReferenceRuleEvidence);
     }
     
     /**
@@ -65,8 +59,8 @@ public final class ShardingPlanningRequestBinder {
      * @param arguments raw MCP arguments
      * @return sharding default strategy workflow request
      */
-    public ShardingDefaultStrategyWorkflowRequest bindDefaultStrategy(final Map<String, Object> arguments) {
-        return new ShardingDefaultStrategyWorkflowRequest(bind(arguments, this::bindDefaultStrategyArguments, this::applyDefaultStrategyEvidence));
+    public ShardingWorkflowRequest bindDefaultStrategy(final Map<String, Object> arguments) {
+        return bind(arguments, this::bindDefaultStrategyArguments, this::applyDefaultStrategyEvidence);
     }
     
     /**
@@ -75,8 +69,8 @@ public final class ShardingPlanningRequestBinder {
      * @param arguments raw MCP arguments
      * @return sharding key generator workflow request
      */
-    public ShardingKeyGeneratorWorkflowRequest bindKeyGenerator(final Map<String, Object> arguments) {
-        return new ShardingKeyGeneratorWorkflowRequest(bind(arguments, this::bindKeyGeneratorArguments, this::applyKeyGeneratorEvidence));
+    public ShardingWorkflowRequest bindKeyGenerator(final Map<String, Object> arguments) {
+        return bind(arguments, this::bindKeyGeneratorArguments, this::applyKeyGeneratorEvidence);
     }
     
     /**
@@ -85,8 +79,8 @@ public final class ShardingPlanningRequestBinder {
      * @param arguments raw MCP arguments
      * @return sharding key generate strategy workflow request
      */
-    public ShardingKeyGenerateStrategyWorkflowRequest bindKeyGenerateStrategy(final Map<String, Object> arguments) {
-        return new ShardingKeyGenerateStrategyWorkflowRequest(bind(arguments, this::bindKeyGenerateStrategyArguments, this::applyKeyGenerateStrategyEvidence));
+    public ShardingWorkflowRequest bindKeyGenerateStrategy(final Map<String, Object> arguments) {
+        return bind(arguments, this::bindKeyGenerateStrategyArguments, this::applyKeyGenerateStrategyEvidence);
     }
     
     /**
@@ -95,8 +89,8 @@ public final class ShardingPlanningRequestBinder {
      * @param arguments raw MCP arguments
      * @return sharding rule component cleanup workflow request
      */
-    public ShardingRuleComponentCleanupWorkflowRequest bindRuleComponentCleanup(final Map<String, Object> arguments) {
-        return new ShardingRuleComponentCleanupWorkflowRequest(bind(arguments, this::bindRuleComponentCleanupArguments, this::applyRuleComponentCleanupEvidence));
+    public ShardingWorkflowRequest bindRuleComponentCleanup(final Map<String, Object> arguments) {
+        return bind(arguments, this::bindRuleComponentCleanupArguments, this::applyRuleComponentCleanupEvidence);
     }
     
     private ShardingWorkflowRequest bind(final Map<String, Object> arguments, final FeatureArgumentBinder argumentBinder, final EvidenceBinder evidenceBinder) {

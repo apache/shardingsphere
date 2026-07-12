@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -66,8 +66,8 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder(getEndpointUri())
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(
-                        "init-1", "initialize", MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"))))
+                .POST(HttpRequest.BodyPublishers.ofString(MCPInteractionProtocolSupport.createJsonRpcRequestBody(
+                        "init-1", "initialize", MCPInteractionProtocolSupport.createInitializeRequestParams("mcp-e2e-programmatic"))))
                 .build();
         HttpResponse<String> actual = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actual.statusCode(), is(400));
@@ -79,7 +79,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Accept", "application/json"),
-                MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
+                MCPInteractionProtocolSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
         assertThat(actual.statusCode(), is(400));
         assertFalse(actual.headers().firstValue("MCP-Session-Id").isPresent());
     }
@@ -90,7 +90,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse<String> actual = sendInitializeRequest(httpClient,
                 Map.of("Accept", "application/json; charset=utf-8, text/event-stream; charset=utf-8"),
-                MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
+                MCPInteractionProtocolSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
         assertThat(actual.statusCode(), is(200));
         assertThat(actual.headers().firstValue("MCP-Protocol-Version").orElse(""), is(getProtocolVersion()));
     }
@@ -147,7 +147,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "missing-tool-1", "tools/call", Map.of("name", "database_gateway_missing_tool", "arguments", Map.of())));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
@@ -220,7 +220,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
     void assertAcceptInitializeWithUnsupportedProtocolVersion() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
-        Map<String, Object> initializeRequestParams = new LinkedHashMap<>(MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
+        Map<String, Object> initializeRequestParams = new LinkedHashMap<>(MCPInteractionProtocolSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
         initializeRequestParams.put("protocolVersion", "2025-06-18");
         HttpResponse<String> actual = sendInitializeRequest(httpClient, initializeRequestParams);
         assertThat(actual.statusCode(), is(200));
@@ -303,7 +303,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
     
     private Map<String, Object> sendInitializedRequest(final HttpClient httpClient, final String sessionId, final String requestId, final String method,
                                                        final Map<String, Object> params) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(requestId, method, params));
+        HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(requestId, method, params));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
         assertFalse(MCPInteractionPayloads.hasJsonRpcError(actualPayload));

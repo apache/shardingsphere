@@ -48,10 +48,6 @@ public final class SearchMetadataToolService {
     
     private final MetadataSearchMatcher matcher = new MetadataSearchMatcher();
     
-    public SearchMetadataToolService(final MCPMetadataQueryFacade metadataQueryFacade) {
-        collector = new MetadataSearchCollector(metadataQueryFacade, null, new GovernanceMetadataQueryService(), new MetadataSearchResourceUriFactory());
-    }
-    
     public SearchMetadataToolService(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade) {
         collector = new MetadataSearchCollector(metadataQueryFacade, queryFacade, new GovernanceMetadataQueryService(), new MetadataSearchResourceUriFactory());
     }

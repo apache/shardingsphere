@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -80,6 +80,6 @@ class HttpTransportSecurityE2ETest extends AbstractHttpProtocolOnlyE2ETest {
     }
     
     private Map<String, Object> createInitializeRequestParams() {
-        return new LinkedHashMap<>(MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-security"));
+        return new LinkedHashMap<>(MCPInteractionProtocolSupport.createInitializeRequestParams("mcp-e2e-security"));
     }
 }

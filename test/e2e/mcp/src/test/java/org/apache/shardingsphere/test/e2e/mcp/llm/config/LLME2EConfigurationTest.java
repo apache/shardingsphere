@@ -179,14 +179,6 @@ class LLME2EConfigurationTest {
     }
     
     @Test
-    void assertWithBaseUrl() {
-        LLME2EConfiguration actual = createConfiguration(RuntimeMode.EXTERNAL_DEBUG).withBaseUrl("http://127.0.0.1:8080/v1/");
-        assertThat(actual.getBaseUrl(), is("http://127.0.0.1:8080/v1"));
-        assertThat(actual.getApiKey(), is("mcp-llm-score"));
-        assertThat(actual.getRuntimeMode(), is(RuntimeMode.EXTERNAL_DEBUG));
-    }
-    
-    @Test
     void assertWithModelEndpoint() {
         LLME2EConfiguration actual = createConfiguration(RuntimeMode.DOCKER).withModelEndpoint("http://127.0.0.1:8081/v1/", "test-api-key");
         assertThat(actual.getBaseUrl(), is("http://127.0.0.1:8081/v1"));

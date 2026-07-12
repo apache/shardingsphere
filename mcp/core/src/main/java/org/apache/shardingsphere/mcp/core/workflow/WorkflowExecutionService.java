@@ -73,27 +73,6 @@ public final class WorkflowExecutionService {
      * @param queryFacade query facade
      * @param executionFacade execution facade
      * @param workflowApplySynchronizationHandler workflow apply synchronization handler
-     * @param sessionId session id
-     * @param snapshot workflow snapshot
-     * @param approvedSteps approved steps
-     * @param executionMode execution mode override
-     * @return apply payload
-     */
-    public Map<String, Object> apply(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
-                                     final MCPFeatureExecutionFacade executionFacade, final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler,
-                                     final String sessionId, final WorkflowContextSnapshot snapshot, final List<String> approvedSteps, final String executionMode) {
-        return apply(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, workflowApplySynchronizationHandler, MCPWorkflowApplyArtifactValidator.NO_OP,
-                sessionId, snapshot, approvedSteps, executionMode);
-    }
-    
-    /**
-     * Apply workflow artifacts.
-     *
-     * @param workflowSessionContext workflow session context
-     * @param metadataQueryFacade metadata query facade
-     * @param queryFacade query facade
-     * @param executionFacade execution facade
-     * @param workflowApplySynchronizationHandler workflow apply synchronization handler
      * @param workflowApplyArtifactValidator workflow apply artifact validator
      * @param sessionId session id
      * @param snapshot workflow snapshot

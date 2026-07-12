@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handle
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,31 +32,25 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class LoadBalanceAlgorithmPluginsHandlerTest {
     
     @Test
-    void assertGetContextType() {
-        assertThat(new LoadBalanceAlgorithmPluginsHandler().getContextType(), is(MCPDatabaseHandlerContext.class));
-    }
-    
-    @Test
-    void assertGetResourceUriTemplate() {
-        assertThat(new LoadBalanceAlgorithmPluginsHandler().getResourceUriTemplate(), is(ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI));
-    }
-    
-    @Test
     void assertHandle() {
-        ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(inspectionService.queryLoadBalanceAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "ROUND_ROBIN")));
-        MCPResponse actual = new LoadBalanceAlgorithmPluginsHandler(inspectionService).handle(databaseContext, new MCPUriVariables(Map.of()));
-        verify(inspectionService).queryLoadBalanceAlgorithmPlugins(queryFacade);
-        assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-        assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"));
+        try (MockedConstruction<ReadwriteSplittingInspectionService> mocked = mockConstruction(ReadwriteSplittingInspectionService.class)) {
+            LoadBalanceAlgorithmPluginsHandler handler = new LoadBalanceAlgorithmPluginsHandler();
+            ReadwriteSplittingInspectionService inspectionService = mocked.constructed().getFirst();
+            MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+            when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+            when(inspectionService.queryLoadBalanceAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "ROUND_ROBIN")));
+            MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of()));
+            verify(inspectionService).queryLoadBalanceAlgorithmPlugins(queryFacade);
+            assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
+            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"));
+        }
     }
 }

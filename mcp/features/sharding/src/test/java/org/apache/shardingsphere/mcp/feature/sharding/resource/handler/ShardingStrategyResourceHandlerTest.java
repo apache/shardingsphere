@@ -25,9 +25,11 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedConstruction;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,64 +37,60 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 class ShardingStrategyResourceHandlerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertHandleArguments")
-    void assertHandle(final String name, final ShardingStrategyResourceHandler handler, final MCPUriVariables uriVariables, final List<Map<String, Object>> rows,
-                      final String expectedSelfUri) {
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
-        MCPResponse actual = handler.handle(databaseContext, uriVariables);
-        assertThat(((List<?>) actual.toPayload().get("items")).size(), is(rows.size()));
-        assertThat(actual.toPayload().get("self_uri"), is(expectedSelfUri));
+    void assertHandle(final String name, final Supplier<ShardingStrategyResourceHandler> handlerSupplier, final MCPUriVariables uriVariables,
+                      final List<Map<String, Object>> rows, final String expectedSelfUri) {
+        try (
+                MockedConstruction<ShardingInspectionService> ignored = mockConstruction(
+                        ShardingInspectionService.class, (mock, context) -> stubInspectionService(mock, rows))) {
+            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+            when(databaseContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
+            MCPResponse actual = handlerSupplier.get().handle(databaseContext, uriVariables);
+            assertThat(((List<?>) actual.toPayload().get("items")).size(), is(rows.size()));
+            assertThat(actual.toPayload().get("self_uri"), is(expectedSelfUri));
+        }
     }
     
     private static Stream<Arguments> assertHandleArguments() {
         List<Map<String, Object>> rows = List.of(Map.of("name", "snowflake_generator"));
-        ShardingInspectionService service = createInspectionService(rows);
         return Stream.of(
-                createArguments("default strategy", "shardingsphere://features/sharding/databases/{database}/default-strategy",
-                        ShardingStrategyResourceHandler.ResourceKind.DEFAULT_STRATEGY, Map.of("database", "logic_db"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/default-strategy", service),
-                createArguments("key generators", "shardingsphere://features/sharding/databases/{database}/key-generators",
-                        ShardingStrategyResourceHandler.ResourceKind.KEY_GENERATORS, Map.of("database", "logic_db"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/key-generators", service),
-                createArguments("key generator", "shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}",
-                        ShardingStrategyResourceHandler.ResourceKind.KEY_GENERATOR, Map.of("database", "logic_db", "keyGenerator", "snowflake_generator"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/key-generators/snowflake_generator", service),
-                createArguments("key generate strategies", "shardingsphere://features/sharding/databases/{database}/key-generate-strategies",
-                        ShardingStrategyResourceHandler.ResourceKind.KEY_GENERATE_STRATEGIES, Map.of("database", "logic_db"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/key-generate-strategies", service),
-                createArguments("key generate strategy", "shardingsphere://features/sharding/databases/{database}/key-generate-strategies/{strategy}",
-                        ShardingStrategyResourceHandler.ResourceKind.KEY_GENERATE_STRATEGY, Map.of("database", "logic_db", "strategy", "order_key_strategy"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/key-generate-strategies/order_key_strategy", service),
-                createArguments("unused key generators", "shardingsphere://features/sharding/databases/{database}/unused-key-generators",
-                        ShardingStrategyResourceHandler.ResourceKind.UNUSED_KEY_GENERATORS, Map.of("database", "logic_db"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/unused-key-generators", service),
-                createArguments("key generator used table rules", "shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}/table-rules",
-                        ShardingStrategyResourceHandler.ResourceKind.KEY_GENERATOR_USED_TABLE_RULES,
+                createArguments("default strategy", ShardingStrategyResourceHandler::defaultStrategy, Map.of("database", "logic_db"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/default-strategy"),
+                createArguments("key generators", ShardingStrategyResourceHandler::keyGenerators, Map.of("database", "logic_db"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/key-generators"),
+                createArguments("key generator", ShardingStrategyResourceHandler::keyGenerator,
                         Map.of("database", "logic_db", "keyGenerator", "snowflake_generator"), rows,
-                        "shardingsphere://features/sharding/databases/logic_db/key-generators/snowflake_generator/table-rules", service));
+                        "shardingsphere://features/sharding/databases/logic_db/key-generators/snowflake_generator"),
+                createArguments("key generate strategies", ShardingStrategyResourceHandler::keyGenerateStrategies, Map.of("database", "logic_db"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/key-generate-strategies"),
+                createArguments("key generate strategy", ShardingStrategyResourceHandler::keyGenerateStrategy,
+                        Map.of("database", "logic_db", "strategy", "order_key_strategy"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/key-generate-strategies/order_key_strategy"),
+                createArguments("unused key generators", ShardingStrategyResourceHandler::unusedKeyGenerators, Map.of("database", "logic_db"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/unused-key-generators"),
+                createArguments("key generator used table rules", ShardingStrategyResourceHandler::keyGeneratorUsedTableRules,
+                        Map.of("database", "logic_db", "keyGenerator", "snowflake_generator"), rows,
+                        "shardingsphere://features/sharding/databases/logic_db/key-generators/snowflake_generator/table-rules"));
     }
     
-    private static Arguments createArguments(final String name, final String resourceUriTemplate, final ShardingStrategyResourceHandler.ResourceKind resourceKind,
-                                             final Map<String, String> uriVariables, final List<Map<String, Object>> rows, final String expectedSelfUri,
-                                             final ShardingInspectionService service) {
-        return Arguments.of(name, new ShardingStrategyResourceHandler(resourceUriTemplate, resourceKind, service), new MCPUriVariables(uriVariables), rows, expectedSelfUri);
+    private static Arguments createArguments(final String name, final Supplier<ShardingStrategyResourceHandler> handlerSupplier,
+                                             final Map<String, String> uriVariables, final List<Map<String, Object>> rows, final String expectedSelfUri) {
+        return Arguments.of(name, handlerSupplier, new MCPUriVariables(uriVariables), rows, expectedSelfUri);
     }
     
-    private static ShardingInspectionService createInspectionService(final List<Map<String, Object>> rows) {
-        ShardingInspectionService result = mock(ShardingInspectionService.class);
-        when(result.queryDefaultStrategy(any(), eq("logic_db"))).thenReturn(rows);
-        when(result.queryKeyGenerators(any(), eq("logic_db"))).thenReturn(rows);
-        when(result.queryKeyGenerator(any(), eq("logic_db"), eq("snowflake_generator"))).thenReturn(rows);
-        when(result.queryKeyGenerateStrategies(any(), eq("logic_db"))).thenReturn(rows);
-        when(result.queryKeyGenerateStrategy(any(), eq("logic_db"), eq("order_key_strategy"))).thenReturn(rows);
-        when(result.queryUnusedKeyGenerators(any(), eq("logic_db"))).thenReturn(rows);
-        when(result.queryTableRulesUsedKeyGenerator(any(), eq("logic_db"), eq("snowflake_generator"))).thenReturn(rows);
-        return result;
+    private static void stubInspectionService(final ShardingInspectionService inspectionService, final List<Map<String, Object>> rows) {
+        when(inspectionService.queryDefaultStrategy(any(), eq("logic_db"))).thenReturn(rows);
+        when(inspectionService.queryKeyGenerators(any(), eq("logic_db"))).thenReturn(rows);
+        when(inspectionService.queryKeyGenerator(any(), eq("logic_db"), eq("snowflake_generator"))).thenReturn(rows);
+        when(inspectionService.queryKeyGenerateStrategies(any(), eq("logic_db"))).thenReturn(rows);
+        when(inspectionService.queryKeyGenerateStrategy(any(), eq("logic_db"), eq("order_key_strategy"))).thenReturn(rows);
+        when(inspectionService.queryUnusedKeyGenerators(any(), eq("logic_db"))).thenReturn(rows);
+        when(inspectionService.queryTableRulesUsedKeyGenerator(any(), eq("logic_db"), eq("snowflake_generator"))).thenReturn(rows);
     }
 }

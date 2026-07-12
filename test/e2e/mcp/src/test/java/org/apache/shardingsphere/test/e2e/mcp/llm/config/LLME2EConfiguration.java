@@ -118,17 +118,6 @@ public final class LLME2EConfiguration {
     }
     
     /**
-     * Create a copy with another model endpoint.
-     *
-     * @param baseUrl model endpoint base URL
-     * @return copied configuration
-     */
-    public LLME2EConfiguration withBaseUrl(final String baseUrl) {
-        return new LLME2EConfiguration(normalizeBaseUrl(baseUrl), modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId,
-                runtimeMode, serverImage, baseServerImage, baseServerImageDigest, modelMetadata);
-    }
-    
-    /**
      * Create a copy with another model endpoint and API key.
      *
      * @param baseUrl model endpoint base URL

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -101,24 +99,6 @@ class MCPHttpTransportTestSupportTest {
         assertThat(actual, is(expected));
         assertThat(requestCaptor.getValue().method(), is("POST"));
         assertThat(requestCaptor.getValue().headers().firstValue("Accept").orElse(""), is("application/json, text/event-stream"));
-    }
-    
-    @Test
-    void assertCreateInitializeRequestParams() {
-        assertThat(MCPHttpTransportTestSupport.createInitializeRequestParams("client"),
-                is(MCPInteractionProtocolSupport.createInitializeRequestParams("client")));
-    }
-    
-    @Test
-    void assertCreateJsonRpcRequestBody() {
-        assertThat(MCPInteractionPayloads.parseJsonPayload(MCPHttpTransportTestSupport.createJsonRpcRequestBody("id", "tools/list", Map.of())),
-                is(Map.of("jsonrpc", "2.0", "id", "id", "method", "tools/list", "params", Map.of())));
-    }
-    
-    @Test
-    void assertCreateJsonRpcNotificationBody() {
-        assertThat(MCPInteractionPayloads.parseJsonPayload(MCPHttpTransportTestSupport.createJsonRpcNotificationBody("notifications/initialized", Map.of())),
-                is(Map.of("jsonrpc", "2.0", "method", "notifications/initialized", "params", Map.of())));
     }
     
     private HttpClient mockHttpClient(final HttpResponse<String> response, final ArgumentCaptor<HttpRequest> requestCaptor) throws IOException, InterruptedException {

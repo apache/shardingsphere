@@ -34,13 +34,13 @@ class WorkflowIntentResolverSupportTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getResolveOperationTypeCases")
     void assertResolveOperationType(final String name, final WorkflowRequest request, final String expectedOperationType) {
-        assertThat(WorkflowIntentResolverSupport.resolveOperationType(request), is(expectedOperationType));
+        assertThat(WorkflowIntentResolverSupport.resolveOperationType(request, new ClarifiedIntent()), is(expectedOperationType));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getResolveFieldSemanticsCases")
     void assertResolveFieldSemantics(final String name, final WorkflowRequest request, final String expectedFieldSemantics) {
-        assertThat(WorkflowIntentResolverSupport.resolveFieldSemantics(request), is(expectedFieldSemantics));
+        assertThat(WorkflowIntentResolverSupport.resolveFieldSemantics(request, new ClarifiedIntent()), is(expectedFieldSemantics));
     }
     
     @ParameterizedTest(name = "{0}")

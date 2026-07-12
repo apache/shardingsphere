@@ -72,12 +72,12 @@ final class WorkflowHandlerTestFixture {
     static WorkflowRuntimeDefinition createDefinition(final String workflowKind) {
         return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), (workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, sessionId, snapshot) -> Map.of(),
                 (snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId) -> {
-                });
+                }, MCPWorkflowApplyArtifactValidator.NO_OP);
     }
     
     static WorkflowRuntimeDefinition createDefinition(final String workflowKind, final MCPWorkflowValidationHandler validationHandler,
                                                       final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler) {
-        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), validationHandler, applySynchronizationHandler);
+        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), validationHandler, applySynchronizationHandler, MCPWorkflowApplyArtifactValidator.NO_OP);
     }
     
     static WorkflowRuntimeDefinition createDefinition(final String workflowKind, final MCPWorkflowValidationHandler validationHandler,

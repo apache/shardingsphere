@@ -40,9 +40,9 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Sharding workflow planning kernel.
+ * Sharding workflow planning service.
  */
-final class ShardingWorkflowPlanningKernel {
+public final class ShardingWorkflowPlanningService {
     
     private static final List<String> SUPPORTED_LIFECYCLE_OPERATION_TYPES = List.of("create", WorkflowLifecycle.OPERATION_DROP);
     
@@ -60,20 +60,13 @@ final class ShardingWorkflowPlanningKernel {
     
     private final ShardingWorkflowInputValidator inputValidator = new ShardingWorkflowInputValidator();
     
-    private final ShardingInspectionService inspectionService;
+    private final ShardingInspectionService inspectionService = new ShardingInspectionService();
     
-    private final ShardingAlgorithmRecommendationService algorithmRecommendationService;
+    private final ShardingAlgorithmRecommendationService algorithmRecommendationService = new ShardingAlgorithmRecommendationService();
     
-    private final ShardingAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+    private final ShardingAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new ShardingAlgorithmPropertyTemplateService();
     
-    private final ShardingDistSQLPlanningService distSQLPlanningService;
-    
-    ShardingWorkflowPlanningKernel() {
-        inspectionService = new ShardingInspectionService();
-        algorithmRecommendationService = new ShardingAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new ShardingAlgorithmPropertyTemplateService();
-        distSQLPlanningService = new ShardingDistSQLPlanningService();
-    }
+    private final ShardingDistSQLPlanningService distSQLPlanningService = new ShardingDistSQLPlanningService();
     
     /**
      * Plan sharding table rule workflow.

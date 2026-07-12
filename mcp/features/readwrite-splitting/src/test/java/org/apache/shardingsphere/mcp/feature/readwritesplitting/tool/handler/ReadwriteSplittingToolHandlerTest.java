@@ -39,6 +39,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedConstruction;
 
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,18 +59,20 @@ class ReadwriteSplittingToolHandlerTest {
     
     @Test
     void assertHandlePlanRule() {
-        ReadwriteSplittingRuleWorkflowPlanningService planningService = mock(ReadwriteSplittingRuleWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot());
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = new PlanReadwriteSplittingRuleToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "rule", "readwrite_ds",
-                "structured_intent_evidence", Map.of("rule", "inferred_rule", "read_storage_units", "read_ds_1"))));
-        assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
-        ArgumentCaptor<ReadwriteSplittingRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingRuleWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        assertThat(requestCaptor.getValue().getRuleName(), is("readwrite_ds"));
-        assertThat(requestCaptor.getValue().getReadStorageUnits(), is(List.of("read_ds_1")));
+        try (
+                MockedConstruction<ReadwriteSplittingRuleWorkflowPlanningService> mocked = mockConstruction(
+                        ReadwriteSplittingRuleWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot()))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = new PlanReadwriteSplittingRuleToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "rule", "readwrite_ds",
+                    "structured_intent_evidence", Map.of("rule", "inferred_rule", "read_storage_units", "read_ds_1"))));
+            assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
+            ArgumentCaptor<ReadwriteSplittingRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingRuleWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getRuleName(), is("readwrite_ds"));
+            assertThat(requestCaptor.getValue().getReadStorageUnits(), is(List.of("read_ds_1")));
+        }
     }
     
     @Test
@@ -87,47 +91,51 @@ class ReadwriteSplittingToolHandlerTest {
     
     @Test
     void assertHandlePlanRuleWithArtifacts() {
-        ReadwriteSplittingRuleWorkflowPlanningService planningService = mock(ReadwriteSplittingRuleWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot());
-        MCPResponse actual = new PlanReadwriteSplittingRuleToolHandler(planningService).handle(
-                createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "rule", "readwrite_ds")));
-        Map<String, Object> actualPayload = actual.toPayload();
-        assertFalse(actualPayload.containsKey("ddl_artifacts"));
-        assertFalse(actualPayload.containsKey("index_plan"));
-        assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("CREATE READWRITE_SPLITTING RULE"));
-        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
-        assertTrue(extractResourceUris(actualResourcesToRead).contains("shardingsphere://features/readwrite-splitting/databases/logic_db/rules"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/readwrite-splitting/databases/logic_db/rules"), is("rule"));
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"), is("algorithm"));
-        assertThat(((Map<?, ?>) actualPayload.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
+        try (
+                MockedConstruction<ReadwriteSplittingRuleWorkflowPlanningService> ignored = mockConstruction(
+                        ReadwriteSplittingRuleWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot()))) {
+            MCPResponse actual = new PlanReadwriteSplittingRuleToolHandler().handle(
+                    createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "rule", "readwrite_ds")));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertFalse(actualPayload.containsKey("ddl_artifacts"));
+            assertFalse(actualPayload.containsKey("index_plan"));
+            assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("CREATE READWRITE_SPLITTING RULE"));
+            List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+            assertTrue(extractResourceUris(actualResourcesToRead).contains("shardingsphere://features/readwrite-splitting/databases/logic_db/rules"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/readwrite-splitting/databases/logic_db/rules"), is("rule"));
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"), is("algorithm"));
+            assertThat(((Map<?, ?>) actualPayload.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
+        }
     }
     
     @Test
     void assertHandlePlanStatus() {
-        ReadwriteSplittingStatusWorkflowPlanningService planningService = mock(ReadwriteSplittingStatusWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createStatusSnapshot());
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        MCPResponse actual = new PlanReadwriteSplittingStatusToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
-                "database", "logic_db",
-                "target_status", "disable",
-                "structured_intent_evidence", Map.of("rule", "readwrite_ds", "storage_unit", "read_ds_0"))));
-        Map<String, Object> actualPayload = actual.toPayload();
-        assertThat(actualPayload.get("workflow_kind"), is("readwrite.status"));
-        List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
-        assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/readwrite-splitting/databases/logic_db/status"), is("rule"));
-        Map<?, ?> actualIntentInference = (Map<?, ?>) actualPayload.get("intent_inference");
-        assertFalse(actualIntentInference.containsKey("operation_type"));
-        assertThat(actualIntentInference.get("target_status"), is("disable"));
-        Map<?, ?> actualArgumentProvenance = (Map<?, ?>) actualPayload.get("argument_provenance");
-        assertFalse(actualArgumentProvenance.containsKey("operation_type"));
-        assertThat(actualArgumentProvenance.get("target_status"), is("user_provided"));
-        Map<?, ?> actualDistSQLArtifact = (Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst();
-        assertFalse(actualDistSQLArtifact.containsKey("operation_type"));
-        assertThat(actualDistSQLArtifact.get("target_status"), is("disable"));
-        ArgumentCaptor<ReadwriteSplittingStatusWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingStatusWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        assertThat(requestCaptor.getValue().getStorageUnit(), is("read_ds_0"));
-        assertThat(requestCaptor.getValue().getTargetStatus(), is("disable"));
+        try (
+                MockedConstruction<ReadwriteSplittingStatusWorkflowPlanningService> mocked = mockConstruction(
+                        ReadwriteSplittingStatusWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createStatusSnapshot()))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            MCPResponse actual = new PlanReadwriteSplittingStatusToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+                    "database", "logic_db",
+                    "target_status", "disable",
+                    "structured_intent_evidence", Map.of("rule", "readwrite_ds", "storage_unit", "read_ds_0"))));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(actualPayload.get("workflow_kind"), is("readwrite.status"));
+            List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
+            assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/readwrite-splitting/databases/logic_db/status"), is("rule"));
+            Map<?, ?> actualIntentInference = (Map<?, ?>) actualPayload.get("intent_inference");
+            assertFalse(actualIntentInference.containsKey("operation_type"));
+            assertThat(actualIntentInference.get("target_status"), is("disable"));
+            Map<?, ?> actualArgumentProvenance = (Map<?, ?>) actualPayload.get("argument_provenance");
+            assertFalse(actualArgumentProvenance.containsKey("operation_type"));
+            assertThat(actualArgumentProvenance.get("target_status"), is("user_provided"));
+            Map<?, ?> actualDistSQLArtifact = (Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst();
+            assertFalse(actualDistSQLArtifact.containsKey("operation_type"));
+            assertThat(actualDistSQLArtifact.get("target_status"), is("disable"));
+            ArgumentCaptor<ReadwriteSplittingStatusWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingStatusWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            assertThat(requestCaptor.getValue().getStorageUnit(), is("read_ds_0"));
+            assertThat(requestCaptor.getValue().getTargetStatus(), is("disable"));
+        }
     }
     
     private WorkflowContextSnapshot createRuleSnapshot() {
@@ -141,13 +149,15 @@ class ReadwriteSplittingToolHandlerTest {
     }
     
     private ReadwriteSplittingRuleWorkflowRequest handlePlanRule(final Map<String, Object> arguments) {
-        ReadwriteSplittingRuleWorkflowPlanningService planningService = mock(ReadwriteSplittingRuleWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot());
-        WorkflowContextFixture fixture = createWorkflowContextFixture();
-        new PlanReadwriteSplittingRuleToolHandler(planningService).handle(fixture.workflowContext, new MCPToolCall("session-1", arguments));
-        ArgumentCaptor<ReadwriteSplittingRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingRuleWorkflowRequest.class);
-        verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
-        return requestCaptor.getValue();
+        try (
+                MockedConstruction<ReadwriteSplittingRuleWorkflowPlanningService> mocked = mockConstruction(
+                        ReadwriteSplittingRuleWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot()))) {
+            WorkflowContextFixture fixture = createWorkflowContextFixture();
+            new PlanReadwriteSplittingRuleToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", arguments));
+            ArgumentCaptor<ReadwriteSplittingRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingRuleWorkflowRequest.class);
+            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            return requestCaptor.getValue();
+        }
     }
     
     private WorkflowContextSnapshot createStatusSnapshot() {

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.service;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -42,19 +40,13 @@ import java.util.Map;
 /**
  * Broadcast workflow validation service.
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class BroadcastWorkflowValidationService implements MCPWorkflowRuntimeHandler {
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final BroadcastRuleInspectionService ruleInspectionService;
+    private final BroadcastRuleInspectionService ruleInspectionService = new BroadcastRuleInspectionService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport;
-    
-    public BroadcastWorkflowValidationService() {
-        ruleInspectionService = new BroadcastRuleInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
-    }
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
     
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,

@@ -51,16 +51,6 @@ public final class WorkflowIntentResolverSupport {
      * Resolve workflow operation type from explicit fields and heuristics.
      *
      * @param request workflow request
-     * @return resolved operation type
-     */
-    public static String resolveOperationType(final WorkflowRequest request) {
-        return resolveOperationType(request, null);
-    }
-    
-    /**
-     * Resolve workflow operation type from explicit fields and heuristics.
-     *
-     * @param request workflow request
      * @param clarifiedIntent clarified intent
      * @return resolved operation type
      */
@@ -77,16 +67,6 @@ public final class WorkflowIntentResolverSupport {
             return recordInferredValue(clarifiedIntent, WorkflowFieldNames.OPERATION_TYPE, "alter");
         }
         return recordInferredValue(clarifiedIntent, WorkflowFieldNames.OPERATION_TYPE, "create");
-    }
-    
-    /**
-     * Resolve field semantics from explicit fields and heuristics.
-     *
-     * @param request workflow request
-     * @return resolved field semantics
-     */
-    public static String resolveFieldSemantics(final WorkflowRequest request) {
-        return resolveFieldSemantics(request, null);
     }
     
     /**

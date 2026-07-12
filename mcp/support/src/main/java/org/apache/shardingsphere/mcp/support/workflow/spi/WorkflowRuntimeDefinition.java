@@ -36,11 +36,6 @@ public final class WorkflowRuntimeDefinition {
     
     private final MCPWorkflowApplyArtifactValidator applyArtifactValidator;
     
-    public WorkflowRuntimeDefinition(final WorkflowKind workflowKind, final MCPWorkflowValidationHandler validationHandler,
-                                     final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler) {
-        this(workflowKind, validationHandler, applySynchronizationHandler, MCPWorkflowApplyArtifactValidator.NO_OP);
-    }
-    
     /**
      * Create workflow runtime definition with one handler for validation and apply synchronization.
      *

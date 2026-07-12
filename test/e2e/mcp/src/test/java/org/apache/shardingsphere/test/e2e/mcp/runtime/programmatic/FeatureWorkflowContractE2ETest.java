@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -94,7 +94,7 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
     
     private void assertFeatureToolSchemaMatchesPlanArguments(final HttpClient httpClient, final String sessionId,
                                                              final FeatureWorkflowScenario scenario) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 scenario.toolName() + "-schema-1", "tools/list", Map.of()));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = castToMap(parseJsonBody(actual.body()).get("result"));
