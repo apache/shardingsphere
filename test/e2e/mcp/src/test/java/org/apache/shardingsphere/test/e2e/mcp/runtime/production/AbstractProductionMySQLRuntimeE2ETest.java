@@ -202,7 +202,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertThat(String.valueOf(actual.get("id")), is(requestId));
         assertTrue(MCPInteractionPayloads.hasJsonRpcError(actual));
         assertFalse(actual.containsKey("result"));
-        Map<String, Object> error = getMap(actual.get("error"));
+        Map<String, Object> error = getObjectOrEmpty(actual.get("error"));
         assertThat(error.get("code"), isA(Number.class));
         assertFalse(String.valueOf(error.get("message")).isBlank());
     }
@@ -219,7 +219,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     
     protected void assertRecoveryResponse(final Map<String, Object> actual, final String expectedMessage, final String expectedCategory) {
         assertRecoveryResponse(actual, expectedMessage);
-        assertThat(String.valueOf(getMap(actual.get("recovery")).get("category")), is(expectedCategory));
+        assertThat(String.valueOf(getObjectOrEmpty(actual.get("recovery")).get("category")), is(expectedCategory));
     }
     
     protected void assertAiNativeGuidance(final Map<String, Object> guidance) {
@@ -232,14 +232,14 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertTrue(guidance.containsKey("security_hints"));
         assertFalse(guidance.containsKey("fingerprints"));
         assertFalse(((List<?>) guidance.get("common_flows")).isEmpty());
-        Map<String, Object> modelFirstSummary = getMap(guidance.get("model_first_summary"));
-        assertThat(getMap(modelFirstSummary.get("official_discovery_methods")).get("tools"), is("tools/list"));
+        Map<String, Object> modelFirstSummary = getObjectOrEmpty(guidance.get("model_first_summary"));
+        assertThat(getObjectOrEmpty(modelFirstSummary.get("official_discovery_methods")).get("tools"), is("tools/list"));
         assertThat(modelFirstSummary.get("guidance_resource"), is("shardingsphere://guidance"));
-        assertThat(getMap(modelFirstSummary.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
-        assertThat(getMap(getMap(modelFirstSummary.get("sql_tool_selection")).get("read_only")).get("tool"), is("database_gateway_execute_query"));
-        assertThat(getMap(getMap(modelFirstSummary.get("workflow_rule")).get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
-        Map<String, Object> surfaceSummary = getMap(guidance.get("surface_summary"));
-        assertThat(getMap(surfaceSummary.get("official_discovery_methods")).get("resources"), is("resources/list"));
+        assertThat(getObjectOrEmpty(modelFirstSummary.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
+        assertThat(getObjectOrEmpty(getObjectOrEmpty(modelFirstSummary.get("sql_tool_selection")).get("read_only")).get("tool"), is("database_gateway_execute_query"));
+        assertThat(getObjectOrEmpty(getObjectOrEmpty(modelFirstSummary.get("workflow_rule")).get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
+        Map<String, Object> surfaceSummary = getObjectOrEmpty(guidance.get("surface_summary"));
+        assertThat(getObjectOrEmpty(surfaceSummary.get("official_discovery_methods")).get("resources"), is("resources/list"));
         assertThat(surfaceSummary.get("preflight_validation_tool"), is("database_gateway_validate_runtime_database"));
         assertThat(surfaceSummary.get("read_only_sql_tool"), is("database_gateway_execute_query"));
         assertThat(surfaceSummary.get("side_effect_sql_tool"), is("database_gateway_execute_update"));
@@ -252,13 +252,14 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertTrue(getResources(interactionClient.listResources()).stream().anyMatch(each -> "shardingsphere://runtime".equals(each.get("uri"))));
         assertTrue(getResourceTemplates(interactionClient.listResourceTemplates()).stream()
                 .anyMatch(each -> "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}".equals(each.get("uriTemplate"))));
-        assertTrue(interactionClient.listTools().stream().anyMatch(each -> "database_gateway_execute_update".equals(each.get("name")) && getMap(each.get("outputSchema")).containsKey("properties")));
+        assertTrue(interactionClient.listTools().stream()
+                .anyMatch(each -> "database_gateway_execute_update".equals(each.get("name")) && getObjectOrEmpty(each.get("outputSchema")).containsKey("properties")));
         Map<String, Object> promptPayload = interactionClient.getPrompt("inspect_metadata",
                 Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "orders"));
         assertTrue(String.valueOf(promptPayload).contains("Stop conditions"));
         Map<String, Object> completionPayload = interactionClient.complete(Map.of("type", "ref/prompt", "name", "inspect_metadata"),
                 "schema", "log", Map.of("database", LOGICAL_DATABASE_NAME));
-        assertTrue(((List<?>) getMap(completionPayload.get("completion")).get("values")).contains(LOGICAL_DATABASE_NAME));
+        assertTrue(((List<?>) getObjectOrEmpty(completionPayload.get("completion")).get("values")).contains(LOGICAL_DATABASE_NAME));
     }
     
     protected void assertAiNativeSqlPreview(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
@@ -268,7 +269,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertThat(String.valueOf(actual.get("result_kind")), is("preview"));
         assertThat(String.valueOf(actual.get("preview_semantics")), is("classification_only"));
         assertFalse((Boolean) actual.get("would_execute"));
-        List<Map<String, Object>> nextActions = getMapList(actual.get("next_actions"));
+        List<Map<String, Object>> nextActions = getRequiredObjectList(actual.get("next_actions"));
         assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("ask_user", "tool_call")));
         Map<String, Object> askUserAction = nextActions.getFirst();
         assertThat(askUserAction.get("order"), is(1));
@@ -277,7 +278,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertThat(toolCallAction.get("order"), is(2));
         assertThat(toolCallAction.get("tool_name"), is("database_gateway_execute_update"));
         assertThat(toolCallAction.get("depends_on"), is(List.of(1)));
-        assertThat(getMap(toolCallAction.get("arguments")).get("execution_mode"), is("execute"));
+        assertThat(getObjectOrEmpty(toolCallAction.get("arguments")).get("execution_mode"), is("execute"));
     }
     
     protected void assertAiNativeSqlResult(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
@@ -287,7 +288,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         assertThat(String.valueOf(actual.get("row_object_status")), is("available"));
         assertThat(((List<?>) actual.get("row_objects")).size(), is(1));
         assertThat(String.valueOf(actual.get("truncated")), is("true"));
-        assertThat(String.valueOf(getMapList(actual.get("next_actions")).getFirst().get("type")), is("ask_user"));
+        assertThat(String.valueOf(getRequiredObjectList(actual.get("next_actions")).getFirst().get("type")), is("ask_user"));
     }
     
     protected McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests) throws IOException {
@@ -303,7 +304,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     protected McpSchema.ElicitResult createElicitationResult(final List<McpSchema.ElicitRequest> elicitationRequests,
                                                              final McpSchema.ElicitRequest request) {
         elicitationRequests.add(request);
-        List<String> requiredFields = getStringList(request.requestedSchema().get("required"));
+        List<String> requiredFields = getRequiredStringList(request.requestedSchema().get("required"));
         return new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of(
                 requiredFields.getFirst(), "1",
                 requiredFields.get(1), "3"));
@@ -313,26 +314,15 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         ProductionMCPClientTransportFactory.assertElicitationRequest(actualRequests);
     }
     
-    @SuppressWarnings("unchecked")
-    protected Map<String, Object> castStructuredContent(final Object value) {
-        return (Map<String, Object>) value;
+    protected Map<String, Object> getObjectOrEmpty(final Object value) {
+        return value instanceof Map ? MCPInteractionPayloads.getRequiredObjectValue(value, "payload") : Map.of();
     }
     
-    @SuppressWarnings("unchecked")
-    protected Map<String, Object> castToMap(final Object value) {
-        return (Map<String, Object>) value;
+    protected List<Map<String, Object>> getRequiredObjectList(final Object value) {
+        return MCPInteractionPayloads.getRequiredObjectList(value, "payload");
     }
     
-    protected Map<String, Object> getMap(final Object value) {
-        return value instanceof Map ? castToMap(value) : Map.of();
-    }
-    
-    @SuppressWarnings("unchecked")
-    protected List<Map<String, Object>> getMapList(final Object value) {
-        return ((List<?>) value).stream().map(each -> (Map<String, Object>) each).toList();
-    }
-    
-    protected List<String> getStringList(final Object value) {
+    protected List<String> getRequiredStringList(final Object value) {
         return ((List<?>) value).stream().map(String::valueOf).toList();
     }
     

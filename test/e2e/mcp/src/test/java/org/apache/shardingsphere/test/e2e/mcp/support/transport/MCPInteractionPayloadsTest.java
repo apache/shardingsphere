@@ -32,13 +32,13 @@ class MCPInteractionPayloadsTest {
     @Test
     void assertParseJsonPayload() {
         Map<String, Object> actualPayload = MCPInteractionPayloads.parseJsonPayload("{\"result\":{\"status\":\"ok\"}}");
-        assertThat(MCPInteractionPayloads.castToMap(actualPayload.get("result")).get("status"), is("ok"));
+        assertThat(MCPInteractionPayloads.getRequiredObject(actualPayload, "result").get("status"), is("ok"));
     }
     
     @Test
     void assertParseServerSentEventPayload() {
         Map<String, Object> actualPayload = MCPInteractionPayloads.parseJsonPayload("event: message\ndata: {\"result\":{\"status\":\"ok\"}}\n");
-        assertThat(MCPInteractionPayloads.castToMap(actualPayload.get("result")).get("status"), is("ok"));
+        assertThat(MCPInteractionPayloads.getRequiredObject(actualPayload, "result").get("status"), is("ok"));
     }
     
     @Test
@@ -52,30 +52,25 @@ class MCPInteractionPayloadsTest {
     }
     
     @Test
-    void assertGetJsonRpcResult() {
-        assertThat(MCPInteractionPayloads.getJsonRpcResult(Map.of("result", Map.of("status", "ok"))).get("status"), is("ok"));
+    void assertGetRequiredJsonRpcResult() {
+        assertThat(MCPInteractionPayloads.getRequiredJsonRpcResult(Map.of("result", Map.of("status", "ok"))).get("status"), is("ok"));
     }
     
     @Test
-    void assertGetJsonRpcResultWithoutResult() {
-        assertTrue(MCPInteractionPayloads.getJsonRpcResult(Map.of()).isEmpty());
+    void assertGetRequiredJsonRpcResultWithoutResult() {
+        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getRequiredJsonRpcResult(Map.of()));
     }
     
     @Test
-    void assertGetResultContents() {
-        Map<String, Object> payload = Map.of("result", Map.of("content", List.of(Map.of("text", "{\"status\":\"ok\"}"))));
-        assertThat(MCPInteractionPayloads.getResultContents(payload).getFirst().get("text"), is("{\"status\":\"ok\"}"));
-    }
-    
-    @Test
-    void assertGetResultContentsWithoutContent() {
-        assertTrue(MCPInteractionPayloads.getResultContents(Map.of("result", Map.of())).isEmpty());
+    void assertRejectJsonRpcErrorAsResult() {
+        assertThrows(IllegalStateException.class,
+                () -> MCPInteractionPayloads.getRequiredJsonRpcResult(Map.of("error", Map.of("message", "failed"))));
     }
     
     @Test
     void assertGetListResourcesPayload() {
         Map<String, Object> actualPayload = MCPInteractionPayloads.getListResourcesPayload(Map.of("result", Map.of("resources", List.of(Map.of("uri", "shardingsphere://capabilities")))));
-        assertThat(MCPInteractionPayloads.castToList(actualPayload.get("resources")).getFirst().get("uri"), is("shardingsphere://capabilities"));
+        assertThat(MCPInteractionPayloads.getRequiredObjectList(actualPayload, "resources").getFirst().get("uri"), is("shardingsphere://capabilities"));
     }
     
     @Test
@@ -85,45 +80,54 @@ class MCPInteractionPayloadsTest {
     }
     
     @Test
-    void assertGetStructuredContent() {
-        Map<String, Object> actualPayload = MCPInteractionPayloads.getStructuredContent(Map.of("result", Map.of("structuredContent", Map.of("status", "ok"))));
+    void assertGetToolCallPayload() {
+        Map<String, Object> actualPayload = MCPInteractionPayloads.getToolCallPayload(Map.of("result", Map.of(
+                "content", List.of(Map.of("type", "text", "text", "ok")), "structuredContent", Map.of("status", "ok"))));
         assertThat(actualPayload.get("status"), is("ok"));
     }
     
     @Test
-    void assertGetStructuredContentPrefersStructuredContent() {
+    void assertGetToolCallPayloadPrefersStructuredContent() {
         Map<String, Object> payload = Map.of("result", Map.of(
                 "structuredContent", Map.of("status", "ok"),
                 "content", List.of(Map.of("type", "text", "text", "{\"status\":\"fallback\"}"))));
-        assertThat(MCPInteractionPayloads.getStructuredContent(payload).get("status"), is("ok"));
+        assertThat(MCPInteractionPayloads.getToolCallPayload(payload).get("status"), is("ok"));
     }
     
     @Test
-    void assertGetStructuredContentRejectsTextContentFallback() {
+    void assertGetToolCallPayloadRejectsTextContentFallback() {
         Map<String, Object> payload = Map.of("result", Map.of("content", List.of(Map.of("text", "{\"status\":\"ok\"}"))));
-        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getStructuredContent(payload));
+        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getToolCallPayload(payload));
     }
     
     @Test
-    void assertGetStructuredContentWithoutContent() {
-        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getStructuredContent(Map.of("result", Map.of())));
+    void assertGetToolCallPayloadWithoutProtocolContent() {
+        assertThrows(IllegalStateException.class,
+                () -> MCPInteractionPayloads.getToolCallPayload(Map.of("result", Map.of("structuredContent", Map.of("status", "ok")))));
     }
     
     @Test
     void assertGetFirstResourcePayload() {
         Map<String, Object> payload = Map.of("result", Map.of("contents", List.of(Map.of("text", "{\"item\":{\"database\":\"logic_db\"}}"))));
-        assertThat(MCPInteractionPayloads.castToMap(MCPInteractionPayloads.getFirstResourcePayload(payload).get("item")).get("database"), is("logic_db"));
+        assertThat(MCPInteractionPayloads.getRequiredObject(MCPInteractionPayloads.getFirstResourcePayload(payload), "item").get("database"), is("logic_db"));
     }
     
     @Test
     void assertGetFirstResourcePayloadWithoutContent() {
-        assertTrue(MCPInteractionPayloads.getFirstResourcePayload(Map.of("result", Map.of())).isEmpty());
+        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getFirstResourcePayload(Map.of("result", Map.of())));
     }
     
     @Test
     void assertGetJsonRpcErrorPayload() {
         assertThat(MCPInteractionPayloads.getJsonRpcErrorPayload(Map.of("error", Map.of("message", "Tool not found"))),
                 is(Map.of("error_code", "json_rpc_error", "message", "Tool not found")));
+    }
+    
+    @Test
+    void assertGetJsonRpcErrorPayloadWithScalarData() {
+        assertThat(MCPInteractionPayloads.getJsonRpcErrorPayload(Map.of("error", Map.of(
+                "message", "Unknown tool: invalid_tool_name", "data", "Tool not found: unsupported_tool"))),
+                is(Map.of("error_code", "json_rpc_error", "message", "Unknown tool: invalid_tool_name")));
     }
     
     @Test
@@ -146,12 +150,22 @@ class MCPInteractionPayloadsTest {
     }
     
     @Test
-    void assertCastToMap() {
-        assertThat(MCPInteractionPayloads.castToMap(Map.of("status", "ok")).get("status"), is("ok"));
+    void assertGetRequiredObject() {
+        assertThat(MCPInteractionPayloads.getRequiredObjectValue(Map.of("status", "ok"), "payload").get("status"), is("ok"));
     }
     
     @Test
-    void assertCastToList() {
-        assertThat(MCPInteractionPayloads.castToList(List.of(Map.of("name", "orders"))).getFirst().get("name"), is("orders"));
+    void assertGetRequiredObjectList() {
+        assertThat(MCPInteractionPayloads.getRequiredObjectList(List.of(Map.of("name", "orders")), "items").getFirst().get("name"), is("orders"));
+    }
+    
+    @Test
+    void assertGetAbsentOptionalObjectList() {
+        assertTrue(MCPInteractionPayloads.getOptionalObjectList(Map.of(), "items").isEmpty());
+    }
+    
+    @Test
+    void assertRejectNonObjectListElement() {
+        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getRequiredObjectList(List.of("orders"), "items"));
     }
 }

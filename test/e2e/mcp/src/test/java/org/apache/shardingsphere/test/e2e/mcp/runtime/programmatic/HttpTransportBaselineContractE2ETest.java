@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapa
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPBaselineContractAssertions;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
@@ -86,10 +87,10 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
         result.put("response_mode", payload.get("response_mode"));
         result.put("guidanceResource", payload.get("guidanceResource"));
         result.put("protocolAvailability", payload.get("protocolAvailability"));
-        result.put("resources", summarizeCapabilityResourceIdentities(castToMapList(payload.get("resources"))));
-        result.put("resourceTemplates", summarizeCapabilityResourceTemplateIdentities(castToMapList(payload.get("resourceTemplates"))));
-        result.put("tools", summarizeCapabilityTools(castToMapList(payload.get("tools"))));
-        result.put("prompts", summarizePrompts(castToMapList(payload.get("prompts"))));
+        result.put("resources", summarizeCapabilityResourceIdentities(MCPInteractionPayloads.getOptionalObjectList(payload, "resources")));
+        result.put("resourceTemplates", summarizeCapabilityResourceTemplateIdentities(MCPInteractionPayloads.getOptionalObjectList(payload, "resourceTemplates")));
+        result.put("tools", summarizeCapabilityTools(MCPInteractionPayloads.getOptionalObjectList(payload, "tools")));
+        result.put("prompts", summarizePrompts(MCPInteractionPayloads.getOptionalObjectList(payload, "prompts")));
         result.put("completionTargets", payload.get("completionTargets"));
         return result;
     }
@@ -133,11 +134,12 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
     }
     
     private Map<String, Object> summarizeResourceMeta(final Map<String, Object> resource) {
-        Map<String, Object> meta = castToMap(resource.getOrDefault("_meta", Map.of()));
+        Map<String, Object> meta = MCPInteractionPayloads.getOptionalObject(resource, "_meta");
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put(MCPShardingSphereMetadataKeys.RESOURCE_KIND, meta.get(MCPShardingSphereMetadataKeys.RESOURCE_KIND));
         putIfNotEmpty(result, MCPShardingSphereMetadataKeys.RELATED_TOOLS, (List<?>) meta.get(MCPShardingSphereMetadataKeys.RELATED_TOOLS));
-        putIfNotEmpty(result, MCPShardingSphereMetadataKeys.URI_VARIABLES, summarizeParameters(castToMapList(meta.get(MCPShardingSphereMetadataKeys.URI_VARIABLES))));
+        putIfNotEmpty(result, MCPShardingSphereMetadataKeys.URI_VARIABLES,
+                summarizeParameters(MCPInteractionPayloads.getOptionalObjectList(meta, MCPShardingSphereMetadataKeys.URI_VARIABLES)));
         return removeNullValues(result);
     }
     
@@ -166,7 +168,7 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("name", prompt.get("name"));
         result.put("title", prompt.get("title"));
-        result.put("arguments", summarizeParameters(castToMapList(prompt.get("arguments"))));
+        result.put("arguments", summarizeParameters(MCPInteractionPayloads.getOptionalObjectList(prompt, "arguments")));
         return result;
     }
     
@@ -185,10 +187,4 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
         return result;
     }
     
-    private List<Map<String, Object>> castToMapList(final Object value) {
-        if (null == value) {
-            return List.of();
-        }
-        return ((List<?>) value).stream().map(this::castToMap).toList();
-    }
 }

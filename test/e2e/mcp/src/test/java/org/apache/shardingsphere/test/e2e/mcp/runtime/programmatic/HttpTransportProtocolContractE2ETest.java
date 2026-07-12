@@ -53,10 +53,10 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         String actualSessionId = actual.headers().firstValue("MCP-Session-Id").orElse("");
         assertFalse(actualSessionId.isEmpty());
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
-        Map<String, Object> actualResult = castToMap(actualPayload.get("result"));
+        Map<String, Object> actualResult = MCPInteractionPayloads.getRequiredJsonRpcResult(actualPayload);
         assertThat(String.valueOf(actualPayload.get("jsonrpc")), is("2.0"));
         assertThat(String.valueOf(actualResult.get("protocolVersion")), is(getProtocolVersion()));
-        assertServerCapabilities(castToMap(actualResult.get("capabilities")));
+        assertServerCapabilities(MCPInteractionPayloads.getRequiredObject(actualResult, "capabilities"));
         assertThat(sendInitializedNotification(httpClient, actualSessionId).statusCode(), is(202));
     }
     
@@ -153,7 +153,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
         assertTrue(MCPInteractionPayloads.hasJsonRpcError(actualPayload));
         assertFalse(actualPayload.containsKey("result"));
-        Map<String, Object> actualError = castToMap(actualPayload.get("error"));
+        Map<String, Object> actualError = MCPInteractionPayloads.getRequiredObject(actualPayload, "error");
         assertTrue(actualError.containsKey("code"));
         assertTrue(actualError.containsKey("message"));
     }
@@ -164,13 +164,14 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> actualResult = sendInitializedRequest(httpClient, sessionId, "tools-list-constraints", "tools/list", Map.of());
-        Map<String, Object> actualTool = MCPInteractionPayloads.castToList(actualResult.get("tools")).stream()
+        Map<String, Object> actualTool = MCPInteractionPayloads.getRequiredObjectList(actualResult, "tools").stream()
                 .filter(each -> "database_gateway_execute_update".equals(each.get("name"))).findFirst().orElseThrow();
-        Map<String, Object> actualProperties = castToMap(castToMap(actualTool.get("inputSchema")).get("properties"));
-        Map<String, Object> actualMaxRows = castToMap(actualProperties.get("max_rows"));
+        Map<String, Object> actualInputSchema = MCPInteractionPayloads.getRequiredObject(actualTool, "inputSchema");
+        Map<String, Object> actualProperties = MCPInteractionPayloads.getRequiredObject(actualInputSchema, "properties");
+        Map<String, Object> actualMaxRows = MCPInteractionPayloads.getRequiredObject(actualProperties, "max_rows");
         assertThat(actualMaxRows.get("minimum"), is(0));
         assertThat(actualMaxRows.get("maximum"), is(5000));
-        assertThat(castToMap(actualProperties.get("execution_mode")).get("enum"), is(List.of("execute", "preview")));
+        assertThat(MCPInteractionPayloads.getRequiredObject(actualProperties, "execution_mode").get("enum"), is(List.of("execute", "preview")));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -180,7 +181,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> actualResult = sendInitializedRequest(httpClient, sessionId, method + "-1", method, Map.of());
-        assertFalse(MCPInteractionPayloads.castToList(actualResult.get(resultKey)).isEmpty());
+        assertFalse(MCPInteractionPayloads.getRequiredObjectList(actualResult, resultKey).isEmpty());
         assertFalse(actualResult.containsKey("nextCursor"));
     }
     
@@ -191,7 +192,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> actualResult = sendInitializedRequest(httpClient, sessionId, method + "-cursor-1", method, Map.of("cursor", "opaque-cursor"));
-        assertFalse(MCPInteractionPayloads.castToList(actualResult.get(resultKey)).isEmpty());
+        assertFalse(MCPInteractionPayloads.getRequiredObjectList(actualResult, resultKey).isEmpty());
         assertFalse(actualResult.containsKey("nextCursor"));
     }
     
@@ -226,7 +227,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         assertThat(actual.statusCode(), is(200));
         assertThat(actual.headers().firstValue("MCP-Protocol-Version").orElse(""), is(getProtocolVersion()));
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
-        assertThat(String.valueOf(castToMap(actualPayload.get("result")).get("protocolVersion")), is(getProtocolVersion()));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredJsonRpcResult(actualPayload).get("protocolVersion")), is(getProtocolVersion()));
     }
     
     @Test
@@ -292,12 +293,12 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         assertTrue(capabilities.containsKey("completions"));
         assertFalse(capabilities.containsKey("experimental"));
         assertFalse(capabilities.containsKey("tasks"));
-        Map<String, Object> resources = castToMap(capabilities.get("resources"));
+        Map<String, Object> resources = MCPInteractionPayloads.getRequiredObject(capabilities, "resources");
         assertFalse((boolean) resources.get("subscribe"));
         assertFalse((boolean) resources.get("listChanged"));
-        Map<String, Object> tools = castToMap(capabilities.get("tools"));
+        Map<String, Object> tools = MCPInteractionPayloads.getRequiredObject(capabilities, "tools");
         assertFalse((boolean) tools.get("listChanged"));
-        Map<String, Object> prompts = castToMap(capabilities.get("prompts"));
+        Map<String, Object> prompts = MCPInteractionPayloads.getRequiredObject(capabilities, "prompts");
         assertFalse((boolean) prompts.get("listChanged"));
     }
     
@@ -306,17 +307,17 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(requestId, method, params));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
-        assertFalse(MCPInteractionPayloads.hasJsonRpcError(actualPayload));
-        return castToMap(actualPayload.get("result"));
+        return MCPInteractionPayloads.getRequiredJsonRpcResult(actualPayload);
     }
     
     private Map<String, Object> assertToolErrorRecovery(final HttpResponse<String> response, final String expectedCategory) {
         assertThat(response.statusCode(), is(200));
-        Map<String, Object> result = castToMap(parseJsonBody(response.body()).get("result"));
+        Map<String, Object> payload = parseJsonBody(response.body());
+        Map<String, Object> result = MCPInteractionPayloads.getRequiredJsonRpcResult(payload);
         assertTrue((boolean) result.get("isError"));
-        Map<String, Object> structuredContent = castToMap(result.get("structuredContent"));
+        Map<String, Object> structuredContent = MCPInteractionPayloads.getToolCallPayload(payload);
         assertThat(structuredContent.get("response_mode"), is("recovery"));
-        Map<String, Object> actualRecovery = castToMap(structuredContent.get("recovery"));
+        Map<String, Object> actualRecovery = MCPInteractionPayloads.getRequiredObject(structuredContent, "recovery");
         assertThat(actualRecovery.get("category"), is(expectedCategory));
         return actualRecovery;
     }

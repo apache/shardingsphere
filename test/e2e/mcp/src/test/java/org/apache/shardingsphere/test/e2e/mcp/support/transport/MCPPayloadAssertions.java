@@ -97,7 +97,7 @@ public final class MCPPayloadAssertions {
      * @return items
      */
     public static List<Map<String, Object>> getItems(final Map<String, Object> payload) {
-        return MCPInteractionPayloads.castToList(payload.get("items"));
+        return MCPInteractionPayloads.getRequiredObjectList(payload, "items");
     }
     
     /**
@@ -114,18 +114,14 @@ public final class MCPPayloadAssertions {
                                             final String expectedRequiredField, final String expectedPropertyField, final String expectedPropertyType) {
         Map<String, Object> actualTool = tools.stream().filter(each -> toolName.equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
         assertThat(String.valueOf(actualTool.get("title")), is(expectedTitle));
-        Map<String, Object> actualInputSchema = getMap(actualTool.get("inputSchema"));
+        Map<String, Object> actualInputSchema = MCPInteractionPayloads.getRequiredObject(actualTool, "inputSchema");
         List<String> actualRequiredFields = ((List<?>) actualInputSchema.get("required")).stream().map(String::valueOf).toList();
-        Map<String, Object> actualProperties = getMap(actualInputSchema.get("properties"));
-        Map<String, Object> actualProperty = getMap(actualProperties.get(expectedPropertyField));
+        Map<String, Object> actualProperties = MCPInteractionPayloads.getRequiredObject(actualInputSchema, "properties");
+        Map<String, Object> actualProperty = MCPInteractionPayloads.getRequiredObject(actualProperties, expectedPropertyField);
         if (!expectedRequiredField.isEmpty()) {
             assertTrue(actualRequiredFields.contains(expectedRequiredField));
         }
         assertThat(String.valueOf(actualProperty.get("type")), is(expectedPropertyType));
     }
     
-    @SuppressWarnings("unchecked")
-    private static Map<String, Object> getMap(final Object value) {
-        return (Map<String, Object>) value;
-    }
 }

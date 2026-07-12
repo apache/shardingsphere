@@ -44,7 +44,7 @@ class ExecuteQueryReadOnlyE2ETest extends AbstractSharedHttpProgrammaticRuntimeE
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "SELECT * FROM orders", "max_rows", 10));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
     }
     
@@ -56,7 +56,7 @@ class ExecuteQueryReadOnlyE2ETest extends AbstractSharedHttpProgrammaticRuntimeE
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "WITH foo_orders AS (SELECT * FROM orders) SELECT * FROM foo_orders"));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
         assertThat(String.valueOf(payload.get("statement_class")), is("query"));
     }

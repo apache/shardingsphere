@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -97,19 +98,15 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 scenario.toolName() + "-schema-1", "tools/list", Map.of()));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = castToMap(parseJsonBody(actual.body()).get("result"));
+        Map<String, Object> payload = MCPInteractionPayloads.getRequiredJsonRpcResult(parseJsonBody(actual.body()));
         assertModelFacingPayloadContract(payload);
-        Map<String, Object> actualTool = findByKey(castToMapList(payload.get("tools")), "name", scenario.toolName());
-        Map<String, Object> actualInputSchema = castToMap(actualTool.get("inputSchema"));
+        Map<String, Object> actualTool = findByKey(MCPInteractionPayloads.getRequiredObjectList(payload, "tools"), "name", scenario.toolName());
+        Map<String, Object> actualInputSchema = MCPInteractionPayloads.getRequiredObject(actualTool, "inputSchema");
         assertFalse((Boolean) actualInputSchema.get("additionalProperties"));
-        Map<String, Object> actualProperties = castToMap(actualInputSchema.get("properties"));
+        Map<String, Object> actualProperties = MCPInteractionPayloads.getRequiredObject(actualInputSchema, "properties");
         for (String each : scenario.planArguments().keySet()) {
             assertTrue(actualProperties.containsKey(each), each);
         }
-    }
-    
-    private List<Map<String, Object>> castToMapList(final Object value) {
-        return ((List<?>) value).stream().map(this::castToMap).toList();
     }
     
     private Map<String, Object> findByKey(final List<Map<String, Object>> values, final String key, final String expectedValue) {
@@ -122,9 +119,9 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         arguments.put("client_hint", "narrow");
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, scenario.toolName(), arguments);
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> result = castToMap(parseJsonBody(actual.body()).get("result"));
+        Map<String, Object> result = MCPInteractionPayloads.getRequiredJsonRpcResult(parseJsonBody(actual.body()));
         assertTrue((Boolean) result.get("isError"));
-        Map<String, Object> payload = castToMap(result.get("structuredContent"));
+        Map<String, Object> payload = MCPInteractionPayloads.getRequiredObject(result, "structuredContent");
         Map<String, Object> recovery = getRecoveryPayload(payload, "validation");
         assertThat(recovery.get("category"), is("unknown_argument"));
         assertThat(recovery.get("argument_path"), is("client_hint"));
@@ -134,7 +131,7 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
     private void assertClarifiesMissingDatabase(final HttpClient httpClient, final String sessionId, final FeatureWorkflowScenario scenario) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, scenario.toolName(), Map.of("natural_language_intent", "plan DistSQL-only feature rule"));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(payload.get("status")), is("clarifying"));
         assertTrue(String.valueOf(payload).contains("Please provide logical database first."));
         assertModelFacingPayloadContract(payload);
@@ -144,7 +141,7 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
                                                                         final FeatureWorkflowScenario scenario) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, scenario.toolName(), scenario.planArguments());
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> result = getStructuredContent(actual.body());
+        Map<String, Object> result = getToolCallPayload(actual.body());
         assertThat(String.valueOf(result.get("response_mode")), is("recovery"));
         assertFalse(String.valueOf(result.get("message")).isBlank());
         assertNoForbiddenArtifacts(result);

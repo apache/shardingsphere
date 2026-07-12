@@ -77,6 +77,35 @@ class MCPSQLExecutionFacadeTest {
     }
     
     @Test
+    @SuppressWarnings("unchecked")
+    void assertExecuteDefersWorkUntilSessionLock() {
+        MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
+        MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
+        MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
+        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
+        StatementClassifier statementClassifier = mock(StatementClassifier.class);
+        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
+        SQLExecutionRequest request = createExecutionRequest("SELECT 1");
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", "");
+        SQLExecutionResponse response = mock(SQLExecutionResponse.class);
+        ArgumentCaptor<Supplier<SQLExecutionResponse>> lockedExecution = ArgumentCaptor.forClass(Supplier.class);
+        when(coordinator.executeWithSessionLock(eq("session-1"), lockedExecution.capture())).thenReturn(response);
+        when(statementClassifier.classify("SELECT 1")).thenReturn(classification);
+        when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
+        when(statementExecutor.execute(request, classification, capability)).thenReturn(response);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, statementClassifier);
+        assertThat(facade.execute(request), is(response));
+        verifyNoInteractions(capabilityProvider, transactionExecutor, statementExecutor, statementClassifier, traceFactory);
+        assertThat(lockedExecution.getValue().get(), is(response));
+        verify(statementClassifier).classify("SELECT 1");
+        verify(capabilityProvider).provide("logic_db");
+        verify(statementExecutor).execute(request, classification, capability);
+        verify(traceFactory).create("session-1", "logic_db", "SELECT 1", true, "QUERY");
+        verifyNoInteractions(transactionExecutor);
+    }
+    
+    @Test
     void assertExecuteWithUnknownCapability() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);

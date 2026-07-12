@@ -114,9 +114,9 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
         return MCPHttpTransportTestSupport.sendRawPostRequest(httpClient, getEndpointUri(), headers, requestBody);
     }
     
-    protected final Map<String, Object> getStructuredContent(final String responseBody) {
+    protected final Map<String, Object> getToolCallPayload(final String responseBody) {
         Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
-        return MCPInteractionPayloads.getStructuredContent(payload);
+        return MCPInteractionPayloads.getToolCallPayload(payload);
     }
     
     protected final Map<String, Object> getFirstResourcePayload(final String responseBody) {
@@ -128,13 +128,9 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
         return MCPInteractionPayloads.parseJsonPayload(responseBody);
     }
     
-    protected final Map<String, Object> castToMap(final Object value) {
-        return MCPInteractionPayloads.castToMap(value);
-    }
-    
     protected final Map<String, Object> getRecoveryPayload(final Map<String, Object> payload, final String expectedRecoveryCategory) {
         assertThat(String.valueOf(payload.get("response_mode")), is("recovery"));
-        Map<String, Object> result = castToMap(payload.get("recovery"));
+        Map<String, Object> result = MCPInteractionPayloads.getRequiredObject(payload, "recovery");
         assertThat(String.valueOf(result.get("recovery_category")), is(expectedRecoveryCategory));
         return result;
     }
@@ -149,7 +145,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
                 "algorithm_type", "KEEP_FIRST_N_LAST_M",
                 "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(payload.get("status")), is("planned"));
         return String.valueOf(payload.get("plan_id"));
     }

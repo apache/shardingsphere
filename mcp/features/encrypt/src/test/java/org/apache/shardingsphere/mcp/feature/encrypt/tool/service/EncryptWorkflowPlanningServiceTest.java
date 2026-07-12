@@ -43,10 +43,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.AdditionalAnswers;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
-import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,7 +60,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.when;
 
 class EncryptWorkflowPlanningServiceTest {
@@ -394,21 +396,17 @@ class EncryptWorkflowPlanningServiceTest {
                                                          final EncryptAlgorithmRecommendationService algorithmRecommendationService,
                                                          final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService,
                                                          final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService) {
-        EncryptWorkflowPlanningService result = new EncryptWorkflowPlanningService();
-        try {
-            setField(result, "ruleInspectionService", ruleInspectionService);
-            setField(result, "algorithmRecommendationService", algorithmRecommendationService);
-            setField(result, "algorithmPropertyTemplateService", algorithmPropertyTemplateService);
-            setField(result, "ruleDistSQLPlanningService", ruleDistSQLPlanningService);
-            return result;
-        } catch (final ReflectiveOperationException ex) {
-            throw new AssertionError(ex);
+        try (
+                MockedConstruction<EncryptRuleInspectionService> ignoredInspectionService = mockConstruction(
+                        EncryptRuleInspectionService.class, withSettings().defaultAnswer(AdditionalAnswers.delegatesTo(ruleInspectionService)));
+                MockedConstruction<EncryptAlgorithmRecommendationService> ignoredRecommendationService = mockConstruction(
+                        EncryptAlgorithmRecommendationService.class, withSettings().defaultAnswer(AdditionalAnswers.delegatesTo(algorithmRecommendationService)));
+                MockedConstruction<EncryptAlgorithmPropertyTemplateService> ignoredPropertyTemplateService = mockConstruction(
+                        EncryptAlgorithmPropertyTemplateService.class, withSettings().defaultAnswer(AdditionalAnswers.delegatesTo(algorithmPropertyTemplateService)));
+                MockedConstruction<EncryptRuleDistSQLPlanningService> ignoredDistSQLPlanningService = mockConstruction(
+                        EncryptRuleDistSQLPlanningService.class, withSettings().defaultAnswer(AdditionalAnswers.delegatesTo(ruleDistSQLPlanningService)))) {
+            return new EncryptWorkflowPlanningService();
         }
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     private void assertRuleDistSQLOnlyPayloadDoesNotExpose(final WorkflowContextSnapshot snapshot, final String term) {

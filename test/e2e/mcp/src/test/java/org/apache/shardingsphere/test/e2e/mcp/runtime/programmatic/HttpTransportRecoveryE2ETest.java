@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDes
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.fixture.MCPWorkflowSecretReferenceFixture;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -29,7 +30,6 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,7 +53,7 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", Map.of("schema", "logic_db", "sql", "SELECT * FROM orders"));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         Map<String, Object> recovery = getRecoveryPayload(payload, "missing_context");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("type")), is("resource_read"));
@@ -75,15 +75,15 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query",
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1"));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         Map<String, Object> recovery = getRecoveryPayload(payload, "unsafe_sql");
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
-        Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
+        Map<String, Object> retryArguments = MCPInteractionPayloads.getRequiredObject(nextAction, "arguments");
         assertThat(String.valueOf(retryArguments.get("execution_mode")), is("preview"));
         HttpResponse<String> retry = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", retryArguments);
         assertThat(retry.statusCode(), is(200));
-        assertThat(String.valueOf(getStructuredContent(retry.body()).get("result_kind")), is("preview"));
+        assertThat(String.valueOf(getToolCallPayload(retry.body()).get("result_kind")), is("preview"));
         assertModelFacingPayloadContract(payload);
     }
     
@@ -95,16 +95,18 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,
                 Map.of("plan_id", "plan-missing", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         Map<String, Object> recovery = getRecoveryPayload(payload, "stale_workflow");
         assertThat(String.valueOf(recovery.get("plan_id")), is("plan-missing"));
         Map<String, Object> nextAction = getFirstNextAction(recovery);
         assertThat(String.valueOf(nextAction.get("type")), is("completion"));
-        assertThat(castToMap(nextAction.get("argument")).get("name"), is("plan_id"));
-        HttpResponse<String> completion = sendCompletionRequest(httpClient, sessionId, castToMap(nextAction.get("ref")), String.valueOf(castToMap(nextAction.get("argument")).get("name")));
+        Map<String, Object> argument = MCPInteractionPayloads.getRequiredObject(nextAction, "argument");
+        assertThat(argument.get("name"), is("plan_id"));
+        Map<String, Object> reference = MCPInteractionPayloads.getRequiredObject(nextAction, "ref");
+        HttpResponse<String> completion = sendCompletionRequest(httpClient, sessionId, reference, String.valueOf(argument.get("name")));
         assertThat(completion.statusCode(), is(200));
         Map<String, Object> completionPayload = getResultPayload(completion);
-        assertThat(castToMap(completionPayload.get("completion")).get("total"), is(0));
+        assertThat(MCPInteractionPayloads.getRequiredObject(completionPayload, "completion").get("total"), is(0));
         assertModelFacingPayloadContract(payload);
         assertModelFacingPayloadContract(completionPayload);
     }
@@ -117,11 +119,11 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         HttpResponse<String> planResponse = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_encrypt_rule", createEncryptRulePlanArguments());
         assertThat(planResponse.statusCode(), is(200));
         assertFalse(planResponse.body().contains(RECOVERY_SECRET), planResponse.body());
-        String planId = String.valueOf(getStructuredContent(planResponse.body()).get("plan_id"));
+        String planId = String.valueOf(getToolCallPayload(planResponse.body()).get("plan_id"));
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME, Map.of("plan_id", planId));
         assertThat(actual.statusCode(), is(200));
         assertFalse(actual.body().contains(RECOVERY_SECRET), actual.body());
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         Map<String, Object> recovery = getRecoveryPayload(payload, "missing_context");
         assertThat(String.valueOf(recovery.get("category")), is("missing_execution_mode"));
         assertModelFacingPayloadContract(payload);
@@ -135,14 +137,14 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         HttpResponse<String> planResponse = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_encrypt_rule", createSecretReferencedEncryptRulePlanArguments());
         assertThat(planResponse.statusCode(), is(200));
         assertSecretReferenceRedacted(planResponse.body());
-        Map<String, Object> planPayload = getStructuredContent(planResponse.body());
+        Map<String, Object> planPayload = getToolCallPayload(planResponse.body());
         assertModelFacingPayloadContract(planPayload);
         String planId = String.valueOf(planPayload.get("plan_id"));
         HttpResponse<String> previewResponse = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,
                 Map.of("plan_id", planId, "execution_mode", "preview"));
         assertThat(previewResponse.statusCode(), is(200));
         assertSecretReferenceRedacted(previewResponse.body());
-        assertModelFacingPayloadContract(getStructuredContent(previewResponse.body()));
+        assertModelFacingPayloadContract(getToolCallPayload(previewResponse.body()));
     }
     
     private Map<String, Object> createSecretReferencedEncryptRulePlanArguments() {
@@ -163,11 +165,11 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
     }
     
     private Map<String, Object> getFirstNextAction(final Map<String, Object> recovery) {
-        return castToMapList(recovery.get("next_actions")).getFirst();
+        return MCPInteractionPayloads.getRequiredObjectList(recovery, "next_actions").getFirst();
     }
     
     private void assertDatabaseListContains(final Map<String, Object> payload, final String expectedDatabase) {
-        assertTrue(castToMapList(payload.get("items")).stream().anyMatch(each -> expectedDatabase.equals(each.get("database"))));
+        assertTrue(MCPInteractionPayloads.getRequiredObjectList(payload, "items").stream().anyMatch(each -> expectedDatabase.equals(each.get("database"))));
     }
     
     private HttpResponse<String> sendCompletionRequest(final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,
@@ -192,14 +194,11 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
     }
     
     private Map<String, Object> getResultPayload(final HttpResponse<String> response) {
-        return castToMap(parseJsonBody(response.body()).get("result"));
+        return MCPInteractionPayloads.getRequiredJsonRpcResult(parseJsonBody(response.body()));
     }
     
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     
-    private List<Map<String, Object>> castToMapList(final Object value) {
-        return ((List<?>) value).stream().map(this::castToMap).toList();
-    }
 }

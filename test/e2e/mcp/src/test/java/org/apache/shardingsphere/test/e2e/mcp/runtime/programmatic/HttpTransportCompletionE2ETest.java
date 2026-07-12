@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -32,7 +33,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
@@ -125,7 +125,7 @@ class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRunti
     }
     
     private List<String> extractCompletionValues(final Map<String, Object> result) {
-        Map<String, Object> completion = castToMap(result.get("completion"));
+        Map<String, Object> completion = MCPInteractionPayloads.getRequiredObject(result, "completion");
         return ((List<?>) completion.get("values")).stream().map(String::valueOf).toList();
     }
     
@@ -138,9 +138,7 @@ class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRunti
                                          final Map<String, String> contextArguments) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendCompletionRequest(httpClient, sessionId, reference, argumentName, argumentValue, contextArguments);
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> result = castToMap(parseJsonBody(actual.body()).get("result"));
-        assertNotNull(result, actual.body());
-        return result;
+        return MCPInteractionPayloads.getRequiredJsonRpcResult(parseJsonBody(actual.body()));
     }
     
     private HttpResponse<String> sendCompletionRequest(final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,

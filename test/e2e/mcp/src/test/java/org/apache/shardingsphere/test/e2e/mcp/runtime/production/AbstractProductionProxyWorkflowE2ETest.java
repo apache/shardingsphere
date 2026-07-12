@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSu
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport.ProxyWorkflowRuntimeFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -111,8 +112,8 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     protected final void assertValidationPassed(final Map<String, Object> actualValidationResponse) {
         assertThat(actualValidationResponse.toString(), String.valueOf(actualValidationResponse.get("status")), is("validated"));
         assertThat(actualValidationResponse.toString(), String.valueOf(actualValidationResponse.get("overall_status")), is("passed"));
-        assertThat(actualValidationResponse.toString(), getMapList(actualValidationResponse.get("issues")).size(), is(0));
-        assertThat(actualValidationResponse.toString(), getMapList(actualValidationResponse.get("mismatches")).size(), is(0));
+        assertThat(actualValidationResponse.toString(), getObjectListOrEmpty(actualValidationResponse.get("issues")).size(), is(0));
+        assertThat(actualValidationResponse.toString(), getObjectListOrEmpty(actualValidationResponse.get("mismatches")).size(), is(0));
         assertModelFacingPayloadContract(actualValidationResponse);
     }
     
@@ -133,7 +134,7 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     }
     
     protected final List<String> getApprovedSteps(final Map<String, Object> previewResponse) {
-        return getMapList(previewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList();
+        return getObjectListOrEmpty(previewResponse.get("preview_artifacts")).stream().map(each -> String.valueOf(each.get("approval_step"))).distinct().toList();
     }
     
     protected final Map<String, Object> createReviewThenExecuteArguments(final String planId, final List<String> approvedSteps) {
@@ -141,11 +142,11 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     }
     
     protected final List<String> getIssueCodes(final Map<String, Object> payload) {
-        return getMapList(payload.get("issues")).stream().map(each -> String.valueOf(each.get("code"))).toList();
+        return getObjectListOrEmpty(payload.get("issues")).stream().map(each -> String.valueOf(each.get("code"))).toList();
     }
     
     protected final List<String> getClarificationMessages(final Map<String, Object> payload) {
-        return getMapList(payload.get("clarification_questions")).stream().map(each -> String.valueOf(each.get("display_message"))).toList();
+        return getObjectListOrEmpty(payload.get("clarification_questions")).stream().map(each -> String.valueOf(each.get("display_message"))).toList();
     }
     
     protected final void assertModelFacingPayloadContract(final Map<String, Object> payload) {
@@ -157,17 +158,15 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
                 .orElseThrow(() -> new AssertionError(String.format("Failed to find item by %s=%s in %s", fieldName, expectedValue, items)));
     }
     
-    protected final List<String> getStringList(final Object value) {
+    protected final List<String> getStringListOrEmpty(final Object value) {
         return null == value ? List.of() : ((List<?>) value).stream().map(String::valueOf).toList();
     }
     
-    @SuppressWarnings("unchecked")
-    protected final List<Map<String, Object>> getMapList(final Object value) {
-        return null == value ? List.of() : ((List<?>) value).stream().map(each -> (Map<String, Object>) each).toList();
+    protected final List<Map<String, Object>> getObjectListOrEmpty(final Object value) {
+        return null == value ? List.of() : MCPInteractionPayloads.getRequiredObjectList(value, "payload");
     }
     
-    @SuppressWarnings("unchecked")
-    protected final Map<String, Object> getMap(final Object value) {
-        return null == value ? Map.of() : (Map<String, Object>) value;
+    protected final Map<String, Object> getObjectOrEmpty(final Object value) {
+        return null == value ? Map.of() : MCPInteractionPayloads.getRequiredObjectValue(value, "payload");
     }
 }
