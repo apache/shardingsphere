@@ -40,7 +40,7 @@ class MCPDatabaseCapabilityResponseTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertToPayloadArguments")
-    void assertToPayload(final String name, final boolean supportsExplain, final String explainExecutionSemantics) {
+    void assertToPayload(final String name, final boolean supportsExplain) {
         MCPDatabaseCapability actualCapability = mock(MCPDatabaseCapability.class);
         when(actualCapability.getDatabaseName()).thenReturn("logic_db");
         when(actualCapability.getDatabaseType()).thenReturn("FixtureDB");
@@ -70,14 +70,12 @@ class MCPDatabaseCapabilityResponseTest {
                 Map.entry("defaultSchemaSemantics", DialectSchemaSemantics.DATABASE_AS_SCHEMA),
                 Map.entry("schemaExecutionSemantics", SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Map.entry("supportsCrossSchemaSql", false),
-                Map.entry("supportsExplain", supportsExplain),
-                Map.entry("explainExecutionSemantics", explainExecutionSemantics))));
+                Map.entry("supportsExplain", supportsExplain))));
     }
     
     private static Stream<Arguments> assertToPayloadArguments() {
         return Stream.of(
-                Arguments.of("supported", true,
-                        "database_gateway_execute_explain_query executes model-generated database-native EXPLAIN SQL for one classifier-approved SELECT. EXPLAIN ANALYZE is not supported."),
-                Arguments.of("unsupported", false, "database_gateway_execute_explain_query is not supported for this database type."));
+                Arguments.of("supported", true),
+                Arguments.of("unsupported", false));
     }
 }
