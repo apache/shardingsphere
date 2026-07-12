@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmU
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
@@ -180,32 +180,33 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     
     private ValidationSection validateByWorkflowKind(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade, final ValidationReport validationReport) {
         ShardingWorkflowRequest request = (ShardingWorkflowRequest) snapshot.getRequest();
-        String databaseType = queryFacade.getDatabaseType(request.getDatabase());
+        queryFacade.checkDatabaseCapability(request.getDatabase());
         if (ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND.equals(snapshot.getWorkflowKind())) {
             return validateNamedState(snapshot, validationReport, inspectionService.queryTableRule(queryFacade, request.getDatabase(), request.getTable()),
-                    "table", request.getTable(), databaseType);
+                    queryFacade, request.getDatabase(), "table", request.getTable());
         }
         if (ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND.equals(snapshot.getWorkflowKind())) {
             return validateNamedState(snapshot, validationReport, inspectionService.queryTableReferenceRule(queryFacade, request.getDatabase(), request.getRuleName()),
-                    "name", request.getRuleName(), databaseType);
+                    queryFacade, request.getDatabase(), "name", request.getRuleName());
         }
         if (ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND.equals(snapshot.getWorkflowKind())) {
             return validateNamedState(snapshot, validationReport, inspectionService.queryKeyGenerator(queryFacade, request.getDatabase(), request.getKeyGeneratorName()),
-                    "name", request.getKeyGeneratorName(), databaseType);
+                    queryFacade, request.getDatabase(), "name", request.getKeyGeneratorName());
         }
         if (ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND.equals(snapshot.getWorkflowKind())) {
             return validateNamedState(snapshot, validationReport, inspectionService.queryKeyGenerateStrategy(queryFacade, request.getDatabase(), request.getKeyGenerateStrategyName()),
-                    "name", request.getKeyGenerateStrategyName(), databaseType);
+                    queryFacade, request.getDatabase(), "name", request.getKeyGenerateStrategyName());
         }
         if (ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND.equals(snapshot.getWorkflowKind())) {
-            return validateDefaultStrategy(snapshot, validationReport, inspectionService.queryDefaultStrategy(queryFacade, request.getDatabase()), request, databaseType);
+            return validateDefaultStrategy(snapshot, validationReport, inspectionService.queryDefaultStrategy(queryFacade, request.getDatabase()), queryFacade, request);
         }
-        return validateCleanup(validationReport, queryFacade, request, databaseType);
+        return validateCleanup(validationReport, queryFacade, request);
     }
     
     private ValidationSection validateNamedState(final WorkflowContextSnapshot snapshot, final ValidationReport validationReport,
-                                                 final List<Map<String, Object>> rows, final String fieldName, final String expected, final String databaseType) {
-        boolean exists = containsNamedRow(rows, fieldName, expected, databaseType);
+                                                 final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final String databaseName,
+                                                 final String fieldName, final String expected) {
+        boolean exists = containsNamedRow(rows, queryFacade, databaseName, fieldName, expected);
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && exists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !exists) {
             addMismatch(validationReport, fieldName, expected);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rows, "Sharding rule state does not match the planned DistSQL artifact.");
@@ -214,8 +215,8 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     }
     
     private ValidationSection validateDefaultStrategy(final WorkflowContextSnapshot snapshot, final ValidationReport validationReport,
-                                                      final List<Map<String, Object>> rows, final ShardingWorkflowRequest request, final String databaseType) {
-        boolean exists = rows.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getDefaultStrategyType(),
+                                                      final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
+        boolean exists = rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getDefaultStrategyType(),
                 WorkflowRuleValueUtils.getRuleValue(each, "name")) && !WorkflowRuleValueUtils.getRuleValue(each, "type").isEmpty());
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && exists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !exists) {
             addMismatch(validationReport, "name", request.getDefaultStrategyType());
@@ -224,10 +225,9 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, rows, "Default sharding strategy state matches the planned DistSQL artifact.");
     }
     
-    private ValidationSection validateCleanup(final ValidationReport validationReport,
-                                              final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request, final String databaseType) {
+    private ValidationSection validateCleanup(final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
         List<Map<String, Object>> rows = queryCleanupRows(queryFacade, request);
-        if (containsNamedRow(rows, "name", request.getComponentName(), databaseType)) {
+        if (containsNamedRow(rows, queryFacade, request.getDatabase(), "name", request.getComponentName())) {
             addMismatch(validationReport, "name", request.getComponentName());
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rows, "Sharding component still exists after cleanup.");
         }
@@ -247,8 +247,9 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
         }
     }
     
-    private boolean containsNamedRow(final List<Map<String, Object>> rows, final String fieldName, final String expected, final String databaseType) {
-        return rows.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
+    private boolean containsNamedRow(final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final String databaseName,
+                                     final String fieldName, final String expected) {
+        return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
     }
     
     private void addMismatch(final ValidationReport validationReport, final String field, final String expected) {

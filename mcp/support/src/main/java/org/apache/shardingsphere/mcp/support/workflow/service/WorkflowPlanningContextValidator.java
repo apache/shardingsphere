@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
@@ -35,6 +37,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Validator for workflow planning context.
@@ -95,8 +98,9 @@ public final class WorkflowPlanningContextValidator {
         }
         String databaseName = WorkflowSQLUtils.normalizeIdentifier(request.getDatabase());
         metadataQueryFacade.queryDatabase(databaseName).orElseThrow(DatabaseCapabilityNotFoundException::new);
-        String databaseType = queryFacade.getDatabaseType(databaseName);
-        request.setSchema(resolveSchema(metadataQueryFacade, request, clarifiedIntent, databaseType));
+        queryFacade.checkDatabaseCapability(databaseName);
+        List<ShardingSphereSchema> schemas = isEmptyIdentifier(request.getSchema()) ? metadataQueryFacade.querySchemas(databaseName) : List.of();
+        request.setSchema(resolveSchema(schemas, request, clarifiedIntent, queryFacade, databaseName));
         if (!ensureSupportedIdentifiers(WorkflowFieldNames.SCHEMA, List.of(request.getSchema()), snapshot, "discovering")) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
@@ -106,7 +110,15 @@ public final class WorkflowPlanningContextValidator {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!ensureTableExists(metadataQueryFacade, request, snapshot, databaseType) || !ensureColumnExists(metadataQueryFacade, request, snapshot, databaseType)) {
+        if (schemas.isEmpty()) {
+            schemas = metadataQueryFacade.querySchemas(databaseName);
+        }
+        Optional<ShardingSphereTable> table = findTable(schemas, request, queryFacade, databaseName);
+        if (!ensureTableExists(table, request, snapshot)) {
+            snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+            return false;
+        }
+        if (!ensureColumnExists(table.orElseThrow(), request, snapshot, queryFacade, databaseName)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -175,19 +187,19 @@ public final class WorkflowPlanningContextValidator {
         return fieldName.isEmpty() ? Map.of("identifier", identifier) : Map.of("field", fieldName, "identifier", identifier);
     }
     
-    private String resolveSchema(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final String databaseType) {
+    private String resolveSchema(final Collection<ShardingSphereSchema> schemas, final WorkflowRequest request, final ClarifiedIntent clarifiedIntent,
+                                 final MCPFeatureQueryFacade queryFacade, final String databaseName) {
         String actualSchema = request.getSchema();
         if (!isEmptyIdentifier(actualSchema)) {
             return actualSchema;
         }
-        List<ShardingSphereSchema> schemas = metadataQueryFacade.querySchemas(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()));
         if (schemas.isEmpty()) {
             return "";
         }
         if (!WorkflowSQLUtils.normalizeIdentifier(request.getTable()).isEmpty()) {
             List<String> result = new LinkedList<>();
             for (ShardingSphereSchema each : schemas) {
-                if (containsTable(databaseType, request.getTable(), each.getAllTables())) {
+                if (containsTable(queryFacade, databaseName, request.getTable(), each.getAllTables())) {
                     result.add(each.getName());
                 }
             }
@@ -198,9 +210,9 @@ public final class WorkflowPlanningContextValidator {
         return 1 == schemas.size() ? recordInferredSchema(clarifiedIntent, schemas.iterator().next().getName()) : "";
     }
     
-    private boolean containsTable(final String databaseType, final String tableName, final Collection<ShardingSphereTable> tables) {
+    private boolean containsTable(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName, final Collection<ShardingSphereTable> tables) {
         for (ShardingSphereTable each : tables) {
-            if (TableType.TABLE == each.getType() && WorkflowSQLUtils.isSameIdentifier(databaseType, tableName, each.getName())) {
+            if (TableType.TABLE == each.getType() && queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, tableName, each.getName())) {
                 return true;
             }
         }
@@ -214,10 +226,24 @@ public final class WorkflowPlanningContextValidator {
         return schema;
     }
     
-    private boolean ensureTableExists(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
-                                      final WorkflowContextSnapshot snapshot, final String databaseType) {
-        if (metadataQueryFacade.queryTable(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()), WorkflowSQLUtils.canonicalizeIdentifier(databaseType, request.getSchema()),
-                WorkflowSQLUtils.canonicalizeIdentifier(databaseType, request.getTable())).isPresent()) {
+    private Optional<ShardingSphereTable> findTable(final Collection<ShardingSphereSchema> schemas, final WorkflowRequest request,
+                                                    final MCPFeatureQueryFacade queryFacade, final String databaseName) {
+        return schemas.stream().filter(each -> matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.SCHEMA, request.getSchema(), each.getName())).findFirst()
+                .flatMap(schema -> schema.getAllTables().stream()
+                        .filter(each -> TableType.TABLE == each.getType()
+                                && matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.TABLE, request.getTable(), each.getName()))
+                        .findFirst());
+    }
+    
+    private boolean matchesMetadataIdentifier(final MCPFeatureQueryFacade queryFacade, final String databaseName, final IdentifierScope identifierScope,
+                                              final String identifier, final String existingIdentifier) {
+        return WorkflowSQLUtils.requiresExactIdentifierMatch(identifier)
+                ? WorkflowSQLUtils.normalizeIdentifier(identifier).equals(existingIdentifier)
+                : queryFacade.isSameIdentifier(databaseName, identifierScope, identifier, existingIdentifier);
+    }
+    
+    private boolean ensureTableExists(final Optional<ShardingSphereTable> table, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        if (table.isPresent()) {
             return true;
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_NOT_FOUND, "error", "discovering",
@@ -225,11 +251,12 @@ public final class WorkflowPlanningContextValidator {
         return false;
     }
     
-    private boolean ensureColumnExists(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
-                                       final WorkflowContextSnapshot snapshot, final String databaseType) {
-        if (metadataQueryFacade.queryTableColumn(WorkflowSQLUtils.normalizeIdentifier(request.getDatabase()), WorkflowSQLUtils.canonicalizeIdentifier(databaseType, request.getSchema()),
-                WorkflowSQLUtils.canonicalizeIdentifier(databaseType, request.getTable()), WorkflowSQLUtils.canonicalizeIdentifier(databaseType, request.getColumn())).isPresent()) {
-            return true;
+    private boolean ensureColumnExists(final ShardingSphereTable table, final WorkflowRequest request, final WorkflowContextSnapshot snapshot,
+                                       final MCPFeatureQueryFacade queryFacade, final String databaseName) {
+        for (ShardingSphereColumn each : table.getAllColumns()) {
+            if (matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.COLUMN, request.getColumn(), each.getName())) {
+                return true;
+            }
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_NOT_FOUND, "error", "discovering",
                 String.format("Column `%s` does not exist in Proxy logical metadata.", request.getColumn()), "Check column name.", false, Map.of()));

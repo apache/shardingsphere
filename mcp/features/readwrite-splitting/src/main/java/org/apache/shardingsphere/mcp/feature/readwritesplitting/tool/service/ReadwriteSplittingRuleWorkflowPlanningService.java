@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -83,9 +83,9 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
-        String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
+        queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
         List<Map<String, Object>> existingRules = inspectionService.queryRules(queryFacade, mergedRequest.getDatabase());
-        if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result, databaseType)) {
+        if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         if (!WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(clarifiedIntent.getOperationType())) {
@@ -154,8 +154,8 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
     }
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final ReadwriteSplittingRuleWorkflowRequest request, final List<Map<String, Object>> rules,
-                                         final WorkflowContextSnapshot snapshot, final String databaseType) {
-        boolean ruleExists = containsRule(rules, databaseType, request.getRuleName());
+                                         final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
+        boolean ruleExists = containsRule(rules, queryFacade, request.getDatabase(), request.getRuleName());
         String operationType = clarifiedIntent.getOperationType().toLowerCase(Locale.ENGLISH);
         if ("create".equals(operationType) && ruleExists) {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
@@ -176,8 +176,8 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
         return true;
     }
     
-    private boolean containsRule(final List<Map<String, Object>> rules, final String databaseType, final String ruleName) {
-        return rules.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "name")));
+    private boolean containsRule(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
+        return rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "name")));
     }
     
     private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final ReadwriteSplittingRuleWorkflowRequest request, final WorkflowContextSnapshot snapshot) {

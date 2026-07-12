@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -118,7 +118,7 @@ public final class ShardingWorkflowPlanningService {
         return planLifecycleWorkflow(workflowSessionContext, sessionId, request, new ShardingWorkflowLifecycleSpec(
                 ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND, "create", "Default sharding strategy workflow plan.",
                 actual -> containsDefaultStrategy(inspectionService.queryDefaultStrategy(queryFacade, actual.getDatabase()),
-                        queryFacade.getDatabaseType(actual.getDatabase()), actual.getDefaultStrategyType()),
+                        queryFacade, actual.getDatabase(), actual.getDefaultStrategyType()),
                 inputValidator::hasRequiredDefaultStrategyInputs,
                 (actual, snapshot) -> planAlgorithms(queryFacade, actual, shouldPlanShardingAlgorithm(actual), false, snapshot),
                 actual -> distSQLPlanningService.planDefaultStrategy(actual, actual.getOperationType())));
@@ -248,9 +248,12 @@ public final class ShardingWorkflowPlanningService {
         return result;
     }
     
-    private boolean containsDefaultStrategy(final List<Map<String, Object>> rows, final String databaseType, final String defaultStrategyType) {
-        return rows.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(
-                databaseType, defaultStrategyType, WorkflowRuleValueUtils.getRuleValue(each, "name")) && !WorkflowRuleValueUtils.getRuleValue(each, "type").isEmpty());
+    private boolean containsDefaultStrategy(final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade,
+                                            final String databaseName, final String defaultStrategyType) {
+        queryFacade.checkDatabaseCapability(databaseName);
+        return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(
+                databaseName, IdentifierScope.TABLE, defaultStrategyType, WorkflowRuleValueUtils.getRuleValue(each, "name"))
+                && !WorkflowRuleValueUtils.getRuleValue(each, "type").isEmpty());
     }
     
     private boolean planAlgorithms(final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request, final boolean includeShardingAlgorithm,
@@ -304,11 +307,11 @@ public final class ShardingWorkflowPlanningService {
     private boolean isUnusedComponent(final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
         return switch (normalizeComponentType(request.getComponentType())) {
             case "algorithm" -> containsNamedRow(inspectionService.queryUnusedAlgorithms(queryFacade, request.getDatabase()),
-                    "name", request.getComponentName(), queryFacade.getDatabaseType(request.getDatabase()));
-            case "key-generator" -> containsNamedRow(inspectionService.queryUnusedKeyGenerators(queryFacade, request.getDatabase()), "name", request.getComponentName(),
-                    queryFacade.getDatabaseType(request.getDatabase()));
+                    queryFacade, request.getDatabase(), "name", request.getComponentName());
+            case "key-generator" -> containsNamedRow(inspectionService.queryUnusedKeyGenerators(queryFacade, request.getDatabase()),
+                    queryFacade, request.getDatabase(), "name", request.getComponentName());
             case "auditor" -> containsNamedRow(inspectionService.queryUnusedAuditors(queryFacade, request.getDatabase()),
-                    "name", request.getComponentName(), queryFacade.getDatabaseType(request.getDatabase()));
+                    queryFacade, request.getDatabase(), "name", request.getComponentName());
             default -> false;
         };
     }
@@ -326,8 +329,10 @@ public final class ShardingWorkflowPlanningService {
         }
     }
     
-    private boolean containsNamedRow(final Collection<Map<String, Object>> rows, final String fieldName, final String expected, final String databaseType) {
-        return rows.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
+    private boolean containsNamedRow(final Collection<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final String databaseName,
+                                     final String fieldName, final String expected) {
+        queryFacade.checkDatabaseCapability(databaseName);
+        return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
     }
     
     private String normalizeComponentType(final String componentType) {

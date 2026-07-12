@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -43,7 +44,10 @@ public final class MCPDatabaseCapability {
     
     private final SchemaExecutionSemantics schemaExecutionSemantics;
     
-    public MCPDatabaseCapability(final String databaseName, final boolean supportsTransaction, final boolean supportsSavepoint, final MCPDatabaseCapabilityOption option) {
+    private final IdentifierCasePolicySet identifierCasePolicySet;
+    
+    public MCPDatabaseCapability(final String databaseName, final boolean supportsTransaction, final boolean supportsSavepoint,
+                                 final IdentifierCasePolicySet identifierCasePolicySet, final MCPDatabaseCapabilityOption option) {
         this.databaseName = databaseName;
         databaseType = option.getType();
         MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(option.getType());
@@ -52,6 +56,7 @@ public final class MCPDatabaseCapability {
         supportedStatementClasses = createSupportedStatementClasses(transactionCapability, option.isExplainSupported());
         defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
         schemaExecutionSemantics = createSchemaExecutionSemantics(defaultSchemaSemantics);
+        this.identifierCasePolicySet = identifierCasePolicySet;
     }
     
     private static SchemaExecutionSemantics createSchemaExecutionSemantics(final DialectSchemaSemantics defaultSchemaSemantics) {

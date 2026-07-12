@@ -17,22 +17,31 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
+import org.mockito.stubbing.Answer;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -49,10 +58,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPDatabaseCapabilityProviderTest {
@@ -73,6 +87,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertFalse(actual.get().isSupportsCrossSchemaSql());
         assertTrue(actual.get().isSupportsExplain());
+        assertFalse(actual.get().getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
     }
     
     @Test
@@ -94,6 +109,66 @@ class MCPDatabaseCapabilityProviderTest {
                 new CapabilityFixture(false, false, false, DialectSchemaSemantics.NATIVE_SCHEMA));
         assertThat(provider.findDatabaseProfile("logic_db").orElseThrow().getDatabaseType(), is("FixtureDB"));
         assertFalse(provider.provide("logic_db").isPresent());
+    }
+    
+    @Test
+    void assertResolveIdentifierCasePolicyPerDatabase() throws SQLException {
+        Connection firstConnection = mock(Connection.class);
+        Connection secondConnection = mock(Connection.class);
+        RuntimeDatabaseConfiguration firstRuntimeDatabase = createRuntimeDatabaseConfiguration("first_db", "MySQL", "", true, true, firstConnection);
+        RuntimeDatabaseConfiguration secondRuntimeDatabase = createRuntimeDatabaseConfiguration("second_db", "MySQL", "", true, true, secondConnection);
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(2, 1F);
+        runtimeDatabases.put("first_db", firstRuntimeDatabase);
+        runtimeDatabases.put("second_db", secondRuntimeDatabase);
+        Map<Connection, IdentifierCasePolicySet> policies = Map.of(
+                firstConnection, IdentifierCasePolicyFactory.newSensitivePolicySet(), secondConnection, IdentifierCasePolicyFactory.newInsensitivePolicySet());
+        MCPDatabaseCapabilityProvider provider = createCapabilityProvider(runtimeDatabases,
+                Map.of("MySQL", new CapabilityFixture(true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA)), invocation -> {
+                    try (Connection connection = invocation.getArgument(2, DataSource.class).getConnection()) {
+                        return policies.get(connection);
+                    }
+                });
+        assertFalse(provider.provide("first_db").orElseThrow().getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
+        assertTrue(provider.provide("second_db").orElseThrow().getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
+        verify(firstRuntimeDatabase, times(2)).openConnection("first_db");
+        verify(firstRuntimeDatabase, never()).openConnection("second_db");
+        verify(secondRuntimeDatabase, times(2)).openConnection("second_db");
+        verify(secondRuntimeDatabase, never()).openConnection("first_db");
+    }
+    
+    @Test
+    void assertPreserveScopedIdentifierCasePolicies() {
+        IdentifierCasePolicySet insensitivePolicySet = IdentifierCasePolicyFactory.newInsensitivePolicySet();
+        IdentifierCasePolicySet scopedPolicySet = new IdentifierCasePolicySet(
+                insensitivePolicySet.getPolicy(IdentifierScope.TABLE),
+                Map.of(IdentifierScope.TABLE, IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE),
+                        IdentifierScope.COLUMN, insensitivePolicySet.getPolicy(IdentifierScope.COLUMN)));
+        MCPDatabaseCapabilityProvider provider = createCapabilityProvider(
+                Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", "MySQL", "", true, true)),
+                Map.of("MySQL", new CapabilityFixture(true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA)), invocation -> scopedPolicySet);
+        IdentifierCasePolicySet actual = provider.provide("logic_db").orElseThrow().getIdentifierCasePolicySet();
+        assertFalse(actual.getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
+        assertTrue(actual.getPolicy(IdentifierScope.COLUMN).matches("phone", "Phone", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertResolveIdentifierCasePolicyWhenRuntimeConnectionFails() throws SQLException {
+        SQLException connectionFailure = new SQLException("connection unavailable");
+        Connection profileConnection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabase = createRuntimeDatabaseConfiguration("logic_db", "MySQL", "", true, true, profileConnection);
+        when(runtimeDatabase.openConnection("logic_db")).thenReturn(profileConnection)
+                .thenThrow(RuntimeDatabaseConnectionException.connectionFailed("logic_db", connectionFailure));
+        MCPDatabaseCapabilityProvider provider = createCapabilityProvider(Map.of("logic_db", runtimeDatabase),
+                Map.of("MySQL", new CapabilityFixture(true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA)), invocation -> {
+                    try (Connection ignored = invocation.getArgument(2, DataSource.class).getConnection()) {
+                        return IdentifierCasePolicyFactory.newSensitivePolicySet();
+                    } catch (final SQLException ex) {
+                        assertThat(ex, is(connectionFailure));
+                        return IdentifierCasePolicyFactory.newInsensitivePolicySet();
+                    }
+                });
+        assertTrue(provider.provide("logic_db").orElseThrow().getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
+        verify(runtimeDatabase, times(2)).openConnection("logic_db");
     }
     
     @ParameterizedTest(name = "{0}")
@@ -129,10 +204,23 @@ class MCPDatabaseCapabilityProviderTest {
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
                                                                    final Map<String, CapabilityFixture> capabilityFixtures) {
+        return createCapabilityProvider(runtimeDatabases, capabilityFixtures, invocation -> {
+            try (Connection ignored = invocation.getArgument(2, DataSource.class).getConnection()) {
+                return IdentifierCasePolicyFactory.newSensitivePolicySet();
+            }
+        });
+    }
+    
+    private MCPDatabaseCapabilityProvider createCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
+                                                                   final Map<String, CapabilityFixture> capabilityFixtures,
+                                                                   final Answer<IdentifierCasePolicySet> identifierCasePolicyResolverAnswer) {
         try (
                 MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class);
+                MockedConstruction<IdentifierCasePolicyResolver> ignoredResolver =
+                        mockConstruction(IdentifierCasePolicyResolver.class,
+                                (mock, context) -> when(mock.resolve(any(), any(), any())).thenAnswer(identifierCasePolicyResolverAnswer))) {
             for (Entry<String, CapabilityFixture> entry : capabilityFixtures.entrySet()) {
                 mockDatabaseType(entry.getKey(), entry.getValue(), typedSPILoader, databaseTypedSPILoader);
             }
@@ -166,9 +254,13 @@ class MCPDatabaseCapabilityProviderTest {
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName, final String databaseType, final String databaseVersion,
                                                                             final boolean transactionSupported, final boolean savepointSupported) {
+        return createRuntimeDatabaseConfiguration(databaseName, databaseType, databaseVersion, transactionSupported, savepointSupported, mock(Connection.class));
+    }
+    
+    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName, final String databaseType, final String databaseVersion,
+                                                                            final boolean transactionSupported, final boolean savepointSupported, final Connection connection) {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         try {
-            Connection connection = mock(Connection.class);
             DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
             Statement statement = mock(Statement.class);
             ResultSet scalarResultSet = mock(ResultSet.class);

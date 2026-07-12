@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
@@ -49,7 +46,6 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -67,22 +63,13 @@ class MaskWorkflowValidationServiceTest {
     
     private MockedStatic<TypedSPILoader> typedSPILoader;
     
-    private MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader;
-    
     @BeforeEach
     void setUp() {
         typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-        databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class);
-        DatabaseType databaseType = mock(DatabaseType.class);
-        typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, "FixtureDB")).thenReturn(Optional.of(databaseType));
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
-        databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(dialectDatabaseMetaData));
     }
     
     @AfterEach
     void tearDown() {
-        databaseTypedSPILoader.close();
         typedSPILoader.close();
     }
     
@@ -284,7 +271,8 @@ class MaskWorkflowValidationServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType(any())).thenReturn("FixtureDB");
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone", "phone")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "email", "email")).thenReturn(true);
         return result;
     }
     

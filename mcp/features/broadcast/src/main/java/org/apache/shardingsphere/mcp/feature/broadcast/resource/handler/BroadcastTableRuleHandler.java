@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -53,9 +54,10 @@ public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDa
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         String database = uriVariables.getValue("database");
         String table = uriVariables.getValue("table");
-        String databaseType = databaseContext.getQueryFacade().getDatabaseType(database);
-        List<Map<String, Object>> items = ruleInspectionService.queryBroadcastRules(databaseContext.getQueryFacade(), database).stream()
-                .filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, table, WorkflowRuleValueUtils.getRuleValue(each, "broadcast_table"))).toList();
+        MCPFeatureQueryFacade queryFacade = databaseContext.getQueryFacade();
+        queryFacade.checkDatabaseCapability(database);
+        List<Map<String, Object>> items = ruleInspectionService.queryBroadcastRules(queryFacade, database).stream()
+                .filter(each -> queryFacade.isSameIdentifier(database, IdentifierScope.TABLE, table, WorkflowRuleValueUtils.getRuleValue(each, "broadcast_table"))).toList();
         return new MCPItemsResponse(items, MCPResourceNavigationPayloadBuilder.create(
                 MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, BroadcastFeatureDefinition.RULES_RESOURCE_URI));
     }

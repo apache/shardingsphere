@@ -21,6 +21,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -46,6 +49,8 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -114,9 +119,19 @@ class WorkflowProxyQueryServiceTest {
     }
     
     @Test
-    void assertGetDatabaseTypeWithoutCapability() {
+    void assertCheckDatabaseCapabilityWithoutCapability() {
         WorkflowProxyQueryService service = new WorkflowProxyQueryService(new MCPSessionManager(Map.of()), mock(MCPDatabaseCapabilityProvider.class));
-        assertThrows(DatabaseCapabilityNotFoundException.class, () -> service.getDatabaseType("logic_db"));
+        assertThrows(DatabaseCapabilityNotFoundException.class, () -> service.checkDatabaseCapability("logic_db"));
+    }
+    
+    @Test
+    void assertIsSameColumnIdentifier() {
+        assertTrue(createService(Map.of()).isSameIdentifier("logic_db", IdentifierScope.COLUMN, "Phone", "phone"));
+    }
+    
+    @Test
+    void assertIsSameTableIdentifier() {
+        assertFalse(createService(Map.of()).isSameIdentifier("logic_db", IdentifierScope.TABLE, "Phone", "phone"));
     }
     
     @Test
@@ -210,6 +225,10 @@ class WorkflowProxyQueryServiceTest {
     private WorkflowProxyQueryService createService(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final String databaseType) {
         MCPDatabaseCapability databaseCapability = mock(MCPDatabaseCapability.class);
         when(databaseCapability.getDatabaseType()).thenReturn(databaseType);
+        IdentifierCasePolicySet insensitivePolicySet = IdentifierCasePolicyFactory.newInsensitivePolicySet();
+        when(databaseCapability.getIdentifierCasePolicySet()).thenReturn(new IdentifierCasePolicySet(
+                IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE),
+                Map.of(IdentifierScope.COLUMN, insensitivePolicySet.getPolicy(IdentifierScope.COLUMN))));
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.provide("logic_db")).thenReturn(Optional.of(databaseCapability));
         return new WorkflowProxyQueryService(new MCPSessionManager(runtimeDatabases), databaseCapabilityProvider);

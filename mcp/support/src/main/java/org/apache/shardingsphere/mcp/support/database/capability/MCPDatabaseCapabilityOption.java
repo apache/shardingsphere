@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -34,15 +32,6 @@ public interface MCPDatabaseCapabilityOption extends TypedSPI {
      * @return whether MCP EXPLAIN execution is supported
      */
     boolean isExplainSupported();
-    
-    /**
-     * Get identifier case policy set.
-     *
-     * @return identifier case policy set
-     */
-    default IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return IdentifierCasePolicyFactory.newSensitivePolicySet();
-    }
     
     @Override
     String getType();

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmU
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
@@ -137,43 +137,46 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
     
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         ValidationReport result = new ValidationReport();
-        String databaseType = queryFacade.getDatabaseType(snapshot.getRequest().getDatabase());
+        queryFacade.checkDatabaseCapability(snapshot.getRequest().getDatabase());
         List<Map<String, Object>> rules = inspectionService.queryRules(queryFacade, snapshot.getRequest().getDatabase());
-        result.setRuleValidation(validateRules(snapshot, rules, result, databaseType));
+        result.setRuleValidation(validateRules(snapshot, rules, result, queryFacade));
         result.setOverallStatus(validationSupport.resolveOverallStatus(result.getRuleValidation()));
         return result;
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> rules,
-                                            final ValidationReport validationReport, final String databaseType) {
+                                            final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade) {
         ReadwriteSplittingRuleWorkflowRequest request = (ReadwriteSplittingRuleWorkflowRequest) snapshot.getRequest();
-        boolean ruleExists = containsRule(rules, databaseType, request.getRuleName());
+        boolean ruleExists = containsRule(rules, queryFacade, request.getDatabase(), request.getRuleName());
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && ruleExists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !ruleExists) {
             addRuleMismatch(validationReport, request.getRuleName(), WorkflowLifecycleUtils.isDropWorkflow(snapshot));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Readwrite-splitting rule state does not match the planned DistSQL artifact.");
         }
-        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !matchesRuleShape(rules, databaseType, request)) {
+        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !matchesRuleShape(rules, queryFacade, request)) {
             addRuleShapeMismatch(validationReport, request.getRuleName());
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Readwrite-splitting rule fields do not match the planned DistSQL artifact.");
         }
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, rules, "Readwrite-splitting rule state matches the planned DistSQL artifact.");
     }
     
-    private boolean containsRule(final List<Map<String, Object>> rules, final String databaseType, final String ruleName) {
-        return rules.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "name")));
+    private boolean containsRule(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
+        return rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "name")));
     }
     
-    private boolean matchesRuleShape(final List<Map<String, Object>> rules, final String databaseType, final ReadwriteSplittingRuleWorkflowRequest request) {
-        return rules.stream().filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "name")))
-                .anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getWriteStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "write_storage_unit_name"))
-                        && containsAllReadStorageUnits(each, databaseType, request)
+    private boolean matchesRuleShape(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final ReadwriteSplittingRuleWorkflowRequest request) {
+        return rules.stream().filter(each -> queryFacade.isSameIdentifier(
+                request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "name")))
+                .anyMatch(each -> queryFacade.isSameIdentifier(
+                        request.getDatabase(), IdentifierScope.TABLE, request.getWriteStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "write_storage_unit_name"))
+                        && containsAllReadStorageUnits(each, queryFacade, request)
                         && WorkflowRuleValueUtils.getRuleValue(each, "transactional_read_query_strategy").equalsIgnoreCase(request.getTransactionalReadQueryStrategy()));
     }
     
-    private boolean containsAllReadStorageUnits(final Map<String, Object> rule, final String databaseType, final ReadwriteSplittingRuleWorkflowRequest request) {
+    private boolean containsAllReadStorageUnits(final Map<String, Object> rule, final MCPFeatureQueryFacade queryFacade, final ReadwriteSplittingRuleWorkflowRequest request) {
         String readStorageUnits = WorkflowRuleValueUtils.getRuleValue(rule, "read_storage_unit_names");
         List<String> actualReadStorageUnits = Arrays.stream(readStorageUnits.split(",")).map(String::trim).filter(each -> !each.isEmpty()).toList();
-        return request.getReadStorageUnits().stream().allMatch(each -> actualReadStorageUnits.stream().anyMatch(actual -> WorkflowSQLUtils.isSameIdentifier(databaseType, each, actual)));
+        return request.getReadStorageUnits().stream().allMatch(each -> actualReadStorageUnits.stream()
+                .anyMatch(actual -> queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, each, actual)));
     }
     
     private void addRuleMismatch(final ValidationReport validationReport, final String ruleName, final boolean dropWorkflow) {

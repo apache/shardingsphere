@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-
 /**
  * MCP database capability option for MariaDB.
  */
@@ -28,10 +25,4 @@ public final class MariaDBMCPDatabaseCapabilityOption extends AbstractMCPDatabas
     public MariaDBMCPDatabaseCapabilityOption() {
         super("MariaDB", true);
     }
-    
-    @Override
-    public IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
-    }
-    
 }

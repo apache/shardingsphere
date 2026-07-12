@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.shadow.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
@@ -44,7 +45,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -55,36 +55,30 @@ class ShadowWorkflowValidationServiceTest {
     void assertValidateRule() {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "shadow_rule", "shadow_rule")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "demo_ds", "demo_ds")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "demo_ds_shadow", "demo_ds_shadow")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(Map.of(
                 "rule_name", "shadow_rule",
                 "source_name", "demo_ds",
                 "shadow_name", "demo_ds_shadow",
                 "shadow_table", "t_order",
                 "algorithm_type", "VALUE_MATCH")));
-        try (MockedStatic<WorkflowSQLUtils> workflowSQLUtils = mockStatic(WorkflowSQLUtils.class, CALLS_REAL_METHODS)) {
-            workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier("FixtureDB", "shadow_rule", "shadow_rule")).thenReturn(true);
-            workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier("FixtureDB", "demo_ds", "demo_ds")).thenReturn(true);
-            workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier("FixtureDB", "demo_ds_shadow", "demo_ds_shadow")).thenReturn(true);
-            workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier("FixtureDB", "t_order", "t_order")).thenReturn(true);
-            Map<String, Object> actual = createService(inspectionService)
-                    .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
-            assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_PASSED));
-        }
+        Map<String, Object> actual = createService(inspectionService)
+                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_PASSED));
     }
     
     @Test
     void assertValidateCleanupFailure() {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.getDatabaseType("logic_db")).thenReturn("FixtureDB");
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "unused_algorithm", "unused_algorithm")).thenReturn(true);
         when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
-        try (MockedStatic<WorkflowSQLUtils> workflowSQLUtils = mockStatic(WorkflowSQLUtils.class, CALLS_REAL_METHODS)) {
-            workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier("FixtureDB", "unused_algorithm", "unused_algorithm")).thenReturn(true);
-            Map<String, Object> actual = createService(inspectionService)
-                    .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createCleanupSnapshot());
-            assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
-        }
+        Map<String, Object> actual = createService(inspectionService)
+                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createCleanupSnapshot());
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
     }
     
     @Test

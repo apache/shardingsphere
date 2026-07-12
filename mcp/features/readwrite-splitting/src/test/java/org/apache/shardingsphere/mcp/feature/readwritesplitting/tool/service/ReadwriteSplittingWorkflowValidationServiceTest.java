@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
@@ -35,8 +36,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchroniz
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -49,28 +48,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ReadwriteSplittingWorkflowValidationServiceTest {
-    
-    private MockedStatic<WorkflowSQLUtils> workflowSQLUtils;
-    
-    @BeforeEach
-    void setUp() {
-        workflowSQLUtils = mockStatic(WorkflowSQLUtils.class, CALLS_REAL_METHODS);
-        workflowSQLUtils.when(() -> WorkflowSQLUtils.isSameIdentifier(anyString(), anyString(), anyString()))
-                .thenAnswer(invocation -> invocation.getArgument(1, String.class).equals(invocation.getArgument(2, String.class)));
-    }
-    
-    @AfterEach
-    void tearDown() {
-        workflowSQLUtils.close();
-    }
     
     @Test
     void assertValidateRejectsDifferentSession() {
@@ -180,7 +163,10 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.getDatabaseType(any())).thenReturn("FixtureDB");
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "write_ds", "write_ds")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "read_ds_0", "read_ds_0")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "read_ds_1", "read_ds_1")).thenReturn(true);
         return result;
     }
     
