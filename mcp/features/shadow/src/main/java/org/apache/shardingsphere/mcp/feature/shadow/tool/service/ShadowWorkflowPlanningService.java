@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
@@ -294,15 +295,15 @@ public final class ShadowWorkflowPlanningService {
                                         final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         return planningSupport.ensureLifecycleState("Shadow rule", clarifiedIntent,
                 rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(
-                        request.getDatabase(), request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name"))),
+                        request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name"))),
                 snapshot);
     }
     
     private boolean ensureAlgorithmCleanupState(final ShadowAlgorithmCleanupWorkflowRequest request, final List<Map<String, Object>> algorithms,
                                                 final List<Map<String, Object>> tableRules, final List<Map<String, Object>> defaultAlgorithm,
                                                 final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
-        boolean configured = algorithms.stream().anyMatch(each -> queryFacade.isSameIdentifier(request.getDatabase(), request.getAlgorithmName(),
-                WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
+        boolean configured = algorithms.stream().anyMatch(each -> queryFacade.isSameIdentifier(
+                request.getDatabase(), IdentifierScope.TABLE, request.getAlgorithmName(), WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
         if (!configured) {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
                     String.format("Shadow algorithm `%s` is not configured.", request.getAlgorithmName()),
@@ -323,12 +324,12 @@ public final class ShadowWorkflowPlanningService {
                                             final String algorithmName, final List<Map<String, Object>> tableRules) {
         return tableRules.stream().map(each -> WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name"))
                 .flatMap(each -> Arrays.stream(each.split(","))).map(String::trim).filter(each -> !each.isEmpty())
-                .anyMatch(each -> queryFacade.isSameIdentifier(databaseName, algorithmName, each));
+                .anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, algorithmName, each));
     }
     
     private boolean isDefaultAlgorithm(final MCPFeatureQueryFacade queryFacade, final String databaseName,
                                        final String algorithmName, final List<Map<String, Object>> defaultAlgorithm) {
-        return defaultAlgorithm.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, algorithmName,
+        return defaultAlgorithm.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, algorithmName,
                 WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
     }
     

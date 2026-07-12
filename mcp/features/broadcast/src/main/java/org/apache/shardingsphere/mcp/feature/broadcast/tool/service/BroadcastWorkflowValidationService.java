@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -75,7 +76,7 @@ public final class BroadcastWorkflowValidationService implements MCPWorkflowRunt
         boolean dropWorkflow = WorkflowLifecycleUtils.isDropWorkflow(snapshot);
         for (String each : request.getTargetTables()) {
             boolean ruleExists = broadcastRules.stream().anyMatch(rule -> queryFacade.isSameIdentifier(
-                    request.getDatabase(), each, WorkflowRuleValueUtils.getRuleValue(rule, "broadcast_table")));
+                    request.getDatabase(), IdentifierScope.TABLE, each, WorkflowRuleValueUtils.getRuleValue(rule, "broadcast_table")));
             if (dropWorkflow && ruleExists || !dropWorkflow && !ruleExists) {
                 addRuleMismatch(validationReport, dropWorkflow, each);
                 return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, broadcastRules, "Broadcast rule state does not match the planned DistSQL artifact.");

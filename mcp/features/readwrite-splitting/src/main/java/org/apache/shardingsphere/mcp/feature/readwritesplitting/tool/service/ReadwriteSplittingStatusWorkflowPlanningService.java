@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -145,7 +146,7 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
     }
     
     private boolean matchesStatusTarget(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> status, final MCPFeatureQueryFacade queryFacade) {
-        return queryFacade.isSameIdentifier(request.getDatabase(), request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(status, "name"))
-                && queryFacade.isSameIdentifier(request.getDatabase(), request.getStorageUnit(), WorkflowRuleValueUtils.getRuleValue(status, "storage_unit"));
+        return queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(status, "name"))
+                && queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getStorageUnit(), WorkflowRuleValueUtils.getRuleValue(status, "storage_unit"));
     }
 }

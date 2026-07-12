@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -130,7 +131,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
             return validateExpectedRules(snapshot, ruleFeatureData.get().getExpectedRules(), maskRules, validationReport, queryFacade);
         }
         Optional<Map<String, Object>> actualRule = maskRules.stream()
-                .filter(each -> queryFacade.isSameIdentifier(snapshot.getRequest().getDatabase(), snapshot.getRequest().getColumn(),
+                .filter(each -> queryFacade.isSameIdentifier(snapshot.getRequest().getDatabase(), IdentifierScope.COLUMN, snapshot.getRequest().getColumn(),
                         WorkflowRuleValueUtils.getRuleValue(each, "column")))
                 .findFirst();
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
@@ -212,7 +213,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     private Optional<Map<String, Object>> findRuleByColumn(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade,
                                                            final String databaseName, final String column) {
         return rules.stream()
-                .filter(each -> queryFacade.isSameIdentifier(databaseName, column, WorkflowRuleValueUtils.getRuleValue(each, "column"))).findFirst();
+                .filter(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.COLUMN, column, WorkflowRuleValueUtils.getRuleValue(each, "column"))).findFirst();
     }
     
     private void addExpectedRuleValueMismatches(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final Map<String, Object> expectedRule,

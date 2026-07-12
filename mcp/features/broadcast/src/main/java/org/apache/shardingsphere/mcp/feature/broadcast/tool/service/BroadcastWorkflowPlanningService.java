@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -123,7 +124,7 @@ public final class BroadcastWorkflowPlanningService {
         boolean result = true;
         for (String each : request.getTargetTables()) {
             boolean ruleExists = broadcastRules.stream().anyMatch(rule -> queryFacade.isSameIdentifier(
-                    request.getDatabase(), each, WorkflowRuleValueUtils.getRuleValue(rule, "broadcast_table")));
+                    request.getDatabase(), IdentifierScope.TABLE, each, WorkflowRuleValueUtils.getRuleValue(rule, "broadcast_table")));
             result = dropWorkflow ? ensureDropState(each, ruleExists, snapshot) && result : ensureCreateState(each, ruleExists, snapshot) && result;
         }
         return result;

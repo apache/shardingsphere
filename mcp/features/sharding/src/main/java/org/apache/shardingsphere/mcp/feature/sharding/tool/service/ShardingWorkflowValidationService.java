@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
@@ -215,7 +216,7 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     
     private ValidationSection validateDefaultStrategy(final WorkflowContextSnapshot snapshot, final ValidationReport validationReport,
                                                       final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
-        boolean exists = rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(request.getDatabase(), request.getDefaultStrategyType(),
+        boolean exists = rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getDefaultStrategyType(),
                 WorkflowRuleValueUtils.getRuleValue(each, "name")) && !WorkflowRuleValueUtils.getRuleValue(each, "type").isEmpty());
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && exists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !exists) {
             addMismatch(validationReport, "name", request.getDefaultStrategyType());
@@ -248,7 +249,7 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     
     private boolean containsNamedRow(final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final String databaseName,
                                      final String fieldName, final String expected) {
-        return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
+        return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
     }
     
     private void addMismatch(final ValidationReport validationReport, final String field, final String expected) {

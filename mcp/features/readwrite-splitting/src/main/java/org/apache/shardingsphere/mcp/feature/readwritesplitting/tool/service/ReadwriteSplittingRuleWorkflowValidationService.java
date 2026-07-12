@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -159,12 +160,14 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
     }
     
     private boolean containsRule(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
-        return rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "name")));
+        return rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "name")));
     }
     
     private boolean matchesRuleShape(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final ReadwriteSplittingRuleWorkflowRequest request) {
-        return rules.stream().filter(each -> queryFacade.isSameIdentifier(request.getDatabase(), request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "name")))
-                .anyMatch(each -> queryFacade.isSameIdentifier(request.getDatabase(), request.getWriteStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "write_storage_unit_name"))
+        return rules.stream().filter(each -> queryFacade.isSameIdentifier(
+                request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "name")))
+                .anyMatch(each -> queryFacade.isSameIdentifier(
+                        request.getDatabase(), IdentifierScope.TABLE, request.getWriteStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "write_storage_unit_name"))
                         && containsAllReadStorageUnits(each, queryFacade, request)
                         && WorkflowRuleValueUtils.getRuleValue(each, "transactional_read_query_strategy").equalsIgnoreCase(request.getTransactionalReadQueryStrategy()));
     }
@@ -173,7 +176,7 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
         String readStorageUnits = WorkflowRuleValueUtils.getRuleValue(rule, "read_storage_unit_names");
         List<String> actualReadStorageUnits = Arrays.stream(readStorageUnits.split(",")).map(String::trim).filter(each -> !each.isEmpty()).toList();
         return request.getReadStorageUnits().stream().allMatch(each -> actualReadStorageUnits.stream()
-                .anyMatch(actual -> queryFacade.isSameIdentifier(request.getDatabase(), each, actual)));
+                .anyMatch(actual -> queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, each, actual)));
     }
     
     private void addRuleMismatch(final ValidationReport validationReport, final String ruleName, final boolean dropWorkflow) {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -56,7 +57,7 @@ public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDa
         MCPFeatureQueryFacade queryFacade = databaseContext.getQueryFacade();
         queryFacade.checkDatabaseCapability(database);
         List<Map<String, Object>> items = ruleInspectionService.queryBroadcastRules(queryFacade, database).stream()
-                .filter(each -> queryFacade.isSameIdentifier(database, table, WorkflowRuleValueUtils.getRuleValue(each, "broadcast_table"))).toList();
+                .filter(each -> queryFacade.isSameIdentifier(database, IdentifierScope.TABLE, table, WorkflowRuleValueUtils.getRuleValue(each, "broadcast_table"))).toList();
         return new MCPItemsResponse(items, MCPResourceNavigationPayloadBuilder.create(
                 MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, BroadcastFeatureDefinition.RULES_RESOURCE_URI));
     }

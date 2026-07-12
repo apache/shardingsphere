@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
@@ -333,11 +334,11 @@ class EncryptWorkflowValidationServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.isSameIdentifier("logic_db", "phone", "phone")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "phone_cipher", "phone_cipher")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "email", "email")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "email_cipher", "email_cipher")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "", "")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone", "phone")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone_cipher", "phone_cipher")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "email", "email")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "email_cipher", "email_cipher")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "", "")).thenReturn(true);
         return result;
     }
     

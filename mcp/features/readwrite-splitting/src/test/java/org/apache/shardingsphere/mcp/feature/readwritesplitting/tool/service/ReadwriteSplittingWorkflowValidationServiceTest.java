@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
@@ -162,10 +163,10 @@ class ReadwriteSplittingWorkflowValidationServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.isSameIdentifier("logic_db", "readwrite_ds", "readwrite_ds")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "write_ds", "write_ds")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "read_ds_0", "read_ds_0")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "read_ds_1", "read_ds_1")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "write_ds", "write_ds")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "read_ds_0", "read_ds_0")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "read_ds_1", "read_ds_1")).thenReturn(true);
         return result;
     }
     

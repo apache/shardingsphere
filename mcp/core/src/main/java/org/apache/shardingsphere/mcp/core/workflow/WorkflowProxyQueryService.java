@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.workflow;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -77,8 +78,8 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     }
     
     @Override
-    public boolean isSameIdentifier(final String databaseName, final String identifier, final String existingIdentifier) {
-        return WorkflowSQLUtils.isSameIdentifier(getDatabaseCapability(databaseName).getIdentifierCasePolicy(), identifier, existingIdentifier);
+    public boolean isSameIdentifier(final String databaseName, final IdentifierScope identifierScope, final String identifier, final String existingIdentifier) {
+        return WorkflowSQLUtils.isSameIdentifier(getDatabaseCapability(databaseName).getIdentifierCasePolicySet().getPolicy(identifierScope), identifier, existingIdentifier);
     }
     
     @Override

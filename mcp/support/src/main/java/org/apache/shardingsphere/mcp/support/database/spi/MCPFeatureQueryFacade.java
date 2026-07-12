@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.spi;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 
 import java.util.List;
@@ -57,12 +58,13 @@ public interface MCPFeatureQueryFacade {
      * Judge whether an identifier references an existing identifier in a runtime database.
      *
      * @param databaseName database name
+     * @param identifierScope identifier scope
      * @param identifier identifier
      * @param existingIdentifier existing identifier
      * @return whether the identifiers are the same
      * @throws DatabaseCapabilityNotFoundException when database capability does not exist
      */
-    boolean isSameIdentifier(String databaseName, String identifier, String existingIdentifier);
+    boolean isSameIdentifier(String databaseName, IdentifierScope identifierScope, String identifier, String existingIdentifier);
     
     /**
      * Query column definition.

@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.mcp.support.database.capability;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
@@ -78,15 +77,15 @@ public final class MCPDatabaseCapabilityProvider implements MCPFeatureCapability
         for (RuntimeDatabaseProfile each : databaseProfiles.values()) {
             TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, each.getDatabaseType())
                     .ifPresent(option -> result.put(each.getDatabase(), new MCPDatabaseCapability(each.getDatabase(), each.isSupportsTransaction(), each.isSupportsSavepoint(),
-                            resolveIdentifierCasePolicy(each, runtimeDatabases.get(each.getDatabase())), option)));
+                            resolveIdentifierCasePolicySet(each, runtimeDatabases.get(each.getDatabase())), option)));
         }
         return result;
     }
     
-    private IdentifierCasePolicy resolveIdentifierCasePolicy(final RuntimeDatabaseProfile databaseProfile, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
+    private IdentifierCasePolicySet resolveIdentifierCasePolicySet(final RuntimeDatabaseProfile databaseProfile, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, databaseProfile.getDatabaseType());
         return new IdentifierCasePolicyResolver().resolve(databaseType, new ConfigurationProperties(new Properties()),
-                new RuntimeDatabaseDataSource(databaseProfile.getDatabase(), runtimeDatabaseConfig)).getPolicy(IdentifierScope.TABLE);
+                new RuntimeDatabaseDataSource(databaseProfile.getDatabase(), runtimeDatabaseConfig));
     }
     
     @RequiredArgsConstructor

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
@@ -187,15 +188,15 @@ class ReadwriteSplittingWorkflowPlanningServiceTest {
     
     private MCPFeatureQueryFacade mockRuleQueryFacade(final List<Map<String, Object>> rules) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.isSameIdentifier("logic_db", "readwrite_ds", "readwrite_ds")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(rules);
         return result;
     }
     
     private MCPFeatureQueryFacade mockStatusQueryFacade(final List<Map<String, Object>> statuses) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.isSameIdentifier("logic_db", "readwrite_ds", "readwrite_ds")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "read_ds_0", "read_ds_0")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "read_ds_0", "read_ds_0")).thenReturn(true);
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(statuses);
         return result;
     }

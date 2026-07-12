@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
@@ -86,7 +87,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertFalse(actual.get().isSupportsCrossSchemaSql());
         assertTrue(actual.get().isSupportsExplain());
-        assertFalse(actual.get().getIdentifierCasePolicy().matches("phone", "Phone", QuoteCharacter.NONE));
+        assertFalse(actual.get().getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
     }
     
     @Test
@@ -127,12 +128,27 @@ class MCPDatabaseCapabilityProviderTest {
                         return policies.get(connection);
                     }
                 });
-        assertFalse(provider.provide("first_db").orElseThrow().getIdentifierCasePolicy().matches("phone", "Phone", QuoteCharacter.NONE));
-        assertTrue(provider.provide("second_db").orElseThrow().getIdentifierCasePolicy().matches("phone", "Phone", QuoteCharacter.NONE));
+        assertFalse(provider.provide("first_db").orElseThrow().getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
+        assertTrue(provider.provide("second_db").orElseThrow().getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
         verify(firstRuntimeDatabase, times(2)).openConnection("first_db");
         verify(firstRuntimeDatabase, never()).openConnection("second_db");
         verify(secondRuntimeDatabase, times(2)).openConnection("second_db");
         verify(secondRuntimeDatabase, never()).openConnection("first_db");
+    }
+    
+    @Test
+    void assertPreserveScopedIdentifierCasePolicies() {
+        IdentifierCasePolicySet insensitivePolicySet = IdentifierCasePolicyFactory.newInsensitivePolicySet();
+        IdentifierCasePolicySet scopedPolicySet = new IdentifierCasePolicySet(
+                insensitivePolicySet.getPolicy(IdentifierScope.TABLE),
+                Map.of(IdentifierScope.TABLE, IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE),
+                        IdentifierScope.COLUMN, insensitivePolicySet.getPolicy(IdentifierScope.COLUMN)));
+        MCPDatabaseCapabilityProvider provider = createCapabilityProvider(
+                Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", "MySQL", "", true, true)),
+                Map.of("MySQL", new CapabilityFixture(true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA)), invocation -> scopedPolicySet);
+        IdentifierCasePolicySet actual = provider.provide("logic_db").orElseThrow().getIdentifierCasePolicySet();
+        assertFalse(actual.getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
+        assertTrue(actual.getPolicy(IdentifierScope.COLUMN).matches("phone", "Phone", QuoteCharacter.NONE));
     }
     
     @Test
@@ -151,7 +167,7 @@ class MCPDatabaseCapabilityProviderTest {
                         return IdentifierCasePolicyFactory.newInsensitivePolicySet();
                     }
                 });
-        assertTrue(provider.provide("logic_db").orElseThrow().getIdentifierCasePolicy().matches("phone", "Phone", QuoteCharacter.NONE));
+        assertTrue(provider.provide("logic_db").orElseThrow().getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
         verify(runtimeDatabase, times(2)).openConnection("logic_db");
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
@@ -185,20 +186,25 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     }
     
     private boolean containsRule(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
-        return rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "rule_name")));
+        return rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(
+                databaseName, IdentifierScope.TABLE, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "rule_name")));
     }
     
     private boolean matchesRuleShape(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final ShadowRuleWorkflowRequest request) {
-        return rules.stream().filter(each -> queryFacade.isSameIdentifier(request.getDatabase(), request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name")))
-                .anyMatch(each -> queryFacade.isSameIdentifier(request.getDatabase(), request.getSourceStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "source_name"))
-                        && queryFacade.isSameIdentifier(request.getDatabase(), request.getShadowStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "shadow_name"))
-                        && queryFacade.isSameIdentifier(request.getDatabase(), request.getTableName(), WorkflowRuleValueUtils.getRuleValue(each, "shadow_table"))
+        return rules.stream().filter(each -> queryFacade.isSameIdentifier(
+                request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name")))
+                .anyMatch(each -> queryFacade.isSameIdentifier(
+                        request.getDatabase(), IdentifierScope.TABLE, request.getSourceStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "source_name"))
+                        && queryFacade.isSameIdentifier(
+                                request.getDatabase(), IdentifierScope.TABLE, request.getShadowStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "shadow_name"))
+                        && queryFacade.isSameIdentifier(
+                                request.getDatabase(), IdentifierScope.TABLE, request.getTableName(), WorkflowRuleValueUtils.getRuleValue(each, "shadow_table"))
                         && WorkflowRuleValueUtils.getRuleValue(each, "algorithm_type").equalsIgnoreCase(request.getAlgorithmType()));
     }
     
     private boolean containsAlgorithm(final List<Map<String, Object>> algorithms, final MCPFeatureQueryFacade queryFacade,
                                       final String databaseName, final String algorithmName) {
-        return algorithms.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, algorithmName,
+        return algorithms.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, algorithmName,
                 WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
     }
     

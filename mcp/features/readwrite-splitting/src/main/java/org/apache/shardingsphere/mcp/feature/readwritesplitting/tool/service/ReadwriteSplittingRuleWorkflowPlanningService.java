@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -176,7 +177,7 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
     }
     
     private boolean containsRule(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
-        return rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "name")));
+        return rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "name")));
     }
     
     private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final ReadwriteSplittingRuleWorkflowRequest request, final WorkflowContextSnapshot snapshot) {

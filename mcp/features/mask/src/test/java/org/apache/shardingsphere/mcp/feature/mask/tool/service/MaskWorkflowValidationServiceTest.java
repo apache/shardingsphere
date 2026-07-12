@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
@@ -270,8 +271,8 @@ class MaskWorkflowValidationServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.isSameIdentifier("logic_db", "phone", "phone")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "email", "email")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone", "phone")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "email", "email")).thenReturn(true);
         return result;
     }
     

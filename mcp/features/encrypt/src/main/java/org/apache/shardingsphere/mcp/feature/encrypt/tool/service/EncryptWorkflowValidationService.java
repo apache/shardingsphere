@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
@@ -262,7 +263,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     private Optional<Map<String, Object>> findRuleByColumn(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade,
                                                            final String databaseName, final String column) {
         return rules.stream()
-                .filter(each -> queryFacade.isSameIdentifier(databaseName, column, WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))).findFirst();
+                .filter(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.COLUMN, column, WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))).findFirst();
     }
     
     private void addExpectedRuleValueMismatches(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final Map<String, Object> expectedRule,
@@ -289,7 +290,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     
     private void addIdentifierMismatch(final List<Map<String, Object>> mismatches, final MCPFeatureQueryFacade queryFacade, final String databaseName,
                                        final String fieldName, final String expected, final String actual, final String impact) {
-        if (queryFacade.isSameIdentifier(databaseName, expected, actual)) {
+        if (queryFacade.isSameIdentifier(databaseName, IdentifierScope.COLUMN, expected, actual)) {
             return;
         }
         mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", formatFieldValue(fieldName, expected), formatFieldValue(fieldName, actual), impact,
@@ -332,7 +333,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     private Optional<Map<String, Object>> findEncryptRule(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> encryptRules,
                                                           final MCPFeatureQueryFacade queryFacade) {
         return encryptRules.stream()
-                .filter(each -> queryFacade.isSameIdentifier(snapshot.getRequest().getDatabase(), snapshot.getRequest().getColumn(),
+                .filter(each -> queryFacade.isSameIdentifier(snapshot.getRequest().getDatabase(), IdentifierScope.COLUMN, snapshot.getRequest().getColumn(),
                         WorkflowRuleValueUtils.getRuleValue(each, "logic_column")))
                 .findFirst();
     }

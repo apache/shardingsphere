@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
@@ -134,7 +135,7 @@ public final class EncryptWorkflowPlanningService {
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
                                          final List<Map<String, Object>> encryptRules, final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         boolean ruleExists = encryptRules.stream().anyMatch(each -> queryFacade.isSameIdentifier(
-                request.getDatabase(), request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "logic_column")));
+                request.getDatabase(), IdentifierScope.COLUMN, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "logic_column")));
         return planningSupport.ensureLifecycleState("Encrypt rule", clarifiedIntent, ruleExists, snapshot);
     }
     
@@ -169,7 +170,9 @@ public final class EncryptWorkflowPlanningService {
     private boolean ensureSupportedRuleRewrite(final MCPFeatureQueryFacade queryFacade, final EncryptWorkflowRequest request,
                                                final List<Map<String, Object>> encryptRules, final WorkflowContextSnapshot snapshot) {
         long remainingRuleCount = encryptRules.stream()
-                .filter(each -> !queryFacade.isSameIdentifier(request.getDatabase(), request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))).count();
+                .filter(each -> !queryFacade.isSameIdentifier(
+                        request.getDatabase(), IdentifierScope.COLUMN, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "logic_column")))
+                .count();
         if (0L == remainingRuleCount) {
             return true;
         }

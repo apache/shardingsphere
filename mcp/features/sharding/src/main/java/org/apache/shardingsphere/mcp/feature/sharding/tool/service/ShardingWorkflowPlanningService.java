@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -251,7 +252,8 @@ public final class ShardingWorkflowPlanningService {
                                             final String databaseName, final String defaultStrategyType) {
         queryFacade.checkDatabaseCapability(databaseName);
         return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(
-                databaseName, defaultStrategyType, WorkflowRuleValueUtils.getRuleValue(each, "name")) && !WorkflowRuleValueUtils.getRuleValue(each, "type").isEmpty());
+                databaseName, IdentifierScope.TABLE, defaultStrategyType, WorkflowRuleValueUtils.getRuleValue(each, "name"))
+                && !WorkflowRuleValueUtils.getRuleValue(each, "type").isEmpty());
     }
     
     private boolean planAlgorithms(final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request, final boolean includeShardingAlgorithm,
@@ -330,7 +332,7 @@ public final class ShardingWorkflowPlanningService {
     private boolean containsNamedRow(final Collection<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final String databaseName,
                                      final String fieldName, final String expected) {
         queryFacade.checkDatabaseCapability(databaseName);
-        return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
+        return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
     }
     
     private String normalizeComponentType(final String componentType) {

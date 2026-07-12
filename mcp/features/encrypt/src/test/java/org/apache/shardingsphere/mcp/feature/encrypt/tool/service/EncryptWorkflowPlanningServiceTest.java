@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -354,11 +355,11 @@ class EncryptWorkflowPlanningServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.isSameIdentifier("logic_db", "public", "public")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "orders", "orders")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "phone", "phone")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "t_user", "t_user")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "name", "name")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.SCHEMA, "public", "public")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "orders", "orders")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone", "phone")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_user", "t_user")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "name", "name")).thenReturn(true);
         return result;
     }
     

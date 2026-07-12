@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
@@ -79,7 +80,7 @@ class BroadcastWorkflowValidationServiceTest {
         BroadcastRuleInspectionService ruleInspectionService = getRuleInspectionService();
         when(ruleInspectionService.queryBroadcastRules(any(), any())).thenReturn(List.of(Map.of("broadcast_table", "t_order")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.isSameIdentifier("logic_db", "t_order", "t_order")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
@@ -122,7 +123,7 @@ class BroadcastWorkflowValidationServiceTest {
     
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.isSameIdentifier("logic_db", "t_order", "t_order")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
         return result;
     }
     

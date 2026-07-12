@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.shadow.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
@@ -112,7 +113,7 @@ class ShadowWorkflowPlanningServiceTest {
         ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
         ShadowInspectionService inspectionService = getInspectionService();
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.isSameIdentifier("logic_db", "unused_algorithm", "unused_algorithm")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "unused_algorithm", "unused_algorithm")).thenReturn(true);
         ShadowAlgorithmCleanupWorkflowRequest request = createCleanupRequest();
         when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
         when(inspectionService.queryTableRules(queryFacade, "logic_db")).thenReturn(List.of());
@@ -126,7 +127,7 @@ class ShadowWorkflowPlanningServiceTest {
         ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
         ShadowInspectionService inspectionService = getInspectionService();
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.isSameIdentifier("logic_db", "unused_algorithm", "unused_algorithm")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "unused_algorithm", "unused_algorithm")).thenReturn(true);
         ShadowAlgorithmCleanupWorkflowRequest request = createCleanupRequest();
         when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
         when(inspectionService.queryTableRules(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -179,9 +180,9 @@ class WorkflowPlanningContextValidatorTest {
     }
     
     private void mockIdentifierComparison(final MCPFeatureQueryFacade queryFacade) {
-        when(queryFacade.isSameIdentifier("logic_db", "orders", "orders")).thenReturn(true);
-        when(queryFacade.isSameIdentifier("logic_db", "public", "public")).thenReturn(true);
-        when(queryFacade.isSameIdentifier("logic_db", "phone", "phone")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "orders", "orders")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.SCHEMA, "public", "public")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone", "phone")).thenReturn(true);
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata() {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.broadcast.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -113,8 +114,8 @@ class BroadcastWorkflowPlanningServiceTest {
     
     private MCPFeatureQueryFacade mockQueryFacade(final List<Map<String, Object>> broadcastRules) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.isSameIdentifier("logic_db", "t_order", "t_order")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", "t_order_item", "t_order_item")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order_item", "t_order_item")).thenReturn(true);
         when(result.query(eq("logic_db"), eq(""), any())).thenReturn(broadcastRules);
         return result;
     }

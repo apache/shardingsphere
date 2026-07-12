@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -126,9 +127,9 @@ class WorkflowPlanningSupportTest {
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.isSameIdentifier("logic_db", "orders", "orders")).thenReturn(true);
-        when(queryFacade.isSameIdentifier("logic_db", "public", "public")).thenReturn(true);
-        when(queryFacade.isSameIdentifier("logic_db", "phone", "phone")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "orders", "orders")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.SCHEMA, "public", "public")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone", "phone")).thenReturn(true);
         boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, queryFacade, request, clarifiedIntent, snapshot);
         assertTrue(actual);
         assertThat(request.getSchema(), is("public"));
@@ -150,9 +151,9 @@ class WorkflowPlanningSupportTest {
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.isSameIdentifier("logic_db", "Public", "public")).thenReturn(true);
-        when(queryFacade.isSameIdentifier("logic_db", "Orders", "orders")).thenReturn(true);
-        when(queryFacade.isSameIdentifier("logic_db", "Phone", "phone")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.SCHEMA, "Public", "public")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "Orders", "orders")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "Phone", "phone")).thenReturn(true);
         boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, queryFacade, request, clarifiedIntent, snapshot);
         assertTrue(actual);
         assertTrue(snapshot.getIssues().isEmpty());
@@ -187,7 +188,7 @@ class WorkflowPlanningSupportTest {
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders-detail", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.isSameIdentifier("logic_db", "public", "public")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.SCHEMA, "public", "public")).thenReturn(true);
         boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, queryFacade, request, new ClarifiedIntent(), snapshot);
         assertFalse(actual);
         assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.TABLE_NOT_FOUND));

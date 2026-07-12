@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.shadow.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
@@ -54,10 +55,10 @@ class ShadowWorkflowValidationServiceTest {
     void assertValidateRule() {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.isSameIdentifier("logic_db", "shadow_rule", "shadow_rule")).thenReturn(true);
-        when(queryFacade.isSameIdentifier("logic_db", "demo_ds", "demo_ds")).thenReturn(true);
-        when(queryFacade.isSameIdentifier("logic_db", "demo_ds_shadow", "demo_ds_shadow")).thenReturn(true);
-        when(queryFacade.isSameIdentifier("logic_db", "t_order", "t_order")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "shadow_rule", "shadow_rule")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "demo_ds", "demo_ds")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "demo_ds_shadow", "demo_ds_shadow")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(Map.of(
                 "rule_name", "shadow_rule",
                 "source_name", "demo_ds",
@@ -73,7 +74,7 @@ class ShadowWorkflowValidationServiceTest {
     void assertValidateCleanupFailure() {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.isSameIdentifier("logic_db", "unused_algorithm", "unused_algorithm")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "unused_algorithm", "unused_algorithm")).thenReturn(true);
         when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
         Map<String, Object> actual = createService(inspectionService)
                 .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createCleanupSnapshot());

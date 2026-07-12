@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
@@ -128,7 +129,7 @@ public final class MaskWorkflowPlanningService {
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
                                          final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         boolean ruleExists = maskRules.stream().anyMatch(each -> queryFacade.isSameIdentifier(
-                request.getDatabase(), request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column")));
+                request.getDatabase(), IdentifierScope.COLUMN, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column")));
         return planningSupport.ensureLifecycleState("Mask rule", clarifiedIntent, ruleExists, snapshot);
     }
     
@@ -142,7 +143,7 @@ public final class MaskWorkflowPlanningService {
     
     private boolean hasRemainingRulesAfterDrop(final MCPFeatureQueryFacade queryFacade, final WorkflowRequest request, final List<Map<String, Object>> maskRules) {
         return maskRules.stream().anyMatch(each -> !queryFacade.isSameIdentifier(
-                request.getDatabase(), request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column")));
+                request.getDatabase(), IdentifierScope.COLUMN, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column")));
     }
     
     private boolean rejectExistingTableRuleMutation(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
