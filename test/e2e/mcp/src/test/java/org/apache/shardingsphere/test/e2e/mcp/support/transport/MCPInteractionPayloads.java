@@ -229,7 +229,8 @@ public final class MCPInteractionPayloads {
     
     private static Map<String, Object> createJsonRpcErrorPayload(final Object rawError) {
         Map<String, Object> error = getRequiredObjectValue(rawError, "error");
-        Map<String, Object> data = getOptionalObject(error, "data");
+        Object rawData = error.get("data");
+        Map<String, Object> data = rawData instanceof Map ? getRequiredObjectValue(rawData, "error.data") : Map.of();
         Map<String, Object> result = new LinkedHashMap<>(data.size() + 2, 1F);
         result.putAll(data);
         result.put("error_code", "json_rpc_error");

@@ -124,6 +124,13 @@ class MCPInteractionPayloadsTest {
     }
     
     @Test
+    void assertGetJsonRpcErrorPayloadWithScalarData() {
+        assertThat(MCPInteractionPayloads.getJsonRpcErrorPayload(Map.of("error", Map.of(
+                "message", "Unknown tool: invalid_tool_name", "data", "Tool not found: unsupported_tool"))),
+                is(Map.of("error_code", "json_rpc_error", "message", "Unknown tool: invalid_tool_name")));
+    }
+    
+    @Test
     void assertGetJsonRpcErrorPayloadPreservesErrorData() {
         Map<String, Object> actual = MCPInteractionPayloads.getJsonRpcErrorPayload(Map.of("error", Map.of(
                 "message", "Tool not found",
