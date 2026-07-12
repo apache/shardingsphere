@@ -29,7 +29,7 @@ import java.util.Collection;
 public final class SQL92FunctionOption implements DialectFunctionOption {
     
     private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new CaseInsensitiveSet<>(Arrays.asList(
-            "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "SESSION_USER", "USER"));
+            "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "SESSION_USER", "SYSTEM_USER", "USER"));
     
     @Override
     public Collection<String> getUnparenthesizedFunctionNames() {
