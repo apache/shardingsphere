@@ -32,6 +32,7 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdCon
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.FirebirdAcceptPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.FirebirdAttachPacket;
@@ -74,6 +75,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         FirebirdStatementIdGenerator.getInstance().registerConnection(connectionId);
         FirebirdBlobIdGenerator.getInstance().registerConnection(connectionId);
         FirebirdBlobUploadCache.getInstance().registerConnection(connectionId);
+        FirebirdBlobRegistry.getInstance().registerConnection(connectionId);
         FirebirdFetchStatementCache.getInstance().registerConnection(connectionId);
         return connectionId;
     }

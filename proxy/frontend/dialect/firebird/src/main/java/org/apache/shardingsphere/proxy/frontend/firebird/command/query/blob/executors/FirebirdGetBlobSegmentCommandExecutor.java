@@ -23,9 +23,9 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -35,21 +35,16 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class FirebirdGetBlobSegmentCommandExecutor implements CommandExecutor {
     
+    private static final int STATE_END_OF_BLOB = 2;
+    
     private final FirebirdGetBlobSegmentCommandPacket packet;
+    
+    private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() {
-        byte[] segment = FirebirdBlobRegistry.getSegment();
-        int segmentLength = segment == null ? 0 : Math.min(packet.getSegmentLength(), segment.length);
-        byte[] payloadSegment = segmentLength == 0 ? new byte[0] : Arrays.copyOf(segment, segmentLength);
-        if (segment != null && segmentLength > 0) {
-            if (segmentLength >= segment.length) {
-                FirebirdBlobRegistry.clearSegment();
-            } else {
-                FirebirdBlobRegistry.setSegment(Arrays.copyOfRange(segment, segmentLength, segment.length));
-            }
-        }
-        FirebirdGetBlobSegmentResponsePacket responsePacket = new FirebirdGetBlobSegmentResponsePacket(payloadSegment);
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(packet.getBlobHandle()).setData(responsePacket));
+        byte[] payloadSegment = FirebirdBlobRegistry.getInstance().readSegment(connectionSession.getConnectionId(), packet.getBlobHandle(), packet.getSegmentLength());
+        int responseHandle = FirebirdBlobRegistry.getInstance().isEof(connectionSession.getConnectionId(), packet.getBlobHandle()) ? STATE_END_OF_BLOB : 0;
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(responseHandle).setData(new FirebirdGetBlobSegmentResponsePacket(payloadSegment)));
     }
 }

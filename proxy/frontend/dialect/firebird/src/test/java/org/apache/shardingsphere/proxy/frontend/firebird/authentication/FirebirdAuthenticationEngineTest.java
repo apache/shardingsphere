@@ -33,6 +33,7 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.Fi
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.FirebirdAcceptPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.FirebirdAttachPacket;
@@ -92,7 +93,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({
         ConnectionIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdStatementIdGenerator.class, FirebirdFetchStatementCache.class,
-        FirebirdBlobIdGenerator.class, FirebirdBlobUploadCache.class, ProxyContext.class
+        FirebirdBlobIdGenerator.class, FirebirdBlobUploadCache.class, FirebirdBlobRegistry.class, ProxyContext.class
 })
 class FirebirdAuthenticationEngineTest {
     
@@ -118,6 +119,9 @@ class FirebirdAuthenticationEngineTest {
     private FirebirdBlobUploadCache blobUploadCache;
     
     @Mock
+    private FirebirdBlobRegistry blobRegistry;
+    
+    @Mock
     private ProxyContext proxyContext;
     
     private final FirebirdAuthenticationEngine authenticationEngine = new FirebirdAuthenticationEngine();
@@ -131,12 +135,14 @@ class FirebirdAuthenticationEngineTest {
         when(FirebirdFetchStatementCache.getInstance()).thenReturn(fetchStatementCache);
         when(FirebirdBlobIdGenerator.getInstance()).thenReturn(blobIdGenerator);
         when(FirebirdBlobUploadCache.getInstance()).thenReturn(blobUploadCache);
+        when(FirebirdBlobRegistry.getInstance()).thenReturn(blobRegistry);
         assertThat(authenticationEngine.handshake(context), is(1));
         verify(transactionIdGenerator).registerConnection(1);
         verify(statementIdGenerator).registerConnection(1);
         verify(fetchStatementCache).registerConnection(1);
         verify(blobIdGenerator).registerConnection(1);
         verify(blobUploadCache).registerConnection(1);
+        verify(blobRegistry).registerConnection(1);
     }
     
     @Test

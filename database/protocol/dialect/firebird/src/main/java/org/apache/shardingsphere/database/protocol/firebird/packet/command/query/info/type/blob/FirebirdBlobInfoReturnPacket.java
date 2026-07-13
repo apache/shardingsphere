@@ -39,6 +39,10 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
     
     private final List<FirebirdInfoPacketType> infoItems;
     
+    private final int connectionId;
+    
+    private final int blobHandle;
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         for (FirebirdInfoPacketType type : infoItems) {
@@ -74,8 +78,7 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
     }
     
     private int getSegmentLength() {
-        byte[] segment = FirebirdBlobRegistry.getSegment();
-        return segment == null ? 0 : segment.length;
+        return FirebirdBlobRegistry.getInstance().getBlobLength(connectionId, blobHandle);
     }
     
     private int getSegmentCount() {

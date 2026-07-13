@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdSeekBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,22 +51,53 @@ class FirebirdSeekBlobCommandExecutorTest {
     
     @BeforeEach
     void setup() {
-        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobRegistry.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobRegistry.getInstance().openBlob(CONNECTION_ID, 7, new byte[]{1, 2, 3, 4});
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
     }
     
     @AfterEach
     void tearDown() {
-        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdBlobRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
-    void assertExecute() {
+    void assertExecuteWithAbsoluteSeek() {
+        when(packet.getBlobHandle()).thenReturn(7);
+        when(packet.getSeekMode()).thenReturn(0);
+        when(packet.getOffset()).thenReturn(3);
         FirebirdSeekBlobCommandExecutor executor = new FirebirdSeekBlobCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
-        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
+        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(3));
+    }
+    
+    @Test
+    void assertExecuteWithRelativeSeek() {
+        FirebirdBlobRegistry.getInstance().seek(CONNECTION_ID, 7, 0, 1);
+        when(packet.getBlobHandle()).thenReturn(7);
+        when(packet.getSeekMode()).thenReturn(1);
+        when(packet.getOffset()).thenReturn(1);
+        FirebirdSeekBlobCommandExecutor executor = new FirebirdSeekBlobCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        DatabasePacket response = actual.iterator().next();
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(2));
+    }
+    
+    @Test
+    void assertExecuteWithSeekFromEnd() {
+        when(packet.getBlobHandle()).thenReturn(7);
+        when(packet.getSeekMode()).thenReturn(2);
+        when(packet.getOffset()).thenReturn(-1);
+        FirebirdSeekBlobCommandExecutor executor = new FirebirdSeekBlobCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        DatabasePacket response = actual.iterator().next();
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(3));
     }
 }

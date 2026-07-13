@@ -23,11 +23,16 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdBlobRegistryTest {
+    
+    private static final int CONNECTION_ID = 1;
+    
+    private static final int BLOB_HANDLE = 2;
     
     @Test
     void assertBuildSegmentPayloadWhenSegmentMissing() {
@@ -60,5 +65,25 @@ class FirebirdBlobRegistryTest {
         assertThat(buffer.readableBytes(), is(1));
         assertThat(buffer.readByte(), is((byte) 0));
         buffer.release();
+    }
+    
+    @Test
+    void assertReadSegmentAdvancesPosition() {
+        FirebirdBlobRegistry.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobRegistry.getInstance().openBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3});
+        assertThat(FirebirdBlobRegistry.getInstance().readSegment(CONNECTION_ID, BLOB_HANDLE, 2), is(new byte[]{1, 2}));
+        assertThat(FirebirdBlobRegistry.getInstance().readSegment(CONNECTION_ID, BLOB_HANDLE, 2), is(new byte[]{3}));
+        assertTrue(FirebirdBlobRegistry.getInstance().isEof(CONNECTION_ID, BLOB_HANDLE));
+        FirebirdBlobRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
+    @Test
+    void assertSeekClampsWithinBlobLength() {
+        FirebirdBlobRegistry.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobRegistry.getInstance().openBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3, 4});
+        assertThat(FirebirdBlobRegistry.getInstance().seek(CONNECTION_ID, BLOB_HANDLE, 0, 10), is(4));
+        assertThat(FirebirdBlobRegistry.getInstance().seek(CONNECTION_ID, BLOB_HANDLE, 1, -10), is(0));
+        assertThat(FirebirdBlobRegistry.getInstance().seek(CONNECTION_ID, BLOB_HANDLE, 2, -2), is(2));
+        FirebirdBlobRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
 }
