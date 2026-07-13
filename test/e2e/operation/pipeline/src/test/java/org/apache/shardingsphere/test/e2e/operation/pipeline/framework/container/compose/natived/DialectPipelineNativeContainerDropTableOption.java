@@ -33,11 +33,12 @@ public interface DialectPipelineNativeContainerDropTableOption extends DatabaseT
      * Get JDBC URL.
      *
      * @param storageContainerConnectOption data source environment
+     * @param actualDatabaseHost actual database host
      * @param actualDatabasePort actual database port
      * @param databaseName database name
      * @return JDBC URL
      */
-    String getJdbcUrl(StorageContainerConnectOption storageContainerConnectOption, int actualDatabasePort, String databaseName);
+    String getJdbcUrl(StorageContainerConnectOption storageContainerConnectOption, String actualDatabaseHost, int actualDatabasePort, String databaseName);
     
     /**
      * Get query all schema and table mapper SQL.

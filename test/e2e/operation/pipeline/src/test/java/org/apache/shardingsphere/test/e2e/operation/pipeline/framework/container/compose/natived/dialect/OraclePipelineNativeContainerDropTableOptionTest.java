@@ -35,18 +35,21 @@ import static org.mockito.Mockito.when;
 
 class OraclePipelineNativeContainerDropTableOptionTest {
     
+    private static final String DATABASE_HOST = "oracle.example.org";
+    
     @Test
     void assertGetJdbcUrl() {
         DatabaseType databaseType = mock(DatabaseType.class);
         StorageContainerConnectOption connectOption = mock(StorageContainerConnectOption.class);
         NativeStorageContainerOption nativeOption = mock(NativeStorageContainerOption.class);
-        when(nativeOption.getAccessURL(connectOption, "localhost", 1521, "pipeline_e2e_0")).thenReturn("jdbc:oracle:thin:@localhost:1521:XE");
+        when(nativeOption.getAccessURL(connectOption, DATABASE_HOST, 1521, "pipeline_e2e_0")).thenReturn("jdbc:oracle:thin:@oracle.example.org:1521:XE");
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, "Oracle")).thenReturn(databaseType);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(NativeStorageContainerOption.class, databaseType)).thenReturn(Optional.of(nativeOption));
-            assertThat(new OraclePipelineNativeContainerDropTableOption().getJdbcUrl(connectOption, 1521, "pipeline_e2e_0"), is("jdbc:oracle:thin:@localhost:1521:XE"));
+            assertThat(new OraclePipelineNativeContainerDropTableOption().getJdbcUrl(connectOption, DATABASE_HOST, 1521, "pipeline_e2e_0"),
+                    is("jdbc:oracle:thin:@oracle.example.org:1521:XE"));
         }
     }
     
@@ -54,13 +57,14 @@ class OraclePipelineNativeContainerDropTableOptionTest {
     void assertGetJdbcUrlWithoutNativeOption() {
         DatabaseType databaseType = mock(DatabaseType.class);
         StorageContainerConnectOption connectOption = mock(StorageContainerConnectOption.class);
-        when(connectOption.getURL("localhost", 1521, "")).thenReturn("jdbc:oracle:thin:@localhost:1521:XE");
+        when(connectOption.getURL(DATABASE_HOST, 1521, "")).thenReturn("jdbc:oracle:thin:@oracle.example.org:1521:XE");
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, "Oracle")).thenReturn(databaseType);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(NativeStorageContainerOption.class, databaseType)).thenReturn(Optional.empty());
-            assertThat(new OraclePipelineNativeContainerDropTableOption().getJdbcUrl(connectOption, 1521, "pipeline_e2e_0"), is("jdbc:oracle:thin:@localhost:1521:XE"));
+            assertThat(new OraclePipelineNativeContainerDropTableOption().getJdbcUrl(connectOption, DATABASE_HOST, 1521, "pipeline_e2e_0"),
+                    is("jdbc:oracle:thin:@oracle.example.org:1521:XE"));
         }
     }
 }

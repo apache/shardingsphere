@@ -31,8 +31,8 @@ import java.util.Optional;
 public final class MySQLPipelineNativeContainerDropTableOption implements DialectPipelineNativeContainerDropTableOption {
     
     @Override
-    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final int actualDatabasePort, final String databaseName) {
-        return new JdbcUrlAppender().appendQueryProperties(storageContainerConnectOption.getURL("localhost", actualDatabasePort, databaseName),
+    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final String actualDatabaseHost, final int actualDatabasePort, final String databaseName) {
+        return new JdbcUrlAppender().appendQueryProperties(storageContainerConnectOption.getURL(actualDatabaseHost, actualDatabasePort, databaseName),
                 PropertiesBuilder.build(new Property("allowPublicKeyRetrieval", Boolean.TRUE.toString())));
     }
     
