@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.dialect;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.NativeStorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.DialectPipelineNativeContainerDropTableOption;
 
@@ -29,7 +33,9 @@ public final class OraclePipelineNativeContainerDropTableOption implements Diale
     
     @Override
     public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final int actualDatabasePort, final String databaseName) {
-        return storageContainerConnectOption.getURL("localhost", actualDatabasePort, "");
+        return DatabaseTypedSPILoader.findService(NativeStorageContainerOption.class, TypedSPILoader.getService(DatabaseType.class, getDatabaseType()))
+                .map(optional -> optional.getAccessURL(storageContainerConnectOption, "localhost", actualDatabasePort, databaseName))
+                .orElseGet(() -> storageContainerConnectOption.getURL("localhost", actualDatabasePort, ""));
     }
     
     @Override

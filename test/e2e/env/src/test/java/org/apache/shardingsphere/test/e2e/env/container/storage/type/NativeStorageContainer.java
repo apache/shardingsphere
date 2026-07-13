@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.storage.type;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountSQLResourceGenerator;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.NativeStorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
@@ -34,11 +36,11 @@ import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.Scenari
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Native storage container.
@@ -58,6 +60,8 @@ public final class NativeStorageContainer implements StorageContainer {
     
     private final StorageContainerOption option;
     
+    private final NativeStorageContainerOption nativeOption;
+    
     @Getter
     private final Map<String, DataSource> actualDataSourceMap;
     
@@ -73,6 +77,7 @@ public final class NativeStorageContainer implements StorageContainer {
         this.databaseType = databaseType;
         this.scenario = scenario;
         option = DatabaseTypedSPILoader.findService(StorageContainerOption.class, databaseType).orElse(null);
+        nativeOption = DatabaseTypedSPILoader.findService(NativeStorageContainerOption.class, databaseType).orElse(null);
         initDatabase();
         actualDataSourceMap = createDataSourceMap(Type.ACTUAL);
         expectedDataSourceMap = createDataSourceMap(Type.EXPECTED);
@@ -98,7 +103,11 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private Map<String, String> generateMountedResources() {
-        return new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(getDefaultMajorVersion(), scenario);
+        return new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(getMajorVersion(), scenario);
+    }
+    
+    private int getMajorVersion() {
+        return Optional.ofNullable(nativeOption).map(NativeStorageContainerOption::getMajorVersion).orElseGet(this::getDefaultMajorVersion);
     }
     
     private int getDefaultMajorVersion() {
@@ -115,16 +124,20 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private DataSource createInitDataSource() {
-        return StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType)),
-                getInitUser(), env.getPassword(), 2);
+        String jdbcUrl = Optional.ofNullable(nativeOption)
+                .map(optional -> optional.getInitURL(option.getConnectOption(), env.getHost(), env.getPort(databaseType)))
+                .orElseGet(() -> option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType)));
+        HikariDataSource result = (HikariDataSource) StorageContainerUtils.generateDataSource(jdbcUrl, getInitUser(), env.getPassword(), 2);
+        Optional.ofNullable(nativeOption).ifPresent(optional -> optional.configureInitDataSource(result));
+        return result;
     }
     
     private String getInitUser() {
-        return env.getUser();
+        return Optional.ofNullable(nativeOption).map(optional -> optional.getInitUser(env.getUser())).orElseGet(env::getUser);
     }
     
     private String getInitDatabaseCacheKey() {
-        return String.join(":", String.valueOf(scenario), databaseType.getType(), env.getHost(), String.valueOf(env.getPort(databaseType)), String.valueOf(getDefaultMajorVersion()));
+        return String.join(":", String.valueOf(scenario), databaseType.getType(), env.getHost(), String.valueOf(env.getPort(databaseType)), String.valueOf(getMajorVersion()));
     }
     
     private Map<String, DataSource> createDataSourceMap(final Type type) {
@@ -134,11 +147,22 @@ public final class NativeStorageContainer implements StorageContainer {
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
         Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
-            DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType), each),
-                    env.getUser(), env.getPassword(), 2);
+            DataSource dataSource = StorageContainerUtils.generateDataSource(getAccessURL(each), env.getUser(), env.getPassword(), 2);
+            initNativeDataSource(each, dataSource);
             result.put(each, dataSource);
         }
         return result;
+    }
+    
+    private String getAccessURL(final String dataSourceName) {
+        return Optional.ofNullable(nativeOption).map(optional -> optional.getAccessURL(option.getConnectOption(), env.getHost(), env.getPort(databaseType), dataSourceName))
+                .orElseGet(() -> null == dataSourceName || dataSourceName.isEmpty()
+                        ? option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType))
+                        : option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType), dataSourceName));
+    }
+    
+    private void initNativeDataSource(final String dataSourceName, final DataSource dataSource) {
+        Optional.ofNullable(nativeOption).ifPresent(optional -> optional.configureAccessDataSource((HikariDataSource) dataSource, dataSourceName));
     }
     
     /**
@@ -161,9 +185,11 @@ public final class NativeStorageContainer implements StorageContainer {
     
     @Override
     public Map<String, String> getLinkReplacements() {
-        Map<String, String> result = new HashMap<>(getNetworkAliases().size() + 2, 1F);
+        Map<String, String> result = new LinkedHashMap<>(getNetworkAliases().size() + 2, 1F);
         for (String each : getNetworkAliases()) {
-            result.put(each + ":" + getExposedPort(), env.getHost() + ":" + env.getPort(databaseType));
+            result.putAll(Optional.ofNullable(nativeOption)
+                    .map(optional -> optional.getLinkReplacements(option.getConnectOption(), each, env.getHost(), env.getPort(databaseType), getExposedPort()))
+                    .orElseGet(() -> Collections.singletonMap(each + ":" + getExposedPort(), env.getHost() + ":" + env.getPort(databaseType))));
         }
         return result;
     }
