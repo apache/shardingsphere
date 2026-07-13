@@ -67,9 +67,9 @@ Stream group-by merger is different from order-by merger only in two aspects:
 1. It will take out all the data with the same group item from multiple data result sets at once.
 1. It carried out the aggregation calculation according to the aggregation function type.
 
-Expression-derived aggregations
+## Expression-derived aggregations
 
-In many real-world queries, aggregation functions are wrapped inside scalar expressions or conditional functions (for example, `IFNULL(SUM(score), 0)` or `COALESCE(COUNT(id), 0)`). The merger engine now natively evaluates such expression-derived aggregations during both stream and memory merges. Expression nodes that wrap aggregation calls are recognized and the underlying aggregation is computed as part of the usual merge flow; surrounding scalar or conditional expressions are then applied to the aggregated result so that semantics (null coalescing, defaulting, arithmetic, etc.) are preserved.
+Aggregation functions may appear inside supported scalar wrapper functions, such as `IFNULL(SUM(score), 0)` or `COALESCE(COUNT(id), 0)`. During both stream and memory merges, the merger engine evaluates the underlying aggregation first and then applies the supported wrapper expression to the merged result. This preserves the expected semantics for supported null-handling wrappers without changing the underlying aggregation behavior.
 
 Proper empty / no-route initializations
 
@@ -94,16 +94,6 @@ The comparison aggregation function refers to `MAX` and `MIN`. They need to comp
 The sum aggregation function refers to `SUM` and `COUNT`. They need to sum up all the result set data of each group.
 
 The average aggregation function refers only to `AVG`. It must be calculated through `SUM` and `COUNT` rewritten by SQL, which has been mentioned in the SQL rewriting section.
-
-## Performance / Memory Optimization
-
-Zero-copy projection pass-through
-
-The group-by merger avoids creating redundant collection wrappers (for example, copying expanded projection results into new `ArrayList` instances) when evaluating projections during merges. Instead, the merger streams directly against existing projection context references and iterates over the original projection objects where possible. This zero-copy pass-through reduces temporary allocations and keeps the garbage collection profile low during large merges.
-
-Elimination of quadratic overhead
-
-Previous implementations performed repeated linked-list scans when resolving projections across expanded projection sets, which could lead to quadratic (`O(N^2)`) behavior for large projection counts. Those linked-list scans have been replaced by optimized linear lookup mappings (e.g., direct index maps or hash-based lookups) so projection evaluation now completes in linear time relative to the number of projections.
 
 ## Pagination Merger
 
