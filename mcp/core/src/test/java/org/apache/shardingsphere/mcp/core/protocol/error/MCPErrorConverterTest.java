@@ -59,12 +59,15 @@ import java.sql.SQLTransientConnectionException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MCPErrorConverterTest {
     
@@ -271,7 +274,12 @@ class MCPErrorConverterTest {
     
     @Test
     void assertConvertSQLToolMismatchWithRecovery() {
-        ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'PAID'", "orders", "");
+        ClassificationResult classificationResult = mock(ClassificationResult.class);
+        when(classificationResult.getStatementClass()).thenReturn(SupportedMCPStatement.DML);
+        when(classificationResult.getStatementType()).thenReturn("UPDATE");
+        when(classificationResult.getNormalizedSql()).thenReturn("UPDATE orders SET status = 'PAID'");
+        when(classificationResult.getTargetObjectName()).thenReturn(Optional.of("orders"));
+        when(classificationResult.getSavepointName()).thenReturn(Optional.empty());
         Map<String, Object> suggestedArguments = Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID'", "execution_mode", "preview");
         Map<String, Object> actual = MCPErrorConverter.convert(new SQLToolMismatchException(
                 "database_gateway_execute_query only supports classifier-approved QUERY statements. "
@@ -304,7 +312,12 @@ class MCPErrorConverterTest {
     
     @Test
     void assertConvertReadOnlySQLToolMismatchWithRecovery() {
-        ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM orders", "orders", "");
+        ClassificationResult classificationResult = mock(ClassificationResult.class);
+        when(classificationResult.getStatementClass()).thenReturn(SupportedMCPStatement.QUERY);
+        when(classificationResult.getStatementType()).thenReturn("SELECT");
+        when(classificationResult.getNormalizedSql()).thenReturn("SELECT * FROM orders");
+        when(classificationResult.getTargetObjectName()).thenReturn(Optional.of("orders"));
+        when(classificationResult.getSavepointName()).thenReturn(Optional.empty());
         Map<String, Object> suggestedArguments = Map.of("database", "logic_db", "sql", "SELECT * FROM orders");
         Map<String, Object> actual = MCPErrorConverter.convert(new SQLToolMismatchException(
                 "database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL.",
@@ -318,8 +331,10 @@ class MCPErrorConverterTest {
     
     @Test
     void assertConvertRuleDistSQLExecutionWithRecovery() {
-        ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.DDL, "CREATE",
-                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))", "", "");
+        ClassificationResult classificationResult = mock(ClassificationResult.class);
+        when(classificationResult.getStatementClass()).thenReturn(SupportedMCPStatement.DDL);
+        when(classificationResult.getStatementType()).thenReturn("CREATE");
+        when(classificationResult.getSideEffectScope()).thenReturn("rule-metadata");
         Map<String, Object> actual = MCPErrorConverter.convert(new RuleDistSQLExecutionException(
                 "sharding_db", classificationResult, new SQLSyntaxErrorException("syntax error"))).toPayload();
         assertThat(actual.get("message"),
