@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Function;
 
@@ -37,10 +38,12 @@ public final class AggregationWrapperExpressionEvaluator {
      * @param expression expression segment to evaluate
      * @param derivedAggregations derived aggregations
      * @param row memory query result row
+     * @param targetType the target JDBC class type to coerce to (optional)
      * @return evaluated result
      */
-    public static Object evaluate(final ExpressionSegment expression, final List<AggregationProjection> derivedAggregations, final MemoryQueryResultRow row) {
-        return evaluate(expression, derivedAggregations, row::getCell);
+    public static Object evaluate(final ExpressionSegment expression, final List<AggregationProjection> derivedAggregations, final MemoryQueryResultRow row, final Class<?> targetType) {
+        Object result = evaluate(expression, derivedAggregations, row::getCell);
+        return coerce(result, targetType);
     }
     
     /**
@@ -48,30 +51,60 @@ public final class AggregationWrapperExpressionEvaluator {
      * @param expression expression segment to evaluate
      * @param derivedAggregations derived aggregations
      * @param currentRow current row data
+     * @param targetType the target JDBC class type to coerce to (optional)
      * @return evaluated result
      */
-    public static Object evaluate(final ExpressionSegment expression, final List<AggregationProjection> derivedAggregations, final List<Object> currentRow) {
-        return evaluate(expression, derivedAggregations, index -> currentRow.get(index - 1));
+    public static Object evaluate(final ExpressionSegment expression, final List<AggregationProjection> derivedAggregations, final List<Object> currentRow, final Class<?> targetType) {
+        Object result = evaluate(expression, derivedAggregations, index -> currentRow.get(index - 1));
+        return coerce(result, targetType);
     }
     
-    private static Object evaluate(final ExpressionSegment expression, final List<AggregationProjection> derivedAggregations, final Function<Integer, Object> valueProvider) {
+    private static Object evaluate(final ExpressionSegment expression, final List<AggregationProjection> derivedAggregations, final Function<Integer, Object> valueExtractor) {
         if (expression instanceof AggregationProjectionSegment) {
-            return getMergedAggregationValue((AggregationProjectionSegment) expression, derivedAggregations, valueProvider);
+            return getMergedAggregationValue((AggregationProjectionSegment) expression, derivedAggregations, valueExtractor);
         }
         if (expression instanceof LiteralExpressionSegment) {
             return ((LiteralExpressionSegment) expression).getLiterals();
         }
         if (expression instanceof FunctionSegment) {
-            return evaluateFunction((FunctionSegment) expression, derivedAggregations, valueProvider);
+            return evaluateFunction((FunctionSegment) expression, derivedAggregations, valueExtractor);
         }
         throw new IllegalArgumentException(String.format("Unsupported aggregation wrapper expression segment type: %s", expression.getClass().getName()));
     }
     
-    private static Object evaluateFunction(final FunctionSegment functionSegment, final List<AggregationProjection> derivedAggregations, final Function<Integer, Object> valueProvider) {
+    private static Object coerce(final Object value, final Class<?> targetType) {
+        if (value == null || targetType == null || value.getClass().equals(targetType)) {
+            return value;
+        }
+        if (value instanceof Number) {
+            Number num = (Number) value;
+            if (targetType == BigDecimal.class) {
+                return new BigDecimal(num.toString());
+            }
+            if (targetType == Long.class) {
+                return num.longValue();
+            }
+            if (targetType == Integer.class) {
+                return num.intValue();
+            }
+            if (targetType == Double.class) {
+                return num.doubleValue();
+            }
+            if (targetType == Float.class) {
+                return num.floatValue();
+            }
+            if (targetType == Short.class) {
+                return num.shortValue();
+            }
+        }
+        return value;
+    }
+    
+    private static Object evaluateFunction(final FunctionSegment functionSegment, final List<AggregationProjection> derivedAggregations, final Function<Integer, Object> valueExtractor) {
         String functionName = functionSegment.getFunctionName();
         if ("IFNULL".equalsIgnoreCase(functionName) || "COALESCE".equalsIgnoreCase(functionName)) {
             for (ExpressionSegment each : functionSegment.getParameters()) {
-                Object value = evaluate(each, derivedAggregations, valueProvider);
+                Object value = evaluate(each, derivedAggregations, valueExtractor);
                 if (null != value) {
                     return value;
                 }
@@ -81,10 +114,10 @@ public final class AggregationWrapperExpressionEvaluator {
         throw new IllegalArgumentException(String.format("Unsupported aggregation wrapper function: %s", functionName));
     }
     
-    private static Object getMergedAggregationValue(final AggregationProjectionSegment segment, final List<AggregationProjection> derivedAggregations, final Function<Integer, Object> valueProvider) {
+    private static Object getMergedAggregationValue(final AggregationProjectionSegment segment, final List<AggregationProjection> derivedAggregations, final Function<Integer, Object> valueExtractor) {
         for (AggregationProjection each : derivedAggregations) {
             if (each.getExpression().equals(segment.getText())) {
-                return valueProvider.apply(each.getIndex());
+                return valueExtractor.apply(each.getIndex());
             }
         }
         throw new IllegalArgumentException(String.format("Cannot find merged aggregation value for expression: %s", segment.getText()));

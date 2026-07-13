@@ -44,6 +44,9 @@ public final class ProjectionsToken extends SQLToken implements Attachable, Rout
     
     @Override
     public String toString(final RouteUnit routeUnit) {
+        if (!projections.containsKey(routeUnit) || projections.get(routeUnit).isEmpty()) {
+            return "";
+        }
         StringBuilder result = new StringBuilder();
         for (String each : projections.get(routeUnit)) {
             result.append(", ");

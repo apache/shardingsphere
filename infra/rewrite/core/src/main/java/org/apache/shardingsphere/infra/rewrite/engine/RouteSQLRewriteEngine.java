@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.rewrite.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -37,6 +39,12 @@ import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilderEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -165,12 +173,66 @@ public final class RouteSQLRewriteEngine {
             return Collections.emptyList();
         }
         ParameterBuilder parameterBuilder = sqlRewriteContext.getParameterBuilder();
+        List<Object> result;
         if (parameterBuilder instanceof StandardParameterBuilder) {
-            return parameterBuilder.getParameters();
+            result = new ArrayList<>(parameterBuilder.getParameters());
+        } else {
+            result = routeContext.getOriginalDataNodes().isEmpty()
+                    ? new ArrayList<>(((GroupedParameterBuilder) parameterBuilder).getParameters())
+                    : new ArrayList<>(buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit));
         }
-        return routeContext.getOriginalDataNodes().isEmpty()
-                ? ((GroupedParameterBuilder) parameterBuilder).getParameters()
-                : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit);
+        
+        if (sqlRewriteContext.getSqlStatementContext() instanceof SelectStatementContext) {
+            appendDerivedAggregationParameters(sqlRewriteContext, (SelectStatementContext) sqlRewriteContext.getSqlStatementContext(), result);
+        }
+        return result;
+    }
+    
+    private void appendDerivedAggregationParameters(final SQLRewriteContext sqlRewriteContext, final SelectStatementContext selectStatementContext, final List<Object> parameters) {
+        Map<ExpressionProjection, List<AggregationProjection>> derivedAggs = selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations();
+        if (derivedAggs.isEmpty()) {
+            return;
+        }
+        
+        List<Object> derivedParams = new LinkedList<>();
+        for (List<AggregationProjection> each : derivedAggs.values()) {
+            appendDerivedParameters(sqlRewriteContext, each, derivedParams);
+        }
+        
+        if (derivedParams.isEmpty()) {
+            return;
+        }
+        
+        int insertionIndex = getProjectionParamCount(selectStatementContext);
+        if (insertionIndex <= parameters.size()) {
+            parameters.addAll(insertionIndex, derivedParams);
+        } else {
+            parameters.addAll(derivedParams);
+        }
+    }
+    
+    private void appendDerivedParameters(final SQLRewriteContext sqlRewriteContext, final List<AggregationProjection> aggrs, final List<Object> derivedParams) {
+        for (AggregationProjection each : aggrs) {
+            Collection<ExpressionSegment> exprs = Collections.singletonList(each.getAggregationSegment());
+            for (ParameterMarkerExpressionSegment marker : ExpressionExtractor.getParameterMarkerExpressions(exprs)) {
+                int markerIndex = marker.getParameterMarkerIndex();
+                if (markerIndex >= 0 && markerIndex < sqlRewriteContext.getParameters().size()) {
+                    derivedParams.add(sqlRewriteContext.getParameters().get(markerIndex));
+                }
+            }
+        }
+    }
+    
+    private int getProjectionParamCount(final SelectStatementContext selectStatementContext) {
+        Collection<ExpressionSegment> expressions = new LinkedList<>();
+        for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
+            if (each instanceof ExpressionProjectionSegment) {
+                expressions.add(((ExpressionProjectionSegment) each).getExpr());
+            } else if (each instanceof AggregationProjectionSegment) {
+                expressions.add((AggregationProjectionSegment) each);
+            }
+        }
+        return ExpressionExtractor.getParameterMarkerExpressions(expressions).size();
     }
     
     private List<Object> buildRouteParameters(final GroupedParameterBuilder paramBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {

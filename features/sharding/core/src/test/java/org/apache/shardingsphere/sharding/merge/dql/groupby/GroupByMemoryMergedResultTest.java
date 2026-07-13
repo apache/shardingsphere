@@ -19,7 +19,10 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -61,6 +64,10 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -618,7 +625,7 @@ class GroupByMemoryMergedResultTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
         
-        org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection avgProjection =
+        AggregationProjection avgProjection =
                 selectStatementContext.getProjectionsContext().getAggregationProjections().get(0);
         avgProjection.setIndex(2);
         avgProjection.getDerivedAggregationProjections().get(0).setIndex(3);
@@ -675,6 +682,55 @@ class GroupByMemoryMergedResultTest {
         
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("8.0000"));
+    }
+    
+    @Test
+    void assertNextWithExpressionDerivedAggregationsForEmptyResultSet() throws SQLException {
+        when(database.getName()).thenReturn("db_schema");
+        QueryResult queryResult = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(queryResult.next()).thenReturn(false);
+        when(queryResult.getMetaData().getColumnCount()).thenReturn(2);
+        when(queryResult.getMetaData().getColumnLabel(1)).thenReturn("EXPR");
+        when(queryResult.getMetaData().getColumnLabel(2)).thenReturn("COUNT(*)");
+        
+        SelectStatementContext mockContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
+        when(mockContext.getProjectionsContext()).thenReturn(projectionsContext);
+        
+        GroupByContext groupByContext = mock(GroupByContext.class);
+        when(groupByContext.getItems()).thenReturn(Collections.emptyList());
+        when(mockContext.getGroupByContext()).thenReturn(groupByContext);
+        
+        FunctionSegment functionSegment = new FunctionSegment(0, 20, "IFNULL", "IFNULL(COUNT(*), 99)");
+        AggregationProjectionSegment aggrSegment = new AggregationProjectionSegment(7, 14, AggregationType.COUNT, "COUNT(*)");
+        LiteralExpressionSegment literalSegment = new LiteralExpressionSegment(17, 17, 99);
+        functionSegment.getParameters().addAll(Arrays.asList(aggrSegment, literalSegment));
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 20, "IFNULL(COUNT(*), 99)", functionSegment);
+        ExpressionProjection expressionProjection = new ExpressionProjection(expressionSegment, null, databaseType);
+        
+        AggregationProjection derivedAggr = new AggregationProjection(AggregationType.COUNT, aggrSegment, new IdentifierValue("EXPR_DERIVED_0"), null);
+        derivedAggr.setIndex(2);
+        
+        Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = new LinkedHashMap<>();
+        expressionDerivedAggregations.put(expressionProjection, Collections.singletonList(derivedAggr));
+        when(projectionsContext.getExpressionDerivedAggregations()).thenReturn(expressionDerivedAggregations);
+        when(projectionsContext.getProjections()).thenReturn(Arrays.asList(expressionProjection, derivedAggr));
+        when(projectionsContext.getAggregationProjections()).thenReturn(Collections.singletonList(derivedAggr));
+        when(projectionsContext.getExpandProjections()).thenReturn(Arrays.asList(expressionProjection, derivedAggr));
+        
+        SelectStatement mockStatement = mock(SelectStatement.class);
+        when(mockContext.getSqlStatement()).thenReturn(mockStatement);
+        when(mockStatement.getGroupBy()).thenReturn(Optional.empty());
+        when(mockStatement.getOrderBy()).thenReturn(Optional.empty());
+        
+        ShardingSphereSchema mockSchema = mock(ShardingSphereSchema.class);
+        
+        MergedResult actual = new GroupByMemoryMergedResult(Collections.singletonList(queryResult), mockContext, mockSchema);
+        
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class), is(0));
     }
     
     private SelectStatementContext createIfNullSelectStatementContext() {

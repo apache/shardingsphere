@@ -196,4 +196,40 @@ class ProjectionEngineTest {
         assertTrue(actual.isPresent());
         assertTrue(derived.isEmpty());
     }
+    
+    @Test
+    void assertCreateProjectionWithColumnFallbackInExpression() {
+        FunctionSegment functionSegment = new FunctionSegment(0, 30, "IFNULL", "IFNULL(SUM(price), column_a)");
+        AggregationProjectionSegment sumSegment = new AggregationProjectionSegment(7, 16, AggregationType.SUM, "SUM(price)");
+        ColumnSegment columnSegment = new ColumnSegment(19, 26, new IdentifierValue("column_a"));
+        functionSegment.getParameters().add(sumSegment);
+        functionSegment.getParameters().add(columnSegment);
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 30, "IFNULL(SUM(price), column_a)", functionSegment);
+        
+        ProjectionEngine engine = new ProjectionEngine(databaseType);
+        Map<ExpressionProjection, List<AggregationProjection>> derived = new LinkedHashMap<>();
+        Optional<Projection> actual = engine.createProjection(expressionSegment, derived);
+        
+        assertTrue(actual.isPresent());
+        assertTrue(derived.isEmpty());
+    }
+    
+    @Test
+    void assertCreateProjectionWithParameterMarkerFallbackInExpression() {
+        FunctionSegment functionSegment = new FunctionSegment(0, 23, "IFNULL", "IFNULL(SUM(price), ?)");
+        AggregationProjectionSegment sumSegment = new AggregationProjectionSegment(7, 16, AggregationType.SUM, "SUM(price)");
+        ParameterMarkerExpressionSegment paramSegment = new ParameterMarkerExpressionSegment(19, 19, 0);
+        functionSegment.getParameters().add(sumSegment);
+        functionSegment.getParameters().add(paramSegment);
+        
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 23, "IFNULL(SUM(price), ?)", functionSegment);
+        
+        ProjectionEngine engine = new ProjectionEngine(databaseType);
+        Map<ExpressionProjection, List<AggregationProjection>> derived = new LinkedHashMap<>();
+        Optional<Projection> actual = engine.createProjection(expressionSegment, derived);
+        
+        assertTrue(actual.isPresent());
+        assertTrue(derived.isEmpty());
+    }
 }

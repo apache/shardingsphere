@@ -49,7 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Sharding projections token generator.
@@ -91,12 +90,15 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     
     private Collection<String> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext, final RouteUnit routeUnit) {
         Collection<String> result = new LinkedList<>();
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromSelect(selectStatementContext.getSqlStatement());
+        
         for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
             if (each instanceof AggregationProjection) {
-                result.addAll(((AggregationProjection) each).getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
+                for (Projection derived : ((AggregationProjection) each).getDerivedAggregationProjections()) {
+                    result.add(getDerivedProjectionText(derived, routeUnit));
+                }
             } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjectionSegment() instanceof ColumnOrderByItemSegment) {
-                TableExtractor tableExtractor = new TableExtractor();
-                tableExtractor.extractTablesFromSelect(selectStatementContext.getSqlStatement());
                 result.add(getDerivedProjectionText((DerivedProjection) each, tableExtractor, routeUnit, selectStatementContext.getSqlStatement().getDatabaseType()));
             } else if (each instanceof DerivedProjection) {
                 result.add(getDerivedProjectionText(each));
@@ -107,9 +109,11 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
         if (!derivedMap.isEmpty()) {
             for (Collection<AggregationProjection> derivedAggregations : derivedMap.values()) {
                 for (AggregationProjection each : derivedAggregations) {
-                    result.add(getDerivedProjectionText(each));
+                    result.add(getDerivedProjectionText(each, routeUnit));
                     if (!each.getDerivedAggregationProjections().isEmpty()) {
-                        result.addAll(each.getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
+                        for (Projection derived : each.getDerivedAggregationProjections()) {
+                            result.add(getDerivedProjectionText(derived, routeUnit));
+                        }
                     }
                 }
             }
@@ -120,6 +124,20 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     private String getDerivedProjectionText(final Projection projection) {
         Preconditions.checkState(projection.getAlias().isPresent());
         String projectionExpression = projection instanceof AggregationDistinctProjection ? ((AggregationDistinctProjection) projection).getDistinctInnerExpression() : projection.getExpression();
+        return projectionExpression + " AS " + projection.getAlias().get().getValue() + " ";
+    }
+    
+    private String getDerivedProjectionText(final Projection projection, final RouteUnit routeUnit) {
+        Preconditions.checkState(projection.getAlias().isPresent());
+        String projectionExpression = projection instanceof AggregationDistinctProjection ? ((AggregationDistinctProjection) projection).getDistinctInnerExpression() : projection.getExpression();
+        
+        for (RouteMapper each : routeUnit.getTableMappers()) {
+            String logicTableName = each.getLogicName();
+            String actualTableName = each.getActualName();
+            projectionExpression = projectionExpression.replaceAll("(?i)\\b" + logicTableName + "\\b\\.", actualTableName + ".");
+            projectionExpression = projectionExpression.replaceAll("(?i)\\b" + logicTableName + "\\b(?!\\.)", actualTableName);
+        }
+        
         return projectionExpression + " AS " + projection.getAlias().get().getValue() + " ";
     }
     

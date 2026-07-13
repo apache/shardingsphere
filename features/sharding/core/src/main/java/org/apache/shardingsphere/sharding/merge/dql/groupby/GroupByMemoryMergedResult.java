@@ -42,12 +42,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Memory merged result for group by.
@@ -83,9 +80,13 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         if (!dataMap.containsKey(groupByValue)) {
             dataMap.put(groupByValue, new MemoryQueryResultRow(queryResult));
         }
-        aggregationMap.computeIfAbsent(groupByValue, unused -> selectStatementContext.getProjectionsContext().getAggregationProjections().stream()
-                .collect(Collectors.toMap(Function.identity(),
-                        input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection, input.getSeparator().orElse(null)))));
+        if (!aggregationMap.containsKey(groupByValue)) {
+            Map<AggregationProjection, AggregationUnit> units = new HashMap<>(selectStatementContext.getProjectionsContext().getAggregationProjections().size(), 1F);
+            for (AggregationProjection each : selectStatementContext.getProjectionsContext().getAggregationProjections()) {
+                units.put(each, AggregationUnitFactory.create(each.getType(), each instanceof AggregationDistinctProjection, each.getSeparator().orElse(null)));
+            }
+            aggregationMap.put(groupByValue, units);
+        }
     }
     
     private void aggregate(final SelectStatementContext selectStatementContext, final QueryResult queryResult,
@@ -152,7 +153,13 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             }
             Object[] data = generateReturnData(selectStatementContext);
             MemoryQueryResultRow syntheticRow = new MemoryQueryResultRow(data);
-            evaluateExpressionValue(selectStatementContext, syntheticRow);
+            
+            Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations();
+            if (expressionDerivedAggregations != null && !expressionDerivedAggregations.isEmpty()) {
+                Map<ExpressionProjection, Integer> expressionIndices = getExpressionIndices(selectStatementContext, expressionDerivedAggregations);
+                evaluateExpressionValue(expressionDerivedAggregations, expressionIndices, syntheticRow);
+            }
+            
             return Collections.singletonList(syntheticRow);
         }
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
@@ -161,45 +168,88 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     }
     
     private Object[] generateReturnData(final SelectStatementContext selectStatementContext) {
-        List<Projection> projections = new LinkedList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
+        int maxColumnIndex = calculateMaxColumnIndex(selectStatementContext);
+        Object[] result = new Object[maxColumnIndex];
         
-        int maxColumnIndex = projections.size();
-        for (AggregationProjection each : selectStatementContext.getProjectionsContext().getAggregationProjections()) {
-            maxColumnIndex = Math.max(maxColumnIndex, each.getIndex());
+        List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
+        for (int i = 0; i < expandProjections.size(); i++) {
+            if (expandProjections.get(i) instanceof AggregationProjection && AggregationType.COUNT == ((AggregationProjection) expandProjections.get(i)).getType()) {
+                result[i] = 0;
+            }
         }
         
-        Object[] result = new Object[maxColumnIndex];
-        for (int i = 0; i < projections.size(); i++) {
-            if (projections.get(i) instanceof AggregationProjection && AggregationType.COUNT == ((AggregationProjection) projections.get(i)).getType()) {
-                result[i] = 0;
+        for (AggregationProjection each : selectStatementContext.getProjectionsContext().getAggregationProjections()) {
+            if (AggregationType.COUNT == each.getType() && each.getIndex() > 0) {
+                result[each.getIndex() - 1] = 0;
+            }
+        }
+        
+        for (List<AggregationProjection> derivedList : selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations().values()) {
+            for (AggregationProjection each : derivedList) {
+                if (AggregationType.COUNT == each.getType() && each.getIndex() > 0) {
+                    result[each.getIndex() - 1] = 0;
+                }
             }
         }
         return result;
     }
     
-    private void setExpressionValueToMemoryRow(final SelectStatementContext selectStatementContext, final Map<GroupByValue, MemoryQueryResultRow> dataMap) {
-        for (MemoryQueryResultRow each : dataMap.values()) {
-            evaluateExpressionValue(selectStatementContext, each);
+    private int calculateMaxColumnIndex(final SelectStatementContext selectStatementContext) {
+        int maxColumnIndex = selectStatementContext.getProjectionsContext().getExpandProjections().size();
+        
+        for (AggregationProjection each : selectStatementContext.getProjectionsContext().getAggregationProjections()) {
+            maxColumnIndex = Math.max(maxColumnIndex, each.getIndex());
         }
+        
+        for (List<AggregationProjection> derivedList : selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations().values()) {
+            for (AggregationProjection each : derivedList) {
+                maxColumnIndex = Math.max(maxColumnIndex, each.getIndex());
+            }
+        }
+        return maxColumnIndex;
     }
     
-    private void evaluateExpressionValue(final SelectStatementContext selectStatementContext, final MemoryQueryResultRow row) {
+    private void setExpressionValueToMemoryRow(final SelectStatementContext selectStatementContext, final Map<GroupByValue, MemoryQueryResultRow> dataMap) {
         Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations();
         if (expressionDerivedAggregations == null || expressionDerivedAggregations.isEmpty()) {
             return;
         }
         
-        List<Projection> expandProjections = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
-        
+        Map<ExpressionProjection, Integer> expressionIndices = getExpressionIndices(selectStatementContext, expressionDerivedAggregations);
+        for (MemoryQueryResultRow each : dataMap.values()) {
+            evaluateExpressionValue(expressionDerivedAggregations, expressionIndices, each);
+        }
+    }
+    
+    private Map<ExpressionProjection, Integer> getExpressionIndices(final SelectStatementContext selectStatementContext,
+                                                                    final Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations) {
+        List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
+        Map<ExpressionProjection, Integer> expressionIndices = new HashMap<>(expressionDerivedAggregations.size(), 1F);
+        for (ExpressionProjection each : expressionDerivedAggregations.keySet()) {
+            expressionIndices.put(each, expandProjections.indexOf(each) + 1);
+        }
+        return expressionIndices;
+    }
+    
+    private void evaluateExpressionValue(final Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations,
+                                         final Map<ExpressionProjection, Integer> expressionIndices, final MemoryQueryResultRow row) {
         for (Entry<ExpressionProjection, List<AggregationProjection>> exprEntry : expressionDerivedAggregations.entrySet()) {
+            
+            int columnIndex = expressionIndices.getOrDefault(exprEntry.getKey(), -1);
+            
+            Class<?> targetType = null;
+            if (columnIndex > 0) {
+                Object existingValue = row.getCell(columnIndex);
+                targetType = existingValue != null ? existingValue.getClass() : null;
+            }
+            
             Object evaluatedValue = AggregationWrapperExpressionEvaluator.evaluate(
                     exprEntry.getKey().getExpressionSegment().getExpr(),
                     exprEntry.getValue(),
-                    row);
+                    row,
+                    targetType);
             
-            int columnIndex = expandProjections.indexOf(exprEntry.getKey()) + 1;
-            
-            if (columnIndex > 0) {
+            if (columnIndex > 0 && evaluatedValue != null) {
                 row.setCell(columnIndex, evaluatedValue);
             }
         }

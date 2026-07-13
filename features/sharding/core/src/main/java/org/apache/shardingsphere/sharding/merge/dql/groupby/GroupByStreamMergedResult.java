@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
@@ -36,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,7 +64,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         
         expressionProjectionIndexMap = new HashMap<>();
         if (!selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations().isEmpty()) {
-            List<Projection> expandProjections = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
+            List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
             for (ExpressionProjection each : selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations().keySet()) {
                 expressionProjectionIndexMap.put(each, expandProjections.indexOf(each) + 1);
             }
@@ -89,9 +89,12 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     private boolean aggregateCurrentGroupByRowAndNext() throws SQLException {
         boolean result = false;
         boolean cachedRow = false;
-        Map<AggregationProjection, AggregationUnit> aggregationUnitMap = Maps.toMap(
-                selectStatementContext.getProjectionsContext().getAggregationProjections(),
-                input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection, input.getSeparator().orElse(null)));
+        
+        Map<AggregationProjection, AggregationUnit> aggregationUnitMap = new LinkedHashMap<>(selectStatementContext.getProjectionsContext().getAggregationProjections().size(), 1F);
+        for (AggregationProjection each : selectStatementContext.getProjectionsContext().getAggregationProjections()) {
+            aggregationUnitMap.put(each, AggregationUnitFactory.create(each.getType(), each instanceof AggregationDistinctProjection, each.getSeparator().orElse(null)));
+        }
+        
         while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectStatementContext.getGroupByContext().getItems()).getGroupValues())) {
             aggregate(aggregationUnitMap);
             if (!cachedRow) {
@@ -163,14 +166,18 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         
         for (Entry<ExpressionProjection, List<AggregationProjection>> entry : expressionDerivedAggregations.entrySet()) {
             ExpressionProjection expressionProjection = entry.getKey();
+            int columnIndex = expressionProjectionIndexMap.get(expressionProjection);
+            
+            Object existingValue = currentRow.get(columnIndex - 1);
+            Class<?> targetType = existingValue != null ? existingValue.getClass() : null;
             
             Object evaluatedValue = AggregationWrapperExpressionEvaluator.evaluate(
                     expressionProjection.getExpressionSegment().getExpr(),
                     entry.getValue(),
-                    currentRow);
+                    currentRow,
+                    targetType);
             
             if (null != evaluatedValue) {
-                int columnIndex = expressionProjectionIndexMap.get(expressionProjection);
                 currentRow.set(columnIndex - 1, evaluatedValue);
             }
         }

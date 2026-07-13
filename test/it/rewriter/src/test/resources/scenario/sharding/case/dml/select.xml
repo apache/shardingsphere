@@ -579,4 +579,14 @@
         <input sql="/* ApplicationName=DBeaver 24.1.0 - SQLEditor &lt;Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=db */ SELECT * FROM t_account WHERE account_id = ?" parameters="100" />
         <output sql="/* ApplicationName=DBeaver 24.1.0 - SQLEditor &lt;Script-84.sql> */  SELECT * FROM t_account WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_ifnull_sum_qualified_owner">
+        <input sql="SELECT IFNULL(SUM(t_order.user_id), 0) FROM t_order WHERE order_id IN (1, 2)" />
+        <output sql="SELECT IFNULL(SUM(t_order.user_id), 0) FROM t_order_0 WHERE order_id IN (1, 2)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_case_when_parameter_in_aggregation">
+        <input sql="SELECT IFNULL(SUM(CASE WHEN order_id = ? THEN user_id ELSE 0 END),0) FROM t_order WHERE order_id IN (1, 2)" parameters="10" />
+        <output sql="SELECT IFNULL(SUM(CASE WHEN order_id = ? THEN user_id ELSE 0 END),0) FROM t_order_0 WHERE order_id IN (1, 2)" parameters="10" />
+    </rewrite-assertion>
 </rewrite-assertions>

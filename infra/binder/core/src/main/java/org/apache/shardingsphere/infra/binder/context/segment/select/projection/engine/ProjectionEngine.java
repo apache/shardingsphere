@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType
 import org.apache.shardingsphere.sql.parser.statement.core.enums.Paren;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -40,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public final class ProjectionEngine {
             return Optional.of(createProjection((AggregationProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
-            return Optional.of(createProjection((SubqueryProjectionSegment) projectionSegment, expressionDerivedAggregations));
+            return Optional.of(createProjection((SubqueryProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(createProjection((ParameterMarkerExpressionSegment) projectionSegment));
@@ -101,28 +101,37 @@ public final class ProjectionEngine {
         return new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getParameterMarkerType(), projectionSegment.getAlias().orElse(null));
     }
     
-    private SubqueryProjection createProjection(final SubqueryProjectionSegment projectionSegment, final Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations) {
-        Projection subqueryProjection = createProjection(projectionSegment.getSubquery().getSelect().getProjections().getProjections().iterator().next(), expressionDerivedAggregations)
-                .orElseThrow(() -> new IllegalArgumentException("Subquery projection must have at least one projection column."));
-        return new SubqueryProjection(projectionSegment, subqueryProjection, projectionSegment.getAlias().orElse(null), databaseType);
+    private SubqueryProjection createProjection(final SubqueryProjectionSegment projectionSegment) {
+        Optional<Projection> subqueryProjection = createProjection(projectionSegment.getSubquery().getSelect().getProjections().getProjections().iterator().next(), new LinkedHashMap<>());
+        if (!subqueryProjection.isPresent()) {
+            throw new IllegalArgumentException("Subquery projection must have at least one projection column.");
+        }
+        return new SubqueryProjection(projectionSegment, subqueryProjection.get(), projectionSegment.getAlias().orElse(null), databaseType);
     }
     
     private ShorthandProjection createProjection(final ShorthandProjectionSegment projectionSegment, final Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations) {
-        IdentifierValue owner = projectionSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null);
+        IdentifierValue owner = projectionSegment.getOwner().isPresent() ? projectionSegment.getOwner().get().getIdentifier() : null;
         Collection<Projection> projections = new LinkedHashSet<>(projectionSegment.getActualProjectionSegments().size(), 1F);
-        projectionSegment.getActualProjectionSegments().forEach(each -> createProjection(each, expressionDerivedAggregations).ifPresent(projections::add));
+        for (ProjectionSegment each : projectionSegment.getActualProjectionSegments()) {
+            Optional<Projection> projection = createProjection(each, expressionDerivedAggregations);
+            projection.ifPresent(projections::add);
+        }
         return new ShorthandProjection(owner, projections);
     }
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
         IdentifierValue owner = projectionSegment.getColumn().getOwner().isPresent() ? projectionSegment.getColumn().getOwner().get().getIdentifier() : null;
-        IdentifierValue alias = projectionSegment.getAliasName().isPresent() ? projectionSegment.getAlias().orElse(null) : null;
+        IdentifierValue alias = projectionSegment.getAliasName().isPresent() && projectionSegment.getAlias().isPresent() ? projectionSegment.getAlias().get() : null;
         return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier(), alias, databaseType, projectionSegment.getColumn().getLeftParentheses().orElse(null),
                 projectionSegment.getColumn().getRightParentheses().orElse(null), projectionSegment.getColumn().getColumnBoundInfo(), true);
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment, final Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations) {
         ExpressionProjection result = new ExpressionProjection(projectionSegment, projectionSegment.getAlias().orElse(null), databaseType);
+        
+        if (isUnsupportedWrapperTree(projectionSegment.getExpr())) {
+            return result;
+        }
         
         List<AggregationProjectionSegment> extractedSegments = new ArrayList<>();
         extractAggregationSegments(projectionSegment.getExpr(), extractedSegments);
@@ -153,8 +162,8 @@ public final class ProjectionEngine {
         if (projectionSegment.getWindow().isPresent()) {
             return createExpressionProjection(projectionSegment);
         }
-        IdentifierValue alias =
-                projectionSegment.getAlias().orElseGet(() -> new IdentifierValue(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++)));
+        IdentifierValue alias = projectionSegment.getAlias().isPresent() ? projectionSegment.getAlias().get()
+                : new IdentifierValue(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
                 projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), projectionSegment, alias,
                 projectionSegment.getDistinctInnerExpression(), databaseType, projectionSegment.getSeparator().orElse(null));
@@ -173,7 +182,6 @@ public final class ProjectionEngine {
                         projectionSegment.getSeparator().orElse(null));
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
-            // TODO replace avg to constant, avoid calculate useless avg
         }
         return result;
     }
@@ -188,26 +196,25 @@ public final class ProjectionEngine {
     }
     
     private void extractAggregationSegments(final ExpressionSegment segment, final List<AggregationProjectionSegment> extractedSegments) {
-        if (segment == null) {
+        if (segment == null || segment instanceof AggregationDistinctProjectionSegment) {
             return;
         }
         
         if (segment instanceof AggregationProjectionSegment) {
-            if (segment instanceof AggregationDistinctProjectionSegment) {
-                return;
-            }
             if (!((AggregationProjectionSegment) segment).getWindow().isPresent()) {
                 extractedSegments.add((AggregationProjectionSegment) segment);
             }
             return;
         }
         
-        if (segment instanceof FunctionSegment) {
-            String functionName = ((FunctionSegment) segment).getFunctionName();
-            if ("IFNULL".equalsIgnoreCase(functionName) || "COALESCE".equalsIgnoreCase(functionName)) {
-                for (ExpressionSegment param : ((FunctionSegment) segment).getParameters()) {
-                    extractAggregationSegments(param, extractedSegments);
-                }
+        if (!(segment instanceof FunctionSegment)) {
+            return;
+        }
+        
+        String functionName = ((FunctionSegment) segment).getFunctionName();
+        if ("IFNULL".equalsIgnoreCase(functionName) || "COALESCE".equalsIgnoreCase(functionName)) {
+            for (ExpressionSegment param : ((FunctionSegment) segment).getParameters()) {
+                extractAggregationSegments(param, extractedSegments);
             }
         }
     }
@@ -245,5 +252,30 @@ public final class ProjectionEngine {
         averageProjection.getDerivedAggregationProjections().add(countProjection);
         averageProjection.getDerivedAggregationProjections().add(sumProjection);
         aggregationAverageDerivedColumnCount++;
+    }
+    
+    private boolean isUnsupportedWrapperTree(final ExpressionSegment segment) {
+        if (segment == null) {
+            return true;
+        }
+        if (segment instanceof AggregationProjectionSegment || segment instanceof LiteralExpressionSegment) {
+            return false;
+        }
+        if (!(segment instanceof FunctionSegment)) {
+            return true;
+        }
+        
+        String functionName = ((FunctionSegment) segment).getFunctionName();
+        if (!"IFNULL".equalsIgnoreCase(functionName) && !"COALESCE".equalsIgnoreCase(functionName)) {
+            return true;
+        }
+        
+        for (ExpressionSegment param : ((FunctionSegment) segment).getParameters()) {
+            if (isUnsupportedWrapperTree(param)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

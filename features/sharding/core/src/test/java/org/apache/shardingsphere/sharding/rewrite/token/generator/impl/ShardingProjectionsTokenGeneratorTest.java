@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -143,7 +144,7 @@ class ShardingProjectionsTokenGeneratorTest {
         when(avgProjection.getDerivedAggregationProjections()).thenReturn(Arrays.asList(countProjection, sumProjection));
         
         Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = new java.util.LinkedHashMap<>();
-        expressionDerivedAggregations.put(mock(org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection.class),
+        expressionDerivedAggregations.put(mock(ExpressionProjection.class),
                 Collections.singletonList(avgProjection));
         
         when(selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations()).thenReturn(expressionDerivedAggregations);
@@ -151,6 +152,22 @@ class ShardingProjectionsTokenGeneratorTest {
         ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
         assertThat(actual.toString(routeUnit),
                 is(", AVG(price) AS avg_alias , COUNT(price) AS AVG_DERIVED_COUNT_0 , SUM(price) AS AVG_DERIVED_SUM_0 "));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithExpressionDerivedAggregations() {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        Map<ExpressionProjection, List<AggregationProjection>> expressionDerivedAggregations = new LinkedHashMap<>();
+        
+        ExpressionProjection mockExpression = mock(ExpressionProjection.class);
+        expressionDerivedAggregations.put(mockExpression, Collections.emptyList());
+        
+        when(selectStatementContext.getProjectionsContext().getExpressionDerivedAggregations()).thenReturn(expressionDerivedAggregations);
+        when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.emptyList());
+        
+        final ShardingProjectionsTokenGenerator generator = new ShardingProjectionsTokenGenerator();
+        assertTrue(generator.isGenerateSQLToken(selectStatementContext));
     }
     
     private AggregationProjection createAggregationProjection() {

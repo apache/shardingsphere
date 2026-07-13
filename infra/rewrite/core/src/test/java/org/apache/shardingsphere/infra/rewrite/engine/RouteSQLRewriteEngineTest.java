@@ -311,4 +311,77 @@ class RouteSQLRewriteEngineTest {
                 new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext, queryContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(2));
     }
+    
+    @Test
+    void assertRewriteWithCaseWhenParameterInAggregation() {
+        SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getOrderByContext().getItems()).thenReturn(Collections.emptyList());
+        when(statementContext.getPaginationContext().isHasPagination()).thenReturn(false);
+        DatabaseType databaseType = mock(DatabaseType.class);
+        when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        ShardingSphereDatabase database = mockDatabase(databaseType);
+        
+        String sql = "SELECT IFNULL(SUM(CASE WHEN status = ? THEN amount ELSE 0 END),0) FROM tbl";
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
+        when(queryContext.getSql()).thenReturn(sql);
+        when(queryContext.getParameters()).thenReturn(Collections.singletonList("ACTIVE"));
+        when(queryContext.getHintValueContext()).thenReturn(new HintValueContext());
+        
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getProps()).thenReturn(new ConfigurationProperties(createPropsWithMaxUnionSizePerDataSource(Integer.MAX_VALUE)));
+        when(queryContext.getMetaData()).thenReturn(metaData);
+        
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
+        RouteContext routeContext = new RouteContext();
+        RouteUnit firstRouteUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
+        RouteUnit secondRouteUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_1")));
+        routeContext.getRouteUnits().add(firstRouteUnit);
+        routeContext.getRouteUnits().add(secondRouteUnit);
+        
+        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
+                new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()), database, mock(RuleMetaData.class))
+                .rewrite(sqlRewriteContext, routeContext, queryContext);
+        
+        assertThat(actual.getSqlRewriteUnits().size(), is(1));
+        assertThat(actual.getSqlRewriteUnits().values().iterator().next().getSql(), is(sql + " UNION ALL " + sql));
+        assertThat(actual.getSqlRewriteUnits().values().iterator().next().getParameters(), is(Arrays.asList("ACTIVE", "ACTIVE")));
+    }
+    
+    @Test
+    void assertRewriteWithQualifiedOwnerInAggregation() {
+        SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getOrderByContext().getItems()).thenReturn(Collections.emptyList());
+        when(statementContext.getPaginationContext().isHasPagination()).thenReturn(false);
+        DatabaseType databaseType = mock(DatabaseType.class);
+        when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        ShardingSphereDatabase database = mockDatabase(databaseType);
+        
+        String sql = "SELECT IFNULL(SUM(t_order.amount), 0) FROM t_order";
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
+        when(queryContext.getSql()).thenReturn(sql);
+        when(queryContext.getParameters()).thenReturn(Collections.emptyList());
+        when(queryContext.getHintValueContext()).thenReturn(new HintValueContext());
+        
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getProps()).thenReturn(new ConfigurationProperties(createPropsWithMaxUnionSizePerDataSource(Integer.MAX_VALUE)));
+        when(queryContext.getMetaData()).thenReturn(metaData);
+        
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
+        
+        RouteContext routeContext = new RouteContext();
+        RouteUnit firstRouteUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0")));
+        RouteUnit secondRouteUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_1")));
+        routeContext.getRouteUnits().add(firstRouteUnit);
+        routeContext.getRouteUnits().add(secondRouteUnit);
+        
+        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
+                new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()), database, mock(RuleMetaData.class))
+                .rewrite(sqlRewriteContext, routeContext, queryContext);
+        
+        assertThat(actual.getSqlRewriteUnits().size(), is(1));
+        assertThat(actual.getSqlRewriteUnits().values().iterator().next().getSql(), is(sql + " UNION ALL " + sql));
+        assertTrue(actual.getSqlRewriteUnits().values().iterator().next().getParameters().isEmpty());
+    }
 }
