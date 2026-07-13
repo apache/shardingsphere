@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -46,17 +47,16 @@ public final class MCPDatabaseCapability {
     
     private final IdentifierCasePolicySet identifierCasePolicySet;
     
-    public MCPDatabaseCapability(final String databaseName, final boolean supportsTransaction, final boolean supportsSavepoint,
-                                 final IdentifierCasePolicySet identifierCasePolicySet, final MCPDatabaseCapabilityOption option) {
-        this.databaseName = databaseName;
+    MCPDatabaseCapability(final RuntimeDatabaseProfile databaseProfile, final MCPDatabaseCapabilityOption option) {
+        databaseName = databaseProfile.getDatabase();
         databaseType = option.getType();
         MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(option.getType());
         supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(databaseDialect);
-        transactionCapability = databaseDialect.getTransactionCapability(supportsTransaction, supportsSavepoint);
+        transactionCapability = databaseDialect.getTransactionCapability(databaseProfile.isSupportsTransaction(), databaseProfile.isSupportsSavepoint());
         supportedStatementClasses = createSupportedStatementClasses(transactionCapability, option.isExplainSupported());
         defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
         schemaExecutionSemantics = createSchemaExecutionSemantics(defaultSchemaSemantics);
-        this.identifierCasePolicySet = identifierCasePolicySet;
+        identifierCasePolicySet = databaseProfile.getIdentifierCasePolicySet();
     }
     
     private static SchemaExecutionSemantics createSchemaExecutionSemantics(final DialectSchemaSemantics defaultSchemaSemantics) {

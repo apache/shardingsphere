@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -51,20 +53,37 @@ public final class ClassificationResult {
     
     private final Collection<String> referencedObjectNames;
     
+    @Getter(AccessLevel.NONE)
+    private final Collection<SQLStatementObjectName> referencedObjects;
+    
     private final String savepointName;
     
     public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName) {
-        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, targetObjectName.isEmpty() ? List.of() : List.of(targetObjectName));
+        this(statementClass, statementType, normalizedSql, savepointName,
+                targetObjectName.isEmpty() ? List.of() : List.of(SQLStatementObjectName.fromNormalizedName(targetObjectName)));
     }
     
-    ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,
-                         final Collection<String> referencedObjectNames) {
+    ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String savepointName,
+                         final Collection<SQLStatementObjectName> referencedObjects) {
         this.statementClass = statementClass;
         this.statementType = statementType;
         this.normalizedSql = normalizedSql;
-        this.targetObjectName = targetObjectName;
-        this.referencedObjectNames = referencedObjectNames;
+        targetObjectName = referencedObjects.isEmpty() ? "" : referencedObjects.iterator().next().objectName();
+        referencedObjectNames = createReferencedObjectNames(referencedObjects);
+        this.referencedObjects = referencedObjects;
         this.savepointName = savepointName;
+    }
+    
+    private Collection<String> createReferencedObjectNames(final Collection<SQLStatementObjectName> referencedObjects) {
+        Collection<String> result = new LinkedHashSet<>(referencedObjects.size(), 1F);
+        for (SQLStatementObjectName each : referencedObjects) {
+            result.add(each.objectName());
+        }
+        return result;
+    }
+    
+    Collection<SQLStatementObjectName> getReferencedObjects() {
+        return referencedObjects;
     }
     
     /**

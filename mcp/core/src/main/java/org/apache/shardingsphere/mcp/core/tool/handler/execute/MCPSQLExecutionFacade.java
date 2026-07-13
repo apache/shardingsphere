@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
@@ -161,24 +163,26 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         if (SchemaExecutionSemantics.BEST_EFFORT == databaseCapability.getSchemaExecutionSemantics()) {
             return;
         }
-        for (String each : classificationResult.getReferencedObjectNames()) {
-            if (isCrossSchemaReference(each, executionRequest.getDatabase(), classificationResult)) {
+        IdentifierCasePolicy identifierCasePolicy = databaseCapability.getIdentifierCasePolicySet().getPolicy(IdentifierScope.SCHEMA);
+        for (SQLStatementObjectName each : classificationResult.getReferencedObjects()) {
+            if (isCrossSchemaReference(each, executionRequest.getDatabase(), classificationResult, identifierCasePolicy)) {
                 throw recordFailure(executionRequest, classificationResult.getTraceStatementMarker(), new MCPInvalidRequestException(
-                        String.format("Cross-schema SQL is not supported for database `%s`: `%s`.", executionRequest.getDatabase(), each)));
+                        String.format("Cross-schema SQL is not supported for database `%s`: `%s`.", executionRequest.getDatabase(), each.objectName())));
             }
         }
     }
     
-    private boolean isCrossSchemaReference(final String objectName, final String databaseName, final ClassificationResult classificationResult) {
-        int qualifierSeparatorIndex = objectName.indexOf('.');
-        if (-1 != qualifierSeparatorIndex) {
-            return !objectName.substring(0, qualifierSeparatorIndex).equalsIgnoreCase(databaseName);
+    private boolean isCrossSchemaReference(final SQLStatementObjectName objectName, final String databaseName, final ClassificationResult classificationResult,
+                                           final IdentifierCasePolicy identifierCasePolicy) {
+        if (objectName.qualified()) {
+            return !identifierCasePolicy.matches(databaseName, objectName.firstIdentifier(), objectName.firstIdentifierQuoteCharacter());
         }
-        return isDatabaseOrSchemaBoundaryReference(objectName, databaseName, classificationResult);
+        return isDatabaseOrSchemaBoundaryReference(objectName, databaseName, classificationResult, identifierCasePolicy);
     }
     
-    private boolean isDatabaseOrSchemaBoundaryReference(final String objectName, final String databaseName, final ClassificationResult classificationResult) {
-        if (objectName.equalsIgnoreCase(databaseName)) {
+    private boolean isDatabaseOrSchemaBoundaryReference(final SQLStatementObjectName objectName, final String databaseName, final ClassificationResult classificationResult,
+                                                        final IdentifierCasePolicy identifierCasePolicy) {
+        if (identifierCasePolicy.matches(databaseName, objectName.firstIdentifier(), objectName.firstIdentifierQuoteCharacter())) {
             return false;
         }
         String actualSql = classificationResult.getNormalizedSql();

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.completion.provider;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -260,11 +261,11 @@ class MetadataCompletionProviderTest {
     }
     
     private RuntimeDatabaseProfile createDatabaseProfile(final String database) {
-        return new RuntimeDatabaseProfile(database, "FixtureDB", "1.0", true, true);
+        return new RuntimeDatabaseProfile(database, "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet());
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata() {
-        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true);
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet());
     }
     
     private ShardingSphereSchema createSchemaMetadata() {

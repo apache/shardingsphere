@@ -19,16 +19,43 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
+@EqualsAndHashCode(exclude = "nextIndex")
 final class SQLStatementObjectName {
     
     private final String objectName;
     
+    private final String firstIdentifier;
+    
+    private final QuoteCharacter firstIdentifierQuoteCharacter;
+    
+    private final boolean qualified;
+    
     private final int nextIndex;
+    
+    static SQLStatementObjectName fromNormalizedName(final String objectName) {
+        int qualifierSeparatorIndex = objectName.indexOf('.');
+        return new SQLStatementObjectName(objectName, -1 == qualifierSeparatorIndex ? objectName : objectName.substring(0, qualifierSeparatorIndex),
+                QuoteCharacter.NONE, -1 != qualifierSeparatorIndex, 0);
+    }
     
     String objectName() {
         return objectName;
+    }
+    
+    String firstIdentifier() {
+        return firstIdentifier;
+    }
+    
+    QuoteCharacter firstIdentifierQuoteCharacter() {
+        return firstIdentifierQuoteCharacter;
+    }
+    
+    boolean qualified() {
+        return qualified;
     }
     
     int nextIndex() {

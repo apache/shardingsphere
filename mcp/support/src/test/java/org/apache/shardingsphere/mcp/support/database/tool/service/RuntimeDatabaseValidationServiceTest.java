@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.mcp.support.database.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
@@ -127,8 +130,12 @@ class RuntimeDatabaseValidationServiceTest {
         MCPJdbcDatabaseProfileLoader profileLoader = getProfileLoader();
         MCPJdbcMetadataLoader metadataLoader = getMetadataLoader();
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration();
-        when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
-        when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("logic_db"));
+        IdentifierCasePolicySet identifierCasePolicySet = new IdentifierCasePolicySet(
+                IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE),
+                Map.of(IdentifierScope.SCHEMA, IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.SCHEMA)));
+        when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class)))
+                .thenReturn(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, identifierCasePolicySet));
+        when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("Logic_DB"));
         RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
                 ignored -> Optional.of(runtimeDatabaseConfig), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
@@ -142,8 +149,9 @@ class RuntimeDatabaseValidationServiceTest {
         MCPJdbcDatabaseProfileLoader profileLoader = getProfileLoader();
         MCPJdbcMetadataLoader metadataLoader = getMetadataLoader();
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration(InvisibleDatabaseDriver.JDBC_URL, "demo", "", InvisibleDatabaseDriver.class.getName());
-        when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(createProfile());
-        when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("public"));
+        when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(
+                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newSensitivePolicySet()));
+        when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("Logic_DB"));
         RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
                 ignored -> Optional.of(runtimeDatabaseConfig), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
         Map<String, Object> actualPayload = actual.toPayload();
@@ -151,6 +159,24 @@ class RuntimeDatabaseValidationServiceTest {
         assertThat(actualPayload.get("category"), is(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE));
         assertThat(actualPayload.get("recovery"), is(Map.of("category", RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE)));
         assertThat(((Map<?, ?>) ((List<?>) actualPayload.get("checks")).get(4)).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateWithVisibleCatalog() throws SQLException {
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        Connection connection = mock(Connection.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        when(connection.getCatalog()).thenReturn("Logic_DB");
+        IdentifierCasePolicySet identifierCasePolicySet = new IdentifierCasePolicySet(
+                IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE),
+                Map.of(IdentifierScope.SCHEMA, IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.SCHEMA)));
+        when(getProfileLoader().load(any(), any(RuntimeDatabaseConfiguration.class)))
+                .thenReturn(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, identifierCasePolicySet));
+        when(getMetadataLoader().load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("public"));
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
+                ignored -> Optional.of(runtimeDatabaseConfig), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
+        assertThat(actual.toPayload().get("status"), is("ready"));
     }
     
     @Test
@@ -215,7 +241,7 @@ class RuntimeDatabaseValidationServiceTest {
     }
     
     private static RuntimeDatabaseProfile createProfile() {
-        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true);
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet());
     }
     
     private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration() {
