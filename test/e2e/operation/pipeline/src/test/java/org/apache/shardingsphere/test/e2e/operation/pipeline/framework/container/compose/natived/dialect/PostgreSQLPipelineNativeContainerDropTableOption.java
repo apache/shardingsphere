@@ -28,8 +28,8 @@ import java.util.Optional;
 public final class PostgreSQLPipelineNativeContainerDropTableOption implements DialectPipelineNativeContainerDropTableOption {
     
     @Override
-    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final String actualDatabaseHost, final int actualDatabasePort, final String databaseName) {
-        return storageContainerConnectOption.getURL(actualDatabaseHost, actualDatabasePort, databaseName);
+    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final int actualDatabasePort, final String databaseName) {
+        return storageContainerConnectOption.getURL("localhost", actualDatabasePort, databaseName);
     }
     
     @Override

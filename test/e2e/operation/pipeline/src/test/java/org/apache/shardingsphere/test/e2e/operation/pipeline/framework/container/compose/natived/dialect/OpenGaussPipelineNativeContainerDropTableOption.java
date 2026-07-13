@@ -30,8 +30,8 @@ public final class OpenGaussPipelineNativeContainerDropTableOption implements Di
     private final DialectPipelineNativeContainerDropTableOption delegate = new PostgreSQLPipelineNativeContainerDropTableOption();
     
     @Override
-    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final String actualDatabaseHost, final int actualDatabasePort, final String databaseName) {
-        return delegate.getJdbcUrl(storageContainerConnectOption, actualDatabaseHost, actualDatabasePort, databaseName);
+    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final int actualDatabasePort, final String databaseName) {
+        return delegate.getJdbcUrl(storageContainerConnectOption, actualDatabasePort, databaseName);
     }
     
     @Override

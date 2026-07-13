@@ -32,10 +32,10 @@ import java.util.Optional;
 public final class OraclePipelineNativeContainerDropTableOption implements DialectPipelineNativeContainerDropTableOption {
     
     @Override
-    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final String actualDatabaseHost, final int actualDatabasePort, final String databaseName) {
+    public String getJdbcUrl(final StorageContainerConnectOption storageContainerConnectOption, final int actualDatabasePort, final String databaseName) {
         return DatabaseTypedSPILoader.findService(NativeStorageContainerOption.class, TypedSPILoader.getService(DatabaseType.class, getDatabaseType()))
-                .map(optional -> optional.getAccessURL(storageContainerConnectOption, actualDatabaseHost, actualDatabasePort, databaseName))
-                .orElseGet(() -> storageContainerConnectOption.getURL(actualDatabaseHost, actualDatabasePort, ""));
+                .map(optional -> optional.getAccessURL(storageContainerConnectOption, "localhost", actualDatabasePort, databaseName))
+                .orElseGet(() -> storageContainerConnectOption.getURL("localhost", actualDatabasePort, ""));
     }
     
     @Override
