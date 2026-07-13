@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 
 /**
  * Runtime database profile.
@@ -36,4 +37,6 @@ public final class RuntimeDatabaseProfile {
     private final boolean supportsTransaction;
     
     private final boolean supportsSavepoint;
+    
+    private final IdentifierCasePolicySet identifierCasePolicySet;
 }

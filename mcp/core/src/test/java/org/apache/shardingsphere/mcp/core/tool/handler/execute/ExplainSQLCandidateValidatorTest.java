@@ -52,6 +52,12 @@ class ExplainSQLCandidateValidatorTest {
     }
     
     @Test
+    void assertValidateHiveCBO() {
+        ClassificationResult actual = validator.validate("SELECT * FROM foo_orders", "EXPLAIN CBO SELECT * FROM foo_orders");
+        assertThat(actual.getNormalizedSql(), is("EXPLAIN CBO SELECT * FROM foo_orders"));
+    }
+    
+    @Test
     void assertValidateWithNonExecutableComments() {
         ClassificationResult actual = validator.validate("SELECT '/*!80018 ANALYZE */' FROM foo_orders",
                 "EXPLAIN /* plan only */ SELECT '/*!80018 ANALYZE */' FROM foo_orders");

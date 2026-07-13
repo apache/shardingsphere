@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.completion;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.completion.provider.MetadataCompletionProvider;
@@ -144,8 +145,8 @@ class MCPCompletionServiceTest {
     private MCPRuntimeContext createRuntimeContext(final WorkflowSessionContext workflowSessionContext) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.getDatabaseProfiles()).thenReturn(List.of(
-                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true),
-                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", true, true)));
+                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet()),
+                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
         MCPRuntimeContext result = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseCapabilityProvider()).thenReturn(databaseCapabilityProvider);
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);

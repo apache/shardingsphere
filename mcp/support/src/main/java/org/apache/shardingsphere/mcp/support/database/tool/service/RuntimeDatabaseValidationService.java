@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.mcp.support.database.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcMetadataLoader;
@@ -95,7 +99,7 @@ public final class RuntimeDatabaseValidationService {
             return createFailureResult(database, checks, ex, recoveryFactory);
         }
         try {
-            validateDatabaseVisibility(database, runtimeDatabaseConfig.get(), schemas);
+            validateDatabaseVisibility(database, runtimeDatabaseConfig.get(), schemas, databaseProfile.getIdentifierCasePolicySet());
             checks.add(RuntimeDatabaseValidationCheckResult.passed("database_visibility", "Validated the requested database name against visible JDBC metadata and connection context."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(RuntimeDatabaseValidationCheckResult.failed("database_visibility", ex.getCategory(), "The requested database name is not visible to the configured JDBC connection."));
@@ -133,12 +137,13 @@ public final class RuntimeDatabaseValidationService {
         return RuntimeDatabaseValidationResult.failed(database, checks, cause.getCategory(), recoveryFactory.apply(cause));
     }
     
-    private void validateDatabaseVisibility(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final Collection<ShardingSphereSchema> schemas) {
-        if (containsVisibleSchema(schemas, database)) {
+    private void validateDatabaseVisibility(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final Collection<ShardingSphereSchema> schemas,
+                                            final IdentifierCasePolicySet identifierCasePolicySet) {
+        if (containsVisibleSchema(schemas, database, identifierCasePolicySet.getPolicy(IdentifierScope.SCHEMA))) {
             return;
         }
         try (Connection connection = runtimeDatabaseConfig.openConnection(resolveExceptionDatabaseName(database))) {
-            if (isVisibleDatabase(connection, database)) {
+            if (isVisibleDatabase(connection, database, identifierCasePolicySet)) {
                 return;
             }
         } catch (final SQLException ex) {
@@ -148,26 +153,28 @@ public final class RuntimeDatabaseValidationService {
                 new IllegalStateException(String.format("Requested database `%s` is not visible to the configured JDBC connection.", database)));
     }
     
-    private boolean containsVisibleSchema(final Collection<ShardingSphereSchema> schemas, final String database) {
+    private boolean containsVisibleSchema(final Collection<ShardingSphereSchema> schemas, final String database, final IdentifierCasePolicy identifierCasePolicy) {
         for (ShardingSphereSchema each : schemas) {
-            if (database.equalsIgnoreCase(each.getName())) {
+            if (matches(each.getName(), database, identifierCasePolicy)) {
                 return true;
             }
         }
         return false;
     }
     
-    private boolean isVisibleDatabase(final Connection connection, final String database) throws SQLException {
-        return matches(connection.getCatalog(), database)
-                || matches(connection.getSchema(), database)
-                || containsCatalog(connection.getMetaData(), database)
-                || containsSchema(connection.getMetaData(), database);
+    private boolean isVisibleDatabase(final Connection connection, final String database, final IdentifierCasePolicySet identifierCasePolicySet) throws SQLException {
+        IdentifierCasePolicy databasePolicy = identifierCasePolicySet.getPolicy(IdentifierScope.DATABASE);
+        IdentifierCasePolicy schemaPolicy = identifierCasePolicySet.getPolicy(IdentifierScope.SCHEMA);
+        return matches(connection.getCatalog(), database, databasePolicy)
+                || matches(connection.getSchema(), database, schemaPolicy)
+                || containsCatalog(connection.getMetaData(), database, databasePolicy)
+                || containsSchema(connection.getMetaData(), database, schemaPolicy);
     }
     
-    private boolean containsCatalog(final DatabaseMetaData databaseMetaData, final String database) throws SQLException {
+    private boolean containsCatalog(final DatabaseMetaData databaseMetaData, final String database, final IdentifierCasePolicy identifierCasePolicy) throws SQLException {
         try (ResultSet resultSet = databaseMetaData.getCatalogs()) {
             while (resultSet.next()) {
-                if (matches(resultSet.getString(1), database)) {
+                if (matches(resultSet.getString(1), database, identifierCasePolicy)) {
                     return true;
                 }
             }
@@ -175,10 +182,10 @@ public final class RuntimeDatabaseValidationService {
         return false;
     }
     
-    private boolean containsSchema(final DatabaseMetaData databaseMetaData, final String database) throws SQLException {
+    private boolean containsSchema(final DatabaseMetaData databaseMetaData, final String database, final IdentifierCasePolicy identifierCasePolicy) throws SQLException {
         try (ResultSet resultSet = databaseMetaData.getSchemas()) {
             while (resultSet.next()) {
-                if (matches(resultSet.getString("TABLE_SCHEM"), database)) {
+                if (matches(resultSet.getString("TABLE_SCHEM"), database, identifierCasePolicy)) {
                     return true;
                 }
             }
@@ -186,8 +193,9 @@ public final class RuntimeDatabaseValidationService {
         return false;
     }
     
-    private boolean matches(final String actualValue, final String expectedValue) {
-        return !Objects.toString(actualValue, "").trim().isEmpty() && actualValue.trim().equalsIgnoreCase(expectedValue);
+    private boolean matches(final String storedName, final String identifier, final IdentifierCasePolicy identifierCasePolicy) {
+        String actualStoredName = Objects.toString(storedName, "").trim();
+        return !actualStoredName.isEmpty() && identifierCasePolicy.matches(actualStoredName, identifier, QuoteCharacter.NONE);
     }
     
     private String resolveExceptionDatabaseName(final String database) {

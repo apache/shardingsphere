@@ -46,8 +46,7 @@ final class ExplainSQLCandidateValidator {
                 () -> new MCPInvalidRequestException("Executable comments are not supported by the MCP explain query tool."));
         List<SQLStatementToken> tokens = scanner.tokenize(actualExplainSql);
         checkExplainCandidate(tokens, explainedStatement.getNormalizedSql(), actualExplainSql);
-        return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, explainedStatement.getTargetObjectName().orElse(""), "",
-                explainedStatement.getReferencedObjectNames());
+        return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, "", explainedStatement.getReferencedObjects());
     }
     
     private void checkExplainCandidate(final List<SQLStatementToken> tokens, final String sql, final String explainSql) {

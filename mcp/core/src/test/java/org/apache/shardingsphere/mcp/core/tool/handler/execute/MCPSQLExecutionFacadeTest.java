@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
@@ -40,7 +42,6 @@ import org.mockito.ArgumentCaptor;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -214,8 +215,7 @@ class MCPSQLExecutionFacadeTest {
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         SQLExecutionRequest request = createExecutionRequest("SELECT * FROM other_db.orders");
-        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM other_db.orders", "other_db.orders", "",
-                List.of("other_db.orders"));
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM other_db.orders", "other_db.orders", "");
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createStatementClassifier(classification));
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
@@ -271,8 +271,7 @@ class MCPSQLExecutionFacadeTest {
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.DML));
         SQLExecutionRequest request = createExecutionRequest("UPDATE other_db.orders SET status = 'DONE'");
-        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE other_db.orders SET status = 'DONE'", "other_db.orders", "",
-                List.of("other_db.orders"));
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE other_db.orders SET status = 'DONE'", "other_db.orders", "");
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createStatementClassifier(classification));
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
@@ -288,8 +287,7 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
-        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM logic_db.orders", "logic_db.orders", "",
-                List.of("logic_db.orders"));
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM logic_db.orders", "logic_db.orders", "");
         SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
@@ -306,13 +304,43 @@ class MCPSQLExecutionFacadeTest {
     }
     
     @Test
+    void assertExecuteWithCaseInsensitiveQualifiedCurrentDatabase() {
+        MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
+        MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
+        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
+        SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
+        mockSessionLock(coordinator);
+        when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
+        SQLExecutionRequest request = createExecutionRequest("SELECT * FROM Logic_DB.orders");
+        when(statementExecutor.execute(eq(request), any(), eq(capability))).thenReturn(response);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), statementExecutor,
+                mock(SQLExecutionTraceFactory.class));
+        assertThat(facade.execute(request), is(response));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertExecuteWithNonMatchingCurrentDatabaseIdentifierCases")
+    void assertExecuteWithNonMatchingCurrentDatabaseIdentifier(final String name, final String sql, final IdentifierCasePolicySet identifierCasePolicySet) {
+        MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
+        MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
+        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
+        when(capability.getIdentifierCasePolicySet()).thenReturn(identifierCasePolicySet);
+        mockSessionLock(coordinator);
+        when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), mock(MCPJdbcStatementExecutor.class),
+                mock(SQLExecutionTraceFactory.class));
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> facade.execute(createExecutionRequest(sql)));
+        assertThat(actual.getMessage(), is("Cross-schema SQL is not supported for database `logic_db`: `Logic_DB.orders`."));
+    }
+    
+    @Test
     void assertExecuteWithCrossSchemaSqlEnabled() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), SchemaExecutionSemantics.BEST_EFFORT);
-        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM other_db.orders", "other_db.orders", "",
-                List.of("other_db.orders"));
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM other_db.orders", "other_db.orders", "");
         SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
@@ -434,6 +462,7 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapability result = mock(MCPDatabaseCapability.class);
         when(result.getSupportedStatementClasses()).thenReturn(supportedStatementClasses);
         when(result.getSchemaExecutionSemantics()).thenReturn(schemaExecutionSemantics);
+        when(result.getIdentifierCasePolicySet()).thenReturn(IdentifierCasePolicyFactory.newInsensitivePolicySet());
         return result;
     }
     
@@ -449,6 +478,7 @@ class MCPSQLExecutionFacadeTest {
                 Arguments.of("query aliased object list", "SELECT * FROM logic_db.orders o, other_db.items i", "other_db.items", "QUERY"),
                 Arguments.of("query partitioned object list", "SELECT * FROM logic_db.orders PARTITION (p0) o, other_db.items i", "other_db.items", "QUERY"),
                 Arguments.of("cte object list", "WITH query_result AS (SELECT * FROM logic_db.orders, other_db.items) SELECT * FROM query_result", "other_db.items", "QUERY"),
+                Arguments.of("qualified object distinct from quoted cte alias", "WITH \"other_db.items\" AS (SELECT 1) SELECT * FROM other_db.items", "other_db.items", "QUERY"),
                 Arguments.of("unused cte reference", "WITH unused_result AS (SELECT * FROM other_db.items) SELECT * FROM logic_db.orders", "other_db.items", "QUERY"),
                 Arguments.of("insert select object list", "INSERT INTO logic_db.orders_archive SELECT * FROM logic_db.orders, other_db.items", "other_db.items", "DML"),
                 Arguments.of("update target object list", "UPDATE logic_db.orders o, other_db.items i SET o.status = 'DONE'", "other_db.items", "DML"),
@@ -477,6 +507,12 @@ class MCPSQLExecutionFacadeTest {
                 Arguments.of("grant global wildcard", "GRANT SELECT ON *.* TO PUBLIC", "*.*", "DCL"),
                 Arguments.of("grant database target", "GRANT CONNECT ON DATABASE other_db TO PUBLIC", "other_db", "DCL"),
                 Arguments.of("qualified function", "SELECT other_db.refresh_orders()", "other_db.refresh_orders", "QUERY"));
+    }
+    
+    private static Stream<Arguments> assertExecuteWithNonMatchingCurrentDatabaseIdentifierCases() {
+        return Stream.of(
+                Arguments.of("case-sensitive unquoted identifier", "SELECT * FROM Logic_DB.orders", IdentifierCasePolicyFactory.newSensitivePolicySet()),
+                Arguments.of("quoted identifier exact match", "SELECT * FROM \"Logic_DB\".orders", IdentifierCasePolicyFactory.newInsensitivePolicySet()));
     }
     
     private static Stream<Arguments> assertExecuteExplainWithSyntaxFailureCases() {

@@ -17,15 +17,24 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -35,14 +44,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPJdbcDatabaseProfileLoaderTest {
     
     @Test
     void assertLoad() throws SQLException {
-        try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
+        IdentifierCasePolicySet expectedIdentifierCasePolicySet = IdentifierCasePolicyFactory.newSensitivePolicySet();
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedConstruction<IdentifierCasePolicyResolver> ignoredResolver = mockConstruction(IdentifierCasePolicyResolver.class,
+                        (mock, context) -> when(mock.resolve(any(), any(), any())).thenReturn(expectedIdentifierCasePolicySet))) {
             RuntimeDatabaseProfile actual =
                     new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true));
             assertThat(actual.getDatabase(), is("logic_db"));
@@ -50,6 +67,7 @@ class MCPJdbcDatabaseProfileLoaderTest {
             assertThat(actual.getDatabaseVersion(), is("1.0"));
             assertTrue(actual.isSupportsTransaction());
             assertTrue(actual.isSupportsSavepoint());
+            assertThat(actual.getIdentifierCasePolicySet(), is(expectedIdentifierCasePolicySet));
         }
     }
     
@@ -60,6 +78,62 @@ class MCPJdbcDatabaseProfileLoaderTest {
                     new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", false, true));
             assertFalse(actual.isSupportsTransaction());
             assertFalse(actual.isSupportsSavepoint());
+        }
+    }
+    
+    @Test
+    void assertLoadIdentifierCasePolicyPerDatabase() throws SQLException {
+        Connection firstConnection = mock(Connection.class);
+        Connection secondConnection = mock(Connection.class);
+        RuntimeDatabaseConfiguration firstRuntimeDatabase = createRuntimeDatabaseConfiguration(
+                SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true, firstConnection);
+        RuntimeDatabaseConfiguration secondRuntimeDatabase = createRuntimeDatabaseConfiguration(
+                SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true, secondConnection);
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(2, 1F);
+        runtimeDatabases.put("first_db", firstRuntimeDatabase);
+        runtimeDatabases.put("second_db", secondRuntimeDatabase);
+        Map<Connection, IdentifierCasePolicySet> policies = Map.of(
+                firstConnection, IdentifierCasePolicyFactory.newSensitivePolicySet(), secondConnection, IdentifierCasePolicyFactory.newInsensitivePolicySet());
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedConstruction<IdentifierCasePolicyResolver> ignoredResolver = mockConstruction(IdentifierCasePolicyResolver.class,
+                        (mock, context) -> when(mock.resolve(any(), any(), any())).thenAnswer(invocation -> {
+                            try (Connection connection = invocation.getArgument(2, DataSource.class).getConnection()) {
+                                return policies.get(connection);
+                            }
+                        }))) {
+            Map<String, RuntimeDatabaseProfile> actual = new MCPJdbcDatabaseProfileLoader().load(runtimeDatabases);
+            assertFalse(actual.get("first_db").getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
+            assertTrue(actual.get("second_db").getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
+            verify(firstRuntimeDatabase, times(2)).openConnection("first_db");
+            verify(firstRuntimeDatabase, never()).openConnection("second_db");
+            verify(secondRuntimeDatabase, times(2)).openConnection("second_db");
+            verify(secondRuntimeDatabase, never()).openConnection("first_db");
+        }
+    }
+    
+    @Test
+    void assertLoadWhenIdentifierCasePolicyConnectionFails() throws SQLException {
+        SQLException connectionFailure = new SQLException("connection unavailable");
+        Connection profileConnection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(
+                SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true, profileConnection);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(profileConnection)
+                .thenThrow(RuntimeDatabaseConnectionException.connectionFailed("logic_db", connectionFailure));
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedConstruction<IdentifierCasePolicyResolver> ignoredResolver = mockConstruction(IdentifierCasePolicyResolver.class,
+                        (mock, context) -> when(mock.resolve(any(), any(), any())).thenAnswer(invocation -> {
+                            try (Connection ignoredConnection = invocation.getArgument(2, DataSource.class).getConnection()) {
+                                return IdentifierCasePolicyFactory.newSensitivePolicySet();
+                            } catch (final SQLException ex) {
+                                assertThat(ex, is(connectionFailure));
+                                return IdentifierCasePolicyFactory.newInsensitivePolicySet();
+                            }
+                        }))) {
+            RuntimeDatabaseProfile actual = new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+            assertTrue(actual.getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
+            verify(runtimeDatabaseConfig, times(2)).openConnection("logic_db");
         }
     }
     
@@ -77,8 +151,13 @@ class MCPJdbcDatabaseProfileLoaderTest {
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl, final String databaseVersion,
                                                                             final boolean supportsTransaction, final boolean supportsSavepoint) throws SQLException {
+        return createRuntimeDatabaseConfiguration(jdbcUrl, databaseVersion, supportsTransaction, supportsSavepoint, mock(Connection.class));
+    }
+    
+    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl, final String databaseVersion,
+                                                                            final boolean supportsTransaction, final boolean supportsSavepoint,
+                                                                            final Connection connection) throws SQLException {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(result.openConnection(anyString())).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
