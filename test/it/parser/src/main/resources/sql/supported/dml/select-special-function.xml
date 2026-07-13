@@ -345,4 +345,6 @@
     <sql-case id="select_interval_with_placeholder" value="SELECT INTERVAL ? DAY FROM t_order" case-types="placeholder" db-types="MySQL,ClickHouse,SQL92,Firebird" />
     <sql-case id="select_split_by_string" value="SELECT SPLIT_BY_STRING('apple::banana::cherry', '::')" db-types="Doris" />
     <sql-case id="select_split_by_string_with_column" value="SELECT SPLIT_BY_STRING(order_notes, '::') FROM t_order" db-types="Doris" />
+    <sql-case id="select_split_by_string_with_placeholder" value="SELECT SPLIT_BY_STRING(?, ?) FROM t_order" case-types="placeholder" db-types="Doris" />
+    <sql-case id="select_split_by_string_with_nested_function" value="SELECT SPLIT_BY_STRING(CONCAT(order_notes, '-'), '::') FROM t_order" db-types="Doris" />
 </sql-cases>
