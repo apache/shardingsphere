@@ -71,9 +71,9 @@ Stream group-by merger is different from order-by merger only in two aspects:
 
 Aggregation functions may appear inside supported scalar wrapper functions, such as `IFNULL(SUM(score), 0)` or `COALESCE(COUNT(id), 0)`. During both stream and memory merges, the merger engine evaluates the underlying aggregation first and then applies the supported wrapper expression to the merged result. This preserves the expected semantics for supported null-handling wrappers without changing the underlying aggregation behavior.
 
-Proper empty / no-route initializations
+## Proper empty / no-route initializations
 
-When a group has no matching rows (including cases where a shard has no route for the query), expression-derived aggregations that depend on counts are initialized safely. In particular, `COUNT` cells are initialized to `0` (rather than relying on generic defaults) so that subsequent scalar expressions (e.g., `IFNULL`, `COALESCE`, or arithmetic) produce correct and deterministic results for empty or unrouted groups.
+When a group has no matching rows (including no-route scenarios), expression-derived `COUNT` aggregations are initialized to `0` before wrapper evaluation. This ensures that wrappers such as `IFNULL` and `COALESCE` preserve SQL `COUNT` semantics for empty result sets.
 
 For the inconsistency between the grouping item and ordering item, it requires uploading all the data to the memory to group and aggregate, since the relevant data value needed to acquire group information is not continuous, and stream merger is not available. For example, acquire each examinee’s total score through the following SQL and order them from the highest to the lowest:
 
