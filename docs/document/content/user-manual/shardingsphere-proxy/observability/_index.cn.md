@@ -124,7 +124,7 @@ cd apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin
 | routed_sql_total             | COUNTER   | 按数据库和 SQL 类型（INSERT、UPDATE、DELETE、SELECT）分类的路由总数                          |
 | routed_storage_unit_total    | COUNTER   | 数据库中存储单元路由结果总数                                                            |
 | routed_table_total           | COUNTER   | 数据库中表路由结果总数                                                               |
-| proxy_state                  | GAUGE     | ShardingSphere-Proxy 状态信息。0 表示正常状态；1 表示熔断状态；2 锁定状态                        |
+| proxy_state                  | GAUGE     | ShardingSphere-Proxy 状态信息。0 表示正常状态；1 表示熔断状态                               |
 | proxy_meta_data_info         | GAUGE     | ShardingSphere-Proxy 元数据信息，database_count：逻辑库数量，storage_unit_count：存储节点数量 |
 | proxy_current_connections    | GAUGE     | ShardingSphere-Proxy 的当前连接数                                               |
 | proxy_requests_total         | COUNTER   | ShardingSphere-Proxy 的接受请求总数                                              |
