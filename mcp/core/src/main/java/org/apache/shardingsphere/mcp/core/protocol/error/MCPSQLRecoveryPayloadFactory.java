@@ -66,7 +66,8 @@ final class MCPSQLRecoveryPayloadFactory {
         result.put("rejected_explain_sql", cause.getExplainSql());
         result.put("suggested_arguments", createExplainRetryArguments(cause));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(
-                MCPNextActionUtils.readResource(createDatabaseCapabilityUri(cause.getDatabase()), "Read explain tool semantics before regenerating explain_sql."),
+                MCPNextActionUtils.readResource(createDatabaseCapabilityUri(cause.getDatabase()),
+                        "Read the target database type before regenerating database-native explain_sql."),
                 MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_execute_explain_query",
                         "Regenerate explain_sql from sql without changing sql, then retry the explain tool with the generated explain_sql.",
                         createExplainRetryArguments(cause)), 1)));

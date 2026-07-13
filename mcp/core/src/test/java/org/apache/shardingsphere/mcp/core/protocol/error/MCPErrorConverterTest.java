@@ -295,8 +295,10 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("category"), is("invalid_explain_sql"));
         assertThat(actualRecovery.get("rejected_explain_sql"), is("EXPLAIN BROKEN SELECT * FROM orders"));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders")));
-        Map<?, ?> actualRetryAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1);
-        assertThat(actualRetryAction.get("tool_name"), is("database_gateway_execute_explain_query"));
+        List<?> actualNextActions = (List<?>) actualRecovery.get("next_actions");
+        assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("reason"),
+                is("Read the target database type before regenerating database-native explain_sql."));
+        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("tool_name"), is("database_gateway_execute_explain_query"));
         assertFalse((Boolean) actualRecovery.get("ask_user_when_uncertain"));
     }
     
