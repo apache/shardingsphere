@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -52,10 +53,10 @@ public final class StatementClassifier {
             String statementType = extractStatementType(upperLeadingSql);
             String savepointName = extractSavepointName(leadingSql);
             validateSavepointName(statementType, savepointName);
-            return new ClassificationResult(SupportedMCPStatement.SAVEPOINT, statementType, actualSql, "", savepointName);
+            return new ClassificationResult(SupportedMCPStatement.SAVEPOINT, statementType, actualSql, savepointName, List.of());
         }
         if (isTransactionControlStatement(upperLeadingSql)) {
-            return new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, extractStatementType(upperLeadingSql), actualSql, "", "");
+            return new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, extractStatementType(upperLeadingSql), actualSql, "", List.of());
         }
         SQLStatementStructure statementStructure = structureResolver.resolve(actualSql);
         SupportedMCPStatement statementClass = statementClassResolver.resolve(statementStructure);

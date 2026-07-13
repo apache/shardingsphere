@@ -36,6 +36,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -125,7 +126,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> executor.execute("session-1", "logic_db", createCapability(),
-                        new ClassificationResult(SupportedMCPStatement.SAVEPOINT, statementType, sql, "", "")));
+                        new ClassificationResult(SupportedMCPStatement.SAVEPOINT, statementType, sql, "", List.of())));
         assertThat(actual.getMessage(), is("Savepoint name is required."));
     }
     

@@ -58,11 +58,6 @@ public final class ClassificationResult {
     
     private final String savepointName;
     
-    public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName) {
-        this(statementClass, statementType, normalizedSql, savepointName,
-                targetObjectName.isEmpty() ? List.of() : List.of(SQLStatementObjectName.fromNormalizedName(targetObjectName)));
-    }
-    
     ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String savepointName,
                          final Collection<SQLStatementObjectName> referencedObjects) {
         this.statementClass = statementClass;

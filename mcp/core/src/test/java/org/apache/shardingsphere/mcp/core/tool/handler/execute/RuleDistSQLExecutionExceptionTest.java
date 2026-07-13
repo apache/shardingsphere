@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPSta
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLSyntaxErrorException;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -30,7 +31,7 @@ class RuleDistSQLExecutionExceptionTest {
     @Test
     void assertRuleDistSQLExecutionException() {
         ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.DDL, "CREATE",
-                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))", "", "");
+                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))", "", List.of());
         SQLSyntaxErrorException cause = new SQLSyntaxErrorException("syntax error");
         RuleDistSQLExecutionException actual = new RuleDistSQLExecutionException("sharding_db", classificationResult, cause);
         assertThat(actual.getMessage(),
