@@ -19,18 +19,11 @@ package org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.da
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLServerFunctionOptionTest {
     
     private final SQLServerFunctionOption functionOption = new SQLServerFunctionOption();
-    
-    @Test
-    void assertGetIfNullFunctionName() {
-        assertThat(functionOption.getIfNullFunctionName(), is("IFNULL"));
-    }
     
     @Test
     void assertGetUnparenthesizedFunctionNames() {

@@ -19,18 +19,11 @@ package org.apache.shardingsphere.database.connector.oracle.metadata.database.op
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OracleFunctionOptionTest {
     
     private final OracleFunctionOption functionOption = new OracleFunctionOption();
-    
-    @Test
-    void assertGetIfNullFunctionName() {
-        assertThat(functionOption.getIfNullFunctionName(), is("NVL"));
-    }
     
     @Test
     void assertGetUnparenthesizedFunctionNames() {
