@@ -35,11 +35,6 @@ public final class OracleFunctionOption implements DialectFunctionOption {
             "USER"));
     
     @Override
-    public String getIfNullFunctionName() {
-        return "NVL";
-    }
-    
-    @Override
     public Collection<String> getUnparenthesizedFunctionNames() {
         return UNPARENTHESIZED_FUNCTION_NAMES;
     }

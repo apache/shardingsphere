@@ -21,9 +21,4 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
  * Default function option.
  */
 public final class DefaultFunctionOption implements DialectFunctionOption {
-    
-    @Override
-    public String getIfNullFunctionName() {
-        return "IFNULL";
-    }
 }

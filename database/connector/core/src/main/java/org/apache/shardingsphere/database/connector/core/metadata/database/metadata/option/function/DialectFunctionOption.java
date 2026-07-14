@@ -26,13 +26,6 @@ import java.util.Collections;
 public interface DialectFunctionOption {
     
     /**
-     * Get if null function name.
-     *
-     * @return if null function name
-     */
-    String getIfNullFunctionName();
-    
-    /**
      * Get unparenthesized function names.
      *
      * @return unparenthesized function names
