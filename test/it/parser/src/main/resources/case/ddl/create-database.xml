@@ -99,4 +99,6 @@
     </create-database>
     <create-database sql-case-id="create_database_with_filespec" />
     <create-database sql-case-id="create_schema_with_filespec" />
+    <create-database sql-case-id="create_database_with_remote_filespec" />
+    <create-database sql-case-id="create_database_with_inet_filespec" />
 </sql-parser-test-cases>

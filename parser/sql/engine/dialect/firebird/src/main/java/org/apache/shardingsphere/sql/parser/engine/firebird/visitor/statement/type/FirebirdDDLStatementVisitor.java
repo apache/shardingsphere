@@ -278,7 +278,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     private String extractDatabaseName(final String filespec) {
         String result = filespec.substring(1, filespec.length() - 1);
-        int separatorIndex = Math.max(result.lastIndexOf('/'), result.lastIndexOf('\\'));
+        int separatorIndex = Math.max(Math.max(result.lastIndexOf('/'), result.lastIndexOf('\\')), result.lastIndexOf(':'));
         result = separatorIndex >= 0 ? result.substring(separatorIndex + 1) : result;
         int extensionIndex = result.lastIndexOf('.');
         return extensionIndex > 0 ? result.substring(0, extensionIndex) : result;
