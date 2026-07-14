@@ -92,7 +92,7 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public Optional<DialectAlterTableOption> getAlterTableOption() {
-        return Optional.of(new DialectAlterTableOption(true, true, true, new DialectAddColumnOption("ADD", "")));
+        return Optional.of(new DialectAlterTableOption(true, true, true, new DialectAddColumnOption("")));
     }
     
     @Override
