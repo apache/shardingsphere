@@ -57,12 +57,6 @@ class DefaultDataTypeOptionTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("textTypeArguments")
-    void assertIsTextType(final String name, final String dataTypeName, final boolean expected) {
-        assertThat(dataTypeOption.isTextType(dataTypeName), is(expected));
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("binaryDataTypeArguments")
     void assertIsBinaryDataType(final String name, final int sqlType, final boolean expected) {
         assertThat(dataTypeOption.isBinaryDataType(sqlType, null), is(expected));
@@ -94,14 +88,6 @@ class DefaultDataTypeOptionTest {
                 Arguments.of("clob", Types.CLOB, true),
                 Arguments.of("nclob", Types.NCLOB, true),
                 Arguments.of("integer", Types.INTEGER, false));
-    }
-    
-    private static Stream<Arguments> textTypeArguments() {
-        return Stream.of(
-                Arguments.of("text", "TEXT", true),
-                Arguments.of("clob", "CLOB", true),
-                Arguments.of("nclob", "NCLOB", true),
-                Arguments.of("varchar", "VARCHAR", false));
     }
     
     private static Stream<Arguments> binaryDataTypeArguments() {

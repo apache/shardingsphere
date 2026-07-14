@@ -54,9 +54,4 @@ public final class OpenGaussDataTypeOption implements DialectDataTypeOption {
     public boolean isBinaryDataType(final int sqlType, final String dataTypeName) {
         return delegate.isBinaryDataType(sqlType, dataTypeName);
     }
-    
-    @Override
-    public boolean isTextType(final String type) {
-        return delegate.isTextType(type);
-    }
 }
