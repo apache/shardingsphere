@@ -59,7 +59,8 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
     
     public ReadwriteSplittingRuleWorkflowValidationService() {
         inspectionService = new ReadwriteSplittingInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
+        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     }
     
     @Override

@@ -61,7 +61,8 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     
     public ShardingWorkflowValidationService() {
         inspectionService = new ShardingInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
+        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     }
     
     @Override

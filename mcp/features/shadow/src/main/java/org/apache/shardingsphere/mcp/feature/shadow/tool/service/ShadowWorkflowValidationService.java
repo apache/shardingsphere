@@ -60,7 +60,8 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     
     public ShadowWorkflowValidationService() {
         inspectionService = new ShadowInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
+        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     }
     
     @Override

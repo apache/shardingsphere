@@ -52,7 +52,8 @@ public final class ReadwriteSplittingStatusWorkflowValidationService implements 
     public ReadwriteSplittingStatusWorkflowValidationService() {
         inspectionService = new ReadwriteSplittingInspectionService();
         distSQLPlanningService = new ReadwriteSplittingStatusDistSQLPlanningService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
+        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     }
     
     @Override

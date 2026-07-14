@@ -63,7 +63,8 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     
     public MaskWorkflowValidationService() {
         ruleInspectionService = new MaskRuleInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
+        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     }
     
     @Override
