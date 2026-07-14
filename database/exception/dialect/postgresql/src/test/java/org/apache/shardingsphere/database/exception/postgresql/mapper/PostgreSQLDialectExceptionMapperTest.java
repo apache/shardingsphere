@@ -80,6 +80,15 @@ class PostgreSQLDialectExceptionMapperTest {
         assertNull(actual.getServerErrorMessage());
     }
     
+    @Test
+    void assertConvertColumnNotFoundMessage() {
+        ColumnNotFoundException sqlDialectException = mock(ColumnNotFoundException.class);
+        when(sqlDialectException.getTableName()).thenReturn("t_order");
+        when(sqlDialectException.getColumnName()).thenReturn("user_id");
+        PostgreSQLException actual = (PostgreSQLException) mapper.convert(sqlDialectException);
+        assertThat(actual.getServerErrorMessage().getMessage(), is("Column \"user_id\" of table \"t_order\" does not exist"));
+    }
+    
     private static Stream<Arguments> convertArguments() {
         return Stream.of(
                 Arguments.of("unknown_database", UnknownDatabaseException.class, PostgreSQLVendorError.INVALID_CATALOG_NAME, "FATAL"),
