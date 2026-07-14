@@ -84,7 +84,7 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public Optional<DialectAlterTableOption> getAlterTableOption() {
-        return Optional.of(new DialectAlterTableOption(false, false, false, new DialectAddColumnOption("ADD", "")));
+        return Optional.of(new DialectAlterTableOption(false, false, false, new DialectAddColumnOption("")));
     }
     
     @Override
