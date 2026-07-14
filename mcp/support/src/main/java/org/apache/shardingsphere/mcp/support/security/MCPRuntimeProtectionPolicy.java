@@ -91,7 +91,8 @@ public final class MCPRuntimeProtectionPolicy {
         result.put("maximum_value", MAX_ROWS_LIMIT);
         result.put("applied_field", "applied_max_rows");
         result.put("truncation_field", "truncated");
-        result.put(MCPPayloadFieldNames.RECOVERY, "Retry with a narrower SELECT, stronger WHERE clause, or smaller projection when rows are truncated.");
+        result.put(MCPPayloadFieldNames.RECOVERY, "For read-only queries, retry with a narrower SELECT, stronger WHERE clause, or smaller projection. "
+                + "If rows came from a side-effecting statement, do not replay that statement automatically; use a separate read-only query when more data is needed.");
         return result;
     }
     

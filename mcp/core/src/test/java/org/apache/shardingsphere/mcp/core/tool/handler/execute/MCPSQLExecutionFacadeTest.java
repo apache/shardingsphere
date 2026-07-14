@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPSta
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -41,7 +41,6 @@ import org.mockito.ArgumentCaptor;
 
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -90,16 +89,16 @@ class MCPSQLExecutionFacadeTest {
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", List.of());
-        SQLExecutionResponse response = mock(SQLExecutionResponse.class);
-        ArgumentCaptor<Supplier<SQLExecutionResponse>> lockedExecution = ArgumentCaptor.forClass(Supplier.class);
-        when(coordinator.executeWithSessionLock(eq("session-1"), lockedExecution.capture())).thenReturn(response);
+        SQLExecutionResult expectedResult = mock(SQLExecutionResult.class);
+        ArgumentCaptor<Supplier<SQLExecutionResult>> lockedExecution = ArgumentCaptor.forClass(Supplier.class);
+        when(coordinator.executeWithSessionLock(eq("session-1"), lockedExecution.capture())).thenReturn(expectedResult);
         when(statementClassifier.classify("SELECT 1")).thenReturn(classification);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
-        when(statementExecutor.execute(request, classification, capability)).thenReturn(response);
+        when(statementExecutor.execute(request, classification, capability)).thenReturn(expectedResult);
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, statementClassifier);
-        assertThat(facade.execute(request), is(response));
+        assertThat(facade.execute(request), is(expectedResult));
         verifyNoInteractions(capabilityProvider, transactionExecutor, statementExecutor, statementClassifier, traceFactory);
-        assertThat(lockedExecution.getValue().get(), is(response));
+        assertThat(lockedExecution.getValue().get(), is(expectedResult));
         verify(statementClassifier).classify("SELECT 1");
         verify(capabilityProvider).provide("logic_db");
         verify(statementExecutor).execute(request, classification, capability);
@@ -171,16 +170,16 @@ class MCPSQLExecutionFacadeTest {
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.TRANSACTION_CONTROL));
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "BEGIN", "", List.of());
-        SQLExecutionResponse response = SQLExecutionResponse.statementAck(SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "Transaction started.");
+        SQLExecutionResult expectedResult = mock(SQLExecutionResult.class);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
-        when(transactionExecutor.execute("session-1", "logic_db", capability, classification)).thenReturn(response);
+        when(transactionExecutor.execute("session-1", "logic_db", capability, classification)).thenReturn(expectedResult);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createStatementClassifier(classification));
         SQLExecutionRequest request = createExecutionRequest("BEGIN");
-        SQLExecutionResponse actual = facade.execute(request);
-        assertThat(actual, is(response));
+        SQLExecutionResult actual = facade.execute(request);
+        assertThat(actual, is(expectedResult));
         verify(transactionExecutor).execute("session-1", "logic_db", capability, classification);
         verify(traceFactory).create("session-1", "logic_db", "BEGIN", true, "BEGIN");
         verifyNoInteractions(statementExecutor);
@@ -194,16 +193,16 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "",
                 List.of(SQLStatementObjectName.fromNormalizedName("orders")));
-        SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
+        SQLExecutionResult expectedResult = mock(SQLExecutionResult.class);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
-        when(statementExecutor.execute(request, classification, capability)).thenReturn(response);
+        when(statementExecutor.execute(request, classification, capability)).thenReturn(expectedResult);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createStatementClassifier(classification));
-        SQLExecutionResponse actual = facade.execute(request);
-        assertThat(actual, is(response));
+        SQLExecutionResult actual = facade.execute(request);
+        assertThat(actual, is(expectedResult));
         verify(statementExecutor).execute(request, classification, capability);
         verify(traceFactory).create("session-1", "logic_db", "SELECT 1", true, "QUERY");
         verifyNoInteractions(transactionExecutor);
@@ -294,16 +293,16 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM logic_db.orders", "",
                 List.of(SQLStatementObjectName.fromNormalizedName("logic_db.orders")));
-        SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
+        SQLExecutionResult expectedResult = mock(SQLExecutionResult.class);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         SQLExecutionRequest request = createExecutionRequest("SELECT * FROM logic_db.orders");
-        when(statementExecutor.execute(request, classification, capability)).thenReturn(response);
+        when(statementExecutor.execute(request, classification, capability)).thenReturn(expectedResult);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createStatementClassifier(classification));
-        SQLExecutionResponse actual = facade.execute(request);
-        assertThat(actual, is(response));
+        SQLExecutionResult actual = facade.execute(request);
+        assertThat(actual, is(expectedResult));
         verify(statementExecutor).execute(request, classification, capability);
         verify(traceFactory).create("session-1", "logic_db", "SELECT * FROM logic_db.orders", true, "QUERY");
         verifyNoInteractions(transactionExecutor);
@@ -315,14 +314,14 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
-        SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
+        SQLExecutionResult expectedResult = mock(SQLExecutionResult.class);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         SQLExecutionRequest request = createExecutionRequest("SELECT * FROM Logic_DB.orders");
-        when(statementExecutor.execute(eq(request), any(), eq(capability))).thenReturn(response);
+        when(statementExecutor.execute(eq(request), any(), eq(capability))).thenReturn(expectedResult);
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), statementExecutor,
                 mock(SQLExecutionTraceFactory.class));
-        assertThat(facade.execute(request), is(response));
+        assertThat(facade.execute(request), is(expectedResult));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -348,16 +347,16 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY), SchemaExecutionSemantics.BEST_EFFORT);
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM other_db.orders", "",
                 List.of(SQLStatementObjectName.fromNormalizedName("other_db.orders")));
-        SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.QUERY, "SELECT", Collections.emptyList(), Collections.emptyList(), false);
+        SQLExecutionResult expectedResult = mock(SQLExecutionResult.class);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         SQLExecutionRequest request = createExecutionRequest("SELECT * FROM other_db.orders");
-        when(statementExecutor.execute(request, classification, capability)).thenReturn(response);
+        when(statementExecutor.execute(request, classification, capability)).thenReturn(expectedResult);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createStatementClassifier(classification));
-        SQLExecutionResponse actual = facade.execute(request);
-        assertThat(actual, is(response));
+        SQLExecutionResult actual = facade.execute(request);
+        assertThat(actual, is(expectedResult));
         verify(statementExecutor).execute(request, classification, capability);
         verify(traceFactory).create("session-1", "logic_db", "SELECT * FROM other_db.orders", true, "QUERY");
         verifyNoInteractions(transactionExecutor);
@@ -390,16 +389,16 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.EXPLAIN));
         SQLExecutionRequest request = createExecutionRequest("EXPLAIN SELECT * FROM orders");
-        SQLExecutionResponse response = SQLExecutionResponse.resultSet(SupportedMCPStatement.EXPLAIN, "EXPLAIN", Collections.emptyList(), Collections.emptyList(), false);
+        SQLExecutionResult expectedResult = mock(SQLExecutionResult.class);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        when(statementExecutor.execute(eq(request), any(), eq(capability))).thenReturn(response);
+        when(statementExecutor.execute(eq(request), any(), eq(capability))).thenReturn(expectedResult);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
-        SQLExecutionResponse actual = facade.executeExplain(request, "SELECT * FROM orders");
-        assertThat(actual, is(response));
+        SQLExecutionResult actual = facade.executeExplain(request, "SELECT * FROM orders");
+        assertThat(actual, is(expectedResult));
         ArgumentCaptor<ClassificationResult> classificationCaptor = ArgumentCaptor.forClass(ClassificationResult.class);
         verify(statementExecutor).execute(eq(request), classificationCaptor.capture(), eq(capability));
         assertThat(classificationCaptor.getValue().getStatementClass(), is(SupportedMCPStatement.EXPLAIN));
@@ -459,7 +458,7 @@ class MCPSQLExecutionFacadeTest {
     
     @SuppressWarnings("unchecked")
     private void mockSessionLock(final MCPSessionExecutionCoordinator coordinator) {
-        when(coordinator.executeWithSessionLock(eq("session-1"), any())).thenAnswer(invocation -> ((Supplier<SQLExecutionResponse>) invocation.getArgument(1, Supplier.class)).get());
+        when(coordinator.executeWithSessionLock(eq("session-1"), any())).thenAnswer(invocation -> ((Supplier<SQLExecutionResult>) invocation.getArgument(1, Supplier.class)).get());
     }
     
     private MCPDatabaseCapability createCapability(final Set<SupportedMCPStatement> supportedStatementClasses) {

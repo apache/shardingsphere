@@ -28,8 +28,8 @@ import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatab
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationCheckResult;
-import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationResult;
+import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
+import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationResult;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -38,7 +38,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -47,8 +46,6 @@ import java.util.function.Function;
  * Runtime database validation service.
  */
 public final class RuntimeDatabaseValidationService {
-    
-    private static final String VALIDATION_BINDING_DATABASE = "__preflight_validation__";
     
     private final MCPJdbcDatabaseProfileLoader profileLoader = new MCPJdbcDatabaseProfileLoader();
     
@@ -59,23 +56,21 @@ public final class RuntimeDatabaseValidationService {
      *
      * @param request validation request
      * @param runtimeDatabaseResolver runtime database resolver
-     * @param recoveryFactory runtime recovery factory
      * @return validation result
      */
     public RuntimeDatabaseValidationResult validate(final RuntimeDatabaseValidationRequest request,
-                                                    final Function<String, Optional<RuntimeDatabaseConfiguration>> runtimeDatabaseResolver,
-                                                    final Function<RuntimeDatabaseConnectionException, Map<String, Object>> recoveryFactory) {
+                                                    final Function<String, Optional<RuntimeDatabaseConfiguration>> runtimeDatabaseResolver) {
         List<RuntimeDatabaseValidationCheckResult> checks = new LinkedList<>();
         String database = normalize(request.getDatabase());
         Optional<RuntimeDatabaseConfiguration> runtimeDatabaseConfig = findRuntimeDatabaseConfiguration(database, runtimeDatabaseResolver);
         if (runtimeDatabaseConfig.isEmpty()) {
-            RuntimeDatabaseConnectionException ex = createMissingRuntimeDatabaseException(database);
-            checks.add(RuntimeDatabaseValidationCheckResult.failed("configuration", ex.getCategory(), "The requested database is not configured for this MCP runtime."));
+            checks.add(RuntimeDatabaseValidationCheckResult.failed("configuration", RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION,
+                    "The requested database is not configured for this MCP runtime."));
             appendSkippedChecks(checks, "jdbc_driver", "configuration validation did not finish");
             appendSkippedChecks(checks, "jdbc_connectivity", "configuration validation did not finish");
             appendSkippedChecks(checks, "metadata_read", "configuration validation did not finish");
             appendSkippedChecks(checks, "database_visibility", "configuration validation did not finish");
-            return createFailureResult(database, checks, ex, recoveryFactory);
+            return RuntimeDatabaseValidationResult.failed(database, checks, RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION);
         }
         checks.add(RuntimeDatabaseValidationCheckResult.passed("configuration", "Resolved the configured runtime database."));
         RuntimeDatabaseProfile databaseProfile;
@@ -87,7 +82,7 @@ public final class RuntimeDatabaseValidationService {
             appendProfileFailureChecks(checks, ex);
             appendSkippedChecks(checks, "metadata_read", "driver or connectivity validation failed");
             appendSkippedChecks(checks, "database_visibility", "driver or connectivity validation failed");
-            return createFailureResult(database, checks, ex, recoveryFactory);
+            return RuntimeDatabaseValidationResult.failed(database, checks, ex.getCategory());
         }
         Collection<ShardingSphereSchema> schemas;
         try {
@@ -96,14 +91,14 @@ public final class RuntimeDatabaseValidationService {
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(RuntimeDatabaseValidationCheckResult.failed("metadata_read", ex.getCategory(), "Failed to read metadata through the configured JDBC connection."));
             appendSkippedChecks(checks, "database_visibility", "metadata validation failed");
-            return createFailureResult(database, checks, ex, recoveryFactory);
+            return RuntimeDatabaseValidationResult.failed(database, checks, ex.getCategory());
         }
         try {
             validateDatabaseVisibility(database, runtimeDatabaseConfig.get(), schemas, databaseProfile.getIdentifierCasePolicySet());
             checks.add(RuntimeDatabaseValidationCheckResult.passed("database_visibility", "Validated the requested database name against visible JDBC metadata and connection context."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(RuntimeDatabaseValidationCheckResult.failed("database_visibility", ex.getCategory(), "The requested database name is not visible to the configured JDBC connection."));
-            return createFailureResult(database, checks, ex, recoveryFactory);
+            return RuntimeDatabaseValidationResult.failed(database, checks, ex.getCategory());
         }
         return RuntimeDatabaseValidationResult.ready(database, checks);
     }
@@ -111,11 +106,6 @@ public final class RuntimeDatabaseValidationService {
     private Optional<RuntimeDatabaseConfiguration> findRuntimeDatabaseConfiguration(final String database,
                                                                                     final Function<String, Optional<RuntimeDatabaseConfiguration>> runtimeDatabaseResolver) {
         return database.isEmpty() ? Optional.empty() : runtimeDatabaseResolver.apply(database);
-    }
-    
-    private RuntimeDatabaseConnectionException createMissingRuntimeDatabaseException(final String database) {
-        return RuntimeDatabaseConnectionException.invalidConfiguration(resolveExceptionDatabaseName(database),
-                new IllegalStateException("Runtime database validation requires one configured runtime database."));
     }
     
     private void appendProfileFailureChecks(final List<RuntimeDatabaseValidationCheckResult> checks, final RuntimeDatabaseConnectionException ex) {
@@ -132,24 +122,19 @@ public final class RuntimeDatabaseValidationService {
         checks.add(RuntimeDatabaseValidationCheckResult.skipped(name, String.format("Skipped because %s.", reason)));
     }
     
-    private RuntimeDatabaseValidationResult createFailureResult(final String database, final List<RuntimeDatabaseValidationCheckResult> checks, final RuntimeDatabaseConnectionException cause,
-                                                                final Function<RuntimeDatabaseConnectionException, Map<String, Object>> recoveryFactory) {
-        return RuntimeDatabaseValidationResult.failed(database, checks, cause.getCategory(), recoveryFactory.apply(cause));
-    }
-    
     private void validateDatabaseVisibility(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final Collection<ShardingSphereSchema> schemas,
                                             final IdentifierCasePolicySet identifierCasePolicySet) {
         if (containsVisibleSchema(schemas, database, identifierCasePolicySet.getPolicy(IdentifierScope.SCHEMA))) {
             return;
         }
-        try (Connection connection = runtimeDatabaseConfig.openConnection(resolveExceptionDatabaseName(database))) {
+        try (Connection connection = runtimeDatabaseConfig.openConnection(database)) {
             if (isVisibleDatabase(connection, database, identifierCasePolicySet)) {
                 return;
             }
         } catch (final SQLException ex) {
-            throw RuntimeDatabaseConnectionException.connectionFailed(resolveExceptionDatabaseName(database), ex);
+            throw RuntimeDatabaseConnectionException.connectionFailed(database, ex);
         }
-        throw RuntimeDatabaseConnectionException.databaseNotVisible(resolveExceptionDatabaseName(database),
+        throw RuntimeDatabaseConnectionException.databaseNotVisible(database,
                 new IllegalStateException(String.format("Requested database `%s` is not visible to the configured JDBC connection.", database)));
     }
     
@@ -196,10 +181,6 @@ public final class RuntimeDatabaseValidationService {
     private boolean matches(final String storedName, final String identifier, final IdentifierCasePolicy identifierCasePolicy) {
         String actualStoredName = Objects.toString(storedName, "").trim();
         return !actualStoredName.isEmpty() && identifierCasePolicy.matches(actualStoredName, identifier, QuoteCharacter.NONE);
-    }
-    
-    private String resolveExceptionDatabaseName(final String database) {
-        return database.isEmpty() ? VALIDATION_BINDING_DATABASE : database;
     }
     
     private String normalize(final String value) {

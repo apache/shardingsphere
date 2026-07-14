@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.core.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
@@ -81,13 +82,13 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return createPreviewResponse(toolArguments, classificationResult);
         }
-        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, TOOL_NAME))
-                .withExecutionMode(EXECUTION_MODE_EXECUTE);
+        return SQLExecutionResponse.executed(databaseContext.getExecutionFacade().execute(
+                SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, TOOL_NAME)));
     }
     
     private ClassificationResult checkUpdateStatement(final MCPToolArguments toolArguments, final String sql) {
         ClassificationResult classificationResult = new StatementClassifier().classify(sql);
-        if (SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult)) {
+        if (SQLExecutionToolHandlerSupport.isQueryStatement(classificationResult)) {
             throw new SQLToolMismatchException("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL.",
                     TOOL_NAME, "database_gateway_execute_query", classificationResult,
                     createQuerySuggestedArguments(toolArguments, classificationResult));

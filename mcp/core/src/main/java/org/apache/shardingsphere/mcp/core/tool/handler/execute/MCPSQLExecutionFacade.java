@@ -37,7 +37,7 @@ import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabili
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
@@ -72,7 +72,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     }
     
     @Override
-    public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest) {
+    public SQLExecutionResult execute(final SQLExecutionRequest executionRequest) {
         try {
             return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest, classify(executionRequest)));
         } catch (final MCPSessionNotExistedException ex) {
@@ -80,7 +80,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         }
     }
     
-    private SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+    private SQLExecutionResult execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         try {
             return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest, classificationResult));
         } catch (final MCPSessionNotExistedException ex) {
@@ -89,7 +89,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     }
     
     @Override
-    public SQLExecutionResponse executeExplain(final SQLExecutionRequest executionRequest, final String sql) {
+    public SQLExecutionResult executeExplain(final SQLExecutionRequest executionRequest, final String sql) {
         ClassificationResult classificationResult = new ExplainSQLCandidateValidator().validate(sql, executionRequest.getSql());
         try {
             return execute(executionRequest, classificationResult);
@@ -125,7 +125,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         }
     }
     
-    private SQLExecutionResponse executeInternal(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+    private SQLExecutionResult executeInternal(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
         ShardingSpherePreconditions.checkState(databaseCapability.isPresent(), () -> recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException()));
         MCPDatabaseCapability actualDatabaseCapability = databaseCapability.orElseThrow();
@@ -154,9 +154,9 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         }
     }
     
-    private SQLExecutionResponse recordSuccess(final SQLExecutionRequest executionRequest, final SQLExecutionResponse response, final String statementMarker) {
+    private SQLExecutionResult recordSuccess(final SQLExecutionRequest executionRequest, final SQLExecutionResult result, final String statementMarker) {
         sqlExecutionTraceFactory.create(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), true, statementMarker);
-        return response;
+        return result;
     }
     
     private void checkCrossSchemaSql(final SQLExecutionRequest executionRequest, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {

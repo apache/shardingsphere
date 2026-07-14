@@ -35,7 +35,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class SQLExecutionToolHandlerSupport {
     
-    static boolean isReadOnlyStatement(final ClassificationResult classificationResult) {
+    static boolean isQueryStatement(final ClassificationResult classificationResult) {
         return SupportedMCPStatement.QUERY == classificationResult.getStatementClass();
     }
     

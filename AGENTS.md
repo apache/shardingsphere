@@ -230,16 +230,22 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 ## Coding Skill Guidance
 - When the named third-party skills are available in the current environment, use them for the matching work:
   `source-driven-development` for official-source checks, `api-and-interface-design` for public contracts,
-  `doubt-driven-development` for non-trivial decisions, `code-simplification` after implementation, and `code-review-and-quality` before handoff.
+  `code-simplification` after implementation, and `code-review-and-quality` before handoff.
 - If a named third-party skill is unavailable, do not install it automatically or block the task.
   Apply an equivalent manual checklist for the same intent, record the fallback in the plan or final response, and continue.
+
+### Cross-Model Review Prohibition
+- Do not use `doubt-driven-development` in this repository when it requires an external or cross-model review offer.
+- Unless the user explicitly requests a specific external model in the current task, never ask whether to run a cross-model review, never pause work for that choice,
+  and never invoke Gemini CLI, Codex CLI, Claude CLI, or any other external model or model-review service.
+- When an independent challenge is useful, use a fresh-context sub-agent within the current session or perform a bounded adversarial self-review, then continue to completion without asking the user to choose a reviewer.
 
 ## Workflow
 - Use Sequential Thinking when tasks need decomposition: 6-10 steps (fallback 3-5), one sentence each, actionable.
 - Intake: choose the strategy for the task, confirm tool availability/fallbacks, capture constraints (forbidden APIs, output format, coverage/test expectations),
   and use `source-driven-development` when available, or equivalent source-checking, to verify facts that depend on authoritative sources.
-- Plan: inspect existing code with tools before edits, finish the plan before coding, use `doubt-driven-development` when available for non-trivial decisions,
-  and set the quality/verification bar.
+- Plan: inspect existing code with tools before edits, finish the plan before coding, use a bounded fresh-context or adversarial self-review for non-trivial decisions,
+  and set the quality/verification bar without invoking or offering cross-model review.
 - Implement: keep scope minimal, follow quality standards, record decisions, and handle edge cases; honor instruction precedence from Core Principle #7.
 - Validate: run the narrowest meaningful checks (see Verification & Commands) and prefer scoped runs; note any sandbox or limit blocks and alternatives.
 - Report & self-check: share intent, edits, verification results, and next steps; ensure all required instructions, coverage, and mocking rules are satisfied, with remaining risks called out.
@@ -332,7 +338,7 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - Before finishing an authorized implementation task, ask whether this task created in-scope legacy or dead code that can be safely removed,
   whether the changed implementation can be simpler without changing behavior,
   whether existing public behavior and contracts are preserved, and whether `code-review-and-quality` or equivalent review still has in-scope required findings.
-- Use `doubt-driven-development` when available, or equivalent adversarial self-review, to keep raising and resolving valuable in-scope questions until the stop condition is met.
+- Use a bounded fresh-context or adversarial self-review to keep raising and resolving valuable in-scope questions until the stop condition is met.
   Stop when no actionable findings remain, the same findings repeat, 3 doubt cycles complete, or the user explicitly overrides.
 - Before finishing any implementation task, compare the final diff against the declared or confirmed change boundary.
   Use `git diff` to verify the final changed file set and changed hunks against the declared or confirmed boundary.

@@ -1636,13 +1636,19 @@ tools:
           description: "Execution or preview status returned by the server."
         normalized_sql:
           type: string
-          description: "Classifier-normalized SQL returned by preview or recovery paths."
+          description: "Classifier-normalized SQL returned by preview or executed responses."
         affected_rows:
           type: integer
           description: "Affected row count when the database reports one."
         message:
           type: string
           description: "Execution message for statements without row results."
+        columns:
+          type: array
+          description: "Returned column definitions when result_kind is result_set."
+        rows:
+          type: array
+          description: "Returned result rows when result_kind is result_set."
         returned_row_count:
           type: integer
           description: "Number of rows returned when result_kind is result_set."
@@ -1761,6 +1767,33 @@ tools:
               depends_on:
                 - 1
               reason: Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.
+        - response_mode: executed
+          summary: Executed side-effecting SQL (statement type SELECT) and returned 1 row(s). Returned rows were truncated; do not replay the statement automatically.
+          result_kind: result_set
+          execution_mode: execute
+          statement_class: dml
+          statement_type: SELECT
+          status: OK
+          normalized_sql: "WITH updated AS (UPDATE orders SET status = 'PAID' WHERE order_id = 1 RETURNING order_id) SELECT order_id FROM updated"
+          columns:
+            - columnName: order_id
+              logicalType: BIGINT
+              nativeType: BIGINT
+              nullable: false
+          rows:
+            - - 1
+          row_objects:
+            - order_id: 1
+          row_object_status: available
+          returned_row_count: 1
+          applied_max_rows: 1
+          applied_timeout_ms: 0
+          truncated: true
+          next_actions:
+            - order: 1
+              type: terminal
+              title: Stop
+              reason: The side-effecting statement already executed and returned truncated rows; do not replay it automatically. Use a separate read-only query if more data is needed.
     annotations:
       title: Preview or Execute Side-Effecting SQL
       readOnlyHint: false

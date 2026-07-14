@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.core.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
@@ -50,13 +51,13 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         String sql = toolArguments.getStringArgument("sql");
         checkReadOnlyQuery(toolArguments, sql);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
-        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(toolCall, toolArguments,
-                SQLExecutionToolHandlerSupport.resolveSchema(databaseContext, toolArguments), sql, TOOL_NAME));
+        return SQLExecutionResponse.query(databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(toolCall, toolArguments,
+                SQLExecutionToolHandlerSupport.resolveSchema(databaseContext, toolArguments), sql, TOOL_NAME)));
     }
     
     private void checkReadOnlyQuery(final MCPToolArguments toolArguments, final String sql) {
         ClassificationResult classificationResult = new StatementClassifier().classify(sql);
-        if (!SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult)) {
+        if (!SQLExecutionToolHandlerSupport.isQueryStatement(classificationResult)) {
             throw new SQLToolMismatchException(
                     "database_gateway_execute_query only supports classifier-approved QUERY statements. "
                             + "Use database_gateway_execute_explain_query for EXPLAIN diagnostics or database_gateway_execute_update for side-effecting SQL.",

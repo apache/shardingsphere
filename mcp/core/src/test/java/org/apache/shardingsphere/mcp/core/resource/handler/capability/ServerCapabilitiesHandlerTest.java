@@ -302,7 +302,24 @@ class ServerCapabilitiesHandlerTest {
         assertFalse(((String) executeUpdateStatementClass.get("description")).contains("explain_analyze"));
         assertTrue(executeUpdateOutputProperties.containsKey("preview_semantics"));
         assertTrue(executeUpdateOutputProperties.containsKey("review_summary"));
+        assertTrue(executeUpdateOutputProperties.containsKey("columns"));
+        assertTrue(executeUpdateOutputProperties.containsKey("rows"));
         assertFalse(executeUpdateOutputProperties.containsKey("approval_summary"));
+        assertThat(((Map<?, ?>) executeUpdateOutputProperties.get("normalized_sql")).get("description"),
+                is("Classifier-normalized SQL returned by preview or executed responses."));
+        Map<?, ?> executedResultSetExample = findByKey((List<?>) ((Map<?, ?>) executeUpdateTool.get("outputSchema")).get("examples"), "response_mode", "executed");
+        assertThat(executedResultSetExample.get("result_kind"), is("result_set"));
+        assertThat(executedResultSetExample.get("statement_class"), is("dml"));
+        assertThat(executedResultSetExample.get("statement_type"), is("SELECT"));
+        assertThat(executedResultSetExample.get("summary"),
+                is("Executed side-effecting SQL (statement type SELECT) and returned 1 row(s). Returned rows were truncated; do not replay the statement automatically."));
+        assertTrue(executedResultSetExample.containsKey("columns"));
+        assertTrue(executedResultSetExample.containsKey("rows"));
+        assertTrue((Boolean) executedResultSetExample.get("truncated"));
+        Map<?, ?> executedResultSetNextAction = (Map<?, ?>) ((List<?>) executedResultSetExample.get("next_actions")).get(0);
+        assertThat(executedResultSetNextAction.get("type"), is("terminal"));
+        assertThat(executedResultSetNextAction.get("reason"), is(
+                "The side-effecting statement already executed and returned truncated rows; do not replay it automatically. Use a separate read-only query if more data is needed."));
         assertThat(executeUpdateTool.get("title"), is("Preview or Execute Side-Effecting SQL"));
         assertTrue(((String) executeUpdateTool.get("description")).contains("Preview is classification-only, not a database dry run."));
         assertThat(findInputSchema(executeUpdateTool, "execution_mode").get("description"),

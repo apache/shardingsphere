@@ -23,9 +23,10 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -47,7 +48,7 @@ class ExecuteUpdateToolHandlerTest {
     @Test
     void assertHandleUpdateStatement() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.updateCount("UPDATE", 1));
+        when(executionFacade.execute(any())).thenReturn(createUpdateResult());
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
@@ -67,7 +68,7 @@ class ExecuteUpdateToolHandlerTest {
     @Test
     void assertHandleExecutionWithoutApprovalArgument() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.updateCount("UPDATE", 1));
+        when(executionFacade.execute(any())).thenReturn(createUpdateResult());
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
@@ -182,6 +183,10 @@ class ExecuteUpdateToolHandlerTest {
                 Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'", "execution_mode", "dry-run"))));
         assertThat(actual.getMessage(), is("database_gateway_execute_update execution_mode must be one of [execute, preview]."));
         verifyNoInteractions(executionFacade);
+    }
+    
+    private SQLExecutionResult createUpdateResult() {
+        return SQLExecutionResult.updateCount(SupportedMCPStatement.DML, "UPDATE", 1, 100, 0, "UPDATE orders SET status = 'PAID'");
     }
     
 }

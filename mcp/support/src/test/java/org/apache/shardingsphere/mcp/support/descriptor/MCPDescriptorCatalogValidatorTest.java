@@ -27,6 +27,8 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -194,6 +196,13 @@ class MCPDescriptorCatalogValidatorTest {
                 "Tool `database_gateway_search_metadata` outputSchema must declare `response_mode`.");
     }
     
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"columns", "rows"})
+    void assertValidateRejectsExecuteUpdateDescriptorWithoutResultSetField(final String fieldName) {
+        assertValidationError(createCatalog(List.of(), List.of(createExecuteUpdateDescriptorWithout(fieldName))),
+                String.format("Tool `database_gateway_execute_update` outputSchema must declare `%s`.", fieldName));
+    }
+    
     @Test
     @SuppressWarnings("unchecked")
     void assertValidateRejectsApplyDescriptorWithoutSecretReferenceSummary() {
@@ -308,6 +317,26 @@ class MCPDescriptorCatalogValidatorTest {
     
     private MCPToolDescriptor createToolDescriptor(final String toolName, final MCPToolAnnotations annotations, final Map<String, Object> outputSchema, final Map<String, Object> meta) {
         return new MCPToolDescriptor(toolName, "Test Tool", "Run a test tool.", createInputSchema(), outputSchema, annotations, meta);
+    }
+    
+    private MCPToolDescriptor createExecuteUpdateDescriptorWithout(final String fieldName) {
+        Map<String, Object> outputProperties = new LinkedHashMap<>();
+        for (String each : List.of("response_mode", "result_kind", "statement_class", "statement_type", "status")) {
+            outputProperties.put(each, Map.of("type", "string", "description", "Execution result field."));
+        }
+        for (String each : List.of("columns", "rows")) {
+            outputProperties.put(each, Map.of("type", "array", "description", "Result-set field."));
+        }
+        for (String each : List.of("returned_row_count", "applied_max_rows", "applied_timeout_ms")) {
+            outputProperties.put(each, Map.of("type", "integer", "description", "Execution limit field."));
+        }
+        outputProperties.put("suggested_arguments", Map.of("type", "object", "description", "Suggested execution arguments."));
+        outputProperties.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActionsSchema());
+        outputProperties.remove(fieldName);
+        Map<String, Object> inputSchema = createInputSchema(Map.of(MCPPayloadFieldNames.EXECUTION_MODE,
+                Map.of("type", "string", "description", "Execution mode.", "enum", List.of("execute", "preview"))), List.of(MCPPayloadFieldNames.EXECUTION_MODE));
+        return new MCPToolDescriptor("database_gateway_execute_update", "Execute Update", "Execute a side-effecting statement.", inputSchema,
+                createOutputSchema(outputProperties, List.of(Map.of("response_mode", "preview"))), createReadOnlyToolAnnotations("Execute Update"), Map.of());
     }
     
     private MCPToolAnnotations createPlanningToolAnnotations() {

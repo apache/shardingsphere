@@ -15,14 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.tool.response;
+package org.apache.shardingsphere.mcp.support.database.tool.result;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Runtime database validation check result.
@@ -77,19 +74,5 @@ public final class RuntimeDatabaseValidationCheckResult {
      */
     public static RuntimeDatabaseValidationCheckResult skipped(final String name, final String message) {
         return new RuntimeDatabaseValidationCheckResult(name, STATUS_SKIPPED, "skipped", message);
-    }
-    
-    /**
-     * Convert to payload.
-     *
-     * @return payload
-     */
-    public Map<String, Object> toPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("name", name);
-        result.put("status", status);
-        result.put("category", category);
-        result.put("message", message);
-        return result;
     }
 }

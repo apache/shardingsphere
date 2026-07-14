@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.protocol;
+package org.apache.shardingsphere.mcp.support.database.tool.result;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Execute query result kind.
+ * SQL execution column definition.
  */
-public enum ExecuteQueryResultKind {
+@RequiredArgsConstructor
+@Getter
+public final class SQLExecutionColumnDefinition {
     
-    RESULT_SET, UPDATE_COUNT, STATEMENT_ACK
+    private final String columnName;
+    
+    private final String logicalType;
+    
+    private final String nativeType;
+    
+    private final boolean nullable;
 }
