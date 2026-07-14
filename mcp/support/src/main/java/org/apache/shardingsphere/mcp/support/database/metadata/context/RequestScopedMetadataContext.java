@@ -33,7 +33,7 @@ import java.util.Optional;
  * Request-scoped metadata context.
  */
 @RequiredArgsConstructor
-public final class RequestScopedMetadataContext implements AutoCloseable {
+public final class RequestScopedMetadataContext {
     
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
@@ -64,8 +64,4 @@ public final class RequestScopedMetadataContext implements AutoCloseable {
         return Optional.of(result);
     }
     
-    @Override
-    public void close() {
-        loadedSchemas.clear();
-    }
 }

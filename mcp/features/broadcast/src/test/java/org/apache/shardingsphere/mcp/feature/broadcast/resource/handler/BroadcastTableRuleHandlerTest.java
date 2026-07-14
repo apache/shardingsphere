@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -44,7 +44,7 @@ class BroadcastTableRuleHandlerTest {
             BroadcastTableRuleHandler handler = new BroadcastTableRuleHandler();
             BroadcastRuleInspectionService ruleInspectionService = mocked.constructed().getFirst();
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+            MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
             when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
             when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
             when(ruleInspectionService.queryBroadcastRules(queryFacade, "logic_db"))

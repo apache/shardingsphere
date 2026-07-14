@@ -22,8 +22,8 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleIns
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 
 import java.util.Map;
 import java.util.Objects;
@@ -32,29 +32,29 @@ import java.util.Set;
 /**
  * Encrypt algorithm completion provider.
  */
-public final class EncryptAlgorithmCompletionProvider implements MCPCompletionProvider<MCPDatabaseHandlerContext> {
+public final class EncryptAlgorithmCompletionProvider implements MCPCompletionProvider<MCPDatabaseRequestContext> {
     
     private static final Set<String> SUPPORTED_ARGUMENTS = Set.of("algorithm_type", "assisted_query_algorithm_type", "like_query_algorithm_type");
     
     private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
-    public boolean supports(final MCPCompletionRequestContext requestContext) {
-        return SUPPORTED_ARGUMENTS.contains(requestContext.getArgumentName()) && isEncryptReference(requestContext);
+    public boolean supports(final MCPCompletionRequest request) {
+        return SUPPORTED_ARGUMENTS.contains(request.getArgumentName()) && isEncryptReference(request);
     }
     
-    private boolean isEncryptReference(final MCPCompletionRequestContext requestContext) {
-        String reference = requestContext.getDescriptor().getReference();
+    private boolean isEncryptReference(final MCPCompletionRequest request) {
+        String reference = request.getDescriptor().getReference();
         return EncryptFeatureDefinition.PLAN_PROMPT_NAME.equals(reference) || EncryptFeatureDefinition.ALGORITHMS_RESOURCE_URI.equals(reference);
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPDatabaseHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
+    public MCPCompletionProviderResult complete(final MCPDatabaseRequestContext handlerContext, final MCPCompletionRequest request) {
         return new MCPCompletionProviderResult(ruleInspectionService.queryEncryptAlgorithms(handlerContext.getQueryFacade()).stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty()).toList());
     }

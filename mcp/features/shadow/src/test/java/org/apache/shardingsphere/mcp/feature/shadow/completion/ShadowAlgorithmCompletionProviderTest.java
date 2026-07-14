@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class ShadowAlgorithmCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new ShadowAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseHandlerContext.class));
+        assertThat(new ShadowAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
     }
     
     @Test
@@ -72,7 +72,7 @@ class ShadowAlgorithmCompletionProviderTest {
         when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS")).thenReturn(List.of(
                 Map.of("type", "VALUE_MATCH", "description", "Value match shadow algorithm", "password", "hidden"),
                 Map.of("type", "")));
-        MCPDatabaseHandlerContext handlerContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext handlerContext = mock(MCPDatabaseRequestContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new ShadowAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext(ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME));
@@ -89,9 +89,9 @@ class ShadowAlgorithmCompletionProviderTest {
         assertTrue(ServiceLoader.load(MCPCompletionProvider.class).stream().anyMatch(each -> ShadowAlgorithmCompletionProvider.class.equals(each.type())));
     }
     
-    private MCPCompletionRequestContext createRequestContext(final String reference) {
+    private MCPCompletionRequest createRequestContext(final String reference) {
         String referenceType = reference.startsWith("shardingsphere://") ? "resource" : "prompt";
-        return new MCPCompletionRequestContext("session-1",
+        return new MCPCompletionRequest(
                 new MCPCompletionTargetDescriptor(referenceType, reference, List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD), 50, Map.of()),
                 ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, Map.of("database", "logic_db"));
     }

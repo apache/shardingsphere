@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -49,7 +49,7 @@ class ShardingAlgorithmResourceHandlerTest {
         try (
                 MockedConstruction<ShardingInspectionService> ignored = mockConstruction(
                         ShardingInspectionService.class, (mock, context) -> stubInspectionService(mock, rows))) {
-            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+            MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
             when(databaseContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
             MCPResponse actual = handlerSupplier.get().handle(databaseContext, uriVariables);
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(rows.size()));

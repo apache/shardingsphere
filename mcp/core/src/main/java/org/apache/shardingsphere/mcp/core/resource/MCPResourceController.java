@@ -35,12 +35,12 @@ public final class MCPResourceController {
     /**
      * Handle resource URI.
      *
+     * @param sessionId session identifier
      * @param resourceUri resource URI
      * @return MCP response
      */
-    public MCPResponse handle(final String resourceUri) {
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            return ResourceDefinitionRegistry.dispatch(requestScope, resourceUri).orElseThrow(() -> new UnsupportedResourceUriException(resourceUri));
-        }
+    public MCPResponse handle(final String sessionId, final String resourceUri) {
+        return ResourceDefinitionRegistry.dispatch(new MCPRequestScope(runtimeContext, sessionId), resourceUri)
+                .orElseThrow(() -> new UnsupportedResourceUriException(resourceUri));
     }
 }

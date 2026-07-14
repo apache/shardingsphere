@@ -38,17 +38,15 @@ class MCPRequestScopeTest {
         sessionManager.createSession("session-1");
         sessionManager.bindSessionIdentity("session-1", sessionIdentity);
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1")) {
-            assertThat(requestScope.findSessionIdentity(), is(Optional.of(sessionIdentity)));
-        }
+        MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1");
+        assertThat(requestScope.findSessionIdentity(), is(Optional.of(sessionIdentity)));
     }
     
     @Test
     void assertFindSessionIdentityWithoutSession() {
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            assertThat(requestScope.findSessionIdentity(), is(Optional.empty()));
-        }
+        MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1");
+        assertThat(requestScope.findSessionIdentity(), is(Optional.empty()));
     }
     
     @Test
@@ -56,9 +54,8 @@ class MCPRequestScopeTest {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig)),
                 new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            assertThat(requestScope.findRuntimeDatabaseConfiguration("logic_db"), is(Optional.of(runtimeDatabaseConfig)));
-            assertThat(requestScope.findRuntimeDatabaseConfiguration("missing_db"), is(Optional.empty()));
-        }
+        MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1");
+        assertThat(requestScope.findRuntimeDatabaseConfiguration("logic_db"), is(Optional.of(runtimeDatabaseConfig)));
+        assertThat(requestScope.findRuntimeDatabaseConfiguration("missing_db"), is(Optional.empty()));
     }
 }

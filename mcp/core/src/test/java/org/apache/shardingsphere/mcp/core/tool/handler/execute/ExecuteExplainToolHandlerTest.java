@@ -20,8 +20,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -48,10 +47,11 @@ class ExecuteExplainToolHandlerTest {
     void assertHandleExplainQuery() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.executeExplain(any(), any())).thenReturn(createExplainResult());
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
+        when(databaseContext.getSessionId()).thenReturn("session-1");
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteExplainToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "explain_sql", "EXPLAIN SELECT * FROM orders")));
+        MCPResponse actual = new ExecuteExplainToolHandler().handle(databaseContext,
+                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "explain_sql", "EXPLAIN SELECT * FROM orders"));
         assertThat(actual.toPayload().get("statement_class"), is("explain"));
         ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);
         verify(executionFacade).executeExplain(requestCaptor.capture(), eq("SELECT * FROM orders"));
@@ -67,11 +67,11 @@ class ExecuteExplainToolHandlerTest {
         when(executionFacade.executeExplain(any(), any())).thenReturn(createExplainResult());
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new ShardingSphereSchema("public", mock(DatabaseType.class))));
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
+        when(databaseContext.getSessionId()).thenReturn("session-1");
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
-        new ExecuteExplainToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "sql", "SELECT * FROM orders", "explain_sql", "EXPLAIN SELECT * FROM orders")));
+        new ExecuteExplainToolHandler().handle(databaseContext, Map.of("database", "logic_db", "sql", "SELECT * FROM orders", "explain_sql", "EXPLAIN SELECT * FROM orders"));
         ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);
         verify(executionFacade).executeExplain(requestCaptor.capture(), eq("SELECT * FROM orders"));
         assertThat(requestCaptor.getValue().getSchema(), is("public"));

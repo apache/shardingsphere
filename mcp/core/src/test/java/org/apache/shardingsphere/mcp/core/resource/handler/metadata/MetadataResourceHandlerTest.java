@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
@@ -52,7 +52,7 @@ class MetadataResourceHandlerTest {
     void assertHandleListResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases",
                 (requestContext, uriVariables) -> List.of(Map.of("database", "logic_db")));
-        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
+        MCPResponse actual = handler.handle(mock(MCPDatabaseRequestContext.class), new MCPUriVariables(Map.of()));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("response_mode"), is("list"));
         assertThat(actualPayload.get("summary"), is("Returned 1 of 1 logical-database metadata entries."));
@@ -72,7 +72,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleRootListResourceWithoutRuntimeDatabase() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
+        MCPResponse actual = handler.handle(mock(MCPDatabaseRequestContext.class), new MCPUriVariables(Map.of()));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
         assertThat(actualEmptyState.get("reason"), is("No ShardingSphere-Proxy logical database is available to MCP. Configure runtimeDatabases before reading metadata."));
@@ -126,11 +126,11 @@ class MetadataResourceHandlerTest {
         assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("requested_token"), is("missing_table"));
     }
     
-    private MCPDatabaseHandlerContext createDatabaseContext(final Optional<RuntimeDatabaseProfile> databaseProfile) {
+    private MCPDatabaseRequestContext createDatabaseContext(final Optional<RuntimeDatabaseProfile> databaseProfile) {
         MCPFeatureCapabilityFacade capabilityFacade = mock(MCPFeatureCapabilityFacade.class);
         when(capabilityFacade.findDatabaseProfile("logic_db")).thenReturn(databaseProfile);
         when(capabilityFacade.findDatabaseProfile("missing_db")).thenReturn(Optional.empty());
-        MCPDatabaseHandlerContext result = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext result = mock(MCPDatabaseRequestContext.class);
         when(result.getCapabilityFacade()).thenReturn(capabilityFacade);
         return result;
     }

@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.response.SQLExecutionResponse;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -40,7 +39,7 @@ import java.util.Map;
 /**
  * Execute side-effecting SQL tool handler.
  */
-public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
+public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabaseRequestContext> {
     
     private static final String TOOL_NAME = "database_gateway_execute_update";
     
@@ -63,8 +62,8 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     private static final String PREVIEW_EXECUTION_REASON = "Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.";
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -73,8 +72,8 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
-        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String executionMode = resolveExecutionMode(toolArguments);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
         String sql = toolArguments.getStringArgument("sql");
@@ -83,7 +82,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
             return createPreviewResponse(toolArguments, classificationResult);
         }
         return SQLExecutionResponse.executed(databaseContext.getExecutionFacade().execute(
-                SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, TOOL_NAME)));
+                SQLExecutionToolHandlerSupport.createExecutionRequest(databaseContext.getSessionId(), toolArguments, sql, TOOL_NAME)));
     }
     
     private ClassificationResult checkUpdateStatement(final MCPToolArguments toolArguments, final String sql) {

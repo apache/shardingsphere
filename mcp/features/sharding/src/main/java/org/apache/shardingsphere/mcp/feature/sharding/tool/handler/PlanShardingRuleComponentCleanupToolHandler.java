@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+
+import java.util.Map;
 
 /**
  * Tool handler for sharding rule component cleanup planning.
@@ -39,13 +40,13 @@ public final class PlanShardingRuleComponentCleanupToolHandler extends AbstractS
     }
     
     @Override
-    protected ShardingWorkflowRequest bindRequest(final MCPToolCall toolCall) {
-        return requestBinder.bindRuleComponentCleanup(toolCall.getArguments());
+    protected ShardingWorkflowRequest bindRequest(final Map<String, Object> arguments) {
+        return requestBinder.bindRuleComponentCleanup(arguments);
     }
     
     @Override
-    protected WorkflowContextSnapshot plan(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall, final ShardingWorkflowRequest request) {
+    protected WorkflowContextSnapshot plan(final MCPWorkflowRequestContext workflowContext, final ShardingWorkflowRequest request) {
         return planningService.planComponentCleanup(
-                workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
+                workflowContext.getWorkflowSessionContext(), workflowContext.getQueryFacade(), request);
     }
 }

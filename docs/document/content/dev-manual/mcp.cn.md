@@ -30,13 +30,12 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 1. 在 `mcp/features/<feature>` 下创建模块。
 2. 依赖 `mcp/api`。
 3. 如果需要 database metadata、SQL execution 或 workflow 支持，依赖 `mcp/support`。
-4. 只有需要 service 级 handler context 时才依赖 `mcp/core`。
-5. 不依赖 `mcp/bootstrap`。
-6. 实现 `MCPHandlerProvider`。
-7. 通过 `getToolHandlers()` 和 `getResourceHandlers()` 返回 feature 自己暴露的 handlers。
-8. 如果 feature 拥有 workflow definitions，在同一个 provider 上实现 `MCPWorkflowDefinitionProvider`。
-9. 在 `src/main/resources/META-INF/services/` 注册 `org.apache.shardingsphere.mcp.api.MCPHandlerProvider`。
-10. 在 `META-INF/shardingsphere-mcp/mcp-descriptors` 下添加 descriptor。
+4. 不依赖 `mcp/core` 或 `mcp/bootstrap`；runtime 实现不是 feature 扩展契约。
+5. 实现 `MCPHandlerProvider`。
+6. 通过 `getToolHandlers()` 和 `getResourceHandlers()` 返回 feature 自己暴露的 handlers。
+7. 如果 feature 拥有 workflow definitions，在同一个 provider 上实现 `MCPWorkflowDefinitionProvider`。
+8. 在 `src/main/resources/META-INF/services/` 注册 `org.apache.shardingsphere.mcp.api.MCPHandlerProvider`。
+9. 在 `META-INF/shardingsphere-mcp/mcp-descriptors` 下添加 descriptor。
 
 如果 feature 要作为官方默认能力随发行包提供，还需要：
 
@@ -64,7 +63,7 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 
 对外新增 tool：
 
-- 实现 `MCPToolHandler<T extends MCPHandlerContext>`。
+- 实现 `MCPToolHandler<T extends MCPRequestContext>`。
 - 声明 context type。
 - 声明 canonical tool name。
 - `handle(...)` 只返回成功的 `MCPResponse`；参数非法、资源不存在、查询失败、超时、不支持等受控失败应抛出 `ShardingSphereMCPException` 子类或明确的运行时异常，由 runtime 转换为 MCP tool 错误结果。
@@ -72,7 +71,7 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 
 对外新增 resource：
 
-- 实现 `MCPResourceHandler<T extends MCPHandlerContext>`。
+- 实现 `MCPResourceHandler<T extends MCPRequestContext>`。
 - 声明 context type。
 - 声明 canonical resource URI template。固定 URI 也是没有变量的 URI template。
 - `handle(...)` 只返回成功的 `MCPResponse`；失败不要在 handler 中手工构造错误 response，由 runtime 转换为 MCP resource 读取错误。
@@ -83,9 +82,14 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 
 ## Context 选择
 
-- service 级 handler 使用 `MCPServiceHandlerContext`。
-- database metadata 或 execution handler 使用 `MCPDatabaseHandlerContext`。
-- workflow handler 使用 `MCPWorkflowHandlerContext`。
+- 只需要 session ID、当前 transport 或 session identity 的 handler 使用 `MCPRequestContext`。
+- database metadata 或 execution handler 使用 `MCPDatabaseRequestContext`。
+- workflow handler 使用 `MCPWorkflowRequestContext`。
+
+`MCPRequestScope` 是 runtime 管理的单次请求实现，名称表达的是生命周期；handler 只依赖自身所需的最小 context 接口。
+
+Completion 请求按 session 使用 60 秒固定窗口限流，默认每分钟 600 次，可通过 Java 系统属性
+`shardingsphere.mcp.maxCompletionRequestsPerMinute` 调整。
 
 ## 命名与唯一性
 

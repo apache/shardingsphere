@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
@@ -36,13 +36,13 @@ import java.util.Map;
 /**
  * Broadcast table rule handler.
  */
-public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
     
     private final BroadcastRuleInspectionService ruleInspectionService = new BroadcastRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -51,7 +51,7 @@ public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDa
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
         String database = uriVariables.getValue("database");
         String table = uriVariables.getValue("table");
         MCPFeatureQueryFacade queryFacade = databaseContext.getQueryFacade();

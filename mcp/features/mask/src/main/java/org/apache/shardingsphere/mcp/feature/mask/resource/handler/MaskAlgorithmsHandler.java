@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
@@ -30,13 +30,13 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPay
 /**
  * Mask algorithms handler.
  */
-public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
     
     private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -45,7 +45,7 @@ public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryMaskAlgorithms(databaseContext.getQueryFacade()),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }

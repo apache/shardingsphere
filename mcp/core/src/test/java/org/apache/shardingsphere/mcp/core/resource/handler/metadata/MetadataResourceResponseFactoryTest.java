@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.junit.jupiter.api.Test;
@@ -91,7 +91,7 @@ class MetadataResourceResponseFactoryTest {
     private MCPResponse createResponse(final String uriTemplate, final MCPUriVariables uriVariables, final List<?> items) {
         MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
         ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(uriTemplate);
-        return new MetadataResourceResponseFactory().create(mock(MCPDatabaseHandlerContext.class), uriVariables, descriptor, metadata, items);
+        return new MetadataResourceResponseFactory().create(mock(MCPDatabaseRequestContext.class), uriVariables, descriptor, metadata, items);
     }
     
     private List<Map<String, String>> createDatabases(final int count) {

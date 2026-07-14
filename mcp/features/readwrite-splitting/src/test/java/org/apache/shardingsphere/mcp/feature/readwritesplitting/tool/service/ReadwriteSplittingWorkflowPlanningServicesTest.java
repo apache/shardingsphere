@@ -43,7 +43,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     
     @Test
     void assertPlanCreateRule() {
-        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), "session-1", createRuleRequest("create"));
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), createRuleRequest("create"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("readwrite.rule"));
         assertThat(actual.getRuleArtifacts().getFirst().getSql(),
@@ -57,7 +57,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest("create");
         request.setLoadBalancerType("WEIGHT");
         request.putLoadBalancerProperties(Map.of("read_ds_0", "2"));
-        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), "session-1", request);
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), request);
         assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("WEIGHT"));
         assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("read_ds_0"));
         String expectedSQL = "CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`), "
@@ -69,7 +69,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     void assertPlanCreateRuleClarifiesMissingLoadBalancerProperties() {
         ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest("create");
         request.setLoadBalancerType("WEIGHT");
-        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), "session-1", request);
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
         assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("read_ds_0"));
@@ -80,7 +80,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     void assertPlanCreateRuleWithLoadBalancerRecommendation() {
         ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest("create");
         request.setLoadBalancerType("RANDOM");
-        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), "session-1", request);
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("RANDOM"));
         assertTrue(actual.getPropertyRequirements().isEmpty());
@@ -89,7 +89,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     @Test
     void assertPlanAlterRule() {
         WorkflowContextSnapshot actual =
-                createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of(Map.of("name", "readwrite_ds"))), "session-1", createRuleRequest("alter"));
+                createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of(Map.of("name", "readwrite_ds"))), createRuleRequest("alter"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getRuleArtifacts().getFirst().getOperationType(), is("alter"));
     }
@@ -100,7 +100,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         request.setDatabase("logic_db");
         request.setRuleName("readwrite_ds");
         request.setOperationType("drop");
-        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of(Map.of("name", "readwrite_ds"))), "session-1", request);
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of(Map.of("name", "readwrite_ds"))), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP READWRITE_SPLITTING RULE `readwrite_ds`"));
     }
@@ -109,7 +109,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     void assertPlanClarifiesMissingStorageUnits() {
         ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest("create");
         request.setWriteStorageUnit("");
-        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
     }
@@ -117,7 +117,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     @Test
     void assertPlanCreateFailsWhenRuleExists() {
         WorkflowContextSnapshot actual =
-                createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of(Map.of("name", "readwrite_ds"))), "session-1", createRuleRequest("create"));
+                createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of(Map.of("name", "readwrite_ds"))), createRuleRequest("create"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
@@ -128,7 +128,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         request.setDatabase("logic_db");
         request.setRuleName("readwrite_ds");
         request.setOperationType("drop");
-        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), "session-1", request);
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND));
     }
@@ -137,7 +137,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     void assertPlanFailsForUnsupportedIdentifier() {
         ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest("create");
         request.setRuleName("bad`rule");
-        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER));
     }
@@ -145,7 +145,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     @Test
     void assertPlanStatus() {
         WorkflowContextSnapshot actual =
-                createStatusService().plan(new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of(createStatusRow("ENABLED"))), "session-1", createStatusRequest("disable"));
+                createStatusService().plan(new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of(createStatusRow("ENABLED"))), createStatusRequest("disable"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("readwrite.status"));
         assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("ALTER READWRITE_SPLITTING RULE `readwrite_ds` DISABLE `read_ds_0` FROM `logic_db`"));
@@ -156,7 +156,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
         request.setNaturalLanguageIntent("disable read storage unit");
         WorkflowContextSnapshot actual = createStatusService().plan(
-                new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of(createStatusRow("ENABLED"))), "session-1", request);
+                new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of(createStatusRow("ENABLED"))), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(((ReadwriteSplittingStatusWorkflowRequest) actual.getRequest()).getTargetStatus(), is("disable"));
         assertThat(actual.getRequest().getOperationType(), is(""));
@@ -166,14 +166,14 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     @Test
     void assertPlanStatusClarifiesMissingStatus() {
         ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
-        WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
     }
     
     @Test
     void assertPlanStatusFailsWhenTargetMissing() {
-        WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of()), "session-1", createStatusRequest("enable"));
+        WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of()), createStatusRequest("enable"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND));
     }

@@ -20,9 +20,8 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
@@ -49,10 +48,11 @@ class ExecuteUpdateToolHandlerTest {
     void assertHandleUpdateStatement() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(createUpdateResult());
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
+        when(databaseContext.getSessionId()).thenReturn("session-1");
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute")));
+        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext,
+                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute"));
         assertThat(actual.toPayload().get("response_mode"), is("executed"));
         assertThat(actual.toPayload().get("execution_mode"), is("execute"));
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
@@ -69,10 +69,11 @@ class ExecuteUpdateToolHandlerTest {
     void assertHandleExecutionWithoutApprovalArgument() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(createUpdateResult());
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
+        when(databaseContext.getSessionId()).thenReturn("session-1");
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute")));
+        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext,
+                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute"));
         assertThat(actual.toPayload().get("execution_mode"), is("execute"));
         verify(executionFacade).execute(any());
     }
@@ -80,10 +81,10 @@ class ExecuteUpdateToolHandlerTest {
     @Test
     void assertRejectMissingExecutionMode() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'"))));
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> new ExecuteUpdateToolHandler().handle(databaseContext, Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'")));
         assertThat(actual.getMessage(), is("database_gateway_execute_update execution_mode is required."));
         verifyNoInteractions(executionFacade);
     }
@@ -91,10 +92,11 @@ class ExecuteUpdateToolHandlerTest {
     @Test
     void assertRejectReadOnlyQuery() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "sql", "select * from orders", "execution_mode", "execute"))));
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
+                () -> new ExecuteUpdateToolHandler().handle(databaseContext,
+                        Map.of("database", "logic_db", "sql", "select * from orders", "execution_mode", "execute")));
         assertThat(actual.getMessage(), is("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL."));
         verifyNoInteractions(executionFacade);
     }
@@ -102,10 +104,10 @@ class ExecuteUpdateToolHandlerTest {
     @Test
     void assertPreviewUpdateStatementWithoutExecuting() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "preview")));
+        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext,
+                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "preview"));
         assertThat(actual.toPayload().get("response_mode"), is("preview"));
         assertThat(actual.toPayload().get("result_kind"), is("preview"));
         assertThat(actual.toPayload().get("preview_semantics"), is("classification_only"));
@@ -136,7 +138,8 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actualToolCallAction.get("reason"),
                 is("Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability."));
         assertThat(((Map<?, ?>) actualToolCallAction.get("arguments")).get("execution_mode"), is("execute"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("resources_to_read")).getFirst()).get("uri"), is("shardingsphere://databases/logic_db/capabilities"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("resources_to_read")).getFirst()).get("uri"),
+                is("shardingsphere://databases/logic_db/capabilities"));
         assertFalse(actual.toPayload().containsKey("ask_user_when_uncertain"));
         verifyNoInteractions(executionFacade);
     }
@@ -144,12 +147,11 @@ class ExecuteUpdateToolHandlerTest {
     @Test
     void assertPreviewRuleDistSQLStatementWithoutExecuting() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "sharding_db", "sql",
-                        "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))",
-                        "execution_mode", "preview")));
+        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, Map.of("database", "sharding_db", "sql",
+                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))",
+                "execution_mode", "preview"));
         assertThat(actual.toPayload().get("response_mode"), is("preview"));
         assertThat(actual.toPayload().get("statement_class"), is("ddl"));
         assertThat(actual.toPayload().get("side_effect_scope"), is(List.of("rule-metadata")));
@@ -164,10 +166,11 @@ class ExecuteUpdateToolHandlerTest {
     @Test
     void assertRejectPreviewWithInvalidTimeout() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPInvalidToolArgumentException actual = assertThrows(MCPInvalidToolArgumentException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "preview", "timeout_ms", 300001))));
+        MCPInvalidToolArgumentException actual = assertThrows(MCPInvalidToolArgumentException.class,
+                () -> new ExecuteUpdateToolHandler().handle(databaseContext,
+                        Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "preview", "timeout_ms", 300001)));
         assertThat(actual.getMessage(), is("timeout_ms must be an integer between 0 and 300000."));
         assertThat(actual.getArgumentPath(), is("timeout_ms"));
         assertThat(actual.getSuggestedValue(), is(0));
@@ -177,10 +180,11 @@ class ExecuteUpdateToolHandlerTest {
     @Test
     void assertRejectUnknownExecutionMode() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'", "execution_mode", "dry-run"))));
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> new ExecuteUpdateToolHandler().handle(databaseContext,
+                        Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'", "execution_mode", "dry-run")));
         assertThat(actual.getMessage(), is("database_gateway_execute_update execution_mode must be one of [execute, preview]."));
         verifyNoInteractions(executionFacade);
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class EncryptMCPHandlerProviderTest {
                 "shardingsphere://features/encrypt/algorithms",
                 "shardingsphere://features/encrypt/databases/{database}/rules",
                 "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules")));
-        assertTrue(actual.stream().allMatch(each -> MCPDatabaseHandlerContext.class.equals(each.getContextType())));
+        assertTrue(actual.stream().allMatch(each -> MCPDatabaseRequestContext.class.equals(each.getContextType())));
     }
     
     @Test

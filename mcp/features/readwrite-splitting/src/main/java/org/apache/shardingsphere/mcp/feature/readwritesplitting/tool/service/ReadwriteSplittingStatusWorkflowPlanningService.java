@@ -62,13 +62,12 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
-    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final String sessionId,
+    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                         final ReadwriteSplittingStatusWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ReadwriteSplittingStatusWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         applyResolvedStatusIntent(mergedRequest, clarifiedIntent);

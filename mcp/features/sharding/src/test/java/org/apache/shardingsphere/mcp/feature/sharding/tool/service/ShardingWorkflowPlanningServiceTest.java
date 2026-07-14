@@ -42,7 +42,7 @@ class ShardingWorkflowPlanningServiceTest {
     @Test
     void assertPlanTableRuleClarifiesMissingDatabase() {
         WorkflowContextSnapshot actual = planningService.planTableRule(
-                new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", new ShardingWorkflowRequest());
+                new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), new ShardingWorkflowRequest());
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
         assertThat(actual.getInteractionPlan().getCurrentStep(), is(WorkflowLifecycle.STEP_CLARIFYING));
         assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide logical database first.")));
@@ -53,7 +53,7 @@ class ShardingWorkflowPlanningServiceTest {
     void assertPlanTableRuleRejectsUnsupportedOperation() {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setOperationType("replace");
-        WorkflowContextSnapshot actual = planningService.planTableRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = planningService.planTableRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(actual.getInteractionPlan().getCurrentStep(), is(WorkflowLifecycle.STEP_FAILED));
         assertThat(actual.getClarifiedIntent().getOperationType(), is(""));
@@ -64,7 +64,7 @@ class ShardingWorkflowPlanningServiceTest {
     @Test
     void assertPlanTableReferenceRuleClarifiesMissingInputs() {
         ShardingWorkflowRequest request = createDatabaseRequest();
-        WorkflowContextSnapshot actual = planningService.planTableReferenceRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = planningService.planTableReferenceRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getWorkflowKind().getValue(), is("sharding.table.reference"));
         assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide table reference rule name.")));
     }
@@ -72,7 +72,7 @@ class ShardingWorkflowPlanningServiceTest {
     @Test
     void assertPlanDefaultStrategyClarifiesMissingInputs() {
         ShardingWorkflowRequest request = createDatabaseRequest();
-        WorkflowContextSnapshot actual = planningService.planDefaultStrategy(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = planningService.planDefaultStrategy(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getWorkflowKind().getValue(), is("sharding.default.strategy"));
         assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide DATABASE or TABLE default strategy type.")));
     }
@@ -80,7 +80,7 @@ class ShardingWorkflowPlanningServiceTest {
     @Test
     void assertPlanKeyGeneratorClarifiesMissingInputs() {
         ShardingWorkflowRequest request = createDatabaseRequest();
-        WorkflowContextSnapshot actual = planningService.planKeyGenerator(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = planningService.planKeyGenerator(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getWorkflowKind().getValue(), is("sharding.key.generator"));
         assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide key generator name.")));
     }
@@ -88,7 +88,7 @@ class ShardingWorkflowPlanningServiceTest {
     @Test
     void assertPlanKeyGenerateStrategyClarifiesMissingInputs() {
         ShardingWorkflowRequest request = createDatabaseRequest();
-        WorkflowContextSnapshot actual = planningService.planKeyGenerateStrategy(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = planningService.planKeyGenerateStrategy(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getWorkflowKind().getValue(), is("sharding.key.generate.strategy"));
         assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide key generate strategy name.")));
     }
@@ -100,7 +100,7 @@ class ShardingWorkflowPlanningServiceTest {
         request.setComponentType("algorithm");
         request.setComponentName("inline_algorithm");
         request.setOperationType("create");
-        WorkflowContextSnapshot actual = planningService.planComponentCleanup(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+        WorkflowContextSnapshot actual = planningService.planComponentCleanup(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(actual.getInteractionPlan().getCurrentStep(), is(WorkflowLifecycle.STEP_FAILED));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));

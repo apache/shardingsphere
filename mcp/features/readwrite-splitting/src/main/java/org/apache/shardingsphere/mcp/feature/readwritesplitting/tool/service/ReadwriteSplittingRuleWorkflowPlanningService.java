@@ -70,13 +70,12 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
-    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final String sessionId,
+    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                         final ReadwriteSplittingRuleWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ReadwriteSplittingRuleWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);

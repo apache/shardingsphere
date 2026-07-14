@@ -115,7 +115,7 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyRejectsDifferentSession() {
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionStore().getSessionContext("session-1");
         workflowSessionContext.save(createSnapshot());
         WorkflowExecutionService executionService = new WorkflowExecutionService();
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
@@ -143,27 +143,30 @@ class WorkflowExecutionServiceTest {
     @Test
     void assertApplyRejectsMissingExecutionMode() {
         WorkflowExecutionService executionService = new WorkflowExecutionService();
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> executionService.apply(new InMemoryWorkflowSessionContext(),
-                mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), NO_OP_APPLY_SYNCHRONIZATION_HANDLER,
-                MCPWorkflowApplyArtifactValidator.NO_OP, "session-1", createSnapshot(), List.of(), ""));
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> executionService.apply(new InMemoryWorkflowSessionStore().getSessionContext("session-1"),
+                        mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), NO_OP_APPLY_SYNCHRONIZATION_HANDLER,
+                        MCPWorkflowApplyArtifactValidator.NO_OP, "session-1", createSnapshot(), List.of(), ""));
         assertThat(actual.getMessage(), is("database_gateway_apply_workflow execution_mode is required."));
     }
     
     @Test
     void assertApplyRejectsUnsupportedExecutionMode() {
         WorkflowExecutionService executionService = new WorkflowExecutionService();
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> executionService.apply(new InMemoryWorkflowSessionContext(),
-                mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), NO_OP_APPLY_SYNCHRONIZATION_HANDLER,
-                MCPWorkflowApplyArtifactValidator.NO_OP, "session-1", createSnapshot(), List.of(), "auto-execute"));
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> executionService.apply(new InMemoryWorkflowSessionStore().getSessionContext("session-1"),
+                        mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), NO_OP_APPLY_SYNCHRONIZATION_HANDLER,
+                        MCPWorkflowApplyArtifactValidator.NO_OP, "session-1", createSnapshot(), List.of(), "auto-execute"));
         assertThat(actual.getMessage(), is("database_gateway_apply_workflow execution_mode must be one of [preview, review-then-execute, manual-only]."));
     }
     
     @Test
     void assertApplyRejectsUnsupportedApprovedStep() {
         WorkflowExecutionService executionService = new WorkflowExecutionService();
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> executionService.apply(new InMemoryWorkflowSessionContext(),
-                mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), NO_OP_APPLY_SYNCHRONIZATION_HANDLER,
-                MCPWorkflowApplyArtifactValidator.NO_OP, "session-1", createSnapshot(), List.of("review"), "review-then-execute"));
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> executionService.apply(new InMemoryWorkflowSessionStore().getSessionContext("session-1"),
+                        mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), NO_OP_APPLY_SYNCHRONIZATION_HANDLER,
+                        MCPWorkflowApplyArtifactValidator.NO_OP, "session-1", createSnapshot(), List.of("review"), "review-then-execute"));
         assertThat(actual.getMessage(), is("approved_steps must contain only [ddl, index_ddl, rule_distsql]."));
     }
     
@@ -284,7 +287,7 @@ class WorkflowExecutionServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionStore().getSessionContext("session-1");
         workflowSessionContext.save(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actualResponse = new WorkflowExecutionService().apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
@@ -481,7 +484,7 @@ class WorkflowExecutionServiceTest {
     }
     
     private WorkflowSessionContext createWorkflowSessionContext(final WorkflowContextSnapshot snapshot) {
-        WorkflowSessionContext result = new InMemoryWorkflowSessionContext();
+        WorkflowSessionContext result = new InMemoryWorkflowSessionStore().getSessionContext("session-1");
         result.save(snapshot);
         return result;
     }

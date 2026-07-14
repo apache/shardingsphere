@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
@@ -30,13 +30,13 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPay
 /**
  * Encrypt algorithms handler.
  */
-public final class EncryptAlgorithmsHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class EncryptAlgorithmsHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
     
     private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -45,7 +45,7 @@ public final class EncryptAlgorithmsHandler implements MCPResourceHandler<MCPDat
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryEncryptAlgorithms(databaseContext.getQueryFacade()),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }

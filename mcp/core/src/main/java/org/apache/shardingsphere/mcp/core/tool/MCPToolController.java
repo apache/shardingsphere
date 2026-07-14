@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 
@@ -36,10 +37,13 @@ public final class MCPToolController {
     
     private final MCPToolCallLimiter toolCallLimiter;
     
+    private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
+    
     public MCPToolController(final MCPRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
         toolCallLimiter = new MCPToolCallLimiter();
         runtimeContext.getSessionManager().addSessionCloseListener(toolCallLimiter::releaseSession);
+        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(runtimeContext.getSessionManager());
     }
     
     /**
@@ -65,10 +69,10 @@ public final class MCPToolController {
      */
     public MCPResponse handle(final String sessionId, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments) {
         try {
-            toolCallLimiter.acquire(sessionId, toolDefinition.getDescriptor().getName());
-            try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, sessionId)) {
-                return ToolDefinitionRegistry.dispatch(requestScope, toolDefinition, sessionId, arguments);
-            }
+            return sessionExecutionCoordinator.executeWithSessionLock(sessionId, () -> {
+                toolCallLimiter.acquire(sessionId, toolDefinition.getDescriptor().getName());
+                return ToolDefinitionRegistry.dispatch(new MCPRequestScope(runtimeContext, sessionId), toolDefinition, arguments);
+            });
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

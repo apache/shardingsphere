@@ -18,15 +18,13 @@
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
@@ -56,15 +54,15 @@ class PlanBroadcastRuleToolHandlerTest {
     void assertHandlePlanBroadcastRule() {
         try (
                 MockedConstruction<BroadcastWorkflowPlanningService> mocked = mockConstruction(BroadcastWorkflowPlanningService.class,
-                        (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createSnapshot("planned")))) {
+                        (mock, context) -> when(mock.plan(any(), any(), any())).thenReturn(createSnapshot("planned")))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanBroadcastRuleToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+            MCPResponse actual = new PlanBroadcastRuleToolHandler().handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
                     "tables", "t_order",
-                    "structured_intent_evidence", Map.of("tables", "t_order_item"))));
+                    "structured_intent_evidence", Map.of("tables", "t_order_item")));
             assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
             ArgumentCaptor<BroadcastWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(BroadcastWorkflowRequest.class);
-            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());
             assertThat(requestCaptor.getValue().getTargetTables(), is(List.of("t_order")));
         }
     }
@@ -73,9 +71,9 @@ class PlanBroadcastRuleToolHandlerTest {
     void assertHandlePlanBroadcastRuleWithArtifacts() {
         try (
                 MockedConstruction<BroadcastWorkflowPlanningService> ignored = mockConstruction(BroadcastWorkflowPlanningService.class,
-                        (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createSnapshot("planned")))) {
+                        (mock, context) -> when(mock.plan(any(), any(), any())).thenReturn(createSnapshot("planned")))) {
             MCPResponse actual = new PlanBroadcastRuleToolHandler().handle(createWorkflowContextFixture().workflowContext,
-                    new MCPToolCall("session-1", Map.of("database", "logic_db", "table", "t_order")));
+                    Map.of("database", "logic_db", "table", "t_order"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertFalse(actualPayload.containsKey("ddl_artifacts"));
             assertFalse(actualPayload.containsKey("index_plan"));
@@ -124,19 +122,18 @@ class PlanBroadcastRuleToolHandlerTest {
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {
-        MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPWorkflowRequestContext result = mock(MCPWorkflowRequestContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(result.getDatabaseContext()).thenReturn(databaseContext);
+        when(result.getSessionId()).thenReturn("session-1");
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        when(result.getQueryFacade()).thenReturn(queryFacade);
+        when(result.getExecutionFacade()).thenReturn(executionFacade);
         return new WorkflowContextFixture(result, workflowSessionContext, queryFacade, executionFacade);
     }
     
-    private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    private record WorkflowContextFixture(MCPWorkflowRequestContext workflowContext, WorkflowSessionContext workflowSessionContext,
                                           MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

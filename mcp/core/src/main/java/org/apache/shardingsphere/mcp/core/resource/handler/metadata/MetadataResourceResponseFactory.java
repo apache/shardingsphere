@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
@@ -56,7 +56,7 @@ public final class MetadataResourceResponseFactory {
      * @param items mapped metadata items
      * @return metadata resource response
      */
-    public MCPResponse create(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables, final MCPResourceDescriptor descriptor,
+    public MCPResponse create(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables, final MCPResourceDescriptor descriptor,
                               final ShardingSphereMCPResourceMetadata metadata, final List<?> items) {
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
         if (isDetailResource(metadata)) {
@@ -127,7 +127,7 @@ public final class MetadataResourceResponseFactory {
     }
     
     private void appendEmptyStateGuidance(final Map<String, Object> payload, final ShardingSphereMCPResourceMetadata metadata,
-                                          final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables, final String uriTemplate) {
+                                          final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables, final String uriTemplate) {
         Map<String, Object> emptyState = new LinkedHashMap<>(4, 1F);
         String resourceKind = null == metadata.getObjectScope() ? "metadata" : metadata.getObjectScope();
         String recoveryCategory = resolveEmptyStateCategory(metadata, databaseContext, uriVariables, uriTemplate);
@@ -149,7 +149,7 @@ public final class MetadataResourceResponseFactory {
                 : List.of(MCPNextActionUtils.readResource(parentUri, "Read the parent metadata resource before broadening or correcting the request.")));
     }
     
-    private String resolveEmptyStateCategory(final ShardingSphereMCPResourceMetadata metadata, final MCPDatabaseHandlerContext databaseContext,
+    private String resolveEmptyStateCategory(final ShardingSphereMCPResourceMetadata metadata, final MCPDatabaseRequestContext databaseContext,
                                              final MCPUriVariables uriVariables, final String uriTemplate) {
         if ("shardingsphere://databases".equals(uriTemplate)) {
             return MCPDiagnosticCategory.NO_RUNTIME_DATABASE;
@@ -180,7 +180,7 @@ public final class MetadataResourceResponseFactory {
         return Stream.of("column", "index", "sequence", "view", "storageUnit", "table").anyMatch(uriVariables::containsVariable);
     }
     
-    private boolean isKnownDatabase(final MCPDatabaseHandlerContext databaseContext, final String databaseName) {
+    private boolean isKnownDatabase(final MCPDatabaseRequestContext databaseContext, final String databaseName) {
         return Optional.ofNullable(databaseContext.getCapabilityFacade()).flatMap(capabilityFacade -> capabilityFacade.findDatabaseProfile(databaseName)).isPresent();
     }
     

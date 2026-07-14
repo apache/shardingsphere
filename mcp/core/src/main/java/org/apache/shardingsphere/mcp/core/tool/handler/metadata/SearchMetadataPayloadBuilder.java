@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -50,7 +50,7 @@ public final class SearchMetadataPayloadBuilder {
      * @param toolName search metadata tool name
      * @return search metadata payload metadata
      */
-    public static Map<String, Object> build(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request,
+    public static Map<String, Object> build(final MCPDatabaseRequestContext databaseContext, final MetadataSearchRequest request,
                                             final MetadataSearchResult searchResult, final String toolName) {
         Map<String, Object> result = new LinkedHashMap<>(9, 1F);
         result.put(MCPPayloadFieldNames.SUMMARY, createSummary(searchResult));
@@ -182,7 +182,7 @@ public final class SearchMetadataPayloadBuilder {
         return result;
     }
     
-    private static Map<String, Object> createEmptyState(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request) {
+    private static Map<String, Object> createEmptyState(final MCPDatabaseRequestContext databaseContext, final MetadataSearchRequest request) {
         String category = resolveEmptyStateCategory(databaseContext, request);
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("state", request.getQuery().isEmpty() ? "no_items" : "no_match");
@@ -191,7 +191,7 @@ public final class SearchMetadataPayloadBuilder {
         return result;
     }
     
-    private static String resolveEmptyStateCategory(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request) {
+    private static String resolveEmptyStateCategory(final MCPDatabaseRequestContext databaseContext, final MetadataSearchRequest request) {
         if (!hasRuntimeDatabase(databaseContext)) {
             return MCPDiagnosticCategory.NO_RUNTIME_DATABASE;
         }
@@ -204,15 +204,15 @@ public final class SearchMetadataPayloadBuilder {
         return request.getQuery().isEmpty() ? MCPDiagnosticCategory.EMPTY_SCOPE : MCPDiagnosticCategory.OBJECT_NOT_VISIBLE;
     }
     
-    private static boolean isKnownDatabase(final MCPDatabaseHandlerContext databaseContext, final String databaseName) {
+    private static boolean isKnownDatabase(final MCPDatabaseRequestContext databaseContext, final String databaseName) {
         return Optional.ofNullable(databaseContext.getCapabilityFacade()).flatMap(capabilityFacade -> capabilityFacade.findDatabaseProfile(databaseName)).isPresent();
     }
     
-    private static boolean isKnownSchema(final MCPDatabaseHandlerContext databaseContext, final String databaseName, final String schemaName) {
+    private static boolean isKnownSchema(final MCPDatabaseRequestContext databaseContext, final String databaseName, final String schemaName) {
         return databaseContext.getMetadataQueryFacade().querySchema(databaseName, schemaName).isPresent();
     }
     
-    private static boolean hasRuntimeDatabase(final MCPDatabaseHandlerContext databaseContext) {
+    private static boolean hasRuntimeDatabase(final MCPDatabaseRequestContext databaseContext) {
         return !databaseContext.getMetadataQueryFacade().queryDatabases().isEmpty();
     }
     

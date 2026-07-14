@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WorkflowLifecycleUtilsTest {
     
     @Test
-    void assertIsOwnedBySessionWithBlankSnapshotSession() {
+    void assertIsNotOwnedBySessionWithBlankSnapshotSession() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        assertTrue(WorkflowLifecycleUtils.isOwnedBySession("session-1", snapshot));
+        assertFalse(WorkflowLifecycleUtils.isOwnedBySession("session-1", snapshot));
     }
     
     @Test

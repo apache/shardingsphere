@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.mcp.feature.shadow.tool.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
@@ -37,13 +36,13 @@ import java.util.Map.Entry;
 /**
  * Tool handler for default shadow algorithm workflow planning.
  */
-public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
+public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandler<MCPWorkflowRequestContext> {
     
     private final ShadowWorkflowPlanningService planningService = new ShadowWorkflowPlanningService();
     
     @Override
-    public Class<MCPWorkflowHandlerContext> getContextType() {
-        return MCPWorkflowHandlerContext.class;
+    public Class<MCPWorkflowRequestContext> getContextType() {
+        return MCPWorkflowRequestContext.class;
     }
     
     @Override
@@ -52,11 +51,10 @@ public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandl
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        ShadowDefaultAlgorithmWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowDefaultAlgorithmWorkflowRequest::new, toolCall.getArguments(),
+    public MCPResponse handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
+        ShadowDefaultAlgorithmWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowDefaultAlgorithmWorkflowRequest::new, arguments,
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence);
-        WorkflowContextSnapshot snapshot = planningService.planDefaultAlgorithm(
-                workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
+        WorkflowContextSnapshot snapshot = planningService.planDefaultAlgorithm(workflowContext.getWorkflowSessionContext(), workflowContext.getQueryFacade(), request);
         return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
     }
     

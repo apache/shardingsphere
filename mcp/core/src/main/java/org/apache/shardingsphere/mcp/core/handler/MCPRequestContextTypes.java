@@ -20,28 +20,28 @@ package org.apache.shardingsphere.mcp.core.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 
 /**
- * MCP handler context utilities.
+ * MCP request context type utilities.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MCPHandlerContexts {
+public final class MCPRequestContextTypes {
     
     /**
-     * Validate handler context type.
+     * Validate request context type.
      *
      * @param contextType context type
      * @param handlerType handler type
      */
     public static void validateContextType(final Class<?> contextType, final Class<?> handlerType) {
         ShardingSpherePreconditions.checkState(isSupportedContextType(contextType),
-                () -> new IllegalArgumentException(String.format("Unsupported handler context type `%s` for `%s`.", contextType.getName(), handlerType.getName())));
+                () -> new IllegalArgumentException(String.format("Unsupported request context type `%s` for `%s`.", contextType.getName(), handlerType.getName())));
     }
     
     private static boolean isSupportedContextType(final Class<?> contextType) {
-        return MCPServiceHandlerContext.class == contextType || MCPDatabaseHandlerContext.class == contextType || MCPWorkflowHandlerContext.class == contextType;
+        return MCPRequestContext.class == contextType || MCPDatabaseRequestContext.class == contextType || MCPWorkflowRequestContext.class == contextType;
     }
 }

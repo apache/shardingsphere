@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
@@ -30,13 +30,13 @@ import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 /**
  * Broadcast rule count handler.
  */
-public final class BroadcastRuleCountHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class BroadcastRuleCountHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
     
     private final BroadcastRuleInspectionService ruleInspectionService = new BroadcastRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -45,7 +45,7 @@ public final class BroadcastRuleCountHandler implements MCPResourceHandler<MCPDa
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryBroadcastRuleCount(databaseContext.getQueryFacade(), uriVariables.getValue("database")),
                 MCPResourceNavigationPayloadBuilder.create(
                         MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, BroadcastFeatureDefinition.RULES_RESOURCE_URI));

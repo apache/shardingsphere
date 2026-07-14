@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
@@ -27,13 +27,13 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 /**
  * Handler for database capabilities resource URI.
  */
-public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
     
     private static final String URI_PATTERN = "shardingsphere://databases/{database}/capabilities";
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -42,7 +42,7 @@ public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCP
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
         var databaseCapabilityProvider = databaseContext.getCapabilityFacade();
         String databaseName = uriVariables.getValue("database");
         return databaseCapabilityProvider.provide(databaseName).<MCPResponse>map(MCPDatabaseCapabilityResponse::new).orElseThrow(DatabaseCapabilityNotFoundException::new);

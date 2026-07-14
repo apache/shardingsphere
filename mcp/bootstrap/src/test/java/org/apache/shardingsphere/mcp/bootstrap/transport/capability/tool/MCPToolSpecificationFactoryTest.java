@@ -123,9 +123,8 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
     
     @Test
     void assertCreateToolSpecificationsRejectInvalidInputSchema() {
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
-        when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
-        SyncToolSpecification actualSpecification = findToolSpecification(new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications(), "database_gateway_search_metadata");
+        SyncToolSpecification actualSpecification = findToolSpecification(
+                new MCPToolSpecificationFactory(createRuntimeContext("")).createToolSpecifications(), "database_gateway_search_metadata");
         CallToolResult actual = callTool(actualSpecification, createExchange(), "database_gateway_search_metadata", Map.of("query", "order", "object_types", List.of("TABLE")));
         @SuppressWarnings("unchecked")
         Map<String, Object> actualPayload = (Map<String, Object>) actual.structuredContent();
@@ -143,9 +142,7 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createStrictToolDescriptor("database_gateway_search_metadata"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), new MCPMapResponse(Map.of("count", 1)));
-            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
-            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
-            CallToolResult actual = callTool(createToolSpecification(runtimeContext), createExchange(), "database_gateway_search_metadata", Map.of());
+            CallToolResult actual = callTool(createToolSpecification(createRuntimeContext("")), createExchange(), "database_gateway_search_metadata", Map.of());
             @SuppressWarnings("unchecked")
             Map<String, Object> actualPayload = (Map<String, Object>) actual.structuredContent();
             assertTrue(String.valueOf(actualPayload.get("message")).contains("database_gateway_search_metadata"));

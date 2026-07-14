@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.core.completion.provider;
 
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
+import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
@@ -42,7 +42,7 @@ class WorkflowPlanIdCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new WorkflowPlanIdCompletionProvider().getContextType(), is(MCPWorkflowHandlerContext.class));
+        assertThat(new WorkflowPlanIdCompletionProvider().getContextType(), is(MCPWorkflowRequestContext.class));
     }
     
     @Test
@@ -53,11 +53,12 @@ class WorkflowPlanIdCompletionProviderTest {
     @Test
     void assertComplete() {
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
-        when(workflowSessionContext.list("session-1")).thenReturn(List.of(
+        when(workflowSessionContext.list()).thenReturn(List.of(
                 createSnapshot("plan-ready", WorkflowLifecycle.STATUS_PLANNED),
                 createSnapshot("plan-previewed", WorkflowLifecycle.STATUS_PREVIEWED),
                 createSnapshot("plan-draft", WorkflowLifecycle.STATUS_CLARIFYING)));
-        MCPWorkflowHandlerContext handlerContext = mock(MCPWorkflowHandlerContext.class);
+        MCPWorkflowRequestContext handlerContext = mock(MCPWorkflowRequestContext.class);
+        when(handlerContext.getSessionId()).thenReturn("session-1");
         when(handlerContext.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         MCPCompletionProviderResult actual = new WorkflowPlanIdCompletionProvider().complete(handlerContext, createRequestContext());
         List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
@@ -68,8 +69,8 @@ class WorkflowPlanIdCompletionProviderTest {
         assertThat(actualCandidates.get(1).getRankingReason(), is("recent-plan-first-for-plan_id"));
     }
     
-    private MCPCompletionRequestContext createRequestContext() {
-        return new MCPCompletionRequestContext("session-1", new MCPCompletionTargetDescriptor("prompt", "recover_workflow", List.of("plan_id"), 50, Map.of()), "plan_id", Map.of());
+    private MCPCompletionRequest createRequestContext() {
+        return new MCPCompletionRequest(new MCPCompletionTargetDescriptor("prompt", "recover_workflow", List.of("plan_id"), 50, Map.of()), "plan_id", Map.of());
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status) {

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.Datab
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestScopeFixture;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.TableMetadataFixture;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -87,8 +86,7 @@ class SearchMetadataToolHandlerTest {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
             MCPResponse actual =
-                    new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
-                            Map.of("query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.INDEX.name()))));
+                    new SearchMetadataToolHandler().handle(requestContext, Map.of("query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.INDEX.name())));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
@@ -108,8 +106,8 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithSequence() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
-                    Map.of("database", "runtime_db", "query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.SEQUENCE.name()))));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext,
+                    Map.of("database", "runtime_db", "query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.SEQUENCE.name())));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
@@ -121,11 +119,10 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithStorageUnit() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getMetadataQueryFacade()).thenReturn(mock(MCPMetadataQueryFacade.class));
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        MCPResponse actual = new SearchMetadataToolHandler().handle(databaseContext, new MCPToolCall("session-1",
-                Map.of("database", "logic_db", "query", "write", "object_types", List.of("storage_unit"))));
+        MCPResponse actual = new SearchMetadataToolHandler().handle(databaseContext, Map.of("database", "logic_db", "query", "write", "object_types", List.of("storage_unit")));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actual, isA(MCPItemsResponse.class));
         MetadataSearchHit actualHit = (MetadataSearchHit) ((List<?>) actualPayload.get("items")).getFirst();
@@ -139,8 +136,9 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataRejectsQueryInObjectTypes() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
-                    Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("table", "orders")))));
+            MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                    () -> new SearchMetadataToolHandler().handle(requestContext,
+                            Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("table", "orders"))));
             assertThat(actual.getMessage(), is("Unsupported object_types value `orders`."));
         }
     }
@@ -149,7 +147,7 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithEmptyQuery() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "logic_db")));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db"));
             Map<String, Object> actualPayload = actual.toPayload();
             List<String> actualNames = new LinkedList<>();
             for (Object each : (List<?>) actualPayload.get("items")) {
@@ -169,8 +167,7 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithLargeResultGuidance() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope(createLargeDatabaseMetadata())) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
-                    Map.of("database", "large_db", "object_types", List.of(SupportedMCPMetadataObjectType.TABLE.name()))));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "large_db", "object_types", List.of(SupportedMCPMetadataObjectType.TABLE.name())));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((List<?>) actualPayload.get("items")).size(), is(100));
             assertThat(actualPayload.get("summary"), is("Metadata search returned 100 of 101 matches."));
@@ -195,7 +192,7 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithBlankAllDatabaseGuard() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of()));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of());
             Map<String, Object> actualPayload = actual.toPayload();
             List<String> actualNames = new LinkedList<>();
             for (Object each : (List<?>) actualPayload.get("items")) {
@@ -216,7 +213,7 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithEmptyResultGuidance() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "query", "missing")));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db", "query", "missing"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actualPayload.get("summary"), is("Metadata search returned 0 of 0 matches."));
             assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("state"), is("no_match"));
@@ -233,8 +230,7 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithObjectNotVisibleInKnownSchema() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
-                    Map.of("database", "logic_db", "schema", "public", "query", "missing", "object_types", List.of("table"))));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db", "schema", "public", "query", "missing", "object_types", List.of("table")));
             Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
             assertThat(actualEmptyState.get("category"), is("object_not_visible"));
             assertThat(actualEmptyState.get("reason"), is("No visible metadata object matched the query in the requested scope."));
@@ -245,7 +241,7 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithUnknownDatabase() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "missing_db", "query", "orders")));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "missing_db", "query", "orders"));
             Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
             assertThat(actualEmptyState.get("category"), is("unknown_database"));
             assertThat(actualEmptyState.get("reason"), is("The requested logical database is not visible to MCP."));
@@ -256,8 +252,7 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithSchemaNotVisible() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
-                    Map.of("database", "logic_db", "schema", "missing_schema", "object_types", List.of("table"))));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db", "schema", "missing_schema", "object_types", List.of("table")));
             Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
             assertThat(actualEmptyState.get("category"), is("schema_not_visible"));
             assertThat(actualEmptyState.get("reason"), is("The requested schema is not visible in the current metadata scope."));
@@ -266,19 +261,18 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithoutRuntimeDatabase() {
-        try (MCPRequestScope requestContext = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of()))) {
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of()));
-            Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
-            assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
-            assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).getFirst()).get("type"), is("resource_read"));
-        }
+        MCPRequestScope requestContext = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of()), "session-1");
+        MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of());
+        Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
+        assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).getFirst()).get("type"), is("resource_read"));
     }
     
     @Test
     void assertHandleSearchMetadataWithAmbiguityGuidance() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope(createDuplicatedTableMetadata())) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("query", "orders")));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("query", "orders"));
             Map<String, Object> actualPayload = actual.toPayload();
             Map<?, ?> actualAmbiguityState = (Map<?, ?>) actualPayload.get("ambiguity_state");
             assertTrue((Boolean) actualAmbiguityState.get("ambiguous"));
@@ -297,7 +291,7 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithPrefixNameAmbiguity() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope(createDuplicatedTableMetadata())) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("query", "order")));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("query", "order"));
             Map<?, ?> actualAmbiguityState = (Map<?, ?>) actual.toPayload().get("ambiguity_state");
             assertTrue((Boolean) actualAmbiguityState.get("ambiguous"));
             assertThat(actualAmbiguityState.get("candidate_count"), is(2));
@@ -309,7 +303,7 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithoutUnrelatedChildAmbiguity() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "schema", "public", "query", "orders")));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db", "schema", "public", "query", "orders"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((List<?>) actualPayload.get("items")).size(), is(5));
             assertFalse(actualPayload.containsKey("ambiguity_state"));
@@ -321,7 +315,7 @@ class SearchMetadataToolHandlerTest {
     void assertHandleSearchMetadataWithAmbiguityAcrossCompleteResult() {
         try (RequestScopeFixture requestScopeFixture = createSearchRequestScope(createDuplicatedTableMetadata())) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("query", "orders")));
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("query", "orders"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((List<?>) actualPayload.get("items")).size(), is(3));
             assertThat(actualPayload.get("total_match_count"), is(3));
