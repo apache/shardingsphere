@@ -29,9 +29,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 
-import java.sql.BatchUpdateException;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -58,43 +56,17 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
         }
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
         FirebirdBatchedStatementsExecutor executor = new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, batchStatement.getParameterValues());
-        try {
-            int[] updateCounts = executor.executeBatch();
-            batchStatement.reset();
-            return Collections.singleton(new FirebirdBatchCompletionStateResponse()
-                    .setHandle(packet.getStatementHandle())
-                    .setRecordsCount(messageCount)
-                    .setUpdateCounts(batchStatement.isRecordCounts() ? updateCounts : new int[0]));
-        } catch (final BatchUpdateException ex) {
-            batchStatement.reset();
-            return Collections.singleton(createErrorResponse(ex, messageCount, batchStatement.isRecordCounts()));
-        }
+        FirebirdBatchCompletion completion = executor.executeBatch();
+        batchStatement.reset();
+        return Collections.singleton(createResponse(completion, batchStatement.isRecordCounts()));
     }
     
-    private FirebirdBatchCompletionStateResponse createErrorResponse(final BatchUpdateException ex, final int messageCount, final boolean recordCounts) {
-        int[] updateCounts = null == ex.getUpdateCounts() ? new int[0] : ex.getUpdateCounts();
-        return new FirebirdBatchCompletionStateResponse()
+    private FirebirdBatchCompletionStateResponse createResponse(final FirebirdBatchCompletion completion, final boolean recordCounts) {
+        FirebirdBatchCompletionStateResponse result = new FirebirdBatchCompletionStateResponse()
                 .setHandle(packet.getStatementHandle())
-                .setRecordsCount(messageCount)
-                .setUpdateCounts(recordCounts ? updateCounts : new int[0])
-                .addDetailedError(getFailedElement(updateCounts, messageCount), new FirebirdStatusVector(ex));
-    }
-    
-    /**
-     * Get the index of the failed batch element. The backend batch runs in halt-at-first-error mode
-     * ({@code FbBatchConfig.HALT_AT_FIRST_ERROR}), so a failure yields exactly one failed record: the first
-     * {@link Statement#EXECUTE_FAILED} entry, or the count of successful records when no marker is present.
-     *
-     * @param updateCounts update counts carried by the batch failure
-     * @param messageCount total number of batch messages
-     * @return zero-based index of the failed element
-     */
-    private int getFailedElement(final int[] updateCounts, final int messageCount) {
-        for (int i = 0; i < updateCounts.length; i++) {
-            if (Statement.EXECUTE_FAILED == updateCounts[i]) {
-                return i;
-            }
-        }
-        return Math.max(0, Math.min(updateCounts.length, messageCount - 1));
+                .setRecordsCount(completion.getRecordsCount())
+                .setUpdateCounts(recordCounts ? completion.getUpdateCounts() : new int[0]);
+        completion.getFailure().ifPresent(optional -> result.addDetailedError(optional.getMessageIndex(), new FirebirdStatusVector(optional.getCause())));
+        return result;
     }
 }

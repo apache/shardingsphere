@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -50,10 +51,12 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -161,13 +164,13 @@ public final class FirebirdBatchedStatementsExecutor {
     /**
      * Execute batch.
      *
-     * @return update counts
+     * @return batch completion in the Firebird domain
      * @throws SQLException SQL exception
      */
-    public int[] executeBatch() throws SQLException {
+    public FirebirdBatchCompletion executeBatch() throws SQLException {
         connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         addBatchedParametersToPreparedStatements();
-        return executeBatchedPreparedStatements();
+        return createBatchCompletion(executeBatchedPreparedStatements());
     }
     
     private void addBatchedParametersToPreparedStatements() throws SQLException {
@@ -197,22 +200,72 @@ public final class FirebirdBatchedStatementsExecutor {
         }
     }
     
-    private int[] executeBatchedPreparedStatements() throws SQLException {
+    private List<BatchExecutionUnitResult> executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getUsedDatabaseName());
         DatabaseType protocolType = database.getProtocolType();
-        JDBCExecutorCallback<int[]> callback =
+        JDBCExecutorCallback<BatchExecutionUnitResult> callback =
                 new BatchedStatementsJDBCExecutorCallback(protocolType, database.getResourceMetaData(), preparedStatement.getSqlStatementContext().getSqlStatement(), isExceptionThrown);
-        List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
-        return getBatchMessageUpdateCounts(executeResults);
+        return jdbcExecutor.execute(executionGroupContext, callback);
     }
     
-    private int[] getBatchMessageUpdateCounts(final List<int[]> executeResults) {
-        int[] result = new int[batchMessageCount];
+    private FirebirdBatchCompletion createBatchCompletion(final List<BatchExecutionUnitResult> executeResults) {
+        int[] messageUpdateCounts = new int[batchMessageCount];
+        int failedMessageIndex = -1;
+        SQLException failureCause = null;
         Iterator<ExecutionUnit> executionUnits = getExecutionUnitsInExecutionOrder().iterator();
-        Iterator<int[]> results = executeResults.iterator();
+        Iterator<BatchExecutionUnitResult> results = executeResults.iterator();
         while (executionUnits.hasNext() && results.hasNext()) {
-            mergeUpdateCounts(result, executionUnitBatchMessageIndexes.getOrDefault(executionUnits.next(), Collections.emptyList()), results.next());
+            ExecutionUnit executionUnit = executionUnits.next();
+            BatchExecutionUnitResult eachResult = results.next();
+            List<Integer> batchMessageIndexes = executionUnitBatchMessageIndexes.getOrDefault(executionUnit, Collections.emptyList());
+            mergeUpdateCounts(messageUpdateCounts, batchMessageIndexes, eachResult.updateCounts);
+            if (null != eachResult.failure) {
+                int eachFailedMessageIndex = getFailedMessageIndex(eachResult.updateCounts, batchMessageIndexes);
+                if (-1 == failedMessageIndex || eachFailedMessageIndex < failedMessageIndex) {
+                    failedMessageIndex = eachFailedMessageIndex;
+                    failureCause = eachResult.failure;
+                }
+            }
+        }
+        return -1 == failedMessageIndex
+                ? new FirebirdBatchCompletion(batchMessageCount, toFirebirdUpdateCounts(messageUpdateCounts, batchMessageCount))
+                : createFailedBatchCompletion(messageUpdateCounts, failedMessageIndex, failureCause);
+    }
+    
+    private FirebirdBatchCompletion createFailedBatchCompletion(final int[] messageUpdateCounts, final int failedMessageIndex, final SQLException failureCause) {
+        int[] processedUpdateCounts = toFirebirdUpdateCounts(messageUpdateCounts, failedMessageIndex + 1);
+        processedUpdateCounts[failedMessageIndex] = FirebirdBatchCompletion.EXECUTE_FAILED;
+        return new FirebirdBatchCompletion(failedMessageIndex + 1, processedUpdateCounts, new FirebirdBatchCompletion.Failure(failedMessageIndex, failureCause));
+    }
+    
+    /**
+     * Get the original client index of the failed batch message within one execution unit.
+     *
+     * @param updateCounts unit-local update counts carried by the batch failure
+     * @param batchMessageIndexes original client indexes of the unit's batched messages
+     * @return zero-based original client index of the failed message
+     */
+    private int getFailedMessageIndex(final int[] updateCounts, final List<Integer> batchMessageIndexes) {
+        if (batchMessageIndexes.isEmpty()) {
+            return 0;
+        }
+        int failedOffset = updateCounts.length;
+        for (int i = 0; i < updateCounts.length; i++) {
+            if (Statement.EXECUTE_FAILED == updateCounts[i]) {
+                failedOffset = i;
+                break;
+            }
+        }
+        return batchMessageIndexes.get(Math.min(failedOffset, batchMessageIndexes.size() - 1));
+    }
+    
+    private int[] toFirebirdUpdateCounts(final int[] messageUpdateCounts, final int processedMessageCount) {
+        int[] result = Arrays.copyOf(messageUpdateCounts, processedMessageCount);
+        for (int i = 0; i < result.length; i++) {
+            if (Statement.EXECUTE_FAILED == result[i]) {
+                result[i] = FirebirdBatchCompletion.EXECUTE_FAILED;
+            }
         }
         return result;
     }
@@ -246,7 +299,7 @@ public final class FirebirdBatchedStatementsExecutor {
         return current + updateCount;
     }
     
-    private static final class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
+    private static final class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<BatchExecutionUnitResult> {
         
         private BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
                                                       final boolean isExceptionThrown) {
@@ -254,18 +307,27 @@ public final class FirebirdBatchedStatementsExecutor {
         }
         
         @Override
-        protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
+        protected BatchExecutionUnitResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
             try {
-                return statement.executeBatch();
+                return new BatchExecutionUnitResult(statement.executeBatch(), null);
+            } catch (final BatchUpdateException ex) {
+                return new BatchExecutionUnitResult(null == ex.getUpdateCounts() ? new int[0] : ex.getUpdateCounts(), ex);
             } finally {
                 statement.close();
             }
         }
         
-        @SuppressWarnings("OptionalContainsCollection")
         @Override
-        protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
+        protected Optional<BatchExecutionUnitResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
             return Optional.empty();
         }
+    }
+    
+    @RequiredArgsConstructor
+    private static final class BatchExecutionUnitResult {
+        
+        private final int[] updateCounts;
+        
+        private final SQLException failure;
     }
 }

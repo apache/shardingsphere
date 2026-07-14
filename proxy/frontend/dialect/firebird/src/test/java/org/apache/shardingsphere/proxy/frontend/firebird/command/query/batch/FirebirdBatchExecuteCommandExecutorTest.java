@@ -39,9 +39,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.firebirdsql.gds.BlrConstants;
 
-import java.sql.BatchUpdateException;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -95,7 +93,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
         try (
                 MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
                 MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
-                        (mock, context) -> when(mock.executeBatch()).thenReturn(new int[]{5, 5}))) {
+                        (mock, context) -> when(mock.executeBatch()).thenReturn(new FirebirdBatchCompletion(2, new int[]{5, 5})))) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             Collection<DatabasePacket> actual = new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute();
             assertThat(actual.size(), is(1));
@@ -121,7 +119,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
         try (
                 MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
                 MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
-                        (mock, context) -> when(mock.executeBatch()).thenReturn(new int[]{5, 5}))) {
+                        (mock, context) -> when(mock.executeBatch()).thenReturn(new FirebirdBatchCompletion(2, new int[]{5, 5})))) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             FirebirdBatchCompletionStateResponse actual = (FirebirdBatchCompletionStateResponse) new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute().iterator().next();
             assertThat(getRecordsCount(actual), is(2L));
@@ -153,31 +151,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithBatchUpdateFailure() throws ReflectiveOperationException, SQLException {
-        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
-        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
-        when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
-        when(batchStatement.getParameterValues()).thenReturn(Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2")));
-        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
-        when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
-        BatchUpdateException failure = new BatchUpdateException("violation of PRIMARY or UNIQUE KEY constraint", "23000", 335544665, new int[0]);
-        try (
-                MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
-                MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
-                        (mock, context) -> when(mock.executeBatch()).thenThrow(failure))) {
-            mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
-            FirebirdBatchCompletionStateResponse actual = (FirebirdBatchCompletionStateResponse) new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute().iterator().next();
-            assertThat(getRecordsCount(actual), is(2L));
-            assertArrayEquals(new int[0], getUpdateCounts(actual));
-            List<DetailedError> detailedErrors = getDetailedErrors(actual);
-            assertThat(detailedErrors.size(), is(1));
-            assertThat(detailedErrors.get(0).getElement(), is(0));
-            verify(batchStatement).reset();
-        }
-    }
-    
-    @Test
-    void assertExecuteWithBatchUpdateFailureUsesSuccessCountAsElement() throws ReflectiveOperationException, SQLException {
+    void assertExecuteWithFailedMessage() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
@@ -185,38 +159,45 @@ class FirebirdBatchExecuteCommandExecutorTest {
         when(batchStatement.getParameterValues()).thenReturn(Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2"), Arrays.asList(3, "foo_3")));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
-        BatchUpdateException failure = new BatchUpdateException("violation", "23000", 335544665, new int[]{1});
+        SQLException failureCause = new SQLException("violation of PRIMARY or UNIQUE KEY constraint", "23000", 335544665);
+        FirebirdBatchCompletion completion = new FirebirdBatchCompletion(2, new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, new FirebirdBatchCompletion.Failure(1, failureCause));
         try (
                 MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
                 MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
-                        (mock, context) -> when(mock.executeBatch()).thenThrow(failure))) {
+                        (mock, context) -> when(mock.executeBatch()).thenReturn(completion))) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             FirebirdBatchCompletionStateResponse actual = (FirebirdBatchCompletionStateResponse) new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute().iterator().next();
-            assertArrayEquals(new int[]{1}, getUpdateCounts(actual));
+            assertThat(getRecordsCount(actual), is(2L));
+            assertArrayEquals(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, getUpdateCounts(actual));
             List<DetailedError> detailedErrors = getDetailedErrors(actual);
             assertThat(detailedErrors.size(), is(1));
             assertThat(detailedErrors.get(0).getElement(), is(1));
+            verify(batchStatement).reset();
         }
     }
     
     @Test
-    void assertExecuteWithBatchUpdateFailureFindsFirstExecuteFailedElement() throws ReflectiveOperationException, SQLException {
+    void assertExecuteWithFailedMessageWithoutRecordCounts() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
-        when(batchStatement.getParameterValues()).thenReturn(Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2"), Arrays.asList(3, "foo_3")));
+        when(batchStatement.getParameterValues()).thenReturn(Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2")));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
-        BatchUpdateException failure = new BatchUpdateException("violation", "23000", 335544665, new int[]{1, Statement.EXECUTE_FAILED, 1});
+        SQLException failureCause = new SQLException("violation", "23000", 335544665);
+        FirebirdBatchCompletion completion = new FirebirdBatchCompletion(1, new int[]{FirebirdBatchCompletion.EXECUTE_FAILED}, new FirebirdBatchCompletion.Failure(0, failureCause));
         try (
                 MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
                 MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
-                        (mock, context) -> when(mock.executeBatch()).thenThrow(failure))) {
+                        (mock, context) -> when(mock.executeBatch()).thenReturn(completion))) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             FirebirdBatchCompletionStateResponse actual = (FirebirdBatchCompletionStateResponse) new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute().iterator().next();
+            assertThat(getRecordsCount(actual), is(1L));
+            assertArrayEquals(new int[0], getUpdateCounts(actual));
             List<DetailedError> detailedErrors = getDetailedErrors(actual);
             assertThat(detailedErrors.size(), is(1));
-            assertThat(detailedErrors.get(0).getElement(), is(1));
+            assertThat(detailedErrors.get(0).getElement(), is(0));
+            verify(batchStatement).reset();
         }
     }
     
