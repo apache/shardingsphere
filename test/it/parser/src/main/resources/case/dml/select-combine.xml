@@ -125,6 +125,64 @@
         </combine>
     </select>
 
+    <select sql-case-id="select_union_with_comment_firebird">
+        <projections start-index="7" stop-index="10">
+            <column-projection name="COL1" start-index="7" stop-index="10" />
+        </projections>
+        <from>
+            <simple-table name="TEST_BATCH_0" start-index="17" stop-index="28" />
+        </from>
+        <combine combine-type="UNION" start-index="0" stop-index="74">
+            <left>
+                <projections start-index="7" stop-index="10">
+                    <column-projection name="COL1" start-index="7" stop-index="10" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_BATCH_0" start-index="17" stop-index="28" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="53" stop-index="56">
+                    <column-projection name="COL1" start-index="53" stop-index="56" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_BATCH_0" start-index="63" stop-index="74" />
+                </from>
+            </right>
+        </combine>
+        <comment start-index="36" stop-index="44" text="/* ALL */" />
+    </select>
+
+    <select sql-case-id="select_union_order_by_firebird">
+        <projections start-index="7" stop-index="10">
+            <column-projection name="COL1" start-index="7" stop-index="10" />
+        </projections>
+        <from>
+            <simple-table name="TEST_BATCH_0" start-index="17" stop-index="28" />
+        </from>
+        <combine combine-type="UNION" start-index="0" stop-index="64">
+            <left>
+                <projections start-index="7" stop-index="10">
+                    <column-projection name="COL1" start-index="7" stop-index="10" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_BATCH_0" start-index="17" stop-index="28" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="43" stop-index="46">
+                    <column-projection name="COL1" start-index="43" stop-index="46" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_BATCH_0" start-index="53" stop-index="64" />
+                </from>
+            </right>
+        </combine>
+        <order-by>
+            <column-item name="COL1" start-index="75" stop-index="78" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_union_doris">
         <projections start-index="7" stop-index="7">
             <expression-projection text="1" start-index="7" stop-index="7">

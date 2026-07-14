@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.type;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AssignmentValueContext;
@@ -115,7 +119,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -268,20 +271,41 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         if (1 == ctx.selectClause().size()) {
             return result;
         }
-        SelectClauseContext leftContext = ctx.selectClause(0);
-        SubquerySegment left = new SubquerySegment(leftContext.start.getStartIndex(), leftContext.stop.getStopIndex(), result, getOriginalText(leftContext));
+        SelectClauseContext firstContext = ctx.selectClause(0);
+        SubquerySegment left = new SubquerySegment(firstContext.start.getStartIndex(), firstContext.stop.getStopIndex(), result, getOriginalText(firstContext));
         for (int i = 1; i < ctx.selectClause().size(); i++) {
             SelectClauseContext rightContext = ctx.selectClause(i);
-            SubquerySegment right = new SubquerySegment(rightContext.start.getStartIndex(), rightContext.stop.getStopIndex(), (SelectStatement) visit(rightContext), getOriginalText(rightContext));
-            String combineText = leftContext.start.getInputStream().getText(new Interval(leftContext.stop.getStopIndex() + 1, rightContext.start.getStartIndex() - 1));
-            CombineType combineType = combineText.toUpperCase(Locale.ENGLISH).contains("ALL") ? CombineType.UNION_ALL : CombineType.UNION;
+            SelectStatement rightSelect = (SelectStatement) visit(rightContext);
+            boolean liftTrailingOrderBy = i == ctx.selectClause().size() - 1 && null != rightContext.orderByClause();
+            OrderBySegment trailingOrderBy = liftTrailingOrderBy ? rightSelect.getOrderBy().orElse(null) : null;
+            if (null != trailingOrderBy) {
+                rightSelect = createSelectStatementBuilder(rightSelect).orderBy(null).build();
+            }
+            SubquerySegment right = createCombineRightSubquery(rightContext, rightSelect, null != trailingOrderBy);
             result = SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getSelect().getProjections())
                     .from(left.getSelect().getFrom().orElse(null))
-                    .combine(new CombineSegment(left.getStartIndex(), right.getStopIndex(), left, combineType, right)).build();
+                    .combine(new CombineSegment(left.getStartIndex(), right.getStopIndex(), left, getCombineType(ctx, rightContext), right))
+                    .orderBy(trailingOrderBy).build();
             left = new SubquerySegment(left.getStartIndex(), right.getStopIndex(), result, ctx.start.getInputStream().getText(new Interval(left.getStartIndex(), right.getStopIndex())));
-            leftContext = rightContext;
         }
         return result;
+    }
+    
+    private CombineType getCombineType(final CombineClauseContext ctx, final SelectClauseContext rightContext) {
+        ParseTree previous = ctx.getChild(ctx.children.indexOf(rightContext) - 1);
+        boolean isUnionAll = previous instanceof TerminalNode && FirebirdStatementParser.ALL == ((TerminalNode) previous).getSymbol().getType();
+        return isUnionAll ? CombineType.UNION_ALL : CombineType.UNION;
+    }
+    
+    private SubquerySegment createCombineRightSubquery(final SelectClauseContext rightContext, final SelectStatement rightSelect, final boolean excludeTrailingOrderBy) {
+        int stopIndex = excludeTrailingOrderBy ? getStopIndexBefore(rightContext, rightContext.orderByClause()) : rightContext.stop.getStopIndex();
+        return new SubquerySegment(rightContext.start.getStartIndex(), stopIndex, rightSelect,
+                rightContext.start.getInputStream().getText(new Interval(rightContext.start.getStartIndex(), stopIndex)));
+    }
+    
+    private int getStopIndexBefore(final ParserRuleContext parent, final ParserRuleContext child) {
+        ParseTree previous = parent.getChild(parent.children.indexOf(child) - 1);
+        return previous instanceof TerminalNode ? ((TerminalNode) previous).getSymbol().getStopIndex() : ((ParserRuleContext) previous).stop.getStopIndex();
     }
     
     @Override
