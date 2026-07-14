@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
@@ -93,8 +92,7 @@ class CommitProxyBackendHandlerTest {
     
     private DialectDatabaseMetaData mockDialectDatabaseMetaData(final boolean returnRollbackWhenFailed) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
-        when(result.getTransactionOption()).thenReturn(new DialectTransactionOption(
-                false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, returnRollbackWhenFailed, false, Collections.emptyList()));
+        when(result.getTransactionOption()).thenReturn(new DialectTransactionOption(false, false, false, false, true, returnRollbackWhenFailed, false, Collections.emptyList()));
         return result;
     }
 }

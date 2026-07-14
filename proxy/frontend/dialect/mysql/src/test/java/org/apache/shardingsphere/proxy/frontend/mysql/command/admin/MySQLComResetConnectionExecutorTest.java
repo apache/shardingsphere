@@ -60,7 +60,6 @@ class MySQLComResetConnectionExecutorTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), isA(MySQLOKPacket.class));
         verify(connectionSession).setAutoCommit(true);
-        verify(connectionSession).setDefaultIsolationLevel(null);
         verify(connectionSession).setIsolationLevel(null);
         assertNull(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId));
     }

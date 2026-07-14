@@ -35,7 +35,6 @@ import org.apache.shardingsphere.database.connector.oracle.metadata.database.opt
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleFunctionOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleSchemaOption;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -83,7 +82,7 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource"));
+        return new DialectTransactionOption(false, false, false, false, true, false, false, Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource"));
     }
     
     @Override
