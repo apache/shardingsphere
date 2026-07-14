@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
@@ -159,7 +160,7 @@ class FirebirdBatchCreateCommandExecutorTest {
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         when(packet.getBatchBlr()).thenReturn(createEmptyBatchBlr());
-        assertThrows(InvalidBatchMessageFormatException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertThrows(BatchParametersRequiredException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
     }
     
     @Test

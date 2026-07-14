@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.Di
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
@@ -69,7 +70,11 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
             return toSQLException(FirebirdVendorError.BATCH_ALREADY_OPENED);
         }
         if (sqlDialectException instanceof InvalidBatchParameterVersionException) {
-            return toSQLException(FirebirdVendorError.INVALID_BATCH_PARAMETER_VERSION, ((InvalidBatchParameterVersionException) sqlDialectException).getVersion());
+            InvalidBatchParameterVersionException ex = (InvalidBatchParameterVersionException) sqlDialectException;
+            return toSQLException(FirebirdVendorError.INVALID_BATCH_PARAMETER_VERSION, ex.getVersion(), ex.getExpectedVersion());
+        }
+        if (sqlDialectException instanceof BatchParametersRequiredException) {
+            return toSQLException(FirebirdVendorError.BATCH_PARAMETERS_REQUIRED);
         }
         if (sqlDialectException instanceof InvalidBatchMessageFormatException) {
             return toSQLException(FirebirdVendorError.SQLDA_ERROR);

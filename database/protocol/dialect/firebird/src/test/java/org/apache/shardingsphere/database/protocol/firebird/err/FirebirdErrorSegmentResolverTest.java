@@ -29,6 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdErrorSegmentResolverTest {
     
@@ -77,5 +78,23 @@ class FirebirdErrorSegmentResolverTest {
         assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_random));
         assertThat(segments.get(0).getArguments(), contains("totally unrelated text"));
         assertThat(segments.get(0).getSqlState(), is("23000"));
+    }
+    
+    @Test
+    void assertResolveKeepsBatchParameterVersionCodeWithBothArguments() {
+        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param_version, "Wrong version of batch parameters block 2, should be 1", "22000");
+        assertThat(segments.size(), is(1));
+        assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_batch_param_version));
+        assertThat(segments.get(0).getArguments(), contains("2", "1"));
+        assertNull(segments.get(0).getSqlState());
+    }
+    
+    @Test
+    void assertResolveKeepsBatchParamCode() {
+        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param, "Statement used in batch must have parameters", "07001");
+        assertThat(segments.size(), is(1));
+        assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_batch_param));
+        assertTrue(segments.get(0).getArguments().isEmpty());
+        assertNull(segments.get(0).getSqlState());
     }
 }

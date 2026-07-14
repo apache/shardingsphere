@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
@@ -80,7 +81,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         int blrLength = batchBlr.readableBytes();
         FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, blrLength);
         if (messageFormat.getFields().isEmpty()) {
-            throw new InvalidBatchMessageFormatException("batch message format must contain at least one field");
+            throw new BatchParametersRequiredException(statementId);
         }
         if (packet.getBatchMessageLength() != messageFormat.getMessageLength()) {
             throw new InvalidBatchMessageFormatException(
