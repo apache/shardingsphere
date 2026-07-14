@@ -40,7 +40,8 @@ class MCPDescriptorCatalogPayloadBuilderTest {
                 createResourceDescriptor("shardingsphere://capabilities", MCPResourceAnnotations.EMPTY),
                 createResourceDescriptor("shardingsphere://databases", MCPResourceAnnotations.EMPTY));
         Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(
-                createCatalog(resourceDescriptors, List.of(createToolDescriptor(new MCPToolAnnotations(null, false, true, false, true)))),
+                createCatalog(resourceDescriptors, List.of(createToolDescriptor(MCPToolAnnotations.builder()
+                        .title(null).readOnlyHint(false).destructiveHint(true).idempotentHint(false).openWorldHint(true).build()))),
                 List.of("shardingsphere://capabilities"), List.of("database_gateway_test_tool"), List.of("SelectStatement"));
         assertThat(payload.get("response_mode"), is("catalog"));
         assertThat(payload.get("guidanceResource"), is("shardingsphere://guidance"));
@@ -81,7 +82,8 @@ class MCPDescriptorCatalogPayloadBuilderTest {
     @Test
     @SuppressWarnings("unchecked")
     void assertBuildToolAnnotationsPayload() {
-        MCPToolDescriptor toolDescriptor = createToolDescriptor(new MCPToolAnnotations(null, false, true, false, true));
+        MCPToolDescriptor toolDescriptor = createToolDescriptor(MCPToolAnnotations.builder()
+                .title(null).readOnlyHint(false).destructiveHint(true).idempotentHint(false).openWorldHint(true).build());
         Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(createCatalog(List.of(), List.of(toolDescriptor)), List.of(), List.of(), List.of());
         List<Map<String, Object>> actualTools = (List<Map<String, Object>>) payload.get("tools");
         assertThat((Map<String, Object>) actualTools.get(0).get("annotations"), is(Map.of(

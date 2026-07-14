@@ -95,18 +95,6 @@ class MCPDatabaseDialectTest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getTransactionCapabilityArguments")
-    void assertGetTransactionCapability(final String name, final boolean transactionSupported, final boolean savepointSupported, final TransactionCapability expected) {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
-            mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
-            assertThat(MCPDatabaseDialect.of("Fixture").getTransactionCapability(transactionSupported, savepointSupported), is(expected));
-        }
-    }
-    
     @Test
     void assertIsSequenceSupported() {
         try (
@@ -207,13 +195,6 @@ class MCPDatabaseDialectTest {
         DialectSystemDatabase result = mock(DialectSystemDatabase.class);
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType)).thenReturn(Optional.of(result));
         return result;
-    }
-    
-    private static Stream<Arguments> getTransactionCapabilityArguments() {
-        return Stream.of(
-                Arguments.of("not supported", false, false, TransactionCapability.NONE),
-                Arguments.of("local only", true, false, TransactionCapability.LOCAL),
-                Arguments.of("local with savepoint", true, true, TransactionCapability.LOCAL_WITH_SAVEPOINT));
     }
     
 }

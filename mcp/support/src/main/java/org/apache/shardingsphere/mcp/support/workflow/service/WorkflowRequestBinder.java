@@ -69,6 +69,20 @@ public final class WorkflowRequestBinder {
         return bindPlanningRequest(WorkflowRequest::new, arguments, featureArgumentBinder, structuredIntentBinder);
     }
     
+    /**
+     * Apply a present structured intent string field without changing its representation.
+     *
+     * @param values structured intent values
+     * @param fieldName field name
+     * @param consumer field consumer
+     */
+    public static void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
+        Object value = values.get(fieldName);
+        if (null != value) {
+            consumer.accept(String.valueOf(value));
+        }
+    }
+    
     private static void bindCommonPlanningFields(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
         request.setPlanId(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
         request.setDatabase(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.DATABASE));

@@ -44,7 +44,7 @@ import java.util.Map;
  */
 public final class MaskWorkflowPlanningService {
     
-    private static final List<String> SUPPORTED_OPERATION_TYPES = List.of("create", WorkflowLifecycle.OPERATION_DROP);
+    private static final List<String> SUPPORTED_OPERATION_TYPES = List.of(WorkflowLifecycle.OPERATION_CREATE, WorkflowLifecycle.OPERATION_DROP);
     
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm database, table, column and target lifecycle",
@@ -150,7 +150,7 @@ public final class MaskWorkflowPlanningService {
                                                     final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot) {
         snapshot.getClarifiedIntent().getClarificationMessages().add(
                 "Current Proxy DistSQL cannot automatically mutate an existing mask table rule. Recreate the mask rule manually with the complete column set during a maintenance window.");
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.MASK_RULE_REWRITE_LIMITED, "error", "planning-artifacts",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.MASK_RULE_REWRITE_LIMITED, "error", WorkflowLifecycle.STEP_PLANNING_ARTIFACTS,
                 "Mask planning cannot automatically rewrite an existing table rule or shrink it while preserving remaining columns.",
                 "Manually recreate the mask rule with the complete column set after reviewing data impact.", true,
                 Map.of("operation_type", clarifiedIntent.getOperationType(), "target_column", request.getColumn(), "existing_columns", createExistingRuleColumns(maskRules))));

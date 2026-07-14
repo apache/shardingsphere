@@ -39,7 +39,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBu
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
@@ -299,8 +298,8 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     
     private void addPropertyMismatch(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final String fieldName,
                                      final Object expected, final Object actual, final String impact) {
-        Map<String, String> expectedProperties = WorkflowSQLUtils.createPropertyMap(expected);
-        Map<String, String> actualProperties = WorkflowSQLUtils.createPropertyMap(actual);
+        Map<String, String> expectedProperties = WorkflowAlgorithmUtils.createPropertyMap(expected);
+        Map<String, String> actualProperties = WorkflowAlgorithmUtils.createPropertyMap(actual);
         String algorithmRole = getAlgorithmRole(fieldName);
         if (WorkflowSecretReferenceUtils.matchesManualPlaceholderProperties(expectedProperties, actualProperties, snapshot.getRequest(), algorithmRole)) {
             return;
@@ -318,12 +317,12 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : rules) {
             Map<String, Object> rule = new LinkedHashMap<>(each);
-            rule.put("encryptor_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("encryptor_props")), snapshot.getPropertyRequirements(),
+            rule.put("encryptor_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowAlgorithmUtils.createPropertyMap(each.get("encryptor_props")), snapshot.getPropertyRequirements(),
                     snapshot.getRequest(), EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY));
             rule.put("assisted_query_props",
-                    WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("assisted_query_props")), snapshot.getPropertyRequirements(),
+                    WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowAlgorithmUtils.createPropertyMap(each.get("assisted_query_props")), snapshot.getPropertyRequirements(),
                             snapshot.getRequest(), EncryptFeatureDefinition.ALGORITHM_ROLE_ASSISTED_QUERY));
-            rule.put("like_query_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("like_query_props")), snapshot.getPropertyRequirements(),
+            rule.put("like_query_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowAlgorithmUtils.createPropertyMap(each.get("like_query_props")), snapshot.getPropertyRequirements(),
                     snapshot.getRequest(), EncryptFeatureDefinition.ALGORITHM_ROLE_LIKE_QUERY));
             result.add(rule);
         }

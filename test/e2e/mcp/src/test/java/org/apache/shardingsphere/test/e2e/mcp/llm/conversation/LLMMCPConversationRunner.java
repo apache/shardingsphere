@@ -89,7 +89,7 @@ public final class LLMMCPConversationRunner {
         try {
             openInteractionClient();
             LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-            LLMMCPConversationTurnPlanner turnPlanner = new LLMMCPConversationTurnPlanner(instructionFactory);
+            LLMMCPConversationTurnPlanner turnPlanner = new LLMMCPConversationTurnPlanner();
             boolean finalAnswerRequested = false;
             for (int turnIndex = 0; turnIndex < maxTurns; turnIndex++) {
                 finalAnswerRequested = requestFinalAnswerIfReady(scenario, messages, artifacts, finalAnswerRequested, instructionFactory);
@@ -139,7 +139,7 @@ public final class LLMMCPConversationRunner {
         if (finalAnswerRequested || !LLMMCPInteractionCoverage.hasRequiredInteractionCoverage(scenario.getRequiredToolNames(), artifacts.getInteractionTrace())) {
             return finalAnswerRequested;
         }
-        if (instructionFactory.hasPendingImmediateNextAction(artifacts.getInteractionTrace())) {
+        if (LLMMCPNextActions.hasPendingImmediateNextAction(artifacts.getInteractionTrace())) {
             return false;
         }
         if (scenario.getRequiredToolNames().contains("database_gateway_execute_query") && !hasExpectedExecuteQuery(scenario.getExpectedAnswer(), artifacts.getInteractionTrace())) {
@@ -190,7 +190,7 @@ public final class LLMMCPConversationRunner {
         }
         messages.add(LLMChatMessage.assistant(completion.getContent(), completion.getToolCalls()));
         for (LLMToolCall each : completion.getToolCalls()) {
-            List<String> availableToolNames = resolveAvailableToolNames(scenario, artifacts, instructionFactory, turnPlanner);
+            List<String> availableToolNames = resolveAvailableToolNames(scenario, artifacts, turnPlanner);
             if (!availableToolNames.isEmpty() && !availableToolNames.contains(each.getName())) {
                 addUnavailableToolCorrection(scenario, each, messages, availableToolNames);
                 return Optional.empty();
@@ -208,9 +208,9 @@ public final class LLMMCPConversationRunner {
     }
     
     private List<String> resolveAvailableToolNames(final LLME2EScenario scenario, final LLMMCPConversationArtifacts artifacts,
-                                                   final LLMMCPConversationInstructionFactory instructionFactory, final LLMMCPConversationTurnPlanner turnPlanner) {
+                                                   final LLMMCPConversationTurnPlanner turnPlanner) {
         List<String> result = turnPlanner.createImmediateNextActionToolNames(artifacts.getInteractionTrace());
-        return result.isEmpty() && instructionFactory.hasSideEffectExecutionNextAction(artifacts.getInteractionTrace())
+        return result.isEmpty() && LLMMCPNextActions.hasSideEffectExecutionNextAction(artifacts.getInteractionTrace())
                 ? turnPlanner.createTurnToolNames(scenario, artifacts.getInteractionTrace())
                 : result;
     }

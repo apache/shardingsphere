@@ -52,11 +52,11 @@ class MCPDatabaseCapabilityResponseTest {
             supportedStatementClasses.add(SupportedMCPStatement.EXPLAIN);
         }
         when(actualCapability.getSupportedStatementClasses()).thenReturn(supportedStatementClasses);
-        when(actualCapability.isSupportsTransactionControl()).thenReturn(true);
-        when(actualCapability.isSupportsSavepoint()).thenReturn(true);
+        when(actualCapability.supportsTransactionControl()).thenReturn(true);
+        when(actualCapability.supportsSavepoint()).thenReturn(true);
         when(actualCapability.getDefaultSchemaSemantics()).thenReturn(DialectSchemaSemantics.DATABASE_AS_SCHEMA);
         when(actualCapability.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
-        when(actualCapability.isSupportsExplain()).thenReturn(supportsExplain);
+        when(actualCapability.supportsExplain()).thenReturn(supportsExplain);
         Map<String, Object> actual = new MCPDatabaseCapabilityResponse(actualCapability).toPayload();
         assertThat(actual, is(Map.ofEntries(
                 Map.entry("response_mode", "detail"),

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -249,7 +251,8 @@ class MaskWorkflowPlanningServiceTest {
     
     private MaskAlgorithmRecommendationService createPrimaryCandidateRecommendation() {
         MaskAlgorithmRecommendationService result = mock(MaskAlgorithmRecommendationService.class);
-        when(result.recommendMaskAlgorithms(any(), any(), any(), any())).thenReturn(List.of(new AlgorithmCandidate("primary", "MASK_FROM_X_TO_Y", null, null, null, 100, "reason", "")));
+        when(result.recommendMaskAlgorithms(any(), any(), any(), any())).thenReturn(List.of(AlgorithmCandidate.builder()
+                .algorithmRole("primary").algorithmType("MASK_FROM_X_TO_Y").recommendationScore(100).recommendationReason("reason").riskNotes("").build()));
         return result;
     }
     
@@ -303,7 +306,7 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata() {
-        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet());
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet());
     }
     
     private ShardingSphereSchema createSchemaMetadata() {

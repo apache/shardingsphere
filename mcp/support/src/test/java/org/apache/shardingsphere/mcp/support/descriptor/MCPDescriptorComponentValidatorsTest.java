@@ -102,7 +102,7 @@ class MCPDescriptorComponentValidatorsTest {
     }
     
     private MCPToolAnnotations createAnnotations() {
-        return new MCPToolAnnotations("Test Tool", true, false, true, true);
+        return MCPToolAnnotations.builder().title("Test Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build();
     }
     
     private Map<String, Object> createInputSchema() {

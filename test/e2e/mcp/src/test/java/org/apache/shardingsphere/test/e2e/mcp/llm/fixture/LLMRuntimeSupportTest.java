@@ -84,16 +84,32 @@ class LLMRuntimeSupportTest {
     
     @Test
     void assertPrepareWithUnsupportedProvider() {
-        LLME2EConfiguration config = new LLME2EConfiguration("http://127.0.0.1:8080/v1", "openai", REQUIRED_MODEL, "mcp-llm-score", 600, 240, 10,
-                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server-b9191",
-                "test-base-server-image-digest", MODEL_METADATA);
+        LLME2EConfiguration config = createConfiguration(RuntimeMode.DOCKER, REQUIRED_MODEL, "http://127.0.0.1:8080/v1").toBuilder()
+                .modelProvider("openai")
+                .readyTimeoutSeconds(600)
+                .requestTimeoutSeconds(240)
+                .build();
         IllegalStateException actualException = assertThrows(IllegalStateException.class, () -> LLMRuntimeSupport.prepare(config));
         assertThat(actualException.getMessage(), is("MCP LLM E2E requires provider openai-compatible."));
     }
     
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode, final String modelName, final String baseUrl) {
-        return new LLME2EConfiguration(baseUrl, "openai-compatible", modelName, "mcp-llm-score", 2, 2, 10, Path.of("target/llm-e2e"), "run-id",
-                runtimeMode, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server-b9191", "test-base-server-image-digest", MODEL_METADATA);
+        return LLME2EConfiguration.builder()
+                .baseUrl(baseUrl)
+                .modelProvider("openai-compatible")
+                .modelName(modelName)
+                .apiKey("mcp-llm-score")
+                .readyTimeoutSeconds(2)
+                .requestTimeoutSeconds(2)
+                .maxTurns(10)
+                .artifactRoot(Path.of("target/llm-e2e"))
+                .runId("run-id")
+                .runtimeMode(runtimeMode)
+                .serverImage("apache/shardingsphere-mcp-llm-runtime:local")
+                .baseServerImage("ghcr.io/ggml-org/llama.cpp:server-b9191")
+                .baseServerImageDigest("test-base-server-image-digest")
+                .modelMetadata(MODEL_METADATA)
+                .build();
     }
     
     private HttpServer startModelServer(final String modelName) throws IOException {

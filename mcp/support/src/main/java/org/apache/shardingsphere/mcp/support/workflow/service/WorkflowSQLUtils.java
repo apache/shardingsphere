@@ -25,12 +25,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
 
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
@@ -171,20 +167,6 @@ public final class WorkflowSQLUtils {
     }
     
     /**
-     * Create properties with trimmed string values.
-     *
-     * @param entries property entries
-     * @return created properties
-     */
-    public static Properties createProperties(final Map<String, String> entries) {
-        Properties result = new Properties();
-        for (Entry<String, String> entry : entries.entrySet()) {
-            result.setProperty(entry.getKey(), trimToEmpty(entry.getValue()));
-        }
-        return result;
-    }
-    
-    /**
      * Create an algorithm fragment for DistSQL.
      *
      * @param algorithmType algorithm type
@@ -196,7 +178,7 @@ public final class WorkflowSQLUtils {
         if (actualType.isEmpty()) {
             return "";
         }
-        Properties actualProperties = createProperties(properties);
+        Properties actualProperties = WorkflowAlgorithmUtils.createProperties(properties);
         return actualProperties.isEmpty()
                 ? String.format("TYPE(NAME='%s')", escapeLiteral(actualType))
                 : String.format("TYPE(NAME='%s', PROPERTIES(%s))", escapeLiteral(actualType), createPropertiesFragment(actualProperties));
@@ -206,60 +188,6 @@ public final class WorkflowSQLUtils {
         return new TreeMap<>(props).entrySet().stream()
                 .map(entry -> String.format("'%s'='%s'", escapeLiteral(String.valueOf(entry.getKey())), escapeLiteral(String.valueOf(entry.getValue()))))
                 .collect(Collectors.joining(", "));
-    }
-    
-    private static Map<String, String> parsePropertyEntries(final List<String> entries) {
-        Map<String, String> result = new LinkedHashMap<>(entries.size(), 1F);
-        for (String each : entries) {
-            int separatorIndex = findPropertySeparatorIndex(each);
-            if (-1 == separatorIndex) {
-                continue;
-            }
-            String key = each.substring(0, separatorIndex).trim();
-            String value = each.substring(separatorIndex + 1).trim();
-            if (!key.isEmpty()) {
-                result.put(key, value);
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Create a property map from supported property carrier types.
-     *
-     * @param value property carrier value
-     * @return normalized property map
-     */
-    public static Map<String, String> createPropertyMap(final Object value) {
-        if (null == value) {
-            return Map.of();
-        }
-        if (value instanceof Properties) {
-            return createPropertyMap((Properties) value);
-        }
-        if (value instanceof Map) {
-            return createPropertyMap((Map<?, ?>) value);
-        }
-        return parsePropertyString(String.valueOf(value));
-    }
-    
-    private static Map<String, String> createPropertyMap(final Properties props) {
-        Map<String, String> result = new LinkedHashMap<>(props.size(), 1F);
-        for (String each : props.stringPropertyNames()) {
-            result.put(each, trimToEmpty(props.getProperty(each)));
-        }
-        return result;
-    }
-    
-    private static Map<String, String> createPropertyMap(final Map<?, ?> props) {
-        Map<String, String> result = new LinkedHashMap<>(props.size(), 1F);
-        for (Entry<?, ?> entry : props.entrySet()) {
-            String key = trimToEmpty(Objects.toString(entry.getKey(), ""));
-            if (!key.isEmpty()) {
-                result.put(key, trimToEmpty(Objects.toString(entry.getValue(), "")));
-            }
-        }
-        return result;
     }
     
     private static boolean isDelimitedIdentifier(final String identifier) {
@@ -292,41 +220,6 @@ public final class WorkflowSQLUtils {
                 ? value
                 : quoteCharacter.getStartDelimiter() + value.replace(quoteCharacter.getEndDelimiter(), quoteCharacter.getEndDelimiter() + quoteCharacter.getEndDelimiter())
                         + quoteCharacter.getEndDelimiter();
-    }
-    
-    private static Map<String, String> parsePropertyString(final String value) {
-        String actualValue = trimToEmpty(value);
-        if (actualValue.isEmpty() || "{}".equals(actualValue)) {
-            return Map.of();
-        }
-        String normalizedValue = actualValue;
-        if (normalizedValue.startsWith("{") && normalizedValue.endsWith("}")) {
-            normalizedValue = normalizedValue.substring(1, normalizedValue.length() - 1);
-        }
-        List<String> entries = List.of(normalizedValue.split(","));
-        Map<String, String> result = new LinkedHashMap<>(entries.size(), 1F);
-        for (Entry<String, String> entry : parsePropertyEntries(entries).entrySet()) {
-            result.put(stripQuotes(entry.getKey()), stripQuotes(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private static int findPropertySeparatorIndex(final String propertyEntry) {
-        int equalsIndex = propertyEntry.indexOf('=');
-        return -1 == equalsIndex ? propertyEntry.indexOf(':') : equalsIndex;
-    }
-    
-    private static String stripQuotes(final String value) {
-        String actualValue = trimToEmpty(value);
-        if (2 > actualValue.length()) {
-            return actualValue;
-        }
-        char first = actualValue.charAt(0);
-        char last = actualValue.charAt(actualValue.length() - 1);
-        if ('\'' == first && '\'' == last || '"' == first && '"' == last) {
-            return actualValue.substring(1, actualValue.length() - 1);
-        }
-        return actualValue;
     }
     
     private static String trimToEmpty(final String value) {

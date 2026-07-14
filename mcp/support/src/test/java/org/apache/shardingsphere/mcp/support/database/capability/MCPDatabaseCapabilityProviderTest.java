@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
@@ -68,12 +70,12 @@ class MCPDatabaseCapabilityProviderTest {
                 is(EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN,
                         SupportedMCPMetadataObjectType.INDEX)));
         assertThat(actual.get().getTransactionCapability(), is(TransactionCapability.LOCAL_WITH_SAVEPOINT));
-        assertTrue(actual.get().isSupportsTransactionControl());
-        assertTrue(actual.get().isSupportsSavepoint());
+        assertTrue(actual.get().supportsTransactionControl());
+        assertTrue(actual.get().supportsSavepoint());
         assertThat(actual.get().getDefaultSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
         assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
-        assertFalse(actual.get().isSupportsCrossSchemaSql());
-        assertTrue(actual.get().isSupportsExplain());
+        assertFalse(actual.get().supportsCrossSchemaSql());
+        assertTrue(actual.get().supportsExplain());
         assertFalse(actual.get().getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
     }
     
@@ -84,8 +86,8 @@ class MCPDatabaseCapabilityProviderTest {
         assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX));
         assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.SEQUENCE));
         assertThat(actual.get().getTransactionCapability(), is(TransactionCapability.NONE));
-        assertFalse(actual.get().isSupportsTransactionControl());
-        assertFalse(actual.get().isSupportsSavepoint());
+        assertFalse(actual.get().supportsTransactionControl());
+        assertFalse(actual.get().supportsSavepoint());
         assertThat(actual.get().getDefaultSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
         assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
     }
@@ -121,13 +123,13 @@ class MCPDatabaseCapabilityProviderTest {
                 SchemaExecutionSemantics.FIXED_TO_DATABASE == expectedSchemaExecutionSemantics ? DialectSchemaSemantics.DATABASE_AS_SCHEMA : DialectSchemaSemantics.NATIVE_SCHEMA);
         Optional<MCPDatabaseCapability> actual = createCapabilityProvider(databaseType, capabilityFixture).provide("logic_db");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().isSupportsTransactionControl(), is(expectedTransactionControl));
-        assertThat(actual.get().isSupportsSavepoint(), is(expectedSavepoint));
+        assertThat(actual.get().supportsTransactionControl(), is(expectedTransactionControl));
+        assertThat(actual.get().supportsSavepoint(), is(expectedSavepoint));
         assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX));
         assertThat(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.SEQUENCE), is(expectedSequenceSupport));
         assertThat(actual.get().getSchemaExecutionSemantics(), is(expectedSchemaExecutionSemantics));
-        assertThat(actual.get().isSupportsCrossSchemaSql(), is(SchemaExecutionSemantics.BEST_EFFORT == expectedSchemaExecutionSemantics));
-        assertThat(actual.get().isSupportsExplain(), is(expectedExplainSupport));
+        assertThat(actual.get().supportsCrossSchemaSql(), is(SchemaExecutionSemantics.BEST_EFFORT == expectedSchemaExecutionSemantics));
+        assertThat(actual.get().supportsExplain(), is(expectedExplainSupport));
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider() {
@@ -180,7 +182,10 @@ class MCPDatabaseCapabilityProviderTest {
     
     private RuntimeDatabaseProfile createDatabaseProfile(final String databaseName, final String databaseType, final CapabilityFixture capabilityFixture,
                                                          final IdentifierCasePolicySet identifierCasePolicySet) {
-        return new RuntimeDatabaseProfile(databaseName, databaseType, "", capabilityFixture.transactionSupported, capabilityFixture.savepointSupported, identifierCasePolicySet);
+        TransactionCapability transactionCapability = capabilityFixture.transactionSupported
+                ? capabilityFixture.savepointSupported ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL
+                : TransactionCapability.NONE;
+        return new RuntimeDatabaseProfile(databaseName, databaseType, "", transactionCapability, identifierCasePolicySet);
     }
     
     private static Stream<Arguments> provideCapabilityMatrixArguments() {

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -115,7 +115,7 @@ class MaskWorkflowValidationServiceTest {
         snapshot.setRequest(request);
         String sql = "CREATE MASK RULE `orders` (COLUMNS((NAME=`phone`, TYPE(NAME='mask_from_x_to_y', PROPERTIES('replace-char'='******')))))";
         typedSPILoader.when(() -> TypedSPILoader.checkService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y",
-                WorkflowSQLUtils.createProperties(request.getPrimaryAlgorithmProperties()))).thenThrow(new IllegalArgumentException("raw-secret"));
+                WorkflowAlgorithmUtils.createProperties(request.getPrimaryAlgorithmProperties()))).thenThrow(new IllegalArgumentException("raw-secret"));
         List<Map<String, Object>> actual = new MaskWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact(sql)));
         assertThat(actual.size(), is(1));
         assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));

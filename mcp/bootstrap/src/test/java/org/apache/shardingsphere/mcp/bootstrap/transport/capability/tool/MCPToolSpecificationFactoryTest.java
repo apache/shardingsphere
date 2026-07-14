@@ -80,7 +80,8 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
     void assertCreateToolSpecificationsMapAnnotationPresence() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             mockedToolDefinitionRegistry.when(ToolDefinitionRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor(
-                    "fixture_declared_defaults", new MCPToolAnnotations(null, false, true, false, true))));
+                    "fixture_declared_defaults", MCPToolAnnotations.builder()
+                            .title(null).readOnlyHint(false).destructiveHint(true).idempotentHint(false).openWorldHint(true).build())));
             MCPToolSpecificationFactory actualFactory = new MCPToolSpecificationFactory(mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS));
             List<SyncToolSpecification> actual = actualFactory.createToolSpecifications();
             assertNotNull(actual.getFirst().tool().annotations());

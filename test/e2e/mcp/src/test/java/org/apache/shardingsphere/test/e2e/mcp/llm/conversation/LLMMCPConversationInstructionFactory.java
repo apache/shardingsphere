@@ -52,25 +52,7 @@ final class LLMMCPConversationInstructionFactory {
         if (!immediateNextActionInstruction.isEmpty()) {
             return immediateNextActionInstruction;
         }
-        return hasSideEffectExecutionNextAction(interactionTrace) ? createSideEffectExecutionNextActionInstruction(scenario.getExpectedAnswer()) : "";
-    }
-    
-    boolean hasPendingImmediateNextAction(final List<MCPInteractionTraceRecord> interactionTrace) {
-        return !interactionTrace.isEmpty() && !findImmediateNextActionName(interactionTrace.getLast()).isEmpty();
-    }
-    
-    String findImmediateNextActionName(final MCPInteractionTraceRecord traceRecord) {
-        for (Map<?, ?> each : LLMMCPNextActions.getNextActions(traceRecord.getStructuredContent())) {
-            String result = findMachineNextActionName(each);
-            if (!result.isEmpty()) {
-                return result;
-            }
-        }
-        return "";
-    }
-    
-    boolean hasSideEffectExecutionNextAction(final List<MCPInteractionTraceRecord> interactionTrace) {
-        return !interactionTrace.isEmpty() && LLMMCPNextActions.getNextActions(interactionTrace.getLast().getStructuredContent()).stream().anyMatch(LLMMCPSideEffectNextAction::isExecutionAction);
+        return LLMMCPNextActions.hasSideEffectExecutionNextAction(interactionTrace) ? createSideEffectExecutionNextActionInstruction(scenario.getExpectedAnswer()) : "";
     }
     
     List<LLMChatMessage> createFinalAnswerMessages(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
@@ -125,20 +107,6 @@ final class LLMMCPConversationInstructionFactory {
             }
         }
         return "";
-    }
-    
-    private String findMachineNextActionName(final Map<?, ?> action) {
-        if (LLMMCPSideEffectNextAction.isExecutionAction(action)) {
-            return "";
-        }
-        String actionType = Objects.toString(action.get("type"), "").trim();
-        if ("resource_read".equals(actionType) && !Objects.toString(action.get("resource_uri"), "").trim().isEmpty()) {
-            return MCPInteractionActionNames.READ_RESOURCE;
-        }
-        if ("tool_call".equals(actionType)) {
-            return Objects.toString(action.get("tool_name"), "").trim();
-        }
-        return "completion".equals(actionType) ? MCPInteractionActionNames.COMPLETE : "";
     }
     
     private String createMachineNextActionInstruction(final Map<?, ?> action) {

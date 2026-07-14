@@ -98,122 +98,108 @@ public final class ShardingPlanningRequestBinder {
     }
     
     private void bindTableRuleArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, "rule", request::setRuleName);
-        applyStringArgument(workflowPlanningArguments, "data_nodes", request::setDataNodes);
-        applyStringArgument(workflowPlanningArguments, "storage_units", request::setStorageUnits);
-        applyStringArgument(workflowPlanningArguments, "strategy_type", request::setStrategyType);
-        applyStringArgument(workflowPlanningArguments, "sharding_columns", request::setShardingColumns);
-        applyStringArgument(workflowPlanningArguments, "algorithm_type", request::setAlgorithmType);
-        applyStringArgument(workflowPlanningArguments, "key_generate_column", request::setKeyGenerateColumn);
-        applyStringArgument(workflowPlanningArguments, "key_generator", request::setKeyGeneratorName);
-        applyStringArgument(workflowPlanningArguments, "key_generator_type", request::setKeyGeneratorType);
-        applyStringArgument(workflowPlanningArguments, "allow_hint_disable", request::setAllowHintDisable);
+        workflowPlanningArguments.applyStringArgument("rule", request::setRuleName);
+        workflowPlanningArguments.applyStringArgument("data_nodes", request::setDataNodes);
+        workflowPlanningArguments.applyStringArgument("storage_units", request::setStorageUnits);
+        workflowPlanningArguments.applyStringArgument("strategy_type", request::setStrategyType);
+        workflowPlanningArguments.applyStringArgument("sharding_columns", request::setShardingColumns);
+        workflowPlanningArguments.applyStringArgument("algorithm_type", request::setAlgorithmType);
+        workflowPlanningArguments.applyStringArgument("key_generate_column", request::setKeyGenerateColumn);
+        workflowPlanningArguments.applyStringArgument("key_generator", request::setKeyGeneratorName);
+        workflowPlanningArguments.applyStringArgument("key_generator_type", request::setKeyGeneratorType);
+        workflowPlanningArguments.applyStringArgument("allow_hint_disable", request::setAllowHintDisable);
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument("algorithm_properties"));
         request.putKeyGeneratorProperties(workflowPlanningArguments.getMapArgument("key_generator_properties"));
         request.getAuditorNames().addAll(createStringList(workflowPlanningArguments.getStringArgument("auditors")));
     }
     
     private void applyTableRuleEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
-        applyStringField(values, "table", request::setTable);
-        applyStringField(values, "column", request::setColumn);
-        applyStringField(values, "rule", request::setRuleName);
-        applyStringField(values, "data_nodes", request::setDataNodes);
-        applyStringField(values, "storage_units", request::setStorageUnits);
-        applyStringField(values, "strategy_type", request::setStrategyType);
-        applyStringField(values, "sharding_columns", request::setShardingColumns);
-        applyStringField(values, "algorithm_type", request::setAlgorithmType);
-        applyStringField(values, "key_generate_column", request::setKeyGenerateColumn);
-        applyStringField(values, "key_generator", request::setKeyGeneratorName);
-        applyStringField(values, "key_generator_type", request::setKeyGeneratorType);
-        applyStringField(values, "allow_hint_disable", request::setAllowHintDisable);
+        WorkflowRequestBinder.applyStringField(values, "table", request::setTable);
+        WorkflowRequestBinder.applyStringField(values, "column", request::setColumn);
+        WorkflowRequestBinder.applyStringField(values, "rule", request::setRuleName);
+        WorkflowRequestBinder.applyStringField(values, "data_nodes", request::setDataNodes);
+        WorkflowRequestBinder.applyStringField(values, "storage_units", request::setStorageUnits);
+        WorkflowRequestBinder.applyStringField(values, "strategy_type", request::setStrategyType);
+        WorkflowRequestBinder.applyStringField(values, "sharding_columns", request::setShardingColumns);
+        WorkflowRequestBinder.applyStringField(values, "algorithm_type", request::setAlgorithmType);
+        WorkflowRequestBinder.applyStringField(values, "key_generate_column", request::setKeyGenerateColumn);
+        WorkflowRequestBinder.applyStringField(values, "key_generator", request::setKeyGeneratorName);
+        WorkflowRequestBinder.applyStringField(values, "key_generator_type", request::setKeyGeneratorType);
+        WorkflowRequestBinder.applyStringField(values, "allow_hint_disable", request::setAllowHintDisable);
         applyMapField(values, "algorithm_properties", request::putAlgorithmProperties);
         applyMapField(values, "key_generator_properties", request::putKeyGeneratorProperties);
         request.getAuditorNames().addAll(createStringList(values.get("auditors")));
     }
     
     private void bindTableReferenceRuleArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, "rule", request::setRuleName);
+        workflowPlanningArguments.applyStringArgument("rule", request::setRuleName);
         request.getReferenceTables().addAll(createStringList(workflowPlanningArguments.getStringArgument("reference_tables")));
     }
     
     private void applyTableReferenceRuleEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
-        applyStringField(values, "rule", request::setRuleName);
+        WorkflowRequestBinder.applyStringField(values, "rule", request::setRuleName);
         request.getReferenceTables().addAll(createStringList(values.get("reference_tables")));
     }
     
     private void bindDefaultStrategyArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, "default_strategy_type", request::setDefaultStrategyType);
-        applyStringArgument(workflowPlanningArguments, "strategy_type", request::setStrategyType);
-        applyStringArgument(workflowPlanningArguments, "sharding_columns", request::setShardingColumns);
-        applyStringArgument(workflowPlanningArguments, "algorithm_type", request::setAlgorithmType);
+        workflowPlanningArguments.applyStringArgument("default_strategy_type", request::setDefaultStrategyType);
+        workflowPlanningArguments.applyStringArgument("strategy_type", request::setStrategyType);
+        workflowPlanningArguments.applyStringArgument("sharding_columns", request::setShardingColumns);
+        workflowPlanningArguments.applyStringArgument("algorithm_type", request::setAlgorithmType);
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument("algorithm_properties"));
     }
     
     private void applyDefaultStrategyEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
-        applyStringField(values, "column", request::setColumn);
-        applyStringField(values, "default_strategy_type", request::setDefaultStrategyType);
-        applyStringField(values, "strategy_type", request::setStrategyType);
-        applyStringField(values, "sharding_columns", request::setShardingColumns);
-        applyStringField(values, "algorithm_type", request::setAlgorithmType);
+        WorkflowRequestBinder.applyStringField(values, "column", request::setColumn);
+        WorkflowRequestBinder.applyStringField(values, "default_strategy_type", request::setDefaultStrategyType);
+        WorkflowRequestBinder.applyStringField(values, "strategy_type", request::setStrategyType);
+        WorkflowRequestBinder.applyStringField(values, "sharding_columns", request::setShardingColumns);
+        WorkflowRequestBinder.applyStringField(values, "algorithm_type", request::setAlgorithmType);
         applyMapField(values, "algorithm_properties", request::putAlgorithmProperties);
     }
     
     private void bindKeyGeneratorArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, "key_generator", request::setKeyGeneratorName);
-        applyStringArgument(workflowPlanningArguments, "key_generator_type", request::setKeyGeneratorType);
+        workflowPlanningArguments.applyStringArgument("key_generator", request::setKeyGeneratorName);
+        workflowPlanningArguments.applyStringArgument("key_generator_type", request::setKeyGeneratorType);
         request.putKeyGeneratorProperties(workflowPlanningArguments.getMapArgument("key_generator_properties"));
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument("algorithm_properties"));
     }
     
     private void applyKeyGeneratorEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
-        applyStringField(values, "key_generator", request::setKeyGeneratorName);
-        applyStringField(values, "key_generator_type", request::setKeyGeneratorType);
+        WorkflowRequestBinder.applyStringField(values, "key_generator", request::setKeyGeneratorName);
+        WorkflowRequestBinder.applyStringField(values, "key_generator_type", request::setKeyGeneratorType);
         applyMapField(values, "key_generator_properties", request::putKeyGeneratorProperties);
         applyMapField(values, "algorithm_properties", request::putAlgorithmProperties);
     }
     
     private void bindKeyGenerateStrategyArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, "key_generate_strategy", request::setKeyGenerateStrategyName);
-        applyStringArgument(workflowPlanningArguments, "sequence", request::setSequenceName);
-        applyStringArgument(workflowPlanningArguments, "key_generator", request::setKeyGeneratorName);
-        applyStringArgument(workflowPlanningArguments, "key_generator_type", request::setKeyGeneratorType);
+        workflowPlanningArguments.applyStringArgument("key_generate_strategy", request::setKeyGenerateStrategyName);
+        workflowPlanningArguments.applyStringArgument("sequence", request::setSequenceName);
+        workflowPlanningArguments.applyStringArgument("key_generator", request::setKeyGeneratorName);
+        workflowPlanningArguments.applyStringArgument("key_generator_type", request::setKeyGeneratorType);
         request.putKeyGeneratorProperties(workflowPlanningArguments.getMapArgument("key_generator_properties"));
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument("algorithm_properties"));
     }
     
     private void applyKeyGenerateStrategyEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
-        applyStringField(values, "table", request::setTable);
-        applyStringField(values, "column", request::setColumn);
-        applyStringField(values, "key_generate_strategy", request::setKeyGenerateStrategyName);
-        applyStringField(values, "sequence", request::setSequenceName);
-        applyStringField(values, "key_generator", request::setKeyGeneratorName);
-        applyStringField(values, "key_generator_type", request::setKeyGeneratorType);
+        WorkflowRequestBinder.applyStringField(values, "table", request::setTable);
+        WorkflowRequestBinder.applyStringField(values, "column", request::setColumn);
+        WorkflowRequestBinder.applyStringField(values, "key_generate_strategy", request::setKeyGenerateStrategyName);
+        WorkflowRequestBinder.applyStringField(values, "sequence", request::setSequenceName);
+        WorkflowRequestBinder.applyStringField(values, "key_generator", request::setKeyGeneratorName);
+        WorkflowRequestBinder.applyStringField(values, "key_generator_type", request::setKeyGeneratorType);
         applyMapField(values, "key_generator_properties", request::putKeyGeneratorProperties);
         applyMapField(values, "algorithm_properties", request::putAlgorithmProperties);
     }
     
     private void bindRuleComponentCleanupArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, "component_type", request::setComponentType);
-        applyStringArgument(workflowPlanningArguments, "component_name", request::setComponentName);
+        workflowPlanningArguments.applyStringArgument("component_type", request::setComponentType);
+        workflowPlanningArguments.applyStringArgument("component_name", request::setComponentName);
     }
     
     private void applyRuleComponentCleanupEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
-        applyStringField(values, "component_type", request::setComponentType);
-        applyStringField(values, "component_name", request::setComponentName);
-    }
-    
-    private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        String value = workflowPlanningArguments.getStringArgument(fieldName);
-        if (!value.isEmpty()) {
-            consumer.accept(value);
-        }
-    }
-    
-    private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
-        Object value = values.get(fieldName);
-        if (null != value) {
-            consumer.accept(String.valueOf(value));
-        }
+        WorkflowRequestBinder.applyStringField(values, "component_type", request::setComponentType);
+        WorkflowRequestBinder.applyStringField(values, "component_name", request::setComponentName);
     }
     
     private void applyMapField(final Map<String, Object> values, final String fieldName, final Consumer<Map<String, String>> consumer) {

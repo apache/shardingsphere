@@ -73,7 +73,7 @@ class MCPToolControllerTest {
     @Test
     void assertHandleWithUnsupportedTool() {
         try (MockedStatic<ToolDefinitionRegistry> mocked = mockStatic(ToolDefinitionRegistry.class)) {
-            mocked.when(() -> ToolDefinitionRegistry.getToolDefinition("unsupported_tool")).thenThrow(UnsupportedToolException.class);
+            mocked.when(() -> ToolDefinitionRegistry.getToolDefinition("unsupported_tool")).thenThrow(new UnsupportedToolException("unsupported_tool"));
             UnsupportedToolException actual =
                     assertThrows(UnsupportedToolException.class, () -> new MCPToolController(ResourceTestDataFactory.createRuntimeContext()).handle("session-1", "unsupported_tool", Map.of()));
             assertThat(actual.getToolName(), is("unsupported_tool"));

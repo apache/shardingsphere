@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +27,7 @@ import java.util.Map;
 /**
  * Secret reference value.
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class SecretReferenceValue {
     

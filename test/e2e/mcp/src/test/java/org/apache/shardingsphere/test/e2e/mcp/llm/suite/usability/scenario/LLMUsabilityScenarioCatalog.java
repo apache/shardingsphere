@@ -208,7 +208,17 @@ public final class LLMUsabilityScenarioCatalog {
                                                 final List<String> tags, final LLME2EScenario llmScenario,
                                                 final List<String> expectedFirstActionNames, final List<String> expectedResourceUris,
                                                 final boolean resourceHitRequired, final boolean recoveryExpected, final String expectedRecoveryCategory) {
-        return new LLMUsabilityScenario(scenarioId, dimension, runtimeKind, tags, llmScenario, expectedFirstActionNames, expectedResourceUris, resourceHitRequired, recoveryExpected,
-                expectedRecoveryCategory);
+        return LLMUsabilityScenario.builder()
+                .scenarioId(scenarioId)
+                .dimension(dimension)
+                .runtimeKind(runtimeKind)
+                .tags(tags)
+                .llmScenario(llmScenario)
+                .expectedFirstActionNames(expectedFirstActionNames)
+                .expectedResourceUris(expectedResourceUris)
+                .resourceHitRequired(resourceHitRequired)
+                .recoveryExpected(recoveryExpected)
+                .expectedRecoveryCategory(expectedRecoveryCategory)
+                .build();
     }
 }

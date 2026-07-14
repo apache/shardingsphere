@@ -39,9 +39,7 @@ import java.util.Map;
  */
 public final class WorkflowApplyResponseBuilder {
     
-    private static final String EXECUTION_MODE_PREVIEW = "preview";
-    
-    private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
+    private static final String STATUS_PREVIEW = "preview";
     
     /**
      * Build workflow apply response payload.
@@ -88,6 +86,19 @@ public final class WorkflowApplyResponseBuilder {
     }
     
     /**
+     * Build failed workflow apply response payload.
+     *
+     * @param snapshot workflow snapshot
+     * @param executionMode execution mode
+     * @param issues workflow issues
+     * @return failed workflow apply response payload
+     */
+    Map<String, Object> buildFailureResponse(final WorkflowContextSnapshot snapshot, final String executionMode,
+                                             final Collection<Map<String, Object>> issues) {
+        return build(snapshot, WorkflowLifecycle.STATUS_FAILED, executionMode, issues, List.of(), List.of(), List.of(), List.of(), Map.of());
+    }
+    
+    /**
      * Build workflow preview response payload.
      *
      * @param snapshot workflow snapshot
@@ -99,7 +110,7 @@ public final class WorkflowApplyResponseBuilder {
     public Map<String, Object> buildPreviewResponse(final WorkflowContextSnapshot snapshot, final Collection<WorkflowArtifactBundle.ExecutableWorkflowArtifact> executableArtifacts,
                                                     final String applyExecutionMode, final Map<String, Object> manualArtifactPackage) {
         List<Map<String, Object>> previewArtifacts = createPreviewArtifacts(executableArtifacts);
-        Map<String, Object> result = build(snapshot, EXECUTION_MODE_PREVIEW, EXECUTION_MODE_PREVIEW,
+        Map<String, Object> result = build(snapshot, STATUS_PREVIEW, WorkflowLifecycle.EXECUTION_MODE_PREVIEW,
                 List.of(), List.of(), List.of(), List.of(), List.of(), manualArtifactPackage);
         result.put("would_apply", false);
         result.put("preview_artifacts", previewArtifacts);
@@ -113,10 +124,10 @@ public final class WorkflowApplyResponseBuilder {
     }
     
     private String resolveResponseMode(final String status, final String executionMode) {
-        if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
+        if (WorkflowLifecycle.EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return MCPResponseMode.PREVIEW;
         }
-        if (EXECUTION_MODE_MANUAL_ONLY.equals(executionMode)) {
+        if (WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY.equals(executionMode)) {
             return MCPResponseMode.MANUAL_ONLY;
         }
         return WorkflowLifecycle.STATUS_COMPLETED.equals(status) ? MCPResponseMode.EXECUTED : MCPResponseMode.TERMINAL;
@@ -124,7 +135,7 @@ public final class WorkflowApplyResponseBuilder {
     
     private String createSummary(final String planId, final String status, final String executionMode, final Collection<Map<String, Object>> issues,
                                  final Collection<String> executedDdl, final Collection<String> executedDistSql) {
-        if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
+        if (WorkflowLifecycle.EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return String.format("Workflow apply preview is ready for plan `%s`.", planId);
         }
         if (WorkflowLifecycle.STATUS_COMPLETED.equals(status)) {
@@ -156,7 +167,7 @@ public final class WorkflowApplyResponseBuilder {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("artifact_categories", previewArtifacts.stream().map(each -> (String) each.get("artifact_type")).distinct().toList());
         result.put("side_effect_scope", previewArtifacts.stream().map(each -> (String) each.get("side_effect_scope")).distinct().toList());
-        boolean manualOnly = EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode);
+        boolean manualOnly = WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode);
         result.put("manual_only", manualOnly);
         if (!manualOnly && !previewArtifacts.isEmpty()) {
             result.put("approval_field", WorkflowFieldNames.APPROVED_STEPS);
@@ -186,7 +197,7 @@ public final class WorkflowApplyResponseBuilder {
         if (previewArtifacts.isEmpty()) {
             return MCPNextActionUtils.ordered(MCPNextActionUtils.stop("Preview has no artifacts to approve."));
         }
-        if (EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode)) {
+        if (WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode)) {
             return MCPNextActionUtils.ordered(MCPNextActionUtils.callTool(WorkflowToolDescriptors.APPLY_TOOL_NAME,
                     createPreviewNextActionReason(applyExecutionMode), createExecutionArguments(snapshot, applyExecutionMode)));
         }
@@ -198,7 +209,7 @@ public final class WorkflowApplyResponseBuilder {
     }
     
     private String createPreviewNextActionReason(final String applyExecutionMode) {
-        return EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode)
+        return WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY.equals(applyExecutionMode)
                 ? "Export reviewed workflow artifacts without applying runtime side effects."
                 : "Confirm the preview_artifacts.approval_step values to approve before execution.";
     }

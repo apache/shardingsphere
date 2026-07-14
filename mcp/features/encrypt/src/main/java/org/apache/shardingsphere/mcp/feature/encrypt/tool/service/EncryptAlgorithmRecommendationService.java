@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowR
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
 import java.util.LinkedList;
@@ -79,7 +80,7 @@ public final class EncryptAlgorithmRecommendationService {
     private String resolveSpecifiedPrimaryEncryptAlgorithm(final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptAlgorithms,
                                                            final List<WorkflowIssue> issues, final String algorithmType) {
         if (!WorkflowAlgorithmUtils.containsAlgorithm(encryptAlgorithms, algorithmType)) {
-            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     String.format("Encrypt algorithm `%s` is not visible from the current Proxy.", algorithmType), "Choose an available encrypt algorithm.", false, Map.of()));
             return "";
         }
@@ -120,7 +121,7 @@ public final class EncryptAlgorithmRecommendationService {
         if (!specifiedAlgorithmType.isEmpty()) {
             return;
         }
-        issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT, "error", "selecting-algorithm", message, userAction, false, Map.of()));
+        issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM, message, userAction, false, Map.of()));
     }
     
     private String resolveAssistedQueryAlgorithm(final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptAlgorithms,
@@ -134,7 +135,7 @@ public final class EncryptAlgorithmRecommendationService {
     
     private String resolveSpecifiedAssistedQueryAlgorithm(final List<Map<String, Object>> encryptAlgorithms, final List<WorkflowIssue> issues, final String algorithmType) {
         if (!WorkflowAlgorithmUtils.containsAlgorithm(encryptAlgorithms, algorithmType)) {
-            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     String.format("Assisted-query algorithm `%s` is not visible from the current Proxy.", algorithmType),
                     "Choose an available assisted-query algorithm.", false, Map.of()));
             return "";
@@ -164,7 +165,7 @@ public final class EncryptAlgorithmRecommendationService {
     
     private String resolveSpecifiedLikeQueryAlgorithm(final List<Map<String, Object>> encryptAlgorithms, final List<WorkflowIssue> issues, final String algorithmType) {
         if (!WorkflowAlgorithmUtils.containsAlgorithm(encryptAlgorithms, algorithmType)) {
-            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     String.format("LIKE-query algorithm `%s` is not visible from the current Proxy.", algorithmType),
                     "Choose an available LIKE-query algorithm.", false, Map.of()));
             return "";
@@ -187,14 +188,21 @@ public final class EncryptAlgorithmRecommendationService {
     }
     
     private void addSpecifiedCapabilityConflictIssue(final List<WorkflowIssue> issues, final String message, final String userAction) {
-        issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT, "error", "selecting-algorithm", message, userAction, false, Map.of()));
+        issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM, message, userAction, false, Map.of()));
     }
     
     private AlgorithmCandidate createEncryptCandidate(final String role, final String algorithmType, final EncryptWorkflowRequest request) {
         Map<String, Boolean> capability = findEncryptCapability(algorithmType);
-        return new AlgorithmCandidate(role, algorithmType, capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_DECRYPT),
-                capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_EQUIVALENT_FILTER), capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_LIKE),
-                calculateEncryptScore(role, capability), createEncryptReason(role, algorithmType, request), createEncryptRisk(capability));
+        return AlgorithmCandidate.builder()
+                .algorithmRole(role)
+                .algorithmType(algorithmType)
+                .supportsDecrypt(capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_DECRYPT))
+                .supportsEquivalentFilter(capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_EQUIVALENT_FILTER))
+                .supportsLike(capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_LIKE))
+                .recommendationScore(calculateEncryptScore(role, capability))
+                .recommendationReason(createEncryptReason(role, algorithmType, request))
+                .riskNotes(createEncryptRisk(capability))
+                .build();
     }
     
     private int calculateEncryptScore(final String role, final Map<String, Boolean> capability) {

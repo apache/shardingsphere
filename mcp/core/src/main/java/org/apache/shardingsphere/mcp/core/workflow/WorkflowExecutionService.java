@@ -54,13 +54,8 @@ import java.util.Map;
  */
 public final class WorkflowExecutionService {
     
-    private static final String EXECUTION_MODE_PREVIEW = "preview";
-    
-    private static final String EXECUTION_MODE_REVIEW_THEN_EXECUTE = "review-then-execute";
-    
-    private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
-    
-    private static final List<String> EXECUTION_MODES = List.of(EXECUTION_MODE_PREVIEW, EXECUTION_MODE_REVIEW_THEN_EXECUTE, EXECUTION_MODE_MANUAL_ONLY);
+    private static final List<String> EXECUTION_MODES = List.of(WorkflowLifecycle.EXECUTION_MODE_PREVIEW,
+            WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE, WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY);
     
     private static final List<String> ALLOWED_APPROVAL_STEPS = List.of(
             WorkflowArtifactPayloadUtils.STEP_DDL, WorkflowArtifactPayloadUtils.STEP_INDEX_DDL, WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL);
@@ -95,7 +90,7 @@ public final class WorkflowExecutionService {
             return invalidArtifactResponse;
         }
         WorkflowApplyOutcome applyOutcome = new WorkflowApplyOutcome();
-        if (EXECUTION_MODE_PREVIEW.equalsIgnoreCase(actualExecutionMode)) {
+        if (WorkflowLifecycle.EXECUTION_MODE_PREVIEW.equalsIgnoreCase(actualExecutionMode)) {
             return previewApply(workflowSessionContext, snapshot);
         }
         if (isManualOnly(actualExecutionMode)) {
@@ -142,17 +137,17 @@ public final class WorkflowExecutionService {
                     String.format("Workflow status `%s` cannot enter apply in the current lifecycle.", snapshot.getStatus()),
                     "Plan the workflow again or continue from a reviewable status.");
         }
-        if (EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(executionMode) && !WorkflowLifecycle.STATUS_PREVIEWED.equalsIgnoreCase(snapshot.getStatus())) {
+        if (WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(executionMode) && !WorkflowLifecycle.STATUS_PREVIEWED.equalsIgnoreCase(snapshot.getStatus())) {
             return createRejectedResponse(snapshot, executionMode, WorkflowIssueCode.WORKFLOW_STATUS_INVALID,
                     "Automatic workflow execution requires an execution_mode=preview call first.",
                     "Call database_gateway_apply_workflow with execution_mode=preview, review preview_artifacts, then pass explicit approved_steps.");
         }
-        if (EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(executionMode) && (null == approvedSteps || approvedSteps.isEmpty())) {
+        if (WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(executionMode) && (null == approvedSteps || approvedSteps.isEmpty())) {
             return createRejectedResponse(snapshot, executionMode, WorkflowIssueCode.WORKFLOW_STATUS_INVALID,
                     "Automatic workflow execution requires explicit approved_steps.",
                     "Pass the reviewed preview_artifacts.approval_step values in approved_steps.");
         }
-        if (EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(executionMode) && !areApprovedStepsVisible(snapshot, approvedSteps)) {
+        if (WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(executionMode) && !areApprovedStepsVisible(snapshot, approvedSteps)) {
             return createRejectedResponse(snapshot, executionMode, WorkflowIssueCode.WORKFLOW_STATUS_INVALID,
                     "Automatic workflow execution received approved_steps that are not present in the previewed artifacts.",
                     "Pass only the preview_artifacts.approval_step values from the latest preview response.");
@@ -176,9 +171,8 @@ public final class WorkflowExecutionService {
     
     private Map<String, Object> createRejectedResponse(final WorkflowContextSnapshot snapshot, final String executionMode, final String issueCode, final String message,
                                                        final String userAction) {
-        return new WorkflowApplyResponseBuilder().build(snapshot, WorkflowLifecycle.STATUS_FAILED, executionMode,
-                List.of(new WorkflowIssue(issueCode, "error", WorkflowLifecycle.STEP_REVIEW, message, userAction, false, Map.of()).toMap()),
-                List.of(), List.of(), List.of(), List.of(), Map.of());
+        return new WorkflowApplyResponseBuilder().buildFailureResponse(snapshot, executionMode,
+                List.of(new WorkflowIssue(issueCode, "error", WorkflowLifecycle.STEP_REVIEW, message, userAction, false, Map.of()).toMap()));
     }
     
     private String resolveSnapshotExecutionMode(final WorkflowContextSnapshot snapshot) {
@@ -186,7 +180,7 @@ public final class WorkflowExecutionService {
     }
     
     private boolean isManualOnly(final String executionMode) {
-        return EXECUTION_MODE_MANUAL_ONLY.equalsIgnoreCase(executionMode);
+        return WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY.equalsIgnoreCase(executionMode);
     }
     
     private boolean areApprovedStepsVisible(final WorkflowContextSnapshot snapshot, final List<String> approvedSteps) {
@@ -199,9 +193,8 @@ public final class WorkflowExecutionService {
         List<Map<String, Object>> validationIssues = workflowApplyArtifactValidator.validate(snapshot, createExecutableArtifacts(snapshot));
         if (!validationIssues.isEmpty()) {
             persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
-            Map<String, Object> result = new WorkflowApplyResponseBuilder().build(snapshot, WorkflowLifecycle.STATUS_FAILED, executionMode, validationIssues,
-                    List.of(), List.of(), List.of(), List.of(), Map.of());
-            if (EXECUTION_MODE_PREVIEW.equalsIgnoreCase(executionMode)) {
+            Map<String, Object> result = new WorkflowApplyResponseBuilder().buildFailureResponse(snapshot, executionMode, validationIssues);
+            if (WorkflowLifecycle.EXECUTION_MODE_PREVIEW.equalsIgnoreCase(executionMode)) {
                 result.put("would_apply", false);
                 result.put("preview_artifacts", List.of());
             }
@@ -220,11 +213,13 @@ public final class WorkflowExecutionService {
     }
     
     private Map<String, Object> createPreviewSuggestedArguments(final WorkflowContextSnapshot snapshot) {
-        return Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW);
+        return Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, WorkflowLifecycle.EXECUTION_MODE_PREVIEW);
     }
     
     private String resolveApplyExecutionMode(final WorkflowContextSnapshot snapshot) {
-        return EXECUTION_MODE_MANUAL_ONLY.equalsIgnoreCase(resolveSnapshotExecutionMode(snapshot)) ? EXECUTION_MODE_MANUAL_ONLY : EXECUTION_MODE_REVIEW_THEN_EXECUTE;
+        return WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY.equalsIgnoreCase(resolveSnapshotExecutionMode(snapshot))
+                ? WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY
+                : WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE;
     }
     
     private Map<String, Object> applyManualOnly(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot,
@@ -233,7 +228,8 @@ public final class WorkflowExecutionService {
         applyOutcome.addIssue(new WorkflowIssue(WorkflowIssueCode.MANUAL_EXECUTION_PENDING, "warning", WorkflowLifecycle.STEP_REVIEW,
                 "Artifacts are generated in manual-only mode and will not be executed automatically.",
                 "Execute artifacts manually and run validation afterwards.", true, Map.of()).toMap());
-        return applyOutcome.createResponse(WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION, snapshot, "manual-only", createArtifactPayload(snapshot));
+        return applyOutcome.createResponse(WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION, snapshot,
+                WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY, createArtifactPayload(snapshot));
     }
     
     private Map<String, Object> applyAutomatically(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,

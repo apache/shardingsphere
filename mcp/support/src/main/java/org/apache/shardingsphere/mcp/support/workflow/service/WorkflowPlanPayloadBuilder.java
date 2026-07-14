@@ -42,12 +42,6 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowPlanPayloadBuilder {
     
-    private static final String DELIVERY_MODE_ALL_AT_ONCE = "all-at-once";
-    
-    private static final String EXECUTION_MODE_REVIEW_THEN_EXECUTE = "review-then-execute";
-    
-    private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
-    
     /**
      * Build one workflow-plan payload map.
      *
@@ -131,7 +125,7 @@ public final class WorkflowPlanPayloadBuilder {
     
     private static Map<String, Object> createReviewFocus(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        boolean manualOnly = EXECUTION_MODE_MANUAL_ONLY.equals(snapshot.getInteractionPlan().getExecutionMode());
+        boolean manualOnly = WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY.equals(snapshot.getInteractionPlan().getExecutionMode());
         result.put("artifact_categories", createReviewArtifactCategories(snapshot));
         result.put("side_effect_scope", createReviewSideEffectScope(snapshot));
         result.put("manual_only", manualOnly);
@@ -173,7 +167,9 @@ public final class WorkflowPlanPayloadBuilder {
     }
     
     private static boolean isDefaultMode(final String fieldName, final String value) {
-        return WorkflowFieldNames.DELIVERY_MODE.equals(fieldName) ? DELIVERY_MODE_ALL_AT_ONCE.equals(value) : EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(value);
+        return WorkflowFieldNames.DELIVERY_MODE.equals(fieldName)
+                ? WorkflowLifecycle.DELIVERY_MODE_ALL_AT_ONCE.equals(value)
+                : WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(value);
     }
     
     private static Map<String, Object> getInferredValues(final WorkflowContextSnapshot snapshot) {

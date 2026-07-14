@@ -48,7 +48,7 @@ class LLMUsabilitySuiteRunnerTest {
     @Test
     void assertAssertCoreSuite() throws IOException {
         LLME2EConfiguration configuration = createConfiguration();
-        new LLMUsabilitySuiteRunner().assertCoreSuite("core-suite", () -> List.of(createScenario(LLMUsabilityScenario.NATURAL_TASK_TAG)),
+        new LLMUsabilitySuiteRunner().assertSuite("core-suite", () -> List.of(createScenario(LLMUsabilityScenario.NATURAL_TASK_TAG)),
                 scenario -> createConversationResult(configuration, scenario), configuration);
         assertTrue(Files.isRegularFile(tempDir.resolve("run-id").resolve("core-suite").resolve("scorecard.json")));
     }
@@ -56,7 +56,7 @@ class LLMUsabilitySuiteRunnerTest {
     @Test
     void assertAssertExtendedSuite() throws IOException {
         LLME2EConfiguration configuration = createConfiguration();
-        new LLMUsabilitySuiteRunner().assertExtendedSuite("extended-suite", () -> List.of(createScenario(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG)),
+        new LLMUsabilitySuiteRunner().assertSuite("extended-suite", () -> List.of(createScenario(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG)),
                 scenario -> createConversationResult(configuration, scenario), configuration);
         assertTrue(Files.isRegularFile(tempDir.resolve("run-id").resolve("extended-suite").resolve("scorecard.json")));
     }
@@ -65,7 +65,7 @@ class LLMUsabilitySuiteRunnerTest {
     void assertAssertCoreSuiteWithModelServiceUnavailable() {
         LLME2EConfiguration configuration = createConfiguration();
         TestAbortedException actual = assertThrows(TestAbortedException.class,
-                () -> new LLMUsabilitySuiteRunner().assertCoreSuite("core-suite", () -> List.of(createScenario(LLMUsabilityScenario.NATURAL_TASK_TAG)),
+                () -> new LLMUsabilitySuiteRunner().assertSuite("core-suite", () -> List.of(createScenario(LLMUsabilityScenario.NATURAL_TASK_TAG)),
                         scenario -> createConversationResult(configuration, scenario, LLME2EAssertionReport.failure("model_service_unavailable",
                                 "Model completion request failed with status 400.")),
                         configuration));
@@ -77,7 +77,7 @@ class LLMUsabilitySuiteRunnerTest {
     void assertFailureSummaryIncludesArtifactDirectory() {
         LLME2EConfiguration configuration = createConfiguration();
         AssertionError actual = assertThrows(AssertionError.class,
-                () -> new LLMUsabilitySuiteRunner().assertCoreSuite("core-suite", () -> List.of(createScenario(LLMUsabilityScenario.NATURAL_TASK_TAG)),
+                () -> new LLMUsabilitySuiteRunner().assertSuite("core-suite", () -> List.of(createScenario(LLMUsabilityScenario.NATURAL_TASK_TAG)),
                         scenario -> createConversationResult(configuration, scenario, LLME2EAssertionReport.failure("answer_mismatch", "Wrong answer.")),
                         configuration));
         Path artifactDirectory = tempDir.resolve("run-id").resolve("scenario-" + LLMUsabilityScenario.NATURAL_TASK_TAG);
@@ -86,7 +86,7 @@ class LLMUsabilitySuiteRunnerTest {
     }
     
     private LLMConversationExecutor.ConversationResult createConversationResult(final LLME2EConfiguration configuration, final LLME2EScenario scenario) throws IOException {
-        return createConversationResult(configuration, scenario, LLME2EAssertionReport.isSuccess("ok"));
+        return createConversationResult(configuration, scenario, LLME2EAssertionReport.success("ok"));
     }
     
     private LLMConversationExecutor.ConversationResult createConversationResult(final LLME2EConfiguration configuration, final LLME2EScenario scenario,
@@ -95,8 +95,18 @@ class LLMUsabilitySuiteRunnerTest {
         createArtifactFiles(artifactDirectory);
         List<MCPInteractionTraceRecord> trace = List.of(new MCPInteractionTraceRecord(1, "tool_call", MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
                 "database_gateway_execute_query", Map.of(), Map.of("result_kind", "result_set"), true, 0L));
-        LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle(scenario.getScenarioId(), scenario.getSystemPrompt(), scenario.getUserPrompt(), "provider", "model",
-                "{}", List.of("raw-output"), trace, List.of("runtime-log"), assertionReport);
+        LLME2EArtifactBundle artifactBundle = LLME2EArtifactBundle.builder()
+                .scenarioId(scenario.getScenarioId())
+                .systemPrompt(scenario.getSystemPrompt())
+                .userPrompt(scenario.getUserPrompt())
+                .modelProvider("provider")
+                .modelName("model")
+                .finalAnswerJson("{}")
+                .rawModelOutputs(List.of("raw-output"))
+                .interactionTrace(trace)
+                .mcpRuntimeLogLines(List.of("runtime-log"))
+                .assertionReport(assertionReport)
+                .build();
         return new LLMConversationExecutor.ConversationResult(artifactBundle, artifactDirectory);
     }
     
@@ -111,12 +121,36 @@ class LLMUsabilitySuiteRunnerTest {
         LLME2EScenario llmScenario = new LLME2EScenario("scenario-" + tag, "system", "Count orders.",
                 new LLMStructuredAnswer("logic_db", "public", "orders", "SELECT COUNT(*) FROM orders", 2, List.of()),
                 List.of("database_gateway_execute_query"), List.of("database_gateway_execute_query"));
-        return new LLMUsabilityScenario("scenario-" + tag, LLMUsabilityDimension.TOOL, "runtime", List.of(tag), llmScenario,
-                List.of("database_gateway_execute_query"), List.of(), false, false, "");
+        return LLMUsabilityScenario.builder()
+                .scenarioId("scenario-" + tag)
+                .dimension(LLMUsabilityDimension.TOOL)
+                .runtimeKind("runtime")
+                .tags(List.of(tag))
+                .llmScenario(llmScenario)
+                .expectedFirstActionNames(List.of("database_gateway_execute_query"))
+                .expectedResourceUris(List.of())
+                .resourceHitRequired(false)
+                .recoveryExpected(false)
+                .expectedRecoveryCategory("")
+                .build();
     }
     
     private LLME2EConfiguration createConfiguration() {
-        return new LLME2EConfiguration("http://127.0.0.1:8080/v1", "provider", "model", "api-key", 1, 1, 1, tempDir, "run-id", RuntimeMode.EXTERNAL_DEBUG,
-                "server-image", "base-image", "", new LLME2EConfiguration.ModelMetadata("repository", "model.gguf", "Q4", "revision", "sha256"));
+        return LLME2EConfiguration.builder()
+                .baseUrl("http://127.0.0.1:8080/v1")
+                .modelProvider("provider")
+                .modelName("model")
+                .apiKey("api-key")
+                .readyTimeoutSeconds(1)
+                .requestTimeoutSeconds(1)
+                .maxTurns(1)
+                .artifactRoot(tempDir)
+                .runId("run-id")
+                .runtimeMode(RuntimeMode.EXTERNAL_DEBUG)
+                .serverImage("server-image")
+                .baseServerImage("base-image")
+                .baseServerImageDigest("")
+                .modelMetadata(new LLME2EConfiguration.ModelMetadata("repository", "model.gguf", "Q4", "revision", "sha256"))
+                .build();
     }
 }

@@ -97,7 +97,7 @@ public final class MCPToolDescriptorCatalogValidator {
         Object properties = inputSchema.get("properties");
         ShardingSpherePreconditions.checkState(properties instanceof Map, () -> new IllegalStateException(String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName())));
         validateNestedInputSchemaFields(descriptor, inputSchema, "inputSchema");
-        MCPToolOutputSchemaValidator.validateInputSchemaFields(descriptor);
+        MCPToolDescriptorValidationUtils.validateModelFacingSchemaFields(descriptor, inputSchema);
     }
     
     private static void validateNestedInputSchemaFields(final MCPToolDescriptor descriptor, final Map<?, ?> schema, final String path) {

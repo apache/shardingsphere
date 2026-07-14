@@ -88,18 +88,16 @@ final class LLMUsabilityTraceMetrics {
     }
     
     boolean isNextActionFollowed(final List<MCPInteractionTraceRecord> interactionTrace) {
-        boolean hasActionableGuidance = false;
         for (int index = 0; index < interactionTrace.size() - 1; index++) {
             List<Map<?, ?>> actions = getImmediateMachineNextActions(interactionTrace.get(index));
             if (actions.isEmpty()) {
                 continue;
             }
-            hasActionableGuidance = true;
             if (!matchesAnyNextAction(actions, interactionTrace.get(index), interactionTrace.get(index + 1))) {
                 return false;
             }
         }
-        return !hasActionableGuidance || !interactionTrace.isEmpty();
+        return true;
     }
     
     boolean hasApprovalViolation(final List<MCPInteractionTraceRecord> interactionTrace) {

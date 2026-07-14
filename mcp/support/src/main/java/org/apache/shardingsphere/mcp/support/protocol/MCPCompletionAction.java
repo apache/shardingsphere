@@ -15,55 +15,52 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
+package org.apache.shardingsphere.mcp.support.protocol;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * MCP completion action.
+ */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
-public final class LLMUsabilityScorecard {
+public final class MCPCompletionAction {
     
-    private final String suiteId;
+    @Builder.Default
+    private final String referenceType = "";
     
-    private final String runId;
+    @Builder.Default
+    private final String reference = "";
     
-    private final double overallScore;
+    @Builder.Default
+    private final String argumentName = "";
     
-    private final boolean fullScore;
+    @Builder.Default
+    private final String argumentPrefix = "";
     
-    private final double taskSuccessRate;
+    @Builder.Default
+    private final Map<String, ?> contextArguments = Map.of();
     
-    private final double naturalTaskSuccessRate;
+    @Builder.Default
+    private final Collection<String> missingContextArguments = List.of();
     
-    private final double protocolContractSuccessRate;
+    @Builder.Default
+    private final String resumeTargetType = "";
     
-    private final double firstCorrectActionRate;
+    @Builder.Default
+    private final String resumeTarget = "";
     
-    private final double invalidCallRate;
+    @Builder.Default
+    private final Map<String, ?> resumeArguments = Map.of();
     
-    private final double averageRoundTrips;
-    
-    private final double queryAnswerFidelity;
-    
-    private final double boundaryConfusionRate;
-    
-    private final double resourceHitRate;
-    
-    private final double recoveryRate;
-    
-    private final double nextActionFollowRate;
-    
-    private final double approvalViolationRate;
-    
-    private final double nativeToolCallRate;
-    
-    private final double harnessRecoveryRate;
-    
-    private final List<LLMUsabilityScenarioResult> scenarioResults;
+    @Builder.Default
+    private final String reason = "";
 }

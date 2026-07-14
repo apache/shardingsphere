@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
@@ -88,7 +88,7 @@ class ShadowWorkflowValidationServiceTest {
         ShadowRuleWorkflowRequest request = (ShadowRuleWorkflowRequest) snapshot.getRequest();
         try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
             mockedStatic.when(() -> TypedSPILoader.checkService(ShadowAlgorithm.class, "VALUE_MATCH",
-                    WorkflowSQLUtils.createProperties(request.getAlgorithmProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
+                    WorkflowAlgorithmUtils.createProperties(request.getAlgorithmProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
             List<Map<String, Object>> actual = new ShadowWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact("CREATE SHADOW RULE `shadow_rule`(...)")));
             assertThat(actual.size(), is(1));
             assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
@@ -103,7 +103,7 @@ class ShadowWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot(request, "create");
         try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
             mockedStatic.when(() -> TypedSPILoader.checkService(ShadowAlgorithm.class, "SQL_HINT",
-                    WorkflowSQLUtils.createProperties(request.getAlgorithmProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
+                    WorkflowAlgorithmUtils.createProperties(request.getAlgorithmProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
             List<Map<String, Object>> actual = new ShadowWorkflowValidationService().validate(snapshot,
                     List.of(createRuleDistSQLArtifact("CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME='sql_hint')")));
             assertThat(actual.size(), is(1));

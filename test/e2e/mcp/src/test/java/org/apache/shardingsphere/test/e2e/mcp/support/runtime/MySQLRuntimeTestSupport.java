@@ -165,13 +165,17 @@ public final class MySQLRuntimeTestSupport {
      * @throws SQLException SQL exception
      */
     public static LLMMySQLRuntimeFixture createLLMRuntimeFixture(final String logicalDatabase) throws SQLException {
-        GenericContainer<?> container = createContainer();
-        container.start();
-        initializeDatabase(container);
-        String schemaName = detectSchema(container);
-        String physicalSchemaName = schemaName.isEmpty() ? DATABASE_NAME : schemaName;
-        int totalOrders = querySingleInt(container, String.format(COUNT_ORDERS_SQL, physicalSchemaName));
-        return new LLMMySQLRuntimeFixture(container, logicalDatabase, totalOrders, createRuntimeDatabases(container, logicalDatabase));
+        try (ContainerStartupGuard startupGuard = new ContainerStartupGuard(createContainer())) {
+            GenericContainer<?> container = startupGuard.container;
+            container.start();
+            initializeDatabase(container);
+            String jdbcMetadataSchemaName = detectSchema(container);
+            String resolvedPhysicalSchemaName = jdbcMetadataSchemaName.isEmpty() ? DATABASE_NAME : jdbcMetadataSchemaName;
+            int totalOrders = querySingleInt(container, String.format(COUNT_ORDERS_SQL, resolvedPhysicalSchemaName));
+            LLMMySQLRuntimeFixture result = new LLMMySQLRuntimeFixture(container, logicalDatabase, totalOrders, createRuntimeDatabases(container, logicalDatabase));
+            startupGuard.complete();
+            return result;
+        }
     }
     
     /**
@@ -357,7 +361,26 @@ public final class MySQLRuntimeTestSupport {
         }
     }
     
-    @RequiredArgsConstructor
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private static final class ContainerStartupGuard implements AutoCloseable {
+        
+        private final GenericContainer<?> container;
+        
+        private boolean completed;
+        
+        private void complete() {
+            completed = true;
+        }
+        
+        @Override
+        public void close() {
+            if (!completed) {
+                container.stop();
+            }
+        }
+    }
+    
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
     public static final class LLMMySQLRuntimeFixture implements AutoCloseable {
         

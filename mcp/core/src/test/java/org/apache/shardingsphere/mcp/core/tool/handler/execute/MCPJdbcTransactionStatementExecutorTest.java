@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
@@ -24,7 +26,6 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
@@ -65,6 +66,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         SQLExecutionResponse actual = executor.execute("session-1", "logic_db", createCapability(), new StatementClassifier().classify(sql));
         assertThat(actual.getStatementType(), is(expectedStatementType));
         assertThat(actual.getMessage(), is(expectedMessage));
+        assertThat(actual.getNormalizedSql(), is(sql));
         assertDatabaseExecution(sql, sessionManager, runtimeDatabaseConfig, connection, savepoint);
     }
     
@@ -136,8 +138,8 @@ class MCPJdbcTransactionStatementExecutorTest {
     
     private MCPDatabaseCapability createCapability(final TransactionCapability transactionCapability) {
         MCPDatabaseCapability result = mock(MCPDatabaseCapability.class);
-        when(result.isSupportsTransactionControl()).thenReturn(TransactionCapability.NONE != transactionCapability);
-        when(result.isSupportsSavepoint()).thenReturn(TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability);
+        when(result.supportsTransactionControl()).thenReturn(TransactionCapability.NONE != transactionCapability);
+        when(result.supportsSavepoint()).thenReturn(TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability);
         return result;
     }
     

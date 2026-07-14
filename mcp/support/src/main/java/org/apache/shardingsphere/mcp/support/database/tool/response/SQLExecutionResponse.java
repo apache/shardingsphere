@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.support.database.tool.response;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
@@ -40,6 +41,7 @@ import java.util.Set;
  * SQL execution response.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE, toBuilder = true)
 @Getter
 public final class SQLExecutionResponse implements MCPResponse {
     
@@ -56,8 +58,6 @@ public final class SQLExecutionResponse implements MCPResponse {
     private final int affectedRows;
     
     private final String statementType;
-    
-    private final String status;
     
     private final String message;
     
@@ -97,8 +97,18 @@ public final class SQLExecutionResponse implements MCPResponse {
      */
     public static SQLExecutionResponse resultSet(final SupportedMCPStatement statementClass, final String statementType,
                                                  final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
-        return new SQLExecutionResponse(ExecuteQueryResultKind.RESULT_SET, statementClass, normalizeColumns(columns), normalizeRows(rows), 0, statementType, "OK", "", truncated, 0, 0, "",
-                MCPResponseMode.QUERY, "");
+        return SQLExecutionResponse.builder()
+                .resultKind(ExecuteQueryResultKind.RESULT_SET)
+                .statementClass(statementClass)
+                .columns(normalizeColumns(columns))
+                .rows(normalizeRows(rows))
+                .statementType(statementType)
+                .message("")
+                .truncated(truncated)
+                .normalizedSql("")
+                .responseMode(MCPResponseMode.QUERY)
+                .executionMode("")
+                .build();
     }
     
     /**
@@ -121,8 +131,18 @@ public final class SQLExecutionResponse implements MCPResponse {
      * @return update-count response
      */
     public static SQLExecutionResponse updateCount(final SupportedMCPStatement statementClass, final String statementType, final int affectedRows) {
-        return new SQLExecutionResponse(ExecuteQueryResultKind.UPDATE_COUNT, statementClass, Collections.emptyList(), Collections.emptyList(), affectedRows, statementType, "OK", "",
-                false, 0, 0, "", MCPResponseMode.EXECUTED, "");
+        return SQLExecutionResponse.builder()
+                .resultKind(ExecuteQueryResultKind.UPDATE_COUNT)
+                .statementClass(statementClass)
+                .columns(Collections.emptyList())
+                .rows(Collections.emptyList())
+                .affectedRows(affectedRows)
+                .statementType(statementType)
+                .message("")
+                .normalizedSql("")
+                .responseMode(MCPResponseMode.EXECUTED)
+                .executionMode("")
+                .build();
     }
     
     /**
@@ -134,8 +154,17 @@ public final class SQLExecutionResponse implements MCPResponse {
      * @return acknowledgement response
      */
     public static SQLExecutionResponse statementAck(final SupportedMCPStatement statementClass, final String statementType, final String message) {
-        return new SQLExecutionResponse(ExecuteQueryResultKind.STATEMENT_ACK, statementClass, Collections.emptyList(), Collections.emptyList(), 0, statementType, "OK", message, false,
-                0, 0, "", MCPResponseMode.EXECUTED, "");
+        return SQLExecutionResponse.builder()
+                .resultKind(ExecuteQueryResultKind.STATEMENT_ACK)
+                .statementClass(statementClass)
+                .columns(Collections.emptyList())
+                .rows(Collections.emptyList())
+                .statementType(statementType)
+                .message(message)
+                .normalizedSql("")
+                .responseMode(MCPResponseMode.EXECUTED)
+                .executionMode("")
+                .build();
     }
     
     /**
@@ -146,8 +175,7 @@ public final class SQLExecutionResponse implements MCPResponse {
      * @return response with execution hints
      */
     public SQLExecutionResponse withExecutionHints(final int appliedMaxRows, final int appliedTimeoutMs) {
-        return new SQLExecutionResponse(resultKind, statementClass, columns, rows, affectedRows, statementType, status, message, truncated, appliedMaxRows, appliedTimeoutMs, normalizedSql,
-                responseMode, executionMode);
+        return toBuilder().appliedMaxRows(appliedMaxRows).appliedTimeoutMs(appliedTimeoutMs).build();
     }
     
     /**
@@ -157,8 +185,7 @@ public final class SQLExecutionResponse implements MCPResponse {
      * @return response with normalized SQL
      */
     public SQLExecutionResponse withNormalizedSql(final String normalizedSql) {
-        return new SQLExecutionResponse(resultKind, statementClass, columns, rows, affectedRows, statementType, status, message, truncated, appliedMaxRows, appliedTimeoutMs,
-                null == normalizedSql ? "" : normalizedSql, responseMode, executionMode);
+        return toBuilder().normalizedSql(null == normalizedSql ? "" : normalizedSql).build();
     }
     
     /**
@@ -168,8 +195,7 @@ public final class SQLExecutionResponse implements MCPResponse {
      * @return response with execution mode markers
      */
     public SQLExecutionResponse withExecutionMode(final String executionMode) {
-        return new SQLExecutionResponse(resultKind, statementClass, columns, rows, affectedRows, statementType, status, message, truncated, appliedMaxRows, appliedTimeoutMs, normalizedSql,
-                MCPResponseMode.EXECUTED, null == executionMode ? "" : executionMode);
+        return toBuilder().responseMode(MCPResponseMode.EXECUTED).executionMode(null == executionMode ? "" : executionMode).build();
     }
     
     @Override
@@ -182,7 +208,7 @@ public final class SQLExecutionResponse implements MCPResponse {
         }
         result.put("statement_class", statementClass.name().toLowerCase(Locale.ENGLISH));
         result.put("statement_type", statementType);
-        result.put("status", status);
+        result.put("status", "OK");
         result.put(MCPPayloadFieldNames.SUMMARY, createSummary());
         if (!normalizedSql.isEmpty()) {
             result.put("normalized_sql", normalizedSql);

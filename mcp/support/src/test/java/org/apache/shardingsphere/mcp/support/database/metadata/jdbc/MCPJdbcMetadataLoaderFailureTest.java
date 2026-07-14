@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +40,7 @@ class MCPJdbcMetadataLoaderFailureTest {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
                 () -> metadataLoader.load("logic_db", runtimeDatabaseConfiguration,
-                        new RuntimeDatabaseProfile("logic_db", "FixtureDB", "", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
+                        new RuntimeDatabaseProfile("logic_db", "FixtureDB", "", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
         assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: connection_failed."));
         assertThat(actual.getCause(), is(expected));
     }

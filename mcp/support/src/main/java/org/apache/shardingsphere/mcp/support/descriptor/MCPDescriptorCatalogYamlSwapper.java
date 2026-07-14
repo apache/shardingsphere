@@ -173,8 +173,13 @@ final class MCPDescriptorCatalogYamlSwapper {
     }
     
     private static MCPToolAnnotations swapToolAnnotations(final YamlMCPToolAnnotations yamlAnnotations) {
-        return new MCPToolAnnotations(yamlAnnotations.getTitle(), Boolean.TRUE.equals(yamlAnnotations.getReadOnlyHint()), Boolean.TRUE.equals(yamlAnnotations.getDestructiveHint()),
-                Boolean.TRUE.equals(yamlAnnotations.getIdempotentHint()), Boolean.TRUE.equals(yamlAnnotations.getOpenWorldHint()));
+        return MCPToolAnnotations.builder()
+                .title(yamlAnnotations.getTitle())
+                .readOnlyHint(Boolean.TRUE.equals(yamlAnnotations.getReadOnlyHint()))
+                .destructiveHint(Boolean.TRUE.equals(yamlAnnotations.getDestructiveHint()))
+                .idempotentHint(Boolean.TRUE.equals(yamlAnnotations.getIdempotentHint()))
+                .openWorldHint(Boolean.TRUE.equals(yamlAnnotations.getOpenWorldHint()))
+                .build();
     }
     
     private static Collection<MCPToolRuntimeDescriptor> swapToolRuntimeDescriptors(final Collection<YamlMCPToolDescriptor> yamlDescriptors) {

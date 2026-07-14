@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
@@ -90,7 +90,7 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
         request.setLoadBalancerType("RANDOM");
         try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
             mockedStatic.when(() -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, "RANDOM",
-                    WorkflowSQLUtils.createProperties(request.getLoadBalancerProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
+                    WorkflowAlgorithmUtils.createProperties(request.getLoadBalancerProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
             List<Map<String, Object>> actual = new ReadwriteSplittingRuleWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact()));
             assertThat(actual.size(), is(1));
             assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));

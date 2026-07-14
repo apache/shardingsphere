@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -65,19 +66,30 @@ class MCPJdbcDatabaseProfileLoaderTest {
             assertThat(actual.getDatabase(), is("logic_db"));
             assertThat(actual.getDatabaseType(), is("FixtureDB"));
             assertThat(actual.getDatabaseVersion(), is("1.0"));
-            assertTrue(actual.isSupportsTransaction());
-            assertTrue(actual.isSupportsSavepoint());
+            assertThat(actual.getTransactionCapability(), is(TransactionCapability.LOCAL_WITH_SAVEPOINT));
             assertThat(actual.getIdentifierCasePolicySet(), is(expectedIdentifierCasePolicySet));
         }
     }
     
     @Test
     void assertLoadWithoutTransaction() throws SQLException {
+        Connection connection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(
+                SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", false, true, connection);
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
+            RuntimeDatabaseProfile actual = new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+            assertThat(actual.getTransactionCapability(), is(TransactionCapability.NONE));
+            verify(databaseMetaData, never()).supportsSavepoints();
+        }
+    }
+    
+    @Test
+    void assertLoadWithoutSavepoint() throws SQLException {
         try (MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata()) {
             RuntimeDatabaseProfile actual =
-                    new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", false, true));
-            assertFalse(actual.isSupportsTransaction());
-            assertFalse(actual.isSupportsSavepoint());
+                    new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, false));
+            assertThat(actual.getTransactionCapability(), is(TransactionCapability.LOCAL));
         }
     }
     

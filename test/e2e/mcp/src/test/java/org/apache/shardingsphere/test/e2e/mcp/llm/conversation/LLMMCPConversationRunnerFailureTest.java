@@ -98,6 +98,7 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("mcp_runtime_unavailable"));
+        assertThat(actual.getAssertionReport().getMessage(), is("MCP action `database_gateway_execute_query` failed: boom"));
     }
     
     @Test
@@ -109,8 +110,38 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("mcp_runtime_unavailable"));
+        assertThat(actual.getAssertionReport().getMessage(), is("MCP runtime failed to initialize."));
         verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient()).close();
+    }
+    
+    @Test
+    void assertRunWithInterruptedMcpOpen() throws IOException, InterruptedException {
+        doThrow(new InterruptedException("boom")).when(getMCPInteractionClient()).open();
+        try {
+            LLME2EArtifactBundle actual = createRunner(1).run(createScenario(List.of("database_gateway_execute_query")));
+            
+            assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
+            assertTrue(Thread.currentThread().isInterrupted());
+        } finally {
+            Thread.interrupted();
+        }
+    }
+    
+    @Test
+    void assertRunWithInterruptedMcpAction() throws IOException, InterruptedException {
+        Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
+        when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenThrow(new InterruptedException("boom"));
+        try {
+            LLME2EArtifactBundle actual = createRunner(1).run(createScenario(List.of("database_gateway_execute_query")));
+            
+            assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
+            assertTrue(Thread.currentThread().isInterrupted());
+        } finally {
+            Thread.interrupted();
+        }
     }
     
     @Test
@@ -122,6 +153,7 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
+        assertThat(actual.getAssertionReport().getMessage(), is("Model service request failed: http 500"));
         verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient()).close();
     }
@@ -153,6 +185,13 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
         verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient()).close();
+    }
+    
+    @Test
+    void assertRunClassifiesModelFailureByMessage() throws IOException, InterruptedException {
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenThrow(new IllegalStateException("MCP-shaped model failure."));
+        LLME2EArtifactBundle actual = createRunner(1).run(createScenario(List.of("database_gateway_execute_query")));
+        assertThat(actual.getAssertionReport().getFailureType(), is("mcp_runtime_unavailable"));
     }
     
     @Test

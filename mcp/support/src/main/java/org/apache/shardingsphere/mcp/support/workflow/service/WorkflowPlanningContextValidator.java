@@ -85,14 +85,14 @@ public final class WorkflowPlanningContextValidator {
                                          final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (isEmptyIdentifier(request.getDatabase())) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Database is required before planning.", "Provide the logical database name.", true, Map.of()));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!ensureSupportedIdentifiers(WorkflowFieldNames.DATABASE, List.of(request.getDatabase()), snapshot, "discovering")
-                || !ensureSupportedIdentifiers(WorkflowFieldNames.TABLE, List.of(request.getTable()), snapshot, "discovering")
-                || !ensureSupportedIdentifiers(WorkflowFieldNames.COLUMN, List.of(request.getColumn()), snapshot, "discovering")) {
+        if (!ensureSupportedIdentifiers(WorkflowFieldNames.DATABASE, List.of(request.getDatabase()), snapshot, WorkflowLifecycle.STEP_DISCOVERING)
+                || !ensureSupportedIdentifiers(WorkflowFieldNames.TABLE, List.of(request.getTable()), snapshot, WorkflowLifecycle.STEP_DISCOVERING)
+                || !ensureSupportedIdentifiers(WorkflowFieldNames.COLUMN, List.of(request.getColumn()), snapshot, WorkflowLifecycle.STEP_DISCOVERING)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -101,7 +101,7 @@ public final class WorkflowPlanningContextValidator {
         queryFacade.checkDatabaseCapability(databaseName);
         List<ShardingSphereSchema> schemas = isEmptyIdentifier(request.getSchema()) ? metadataQueryFacade.querySchemas(databaseName) : List.of();
         request.setSchema(resolveSchema(schemas, request, clarifiedIntent, queryFacade, databaseName));
-        if (!ensureSupportedIdentifiers(WorkflowFieldNames.SCHEMA, List.of(request.getSchema()), snapshot, "discovering")) {
+        if (!ensureSupportedIdentifiers(WorkflowFieldNames.SCHEMA, List.of(request.getSchema()), snapshot, WorkflowLifecycle.STEP_DISCOVERING)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -149,7 +149,7 @@ public final class WorkflowPlanningContextValidator {
     private void addMissingTableQuestion(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String message) {
         if (isEmptyIdentifier(request.getTable())) {
             clarifiedIntent.getClarificationMessages().add("Please specify target table.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     message, "Provide the logical table name.", true, Map.of()));
         }
     }
@@ -157,7 +157,7 @@ public final class WorkflowPlanningContextValidator {
     private void addMissingColumnQuestion(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String message) {
         if (isEmptyIdentifier(request.getColumn())) {
             clarifiedIntent.getClarificationMessages().add("Please specify target column.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     message, "Provide the logical column name.", true, Map.of()));
         }
     }
@@ -246,7 +246,7 @@ public final class WorkflowPlanningContextValidator {
         if (table.isPresent()) {
             return true;
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_NOT_FOUND, "error", "discovering",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_NOT_FOUND, "error", WorkflowLifecycle.STEP_DISCOVERING,
                 String.format("Table `%s` does not exist in Proxy logical metadata.", request.getTable()), "Check database, schema and table name.", false, Map.of()));
         return false;
     }
@@ -258,7 +258,7 @@ public final class WorkflowPlanningContextValidator {
                 return true;
             }
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_NOT_FOUND, "error", "discovering",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_NOT_FOUND, "error", WorkflowLifecycle.STEP_DISCOVERING,
                 String.format("Column `%s` does not exist in Proxy logical metadata.", request.getColumn()), "Check column name.", false, Map.of()));
         return false;
     }

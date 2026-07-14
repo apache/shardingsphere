@@ -101,14 +101,16 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
     private boolean ensurePlanningContext(final ReadwriteSplittingStatusWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (request.getDatabase().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Database is required before planning readwrite-splitting status DistSQL.", "Provide the logical database name.", true, Map.of()));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!planningSupport.ensureOptionalSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, "intaking")
-                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.RULE_FIELD, List.of(request.getRuleName()), snapshot, "intaking")
-                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, List.of(request.getStorageUnit()), snapshot, "intaking")) {
+        if (!planningSupport.ensureOptionalSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, WorkflowLifecycle.STEP_INTAKING)
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.RULE_FIELD, List.of(request.getRuleName()),
+                        snapshot, WorkflowLifecycle.STEP_INTAKING)
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, List.of(request.getStorageUnit()),
+                        snapshot, WorkflowLifecycle.STEP_INTAKING)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -118,7 +120,7 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         addMissingInput(missingInputs, distSQLPlanningService.resolveStatusOperation(request), ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD);
         if (!missingInputs.isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide readwrite-splitting rule name, read storage unit and target status.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Readwrite-splitting status DistSQL requires explicit rule, storage unit and status inputs.",
                     "Provide target_status as enable or disable.", true, Map.of("missing_inputs", missingInputs)));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
@@ -138,7 +140,7 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         if (statuses.stream().anyMatch(each -> matchesStatusTarget(request, each, queryFacade))) {
             return true;
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", "discovering",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", WorkflowLifecycle.STEP_DISCOVERING,
                 String.format("Readwrite-splitting status target `%s.%s` does not exist.", request.getRuleName(), request.getStorageUnit()),
                 "Confirm the target rule and read storage unit before planning status changes.", false,
                 Map.of("rule", request.getRuleName(), "storage_unit", request.getStorageUnit())));

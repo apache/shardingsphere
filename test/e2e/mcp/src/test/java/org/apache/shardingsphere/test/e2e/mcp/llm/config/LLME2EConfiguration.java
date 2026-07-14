@@ -19,6 +19,9 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.config;
 
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +39,8 @@ import java.util.UUID;
 /**
  * LLM E2E configuration.
  */
-@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
 @Getter
 public final class LLME2EConfiguration {
     
@@ -87,21 +91,22 @@ public final class LLME2EConfiguration {
         Properties props = EnvironmentPropertiesLoader.loadProperties();
         RuntimeMode runtimeMode = RuntimeMode.from(readString(props, "mcp.llm.runtime-mode", RuntimeMode.DOCKER.getValue()));
         ModelMetadata modelMetadata = readModelMetadata(props);
-        return new LLME2EConfiguration(
-                normalizeBaseUrl(readString(props, "mcp.llm.base-url", DEFAULT_BASE_URL)),
-                readString(props, "mcp.llm.provider", "openai-compatible"),
-                readString(props, "mcp.llm.model", DEFAULT_MODEL_NAME),
-                readString(props, "mcp.llm.api-key", DEFAULT_API_KEY),
-                readInteger(props, "mcp.llm.ready-timeout-seconds", 600),
-                readInteger(props, "mcp.llm.request-timeout-seconds", 240),
-                readInteger(props, "mcp.llm.max-turns", 10),
-                Paths.get(readString(props, "mcp.llm.artifact-root", "target/llm-e2e")),
-                readString(props, "mcp.llm.run-id", createDefaultRunId()),
-                runtimeMode,
-                readString(props, "mcp.llm.server-image", DEFAULT_SERVER_IMAGE),
-                readString(props, "mcp.llm.base-server-image", ""),
-                readString(props, "mcp.llm.base-server-image-digest", ""),
-                modelMetadata);
+        return LLME2EConfiguration.builder()
+                .baseUrl(normalizeBaseUrl(readString(props, "mcp.llm.base-url", DEFAULT_BASE_URL)))
+                .modelProvider(readString(props, "mcp.llm.provider", "openai-compatible"))
+                .modelName(readString(props, "mcp.llm.model", DEFAULT_MODEL_NAME))
+                .apiKey(readString(props, "mcp.llm.api-key", DEFAULT_API_KEY))
+                .readyTimeoutSeconds(readInteger(props, "mcp.llm.ready-timeout-seconds", 600))
+                .requestTimeoutSeconds(readInteger(props, "mcp.llm.request-timeout-seconds", 240))
+                .maxTurns(readInteger(props, "mcp.llm.max-turns", 10))
+                .artifactRoot(Paths.get(readString(props, "mcp.llm.artifact-root", "target/llm-e2e")))
+                .runId(readString(props, "mcp.llm.run-id", createDefaultRunId()))
+                .runtimeMode(runtimeMode)
+                .serverImage(readString(props, "mcp.llm.server-image", DEFAULT_SERVER_IMAGE))
+                .baseServerImage(readString(props, "mcp.llm.base-server-image", ""))
+                .baseServerImageDigest(readString(props, "mcp.llm.base-server-image-digest", ""))
+                .modelMetadata(modelMetadata)
+                .build();
     }
     
     /**
@@ -125,8 +130,7 @@ public final class LLME2EConfiguration {
      * @return copied configuration
      */
     public LLME2EConfiguration withModelEndpoint(final String baseUrl, final String apiKey) {
-        return new LLME2EConfiguration(normalizeBaseUrl(baseUrl), modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId,
-                runtimeMode, serverImage, baseServerImage, baseServerImageDigest, modelMetadata);
+        return toBuilder().baseUrl(normalizeBaseUrl(baseUrl)).apiKey(apiKey).build();
     }
     
     /**
@@ -137,8 +141,7 @@ public final class LLME2EConfiguration {
      * @return copied configuration
      */
     public LLME2EConfiguration withReadinessTimeouts(final int readyTimeoutSeconds, final int requestTimeoutSeconds) {
-        return new LLME2EConfiguration(baseUrl, modelProvider, modelName, apiKey, readyTimeoutSeconds, requestTimeoutSeconds, maxTurns, artifactRoot, runId, runtimeMode,
-                serverImage, baseServerImage, baseServerImageDigest, modelMetadata);
+        return toBuilder().readyTimeoutSeconds(readyTimeoutSeconds).requestTimeoutSeconds(requestTimeoutSeconds).build();
     }
     
     /**

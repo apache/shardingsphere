@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowSessionSnapshotResolver;
@@ -57,15 +56,9 @@ public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPWo
         MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowContextSnapshot snapshot = WorkflowSessionSnapshotResolver.getRequired(workflowContext.getWorkflowSessionContext(), toolCall.getSessionId(),
                 toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
-        WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
+        WorkflowKind workflowKind = WorkflowSessionSnapshotResolver.getRequiredWorkflowKind(snapshot);
         return new MCPMapResponse(workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getValidationHandler().validate(workflowContext.getWorkflowSessionContext(),
                 databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(), databaseContext.getExecutionFacade(), toolCall.getSessionId(), snapshot));
     }
     
-    private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {
-        if (null != snapshot.getWorkflowKind()) {
-            return snapshot.getWorkflowKind();
-        }
-        throw new MCPWorkflowStateException(String.format("Workflow kind is required for plan_id `%s`.", snapshot.getPlanId()), snapshot.getPlanId());
-    }
 }

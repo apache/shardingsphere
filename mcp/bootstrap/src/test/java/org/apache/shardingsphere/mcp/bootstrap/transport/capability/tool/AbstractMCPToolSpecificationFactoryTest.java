@@ -239,7 +239,8 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         properties.put("object_types", Map.of("type", "array", "description", "Optional object-type filter.",
                 "items", Map.of("type", "string", "description", "Object type.", "enum", List.of("TABLE", "VIEW"))));
         return new MCPToolDescriptor(toolName, "Search Metadata", "Search database metadata.", createInputSchema(properties, List.of("query")),
-                Map.of("type", "object"), new MCPToolAnnotations("Search Metadata", true, false, true, true),
+                Map.of("type", "object"), MCPToolAnnotations.builder()
+                        .title("Search Metadata").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
                 Map.of(MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, List.of("shardingsphere://databases")));
     }
     
@@ -249,13 +250,17 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
     
     protected MCPToolDescriptor createToolDescriptorWithoutOutputSchema(final String toolName) {
         return new MCPToolDescriptor(toolName, "Fixture Tool", "Run a fixture tool.", createInputSchema(Map.of(), List.of()), Collections.emptyMap(),
-                new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
+                MCPToolAnnotations.builder()
+                        .title("Fixture Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     protected MCPToolDescriptor createStrictToolDescriptor(final String toolName) {
         return new MCPToolDescriptor(toolName, "Search Metadata", "Search database metadata.", createInputSchema(Map.of(), List.of()),
                 Map.of("type", "object", "properties", Map.of("status", Map.of("type", "string")), "required", List.of("status")),
-                new MCPToolAnnotations("Search Metadata", true, false, true, true), Collections.emptyMap());
+                MCPToolAnnotations.builder()
+                        .title("Search Metadata").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     protected MCPToolDescriptor createPlanningToolDescriptor(final String toolName) {
@@ -264,7 +269,9 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         properties.put("intent", Map.of("type", "object", "description", "Intent.", "properties",
                 Map.of("requires_review", Map.of("type", "boolean", "description", "Requires review.")), "required", List.of(), "additionalProperties", false));
         return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", createInputSchema(properties, List.of()),
-                Map.of("type", "object"), new MCPToolAnnotations("Plan Custom Rule", false, false, true, true), Collections.emptyMap());
+                Map.of("type", "object"), MCPToolAnnotations.builder()
+                        .title("Plan Custom Rule").readOnlyHint(false).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     protected MCPToolDescriptor createAmbiguousPlanningToolDescriptor(final String toolName) {
@@ -278,7 +285,9 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         properties.put("intent", objectProperty);
         properties.put("review_policy", objectProperty);
         return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", createInputSchema(properties, List.of()),
-                Map.of("type", "object"), new MCPToolAnnotations("Plan Custom Rule", false, false, true, true), Collections.emptyMap());
+                Map.of("type", "object"), MCPToolAnnotations.builder()
+                        .title("Plan Custom Rule").readOnlyHint(false).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     protected Map<String, Object> createInputSchema(final Map<String, Object> properties, final List<String> required) {

@@ -126,7 +126,7 @@ class MCPToolDescriptorValidationUtilsTest {
     }
     
     private MCPToolAnnotations createAnnotations() {
-        return new MCPToolAnnotations("Fixture Tool", true, false, true, false);
+        return MCPToolAnnotations.builder().title("Fixture Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(false).build();
     }
     
     private Map<String, Object> createOutputProperties(final Collection<String> outputFields) {

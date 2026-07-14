@@ -59,7 +59,7 @@ public final class WorkflowApplyOutcome {
     
     void addFailedArtifact(final String issueCode, final String artifactType, final String artifactSql, final String errorMessage) {
         stepResults.add(createStepResult(artifactType, WorkflowLifecycle.STATUS_FAILED, artifactSql));
-        issues.add(new WorkflowIssue(issueCode, "error", "executing", errorMessage, "Fix the failed artifact and retry execution.", true,
+        issues.add(new WorkflowIssue(issueCode, "error", WorkflowLifecycle.STEP_EXECUTING, errorMessage, "Fix the failed artifact and retry execution.", true,
                 Map.of("artifact_type", artifactType, "sql", artifactSql)).toMap());
     }
     

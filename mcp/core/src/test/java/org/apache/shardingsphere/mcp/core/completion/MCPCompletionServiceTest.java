@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.completion;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
@@ -63,7 +65,7 @@ class MCPCompletionServiceTest {
         MCPCompletionResult actual = complete(new InMemoryWorkflowSessionContext(), createDescriptor("inspect_metadata", "database", 1), "database", "", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of("logic_db")));
         assertThat(actual.getTotal(), is(2));
-        assertTrue(actual.isHasMore());
+        assertTrue(actual.hasMore());
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.RETURNED_CANDIDATE_COUNT), is(1));
     }
@@ -106,7 +108,7 @@ class MCPCompletionServiceTest {
                 List.of(new SizedCompletionProvider()));
         assertThat(actual.getValues().size(), is(100));
         assertThat(actual.getTotal(), is(101));
-        assertTrue(actual.isHasMore());
+        assertTrue(actual.hasMore());
     }
     
     @Test
@@ -145,8 +147,8 @@ class MCPCompletionServiceTest {
     private MCPRuntimeContext createRuntimeContext(final WorkflowSessionContext workflowSessionContext) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.getDatabaseProfiles()).thenReturn(List.of(
-                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet()),
-                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
+                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()),
+                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
         MCPRuntimeContext result = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseCapabilityProvider()).thenReturn(databaseCapabilityProvider);
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);

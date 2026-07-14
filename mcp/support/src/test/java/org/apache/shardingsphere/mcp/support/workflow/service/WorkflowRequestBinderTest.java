@@ -88,4 +88,18 @@ class WorkflowRequestBinderTest {
                 }));
         assertThat(actual.getMessage(), is("structured_intent_evidence must be an object."));
     }
+    
+    @Test
+    void assertApplyStringField() {
+        AtomicReference<String> actual = new AtomicReference<>();
+        WorkflowRequestBinder.applyStringField(Map.of("field", 42), "field", actual::set);
+        assertThat(actual.get(), is("42"));
+    }
+    
+    @Test
+    void assertApplyStringFieldIgnoresMissingField() {
+        AtomicReference<String> actual = new AtomicReference<>("unchanged");
+        WorkflowRequestBinder.applyStringField(Map.of(), "field", actual::set);
+        assertThat(actual.get(), is("unchanged"));
+    }
 }

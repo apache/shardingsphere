@@ -65,8 +65,11 @@ class MCPNextActionUtilsTest {
     
     @Test
     void assertCompleteArgument() {
-        Map<String, Object> actual = MCPNextActionUtils.completeArgument("ref/prompt", "inspect_metadata", "schema", "pub", Map.of("database", "logic_db"),
-                List.of("table"), "tool", "database_gateway_search_metadata", Map.of("query", "orders"), "Complete schema.");
+        Map<String, Object> actual = MCPNextActionUtils.completeArgument(MCPCompletionAction.builder()
+                .referenceType("ref/prompt").reference("inspect_metadata").argumentName("schema").argumentPrefix("pub")
+                .contextArguments(Map.of("database", "logic_db")).missingContextArguments(List.of("table"))
+                .resumeTargetType("tool").resumeTarget("database_gateway_search_metadata").resumeArguments(Map.of("query", "orders"))
+                .reason("Complete schema.").build());
         assertThat(actual.get("type"), is("completion"));
         assertThat(actual.get("title"), is("Complete schema"));
         assertThat(actual.get("ref"), is(Map.of("type", "ref/prompt", "name", "inspect_metadata")));
@@ -79,17 +82,21 @@ class MCPNextActionUtilsTest {
     
     @Test
     void assertCompleteArgumentNormalizesReferenceTypes() {
-        Map<String, Object> actual = MCPNextActionUtils.completeArgument("prompt", "inspect_metadata", "schema", "pub", Map.of("database", "logic_db"),
-                List.of("table"), "resource", "shardingsphere://databases/{database}/schemas/{schema}", Map.of("database", "logic_db"), "Complete schema.");
+        Map<String, Object> actual = MCPNextActionUtils.completeArgument(MCPCompletionAction.builder()
+                .referenceType("prompt").reference("inspect_metadata").argumentName("schema").argumentPrefix("pub")
+                .contextArguments(Map.of("database", "logic_db")).missingContextArguments(List.of("table"))
+                .resumeTargetType("resource").resumeTarget("shardingsphere://databases/{database}/schemas/{schema}").resumeArguments(Map.of("database", "logic_db"))
+                .reason("Complete schema.").build());
         assertThat(actual.get("ref"), is(Map.of("type", "ref/prompt", "name", "inspect_metadata")));
         assertThat(actual.get("resume_ref"), is(Map.of("type", "ref/resource", "uri", "shardingsphere://databases/{database}/schemas/{schema}")));
     }
     
     @Test
     void assertCompleteArgumentWithoutResumeTarget() {
-        Map<String, Object> actual = MCPNextActionUtils.completeArgument("ref/resource", "shardingsphere://databases/{database}", "database", "", Map.of(), List.of(), "", "", Map.of(),
-                "Complete database.");
+        Map<String, Object> actual = MCPNextActionUtils.completeArgument(MCPCompletionAction.builder()
+                .referenceType("ref/resource").reference("shardingsphere://databases/{database}").argumentName("database").reason("Complete database.").build());
         assertThat(actual.get("type"), is("completion"));
+        assertThat(actual.get("missing_context_arguments"), is(List.of()));
         assertFalse(actual.containsKey("context"));
         assertFalse(actual.containsKey("resume_ref"));
         assertFalse(actual.containsKey("resume_arguments"));

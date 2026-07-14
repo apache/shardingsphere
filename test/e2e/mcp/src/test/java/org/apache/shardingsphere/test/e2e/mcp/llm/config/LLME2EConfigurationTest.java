@@ -224,10 +224,23 @@ class LLME2EConfigurationTest {
     }
     
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode, final Path artifactRoot) {
-        return new LLME2EConfiguration("http://127.0.0.1:8080/v1", "openai-compatible", "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M", "mcp-llm-score", 600, 240, 10,
-                artifactRoot, "run-id", runtimeMode, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server-b9191", "",
-                new LLME2EConfiguration.ModelMetadata("ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb",
-                        "configured-model-sha256"));
+        return LLME2EConfiguration.builder()
+                .baseUrl("http://127.0.0.1:8080/v1")
+                .modelProvider("openai-compatible")
+                .modelName("ggml-org/Qwen3-1.7B-GGUF:Q4_K_M")
+                .apiKey("mcp-llm-score")
+                .readyTimeoutSeconds(600)
+                .requestTimeoutSeconds(240)
+                .maxTurns(10)
+                .artifactRoot(artifactRoot)
+                .runId("run-id")
+                .runtimeMode(runtimeMode)
+                .serverImage("apache/shardingsphere-mcp-llm-runtime:local")
+                .baseServerImage("ghcr.io/ggml-org/llama.cpp:server-b9191")
+                .baseServerImageDigest("")
+                .modelMetadata(new LLME2EConfiguration.ModelMetadata("ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M",
+                        "daeb8e2d528a760970442092f6bf1e55c3b659eb", "configured-model-sha256"))
+                .build();
     }
     
     private void restoreProperty(final String name, final String value) {

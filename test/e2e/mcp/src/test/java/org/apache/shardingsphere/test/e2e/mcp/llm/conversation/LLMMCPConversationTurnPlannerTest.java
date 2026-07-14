@@ -34,8 +34,7 @@ class LLMMCPConversationTurnPlannerTest {
     
     @Test
     void assertCreateTurnToolNamesWithImmediateResourceAction() {
-        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(Set.of());
         List<String> actual = planner.createTurnToolNames(createScenario(List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
                 List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
                 List.of(createTraceRecord("database_gateway_plan_mask_rule",
@@ -45,8 +44,7 @@ class LLMMCPConversationTurnPlannerTest {
     
     @Test
     void assertCreateTurnToolNamesWithImmediateCompletionAction() {
-        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(Set.of());
         List<String> actual = planner.createTurnToolNames(createScenario(List.of("database_gateway_plan_mask_rule", "database_gateway_execute_query"),
                 List.of("database_gateway_plan_mask_rule", "database_gateway_execute_query")),
                 List.of(createTraceRecord("database_gateway_plan_mask_rule",
@@ -56,8 +54,7 @@ class LLMMCPConversationTurnPlannerTest {
     
     @Test
     void assertCreateTurnToolNamesPrefersReadOnlyAfterSideEffectNextAction() {
-        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of("database_gateway_execute_query"));
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(Set.of("database_gateway_execute_query"));
         Map<String, Object> nextAction = Map.of("type", "tool_call", "tool_name", "database_gateway_execute_update", "arguments", Map.of("execution_mode", "execute"));
         List<String> actual = planner.createTurnToolNames(createScenario(List.of("database_gateway_execute_update", "database_gateway_execute_query"),
                 List.of("database_gateway_execute_update", "database_gateway_execute_query")),
@@ -67,8 +64,7 @@ class LLMMCPConversationTurnPlannerTest {
     
     @Test
     void assertCreateTurnToolNamesPrefersDescriptorReadOnlyToolAfterSideEffectNextAction() {
-        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner();
         Map<String, Object> nextAction = Map.of("type", "tool_call", "tool_name", "database_gateway_execute_update", "arguments", Map.of("execution_mode", "execute"));
         List<String> actual = planner.createTurnToolNames(createScenario(List.of("database_gateway_execute_update", "database_gateway_validate_runtime_database"),
                 List.of("database_gateway_execute_update", "database_gateway_validate_runtime_database")),
@@ -78,8 +74,7 @@ class LLMMCPConversationTurnPlannerTest {
     
     @Test
     void assertCreateTurnToolNamesPrefersDiscoveryBridgeAfterSideEffectNextAction() {
-        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory);
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner();
         Map<String, Object> nextAction = Map.of("type", "tool_call", "tool_name", "database_gateway_execute_update", "arguments", Map.of("execution_mode", "execute"));
         List<String> actual = planner.createTurnToolNames(createScenario(List.of("database_gateway_execute_update", MCPInteractionActionNames.LIST_TOOLS),
                 List.of("database_gateway_execute_update", MCPInteractionActionNames.LIST_TOOLS)),
@@ -89,23 +84,20 @@ class LLMMCPConversationTurnPlannerTest {
     
     @Test
     void assertCreateToolChoiceWithMissingCoverage() {
-        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(Set.of());
         assertThat(planner.createToolChoice(createScenario(List.of("database_gateway_execute_query"), List.of("database_gateway_execute_query")), List.of(), false), is("required"));
     }
     
     @Test
     void assertCreateToolChoiceWithCoveredRequiredTools() {
-        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(Set.of());
         assertThat(planner.createToolChoice(createScenario(List.of("database_gateway_execute_query"), List.of("database_gateway_execute_query")),
                 List.of(createTraceRecord("database_gateway_execute_query", Map.of("row_objects", List.of()))), false), is("auto"));
     }
     
     @Test
     void assertCreateToolChoiceWithFinalAnswer() {
-        LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
-        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(instructionFactory, Set.of());
+        LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(Set.of());
         assertThat(planner.createToolChoice(createScenario(List.of("database_gateway_execute_query"), List.of("database_gateway_execute_query")), List.of(), true), is("none"));
     }
     

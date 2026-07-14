@@ -63,10 +63,38 @@ class WorkflowAlgorithmUtilsTest {
     }
     
     @Test
+    void assertCreatePropertiesTrimsValues() {
+        Properties actualProperties = WorkflowAlgorithmUtils.createProperties(Map.of("aes-key-value", " 123456 "));
+        assertThat(actualProperties.getProperty("aes-key-value"), is("123456"));
+    }
+    
+    @Test
+    void assertCreatePropertyMapReturnsEmptyForNull() {
+        assertThat(WorkflowAlgorithmUtils.createPropertyMap(null), is(Map.of()));
+    }
+    
+    @Test
+    void assertCreatePropertyMapHandlesProperties() {
+        Properties props = new Properties();
+        props.setProperty("aes-key-value", " 123456 ");
+        assertThat(WorkflowAlgorithmUtils.createPropertyMap(props), is(Map.of("aes-key-value", "123456")));
+    }
+    
+    @Test
+    void assertCreatePropertyMapHandlesMap() {
+        assertThat(WorkflowAlgorithmUtils.createPropertyMap(Map.of("aes-key-value", " 123456 ")), is(Map.of("aes-key-value", "123456")));
+    }
+    
+    @Test
+    void assertCreatePropertyMapHandlesString() {
+        assertThat(WorkflowAlgorithmUtils.createPropertyMap("{'aes-key-value':'123456','iv':'abc'}"), is(Map.of("aes-key-value", "123456", "iv", "abc")));
+    }
+    
+    @Test
     void assertAlgorithmServiceAvailable() {
         try (MockedStatic<TypedSPILoader> ignored = mockStatic(TypedSPILoader.class)) {
             assertTrue(WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(TypedSPIFixture.class, "FIXTURE", Map.of("foo", "bar")));
-            ignored.verify(() -> TypedSPILoader.checkService(TypedSPIFixture.class, "FIXTURE", WorkflowSQLUtils.createProperties(Map.of("foo", "bar"))));
+            ignored.verify(() -> TypedSPILoader.checkService(TypedSPIFixture.class, "FIXTURE", WorkflowAlgorithmUtils.createProperties(Map.of("foo", "bar"))));
         }
     }
     

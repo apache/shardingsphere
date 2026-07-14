@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.LinkedList;
@@ -42,7 +43,7 @@ public final class WorkflowAlgorithmRequirementCollector {
      * @return whether there is any blocking algorithm issue
      */
     public boolean hasBlockingAlgorithmIssues(final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String fallbackQuestion) {
-        boolean result = snapshot.getIssues().stream().anyMatch(each -> "selecting-algorithm".equals(each.getStage()) && "error".equals(each.getSeverity()));
+        boolean result = snapshot.getIssues().stream().anyMatch(each -> WorkflowLifecycle.STEP_SELECTING_ALGORITHM.equals(each.getStage()) && "error".equals(each.getSeverity()));
         if (result && clarifiedIntent.getClarificationMessages().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add(fallbackQuestion);
         }
@@ -69,7 +70,7 @@ public final class WorkflowAlgorithmRequirementCollector {
         for (String each : missingRequiredProperties) {
             clarifiedIntent.getClarificationMessages().add(String.format("Please provide property `%s`.", each));
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING, "error", "collecting-properties",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING, "error", WorkflowLifecycle.STEP_COLLECTING_PROPERTIES,
                 "Required algorithm properties are still missing.", "Provide all required algorithm properties.", true, Map.of("missing_properties", missingRequiredProperties)));
         return false;
     }

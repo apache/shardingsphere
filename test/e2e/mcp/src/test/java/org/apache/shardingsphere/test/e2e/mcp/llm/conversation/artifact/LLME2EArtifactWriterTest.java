@@ -43,9 +43,18 @@ class LLME2EArtifactWriterTest {
     
     @Test
     void assertWriteRedactsSecretsAndRecordsRunContext() throws IOException {
-        LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle("scenario-id", "system", "user",
-                "openai-compatible", MODEL_NAME, "{\"api_key\":\"secret-value\"}", List.of("{\"token\":\"raw-secret\"}"), List.of(),
-                List.of("Authorization: Bearer runtime-secret", "MCP_LLM_API_KEY=runtime-secret"), LLME2EAssertionReport.failure("boom", "failed"));
+        LLME2EArtifactBundle artifactBundle = LLME2EArtifactBundle.builder()
+                .scenarioId("scenario-id")
+                .systemPrompt("system")
+                .userPrompt("user")
+                .modelProvider("openai-compatible")
+                .modelName(MODEL_NAME)
+                .finalAnswerJson("{\"api_key\":\"secret-value\"}")
+                .rawModelOutputs(List.of("{\"token\":\"raw-secret\"}"))
+                .interactionTrace(List.of())
+                .mcpRuntimeLogLines(List.of("Authorization: Bearer runtime-secret", "MCP_LLM_API_KEY=runtime-secret"))
+                .assertionReport(LLME2EAssertionReport.failure("boom", "failed"))
+                .build();
         new LLME2EArtifactWriter().write(tempDir, artifactBundle, createScoreClosingEvidence());
         Map<String, Object> runContext = JsonUtils.fromJsonString(Files.readString(tempDir.resolve("run-context.json")), new TypeReference<>() {
         });
@@ -64,8 +73,18 @@ class LLME2EArtifactWriterTest {
     
     @Test
     void assertWriteWithMissingScoreClosingEvidence() {
-        LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle("scenario-id", "system", "user",
-                "openai-compatible", MODEL_NAME, "{}", List.of(), List.of(), List.of(), LLME2EAssertionReport.failure("boom", "failed"));
+        LLME2EArtifactBundle artifactBundle = LLME2EArtifactBundle.builder()
+                .scenarioId("scenario-id")
+                .systemPrompt("system")
+                .userPrompt("user")
+                .modelProvider("openai-compatible")
+                .modelName(MODEL_NAME)
+                .finalAnswerJson("{}")
+                .rawModelOutputs(List.of())
+                .interactionTrace(List.of())
+                .mcpRuntimeLogLines(List.of())
+                .assertionReport(LLME2EAssertionReport.failure("boom", "failed"))
+                .build();
         IllegalStateException actualException = assertThrows(IllegalStateException.class,
                 () -> new LLME2EArtifactWriter().write(tempDir, artifactBundle, Map.of("scoreClosing", true)));
         assertThat(actualException.getMessage(), is("Missing score-closing LLM runtime evidence field `runtimeMode`."));

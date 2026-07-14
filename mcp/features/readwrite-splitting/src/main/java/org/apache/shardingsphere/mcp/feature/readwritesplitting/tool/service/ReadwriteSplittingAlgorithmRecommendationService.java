@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.Readw
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
 import java.util.List;
@@ -47,14 +48,14 @@ public final class ReadwriteSplittingAlgorithmRecommendationService {
             if (actualAlgorithmRows.isEmpty() || WorkflowAlgorithmUtils.containsAlgorithm(actualAlgorithmRows, actualAlgorithmType, "type", "name")) {
                 return List.of(createCandidate(actualAlgorithmType, 100, "User specified load-balance algorithm."));
             }
-            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     String.format("Load-balance algorithm `%s` is not visible from the current Proxy.", actualAlgorithmType),
                     "Choose an available load-balance algorithm.", false, Map.of()));
             return List.of();
         }
         String recommendedType = resolveRecommendedAlgorithm(actualAlgorithmRows);
         if (recommendedType.isEmpty()) {
-            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     "No load-balance algorithm is available from the current Proxy.", "Install or expose at least one load-balance algorithm.", false, Map.of()));
             return List.of();
         }
@@ -62,7 +63,7 @@ public final class ReadwriteSplittingAlgorithmRecommendationService {
     }
     
     private AlgorithmCandidate createCandidate(final String algorithmType, final int score, final String reason) {
-        return new AlgorithmCandidate("primary", algorithmType, null, null, null, score, reason, "");
+        return AlgorithmCandidate.builder().algorithmRole("primary").algorithmType(algorithmType).recommendationScore(score).recommendationReason(reason).riskNotes("").build();
     }
     
     private String resolveRecommendedAlgorithm(final List<Map<String, Object>> algorithmRows) {

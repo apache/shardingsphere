@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -318,7 +320,9 @@ class EncryptWorkflowPlanningServiceTest {
     
     private EncryptAlgorithmRecommendationService createPrimaryCandidateRecommendation() {
         EncryptAlgorithmRecommendationService result = mock(EncryptAlgorithmRecommendationService.class);
-        when(result.recommendEncryptAlgorithms(any(), any(), any())).thenReturn(List.of(new AlgorithmCandidate("primary", "AES", true, true, false, 100, "reason", "")));
+        when(result.recommendEncryptAlgorithms(any(), any(), any())).thenReturn(List.of(AlgorithmCandidate.builder()
+                .algorithmRole("primary").algorithmType("AES").supportsDecrypt(true).supportsEquivalentFilter(true).supportsLike(false)
+                .recommendationScore(100).recommendationReason("reason").riskNotes("").build()));
         return result;
     }
     
@@ -374,7 +378,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata() {
-        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet());
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet());
     }
     
     private ShardingSphereSchema createSchemaMetadata() {

@@ -253,13 +253,19 @@ class ToolDefinitionRegistryTest {
     private static MCPToolDescriptor createNestedFixtureToolDescriptor() {
         Map<String, Object> optionSchema = Map.of("type", "object", "properties", Map.of("mode", Map.of("type", "string")), "required", List.of(), "additionalProperties", false);
         return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of("type", "object", "properties", Map.of("options", optionSchema), "required", List.of(),
-                "additionalProperties", false), Collections.emptyMap(), new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
+                "additionalProperties", false), Collections.emptyMap(),
+                MCPToolAnnotations.builder()
+                        .title("Fixture Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     private static MCPToolDescriptor createAdditionalPropertiesFixtureToolDescriptor() {
         Map<String, Object> optionSchema = Map.of("type", "object", "additionalProperties", Map.of("type", "string"));
         return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of("type", "object", "properties", Map.of("options", optionSchema), "required", List.of(),
-                "additionalProperties", false), Collections.emptyMap(), new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
+                "additionalProperties", false), Collections.emptyMap(),
+                MCPToolAnnotations.builder()
+                        .title("Fixture Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     private static void assertToolFields(final MCPToolDescriptor descriptor, final List<String> expectedFieldNames) {

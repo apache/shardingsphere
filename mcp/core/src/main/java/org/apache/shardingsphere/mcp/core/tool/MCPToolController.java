@@ -52,11 +52,7 @@ public final class MCPToolController {
      * @throws UnsupportedToolException unsupported tool exception
      */
     public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        try {
-            return handle(sessionId, ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
-        } catch (final UnsupportedToolException ignored) {
-            throw new UnsupportedToolException(toolName);
-        }
+        return handle(sessionId, ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
     }
     
     /**

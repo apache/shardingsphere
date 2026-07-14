@@ -47,10 +47,6 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowGuidancePayloadBuilder {
     
-    private static final String EXECUTION_MODE_PREVIEW = "preview";
-    
-    private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
-    
     /**
      * Append model-facing next action guidance to a planning response.
      *
@@ -142,7 +138,7 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static boolean isManualOnlyWorkflow(final WorkflowContextSnapshot snapshot) {
-        return null != snapshot.getRequest() && EXECUTION_MODE_MANUAL_ONLY.equalsIgnoreCase(snapshot.getRequest().getExecutionMode());
+        return null != snapshot.getRequest() && WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY.equalsIgnoreCase(snapshot.getRequest().getExecutionMode());
     }
     
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {
@@ -281,7 +277,7 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         if (WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus())) {
             return List.of(createToolAction(WorkflowToolDescriptors.APPLY_TOOL_NAME, "Preview workflow artifacts before execution.",
-                    Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW)));
+                    Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, WorkflowLifecycle.EXECUTION_MODE_PREVIEW)));
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus())) {
             return createRecoveryPlanningActions(snapshot);

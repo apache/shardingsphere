@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningAr
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Tool handler for shadow algorithm cleanup workflow planning.
@@ -60,24 +59,11 @@ public final class PlanShadowAlgorithmCleanupToolHandler implements MCPToolHandl
     }
     
     private void bindFeatureArguments(final ShadowAlgorithmCleanupWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, ShadowFeatureDefinition.ALGORITHM_NAME_FIELD, request::setAlgorithmName);
+        workflowPlanningArguments.applyStringArgument(ShadowFeatureDefinition.ALGORITHM_NAME_FIELD, request::setAlgorithmName);
     }
     
     private void applyStructuredIntentEvidence(final ShadowAlgorithmCleanupWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_NAME_FIELD, request::setAlgorithmName);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_NAME_FIELD, request::setAlgorithmName);
     }
     
-    private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
-        Object value = values.get(fieldName);
-        if (null != value) {
-            consumer.accept(String.valueOf(value));
-        }
-    }
-    
-    private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        String value = workflowPlanningArguments.getStringArgument(fieldName);
-        if (!value.isEmpty()) {
-            consumer.accept(value);
-        }
-    }
 }

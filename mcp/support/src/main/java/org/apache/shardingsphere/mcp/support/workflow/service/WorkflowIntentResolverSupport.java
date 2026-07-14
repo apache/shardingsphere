@@ -34,8 +34,6 @@ import java.util.Locale;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowIntentResolverSupport {
     
-    private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
-    
     private static final List<FieldSemanticRule> FIELD_SEMANTIC_RULES = List.of(
             new FieldSemanticRule("phone", List.of("phone number", "phone", "mobile", "tel", "手机号", "手机", "电话号码", "电话"), List.of("phone", "mobile", "tel")),
             new FieldSemanticRule("id_card", List.of("identity card", "id card", "身份证", "证件"), List.of("id_card")),
@@ -64,9 +62,9 @@ public final class WorkflowIntentResolverSupport {
             return recordInferredValue(clarifiedIntent, WorkflowFieldNames.OPERATION_TYPE, WorkflowLifecycle.OPERATION_DROP);
         }
         if (containsAny(naturalLanguageIntent, "alter", "modify", "update", "修改", "更新", "调整", "变更")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.OPERATION_TYPE, "alter");
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.OPERATION_TYPE, WorkflowLifecycle.OPERATION_ALTER);
         }
-        return recordInferredValue(clarifiedIntent, WorkflowFieldNames.OPERATION_TYPE, "create");
+        return recordInferredValue(clarifiedIntent, WorkflowFieldNames.OPERATION_TYPE, WorkflowLifecycle.OPERATION_CREATE);
     }
     
     /**
@@ -96,7 +94,7 @@ public final class WorkflowIntentResolverSupport {
         if (containsAny(naturalLanguageIntent, "manual", "manual-only", "manual only", "manual execution", "manual artifacts",
                 "export", "outside mcp", "without applying", "do not apply", "no runtime side effects", "side effects out of mcp",
                 "手动", "手工", "人工", "导出", "不要执行", "不执行", "不要应用", "不应用", "不产生副作用")) {
-            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.EXECUTION_MODE, EXECUTION_MODE_MANUAL_ONLY);
+            return recordInferredValue(clarifiedIntent, WorkflowFieldNames.EXECUTION_MODE, WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY);
         }
         String actualExecutionMode = request.getExecutionMode().toLowerCase(Locale.ENGLISH);
         return actualExecutionMode.isEmpty() ? "" : actualExecutionMode;
