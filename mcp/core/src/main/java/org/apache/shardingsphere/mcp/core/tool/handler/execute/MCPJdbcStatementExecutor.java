@@ -23,9 +23,9 @@ import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecution
 import org.apache.shardingsphere.mcp.support.database.exception.QueryDidNotReturnResultSetException;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.support.database.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionColumnDefinition;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
@@ -63,7 +63,7 @@ public final class MCPJdbcStatementExecutor {
      * @param executionRequest execution request
      * @param classificationResult classification result
      * @param databaseCapability database capability
-     * @return execution response
+     * @return execution result
      * @throws MCPTransactionStateException when the current transaction state blocks execution
      * @throws MCPTimeoutException when the JDBC execution times out
      * @throws MCPUnsupportedException when the JDBC driver or statement class is unsupported
@@ -72,7 +72,7 @@ public final class MCPJdbcStatementExecutor {
      * @throws MCPQueryFailedException when query execution fails
      * @throws MCPUnavailableException when the runtime database configuration is unavailable
      */
-    public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) {
+    public SQLExecutionResult execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) {
         try {
             Optional<Connection> transactionConnection = findTransactionConnection(executionRequest);
             if (transactionConnection.isPresent()) {
@@ -109,14 +109,14 @@ public final class MCPJdbcStatementExecutor {
         }
     }
     
-    private SQLExecutionResponse executeWithBorrowedConnection(final Connection connection, final SQLExecutionRequest executionRequest,
-                                                               final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) throws SQLException {
+    private SQLExecutionResult executeWithBorrowedConnection(final Connection connection, final SQLExecutionRequest executionRequest,
+                                                             final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) throws SQLException {
         applySchema(connection, executionRequest.getSchema(), databaseCapability.getSchemaExecutionSemantics());
         return executeWithStatement(connection, executionRequest, classificationResult);
     }
     
-    private SQLExecutionResponse executeWithOwnedConnection(final Connection connection, final SQLExecutionRequest executionRequest,
-                                                            final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) throws SQLException {
+    private SQLExecutionResult executeWithOwnedConnection(final Connection connection, final SQLExecutionRequest executionRequest,
+                                                          final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) throws SQLException {
         try {
             applySchema(connection, executionRequest.getSchema(), databaseCapability.getSchemaExecutionSemantics());
             return executionRequest.isReadOnlyExecution()
@@ -127,8 +127,8 @@ public final class MCPJdbcStatementExecutor {
         }
     }
     
-    private SQLExecutionResponse executeWithStatement(final Connection connection, final SQLExecutionRequest executionRequest,
-                                                      final ClassificationResult classificationResult) throws SQLException {
+    private SQLExecutionResult executeWithStatement(final Connection connection, final SQLExecutionRequest executionRequest,
+                                                    final ClassificationResult classificationResult) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             configureStatement(statement, executionRequest);
             return executeStatement(statement, executionRequest, classificationResult);
@@ -142,8 +142,8 @@ public final class MCPJdbcStatementExecutor {
         }
     }
     
-    private SQLExecutionResponse executeWithReadOnlyConnection(final Connection connection, final SQLExecutionRequest executionRequest,
-                                                               final ClassificationResult classificationResult) throws SQLException {
+    private SQLExecutionResult executeWithReadOnlyConnection(final Connection connection, final SQLExecutionRequest executionRequest,
+                                                             final ClassificationResult classificationResult) throws SQLException {
         boolean originalReadOnly = connection.isReadOnly();
         boolean originalAutoCommit = connection.getAutoCommit();
         boolean autoCommitDisabled = false;
@@ -219,8 +219,8 @@ public final class MCPJdbcStatementExecutor {
         }
     }
     
-    private SQLExecutionResponse executeStatement(final Statement statement, final SQLExecutionRequest executionRequest,
-                                                  final ClassificationResult classificationResult) throws SQLException {
+    private SQLExecutionResult executeStatement(final Statement statement, final SQLExecutionRequest executionRequest,
+                                                final ClassificationResult classificationResult) throws SQLException {
         boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
         switch (classificationResult.getStatementClass()) {
             case QUERY:
@@ -228,35 +228,31 @@ public final class MCPJdbcStatementExecutor {
                 if (!hasResultSet) {
                     throw new QueryDidNotReturnResultSetException();
                 }
-                return withExecutionHints(createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult), executionRequest, classificationResult);
+                return createResultSetResult(statement.getResultSet(), executionRequest, classificationResult);
             case DML:
                 return hasResultSet
-                        ? withExecutionHints(createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult), executionRequest, classificationResult)
-                        : withExecutionHints(SQLExecutionResponse.updateCount(
-                                classificationResult.getStatementClass(), classificationResult.getStatementType(), statement.getUpdateCount()), executionRequest, classificationResult);
+                        ? createResultSetResult(statement.getResultSet(), executionRequest, classificationResult)
+                        : SQLExecutionResult.updateCount(classificationResult.getStatementClass(), classificationResult.getStatementType(), statement.getUpdateCount(),
+                                executionRequest.getMaxRows(), executionRequest.getTimeoutMs(), classificationResult.getNormalizedSql());
             case DDL:
             case DCL:
-                return withExecutionHints(SQLExecutionResponse.statementAck(
-                        classificationResult.getStatementClass(), classificationResult.getStatementType(), "Statement executed."), executionRequest, classificationResult);
+                return SQLExecutionResult.statementAck(classificationResult.getStatementClass(), classificationResult.getStatementType(),
+                        executionRequest.getMaxRows(), executionRequest.getTimeoutMs(), classificationResult.getNormalizedSql());
             default:
                 throw new StatementClassNotSupportedException();
         }
     }
     
-    private SQLExecutionResponse withExecutionHints(final SQLExecutionResponse response, final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
-        return response.withExecutionHints(executionRequest.getMaxRows(), executionRequest.getTimeoutMs()).withNormalizedSql(classificationResult.getNormalizedSql());
-    }
-    
-    private SQLExecutionResponse createResultSetResponse(final ResultSet resultSet, final int maxRows, final ClassificationResult classificationResult) throws SQLException {
+    private SQLExecutionResult createResultSetResult(final ResultSet resultSet, final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
+        LinkedList<SQLExecutionColumnDefinition> columns = new LinkedList<>();
         for (int index = 1; index <= resultSetMetaData.getColumnCount(); index++) {
-            columns.add(new ExecuteQueryColumnDefinition(resultSetMetaData.getColumnLabel(index), resultSetMetaData.getColumnTypeName(index),
+            columns.add(new SQLExecutionColumnDefinition(resultSetMetaData.getColumnLabel(index), resultSetMetaData.getColumnTypeName(index),
                     resultSetMetaData.getColumnTypeName(index), ResultSetMetaData.columnNoNulls != resultSetMetaData.isNullable(index)));
         }
         LinkedList<List<Object>> rows = new LinkedList<>();
         boolean truncated = false;
-        int effectiveMaxRows = 0 >= maxRows ? Integer.MAX_VALUE : maxRows;
+        int effectiveMaxRows = 0 >= executionRequest.getMaxRows() ? Integer.MAX_VALUE : executionRequest.getMaxRows();
         while (resultSet.next()) {
             if (rows.size() >= effectiveMaxRows) {
                 truncated = true;
@@ -268,7 +264,8 @@ public final class MCPJdbcStatementExecutor {
             }
             rows.add(row);
         }
-        return SQLExecutionResponse.resultSet(classificationResult.getStatementClass(), classificationResult.getStatementType(), columns, rows, truncated);
+        return SQLExecutionResult.resultSet(classificationResult.getStatementClass(), classificationResult.getStatementType(), columns, rows, truncated,
+                executionRequest.getMaxRows(), executionRequest.getTimeoutMs(), classificationResult.getNormalizedSql());
     }
     
     private int resolveStatementMaxRows(final int maxRows) {

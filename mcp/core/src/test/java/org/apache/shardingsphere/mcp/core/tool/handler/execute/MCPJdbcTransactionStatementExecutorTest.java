@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
-
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
@@ -26,8 +24,10 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResultKind;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,7 +54,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteCases")
-    void assertExecute(final String name, final String sql, final String expectedStatementType, final String expectedMessage) throws SQLException {
+    void assertExecute(final String name, final String sql, final String expectedStatementType) throws SQLException {
         Connection connection = mock(Connection.class);
         Savepoint savepoint = mock(Savepoint.class);
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
@@ -63,22 +63,26 @@ class MCPJdbcTransactionStatementExecutorTest {
         sessionManager.createSession("session-1");
         prepareTransactionState(sql, sessionManager, connection, savepoint);
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
-        SQLExecutionResponse actual = executor.execute("session-1", "logic_db", createCapability(), new StatementClassifier().classify(sql));
+        ClassificationResult classificationResult = new StatementClassifier().classify(sql);
+        SQLExecutionResult actual = executor.execute("session-1", "logic_db", createCapability(), classificationResult);
+        assertThat(actual.getResultKind(), is(SQLExecutionResultKind.STATEMENT_ACK));
+        assertThat(actual.getStatementClass(), is(classificationResult.getStatementClass()));
         assertThat(actual.getStatementType(), is(expectedStatementType));
-        assertThat(actual.getMessage(), is(expectedMessage));
+        assertThat(actual.getAppliedMaxRows(), is(0));
+        assertThat(actual.getAppliedTimeoutMs(), is(0));
         assertThat(actual.getNormalizedSql(), is(sql));
         assertDatabaseExecution(sql, sessionManager, runtimeDatabaseConfig, connection, savepoint);
     }
     
     static Stream<Arguments> assertExecuteCases() {
         return Stream.of(
-                Arguments.of("begin", "BEGIN", "BEGIN", "Transaction started."),
-                Arguments.of("start transaction", "START TRANSACTION", "START TRANSACTION", "Transaction started."),
-                Arguments.of("commit", "COMMIT", "COMMIT", "Transaction committed."),
-                Arguments.of("rollback", "ROLLBACK", "ROLLBACK", "Transaction rolled back."),
-                Arguments.of("savepoint", "SAVEPOINT sp_1", "SAVEPOINT", "Savepoint created."),
-                Arguments.of("rollback to savepoint", "ROLLBACK TO SAVEPOINT sp_1", "ROLLBACK TO SAVEPOINT", "Savepoint rolled back."),
-                Arguments.of("release savepoint", "RELEASE SAVEPOINT sp_1", "RELEASE SAVEPOINT", "Savepoint released."));
+                Arguments.of("begin", "BEGIN", "BEGIN"),
+                Arguments.of("start transaction", "START TRANSACTION", "START TRANSACTION"),
+                Arguments.of("commit", "COMMIT", "COMMIT"),
+                Arguments.of("rollback", "ROLLBACK", "ROLLBACK"),
+                Arguments.of("savepoint", "SAVEPOINT sp_1", "SAVEPOINT"),
+                Arguments.of("rollback to savepoint", "ROLLBACK TO SAVEPOINT sp_1", "ROLLBACK TO SAVEPOINT"),
+                Arguments.of("release savepoint", "RELEASE SAVEPOINT sp_1", "RELEASE SAVEPOINT"));
     }
     
     @Test

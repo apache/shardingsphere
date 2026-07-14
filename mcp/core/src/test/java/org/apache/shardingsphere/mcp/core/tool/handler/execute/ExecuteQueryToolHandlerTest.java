@@ -24,10 +24,11 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedExcept
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -49,7 +50,7 @@ class ExecuteQueryToolHandlerTest {
     @Test
     void assertHandleReadOnlyQuery() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(List.of(), List.of(), false));
+        when(executionFacade.execute(any())).thenReturn(createQueryResult());
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPResponse actual = new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
@@ -68,7 +69,7 @@ class ExecuteQueryToolHandlerTest {
     @Test
     void assertHandleReadOnlyQueryWithSingleSchemaDefault() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(List.of(), List.of(), false));
+        when(executionFacade.execute(any())).thenReturn(createQueryResult());
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new ShardingSphereSchema("public", mock(DatabaseType.class))));
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
@@ -127,7 +128,7 @@ class ExecuteQueryToolHandlerTest {
     @Test
     void assertHandleZeroMaxRowsAsDefault() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(List.of(), List.of(), false));
+        when(executionFacade.execute(any())).thenReturn(createQueryResult());
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new ShardingSphereSchema("public", mock(DatabaseType.class))));
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
@@ -138,5 +139,9 @@ class ExecuteQueryToolHandlerTest {
         ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);
         verify(executionFacade).execute(requestCaptor.capture());
         assertThat(requestCaptor.getValue().getMaxRows(), is(100));
+    }
+    
+    private SQLExecutionResult createQueryResult() {
+        return SQLExecutionResult.resultSet(SupportedMCPStatement.QUERY, "SELECT", List.of(), List.of(), false, 100, 0, "SELECT * FROM orders");
     }
 }

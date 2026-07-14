@@ -72,6 +72,9 @@ class MCPRuntimeProtectionPolicyTest {
         assertThat(actualMaxRows.get("maximum_value"), is(MCPRuntimeProtectionPolicy.MAX_ROWS_LIMIT));
         assertThat(actualMaxRows.get("applied_field"), is("applied_max_rows"));
         assertThat(actualMaxRows.get("truncation_field"), is("truncated"));
+        assertThat(actualMaxRows.get("recovery"), is(
+                "For read-only queries, retry with a narrower SELECT, stronger WHERE clause, or smaller projection. "
+                        + "If rows came from a side-effecting statement, do not replay that statement automatically; use a separate read-only query when more data is needed."));
         Map<?, ?> actualTimeout = (Map<?, ?>) actualSQLExecutionLimits.get("timeout_ms");
         assertThat(actualTimeout.get("default_value"), is(MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS));
         assertThat(actualTimeout.get("maximum_value"), is(MCPRuntimeProtectionPolicy.MAX_TIMEOUT_MILLISECONDS));

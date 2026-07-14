@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.tool.response;
+package org.apache.shardingsphere.mcp.support.database.tool.result;
 
 import org.junit.jupiter.api.Test;
-
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -51,15 +49,5 @@ class RuntimeDatabaseValidationCheckResultTest {
         assertThat(actual.getStatus(), is("skipped"));
         assertThat(actual.getCategory(), is("skipped"));
         assertThat(actual.getMessage(), is("Skipped because no database was provided."));
-    }
-    
-    @Test
-    void assertToPayload() {
-        Map<String, Object> actual = RuntimeDatabaseValidationCheckResult.failed("metadata_read", "connection_failed", "Failed to read metadata.").toPayload();
-        assertThat(actual, is(Map.of(
-                "name", "metadata_read",
-                "status", "failed",
-                "category", "connection_failed",
-                "message", "Failed to read metadata.")));
     }
 }

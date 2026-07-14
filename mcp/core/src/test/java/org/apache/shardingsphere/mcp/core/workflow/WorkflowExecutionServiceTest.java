@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -169,7 +169,7 @@ class WorkflowExecutionServiceTest {
         snapshot.setStatus("previewed");
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
+        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResult.class));
         Map<String, Object> actualResponse = apply(snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, List.of(), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
@@ -324,7 +324,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
         WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
+        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResult.class));
         Map<String, Object> actualResponse = apply(workflowSessionContext, snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP,
                 List.of("ddl", "index_ddl", "rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
@@ -344,7 +344,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
+        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResult.class));
         Map<String, Object> actualResponse = apply(snapshot, executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, List.of("rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(((List<?>) actualResponse.get("executed_distsql")).getFirst(), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
@@ -379,7 +379,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
         WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
+        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResult.class));
         MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
         Map<String, Object> actualResponse = apply(workflowSessionContext, snapshot, executionFacade, workflowApplySynchronizationHandler, List.of("ddl"), "review-then-execute");
         List<?> actualStepResults = (List<?>) actualResponse.get("step_results");
@@ -399,7 +399,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "ALTER MASK RULE orders"));
         WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
+        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResult.class));
         MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
         doThrow(new WorkflowSynchronizationException(WorkflowIssueCode.RULE_STATE_MISMATCH, "Mask rule is missing.",
                 List.of(Map.of("code", WorkflowIssueCode.RULE_STATE_MISMATCH)))).when(workflowApplySynchronizationHandler).synchronize(any(), any(), any(), any(), any());

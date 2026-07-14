@@ -19,14 +19,13 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 
 /**
  * MCP JDBC transaction statement executor.
@@ -43,27 +42,28 @@ public final class MCPJdbcTransactionStatementExecutor {
      * @param databaseName logical database name
      * @param databaseCapability resolved database capability
      * @param classificationResult statement classification result
-     * @return execution response
+     * @return execution result
      * @throws MCPSessionNotExistedException when the session does not exist
      * @throws MCPInvalidRequestException when the statement is not a transaction command
      * @throws MCPTransactionStateException when the transaction state does not allow the operation
      * @throws MCPUnsupportedException when the database does not support the requested transaction feature
      */
-    public SQLExecutionResponse execute(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
+    public SQLExecutionResult execute(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability,
+                                      final ClassificationResult classificationResult) {
         String statementType = classificationResult.getStatementType();
         try {
             ShardingSpherePreconditions.checkState(sessionManager.hasSession(sessionId), MCPSessionNotExistedException::new);
-            SQLExecutionResponse result;
             if ("BEGIN".equals(statementType) || "START TRANSACTION".equals(statementType)) {
-                result = executeBeginTransaction(sessionId, databaseName, databaseCapability, statementType);
+                executeBeginTransaction(sessionId, databaseName, databaseCapability);
             } else if ("COMMIT".equals(statementType)) {
-                result = executeCommit(sessionId, databaseCapability);
+                executeCommit(sessionId, databaseCapability);
             } else if ("ROLLBACK".equals(statementType)) {
-                result = executeRollback(sessionId, databaseCapability);
+                executeRollback(sessionId, databaseCapability);
             } else {
-                result = executeSavepointStatement(sessionId, databaseCapability, classificationResult);
+                executeSavepointStatement(sessionId, databaseCapability, classificationResult);
             }
-            return result.withNormalizedSql(classificationResult.getNormalizedSql());
+            return SQLExecutionResult.statementAck(classificationResult.getStatementClass(), statementType,
+                    0, 0, classificationResult.getNormalizedSql());
         } catch (final IllegalArgumentException ex) {
             throw new MCPInvalidRequestException(ex.getMessage(), ex);
         } catch (final IllegalStateException ex) {
@@ -71,20 +71,18 @@ public final class MCPJdbcTransactionStatementExecutor {
         }
     }
     
-    private SQLExecutionResponse executeSavepointStatement(final String sessionId, final MCPDatabaseCapability databaseCapability,
-                                                           final ClassificationResult classificationResult) {
+    private void executeSavepointStatement(final String sessionId, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
         String statementType = classificationResult.getStatementType();
         String savepointName = classificationResult.getSavepointName().orElse("");
         if ("SAVEPOINT".equals(statementType)) {
-            return executeSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
+            executeSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
+        } else if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
+            executeRollbackSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
+        } else if ("RELEASE SAVEPOINT".equals(statementType)) {
+            executeReleaseSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
+        } else {
+            throw new MCPInvalidRequestException("Statement is not a transaction command.");
         }
-        if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
-            return executeRollbackSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
-        }
-        if ("RELEASE SAVEPOINT".equals(statementType)) {
-            return executeReleaseSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
-        }
-        throw new MCPInvalidRequestException("Statement is not a transaction command.");
     }
     
     private String getRequiredSavepointName(final String savepointName) {
@@ -93,45 +91,33 @@ public final class MCPJdbcTransactionStatementExecutor {
         return result;
     }
     
-    private SQLExecutionResponse executeBeginTransaction(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final String statementType) {
+    private void executeBeginTransaction(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability) {
         ShardingSpherePreconditions.checkState(databaseCapability.supportsTransactionControl(), () -> new MCPUnsupportedException("Transaction control is not supported."));
         sessionManager.getTransactionResourceManager().beginTransaction(sessionId, databaseName);
-        return SQLExecutionResponse.statementAck(classifyTransactionStatement(statementType), statementType, "Transaction started.");
     }
     
-    private SQLExecutionResponse executeCommit(final String sessionId, final MCPDatabaseCapability databaseCapability) {
+    private void executeCommit(final String sessionId, final MCPDatabaseCapability databaseCapability) {
         ShardingSpherePreconditions.checkState(databaseCapability.supportsTransactionControl(), () -> new MCPUnsupportedException("Transaction control is not supported."));
         sessionManager.getTransactionResourceManager().commitTransaction(sessionId);
-        return SQLExecutionResponse.statementAck(classifyTransactionStatement("COMMIT"), "COMMIT", "Transaction committed.");
     }
     
-    private SQLExecutionResponse executeRollback(final String sessionId, final MCPDatabaseCapability databaseCapability) {
+    private void executeRollback(final String sessionId, final MCPDatabaseCapability databaseCapability) {
         ShardingSpherePreconditions.checkState(databaseCapability.supportsTransactionControl(), () -> new MCPUnsupportedException("Transaction control is not supported."));
         sessionManager.getTransactionResourceManager().rollbackTransaction(sessionId);
-        return SQLExecutionResponse.statementAck(classifyTransactionStatement("ROLLBACK"), "ROLLBACK", "Transaction rolled back.");
     }
     
-    private SQLExecutionResponse executeSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
+    private void executeSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         ShardingSpherePreconditions.checkState(databaseCapability.supportsSavepoint(), () -> new MCPUnsupportedException("Savepoint is not supported."));
         sessionManager.getTransactionResourceManager().createSavepoint(sessionId, savepointName);
-        return SQLExecutionResponse.statementAck(classifyTransactionStatement("SAVEPOINT"), "SAVEPOINT", "Savepoint created.");
     }
     
-    private SQLExecutionResponse executeRollbackSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
+    private void executeRollbackSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         ShardingSpherePreconditions.checkState(databaseCapability.supportsSavepoint(), () -> new MCPUnsupportedException("Savepoint is not supported."));
         sessionManager.getTransactionResourceManager().rollbackToSavepoint(sessionId, savepointName);
-        return SQLExecutionResponse.statementAck(classifyTransactionStatement("ROLLBACK TO SAVEPOINT"), "ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
     }
     
-    private SQLExecutionResponse executeReleaseSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
+    private void executeReleaseSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         ShardingSpherePreconditions.checkState(databaseCapability.supportsSavepoint(), () -> new MCPUnsupportedException("Savepoint is not supported."));
         sessionManager.getTransactionResourceManager().releaseSavepoint(sessionId, savepointName);
-        return SQLExecutionResponse.statementAck(classifyTransactionStatement("RELEASE SAVEPOINT"), "RELEASE SAVEPOINT", "Savepoint released.");
-    }
-    
-    private SupportedMCPStatement classifyTransactionStatement(final String statementType) {
-        return "SAVEPOINT".equals(statementType) || "ROLLBACK TO SAVEPOINT".equals(statementType) || "RELEASE SAVEPOINT".equals(statementType)
-                ? SupportedMCPStatement.SAVEPOINT
-                : SupportedMCPStatement.TRANSACTION_CONTROL;
     }
 }

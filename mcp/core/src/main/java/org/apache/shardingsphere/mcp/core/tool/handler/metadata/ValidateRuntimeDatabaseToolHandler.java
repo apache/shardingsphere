@@ -20,14 +20,10 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
+import org.apache.shardingsphere.mcp.core.tool.response.RuntimeDatabaseValidationResponse;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.service.RuntimeDatabaseValidationService;
-import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
-
-import java.util.Map;
 
 /**
  * Handler for runtime database validation tool.
@@ -50,12 +46,7 @@ public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
-        return validationService.validate(RuntimeDatabaseValidationRequest.from(toolCall.getArguments()), databaseContext::findRuntimeDatabaseConfiguration, this::createRecoveryPayload);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> createRecoveryPayload(final RuntimeDatabaseConnectionException cause) {
-        Object result = MCPErrorConverter.convert(cause).toPayload().get(MCPPayloadFieldNames.RECOVERY);
-        return result instanceof Map ? (Map<String, Object>) result : Map.of();
+        return RuntimeDatabaseValidationResponse.from(
+                validationService.validate(RuntimeDatabaseValidationRequest.from(toolCall.getArguments()), databaseContext::findRuntimeDatabaseConfiguration));
     }
 }

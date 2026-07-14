@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.protocol.response;
+package org.apache.shardingsphere.mcp.support.database.tool.result;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.sameInstance;
-
-class MCPMapResponseTest {
+/**
+ * SQL execution result kind.
+ */
+public enum SQLExecutionResultKind {
     
-    @Test
-    void assertToPayload() {
-        Map<String, Object> expectedPayload = Map.of("foo_key", "bar_value");
-        Map<String, Object> actual = new MCPMapResponse(expectedPayload).toPayload();
-        assertThat(actual, sameInstance(expectedPayload));
-    }
+    RESULT_SET, UPDATE_COUNT, STATEMENT_ACK
 }

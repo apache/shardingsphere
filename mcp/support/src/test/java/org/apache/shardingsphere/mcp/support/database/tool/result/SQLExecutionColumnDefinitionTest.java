@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.protocol;
+package org.apache.shardingsphere.mcp.support.database.tool.result;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.junit.jupiter.api.Test;
 
-/**
- * Execute query column definition.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ExecuteQueryColumnDefinition {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class SQLExecutionColumnDefinitionTest {
     
-    private final String columnName;
-    
-    private final String logicalType;
-    
-    private final String nativeType;
-    
-    private final boolean nullable;
+    @Test
+    void assertJsonFieldNames() {
+        assertThat(JsonUtils.toJsonString(new SQLExecutionColumnDefinition("order_id", "INTEGER", "int4", false)),
+                is("{\"columnName\":\"order_id\",\"logicalType\":\"INTEGER\",\"nativeType\":\"int4\",\"nullable\":false}"));
+    }
 }

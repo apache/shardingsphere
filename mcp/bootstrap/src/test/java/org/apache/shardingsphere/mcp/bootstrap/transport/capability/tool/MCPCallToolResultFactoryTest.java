@@ -24,9 +24,14 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ResourceLink;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.core.tool.handler.metadata.ValidateRuntimeDatabaseToolHandler;
+import org.apache.shardingsphere.mcp.core.tool.response.RuntimeDatabaseValidationResponse;
+import org.apache.shardingsphere.mcp.core.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
@@ -34,6 +39,12 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowR
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
+import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
+import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationResult;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionColumnDefinition;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
@@ -93,6 +104,45 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
     void assertCreateToolSpecificationsHandlePlainPayload() {
         CallToolResult actual = createCallToolResult("fixture_ping", new MCPMapResponse(Map.of("message", "invalid_request")));
         assertFalse(actual.isError());
+    }
+    
+    @Test
+    void assertCreateWithRuntimeValidationDiagnostic() {
+        MCPResponse response = RuntimeDatabaseValidationResponse.from(RuntimeDatabaseValidationResult.failed("",
+                List.of(RuntimeDatabaseValidationCheckResult.failed("configuration", RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION,
+                        "The requested database is not configured for this MCP runtime.")),
+                RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
+        CallToolResult actual = createRealDescriptorCallToolResult(ValidateRuntimeDatabaseToolHandler.TOOL_NAME, response);
+        Map<String, Object> actualPayload = getStructuredContent(actual);
+        assertFalse(actual.isError());
+        assertThat(actualPayload.get("status"), is("failed"));
+        assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("database"));
+        assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("request_id"));
+        assertThat(((TextContent) actual.content().getFirst()).text(), is(JsonUtils.toJsonString(actualPayload)));
+    }
+    
+    @Test
+    void assertCreateWithRuntimeValidationException() {
+        MCPResponse response = MCPErrorConverter.convert(RuntimeDatabaseConnectionException.invalidConfiguration(
+                "logic_db", new IllegalStateException("Invalid runtime database configuration.")));
+        CallToolResult actual = createRealDescriptorCallToolResult(ValidateRuntimeDatabaseToolHandler.TOOL_NAME, response);
+        assertTrue(actual.isError());
+        assertThat(getStructuredContent(actual).get("response_mode"), is("recovery"));
+    }
+    
+    @Test
+    void assertCreateWithExecutedResultSet() {
+        SQLExecutionColumnDefinition column = new SQLExecutionColumnDefinition("order_id", "BIGINT", "BIGINT", false);
+        MCPResponse response = SQLExecutionResponse.executed(SQLExecutionResult.resultSet(SupportedMCPStatement.DML, "SELECT",
+                List.of(column), List.of(List.of(1L)), true, 1, 0, "WITH changed AS (...) SELECT order_id FROM changed"));
+        CallToolResult actual = createRealDescriptorCallToolResult("database_gateway_execute_update", response);
+        Map<String, Object> actualPayload = getStructuredContent(actual);
+        assertFalse(actual.isError(), () -> String.valueOf(actualPayload));
+        assertThat(actualPayload.get("columns"), is(List.of(column)));
+        assertThat(actualPayload.get("rows"), is(List.of(List.of(1L))));
+        assertThat(((Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst()).get("reason"), is(
+                "The side-effecting statement already executed and returned truncated rows; do not replay it automatically. "
+                        + "Use a separate read-only query if more data is needed."));
     }
     
     @Test

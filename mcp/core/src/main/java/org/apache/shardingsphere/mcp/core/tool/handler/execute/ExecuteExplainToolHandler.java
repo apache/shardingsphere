@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.core.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 
@@ -50,6 +51,6 @@ public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPDataba
         String schema = SQLExecutionToolHandlerSupport.resolveSchema(databaseContext, toolArguments);
         SQLExecutionRequest executionRequest = SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(toolCall, toolArguments,
                 schema, explainSql, TOOL_NAME);
-        return databaseContext.getExecutionFacade().executeExplain(executionRequest, sql);
+        return SQLExecutionResponse.query(databaseContext.getExecutionFacade().executeExplain(executionRequest, sql));
     }
 }

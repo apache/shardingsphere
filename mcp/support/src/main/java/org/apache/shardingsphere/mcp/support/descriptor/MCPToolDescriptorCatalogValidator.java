@@ -216,8 +216,8 @@ public final class MCPToolDescriptorCatalogValidator {
     }
     
     private static void validateExecuteUpdateDescriptor(final MCPToolDescriptor descriptor) {
-        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor, List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "returned_row_count",
-                "applied_max_rows", "applied_timeout_ms", "suggested_arguments", MCPPayloadFieldNames.NEXT_ACTIONS));
+        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor, List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "columns", "rows",
+                "returned_row_count", "applied_max_rows", "applied_timeout_ms", "suggested_arguments", MCPPayloadFieldNames.NEXT_ACTIONS));
         Map<?, ?> executionMode = MCPToolDescriptorValidationUtils.findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE).orElseThrow(
                 () -> new IllegalStateException("Tool `database_gateway_execute_update` must declare execution_mode."));
         ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.isRequiredToolInput(descriptor, MCPPayloadFieldNames.EXECUTION_MODE),
