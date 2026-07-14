@@ -245,8 +245,10 @@ security_hints:
         recovery: Close and recreate the MCP session after the quota is exhausted.}
       sql_execution_limits:
         max_rows: {default_value: 100, maximum_value: 5000, applied_field: applied_max_rows,
-          truncation_field: truncated, recovery: 'Retry with a narrower SELECT, stronger
-            WHERE clause, or smaller projection when rows are truncated.'}
+          truncation_field: truncated, recovery: 'For read-only queries, retry with
+            a narrower SELECT, stronger WHERE clause, or smaller projection. If rows
+            came from a side-effecting statement, do not replay that statement automatically;
+            use a separate read-only query when more data is needed.'}
         timeout_ms: {default_value: 0, maximum_value: 300000, applied_field: applied_timeout_ms,
           zero_means: server_default, recovery: Retry with a bounded timeout_ms value
             or omit timeout_ms to use the server default.}
