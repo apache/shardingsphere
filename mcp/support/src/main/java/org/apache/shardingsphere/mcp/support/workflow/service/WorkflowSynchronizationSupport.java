@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,48 +34,63 @@ import java.util.function.Supplier;
  */
 public final class WorkflowSynchronizationSupport {
     
-    private static final int DEFAULT_MAX_ATTEMPTS = 30;
+    /**
+     * Default synchronization window.
+     */
+    public static final Duration DEFAULT_SYNCHRONIZATION_WINDOW = Duration.ofSeconds(30L);
     
-    private static final long DEFAULT_POLL_INTERVAL_MILLIS = 1000L;
+    /**
+     * Default interval between validation attempts.
+     */
+    public static final Duration DEFAULT_POLL_INTERVAL = Duration.ofSeconds(1L);
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final int maxAttempts;
+    private final long synchronizationWindowNanos;
     
-    private final long pollIntervalMillis;
+    private final long pollIntervalNanos;
     
-    public WorkflowSynchronizationSupport() {
-        maxAttempts = DEFAULT_MAX_ATTEMPTS;
-        pollIntervalMillis = DEFAULT_POLL_INTERVAL_MILLIS;
-    }
-    
-    public WorkflowSynchronizationSupport(final int maxAttempts, final long pollIntervalMillis) {
-        this.maxAttempts = Math.max(maxAttempts, 1);
-        this.pollIntervalMillis = Math.max(pollIntervalMillis, 0L);
+    /**
+     * Constructs workflow synchronization support.
+     *
+     * @param synchronizationWindow synchronization window spent waiting between validation attempts
+     * @param pollInterval interval between validation attempts
+     * @throws IllegalArgumentException if either duration is not positive
+     */
+    public WorkflowSynchronizationSupport(final Duration synchronizationWindow, final Duration pollInterval) {
+        ShardingSpherePreconditions.checkState(!synchronizationWindow.isZero() && !synchronizationWindow.isNegative(),
+                () -> new IllegalArgumentException("Synchronization window must be positive."));
+        ShardingSpherePreconditions.checkState(!pollInterval.isZero() && !pollInterval.isNegative(),
+                () -> new IllegalArgumentException("Poll interval must be positive."));
+        synchronizationWindowNanos = synchronizationWindow.toNanos();
+        pollIntervalNanos = pollInterval.toNanos();
     }
     
     /**
-     * Synchronize workflow state by polling validation.
+     * Synchronize workflow state by polling validation. Time spent obtaining validation reports is excluded from the synchronization window.
      *
      * @param validationReportSupplier validation report supplier
      */
     public void synchronize(final Supplier<ValidationReport> validationReportSupplier) {
-        ValidationReport validationReport = null;
-        for (int i = 0; i < maxAttempts; i++) {
+        ValidationReport validationReport;
+        long remainingWaitNanos = synchronizationWindowNanos;
+        while (true) {
             validationReport = validationReportSupplier.get();
             if (WorkflowLifecycle.STATUS_PASSED.equals(validationReport.getOverallStatus())) {
                 return;
             }
-            if (i < maxAttempts - 1) {
-                sleep();
+            if (remainingWaitNanos <= pollIntervalNanos) {
+                break;
             }
+            waitForNextValidation();
+            remainingWaitNanos -= pollIntervalNanos;
         }
         throw createSynchronizationException(validationReport);
     }
     
-    private void sleep() {
+    private void waitForNextValidation() {
         try {
-            TimeUnit.MILLISECONDS.sleep(pollIntervalMillis);
+            TimeUnit.NANOSECONDS.sleep(pollIntervalNanos);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new WorkflowSynchronizationException(WorkflowIssueCode.RULE_STATE_MISMATCH, "Workflow synchronization was interrupted.", List.of());
@@ -81,10 +98,6 @@ public final class WorkflowSynchronizationSupport {
     }
     
     private WorkflowSynchronizationException createSynchronizationException(final ValidationReport validationReport) {
-        if (null == validationReport) {
-            return new WorkflowSynchronizationException(WorkflowIssueCode.RULE_STATE_MISMATCH,
-                    "Workflow execution completed before the resulting state became visible to Proxy validation.", List.of());
-        }
         return new WorkflowSynchronizationException(validationSupport.resolveValidationIssueCode(validationReport),
                 resolveFailureMessage(validationReport), validationReport.getMismatches());
     }
