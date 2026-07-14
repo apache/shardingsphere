@@ -51,9 +51,7 @@ public final class FirebirdBatchSendMessageCommandExecutor implements CommandExe
             throw new InvalidBatchHandleException(packet.getStatementHandle());
         }
         if (batchStatement.getAccumulatedSize() + packet.getDataLength() > batchStatement.getBufferSize()) {
-            BatchTooBigException ex = new BatchTooBigException(packet.getStatementHandle(), batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
-            batchStatement.reset();
-            throw ex;
+            throw new BatchTooBigException(packet.getStatementHandle(), batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
         }
         for (List<Object> each : packet.readParameterValues(batchStatement.getColumnDescriptors())) {
             batchStatement.addParameterValues(each);
