@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -33,16 +34,25 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class FirebirdStartTransactionCommandExecutor implements CommandExecutor {
     
+    private static final int MAX_CONCURRENT_TRANSACTIONS = 1;
+    
     private final FirebirdStartTransactionPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() {
+        validateNoActiveTransaction();
         connectionSession.setAutoCommit(packet.isAutoCommit());
         connectionSession.setReadOnly(packet.isReadOnly());
         connectionSession.setIsolationLevel(packet.getIsolationLevel());
         int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession.getConnectionId());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(transactionId));
+    }
+    
+    private void validateNoActiveTransaction() {
+        if (FirebirdTransactionIdGenerator.getInstance().hasActiveTransaction(connectionSession.getConnectionId())) {
+            throw new ExcessTransactionsException(MAX_CONCURRENT_TRANSACTIONS);
+        }
     }
 }

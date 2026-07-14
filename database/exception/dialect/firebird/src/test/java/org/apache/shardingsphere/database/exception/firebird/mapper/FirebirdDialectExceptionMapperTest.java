@@ -30,6 +30,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.table.
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
@@ -116,6 +117,11 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithInvalidTransactionHandle() {
         assertSQLException(mapper.convert(new InvalidTransactionHandleException(42)), FirebirdVendorError.INVALID_TRANSACTION_HANDLE);
+    }
+    
+    @Test
+    void assertConvertWithExcessTransactions() {
+        assertSQLException(mapper.convert(new ExcessTransactionsException(1)), FirebirdVendorError.EXCESS_TRANSACTIONS, 1);
     }
     
     @Test

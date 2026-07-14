@@ -80,6 +80,16 @@ public final class FirebirdTransactionIdGenerator {
     }
     
     /**
+     * Judge whether any transaction is active for connection.
+     *
+     * @param connectionId connection ID
+     * @return has active transaction or not
+     */
+    public boolean hasActiveTransaction(final int connectionId) {
+        return !getActiveTransactions(connectionId).isEmpty();
+    }
+    
+    /**
      * Close transaction for connection.
      *
      * @param connectionId connection ID
