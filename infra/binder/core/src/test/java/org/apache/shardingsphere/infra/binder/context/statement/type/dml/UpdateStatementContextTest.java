@@ -52,6 +52,8 @@ class UpdateStatementContextTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
+    private final DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    
     @Mock
     private WhereSegment whereSegment;
     
@@ -93,6 +95,23 @@ class UpdateStatementContextTest {
         UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("ScrapReason", "WorkOrder"))));
         assertFalse(actual.getTablesContext().getTableNames().contains("sr"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithSQLServerUpdateTableVariableTargetExcludesVariableTable() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@MyTableVar"));
+        assertThat(((SimpleTableSegment) actual.getSqlStatement().getTable()).getTableName().getIdentifier().getValue(), is("@MyTableVar"));
     }
     
     @Test

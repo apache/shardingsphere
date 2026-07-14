@@ -124,4 +124,9 @@
         <input sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + (SELECT SUM(so.SubTotal) FROM dbo.SalesOrderHeader AS so WHERE so.OrderDate = (SELECT MAX(OrderDate) FROM dbo.SalesOrderHeader AS so2 WHERE so2.SalesPersonID = so.SalesPersonID) AND dbo.SalesPerson.BusinessEntityID = so.SalesPersonID GROUP BY so.SalesPersonID), Bonus = 3000.00" />
         <output sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + (SELECT SUM(so.SubTotal) FROM dbo.SalesOrderHeader AS so WHERE so.OrderDate = (SELECT MAX(OrderDate) FROM dbo.SalesOrderHeader AS so2 WHERE so2.SalesPersonID = so.SalesPersonID) AND dbo.SalesPerson.BusinessEntityID = so.SalesPersonID GROUP BY so.SalesPersonID), [bonus_cipher] = 'encrypt_3000.00'" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTableVar SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.VacationNote = 'annual leave'" />
+        <output sql="UPDATE @MyTableVar SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
 </rewrite-assertions>

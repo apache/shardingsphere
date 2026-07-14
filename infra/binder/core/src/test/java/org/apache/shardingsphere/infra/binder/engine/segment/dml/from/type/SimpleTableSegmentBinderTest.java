@@ -56,6 +56,8 @@ class SimpleTableSegmentBinderTest {
     
     private final DatabaseType hiveDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Hive");
     
+    private final DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    
     @SuppressWarnings("resource")
     @Test
     void assertBindTableNotExists() {
@@ -76,6 +78,16 @@ class SimpleTableSegmentBinderTest {
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts);
         SimpleTableSegmentBinderContext tableSegmentBinderContext = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
         assertTrue(tableSegmentBinderContext.isContainsDBLink());
+    }
+    
+    @Test
+    void assertBindWithTableVariableContainsTableVariable() {
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTableVar")));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegmentBinder.bind(simpleTableSegment,
+                new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(sqlServerDatabaseType).build()), tableBinderContexts);
+        SimpleTableSegmentBinderContext tableSegmentBinderContext = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+        assertTrue(tableSegmentBinderContext.isContainsTableVariable());
     }
     
     @Test
