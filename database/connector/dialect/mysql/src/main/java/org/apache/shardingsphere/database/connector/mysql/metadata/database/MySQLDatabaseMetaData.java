@@ -36,7 +36,6 @@ import org.apache.shardingsphere.database.connector.mysql.metadata.database.opti
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLFunctionOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLGeneratedKeyOption;
 
-import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -82,7 +81,7 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_REPEATABLE_READ, false, false,
+        return new DialectTransactionOption(false, false, true, false, true, false, false,
                 Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource"));
     }
     

@@ -42,7 +42,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -143,7 +142,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return transaction option
      */
     default DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.emptyList());
+        return new DialectTransactionOption(false, false, false, false, true, false, false, Collections.emptyList());
     }
     
     /**

@@ -37,7 +37,6 @@ import org.apache.shardingsphere.database.connector.oracle.metadata.database.opt
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -106,7 +105,6 @@ class OracleDatabaseMetaDataTest {
         assertFalse(actualTransactionOption.isSupportAutoCommitInNestedTransaction());
         assertFalse(actualTransactionOption.isSupportDDLInXATransaction());
         assertTrue(actualTransactionOption.isSupportMetaDataRefreshInTransaction());
-        assertThat(actualTransactionOption.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
         assertFalse(actualTransactionOption.isReturnRollbackStatementWhenCommitFailed());
         assertFalse(actualTransactionOption.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actualTransactionOption.getXaDriverClassNames(), is(Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource")));

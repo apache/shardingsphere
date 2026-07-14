@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
@@ -141,8 +140,7 @@ class SetAutoCommitProxyBackendHandlerTest {
     
     private DialectDatabaseMetaData mockDialectDatabaseMetaData(final boolean supportAutoCommitInNestedTransaction) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
-        DialectTransactionOption transactionOption = new DialectTransactionOption(false, false, supportAutoCommitInNestedTransaction, false, true,
-                Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.emptyList());
+        DialectTransactionOption transactionOption = new DialectTransactionOption(false, false, supportAutoCommitInNestedTransaction, false, true, false, false, Collections.emptyList());
         when(result.getTransactionOption()).thenReturn(transactionOption);
         return result;
     }

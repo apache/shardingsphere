@@ -33,7 +33,6 @@ import org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.dat
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
@@ -80,7 +79,6 @@ class SQLServerDatabaseMetaDataTest {
         assertFalse(actual.isSupportAutoCommitInNestedTransaction());
         assertFalse(actual.isSupportDDLInXATransaction());
         assertTrue(actual.isSupportMetaDataRefreshInTransaction());
-        assertThat(actual.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
         assertFalse(actual.isReturnRollbackStatementWhenCommitFailed());
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
