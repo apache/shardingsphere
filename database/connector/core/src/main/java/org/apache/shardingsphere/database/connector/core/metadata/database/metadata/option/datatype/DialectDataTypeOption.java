@@ -65,12 +65,4 @@ public interface DialectDataTypeOption {
      * @return is binary type or not
      */
     boolean isBinaryDataType(int sqlType, String dataTypeName);
-    
-    /**
-     * Judge whether type is text type or not.
-     *
-     * @param type type
-     * @return whether is text type or not
-     */
-    boolean isTextType(String type);
 }

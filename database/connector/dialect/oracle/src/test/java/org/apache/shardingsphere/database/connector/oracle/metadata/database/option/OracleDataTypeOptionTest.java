@@ -71,13 +71,4 @@ class OracleDataTypeOptionTest {
         assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "BLOB"));
         assertFalse(dataTypeOption.isBinaryDataType(Types.OTHER, "VARCHAR2"));
     }
-    
-    @Test
-    void assertIsTextType() {
-        assertTrue(dataTypeOption.isTextType("CLOB"));
-        assertTrue(dataTypeOption.isTextType("NCLOB"));
-        assertFalse(dataTypeOption.isTextType("VARCHAR2"));
-        assertFalse(dataTypeOption.isTextType("NVARCHAR2"));
-        assertFalse(dataTypeOption.isTextType("RAW"));
-    }
 }
