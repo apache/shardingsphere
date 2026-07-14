@@ -254,7 +254,7 @@ public final class WorkflowExecutionService {
                 applyOutcome.addExecutedArtifact(each);
             }
             if (!applyOutcome.hasSkippedArtifacts()) {
-                synchronizeAppliedWorkflow(snapshot, metadataQueryFacade, queryFacade, executionFacade, workflowApplySynchronizationHandler, sessionId);
+                workflowApplySynchronizationHandler.synchronize(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId);
             }
             return completeApply(workflowSessionContext, snapshot, executionMode, applyOutcome);
         } catch (final WorkflowSynchronizationException ex) {
@@ -264,12 +264,6 @@ public final class WorkflowExecutionService {
             // CHECKSTYLE:ON
             return failApply(workflowSessionContext, snapshot, executionMode, applyOutcome, currentArtifactType, currentArtifactDisplaySql, ex);
         }
-    }
-    
-    private void synchronizeAppliedWorkflow(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
-                                            final MCPFeatureExecutionFacade executionFacade, final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler,
-                                            final String sessionId) {
-        workflowApplySynchronizationHandler.synchronize(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId);
     }
     
     private Map<String, Object> completeApply(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot, final String executionMode,

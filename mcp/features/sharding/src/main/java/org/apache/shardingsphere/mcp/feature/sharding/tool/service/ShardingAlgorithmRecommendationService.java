@@ -54,7 +54,7 @@ public final class ShardingAlgorithmRecommendationService {
             recommendAlgorithm(request.getAlgorithmType(), actualAlgorithmRows, issues).forEach(result::add);
         }
         if (includeKeyGenerator) {
-            recommendKeyGenerator(resolveKeyGeneratorType(request), actualKeyGeneratorRows, issues).forEach(result::add);
+            recommendKeyGenerator(request.getKeyGeneratorType(), actualKeyGeneratorRows, issues).forEach(result::add);
         }
         return result;
     }
@@ -91,10 +91,6 @@ public final class ShardingAlgorithmRecommendationService {
             return List.of();
         }
         return List.of(createCandidate("key_generator", recommendedType, 90, "Recommended from current key-generator availability."));
-    }
-    
-    private String resolveKeyGeneratorType(final ShardingWorkflowRequest request) {
-        return request.getKeyGeneratorType();
     }
     
     private AlgorithmCandidate createCandidate(final String role, final String algorithmType, final int score, final String reason) {
