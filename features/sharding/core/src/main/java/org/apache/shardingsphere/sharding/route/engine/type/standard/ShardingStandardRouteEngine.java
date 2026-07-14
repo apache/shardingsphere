@@ -132,13 +132,33 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
                                                                         final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy) {
         Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : shardingConditions.getConditions()) {
-            Collection<DataNode> dataNodes = route0(shardingTable,
-                    databaseShardingStrategy, getShardingValuesFromShardingConditions(shardingRule, databaseShardingStrategy.getShardingColumns(), each),
-                    tableShardingStrategy, getShardingValuesFromShardingConditions(shardingRule, tableShardingStrategy.getShardingColumns(), each));
+            Collection<DataNode> dataNodes = isConditionRelevantToTable(shardingRule, each)
+                    ? route0(shardingTable,
+                            databaseShardingStrategy, getShardingValuesFromShardingConditions(shardingRule, databaseShardingStrategy.getShardingColumns(), each),
+                            tableShardingStrategy, getShardingValuesFromShardingConditions(shardingRule, tableShardingStrategy.getShardingColumns(), each))
+                    : Collections.<DataNode>emptyList();
             result.addAll(dataNodes);
             originalDataNodes.add(dataNodes);
         }
-        return result;
+        return result.isEmpty()
+                ? route0(shardingTable, databaseShardingStrategy, Collections.emptyList(), tableShardingStrategy, Collections.emptyList())
+                : result;
+    }
+    
+    private boolean isConditionRelevantToTable(final ShardingRule shardingRule, final ShardingCondition shardingCondition) {
+        if (shardingCondition.getValues().isEmpty()) {
+            return true;
+        }
+        for (ShardingConditionValue each : shardingCondition.getValues()) {
+            if (logicTableName.equalsIgnoreCase(each.getTableName())) {
+                return true;
+            }
+            Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each.getTableName());
+            if (bindingTableRule.isPresent() && bindingTableRule.get().hasLogicTable(logicTableName)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private Collection<DataNode> routeByMixedConditions(final ShardingRule shardingRule, final ShardingTable shardingTable,
