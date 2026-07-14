@@ -42,11 +42,6 @@ class DialectDatabaseMetaDataTest {
     private final DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, CALLS_REAL_METHODS);
     
     @Test
-    void assertIsCaseSensitive() {
-        assertFalse(dialectDatabaseMetaData.isCaseSensitive());
-    }
-    
-    @Test
     void assertGetDataTypeOption() {
         assertThat(dialectDatabaseMetaData.getDataTypeOption(), isA(DefaultDataTypeOption.class));
     }

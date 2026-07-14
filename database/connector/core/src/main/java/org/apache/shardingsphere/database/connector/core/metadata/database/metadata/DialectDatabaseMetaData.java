@@ -66,15 +66,6 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     IdentifierPatternType getIdentifierPatternType();
     
     /**
-     * Whether identifier is case-sensitive.
-     *
-     * @return is case-sensitive or insensitive
-     */
-    default boolean isCaseSensitive() {
-        return false;
-    }
-    
-    /**
      * Get default nulls order type.
      *
      * @return default nulls order type

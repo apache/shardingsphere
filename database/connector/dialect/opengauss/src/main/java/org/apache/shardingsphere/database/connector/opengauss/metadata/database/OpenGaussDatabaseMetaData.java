@@ -100,11 +100,6 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public boolean isCaseSensitive() {
-        return true;
-    }
-    
-    @Override
     public String getDatabaseType() {
         return "openGauss";
     }
