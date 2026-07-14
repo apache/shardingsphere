@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.tcl.local.type;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -29,16 +30,12 @@ import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionEx
 /**
  * Set transaction proxy backend handler.
  */
+@RequiredArgsConstructor
 public final class SetTransactionProxyBackendHandler implements ProxyBackendHandler {
     
     private final SetTransactionStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
-    
-    public SetTransactionProxyBackendHandler(final SetTransactionStatement sqlStatement, final ConnectionSession connectionSession) {
-        this.sqlStatement = sqlStatement;
-        this.connectionSession = connectionSession;
-    }
     
     @Override
     public ResponseHeader execute() {
