@@ -15,21 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool;
+package org.apache.shardingsphere.mcp.api;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 
-import java.util.Map;
+import java.util.Optional;
 
 /**
- * MCP tool call.
+ * MCP request context.
+ *
+ * <p>The runtime owns this context. Handlers and providers must use it only during the current synchronous invocation.</p>
  */
-@RequiredArgsConstructor
-@Getter
-public final class MCPToolCall {
+public interface MCPRequestContext {
     
-    private final String sessionId;
+    /**
+     * Get session identifier.
+     *
+     * @return session identifier
+     */
+    String getSessionId();
     
-    private final Map<String, Object> arguments;
+    /**
+     * Get active MCP transport.
+     *
+     * @return active MCP transport
+     */
+    String getActiveTransport();
+    
+    /**
+     * Find session identity.
+     *
+     * @return session identity
+     */
+    Optional<MCPSessionIdentity> findSessionIdentity();
 }

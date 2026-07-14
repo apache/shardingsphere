@@ -24,12 +24,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * MCP completion request context.
+ * MCP completion request.
  */
 @Getter
-public final class MCPCompletionRequestContext {
-    
-    private final String sessionId;
+public final class MCPCompletionRequest {
     
     private final MCPCompletionTargetDescriptor descriptor;
     
@@ -37,9 +35,14 @@ public final class MCPCompletionRequestContext {
     
     private final Map<String, String> contextArguments;
     
-    public MCPCompletionRequestContext(final String sessionId, final MCPCompletionTargetDescriptor descriptor, final String argumentName,
-                                       final Map<String, String> contextArguments) {
-        this.sessionId = sessionId;
+    /**
+     * Create an MCP completion request with a snapshot of the supplied context arguments.
+     *
+     * @param descriptor completion target descriptor
+     * @param argumentName argument name
+     * @param contextArguments completion context arguments
+     */
+    public MCPCompletionRequest(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final Map<String, String> contextArguments) {
         this.descriptor = descriptor;
         this.argumentName = argumentName;
         this.contextArguments = new LinkedHashMap<>(contextArguments);

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.feature.encrypt.completion;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ class EncryptAlgorithmCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new EncryptAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseHandlerContext.class));
+        assertThat(new EncryptAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
     }
     
     @Test
@@ -72,7 +72,7 @@ class EncryptAlgorithmCompletionProviderTest {
         when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenReturn(List.of(
                 Map.of("type", "AES", "description", "AES encryptor", "aes-key-value", "secret-value"),
                 Map.of("type", "")));
-        MCPDatabaseHandlerContext handlerContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext handlerContext = mock(MCPDatabaseRequestContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         Collection<MCPCompletionCandidate> actualCandidates = new EncryptAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext("prompt", EncryptFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type")).getCandidates();
@@ -101,7 +101,7 @@ class EncryptAlgorithmCompletionProviderTest {
                 Arguments.of("foreign resource", "resource", "shardingsphere://features/mask/algorithms", "algorithm_type"));
     }
     
-    private MCPCompletionRequestContext createRequestContext(final String referenceType, final String reference, final String argumentName) {
-        return new MCPCompletionRequestContext("session-1", new MCPCompletionTargetDescriptor(referenceType, reference, List.of(argumentName), 50, Map.of()), argumentName, Map.of());
+    private MCPCompletionRequest createRequestContext(final String referenceType, final String reference, final String argumentName) {
+        return new MCPCompletionRequest(new MCPCompletionTargetDescriptor(referenceType, reference, List.of(argumentName), 50, Map.of()), argumentName, Map.of());
     }
 }

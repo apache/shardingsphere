@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database;
 
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -27,16 +27,9 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade
 import java.util.Optional;
 
 /**
- * Database-aware MCP handler context.
+ * Database-aware MCP request context.
  */
-public interface MCPDatabaseHandlerContext extends MCPHandlerContext {
-    
-    /**
-     * Get active MCP transport.
-     *
-     * @return active MCP transport
-     */
-    String getActiveTransport();
+public interface MCPDatabaseRequestContext extends MCPRequestContext {
     
     /**
      * Get metadata query facade.

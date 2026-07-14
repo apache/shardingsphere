@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.feature.mask.completion;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class MaskAlgorithmCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new MaskAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseHandlerContext.class));
+        assertThat(new MaskAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
     }
     
     @Test
@@ -65,7 +65,7 @@ class MaskAlgorithmCompletionProviderTest {
         when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenReturn(List.of(
                 Map.of("type", "MASK_FROM_X_TO_Y", "description", "Range mask"),
                 Map.of("type", "")));
-        MCPDatabaseHandlerContext handlerContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext handlerContext = mock(MCPDatabaseRequestContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new MaskAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext(MaskFeatureDefinition.PLAN_PROMPT_NAME));
@@ -76,7 +76,7 @@ class MaskAlgorithmCompletionProviderTest {
         assertThat(actualCandidate.getLabel(), is("Range mask"));
     }
     
-    private MCPCompletionRequestContext createRequestContext(final String reference) {
-        return new MCPCompletionRequestContext("session-1", new MCPCompletionTargetDescriptor("prompt", reference, List.of("algorithm_type"), 50, Map.of()), "algorithm_type", Map.of());
+    private MCPCompletionRequest createRequestContext(final String reference) {
+        return new MCPCompletionRequest(new MCPCompletionTargetDescriptor("prompt", reference, List.of("algorithm_type"), 50, Map.of()), "algorithm_type", Map.of());
     }
 }

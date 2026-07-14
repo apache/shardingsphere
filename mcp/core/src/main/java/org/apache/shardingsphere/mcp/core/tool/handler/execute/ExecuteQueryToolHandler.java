@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.response.SQLExecutionResponse;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
@@ -31,13 +30,13 @@ import java.util.Map;
 /**
  * Execute read-only SQL query tool handler.
  */
-public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
+public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabaseRequestContext> {
     
     private static final String TOOL_NAME = "database_gateway_execute_query";
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -46,12 +45,12 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
-        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String sql = toolArguments.getStringArgument("sql");
         checkReadOnlyQuery(toolArguments, sql);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
-        return SQLExecutionResponse.query(databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(toolCall, toolArguments,
+        return SQLExecutionResponse.query(databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(databaseContext.getSessionId(), toolArguments,
                 SQLExecutionToolHandlerSupport.resolveSchema(databaseContext, toolArguments), sql, TOOL_NAME)));
     }
     

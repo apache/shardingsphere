@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -44,7 +44,7 @@ class BroadcastRuleCountHandlerTest {
             BroadcastRuleCountHandler handler = new BroadcastRuleCountHandler();
             BroadcastRuleInspectionService ruleInspectionService = mocked.constructed().getFirst();
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+            MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
             when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
             when(ruleInspectionService.queryBroadcastRuleCount(queryFacade, "logic_db")).thenReturn(List.of(Map.of("rule_count", 2)));
             MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db")));

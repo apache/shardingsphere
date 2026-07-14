@@ -83,6 +83,15 @@ class MCPSessionManagerTest {
     }
     
     @Test
+    void assertCloseListenerCompletesBeforeSessionCanBeRecreated() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession("session-1");
+        sessionManager.addSessionCloseListener(sessionId -> assertThrows(IllegalStateException.class, () -> sessionManager.createSession(sessionId)));
+        sessionManager.closeSession("session-1");
+        assertDoesNotThrow(() -> sessionManager.createSession("session-1"));
+    }
+    
+    @Test
     void assertCloseSessionWithTransactionResourceManager() throws SQLException {
         Connection connection = mock(Connection.class);
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
@@ -124,7 +133,7 @@ class MCPSessionManagerTest {
         sessionManager.createSession("session-2");
         sessionManager.getTransactionResourceManager().beginTransaction("session-1", "logic_db");
         sessionManager.getTransactionResourceManager().beginTransaction("session-2", "logic_db");
-        sessionManager.closeAllSessions();
+        new MCPSessionExecutionCoordinator(sessionManager).closeAllSessions();
         verify(firstConnection).rollback();
         verify(firstConnection).setAutoCommit(true);
         verify(firstConnection).close();

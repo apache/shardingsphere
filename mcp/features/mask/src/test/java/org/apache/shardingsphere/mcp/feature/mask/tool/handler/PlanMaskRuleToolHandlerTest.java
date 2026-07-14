@@ -18,15 +18,13 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
@@ -59,17 +57,17 @@ class PlanMaskRuleToolHandlerTest {
         try (MockedConstruction<MaskWorkflowPlanningService> mockedConstruction = mockConstruction(MaskWorkflowPlanningService.class)) {
             PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
             MaskWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
-            when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+            when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+            MCPResponse actual = handler.handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone",
                     "algorithm_type", "KEEP_FIRST_N_LAST_M",
-                    "structured_intent_evidence", Map.of("field_semantics", "phone"))));
+                    "structured_intent_evidence", Map.of("field_semantics", "phone")));
             assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
             ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
-            verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), requestCaptor.capture());
             WorkflowRequest actualRequest = requestCaptor.getValue();
             assertThat(actualRequest.getAlgorithmType(), is("KEEP_FIRST_N_LAST_M"));
             assertThat(actualRequest.getFieldSemantics(), is("phone"));
@@ -80,11 +78,11 @@ class PlanMaskRuleToolHandlerTest {
     void assertHandlePlanMaskRuleWithMaskedArtifacts() {
         try (MockedConstruction<MaskWorkflowPlanningService> mockedConstruction = mockConstruction(MaskWorkflowPlanningService.class)) {
             PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
-            when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
-            MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
+            when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
+            MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
-                    "column", "phone")));
+                    "column", "phone"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("first-n"), is("3"));
             assertFalse(actualPayload.containsKey("ddl_artifacts"));
@@ -112,13 +110,13 @@ class PlanMaskRuleToolHandlerTest {
         try (MockedConstruction<MaskWorkflowPlanningService> mockedConstruction = mockConstruction(MaskWorkflowPlanningService.class)) {
             PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
             MaskWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
-            when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+            when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+            handler.handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
-                    "primary_algorithm_properties", Map.of("replace-char", Map.of("secret_ref", "placeholder://secret-value-1")))));
+                    "primary_algorithm_properties", Map.of("replace-char", Map.of("secret_ref", "placeholder://secret-value-1"))));
             ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
-            verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), requestCaptor.capture());
             WorkflowRequest actualRequest = requestCaptor.getValue();
             assertThat(actualRequest.getPrimaryAlgorithmProperties().get("replace-char"), is("secret_reference:primary.replace-char"));
             assertFalse(actualRequest.getSecretReferences("primary").get("replace-char").isMalformed());
@@ -175,21 +173,20 @@ class PlanMaskRuleToolHandlerTest {
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {
-        MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPWorkflowRequestContext result = mock(MCPWorkflowRequestContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(result.getDatabaseContext()).thenReturn(databaseContext);
+        when(result.getSessionId()).thenReturn("session-1");
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
+        when(result.getQueryFacade()).thenReturn(queryFacade);
+        when(result.getExecutionFacade()).thenReturn(executionFacade);
         return new WorkflowContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
     
-    private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    private record WorkflowContextFixture(MCPWorkflowRequestContext workflowContext, WorkflowSessionContext workflowSessionContext,
                                           MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

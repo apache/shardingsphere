@@ -19,30 +19,29 @@ package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.core.workflow.WorkflowSessionSnapshotResolver;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+
+import java.util.Map;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Generic workflow validation tool handler.
  */
 @RequiredArgsConstructor
-public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
+public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPWorkflowRequestContext> {
     
     private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
     
     @Override
-    public Class<MCPWorkflowHandlerContext> getContextType() {
-        return MCPWorkflowHandlerContext.class;
+    public Class<MCPWorkflowRequestContext> getContextType() {
+        return MCPWorkflowRequestContext.class;
     }
     
     @Override
@@ -51,14 +50,12 @@ public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPWo
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
-        MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
-        WorkflowContextSnapshot snapshot = WorkflowSessionSnapshotResolver.getRequired(workflowContext.getWorkflowSessionContext(), toolCall.getSessionId(),
-                toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
-        WorkflowKind workflowKind = WorkflowSessionSnapshotResolver.getRequiredWorkflowKind(snapshot);
-        return new MCPMapResponse(workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getValidationHandler().validate(workflowContext.getWorkflowSessionContext(),
-                databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(), databaseContext.getExecutionFacade(), toolCall.getSessionId(), snapshot));
+    public MCPResponse handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
+        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
+        WorkflowSessionContext workflowSessionContext = workflowContext.getWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
+        return new MCPMapResponse(workflowRuntimeDefinitionRegistry.getRequired(snapshot).getValidationHandler().validate(workflowSessionContext,
+                workflowContext.getMetadataQueryFacade(), workflowContext.getQueryFacade(), workflowContext.getExecutionFacade(), workflowContext.getSessionId(), snapshot));
     }
     
 }

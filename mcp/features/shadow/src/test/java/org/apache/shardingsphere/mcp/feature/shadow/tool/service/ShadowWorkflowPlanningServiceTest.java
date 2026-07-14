@@ -61,7 +61,7 @@ class ShadowWorkflowPlanningServiceTest {
         ShadowInspectionService inspectionService = getInspectionService();
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of());
-        WorkflowContextSnapshot actual = service.planRule(new TestWorkflowSessionContext(), queryFacade, "session-1", createRuleRequest());
+        WorkflowContextSnapshot actual = service.planRule(new TestWorkflowSessionContext(), queryFacade, createRuleRequest());
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("VALUE_MATCH"));
         assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("operation"));
@@ -73,7 +73,7 @@ class ShadowWorkflowPlanningServiceTest {
         ShadowRuleWorkflowRequest request = createRuleRequest();
         request.getAlgorithmProperties().clear();
         WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService().planRule(
-                new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), "session-1", request);
+                new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
         assertTrue(actual.getRuleArtifacts().isEmpty());
@@ -89,7 +89,7 @@ class ShadowWorkflowPlanningServiceTest {
         ShadowInspectionService inspectionService = getInspectionService();
         when(inspectionService.queryAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "SQL_HINT")));
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of());
-        WorkflowContextSnapshot actual = service.planRule(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        WorkflowContextSnapshot actual = service.planRule(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("SQL_HINT"));
         assertTrue(actual.getPropertyRequirements().isEmpty());
@@ -104,7 +104,7 @@ class ShadowWorkflowPlanningServiceTest {
         ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
         ShadowInspectionService inspectionService = getInspectionService();
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "default_shadow_algorithm")));
-        WorkflowContextSnapshot actual = service.planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        WorkflowContextSnapshot actual = service.planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP DEFAULT SHADOW ALGORITHM"));
     }
     
@@ -118,7 +118,7 @@ class ShadowWorkflowPlanningServiceTest {
         when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
         when(inspectionService.queryTableRules(queryFacade, "logic_db")).thenReturn(List.of());
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of());
-        WorkflowContextSnapshot actual = service.planAlgorithmCleanup(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        WorkflowContextSnapshot actual = service.planAlgorithmCleanup(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP SHADOW ALGORITHM `unused_algorithm`"));
     }
     
@@ -132,7 +132,7 @@ class ShadowWorkflowPlanningServiceTest {
         when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
         when(inspectionService.queryTableRules(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of());
-        WorkflowContextSnapshot actual = service.planAlgorithmCleanup(new TestWorkflowSessionContext(), queryFacade, "session-1", request);
+        WorkflowContextSnapshot actual = service.planAlgorithmCleanup(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
     }
     

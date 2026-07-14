@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
+import org.apache.shardingsphere.mcp.core.handler.MCPRequestContextTypes;
 
 import java.util.Collection;
 
@@ -40,7 +40,7 @@ public final class MCPCompletionProviderLoader {
     public static Collection<MCPCompletionProvider<?>> load() {
         Collection<MCPCompletionProvider> result = ShardingSphereServiceLoader.getServiceInstances(MCPCompletionProvider.class);
         for (MCPCompletionProvider<?> each : result) {
-            MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
+            MCPRequestContextTypes.validateContextType(each.getContextType(), each.getClass());
         }
         return (Collection) result;
     }

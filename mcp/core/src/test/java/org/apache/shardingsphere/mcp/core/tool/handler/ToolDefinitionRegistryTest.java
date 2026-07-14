@@ -97,7 +97,7 @@ class ToolDefinitionRegistryTest {
         try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
             MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata");
-            MCPResponse actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, "session-1", Map.of("query", "order", "object_types", List.of("index")));
+            MCPResponse actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, Map.of("query", "order", "object_types", List.of("index")));
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
         }
@@ -247,7 +247,7 @@ class ToolDefinitionRegistryTest {
     }
     
     private static MCPResponse dispatch(final String toolName, final Map<String, Object> arguments) {
-        return ToolDefinitionRegistry.dispatch(mock(MCPRequestScope.class), ToolDefinitionRegistry.getToolDefinition(toolName), "session-1", arguments);
+        return ToolDefinitionRegistry.dispatch(mock(MCPRequestScope.class), ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
     }
     
     private static MCPToolDescriptor createNestedFixtureToolDescriptor() {

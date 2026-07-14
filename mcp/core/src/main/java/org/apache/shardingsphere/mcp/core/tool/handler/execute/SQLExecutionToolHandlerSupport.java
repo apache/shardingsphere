@@ -21,10 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
@@ -45,28 +44,28 @@ final class SQLExecutionToolHandlerSupport {
                 MCPRuntimeProtectionPolicy.MAX_TIMEOUT_MILLISECONDS, MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS);
     }
     
-    static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String sql, final String sourceTool) {
-        return createExecutionRequest(toolCall, toolArguments, toolArguments.getStringArgument("schema"), sql, sourceTool);
+    static SQLExecutionRequest createExecutionRequest(final String sessionId, final MCPToolArguments toolArguments, final String sql, final String sourceTool) {
+        return createExecutionRequest(sessionId, toolArguments, toolArguments.getStringArgument("schema"), sql, sourceTool);
     }
     
-    static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
-        return createExecutionRequest(toolCall, toolArguments, schema, sql, sourceTool, false);
+    static SQLExecutionRequest createExecutionRequest(final String sessionId, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
+        return createExecutionRequest(sessionId, toolArguments, schema, sql, sourceTool, false);
     }
     
-    private static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool,
+    private static SQLExecutionRequest createExecutionRequest(final String sessionId, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool,
                                                               final boolean readOnlyExecution) {
-        return new SQLExecutionRequest(toolCall.getSessionId(), toolArguments.getStringArgument("database"), schema, sql,
+        return new SQLExecutionRequest(sessionId, toolArguments.getStringArgument("database"), schema, sql,
                 resolveMaxRows(toolArguments, sourceTool), getIntegerArgument(toolArguments, sourceTool, "timeout_ms", MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS,
                         MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS, MCPRuntimeProtectionPolicy.MAX_TIMEOUT_MILLISECONDS,
                         MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS),
                 readOnlyExecution);
     }
     
-    static SQLExecutionRequest createReadOnlyExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
-        return createExecutionRequest(toolCall, toolArguments, schema, sql, sourceTool, true);
+    static SQLExecutionRequest createReadOnlyExecutionRequest(final String sessionId, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
+        return createExecutionRequest(sessionId, toolArguments, schema, sql, sourceTool, true);
     }
     
-    static String resolveSchema(final MCPDatabaseHandlerContext databaseContext, final MCPToolArguments toolArguments) {
+    static String resolveSchema(final MCPDatabaseRequestContext databaseContext, final MCPToolArguments toolArguments) {
         String result = toolArguments.getStringArgument("schema");
         if (!result.isEmpty()) {
             return result;

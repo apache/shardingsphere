@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.capability.completion;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncCompletionSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.completion.MCPCompletionResult;
 import org.apache.shardingsphere.mcp.core.completion.MCPCompletionService;
@@ -68,7 +68,7 @@ public final class MCPCompletionSpecificationFactory {
         try {
             MCPCompletionResult result = completionService.complete(exchange.sessionId(), descriptor, argumentName, prefix, contextArguments);
             return new McpSchema.CompleteResult(new McpSchema.CompleteResult.CompleteCompletion(result.getValues(), result.getTotal(), result.hasMore()), result.getMeta());
-        } catch (final MCPInvalidRequestException ex) {
+        } catch (final ShardingSphereMCPException ex) {
             throw MCPTransportErrorFactory.createError(ex);
         }
     }

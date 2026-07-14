@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+
+import java.util.Map;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
@@ -33,7 +34,7 @@ import java.util.Set;
 /**
  * Handler for search-metadata tool.
  */
-public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
+public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDatabaseRequestContext> {
     
     private static final String TOOL_NAME = "database_gateway_search_metadata";
     
@@ -43,8 +44,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
             SupportedMCPMetadataObjectType.STORAGE_UNIT, SupportedMCPMetadataObjectType.SEQUENCE);
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -53,8 +54,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
-        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String query = toolArguments.getStringArgument("query");
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), query,

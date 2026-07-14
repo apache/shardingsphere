@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handle
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -44,7 +44,7 @@ class LoadBalanceAlgorithmPluginsHandlerTest {
             LoadBalanceAlgorithmPluginsHandler handler = new LoadBalanceAlgorithmPluginsHandler();
             ReadwriteSplittingInspectionService inspectionService = mocked.constructed().getFirst();
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+            MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
             when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
             when(inspectionService.queryLoadBalanceAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "ROUND_ROBIN")));
             MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of()));

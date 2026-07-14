@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.mcp.core.resource.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
-import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -148,15 +147,15 @@ class ResourceDefinitionRegistryTest {
     }
     
     private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
-        MCPResourceHandler<MCPServiceHandlerContext> result = mock(MCPResourceHandler.class);
-        when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
+        MCPResourceHandler<MCPRequestContext> result = mock(MCPResourceHandler.class);
+        when(result.getContextType()).thenReturn(MCPRequestContext.class);
         when(result.getResourceUriTemplate()).thenReturn(uriTemplate);
         return result;
     }
     
     private static MCPResourceHandler<?> createUnsupportedResourceHandler() {
-        MCPResourceHandler<MCPHandlerContext> result = mock(MCPResourceHandler.class);
-        when(result.getContextType()).thenReturn(MCPHandlerContext.class);
+        MCPResourceHandler<UnsupportedRequestContext> result = mock(MCPResourceHandler.class);
+        when(result.getContextType()).thenReturn(UnsupportedRequestContext.class);
         when(result.getResourceUriTemplate()).thenReturn("shardingsphere://unsupported");
         return result;
     }
@@ -223,6 +222,9 @@ class ResourceDefinitionRegistryTest {
     
     private static String getUnsupportedResourceHandlerMessage() {
         MCPResourceHandler<?> handler = createUnsupportedResourceHandler();
-        return String.format("Unsupported handler context type `%s` for `%s`.", MCPHandlerContext.class.getName(), handler.getClass().getName());
+        return String.format("Unsupported request context type `%s` for `%s`.", UnsupportedRequestContext.class.getName(), handler.getClass().getName());
+    }
+    
+    private interface UnsupportedRequestContext extends MCPRequestContext {
     }
 }

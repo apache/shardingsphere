@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class ShardingAlgorithmCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new ShardingAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseHandlerContext.class));
+        assertThat(new ShardingAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
     }
     
     @Test
@@ -96,14 +96,14 @@ class ShardingAlgorithmCompletionProviderTest {
         assertTrue(ServiceLoader.load(MCPCompletionProvider.class).stream().anyMatch(each -> ShardingAlgorithmCompletionProvider.class.equals(each.type())));
     }
     
-    private MCPDatabaseHandlerContext createHandlerContext(final MCPFeatureQueryFacade queryFacade) {
-        MCPDatabaseHandlerContext result = mock(MCPDatabaseHandlerContext.class);
+    private MCPDatabaseRequestContext createHandlerContext(final MCPFeatureQueryFacade queryFacade) {
+        MCPDatabaseRequestContext result = mock(MCPDatabaseRequestContext.class);
         when(result.getQueryFacade()).thenReturn(queryFacade);
         return result;
     }
     
-    private MCPCompletionRequestContext createRequestContext(final String reference, final String argumentName) {
-        return new MCPCompletionRequestContext("session-1",
+    private MCPCompletionRequest createRequestContext(final String reference, final String argumentName) {
+        return new MCPCompletionRequest(
                 new MCPCompletionTargetDescriptor("resource", reference, List.of(argumentName), 50, Map.of()), argumentName, Map.of("database", "logic_db"));
     }
 }

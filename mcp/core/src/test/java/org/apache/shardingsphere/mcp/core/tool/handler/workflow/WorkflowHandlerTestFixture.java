@@ -19,11 +19,10 @@ package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
@@ -41,17 +40,16 @@ import static org.mockito.Mockito.when;
 final class WorkflowHandlerTestFixture {
     
     static Context createContext(final WorkflowContextSnapshot snapshot) {
-        MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPWorkflowRequestContext result = mock(MCPWorkflowRequestContext.class);
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(result.getDatabaseContext()).thenReturn(databaseContext);
+        when(result.getSessionId()).thenReturn("session-1");
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
+        when(result.getQueryFacade()).thenReturn(queryFacade);
+        when(result.getExecutionFacade()).thenReturn(executionFacade);
         when(workflowSessionContext.getRequired("plan-1")).thenReturn(snapshot);
         return new Context(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
@@ -86,7 +84,7 @@ final class WorkflowHandlerTestFixture {
         return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), validationHandler, applySynchronizationHandler, applyArtifactValidator);
     }
     
-    record Context(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    record Context(MCPWorkflowRequestContext workflowContext, WorkflowSessionContext workflowSessionContext,
                    MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

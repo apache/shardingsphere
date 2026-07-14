@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.mcp.feature.shadow.tool.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
@@ -60,12 +58,12 @@ class ShadowWorkflowToolHandlersTest {
     void assertHandlePlanRule() {
         try (
                 MockedConstruction<ShadowWorkflowPlanningService> mocked = mockConstruction(ShadowWorkflowPlanningService.class,
-                        (mock, context) -> when(mock.planRule(any(), any(), any(), any())).thenReturn(createSnapshot(createRuleRequest(), ShadowFeatureDefinition.RULE_WORKFLOW_KIND.getValue())))) {
+                        (mock, context) -> when(mock.planRule(any(), any(), any())).thenReturn(createSnapshot(createRuleRequest(), ShadowFeatureDefinition.RULE_WORKFLOW_KIND.getValue())))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanShadowRuleToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+            MCPResponse actual = new PlanShadowRuleToolHandler().handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
                     "algorithm_type", "SQL_HINT",
-                    "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order"))));
+                    "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order")));
             Map<String, Object> actualPayload = actual.toPayload();
             assertFalse(actualPayload.containsKey("ddl_artifacts"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
@@ -74,7 +72,7 @@ class ShadowWorkflowToolHandlersTest {
             assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/table-rules"), is("rule"));
             assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/tables/t_order/rules"), is("rule"));
             ArgumentCaptor<ShadowRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowRuleWorkflowRequest.class);
-            verify(mocked.constructed().getFirst()).planRule(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            verify(mocked.constructed().getFirst()).planRule(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());
             assertThat(requestCaptor.getValue().getTableName(), is("t_order"));
             assertThat(requestCaptor.getValue().getAlgorithmType(), is("SQL_HINT"));
         }
@@ -84,14 +82,14 @@ class ShadowWorkflowToolHandlersTest {
     void assertHandlePlanDefaultAlgorithm() {
         try (
                 MockedConstruction<ShadowWorkflowPlanningService> mocked =
-                        mockConstruction(ShadowWorkflowPlanningService.class, (mock, context) -> when(mock.planDefaultAlgorithm(any(), any(), any(), any())).thenReturn(createSnapshot(
+                        mockConstruction(ShadowWorkflowPlanningService.class, (mock, context) -> when(mock.planDefaultAlgorithm(any(), any(), any())).thenReturn(createSnapshot(
                                 new ShadowDefaultAlgorithmWorkflowRequest(), ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND.getValue())))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
             MCPResponse actual = new PlanDefaultShadowAlgorithmToolHandler()
-                    .handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "algorithm_type", "SQL_HINT")));
+                    .handle(fixture.workflowContext, Map.of("database", "logic_db", "algorithm_type", "SQL_HINT"));
             ArgumentCaptor<ShadowDefaultAlgorithmWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowDefaultAlgorithmWorkflowRequest.class);
             verify(mocked.constructed().getFirst()).planDefaultAlgorithm(
-                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());
             assertThat(requestCaptor.getValue().getAlgorithmType(), is("SQL_HINT"));
             assertThat(actual.toPayload().get("workflow_kind"), is("shadow.default"));
         }
@@ -101,14 +99,14 @@ class ShadowWorkflowToolHandlersTest {
     void assertHandlePlanCleanup() {
         try (
                 MockedConstruction<ShadowWorkflowPlanningService> mocked =
-                        mockConstruction(ShadowWorkflowPlanningService.class, (mock, context) -> when(mock.planAlgorithmCleanup(any(), any(), any(), any())).thenReturn(createSnapshot(
+                        mockConstruction(ShadowWorkflowPlanningService.class, (mock, context) -> when(mock.planAlgorithmCleanup(any(), any(), any())).thenReturn(createSnapshot(
                                 new ShadowAlgorithmCleanupWorkflowRequest(), ShadowFeatureDefinition.ALGORITHM_CLEANUP_WORKFLOW_KIND.getValue())))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
             MCPResponse actual = new PlanShadowAlgorithmCleanupToolHandler()
-                    .handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "algorithm_name", "unused_algorithm")));
+                    .handle(fixture.workflowContext, Map.of("database", "logic_db", "algorithm_name", "unused_algorithm"));
             ArgumentCaptor<ShadowAlgorithmCleanupWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowAlgorithmCleanupWorkflowRequest.class);
             verify(mocked.constructed().getFirst()).planAlgorithmCleanup(
-                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+                    eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());
             assertThat(requestCaptor.getValue().getAlgorithmName(), is("unused_algorithm"));
             assertThat(actual.toPayload().get("workflow_kind"), is("shadow.cleanup"));
         }
@@ -147,19 +145,18 @@ class ShadowWorkflowToolHandlersTest {
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {
-        MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPWorkflowRequestContext result = mock(MCPWorkflowRequestContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(result.getDatabaseContext()).thenReturn(databaseContext);
+        when(result.getSessionId()).thenReturn("session-1");
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        when(result.getQueryFacade()).thenReturn(queryFacade);
+        when(result.getExecutionFacade()).thenReturn(executionFacade);
         return new WorkflowContextFixture(result, workflowSessionContext, queryFacade, executionFacade);
     }
     
-    private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    private record WorkflowContextFixture(MCPWorkflowRequestContext workflowContext, WorkflowSessionContext workflowSessionContext,
                                           MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

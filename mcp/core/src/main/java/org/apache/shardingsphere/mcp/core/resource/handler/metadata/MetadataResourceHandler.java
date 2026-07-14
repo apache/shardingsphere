@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 
@@ -33,15 +33,15 @@ import java.util.function.BiFunction;
  * Metadata resource handler backed by one metadata loader function.
  */
 @RequiredArgsConstructor
-public final class MetadataResourceHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class MetadataResourceHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
     
     private final String uriTemplate;
     
-    private final BiFunction<MCPDatabaseHandlerContext, MCPUriVariables, List<?>> metadataLoader;
+    private final BiFunction<MCPDatabaseRequestContext, MCPUriVariables, List<?>> metadataLoader;
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -50,7 +50,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
         MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
         ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(descriptor.getUriTemplate());

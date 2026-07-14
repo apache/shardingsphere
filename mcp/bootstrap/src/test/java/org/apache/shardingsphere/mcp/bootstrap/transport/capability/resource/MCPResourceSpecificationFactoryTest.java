@@ -31,13 +31,16 @@ import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -85,6 +88,25 @@ class MCPResourceSpecificationFactoryTest {
         assertThat(actualContents.mimeType(), is("application/json"));
         assertTrue(actualContents.text().contains("\"response_mode\":\"catalog\""));
         assertTrue(actualContents.text().contains("\"guidanceResource\":\"shardingsphere://guidance\""));
+    }
+    
+    @Test
+    void assertReadResourceUsesExchangeSession() {
+        MCPResourceDescriptor descriptor = new MCPResourceDescriptor("shardingsphere://session", "session", "Session", "Read session.", "application/json",
+                MCPResourceAnnotations.EMPTY, Map.of());
+        McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
+        when(exchange.sessionId()).thenReturn("session-1");
+        ArgumentCaptor<MCPRequestScope> requestScopeCaptor = ArgumentCaptor.forClass(MCPRequestScope.class);
+        try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
+            mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://session")))
+                    .thenReturn(Optional.of(new MCPMapResponse(Map.of())));
+            SyncResourceSpecification actualSpecification = findResourceSpecification(
+                    new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications(), "shardingsphere://session");
+            actualSpecification.readHandler().apply(exchange, new ReadResourceRequest("shardingsphere://session"));
+            mocked.verify(() -> ResourceDefinitionRegistry.dispatch(requestScopeCaptor.capture(), eq("shardingsphere://session")));
+        }
+        assertThat(requestScopeCaptor.getValue().getSessionId(), is("session-1"));
     }
     
     @Test

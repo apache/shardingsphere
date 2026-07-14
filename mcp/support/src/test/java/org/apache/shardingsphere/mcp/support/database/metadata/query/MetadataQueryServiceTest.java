@@ -91,8 +91,7 @@ class MetadataQueryServiceTest {
     }
     
     @AfterEach
-    void closeRequestContext() {
-        metadataContext.close();
+    void closeMocks() {
         databaseTypedSPILoader.close();
         typedSPILoader.close();
         databaseTypeFactory.close();

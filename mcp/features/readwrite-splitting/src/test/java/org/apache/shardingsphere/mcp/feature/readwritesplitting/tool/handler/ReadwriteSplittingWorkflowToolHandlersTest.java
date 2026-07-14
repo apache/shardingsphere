@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingRuleWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingStatusWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
@@ -61,15 +59,15 @@ class ReadwriteSplittingWorkflowToolHandlersTest {
     void assertHandlePlanRule() {
         try (
                 MockedConstruction<ReadwriteSplittingRuleWorkflowPlanningService> mocked = mockConstruction(
-                        ReadwriteSplittingRuleWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot()))) {
+                        ReadwriteSplittingRuleWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any())).thenReturn(createRuleSnapshot()))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanReadwriteSplittingRuleToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+            MCPResponse actual = new PlanReadwriteSplittingRuleToolHandler().handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
                     "rule", "readwrite_ds",
-                    "structured_intent_evidence", Map.of("rule", "inferred_rule", "read_storage_units", "read_ds_1"))));
+                    "structured_intent_evidence", Map.of("rule", "inferred_rule", "read_storage_units", "read_ds_1")));
             assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
             ArgumentCaptor<ReadwriteSplittingRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingRuleWorkflowRequest.class);
-            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());
             assertThat(requestCaptor.getValue().getRuleName(), is("readwrite_ds"));
             assertThat(requestCaptor.getValue().getReadStorageUnits(), is(List.of("read_ds_1")));
         }
@@ -93,9 +91,9 @@ class ReadwriteSplittingWorkflowToolHandlersTest {
     void assertHandlePlanRuleWithArtifacts() {
         try (
                 MockedConstruction<ReadwriteSplittingRuleWorkflowPlanningService> ignored = mockConstruction(
-                        ReadwriteSplittingRuleWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot()))) {
+                        ReadwriteSplittingRuleWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any())).thenReturn(createRuleSnapshot()))) {
             MCPResponse actual = new PlanReadwriteSplittingRuleToolHandler().handle(
-                    createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "rule", "readwrite_ds")));
+                    createWorkflowContextFixture().workflowContext, Map.of("database", "logic_db", "rule", "readwrite_ds"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertFalse(actualPayload.containsKey("ddl_artifacts"));
             assertFalse(actualPayload.containsKey("index_plan"));
@@ -112,12 +110,12 @@ class ReadwriteSplittingWorkflowToolHandlersTest {
     void assertHandlePlanStatus() {
         try (
                 MockedConstruction<ReadwriteSplittingStatusWorkflowPlanningService> mocked = mockConstruction(
-                        ReadwriteSplittingStatusWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createStatusSnapshot()))) {
+                        ReadwriteSplittingStatusWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any())).thenReturn(createStatusSnapshot()))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanReadwriteSplittingStatusToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
+            MCPResponse actual = new PlanReadwriteSplittingStatusToolHandler().handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
                     "target_status", "disable",
-                    "structured_intent_evidence", Map.of("rule", "readwrite_ds", "storage_unit", "read_ds_0"))));
+                    "structured_intent_evidence", Map.of("rule", "readwrite_ds", "storage_unit", "read_ds_0")));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actualPayload.get("workflow_kind"), is("readwrite.status"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
@@ -132,7 +130,7 @@ class ReadwriteSplittingWorkflowToolHandlersTest {
             assertFalse(actualDistSQLArtifact.containsKey("operation_type"));
             assertThat(actualDistSQLArtifact.get("target_status"), is("disable"));
             ArgumentCaptor<ReadwriteSplittingStatusWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingStatusWorkflowRequest.class);
-            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());
             assertThat(requestCaptor.getValue().getStorageUnit(), is("read_ds_0"));
             assertThat(requestCaptor.getValue().getTargetStatus(), is("disable"));
         }
@@ -151,11 +149,11 @@ class ReadwriteSplittingWorkflowToolHandlersTest {
     private ReadwriteSplittingRuleWorkflowRequest handlePlanRule(final Map<String, Object> arguments) {
         try (
                 MockedConstruction<ReadwriteSplittingRuleWorkflowPlanningService> mocked = mockConstruction(
-                        ReadwriteSplittingRuleWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any(), any())).thenReturn(createRuleSnapshot()))) {
+                        ReadwriteSplittingRuleWorkflowPlanningService.class, (mock, context) -> when(mock.plan(any(), any(), any())).thenReturn(createRuleSnapshot()))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            new PlanReadwriteSplittingRuleToolHandler().handle(fixture.workflowContext, new MCPToolCall("session-1", arguments));
+            new PlanReadwriteSplittingRuleToolHandler().handle(fixture.workflowContext, arguments);
             ArgumentCaptor<ReadwriteSplittingRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingRuleWorkflowRequest.class);
-            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
+            verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());
             return requestCaptor.getValue();
         }
     }
@@ -200,19 +198,18 @@ class ReadwriteSplittingWorkflowToolHandlersTest {
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {
-        MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPWorkflowRequestContext result = mock(MCPWorkflowRequestContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(result.getDatabaseContext()).thenReturn(databaseContext);
+        when(result.getSessionId()).thenReturn("session-1");
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        when(result.getQueryFacade()).thenReturn(queryFacade);
+        when(result.getExecutionFacade()).thenReturn(executionFacade);
         return new WorkflowContextFixture(result, workflowSessionContext, queryFacade, executionFacade);
     }
     
-    private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    private record WorkflowContextFixture(MCPWorkflowRequestContext workflowContext, WorkflowSessionContext workflowSessionContext,
                                           MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

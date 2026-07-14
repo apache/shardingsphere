@@ -21,14 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
-import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
+import org.apache.shardingsphere.mcp.core.handler.MCPRequestContextTypes;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
@@ -64,7 +64,7 @@ public final class ResourceDefinitionRegistry {
             String uriTemplate = each.getResourceUriTemplate();
             ShardingSpherePreconditions.checkState(null != uriTemplate && !uriTemplate.isBlank(),
                     () -> new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName())));
-            MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
+            MCPRequestContextTypes.validateContextType(each.getContextType(), each.getClass());
             result.put(new MCPUriPattern(uriTemplate), each);
         }
         return result;
@@ -136,7 +136,7 @@ public final class ResourceDefinitionRegistry {
         return dispatch(requestScope, resourceDefinition.getHandler(), uriVariables);
     }
     
-    private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
+    private static <T extends MCPRequestContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
         return resourceHandler.handle(resourceHandler.getContextType().cast(requestScope), uriVariables);
     }
     

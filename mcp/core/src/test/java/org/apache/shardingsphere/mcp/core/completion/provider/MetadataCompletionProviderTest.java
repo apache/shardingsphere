@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
@@ -55,7 +55,7 @@ class MetadataCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new MetadataCompletionProvider().getContextType(), is(MCPDatabaseHandlerContext.class));
+        assertThat(new MetadataCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
     }
     
     @Test
@@ -230,17 +230,17 @@ class MetadataCompletionProviderTest {
         assertThat(actual.getNearestResourceUri(), is("shardingsphere://databases"));
     }
     
-    private MCPCompletionRequestContext createRequestContext(final String argumentName, final Map<String, String> contextArguments) {
-        return new MCPCompletionRequestContext("session-1", new MCPCompletionTargetDescriptor("prompt", "inspect_metadata", List.of(argumentName), 50, Map.of()), argumentName,
+    private MCPCompletionRequest createRequestContext(final String argumentName, final Map<String, String> contextArguments) {
+        return new MCPCompletionRequest(new MCPCompletionTargetDescriptor("prompt", "inspect_metadata", List.of(argumentName), 50, Map.of()), argumentName,
                 contextArguments);
     }
     
-    private MCPDatabaseHandlerContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade) {
+    private MCPDatabaseRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade) {
         return createHandlerContext(metadataQueryFacade, List.of());
     }
     
-    private MCPDatabaseHandlerContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final List<RuntimeDatabaseProfile> databaseProfiles) {
-        MCPDatabaseHandlerContext result = mock(MCPDatabaseHandlerContext.class);
+    private MCPDatabaseRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final List<RuntimeDatabaseProfile> databaseProfiles) {
+        MCPDatabaseRequestContext result = mock(MCPDatabaseRequestContext.class);
         MCPFeatureCapabilityFacade capabilityFacade = mock(MCPFeatureCapabilityFacade.class);
         when(capabilityFacade.getDatabaseProfiles()).thenReturn(databaseProfiles);
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
@@ -248,15 +248,15 @@ class MetadataCompletionProviderTest {
         return result;
     }
     
-    private MCPDatabaseHandlerContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade) {
-        MCPDatabaseHandlerContext result = createHandlerContext(metadataQueryFacade, List.of());
+    private MCPDatabaseRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade) {
+        MCPDatabaseRequestContext result = createHandlerContext(metadataQueryFacade, List.of());
         when(result.getQueryFacade()).thenReturn(queryFacade);
         return result;
     }
     
-    private MCPDatabaseHandlerContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
+    private MCPDatabaseRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
                                                            final List<RuntimeDatabaseProfile> databaseProfiles) {
-        MCPDatabaseHandlerContext result = createHandlerContext(metadataQueryFacade, databaseProfiles);
+        MCPDatabaseRequestContext result = createHandlerContext(metadataQueryFacade, databaseProfiles);
         when(result.getQueryFacade()).thenReturn(queryFacade);
         return result;
     }

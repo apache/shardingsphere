@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
@@ -120,36 +120,34 @@ class CoreResourceHandlerSurfaceTest {
     
     @Test
     void assertHandleWithUnsupportedSequenceResource() {
-        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
-            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
-                    "shardingsphere://databases/{database}/schemas/{schema}/sequences",
-                    (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().querySequences(
-                            uriVariables.getValue("database"), uriVariables.getValue("schema")))
-                    .handle(requestContext,
-                            parseUriVariables("shardingsphere://databases/{database}/schemas/{schema}/sequences",
-                                    "shardingsphere://databases/warehouse/schemas/warehouse/sequences")));
-            assertThat(actual.getMessage(), is("Sequence resources are not supported for the current database."));
-        }
+        MCPRequestScope requestContext = new MCPRequestScope(runtimeContext, "session-1");
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().querySequences(
+                        uriVariables.getValue("database"), uriVariables.getValue("schema")))
+                .handle(requestContext,
+                        parseUriVariables("shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                                "shardingsphere://databases/warehouse/schemas/warehouse/sequences")));
+        assertThat(actual.getMessage(), is("Sequence resources are not supported for the current database."));
     }
     
     @Test
     void assertHandleWithUnsupportedStorageUnitResource() {
-        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
-            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
-                    "shardingsphere://databases/{database}/storage-units",
-                    (featureContext, uriVariables) -> {
-                        throw new MCPUnsupportedException("Storage unit resources are not supported for the current database.");
-                    }).handle(requestContext,
-                            parseUriVariables("shardingsphere://databases/{database}/storage-units", "shardingsphere://databases/logic_db/storage-units")));
-            assertThat(actual.getMessage(), is("Storage unit resources are not supported for the current database."));
-        }
+        MCPRequestScope requestContext = new MCPRequestScope(runtimeContext, "session-1");
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
+                "shardingsphere://databases/{database}/storage-units",
+                (featureContext, uriVariables) -> {
+                    throw new MCPUnsupportedException("Storage unit resources are not supported for the current database.");
+                }).handle(requestContext,
+                        parseUriVariables("shardingsphere://databases/{database}/storage-units", "shardingsphere://databases/logic_db/storage-units")));
+        assertThat(actual.getMessage(), is("Storage unit resources are not supported for the current database."));
     }
     
     private MCPUriVariables parseUriVariables(final String uriTemplate, final String resourceUri) {
         return new MCPUriPattern(uriTemplate).parse(resourceUri).orElseThrow();
     }
     
-    private <T extends MCPHandlerContext> MCPResponse handle(final MCPResourceHandler<T> handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
+    private <T extends MCPRequestContext> MCPResponse handle(final MCPResourceHandler<T> handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
         return handler.handle(handler.getContextType().cast(requestContext), uriVariables);
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.shadow.resource.handler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -56,7 +56,7 @@ class ShadowResourceHandlerTest {
             when(mock.queryRuleCount(any(), eq("logic_db"))).thenReturn(createRows("rule_count"));
             when(mock.queryAlgorithmPlugins(any())).thenReturn(createRows("algorithm_plugins"));
         })) {
-            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+            MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
             when(databaseContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
             MCPResponse actual = handlerSupplier.get().handle(databaseContext, uriVariables);
             assertThat(actual.toPayload().get("items"), is(createRows(expectedKind)));

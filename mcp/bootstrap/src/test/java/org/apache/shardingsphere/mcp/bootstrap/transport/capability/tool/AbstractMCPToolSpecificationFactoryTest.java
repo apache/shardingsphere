@@ -28,8 +28,10 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.mockito.MockedStatic;
@@ -50,7 +52,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -111,15 +112,14 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
     
     protected void mockToolDispatch(final MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry, final MCPToolDefinition toolDefinition,
                                     final Map<String, Object> arguments, final MCPResponse response) {
-        mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq("session-id"), eq(arguments)))
+        mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(arguments)))
                 .thenReturn(response);
     }
     
     protected MCPRuntimeContext createRuntimeContext(final String activeTransport) {
-        MCPRuntimeContext result = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
-        when(result.getActiveTransport()).thenReturn(activeTransport);
-        return result;
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession("session-id");
+        return new MCPRuntimeContext(sessionManager, mock(MCPDatabaseCapabilityProvider.class), activeTransport);
     }
     
     protected SyncToolSpecification createToolSpecification(final String activeTransport) {
@@ -177,9 +177,7 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
-            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
-            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
-            return callTool(createToolSpecification(runtimeContext), createExchange(), toolName, Map.of());
+            return callTool(createToolSpecification(createRuntimeContext("")), createExchange(), toolName, Map.of());
         }
     }
     

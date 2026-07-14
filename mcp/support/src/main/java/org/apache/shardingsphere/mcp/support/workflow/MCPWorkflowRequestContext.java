@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.context;
+package org.apache.shardingsphere.mcp.support.workflow;
 
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 
 /**
- * Service-level MCP handler context.
+ * Workflow-aware MCP request context.
  */
-public interface MCPServiceHandlerContext extends MCPHandlerContext {
+public interface MCPWorkflowRequestContext extends MCPDatabaseRequestContext {
+    
+    /**
+     * Get workflow session context bound to the current MCP session.
+     *
+     * @return workflow session context
+     */
+    WorkflowSessionContext getWorkflowSessionContext();
 }

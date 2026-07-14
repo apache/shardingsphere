@@ -175,7 +175,7 @@ public final class ResourceTestDataFactory {
      */
     public static RequestScopeFixture createRequestScopeFixture(final MCPRuntimeContext runtimeContext, final List<DatabaseMetadataFixture> databaseMetadataList) {
         MetadataSPIMocks metadataSPIMocks = mockMetadataSPI(databaseMetadataList);
-        return new RequestScopeFixture(new MCPRequestScope(runtimeContext), metadataSPIMocks);
+        return new RequestScopeFixture(new MCPRequestScope(runtimeContext, "session-1"), metadataSPIMocks);
     }
     
     private static MCPDatabaseCapabilityProvider createDatabaseCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
@@ -375,11 +375,7 @@ public final class ResourceTestDataFactory {
         
         @Override
         public void close() {
-            try {
-                requestScope.close();
-            } finally {
-                metadataSPIMocks.close();
-            }
+            metadataSPIMocks.close();
         }
     }
     

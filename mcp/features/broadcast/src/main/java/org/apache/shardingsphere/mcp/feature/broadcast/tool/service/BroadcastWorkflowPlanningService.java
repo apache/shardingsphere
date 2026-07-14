@@ -61,13 +61,11 @@ public final class BroadcastWorkflowPlanningService {
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
-    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final String sessionId,
-                                        final BroadcastWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final BroadcastWorkflowRequest request) {
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         BroadcastWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);

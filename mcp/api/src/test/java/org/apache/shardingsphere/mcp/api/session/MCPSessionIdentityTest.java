@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.api.session;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,5 +47,14 @@ class MCPSessionIdentityTest {
         MCPSessionIdentity actual = new MCPSessionIdentity("subject", "gateway", Map.of("region", "ap-south"));
         MCPSessionIdentity expected = new MCPSessionIdentity("other", "gateway", Map.of("region", "ap-south"));
         assertThat(actual, is(not(expected)));
+    }
+    
+    @Test
+    void assertAttributesAreSnapshot() {
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("region", "ap-south");
+        MCPSessionIdentity actual = new MCPSessionIdentity("subject", "gateway", attributes);
+        attributes.put("region", "eu-west");
+        assertThat(actual.getAttributes(), is(Map.of("region", "ap-south")));
     }
 }

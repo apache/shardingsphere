@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
@@ -107,5 +109,17 @@ public final class WorkflowRuntimeDefinitionRegistry {
      */
     public WorkflowRuntimeDefinition getRequired(final WorkflowKind workflowKind) {
         return findRegisteredDefinition(workflowKind).orElseThrow(() -> new MCPInvalidRequestException(String.format("Unknown workflow_kind `%s`.", workflowKind.getValue())));
+    }
+    
+    /**
+     * Get the workflow runtime definition required by a snapshot.
+     *
+     * @param snapshot workflow snapshot
+     * @return workflow runtime definition
+     */
+    public WorkflowRuntimeDefinition getRequired(final WorkflowContextSnapshot snapshot) {
+        ShardingSpherePreconditions.checkNotNull(snapshot.getWorkflowKind(),
+                () -> new MCPWorkflowStateException(String.format("Workflow kind is required for plan_id `%s`.", snapshot.getPlanId()), snapshot.getPlanId()));
+        return getRequired(snapshot.getWorkflowKind());
     }
 }

@@ -90,13 +90,12 @@ public final class ShadowWorkflowPlanningService {
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
-    public WorkflowContextSnapshot planRule(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final String sessionId,
+    public WorkflowContextSnapshot planRule(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                             final ShadowRuleWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ShadowRuleWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.RULE_WORKFLOW_KIND,
                 resolveIntent(request, WorkflowLifecycle.OPERATION_CREATE), "Shadow rule workflow plan.", RULE_INTERACTION_STEPS);
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());
@@ -120,13 +119,12 @@ public final class ShadowWorkflowPlanningService {
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
     public WorkflowContextSnapshot planDefaultAlgorithm(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
-                                                        final String sessionId, final ShadowDefaultAlgorithmWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+                                                        final ShadowDefaultAlgorithmWorkflowRequest request) {
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ShadowDefaultAlgorithmWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND,
                 resolveIntent(request, WorkflowLifecycle.OPERATION_CREATE), "Default shadow algorithm workflow plan.", DEFAULT_ALGORITHM_INTERACTION_STEPS);
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());
@@ -150,13 +148,12 @@ public final class ShadowWorkflowPlanningService {
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
     public WorkflowContextSnapshot planAlgorithmCleanup(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
-                                                        final String sessionId, final ShadowAlgorithmCleanupWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+                                                        final ShadowAlgorithmCleanupWorkflowRequest request) {
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ShadowAlgorithmCleanupWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.ALGORITHM_CLEANUP_WORKFLOW_KIND,
                 resolveIntent(request, WorkflowLifecycle.OPERATION_DROP), "Shadow algorithm cleanup workflow plan.", CLEANUP_INTERACTION_STEPS);
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());

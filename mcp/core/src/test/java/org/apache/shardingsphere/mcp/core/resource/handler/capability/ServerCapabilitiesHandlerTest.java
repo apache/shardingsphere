@@ -75,15 +75,13 @@ class ServerCapabilitiesHandlerTest {
     }
     
     private Map<String, Object> createCapabilitiesPayload() {
-        try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext())) {
-            return new ServerCapabilitiesHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
-        }
+        MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(), "session-1");
+        return new ServerCapabilitiesHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
     }
     
     private Map<String, Object> createGuidancePayload() {
-        try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext())) {
-            return new ServerGuidanceHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
-        }
+        MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(), "session-1");
+        return new ServerGuidanceHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
     }
     
     private void assertBaselineTopLevelKeys(final Map<String, Object> capabilities) {

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
@@ -36,7 +36,7 @@ import java.util.Map;
  * Shadow resource handler.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShadowResourceHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class ShadowResourceHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
     
     private final String resourceUriTemplate;
     
@@ -117,8 +117,8 @@ public final class ShadowResourceHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -127,12 +127,12 @@ public final class ShadowResourceHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(query(databaseContext, uriVariables),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
     
-    private List<Map<String, Object>> query(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    private List<Map<String, Object>> query(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
         return switch (resourceKind) {
             case RULES -> inspectionService.queryRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
             case RULE -> inspectionService.queryRule(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShadowFeatureDefinition.RULE_FIELD));

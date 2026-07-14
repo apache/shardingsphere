@@ -243,6 +243,9 @@ security_hints:
     runtime_protection:
       tool_call_limit: {scope: session, max_calls: 10000, property: shardingsphere.mcp.maxToolCallsPerSession,
         recovery: Close and recreate the MCP session after the quota is exhausted.}
+      completion_rate_limit: {scope: session, window_seconds: 60, max_requests: 600,
+        property: shardingsphere.mcp.maxCompletionRequestsPerMinute, recovery: Retry after
+          the current completion rate-limit window ends.}
       sql_execution_limits:
         max_rows: {default_value: 100, maximum_value: 5000, applied_field: applied_max_rows,
           truncation_field: truncated, recovery: 'For read-only queries, retry with

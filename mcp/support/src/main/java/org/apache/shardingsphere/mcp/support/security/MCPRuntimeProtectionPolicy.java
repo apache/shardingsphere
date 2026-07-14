@@ -34,6 +34,10 @@ public final class MCPRuntimeProtectionPolicy {
     
     public static final String MAX_TOOL_CALLS_PER_SESSION_PROPERTY = "shardingsphere.mcp.maxToolCallsPerSession";
     
+    public static final int DEFAULT_MAX_COMPLETION_REQUESTS_PER_MINUTE = 600;
+    
+    public static final String MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY = "shardingsphere.mcp.maxCompletionRequestsPerMinute";
+    
     public static final int DEFAULT_MAX_ROWS = 100;
     
     public static final int MAX_ROWS_LIMIT = 5000;
@@ -50,6 +54,16 @@ public final class MCPRuntimeProtectionPolicy {
     public static int getMaxToolCallsPerSession() {
         Integer configuredValue = Integer.getInteger(MAX_TOOL_CALLS_PER_SESSION_PROPERTY, DEFAULT_MAX_TOOL_CALLS_PER_SESSION);
         return configuredValue > 0 ? configuredValue : DEFAULT_MAX_TOOL_CALLS_PER_SESSION;
+    }
+    
+    /**
+     * Get maximum completion requests per minute for one MCP session.
+     *
+     * @return maximum completion requests per minute
+     */
+    public static int getMaxCompletionRequestsPerMinute() {
+        Integer configuredValue = Integer.getInteger(MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY, DEFAULT_MAX_COMPLETION_REQUESTS_PER_MINUTE);
+        return configuredValue > 0 ? configuredValue : DEFAULT_MAX_COMPLETION_REQUESTS_PER_MINUTE;
     }
     
     /**
@@ -72,9 +86,20 @@ public final class MCPRuntimeProtectionPolicy {
      * @return runtime protection payload
      */
     public static Map<String, Object> createRuntimeProtectionPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("tool_call_limit", createToolCallLimitPayload());
+        result.put("completion_rate_limit", createCompletionRateLimitPayload());
         result.put("sql_execution_limits", createSQLExecutionLimitsPayload());
+        return result;
+    }
+    
+    private static Map<String, Object> createCompletionRateLimitPayload() {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("scope", "session");
+        result.put("window_seconds", 60);
+        result.put("max_requests", getMaxCompletionRequestsPerMinute());
+        result.put("property", MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY);
+        result.put(MCPPayloadFieldNames.RECOVERY, "Retry after the current completion rate-limit window ends.");
         return result;
     }
     

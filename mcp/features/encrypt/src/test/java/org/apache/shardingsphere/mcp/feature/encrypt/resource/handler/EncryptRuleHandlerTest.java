@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -41,7 +41,7 @@ class EncryptRuleHandlerTest {
     @Test
     void assertHandle() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
         try (
                 MockedConstruction<EncryptRuleInspectionService> mockedConstruction = mockConstruction(EncryptRuleInspectionService.class,

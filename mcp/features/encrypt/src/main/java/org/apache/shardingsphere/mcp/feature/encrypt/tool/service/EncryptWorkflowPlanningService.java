@@ -86,13 +86,12 @@ public final class EncryptWorkflowPlanningService {
      * @param workflowSessionContext workflow session context
      * @param metadataQueryFacade metadata query facade
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
     public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
-                                        final String sessionId, final EncryptWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+                                        final EncryptWorkflowRequest request) {
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         EncryptWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);

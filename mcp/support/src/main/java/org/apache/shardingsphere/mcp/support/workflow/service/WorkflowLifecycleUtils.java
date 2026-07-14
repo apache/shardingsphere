@@ -36,7 +36,7 @@ public final class WorkflowLifecycleUtils {
      * @return whether the snapshot belongs to the session
      */
     public static boolean isOwnedBySession(final String sessionId, final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getSessionId() || snapshot.getSessionId().isBlank() || snapshot.getSessionId().equals(sessionId);
+        return sessionId.equals(snapshot.getSessionId());
     }
     
     /**

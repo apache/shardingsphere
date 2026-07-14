@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingStatusWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
@@ -39,13 +38,13 @@ import java.util.Map;
 /**
  * Tool handler for readwrite-splitting storage-unit status workflow planning.
  */
-public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
+public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHandler<MCPWorkflowRequestContext> {
     
     private final ReadwriteSplittingStatusWorkflowPlanningService planningService = new ReadwriteSplittingStatusWorkflowPlanningService();
     
     @Override
-    public Class<MCPWorkflowHandlerContext> getContextType() {
-        return MCPWorkflowHandlerContext.class;
+    public Class<MCPWorkflowRequestContext> getContextType() {
+        return MCPWorkflowRequestContext.class;
     }
     
     @Override
@@ -54,12 +53,11 @@ public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHan
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        ReadwriteSplittingStatusWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ReadwriteSplittingStatusWorkflowRequest::new, toolCall.getArguments(),
+    public MCPResponse handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
+        ReadwriteSplittingStatusWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ReadwriteSplittingStatusWorkflowRequest::new, arguments,
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         request.setOperationType("");
-        WorkflowContextSnapshot snapshot = planningService.plan(
-                workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
+        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getQueryFacade(), request);
         return new MCPMapResponse(createPlanResponse(snapshot));
     }
     
