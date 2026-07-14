@@ -33,7 +33,6 @@ import org.mockito.MockedStatic;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -245,12 +244,6 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertCreatePropertiesTrimsValues() {
-        Properties actualProperties = WorkflowSQLUtils.createProperties(Map.of("aes-key-value", " 123456 "));
-        assertThat(actualProperties.getProperty("aes-key-value"), is("123456"));
-    }
-    
-    @Test
     void assertCreateAlgorithmFragmentFormatsProperties() {
         String actualFragment = WorkflowSQLUtils.createAlgorithmFragment(" AES ", Map.of("aes-key-value", " 123456 "));
         assertThat(actualFragment, is("TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456'))"));
@@ -266,32 +259,6 @@ class WorkflowSQLUtilsTest {
     void assertCreateAlgorithmFragmentReturnsEmptyForBlankType() {
         String actualFragment = WorkflowSQLUtils.createAlgorithmFragment(" ", Map.of("aes-key-value", "123456"));
         assertThat(actualFragment, is(""));
-    }
-    
-    @Test
-    void assertCreatePropertyMapReturnsEmptyForNull() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(null);
-        assertThat(actualEntries, is(Map.of()));
-    }
-    
-    @Test
-    void assertCreatePropertyMapHandlesProperties() {
-        Properties props = new Properties();
-        props.setProperty("aes-key-value", " 123456 ");
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(props);
-        assertThat(actualEntries, is(Map.of("aes-key-value", "123456")));
-    }
-    
-    @Test
-    void assertCreatePropertyMapHandlesMap() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(Map.of("aes-key-value", " 123456 "));
-        assertThat(actualEntries, is(Map.of("aes-key-value", "123456")));
-    }
-    
-    @Test
-    void assertCreatePropertyMapHandlesString() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap("{'aes-key-value':'123456','iv':'abc'}");
-        assertThat(actualEntries, is(Map.of("aes-key-value", "123456", "iv", "abc")));
     }
     
     private static Stream<Arguments> getDistSQLKeywordCases() {

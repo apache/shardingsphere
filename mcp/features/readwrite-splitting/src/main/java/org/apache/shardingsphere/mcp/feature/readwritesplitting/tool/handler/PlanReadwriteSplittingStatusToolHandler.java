@@ -35,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Tool handler for readwrite-splitting storage-unit status workflow planning.
@@ -143,28 +142,15 @@ public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHan
     }
     
     private void bindFeatureArguments(final ReadwriteSplittingStatusWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request::setStorageUnit);
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, request::setTargetStatus);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request::setStorageUnit);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, request::setTargetStatus);
     }
     
     private void applyStructuredIntentEvidence(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request::setStorageUnit);
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, request::setTargetStatus);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request::setStorageUnit);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, request::setTargetStatus);
     }
     
-    private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
-        Object value = values.get(fieldName);
-        if (null != value) {
-            consumer.accept(String.valueOf(value));
-        }
-    }
-    
-    private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        String value = workflowPlanningArguments.getStringArgument(fieldName);
-        if (!value.isEmpty()) {
-            consumer.accept(value);
-        }
-    }
 }

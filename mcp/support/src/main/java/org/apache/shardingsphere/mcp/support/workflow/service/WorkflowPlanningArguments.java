@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Workflow-scoped planning arguments.
@@ -43,6 +44,19 @@ public final class WorkflowPlanningArguments {
      */
     public String getStringArgument(final String name) {
         return Objects.toString(arguments.get(name), "").trim();
+    }
+    
+    /**
+     * Apply a non-empty string argument.
+     *
+     * @param name argument name
+     * @param consumer argument consumer
+     */
+    public void applyStringArgument(final String name, final Consumer<String> consumer) {
+        String value = getStringArgument(name);
+        if (!value.isEmpty()) {
+            consumer.accept(value);
+        }
     }
     
     /**

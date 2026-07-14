@@ -34,12 +34,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMMCPConversationTurnPlanner {
     
-    private final LLMMCPConversationInstructionFactory instructionFactory;
-    
     private final Set<String> readOnlyToolNames;
     
-    LLMMCPConversationTurnPlanner(final LLMMCPConversationInstructionFactory instructionFactory) {
-        this(instructionFactory, createReadOnlyToolNames());
+    LLMMCPConversationTurnPlanner() {
+        this(createReadOnlyToolNames());
     }
     
     private static Set<String> createReadOnlyToolNames() {
@@ -64,7 +62,7 @@ final class LLMMCPConversationTurnPlanner {
         if (!immediateActionToolNames.isEmpty()) {
             return immediateActionToolNames;
         }
-        if (instructionFactory.hasSideEffectExecutionNextAction(interactionTrace)) {
+        if (LLMMCPNextActions.hasSideEffectExecutionNextAction(interactionTrace)) {
             List<String> missingReadOnlyToolNames = findMissingReadOnlyToolNames(scenario, interactionTrace);
             if (!missingReadOnlyToolNames.isEmpty()) {
                 return List.of(missingReadOnlyToolNames.getFirst());
@@ -78,7 +76,7 @@ final class LLMMCPConversationTurnPlanner {
         if (interactionTrace.isEmpty()) {
             return List.of();
         }
-        String immediateActionName = instructionFactory.findImmediateNextActionName(interactionTrace.getLast());
+        String immediateActionName = LLMMCPNextActions.findImmediateNextActionName(interactionTrace.getLast());
         return immediateActionName.isEmpty() ? List.of() : List.of(immediateActionName);
     }
     

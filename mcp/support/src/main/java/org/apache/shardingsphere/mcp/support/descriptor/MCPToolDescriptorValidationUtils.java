@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
@@ -28,6 +29,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -108,6 +110,15 @@ public final class MCPToolDescriptorValidationUtils {
         return findToolSchemaProperty(descriptor.getOutputSchema(), fieldName);
     }
     
+    private static Optional<Map<?, ?>> findToolSchemaProperty(final Map<String, Object> schema, final String fieldName) {
+        Object properties = schema.get("properties");
+        if (!(properties instanceof Map)) {
+            return Optional.empty();
+        }
+        Object property = ((Map<?, ?>) properties).get(fieldName);
+        return property instanceof Map ? Optional.of((Map<?, ?>) property) : Optional.empty();
+    }
+    
     /**
      * Check whether input schema property is required.
      *
@@ -120,13 +131,49 @@ public final class MCPToolDescriptorValidationUtils {
         return required instanceof Collection && ((Collection<?>) required).contains(fieldName);
     }
     
-    private static Optional<Map<?, ?>> findToolSchemaProperty(final Map<String, Object> schema, final String fieldName) {
-        Object properties = schema.get("properties");
-        if (!(properties instanceof Map)) {
-            return Optional.empty();
+    /**
+     * Validate that a model-facing schema does not use removed field aliases.
+     *
+     * @param descriptor tool descriptor
+     * @param schema model-facing schema
+     */
+    static void validateModelFacingSchemaFields(final MCPToolDescriptor descriptor, final Map<String, Object> schema) {
+        validateNoRemovedModelFacingFields(descriptor, schema);
+    }
+    
+    private static void validateNoRemovedModelFacingFields(final MCPToolDescriptor descriptor, final Object value) {
+        if (value instanceof Map) {
+            validateNoRemovedModelFacingFieldMap(descriptor, (Map<?, ?>) value);
+        } else if (value instanceof Collection) {
+            for (Object each : (Collection<?>) value) {
+                validateNoRemovedModelFacingFields(descriptor, each);
+            }
         }
-        Object property = ((Map<?, ?>) properties).get(fieldName);
-        return property instanceof Map ? Optional.of((Map<?, ?>) property) : Optional.empty();
+    }
+    
+    private static void validateNoRemovedModelFacingFieldMap(final MCPToolDescriptor descriptor, final Map<?, ?> value) {
+        for (Entry<?, ?> entry : value.entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            validateNoRemovedModelFacingField(descriptor, key);
+            if ("required".equals(key)) {
+                validateNoRemovedModelFacingRequiredFields(descriptor, entry.getValue());
+            }
+            validateNoRemovedModelFacingFields(descriptor, entry.getValue());
+        }
+    }
+    
+    private static void validateNoRemovedModelFacingRequiredFields(final MCPToolDescriptor descriptor, final Object value) {
+        if (!(value instanceof Collection)) {
+            return;
+        }
+        for (Object each : (Collection<?>) value) {
+            validateNoRemovedModelFacingField(descriptor, String.valueOf(each));
+        }
+    }
+    
+    private static void validateNoRemovedModelFacingField(final MCPToolDescriptor descriptor, final String fieldName) {
+        ShardingSpherePreconditions.checkState(!MCPModelFacingPayloadContract.isRemovedFieldName(fieldName),
+                () -> new IllegalStateException(String.format("Tool `%s` model-facing contract must use canonical fields instead of removed `%s`.", descriptor.getName(), fieldName)));
     }
     
     /**

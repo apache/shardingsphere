@@ -23,10 +23,12 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeReq
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
+import org.apache.shardingsphere.mcp.support.protocol.MCPCompletionAction;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,8 @@ final class MCPWorkflowRecoveryPayloadFactory {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "invalid_enum_value", "Retry database_gateway_apply_workflow with execution_mode=preview, review the returned preview_artifacts, "
                         + "then pass explicit approved_steps copied from visible preview_artifacts.approval_step values.");
-        Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(cause.getSuggestedArguments(), Map.of(WorkflowFieldNames.EXECUTION_MODE, "preview"));
+        Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(cause.getSuggestedArguments(),
+                Map.of(WorkflowFieldNames.EXECUTION_MODE, WorkflowLifecycle.EXECUTION_MODE_PREVIEW));
         result.put(MCPPayloadFieldNames.FIELD, WorkflowFieldNames.APPROVED_STEPS);
         result.put(MCPPayloadFieldNames.ALLOWED_VALUES, cause.getAllowedValues());
         result.put("suggested_arguments", suggestedArguments);
@@ -67,8 +70,14 @@ final class MCPWorkflowRecoveryPayloadFactory {
                 "shardingsphere://capabilities", "capability", "Read workflow-capable MCP tools before re-planning."));
         result.put("completion_first", Map.of("argument", WorkflowFieldNames.PLAN_ID, "scope", "current MCP session"));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(
-                MCPNextActionUtils.completeArgument("resource", "shardingsphere://workflows/{plan_id}", WorkflowFieldNames.PLAN_ID, "", Map.of(), List.of(), "resource",
-                        "shardingsphere://workflows/{plan_id}", Map.of(), "Use MCP completion for plan_id to pick an available current-session workflow plan."),
+                MCPNextActionUtils.completeArgument(MCPCompletionAction.builder()
+                        .referenceType("resource")
+                        .reference("shardingsphere://workflows/{plan_id}")
+                        .argumentName(WorkflowFieldNames.PLAN_ID)
+                        .resumeTargetType("resource")
+                        .resumeTarget("shardingsphere://workflows/{plan_id}")
+                        .reason("Use MCP completion for plan_id to pick an available current-session workflow plan.")
+                        .build()),
                 MCPNextActionUtils.dependsOn(MCPNextActionUtils.readResource(
                         "shardingsphere://capabilities", "Read current workflow tools, then re-run the matching planning tool if completion has no usable plan."), 1)));
         result.put("ask_user_when_uncertain", false);
@@ -109,7 +118,8 @@ final class MCPWorkflowRecoveryPayloadFactory {
         result.put("source_tool", toolName);
         result.put("tool_name", toolName);
         result.put(MCPPayloadFieldNames.ALLOWED_VALUES, allowedValues);
-        Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(sourceSuggestedArguments, Map.of(WorkflowFieldNames.EXECUTION_MODE, "preview"));
+        Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(sourceSuggestedArguments,
+                Map.of(WorkflowFieldNames.EXECUTION_MODE, WorkflowLifecycle.EXECUTION_MODE_PREVIEW));
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(retryTool
                 ? MCPNextActionUtils.retryTool(toolName, retryReason, suggestedArguments)

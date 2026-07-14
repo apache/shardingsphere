@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.capability;
+package org.apache.shardingsphere.mcp.support.database.metadata;
 
 /**
- * Transaction capability levels exposed by the capability matrix.
+ * Runtime transaction capability.
  */
 public enum TransactionCapability {
     

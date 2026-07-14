@@ -159,7 +159,7 @@ public final class WorkflowValidationSupport {
         if (!WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus())) {
             return List.of();
         }
-        return List.of(new WorkflowIssue(resolveValidationIssueCode(validationReport), "error", "validating",
+        return List.of(new WorkflowIssue(resolveValidationIssueCode(validationReport), "error", WorkflowLifecycle.STEP_VALIDATING,
                 "Validation detected mismatches between the plan and the current state.", "Inspect mismatches and re-run the workflow after fixes.", true, Map.of()).toMap());
     }
     
@@ -215,7 +215,7 @@ public final class WorkflowValidationSupport {
         result.put(MCPPayloadFieldNames.SUMMARY, String.format("Workflow validation cannot run for plan `%s`.", snapshot.getPlanId()));
         result.put(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId());
         result.put("status", WorkflowLifecycle.STATUS_FAILED);
-        result.put("issues", List.of(new WorkflowIssue(issueCode, "error", "validating", message, userAction, false, Map.of()).toMap()));
+        result.put("issues", List.of(new WorkflowIssue(issueCode, "error", WorkflowLifecycle.STEP_VALIDATING, message, userAction, false, Map.of()).toMap()));
         result.put("overall_status", WorkflowLifecycle.STATUS_FAILED);
         result.put("mismatches", List.of());
         result.put("recovery_guidance", userAction);

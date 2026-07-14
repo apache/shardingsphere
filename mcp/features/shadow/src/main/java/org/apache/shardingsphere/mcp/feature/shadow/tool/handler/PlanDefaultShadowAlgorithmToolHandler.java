@@ -33,7 +33,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBin
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 /**
  * Tool handler for default shadow algorithm workflow planning.
@@ -62,27 +61,13 @@ public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandl
     }
     
     private void bindFeatureArguments(final ShadowDefaultAlgorithmWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
+        workflowPlanningArguments.applyStringArgument(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument(ShadowFeatureDefinition.ALGORITHM_PROPERTIES_FIELD));
     }
     
     private void applyStructuredIntentEvidence(final ShadowDefaultAlgorithmWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
         applyMapField(structuredIntentEvidence, request);
-    }
-    
-    private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
-        Object value = values.get(fieldName);
-        if (null != value) {
-            consumer.accept(String.valueOf(value));
-        }
-    }
-    
-    private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        String value = workflowPlanningArguments.getStringArgument(fieldName);
-        if (!value.isEmpty()) {
-            consumer.accept(value);
-        }
     }
     
     private void applyMapField(final Map<String, Object> values, final ShadowDefaultAlgorithmWorkflowRequest request) {

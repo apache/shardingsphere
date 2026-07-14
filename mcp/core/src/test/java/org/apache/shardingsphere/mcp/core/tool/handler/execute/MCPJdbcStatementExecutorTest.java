@@ -102,8 +102,9 @@ class MCPJdbcStatementExecutorTest {
         SQLExecutionResponse actual = statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "UPDATE orders SET status = 'DONE'", 10, 1000),
                 new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", List.of()),
-                createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
+                createDatabaseCapability(SchemaExecutionSemantics.BEST_EFFORT));
         assertThat(actual.getAffectedRows(), is(2));
+        verify(connection).setSchema("public");
         verify(connection, never()).close();
     }
     

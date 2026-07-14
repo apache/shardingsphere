@@ -45,7 +45,7 @@ import java.util.Map;
  */
 public final class EncryptWorkflowPlanningService {
     
-    private static final List<String> SUPPORTED_OPERATION_TYPES = List.of("create", WorkflowLifecycle.OPERATION_DROP);
+    private static final List<String> SUPPORTED_OPERATION_TYPES = List.of(WorkflowLifecycle.OPERATION_CREATE, WorkflowLifecycle.OPERATION_DROP);
     
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm database, table, column and target operation",
@@ -179,7 +179,7 @@ public final class EncryptWorkflowPlanningService {
         snapshot.getClarifiedIntent().getClarificationMessages().add(
                 "Current Proxy DistSQL cannot automatically rewrite an existing encrypt table rule with a partial column set. "
                         + "Recreate the rule manually during a maintenance window.");
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_RULE_REWRITE_LIMITED, "error", "planning-artifacts",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_RULE_REWRITE_LIMITED, "error", WorkflowLifecycle.STEP_PLANNING_ARTIFACTS,
                 "Encrypt planning cannot automatically rewrite an existing table rule while preserving other columns.",
                 "Manually recreate the encrypt rule with the complete column set after reviewing data impact.", true, Map.of("requires_table_rule_rewrite", true)));
         return false;
@@ -190,7 +190,7 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private void addDropLifecycleWarnings(final WorkflowContextSnapshot snapshot) {
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED, "warning", "planning-artifacts",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED, "warning", WorkflowLifecycle.STEP_PLANNING_ARTIFACTS,
                 "Encrypt drop only removes the rule. MCP will not restore historical plaintext data.", "Review business impact before execution.", true, Map.of()));
     }
     
@@ -253,7 +253,7 @@ public final class EncryptWorkflowPlanningService {
         for (String each : missingInputs) {
             clarifiedIntent.getClarificationMessages().add(String.format("Please provide `%s` for encrypt rule DistSQL.", each));
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", "collecting-rule-inputs",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", WorkflowLifecycle.STEP_COLLECTING_RULE_INPUTS,
                 "Encrypt rule DistSQL requires explicit rule column and query algorithm inputs.", "Provide the missing rule inputs and retry planning.", true,
                 Map.of("missing_inputs", missingInputs)));
         return false;

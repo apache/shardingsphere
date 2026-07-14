@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflo
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
 import java.util.LinkedList;
@@ -97,7 +98,7 @@ public final class ShardingAlgorithmRecommendationService {
     }
     
     private AlgorithmCandidate createCandidate(final String role, final String algorithmType, final int score, final String reason) {
-        return new AlgorithmCandidate(role, algorithmType, null, null, null, score, reason, "");
+        return AlgorithmCandidate.builder().algorithmRole(role).algorithmType(algorithmType).recommendationScore(score).recommendationReason(reason).riskNotes("").build();
     }
     
     private String resolveRecommendedAlgorithm(final List<Map<String, Object>> algorithmRows, final List<String> preferredTypes) {
@@ -110,13 +111,13 @@ public final class ShardingAlgorithmRecommendationService {
     }
     
     private void addAlgorithmNotFoundIssue(final List<WorkflowIssue> issues, final String label, final String algorithmType) {
-        issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+        issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                 String.format("%s `%s` is not visible from the current Proxy.", label, algorithmType),
                 "Choose an available algorithm.", false, Map.of()));
     }
     
     private void addNoAlgorithmIssue(final List<WorkflowIssue> issues, final String label) {
-        issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+        issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                 String.format("No %s is available from the current Proxy.", label), "Install or expose an available algorithm.", false, Map.of()));
     }
 }

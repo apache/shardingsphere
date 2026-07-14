@@ -82,33 +82,22 @@ public final class MCPNextActionUtils {
     /**
      * Create a completion action.
      *
-     * @param referenceType completion reference type
-     * @param reference completion reference
-     * @param argumentName argument name
-     * @param argumentPrefix argument prefix
-     * @param contextArguments context arguments
-     * @param missingContextArguments missing context arguments
-     * @param resumeTargetType resume target type
-     * @param resumeTarget resume target
-     * @param resumeArguments resume arguments
-     * @param reason action reason
+     * @param action completion action
      * @return action payload
      */
-    public static Map<String, Object> completeArgument(final String referenceType, final String reference, final String argumentName, final String argumentPrefix,
-                                                       final Map<String, ?> contextArguments, final Collection<String> missingContextArguments, final String resumeTargetType,
-                                                       final String resumeTarget, final Map<String, ?> resumeArguments, final String reason) {
-        Map<String, Object> result = createBaseAction("completion", "Complete " + argumentName, reason);
-        result.put("ref", createCompletionRef(referenceType, reference));
-        result.put("argument", Map.of("name", argumentName, "value", argumentPrefix));
-        if (!contextArguments.isEmpty()) {
-            result.put("context", Map.of("arguments", contextArguments));
+    public static Map<String, Object> completeArgument(final MCPCompletionAction action) {
+        Map<String, Object> result = createBaseAction("completion", "Complete " + action.getArgumentName(), action.getReason());
+        result.put("ref", createCompletionRef(action.getReferenceType(), action.getReference()));
+        result.put("argument", Map.of("name", action.getArgumentName(), "value", action.getArgumentPrefix()));
+        if (!action.getContextArguments().isEmpty()) {
+            result.put("context", Map.of("arguments", action.getContextArguments()));
         }
-        result.put("missing_context_arguments", missingContextArguments);
-        if (!resumeTargetType.isEmpty()) {
-            result.put("resume_ref", createCompletionRef(resumeTargetType, resumeTarget));
+        result.put("missing_context_arguments", action.getMissingContextArguments());
+        if (!action.getResumeTargetType().isEmpty()) {
+            result.put("resume_ref", createCompletionRef(action.getResumeTargetType(), action.getResumeTarget()));
         }
-        if (!resumeArguments.isEmpty()) {
-            result.put("resume_arguments", resumeArguments);
+        if (!action.getResumeArguments().isEmpty()) {
+            result.put("resume_arguments", action.getResumeArguments());
         }
         return result;
     }

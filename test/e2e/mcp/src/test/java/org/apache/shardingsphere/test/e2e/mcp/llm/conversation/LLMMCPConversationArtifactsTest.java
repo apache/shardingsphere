@@ -36,7 +36,7 @@ class LLMMCPConversationArtifactsTest {
     void assertAddRawModelOutput() {
         LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts("provider", "model");
         artifacts.addRawModelOutput("raw-output");
-        assertThat(artifacts.createArtifactBundle(createScenario(), LLME2EAssertionReport.isSuccess("ok")).getRawModelOutputs(), is(List.of("raw-output")));
+        assertThat(artifacts.createArtifactBundle(createScenario(), LLME2EAssertionReport.success("ok")).getRawModelOutputs(), is(List.of("raw-output")));
     }
     
     @Test
@@ -51,7 +51,7 @@ class LLMMCPConversationArtifactsTest {
     void assertAddRuntimeLogLine() {
         LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts("provider", "model");
         artifacts.addRuntimeLogLine("runtime-log");
-        assertThat(artifacts.createArtifactBundle(createScenario(), LLME2EAssertionReport.isSuccess("ok")).getMcpRuntimeLogLines(), is(List.of("runtime-log")));
+        assertThat(artifacts.createArtifactBundle(createScenario(), LLME2EAssertionReport.success("ok")).getMcpRuntimeLogLines(), is(List.of("runtime-log")));
     }
     
     @Test
@@ -81,7 +81,7 @@ class LLMMCPConversationArtifactsTest {
         MCPInteractionTraceRecord traceRecord = createTrace();
         artifacts.addInteractionTrace(traceRecord);
         artifacts.addRuntimeLogLine("runtime-log");
-        LLME2EAssertionReport assertionReport = LLME2EAssertionReport.isSuccess("ok");
+        LLME2EAssertionReport assertionReport = LLME2EAssertionReport.success("ok");
         LLME2EArtifactBundle actual = artifacts.createArtifactBundle(createScenario(), assertionReport);
         assertThat(actual.getScenarioId(), is("scenario"));
         assertThat(actual.getSystemPrompt(), is("system"));

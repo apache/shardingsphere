@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.junit.jupiter.api.Test;
@@ -93,7 +93,7 @@ class ShardingWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
         try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
             mockedStatic.when(() -> TypedSPILoader.checkService(ShardingAlgorithm.class, "INLINE",
-                    WorkflowSQLUtils.createProperties(request.getPrimaryAlgorithmProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
+                    WorkflowAlgorithmUtils.createProperties(request.getPrimaryAlgorithmProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
             List<Map<String, Object>> actual = new ShardingWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)")));
             assertThat(actual.size(), is(1));
             assertThat(actual.getFirst().get("message"), is("Generated sharding DistSQL references sharding algorithm `INLINE`, "
@@ -110,7 +110,7 @@ class ShardingWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create", ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND, request);
         try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
             mockedStatic.when(() -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, "SNOWFLAKE",
-                    WorkflowSQLUtils.createProperties(request.getKeyGeneratorProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
+                    WorkflowAlgorithmUtils.createProperties(request.getKeyGeneratorProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
             List<Map<String, Object>> actual = new ShardingWorkflowValidationService().validate(snapshot,
                     List.of(createRuleDistSQLArtifact("CREATE SHARDING KEY GENERATOR `snowflake_generator`(TYPE(NAME='snowflake'))")));
             assertThat(actual.size(), is(1));
@@ -127,7 +127,7 @@ class ShardingWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
         try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
             mockedStatic.when(() -> TypedSPILoader.checkService(ShardingAuditAlgorithm.class, "DML_SHARDING_CONDITIONS",
-                    WorkflowSQLUtils.createProperties(Map.of()))).thenThrow(new IllegalArgumentException("unavailable"));
+                    WorkflowAlgorithmUtils.createProperties(Map.of()))).thenThrow(new IllegalArgumentException("unavailable"));
             List<Map<String, Object>> actual = new ShardingWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)")));
             assertThat(actual.size(), is(1));
             assertThat(actual.getFirst().get("message"), is("Generated sharding DistSQL references auditor algorithm `DML_SHARDING_CONDITIONS`, "

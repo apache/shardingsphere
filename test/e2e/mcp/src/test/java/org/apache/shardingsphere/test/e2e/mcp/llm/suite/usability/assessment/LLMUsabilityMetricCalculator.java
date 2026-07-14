@@ -89,9 +89,27 @@ public final class LLMUsabilityMetricCalculator {
         boolean approvalViolation = traceMetrics.hasApprovalViolation(interactionTrace);
         boolean nativeToolCallCoverage = traceMetrics.hasNativeRequiredToolCoverage(scenario.getLlmScenario().getRequiredToolNames(), interactionTrace);
         boolean harnessRecoveryUsed = traceMetrics.hasHarnessRecovery(interactionTrace);
-        return new LLMUsabilityScenarioResult(scenario.getScenarioId(), scenario.getDimension(), scenario.getRuntimeKind(), scenario.getTags(), success, failureType, message,
-                firstCorrectAction, invalidCallCount, interactionTrace.size(), resourceHit, recoveredAfterError, queryAnswerFidelity,
-                boundaryConfusion, nextActionFollowed, approvalViolation, nativeToolCallCoverage, harnessRecoveryUsed, interactionTrace);
+        return LLMUsabilityScenarioResult.builder()
+                .scenarioId(scenario.getScenarioId())
+                .dimension(scenario.getDimension())
+                .runtimeKind(scenario.getRuntimeKind())
+                .tags(scenario.getTags())
+                .success(success)
+                .failureType(failureType)
+                .message(message)
+                .firstCorrectAction(firstCorrectAction)
+                .invalidCallCount(invalidCallCount)
+                .roundTripCount(interactionTrace.size())
+                .resourceHit(resourceHit)
+                .recoveredAfterError(recoveredAfterError)
+                .queryAnswerFidelity(queryAnswerFidelity)
+                .boundaryConfusion(boundaryConfusion)
+                .nextActionFollowed(nextActionFollowed)
+                .approvalViolation(approvalViolation)
+                .nativeToolCallCoverage(nativeToolCallCoverage)
+                .harnessRecoveryUsed(harnessRecoveryUsed)
+                .interactionTrace(interactionTrace)
+                .build();
     }
     
     /**
@@ -119,10 +137,27 @@ public final class LLMUsabilityMetricCalculator {
         double harnessRecoveryRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isHarnessRecoveryUsed);
         double overallScore = calculateOverallScore(taskSuccessRate, firstCorrectActionRate, invalidCallRate, queryAnswerFidelity,
                 boundaryConfusionRate, resourceHitRate, recoveryRate, nextActionFollowRate, approvalViolationRate);
-        return new LLMUsabilityScorecard(suiteId, runId, overallScore,
-                isFullScore(overallScore, nativeToolCallRate, harnessRecoveryRate, naturalTaskSuccessRate, protocolContractSuccessRate), taskSuccessRate,
-                naturalTaskSuccessRate, protocolContractSuccessRate, firstCorrectActionRate, invalidCallRate, averageRoundTrips, queryAnswerFidelity, boundaryConfusionRate,
-                resourceHitRate, recoveryRate, nextActionFollowRate, approvalViolationRate, nativeToolCallRate, harnessRecoveryRate, scenarioResults);
+        return LLMUsabilityScorecard.builder()
+                .suiteId(suiteId)
+                .runId(runId)
+                .overallScore(overallScore)
+                .fullScore(isFullScore(overallScore, nativeToolCallRate, harnessRecoveryRate, naturalTaskSuccessRate, protocolContractSuccessRate))
+                .taskSuccessRate(taskSuccessRate)
+                .naturalTaskSuccessRate(naturalTaskSuccessRate)
+                .protocolContractSuccessRate(protocolContractSuccessRate)
+                .firstCorrectActionRate(firstCorrectActionRate)
+                .invalidCallRate(invalidCallRate)
+                .averageRoundTrips(averageRoundTrips)
+                .queryAnswerFidelity(queryAnswerFidelity)
+                .boundaryConfusionRate(boundaryConfusionRate)
+                .resourceHitRate(resourceHitRate)
+                .recoveryRate(recoveryRate)
+                .nextActionFollowRate(nextActionFollowRate)
+                .approvalViolationRate(approvalViolationRate)
+                .nativeToolCallRate(nativeToolCallRate)
+                .harnessRecoveryRate(harnessRecoveryRate)
+                .scenarioResults(scenarioResults)
+                .build();
     }
     
     private double calculateOverallScore(final double taskSuccessRate, final double firstCorrectActionRate, final double invalidCallRate,

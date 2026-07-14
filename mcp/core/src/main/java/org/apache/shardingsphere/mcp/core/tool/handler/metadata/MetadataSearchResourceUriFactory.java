@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
@@ -29,31 +30,20 @@ final class MetadataSearchResourceUriFactory {
     
     private static final String DATABASES_RESOURCE_URI = "shardingsphere://databases";
     
-    MetadataResourceUris create(final String database, final String schema, final String objectType, final String table, final String view, final String name) {
-        if ("database".equals(objectType)) {
-            return createDatabaseResourceUris(database);
-        }
-        if ("schema".equals(objectType)) {
-            return createSchemaResourceUris(database, schema);
-        }
-        if ("table".equals(objectType)) {
-            return createTableResourceUris(database, schema, table);
-        }
-        if ("view".equals(objectType)) {
-            return createViewResourceUris(database, schema, view);
-        }
-        if ("column".equals(objectType)) {
-            return createColumnResourceUris(database, schema, table, view, name);
-        }
-        if ("index".equals(objectType)) {
-            return createIndexResourceUris(database, schema, table, name);
-        }
-        if ("storage_unit".equals(objectType)) {
-            return createStorageUnitResourceUris(database, name);
-        }
-        return "sequence".equals(objectType)
-                ? createSequenceResourceUris(database, schema, name)
-                : notSafe("Metadata hit object type is not backed by a descriptor resource pattern.");
+    MetadataResourceUris create(final String database, final String schema, final SupportedMCPMetadataObjectType objectType,
+                                final String table, final String view, final String name) {
+        return switch (objectType) {
+            case DATABASE -> createDatabaseResourceUris(database);
+            case SCHEMA -> createSchemaResourceUris(database, schema);
+            case TABLE -> createTableResourceUris(database, schema, table);
+            case VIEW -> createViewResourceUris(database, schema, view);
+            case COLUMN -> createColumnResourceUris(database, schema, table, view, name);
+            case INDEX -> createIndexResourceUris(database, schema, table, name);
+            case STORAGE_UNIT -> createStorageUnitResourceUris(database, name);
+            case SEQUENCE -> createSequenceResourceUris(database, schema, name);
+            case MATERIALIZED_VIEW, ROUTINE, TRIGGER, EVENT, SYNONYM, DATABASE_SPECIFIC ->
+                    notSafe("Metadata hit object type is not backed by a descriptor resource pattern.");
+        };
     }
     
     private MetadataResourceUris createDatabaseResourceUris(final String database) {

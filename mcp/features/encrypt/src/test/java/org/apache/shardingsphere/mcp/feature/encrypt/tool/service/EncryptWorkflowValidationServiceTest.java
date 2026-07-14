@@ -36,7 +36,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -138,7 +138,7 @@ class EncryptWorkflowValidationServiceTest {
         snapshot.setRequest(request);
         String sql = "CREATE ENCRYPT RULE `t_user` (COLUMNS((NAME=`phone`, CIPHER=`phone_cipher`, "
                 + "ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='******', 'digest-algorithm-name'='SHA-1'))))))";
-        typedSPILoader.when(() -> TypedSPILoader.checkService(EncryptAlgorithm.class, "AES", WorkflowSQLUtils.createProperties(request.getPrimaryAlgorithmProperties())))
+        typedSPILoader.when(() -> TypedSPILoader.checkService(EncryptAlgorithm.class, "AES", WorkflowAlgorithmUtils.createProperties(request.getPrimaryAlgorithmProperties())))
                 .thenThrow(new IllegalArgumentException("raw-secret"));
         List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact(sql, sql)));
         assertThat(actual.size(), is(1));

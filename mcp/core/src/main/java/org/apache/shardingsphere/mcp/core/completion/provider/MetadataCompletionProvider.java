@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * Metadata completion provider.
@@ -48,8 +47,6 @@ import java.util.stream.Stream;
 public final class MetadataCompletionProvider implements MCPCompletionProvider<MCPDatabaseHandlerContext> {
     
     private static final Set<String> STORAGE_UNIT_ARGUMENTS = Set.of("storageUnit", "storage_unit", "write_storage_unit", "source_storage_unit", "shadow_storage_unit");
-    
-    private static final Set<String> SUPPORTED_ARGUMENTS = Set.of("database", "schema", "table", "column", "index", "sequence", "storageUnit");
     
     private final GovernanceMetadataQueryService governanceMetadataQueryService = new GovernanceMetadataQueryService();
     
@@ -60,36 +57,34 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
     
     @Override
     public boolean supports(final MCPCompletionRequestContext requestContext) {
-        return SUPPORTED_ARGUMENTS.contains(canonicalizeArgumentName(requestContext.getArgumentName()));
+        return MetadataCompletionTarget.UNKNOWN != MetadataCompletionTarget.from(requestContext.getArgumentName());
     }
     
     @Override
     public MCPCompletionProviderResult complete(final MCPDatabaseHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
-        String argumentName = canonicalizeArgumentName(requestContext.getArgumentName());
+        MetadataCompletionTarget target = MetadataCompletionTarget.from(requestContext.getArgumentName());
         Map<String, String> contextArguments = new LinkedHashMap<>(requestContext.getContextArguments());
-        Map<String, Object> inferredContextArguments = applyContextDefaults(handlerContext, argumentName, contextArguments);
-        Collection<String> missingContextArguments = createMissingContextArguments(argumentName, contextArguments);
-        String nearestResourceUri = createNearestResourceUri(
-                missingContextArguments.isEmpty() ? argumentName : missingContextArguments.iterator().next(), contextArguments);
+        Map<String, Object> inferredContextArguments = applyContextDefaults(handlerContext, target, contextArguments);
+        Collection<String> missingContextArguments = createMissingContextArguments(target, contextArguments);
+        MetadataCompletionTarget nearestTarget = missingContextArguments.isEmpty() ? target : MetadataCompletionTarget.from(missingContextArguments.iterator().next());
+        String nearestResourceUri = createNearestResourceUri(nearestTarget, contextArguments);
         return new MCPCompletionProviderResult(
-                completeMetadata(handlerContext, argumentName, contextArguments), inferredContextArguments, missingContextArguments, nearestResourceUri);
+                completeMetadata(handlerContext, target, contextArguments), inferredContextArguments, missingContextArguments, nearestResourceUri);
     }
     
-    private String canonicalizeArgumentName(final String argumentName) {
-        return STORAGE_UNIT_ARGUMENTS.contains(argumentName) ? "storageUnit" : argumentName;
-    }
-    
-    private Map<String, Object> applyContextDefaults(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
+    private Map<String, Object> applyContextDefaults(final MCPDatabaseHandlerContext handlerContext, final MetadataCompletionTarget target,
+                                                     final Map<String, String> contextArguments) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
-        result.putAll(applySingleDatabaseDefault(handlerContext, argumentName, contextArguments));
+        result.putAll(applySingleDatabaseDefault(handlerContext, target, contextArguments));
         mergeInferredContextArguments(contextArguments, result);
-        result.putAll(applySingleSchemaDefault(handlerContext, argumentName, contextArguments));
+        result.putAll(applySingleSchemaDefault(handlerContext, target, contextArguments));
         mergeInferredContextArguments(contextArguments, result);
         return result;
     }
     
-    private Map<String, Object> applySingleDatabaseDefault(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
-        if (!requiresDatabaseContext(argumentName) || !Objects.toString(contextArguments.get("database"), "").isEmpty()) {
+    private Map<String, Object> applySingleDatabaseDefault(final MCPDatabaseHandlerContext handlerContext, final MetadataCompletionTarget target,
+                                                           final Map<String, String> contextArguments) {
+        if (!target.requires("database") || !Objects.toString(contextArguments.get("database"), "").isEmpty()) {
             return Map.of();
         }
         List<RuntimeDatabaseProfile> databaseProfiles = handlerContext.getCapabilityFacade().getDatabaseProfiles();
@@ -100,8 +95,9 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         return database.isEmpty() ? Map.of() : Map.of("database", database);
     }
     
-    private Map<String, Object> applySingleSchemaDefault(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
-        if (!requiresSchemaContext(argumentName) || !Objects.toString(contextArguments.get("schema"), "").isEmpty()
+    private Map<String, Object> applySingleSchemaDefault(final MCPDatabaseHandlerContext handlerContext, final MetadataCompletionTarget target,
+                                                         final Map<String, String> contextArguments) {
+        if (!target.requires("schema") || !Objects.toString(contextArguments.get("schema"), "").isEmpty()
                 || Objects.toString(contextArguments.get("database"), "").isEmpty()) {
             return Map.of();
         }
@@ -117,34 +113,18 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         }
     }
     
-    private boolean requiresDatabaseContext(final String argumentName) {
-        return "schema".equals(argumentName) || "storageUnit".equals(argumentName) || requiresSchemaContext(argumentName);
-    }
-    
-    private boolean requiresSchemaContext(final String argumentName) {
-        return "table".equals(argumentName) || "column".equals(argumentName) || "index".equals(argumentName) || "sequence".equals(argumentName);
-    }
-    
-    private Collection<MCPCompletionCandidate> completeMetadata(final MCPDatabaseHandlerContext handlerContext, final String argumentName, final Map<String, String> contextArguments) {
-        if ("database".equals(argumentName)) {
-            return completeDatabases(handlerContext);
-        }
-        if ("schema".equals(argumentName)) {
-            return completeSchemas(handlerContext, contextArguments);
-        }
-        if ("table".equals(argumentName)) {
-            return completeTables(handlerContext, contextArguments);
-        }
-        if ("column".equals(argumentName)) {
-            return completeColumns(handlerContext, contextArguments);
-        }
-        if ("index".equals(argumentName)) {
-            return completeIndexes(handlerContext, contextArguments);
-        }
-        if ("storageUnit".equals(argumentName)) {
-            return completeStorageUnits(handlerContext, contextArguments);
-        }
-        return "sequence".equals(argumentName) ? completeSequences(handlerContext, contextArguments) : List.of();
+    private Collection<MCPCompletionCandidate> completeMetadata(final MCPDatabaseHandlerContext handlerContext, final MetadataCompletionTarget target,
+                                                                final Map<String, String> contextArguments) {
+        return switch (target) {
+            case DATABASE -> completeDatabases(handlerContext);
+            case SCHEMA -> completeSchemas(handlerContext, contextArguments);
+            case TABLE -> completeTables(handlerContext, contextArguments);
+            case COLUMN -> completeColumns(handlerContext, contextArguments);
+            case INDEX -> completeIndexes(handlerContext, contextArguments);
+            case SEQUENCE -> completeSequences(handlerContext, contextArguments);
+            case STORAGE_UNIT -> completeStorageUnits(handlerContext, contextArguments);
+            case UNKNOWN -> List.of();
+        };
     }
     
     private List<MCPCompletionCandidate> completeDatabases(final MCPDatabaseHandlerContext handlerContext) {
@@ -221,52 +201,65 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         return Objects.toString(contextArguments.get("schema"), "");
     }
     
-    private List<String> createMissingContextArguments(final String argumentName, final Map<String, String> contextArguments) {
-        if ("schema".equals(argumentName) || "storageUnit".equals(argumentName)) {
-            return createMissingArguments(contextArguments, "database");
-        }
-        if ("table".equals(argumentName) || "sequence".equals(argumentName)) {
-            return createMissingArguments(contextArguments, "database", "schema");
-        }
-        if ("column".equals(argumentName) || "index".equals(argumentName)) {
-            return createMissingArguments(contextArguments, "database", "schema", "table");
-        }
-        return List.of();
+    private List<String> createMissingContextArguments(final MetadataCompletionTarget target, final Map<String, String> contextArguments) {
+        return target.requiredContextArguments.stream().filter(each -> Objects.toString(contextArguments.get(each), "").isEmpty()).toList();
     }
     
-    private List<String> createMissingArguments(final Map<String, String> contextArguments, final String... requiredArguments) {
-        return Stream.of(requiredArguments).filter(each -> Objects.toString(contextArguments.get(each), "").isEmpty()).toList();
-    }
-    
-    private String createNearestResourceUri(final String argumentName, final Map<String, String> contextArguments) {
+    private String createNearestResourceUri(final MetadataCompletionTarget target, final Map<String, String> contextArguments) {
         String database = Objects.toString(contextArguments.get("database"), "");
         String schema = Objects.toString(contextArguments.get("schema"), "");
-        if ("database".equals(argumentName)) {
-            return "shardingsphere://databases";
-        }
-        if ("schema".equals(argumentName) && !database.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/schemas", encode(database));
-        }
-        if ("table".equals(argumentName) && !database.isEmpty() && !schema.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/schemas/%s/tables", encode(database), encode(schema));
-        }
-        if ("sequence".equals(argumentName) && !database.isEmpty() && !schema.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/schemas/%s/sequences", encode(database), encode(schema));
-        }
-        if ("storageUnit".equals(argumentName) && !database.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/storage-units", encode(database));
-        }
         String table = Objects.toString(contextArguments.get("table"), "");
-        if ("column".equals(argumentName) && !database.isEmpty() && !schema.isEmpty() && !table.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", encode(database), encode(schema), encode(table));
-        }
-        if ("index".equals(argumentName) && !database.isEmpty() && !schema.isEmpty() && !table.isEmpty()) {
-            return String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", encode(database), encode(schema), encode(table));
-        }
-        return "";
+        return switch (target) {
+            case DATABASE -> "shardingsphere://databases";
+            case SCHEMA -> database.isEmpty() ? "" : String.format("shardingsphere://databases/%s/schemas", encode(database));
+            case TABLE -> database.isEmpty() || schema.isEmpty() ? "" : String.format("shardingsphere://databases/%s/schemas/%s/tables", encode(database), encode(schema));
+            case SEQUENCE -> database.isEmpty() || schema.isEmpty()
+                    ? "" : String.format("shardingsphere://databases/%s/schemas/%s/sequences", encode(database), encode(schema));
+            case STORAGE_UNIT -> database.isEmpty() ? "" : String.format("shardingsphere://databases/%s/storage-units", encode(database));
+            case COLUMN -> database.isEmpty() || schema.isEmpty() || table.isEmpty()
+                    ? "" : String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", encode(database), encode(schema), encode(table));
+            case INDEX -> database.isEmpty() || schema.isEmpty() || table.isEmpty()
+                    ? "" : String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", encode(database), encode(schema), encode(table));
+            case UNKNOWN -> "";
+        };
     }
     
     private String encode(final String value) {
         return MCPUriPathSegmentUtils.encodePathSegment(value);
+    }
+    
+    private enum MetadataCompletionTarget {
+        
+        DATABASE("database"),
+        SCHEMA("schema", "database"),
+        TABLE("table", "database", "schema"),
+        COLUMN("column", "database", "schema", "table"),
+        INDEX("index", "database", "schema", "table"),
+        SEQUENCE("sequence", "database", "schema"),
+        STORAGE_UNIT("storageUnit", "database"),
+        UNKNOWN("");
+        
+        private final String argumentName;
+        
+        private final List<String> requiredContextArguments;
+        
+        MetadataCompletionTarget(final String argumentName, final String... requiredContextArguments) {
+            this.argumentName = argumentName;
+            this.requiredContextArguments = List.of(requiredContextArguments);
+        }
+        
+        private static MetadataCompletionTarget from(final String argumentName) {
+            String canonicalArgumentName = STORAGE_UNIT_ARGUMENTS.contains(argumentName) ? "storageUnit" : argumentName;
+            for (MetadataCompletionTarget each : values()) {
+                if (each.argumentName.equals(canonicalArgumentName)) {
+                    return each;
+                }
+            }
+            return UNKNOWN;
+        }
+        
+        private boolean requires(final String argumentName) {
+            return requiredContextArguments.contains(argumentName);
+        }
     }
 }

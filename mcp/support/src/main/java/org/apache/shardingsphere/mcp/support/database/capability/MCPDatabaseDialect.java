@@ -74,20 +74,6 @@ public final class MCPDatabaseDialect {
     }
     
     /**
-     * Get transaction capability.
-     *
-     * @param supportsTransaction whether transaction is supported
-     * @param supportsSavepoint whether savepoint is supported
-     * @return transaction capability
-     */
-    public TransactionCapability getTransactionCapability(final boolean supportsTransaction, final boolean supportsSavepoint) {
-        if (!supportsTransaction) {
-            return TransactionCapability.NONE;
-        }
-        return supportsSavepoint ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
-    }
-    
-    /**
      * Get sequence metadata query.
      *
      * @return sequence metadata query

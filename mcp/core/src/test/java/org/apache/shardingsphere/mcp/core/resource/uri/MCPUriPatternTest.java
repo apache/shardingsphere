@@ -94,7 +94,7 @@ class MCPUriPatternTest {
     
     @Test
     void assertIsOverlaps() {
-        boolean actual = new MCPUriPattern("shardingsphere://databases/{database}").isOverlaps(new MCPUriPattern("shardingsphere://databases/default_db"));
+        boolean actual = new MCPUriPattern("shardingsphere://databases/{database}").overlaps(new MCPUriPattern("shardingsphere://databases/default_db"));
         assertTrue(actual);
     }
     

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderRes
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
+import org.apache.shardingsphere.mcp.support.protocol.MCPCompletionAction;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
@@ -234,8 +235,18 @@ public final class MCPCompletionService {
     
     private Map<String, Object> createCompletionAction(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String argumentPrefix,
                                                        final Map<String, String> contextArguments, final Collection<String> missingContextArguments, final String reason) {
-        return MCPNextActionUtils.completeArgument(descriptor.getReferenceType(), descriptor.getReference(), argumentName, argumentPrefix, contextArguments, missingContextArguments,
-                descriptor.getReferenceType(), descriptor.getReference(), contextArguments, reason);
+        return MCPNextActionUtils.completeArgument(MCPCompletionAction.builder()
+                .referenceType(descriptor.getReferenceType())
+                .reference(descriptor.getReference())
+                .argumentName(argumentName)
+                .argumentPrefix(argumentPrefix)
+                .contextArguments(contextArguments)
+                .missingContextArguments(missingContextArguments)
+                .resumeTargetType(descriptor.getReferenceType())
+                .resumeTarget(descriptor.getReference())
+                .resumeArguments(contextArguments)
+                .reason(reason)
+                .build());
     }
     
     private String createDiagnostic(final Collection<MCPCompletionCandidate> candidates, final Collection<MCPCompletionCandidate> filteredCandidates,

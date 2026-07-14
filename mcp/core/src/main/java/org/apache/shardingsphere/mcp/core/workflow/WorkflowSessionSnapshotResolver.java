@@ -19,9 +19,11 @@ package org.apache.shardingsphere.mcp.core.workflow;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 import java.util.Objects;
 
@@ -47,5 +49,18 @@ public final class WorkflowSessionSnapshotResolver {
                     String.format("Unknown or unavailable plan_id `%s`. Call the planning tool again in the current MCP session.", planId), planId);
         }
         return result;
+    }
+    
+    /**
+     * Get required workflow kind.
+     *
+     * @param snapshot workflow snapshot
+     * @return workflow kind
+     * @throws MCPWorkflowStateException when the workflow kind is unavailable
+     */
+    public static WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {
+        ShardingSpherePreconditions.checkNotNull(snapshot.getWorkflowKind(),
+                () -> new MCPWorkflowStateException(String.format("Workflow kind is required for plan_id `%s`.", snapshot.getPlanId()), snapshot.getPlanId()));
+        return snapshot.getWorkflowKind();
     }
 }

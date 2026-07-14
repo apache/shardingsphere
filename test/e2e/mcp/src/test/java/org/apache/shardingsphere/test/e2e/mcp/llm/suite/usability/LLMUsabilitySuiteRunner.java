@@ -64,18 +64,8 @@ final class LLMUsabilitySuiteRunner {
     
     private final LLMUsabilityReportWriter reportWriter = new LLMUsabilityReportWriter();
     
-    void assertCoreSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
-                         final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
-        assertSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
-    }
-    
-    void assertExtendedSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
-                             final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
-        assertSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
-    }
-    
-    private void assertSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
-                             final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
+    void assertSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
+                     final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
         EvaluatedSuite evaluatedSuite = evaluateSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
         assumeModelServiceAvailable(evaluatedSuite.scorecard());
         assertFullScore(evaluatedSuite);

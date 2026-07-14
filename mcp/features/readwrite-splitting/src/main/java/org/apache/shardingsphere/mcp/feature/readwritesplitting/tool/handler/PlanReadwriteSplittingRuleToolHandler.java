@@ -63,35 +63,21 @@ public final class PlanReadwriteSplittingRuleToolHandler implements MCPToolHandl
     }
     
     private void bindFeatureArguments(final ReadwriteSplittingRuleWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.WRITE_STORAGE_UNIT_FIELD, request::setWriteStorageUnit);
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD, request::setReadStorageUnits);
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.TRANSACTIONAL_READ_QUERY_STRATEGY_FIELD, request::setTransactionalReadQueryStrategy);
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD, request::setLoadBalancerType);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.WRITE_STORAGE_UNIT_FIELD, request::setWriteStorageUnit);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD, request::setReadStorageUnits);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.TRANSACTIONAL_READ_QUERY_STRATEGY_FIELD, request::setTransactionalReadQueryStrategy);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD, request::setLoadBalancerType);
         request.putLoadBalancerProperties(workflowPlanningArguments.getMapArgument(ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_PROPERTIES_FIELD));
     }
     
     private void applyStructuredIntentEvidence(final ReadwriteSplittingRuleWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.WRITE_STORAGE_UNIT_FIELD, request::setWriteStorageUnit);
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD, request::setReadStorageUnits);
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.TRANSACTIONAL_READ_QUERY_STRATEGY_FIELD, request::setTransactionalReadQueryStrategy);
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD, request::setLoadBalancerType);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.WRITE_STORAGE_UNIT_FIELD, request::setWriteStorageUnit);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD, request::setReadStorageUnits);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.TRANSACTIONAL_READ_QUERY_STRATEGY_FIELD, request::setTransactionalReadQueryStrategy);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD, request::setLoadBalancerType);
         applyMapField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_PROPERTIES_FIELD, request::putLoadBalancerProperties);
-    }
-    
-    private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
-        Object value = values.get(fieldName);
-        if (null != value) {
-            consumer.accept(String.valueOf(value));
-        }
-    }
-    
-    private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        String value = workflowPlanningArguments.getStringArgument(fieldName);
-        if (!value.isEmpty()) {
-            consumer.accept(value);
-        }
     }
     
     private void applyMapField(final Map<String, Object> values, final String fieldName, final Consumer<Map<String, String>> consumer) {

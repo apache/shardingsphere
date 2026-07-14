@@ -64,7 +64,17 @@ final class LLMMCPConversationArtifacts {
     }
     
     LLME2EArtifactBundle createArtifactBundle(final LLME2EScenario scenario, final LLME2EAssertionReport assertionReport) {
-        return new LLME2EArtifactBundle(scenario.getScenarioId(), scenario.getSystemPrompt(), scenario.getUserPrompt(), modelProvider, modelName,
-                finalAnswerJson, rawModelOutputs, interactionTrace, mcpRuntimeLogLines, assertionReport);
+        return LLME2EArtifactBundle.builder()
+                .scenarioId(scenario.getScenarioId())
+                .systemPrompt(scenario.getSystemPrompt())
+                .userPrompt(scenario.getUserPrompt())
+                .modelProvider(modelProvider)
+                .modelName(modelName)
+                .finalAnswerJson(finalAnswerJson)
+                .rawModelOutputs(rawModelOutputs)
+                .interactionTrace(interactionTrace)
+                .mcpRuntimeLogLines(mcpRuntimeLogLines)
+                .assertionReport(assertionReport)
+                .build();
     }
 }

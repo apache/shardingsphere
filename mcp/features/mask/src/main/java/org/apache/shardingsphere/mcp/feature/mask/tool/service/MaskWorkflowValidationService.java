@@ -36,7 +36,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
@@ -229,8 +228,8 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     }
     
     private void addPropertyMismatch(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final Object expected, final Object actual) {
-        Map<String, String> expectedProperties = WorkflowSQLUtils.createPropertyMap(expected);
-        Map<String, String> actualProperties = WorkflowSQLUtils.createPropertyMap(actual);
+        Map<String, String> expectedProperties = WorkflowAlgorithmUtils.createPropertyMap(expected);
+        Map<String, String> actualProperties = WorkflowAlgorithmUtils.createPropertyMap(actual);
         if (WorkflowSecretReferenceUtils.matchesManualPlaceholderProperties(expectedProperties, actualProperties, snapshot.getRequest(), "primary")) {
             return;
         }
@@ -244,7 +243,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : rules) {
             Map<String, Object> rule = new LinkedHashMap<>(each);
-            rule.put("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("algorithm_props")), snapshot.getPropertyRequirements(),
+            rule.put("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowAlgorithmUtils.createPropertyMap(each.get("algorithm_props")), snapshot.getPropertyRequirements(),
                     snapshot.getRequest(), "primary"));
             result.add(rule);
         }

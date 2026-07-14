@@ -119,11 +119,11 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration(), getRequiredLLMRuntimeEvidence());
         conversationExecutor.assertModelReady();
         prepareRuntimeFixture();
-        suiteRunner.assertCoreSuite(suiteId + "/core",
+        suiteRunner.assertSuite(suiteId + "/core",
                 this::createCoreScenarios,
                 each -> conversationExecutor.runConversation(suiteId + "/core/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());
-        suiteRunner.assertExtendedSuite(suiteId + "/extended",
+        suiteRunner.assertSuite(suiteId + "/extended",
                 this::createExtendedScenarios,
                 each -> conversationExecutor.runConversation(suiteId + "/extended/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());

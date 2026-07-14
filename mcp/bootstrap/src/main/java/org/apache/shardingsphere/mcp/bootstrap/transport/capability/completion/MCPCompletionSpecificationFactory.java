@@ -67,7 +67,7 @@ public final class MCPCompletionSpecificationFactory {
         Map<String, String> contextArguments = null == request.context() || null == request.context().arguments() ? Map.of() : request.context().arguments();
         try {
             MCPCompletionResult result = completionService.complete(exchange.sessionId(), descriptor, argumentName, prefix, contextArguments);
-            return new McpSchema.CompleteResult(new McpSchema.CompleteResult.CompleteCompletion(result.getValues(), result.getTotal(), result.isHasMore()), result.getMeta());
+            return new McpSchema.CompleteResult(new McpSchema.CompleteResult.CompleteCompletion(result.getValues(), result.getTotal(), result.hasMore()), result.getMeta());
         } catch (final MCPInvalidRequestException ex) {
             throw MCPTransportErrorFactory.createError(ex);
         }

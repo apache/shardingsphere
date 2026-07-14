@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactor
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -63,25 +64,29 @@ public final class MCPJdbcDatabaseProfileLoader {
      * @param databaseName database name
      * @param runtimeDatabaseConfig runtime database configuration
      * @return runtime database profile
-     * @throws RuntimeDatabaseConnectionException when runtime database connection or configuration fails
-     * @throws RuntimeDatabaseConnectionException when profile metadata loading fails
+     * @throws RuntimeDatabaseConnectionException when runtime database profile loading fails
      */
     public RuntimeDatabaseProfile load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
         DatabaseType databaseType;
         String databaseVersion;
-        boolean supportsTransaction;
-        boolean supportsSavepoint;
+        TransactionCapability transactionCapability;
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             databaseType = loadDatabaseType(databaseName, databaseMetaData);
             databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
-            supportsTransaction = databaseMetaData.supportsTransactions();
-            supportsSavepoint = supportsTransaction && databaseMetaData.supportsSavepoints();
+            transactionCapability = loadTransactionCapability(databaseMetaData);
         } catch (final SQLException ex) {
             throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
         }
-        return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion, supportsTransaction, supportsSavepoint,
+        return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion, transactionCapability,
                 resolveIdentifierCasePolicySet(databaseName, databaseType, runtimeDatabaseConfig));
+    }
+    
+    private TransactionCapability loadTransactionCapability(final DatabaseMetaData databaseMetaData) throws SQLException {
+        if (!databaseMetaData.supportsTransactions()) {
+            return TransactionCapability.NONE;
+        }
+        return databaseMetaData.supportsSavepoints() ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
     }
     
     private IdentifierCasePolicySet resolveIdentifierCasePolicySet(final String databaseName, final DatabaseType databaseType,

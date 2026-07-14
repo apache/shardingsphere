@@ -73,23 +73,12 @@ public final class MCPJdbcStatementExecutor {
      * @throws MCPUnavailableException when the runtime database configuration is unavailable
      */
     public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) {
-        Connection connection = null;
-        boolean needCloseConnection = false;
-        boolean transactionConnectionInUse = false;
         try {
-            try {
-                Optional<Connection> transactionConnection = transactionResourceManager.findTransactionConnection(executionRequest.getSessionId(), executionRequest.getDatabase());
-                if (transactionConnection.isPresent()) {
-                    connection = transactionConnection.get();
-                    transactionConnectionInUse = true;
-                } else {
-                    connection = openConnection(executionRequest.getDatabase());
-                    needCloseConnection = true;
-                }
-            } catch (final IllegalStateException ex) {
-                throw new MCPTransactionStateException(ex.getMessage(), ex);
+            Optional<Connection> transactionConnection = findTransactionConnection(executionRequest);
+            if (transactionConnection.isPresent()) {
+                return executeWithBorrowedConnection(transactionConnection.get(), executionRequest, classificationResult, databaseCapability);
             }
-            return executeWithConnection(connection, executionRequest, classificationResult, databaseCapability, transactionConnectionInUse);
+            return executeWithOwnedConnection(openOwnedConnection(executionRequest.getDatabase()), executionRequest, classificationResult, databaseCapability);
         } catch (final SQLTimeoutException ex) {
             throw new MCPTimeoutException(ex.getMessage(), ex);
         } catch (final SQLFeatureNotSupportedException ex) {
@@ -101,26 +90,55 @@ public final class MCPJdbcStatementExecutor {
             throw new MCPInvalidRequestException(ex.getMessage(), ex);
         } catch (final SQLException ex) {
             throw new MCPQueryFailedException(ex.getMessage(), ex);
-        } finally {
-            if (needCloseConnection && null != connection) {
-                try {
-                    connection.close();
-                } catch (final SQLException ignored) {
-                }
-            }
         }
     }
     
-    private SQLExecutionResponse executeWithConnection(final Connection connection, final SQLExecutionRequest executionRequest,
-                                                       final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability,
-                                                       final boolean transactionConnectionInUse) throws SQLException {
-        applySchema(connection, executionRequest.getSchema(), databaseCapability.getSchemaExecutionSemantics());
-        if (executionRequest.isReadOnlyExecution() && !transactionConnectionInUse) {
-            return executeWithReadOnlyConnection(connection, executionRequest, classificationResult);
+    private Optional<Connection> findTransactionConnection(final SQLExecutionRequest executionRequest) {
+        try {
+            return transactionResourceManager.findTransactionConnection(executionRequest.getSessionId(), executionRequest.getDatabase());
+        } catch (final IllegalStateException ex) {
+            throw new MCPTransactionStateException(ex.getMessage(), ex);
         }
+    }
+    
+    private Connection openOwnedConnection(final String databaseName) throws SQLException {
+        try {
+            return openConnection(databaseName);
+        } catch (final IllegalStateException ex) {
+            throw new MCPTransactionStateException(ex.getMessage(), ex);
+        }
+    }
+    
+    private SQLExecutionResponse executeWithBorrowedConnection(final Connection connection, final SQLExecutionRequest executionRequest,
+                                                               final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) throws SQLException {
+        applySchema(connection, executionRequest.getSchema(), databaseCapability.getSchemaExecutionSemantics());
+        return executeWithStatement(connection, executionRequest, classificationResult);
+    }
+    
+    private SQLExecutionResponse executeWithOwnedConnection(final Connection connection, final SQLExecutionRequest executionRequest,
+                                                            final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) throws SQLException {
+        try {
+            applySchema(connection, executionRequest.getSchema(), databaseCapability.getSchemaExecutionSemantics());
+            return executionRequest.isReadOnlyExecution()
+                    ? executeWithReadOnlyConnection(connection, executionRequest, classificationResult)
+                    : executeWithStatement(connection, executionRequest, classificationResult);
+        } finally {
+            closeOwnedConnection(connection);
+        }
+    }
+    
+    private SQLExecutionResponse executeWithStatement(final Connection connection, final SQLExecutionRequest executionRequest,
+                                                      final ClassificationResult classificationResult) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             configureStatement(statement, executionRequest);
             return executeStatement(statement, executionRequest, classificationResult);
+        }
+    }
+    
+    private void closeOwnedConnection(final Connection connection) {
+        try {
+            connection.close();
+        } catch (final SQLException ignored) {
         }
     }
     

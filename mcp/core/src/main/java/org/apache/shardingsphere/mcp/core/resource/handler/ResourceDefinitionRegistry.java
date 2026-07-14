@@ -84,7 +84,7 @@ public final class ResourceDefinitionRegistry {
             Entry<MCPUriPattern, MCPResourceHandler<?>> current = entries.get(i);
             for (int j = i + 1; j < entries.size(); j++) {
                 Entry<MCPUriPattern, MCPResourceHandler<?>> other = entries.get(j);
-                ShardingSpherePreconditions.checkState(!current.getKey().isOverlaps(other.getKey()), () -> new IllegalArgumentException(
+                ShardingSpherePreconditions.checkState(!current.getKey().overlaps(other.getKey()), () -> new IllegalArgumentException(
                         String.format("Overlapping resource URI templates `%s` with `%s` and `%s`.",
                                 current.getKey().getPattern(), current.getValue().getClass().getName(), other.getValue().getClass().getName())));
             }

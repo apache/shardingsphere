@@ -53,19 +53,10 @@ public final class MCPToolOutputSchemaValidator {
         Object properties = outputSchema.get("properties");
         ShardingSpherePreconditions.checkState(properties instanceof Map && !((Map<?, ?>) properties).isEmpty(),
                 () -> new IllegalStateException(String.format("Tool `%s` outputSchema must declare properties.", descriptor.getName())));
-        validateNoRemovedModelFacingFields(descriptor, outputSchema);
+        MCPToolDescriptorValidationUtils.validateModelFacingSchemaFields(descriptor, outputSchema);
         validateOutputExamples(descriptor, outputSchema);
         validateOutputExampleContractValues(descriptor, outputSchema);
         validateModelCriticalOutputHints(descriptor, (Map<?, ?>) properties);
-    }
-    
-    /**
-     * Validate that model-facing input schema fields do not use removed aliases.
-     *
-     * @param descriptor tool descriptor
-     */
-    public static void validateInputSchemaFields(final MCPToolDescriptor descriptor) {
-        validateNoRemovedModelFacingFields(descriptor, descriptor.getInputSchema());
     }
     
     private static void validateOutputExamples(final MCPToolDescriptor descriptor, final Map<String, Object> outputSchema) {
@@ -116,41 +107,6 @@ public final class MCPToolOutputSchemaValidator {
         if (null != nextActions) {
             validateConcreteNextActions(descriptor, nextActions);
         }
-    }
-    
-    private static void validateNoRemovedModelFacingFields(final MCPToolDescriptor descriptor, final Object value) {
-        if (value instanceof Map) {
-            validateNoRemovedModelFacingFieldMap(descriptor, (Map<?, ?>) value);
-        } else if (value instanceof Collection) {
-            for (Object each : (Collection<?>) value) {
-                validateNoRemovedModelFacingFields(descriptor, each);
-            }
-        }
-    }
-    
-    private static void validateNoRemovedModelFacingFieldMap(final MCPToolDescriptor descriptor, final Map<?, ?> value) {
-        for (Entry<?, ?> entry : value.entrySet()) {
-            String key = String.valueOf(entry.getKey());
-            validateNoRemovedModelFacingField(descriptor, key);
-            if ("required".equals(key)) {
-                validateNoRemovedModelFacingRequiredFields(descriptor, entry.getValue());
-            }
-            validateNoRemovedModelFacingFields(descriptor, entry.getValue());
-        }
-    }
-    
-    private static void validateNoRemovedModelFacingRequiredFields(final MCPToolDescriptor descriptor, final Object value) {
-        if (!(value instanceof Collection)) {
-            return;
-        }
-        for (Object each : (Collection<?>) value) {
-            validateNoRemovedModelFacingField(descriptor, String.valueOf(each));
-        }
-    }
-    
-    private static void validateNoRemovedModelFacingField(final MCPToolDescriptor descriptor, final String fieldName) {
-        ShardingSpherePreconditions.checkState(!MCPModelFacingPayloadContract.isRemovedFieldName(fieldName),
-                () -> new IllegalStateException(String.format("Tool `%s` model-facing contract must use canonical fields instead of removed `%s`.", descriptor.getName(), fieldName)));
     }
     
     private static void validateConcreteNextActions(final MCPToolDescriptor descriptor, final Object value) {

@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
 import java.util.List;
 
-@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Getter
 public final class LLMUsabilityScenarioResult {
     

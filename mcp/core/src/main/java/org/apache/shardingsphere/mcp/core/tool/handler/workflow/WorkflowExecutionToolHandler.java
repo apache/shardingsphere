@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
-import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDes
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
 import java.util.LinkedHashMap;
@@ -68,30 +68,24 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String executionMode = toolArguments.getStringArgument(WorkflowFieldNames.EXECUTION_MODE);
         if (executionMode.isEmpty()) {
-            throw new MCPExecutionModeRequiredException(WorkflowToolDescriptors.APPLY_TOOL_NAME, List.of("preview", "review-then-execute", "manual-only"),
+            throw new MCPExecutionModeRequiredException(WorkflowToolDescriptors.APPLY_TOOL_NAME, List.of(WorkflowLifecycle.EXECUTION_MODE_PREVIEW,
+                    WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE, WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY),
                     createPreviewSuggestedArguments(toolCall.getArguments()));
         }
         MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowContextSnapshot snapshot = WorkflowSessionSnapshotResolver.getRequired(workflowContext.getWorkflowSessionContext(), toolCall.getSessionId(),
                 toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
-        WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
+        WorkflowKind workflowKind = WorkflowSessionSnapshotResolver.getRequiredWorkflowKind(snapshot);
         WorkflowRuntimeDefinition workflowRuntimeDefinition = workflowRuntimeDefinitionRegistry.getRequired(workflowKind);
         return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(),
                 databaseContext.getExecutionFacade(), workflowRuntimeDefinition.getApplySynchronizationHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(), toolCall.getSessionId(),
                 snapshot, toolArguments.getStringCollectionArgument(WorkflowFieldNames.APPROVED_STEPS), executionMode));
     }
     
-    private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {
-        if (null != snapshot.getWorkflowKind()) {
-            return snapshot.getWorkflowKind();
-        }
-        throw new MCPWorkflowStateException(String.format("Workflow kind is required for plan_id `%s`.", snapshot.getPlanId()), snapshot.getPlanId());
-    }
-    
     private static Map<String, Object> createPreviewSuggestedArguments(final Map<String, Object> arguments) {
         Map<String, Object> result = new LinkedHashMap<>(arguments);
         result.remove(WorkflowFieldNames.EXECUTION_MODE);
-        result.put(WorkflowFieldNames.EXECUTION_MODE, "preview");
+        result.put(WorkflowFieldNames.EXECUTION_MODE, WorkflowLifecycle.EXECUTION_MODE_PREVIEW);
         return result;
     }
 }

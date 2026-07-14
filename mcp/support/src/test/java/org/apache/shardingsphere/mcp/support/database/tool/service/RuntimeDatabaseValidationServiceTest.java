@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.database.tool.service;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -134,7 +136,7 @@ class RuntimeDatabaseValidationServiceTest {
                 IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE),
                 Map.of(IdentifierScope.SCHEMA, IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.SCHEMA)));
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class)))
-                .thenReturn(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, identifierCasePolicySet));
+                .thenReturn(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, identifierCasePolicySet));
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("Logic_DB"));
         RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
                 ignored -> Optional.of(runtimeDatabaseConfig), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
@@ -150,7 +152,7 @@ class RuntimeDatabaseValidationServiceTest {
         MCPJdbcMetadataLoader metadataLoader = getMetadataLoader();
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration(InvisibleDatabaseDriver.JDBC_URL, "demo", "", InvisibleDatabaseDriver.class.getName());
         when(profileLoader.load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(
-                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newSensitivePolicySet()));
+                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newSensitivePolicySet()));
         when(metadataLoader.load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("Logic_DB"));
         RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
                 ignored -> Optional.of(runtimeDatabaseConfig), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
@@ -172,7 +174,7 @@ class RuntimeDatabaseValidationServiceTest {
                 IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE),
                 Map.of(IdentifierScope.SCHEMA, IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.SCHEMA)));
         when(getProfileLoader().load(any(), any(RuntimeDatabaseConfiguration.class)))
-                .thenReturn(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, identifierCasePolicySet));
+                .thenReturn(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, identifierCasePolicySet));
         when(getMetadataLoader().load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("public"));
         RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"),
                 ignored -> Optional.of(runtimeDatabaseConfig), RuntimeDatabaseValidationServiceTest::createRecoveryPayload);
@@ -241,7 +243,7 @@ class RuntimeDatabaseValidationServiceTest {
     }
     
     private static RuntimeDatabaseProfile createProfile() {
-        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet());
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet());
     }
     
     private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration() {

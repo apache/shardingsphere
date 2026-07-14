@@ -47,7 +47,7 @@ final class ShardingWorkflowInputValidator {
                 && areSupportedIdentifiers(splitCsv(request.getShardingColumns()))) {
             return true;
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "intaking",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", WorkflowLifecycle.STEP_INTAKING,
                 "A sharding identifier contains unsupported characters.", "Use reviewable DistSQL identifiers only.", false, Map.of()));
         snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
         return false;

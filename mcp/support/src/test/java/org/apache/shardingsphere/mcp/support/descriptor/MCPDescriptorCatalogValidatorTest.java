@@ -49,13 +49,13 @@ class MCPDescriptorCatalogValidatorTest {
     void assertValidateScopedProtocolNonGoalFieldsAreNotRequired() {
         assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(
                 List.of(createResourceDescriptor(MCPResourceAnnotations.EMPTY)),
-                List.of(createToolDescriptor(new MCPToolAnnotations("Test Tool", true, false, true, true))))));
+                List.of(createToolDescriptor(createReadOnlyToolAnnotations())))));
     }
     
     @Test
     void assertValidateRejectsRemovedModelFacingOutputField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                "database_gateway_test_tool", createReadOnlyToolAnnotations(),
                 createOutputSchema(Map.of("recommended_next_tool", Map.of("type", "string", "description", "Removed alias.")))))),
                 "Tool `database_gateway_test_tool` model-facing contract must use canonical fields instead of removed `recommended_next_tool`.");
     }
@@ -66,7 +66,7 @@ class MCPDescriptorCatalogValidatorTest {
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.",
                 createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query."),
                         "user_overrides", Map.of("type", "object", "description", "Removed duplicate input."))),
-                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                createOutputSchema(), createReadOnlyToolAnnotations(), Map.of()))),
                 "Tool `database_gateway_test_tool` model-facing contract must use canonical fields instead of removed `user_overrides`.");
     }
     
@@ -75,7 +75,7 @@ class MCPDescriptorCatalogValidatorTest {
         assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.",
                 createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query.")), List.of("query", "required_arguments")),
-                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                createOutputSchema(), createReadOnlyToolAnnotations(), Map.of()))),
                 "Tool `database_gateway_test_tool` model-facing contract must use canonical fields instead of removed `required_arguments`.");
     }
     
@@ -85,7 +85,7 @@ class MCPDescriptorCatalogValidatorTest {
         inputSchema.put("oneOf", List.of(Map.of("required", List.of("query"))));
         assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.", inputSchema,
-                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                createOutputSchema(), createReadOnlyToolAnnotations(), Map.of()))),
                 "Tool `database_gateway_test_tool` inputSchema contains unsupported top-level field `oneOf`.");
     }
     
@@ -94,7 +94,7 @@ class MCPDescriptorCatalogValidatorTest {
         assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.",
                 createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query.", "pattern", ".+"))),
-                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                createOutputSchema(), createReadOnlyToolAnnotations(), Map.of()))),
                 "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query` contains unsupported field `pattern`.");
     }
     
@@ -102,7 +102,7 @@ class MCPDescriptorCatalogValidatorTest {
     void assertValidateRejectsUnknownRelatedResourceUri() {
         assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.", createInputSchema(),
-                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true),
+                createOutputSchema(), createReadOnlyToolAnnotations(),
                 Map.of(MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, List.of("shardingsphere://unknown"))))),
                 "Tool `database_gateway_test_tool` metadata `org.apache.shardingsphere/related-resource-uris` references unknown resource `shardingsphere://unknown`.");
     }
@@ -131,7 +131,8 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsPlanningToolReadOnlyHint() {
         String toolName = "database_gateway_test_plan_rule";
-        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", true, false, false, true),
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, MCPToolAnnotations.builder()
+                .title("Test Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(false).openWorldHint(true).build(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
                 "Planning tool `database_gateway_test_plan_rule` annotations.readOnlyHint must be false.");
     }
@@ -139,7 +140,8 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsPlanningToolDestructiveHint() {
         String toolName = "database_gateway_test_plan_rule";
-        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", false, true, false, true),
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, MCPToolAnnotations.builder()
+                .title("Test Tool").readOnlyHint(false).destructiveHint(true).idempotentHint(false).openWorldHint(true).build(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
                 "Planning tool `database_gateway_test_plan_rule` annotations.destructiveHint must be false.");
     }
@@ -147,7 +149,8 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsPlanningToolIdempotentHint() {
         String toolName = "database_gateway_test_plan_rule";
-        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", false, false, true, true),
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, MCPToolAnnotations.builder()
+                .title("Test Tool").readOnlyHint(false).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
                 "Planning tool `database_gateway_test_plan_rule` annotations.idempotentHint must be false.");
     }
@@ -155,7 +158,7 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsUnsupportedNextActionSchemaField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                "database_gateway_test_tool", createReadOnlyToolAnnotations(),
                 createOutputSchema(Map.of("next_actions", createNextActionsSchema("extra_context")))))),
                 "Tool `database_gateway_test_tool` next_actions item contains unsupported field `extra_context`.");
     }
@@ -163,7 +166,7 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsUnsupportedNextActionExampleField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                "database_gateway_test_tool", createReadOnlyToolAnnotations(),
                 createOutputSchema(Map.of("next_actions", createNextActionsSchema()), List.of(Map.of("next_actions", List.of(
                         Map.of("order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_test_tool", "arguments", Map.of(), "extra_context", "bad")))))))),
                 "Tool `database_gateway_test_tool` next_actions example `tool_call` contains unsupported field `extra_context`.");
@@ -172,7 +175,7 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsMissingNextActionExampleField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                "database_gateway_test_tool", createReadOnlyToolAnnotations(),
                 createOutputSchema(Map.of("next_actions", createNextActionsSchema()), List.of(Map.of("next_actions", List.of(
                         Map.of("order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_test_tool")))))))),
                 "Tool `database_gateway_test_tool` next_actions example `tool_call` must contain `arguments`.");
@@ -181,13 +184,13 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateAcceptsFeatureOwnedToolDescriptorWithoutExtensionMarker() {
         assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_extension_test_tool", new MCPToolAnnotations("Extension Tool", true, false, true, true), createOutputSchema())))));
+                "database_gateway_extension_test_tool", createReadOnlyToolAnnotations("Extension Tool"), createOutputSchema())))));
     }
     
     @Test
     void assertValidateRejectsIncompleteCoreToolDescriptor() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_search_metadata", new MCPToolAnnotations("Search Metadata", true, false, true, true), createOutputSchema()))),
+                "database_gateway_search_metadata", createReadOnlyToolAnnotations("Search Metadata"), createOutputSchema()))),
                 "Tool `database_gateway_search_metadata` outputSchema must declare `response_mode`.");
     }
     
@@ -308,7 +311,15 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     private MCPToolAnnotations createPlanningToolAnnotations() {
-        return new MCPToolAnnotations("Test Tool", false, false, false, true);
+        return MCPToolAnnotations.builder().title("Test Tool").readOnlyHint(false).destructiveHint(false).idempotentHint(false).openWorldHint(true).build();
+    }
+    
+    private MCPToolAnnotations createReadOnlyToolAnnotations() {
+        return createReadOnlyToolAnnotations("Test Tool");
+    }
+    
+    private MCPToolAnnotations createReadOnlyToolAnnotations(final String title) {
+        return MCPToolAnnotations.builder().title(title).readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build();
     }
     
     private Map<String, Object> createInputSchema() {

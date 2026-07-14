@@ -20,8 +20,10 @@ package org.apache.shardingsphere.mcp.core.tool.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.List;
@@ -30,7 +32,8 @@ import java.util.Map;
 /**
  * Search hit for metadata discovery.
  */
-@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
 @Getter
 public final class MetadataSearchHit {
     
@@ -85,7 +88,6 @@ public final class MetadataSearchHit {
      * @return search hit with match explanation
      */
     public MetadataSearchHit withMatch(final String matchKind, final List<String> matchedFields, final String matchedValue) {
-        return new MetadataSearchHit(database, schema, objectType, table, view, name, resource, parentResource, nextResources, derivationStatus, derivationReason,
-                matchKind, matchedFields, matchedValue);
+        return toBuilder().matchKind(matchKind).matchedFields(matchedFields).matchedValue(matchedValue).build();
     }
 }

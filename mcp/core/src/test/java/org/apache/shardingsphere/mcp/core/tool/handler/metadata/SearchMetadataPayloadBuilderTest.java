@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
@@ -93,7 +95,10 @@ class SearchMetadataPayloadBuilderTest {
     }
     
     private MetadataSearchHit createHit(final String database, final String schema, final String name, final List<String> matchedFields) {
-        return new MetadataSearchHit(database, schema, "table", name, "", name, Map.of(), Map.of(), List.of(), "complete", "", "exact", matchedFields, name);
+        return MetadataSearchHit.builder()
+                .database(database).schema(schema).objectType("table").table(name).view("").name(name)
+                .resource(Map.of()).parentResource(Map.of()).nextResources(List.of()).derivationStatus("complete").derivationReason("")
+                .matchKind("exact").matchedFields(matchedFields).matchedValue(name).build();
     }
     
     private MCPDatabaseHandlerContext createDatabaseContext() {
@@ -103,7 +108,7 @@ class SearchMetadataPayloadBuilderTest {
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(result.getCapabilityFacade()).thenReturn(capabilityFacade);
         when(metadataQueryFacade.queryDatabases()).thenReturn(
-                List.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
+                List.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
         when(metadataQueryFacade.querySchema("logic_db", "public")).thenReturn(Optional.of(mock(ShardingSphereSchema.class)));
         when(capabilityFacade.findDatabaseProfile("logic_db")).thenReturn(Optional.of(mock(RuntimeDatabaseProfile.class)));
         return result;

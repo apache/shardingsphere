@@ -37,7 +37,7 @@ public final class MCPToolAnnotations {
     private final boolean openWorldHint;
     
     @Builder
-    public MCPToolAnnotations(final String title, final boolean readOnlyHint, final boolean destructiveHint, final boolean idempotentHint, final boolean openWorldHint) {
+    private MCPToolAnnotations(final String title, final boolean readOnlyHint, final boolean destructiveHint, final boolean idempotentHint, final boolean openWorldHint) {
         this.title = title;
         this.readOnlyHint = readOnlyHint;
         this.destructiveHint = destructiveHint;

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -187,7 +189,7 @@ class WorkflowPlanningContextValidatorTest {
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata() {
-        return new RuntimeDatabaseProfile("logic_db", "Fixture", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet());
+        return new RuntimeDatabaseProfile("logic_db", "Fixture", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet());
     }
     
     private ShardingSphereSchema createSchemaMetadata() {

@@ -75,7 +75,7 @@ class MCPProtocolDescriptorCatalogTest {
     
     private MCPToolDescriptor createToolDescriptor() {
         return new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.", Map.of(), Map.of(),
-                new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of());
+                MCPToolAnnotations.builder().title("Test Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(), Map.of());
     }
     
     private MCPPromptDescriptor createPromptDescriptor() {
