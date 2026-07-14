@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ClickHouseDatabaseMetaDataTest {
     
@@ -49,11 +48,6 @@ class ClickHouseDatabaseMetaDataTest {
     @Test
     void assertGetDefaultNullsOrderType() {
         assertThat(dialectDatabaseMetaData.getDefaultNullsOrderType(), is(NullsOrderType.LOW));
-    }
-    
-    @Test
-    void assertIsCaseSensitive() {
-        assertTrue(dialectDatabaseMetaData.isCaseSensitive());
     }
     
     @Test

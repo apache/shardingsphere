@@ -93,11 +93,6 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
-    public boolean isCaseSensitive() {
-        return true;
-    }
-    
-    @Override
     public String getDatabaseType() {
         return "PostgreSQL";
     }

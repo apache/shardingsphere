@@ -34,7 +34,7 @@ public final class DefaultIdentifierCasePolicyProvider implements IdentifierCase
     @Override
     public Optional<IdentifierCasePolicySet> provide(final IdentifierCasePolicyProviderContext context) {
         DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, context.getDatabaseType());
-        return Optional.of(IdentifierCasePolicyFactory.newDialectDefaultPolicySet(dialectDatabaseMetaData.getIdentifierPatternType(), dialectDatabaseMetaData.isCaseSensitive()));
+        return Optional.of(IdentifierCasePolicyFactory.newDialectDefaultPolicySet(dialectDatabaseMetaData.getIdentifierPatternType()));
     }
     
     @Override

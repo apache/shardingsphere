@@ -90,10 +90,9 @@ public final class IdentifierCasePolicyFactory {
      * Create dialect default policy set.
      *
      * @param identifierPatternType identifier pattern type
-     * @param caseSensitive case-sensitive flag
      * @return dialect default policy set
      */
-    public static IdentifierCasePolicySet newDialectDefaultPolicySet(final IdentifierPatternType identifierPatternType, final boolean caseSensitive) {
+    public static IdentifierCasePolicySet newDialectDefaultPolicySet(final IdentifierPatternType identifierPatternType) {
         switch (identifierPatternType) {
             case LOWER_CASE:
                 return newLowerCasePolicySet();
@@ -101,7 +100,7 @@ public final class IdentifierCasePolicyFactory {
                 return newUpperCasePolicySet();
             case KEEP_ORIGIN:
             default:
-                return caseSensitive ? newSensitivePolicySet() : newInsensitivePolicySet();
+                return newInsensitivePolicySet();
         }
     }
     

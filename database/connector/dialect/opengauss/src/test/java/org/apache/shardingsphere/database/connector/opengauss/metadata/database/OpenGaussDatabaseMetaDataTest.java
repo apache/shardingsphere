@@ -125,11 +125,6 @@ class OpenGaussDatabaseMetaDataTest {
     }
     
     @Test
-    void assertIsCaseSensitive() {
-        assertTrue(dialectDatabaseMetaData.isCaseSensitive());
-    }
-    
-    @Test
     void assertGetFunctionOption() {
         assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(PostgreSQLFunctionOption.class));
     }
