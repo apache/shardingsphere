@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.exception.core.exception.SQLDialectExc
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.database.exception.core.exception.data.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
@@ -85,6 +86,11 @@ class MySQLDialectExceptionMapperTest {
         assertSQLExceptionWithMessage(mapper.convert(new AccessDeniedException("root", "127.0.0.1", true)), MySQLVendorError.ER_ACCESS_DENIED_ERROR, "root", "127.0.0.1", "YES");
     }
     
+    @Test
+    void assertConvertWithColumnNotFound() {
+        assertSQLExceptionWithMessage(mapper.convert(new ColumnNotFoundException("t_order", "order_id")), MySQLVendorError.ER_BAD_FIELD_ERROR, "order_id", "t_order");
+    }
+    
     private void assertSQLExceptionWithMessage(final SQLException actual, final VendorError vendorError, final Object... messageArgs) {
         assertSQLException(actual, vendorError);
         assertThat(actual.getMessage(), is(String.format(vendorError.getReason(), messageArgs)));
@@ -123,6 +129,7 @@ class MySQLDialectExceptionMapperTest {
                 Arguments.of("unknown_system_variable", UnknownSystemVariableException.class, MySQLVendorError.ER_UNKNOWN_SYSTEM_VARIABLE),
                 Arguments.of("error_local_variable", ErrorLocalVariableException.class, MySQLVendorError.ER_LOCAL_VARIABLE),
                 Arguments.of("error_global_variable", ErrorGlobalVariableException.class, MySQLVendorError.ER_GLOBAL_VARIABLE),
-                Arguments.of("incorrect_global_local_variable", IncorrectGlobalLocalVariableException.class, MySQLVendorError.ER_INCORRECT_GLOBAL_LOCAL_VAR));
+                Arguments.of("incorrect_global_local_variable", IncorrectGlobalLocalVariableException.class, MySQLVendorError.ER_INCORRECT_GLOBAL_LOCAL_VAR),
+                Arguments.of("column_not_found", ColumnNotFoundException.class, MySQLVendorError.ER_BAD_FIELD_ERROR));
     }
 }

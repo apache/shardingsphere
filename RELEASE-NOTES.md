@@ -47,6 +47,7 @@
 
 ### Enhancements
 
+1. Proxy: Add MySQL exception mapping for ColumnNotFoundException - [#39126](https://github.com/apache/shardingsphere/pull/39126)
 1. Build: Support compiling and using ShardingSphere under OpenJDK 26 - [#38625](https://github.com/apache/shardingsphere/issues/38625)
 1. SQL Parser: Support Hive OPTIMIZE Statement about iceberg statement parse - [#38877](https://github.com/apache/shardingsphere/pull/38877)
 1. SQL Parser: Support Hive DELETE ORPHAN-FILES Statement about iceberg statement parse - [#38669](https://github.com/apache/shardingsphere/pull/38669)

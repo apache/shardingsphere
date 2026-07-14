@@ -50,6 +50,8 @@ public enum MySQLVendorError implements VendorError {
     
     ER_TABLE_EXISTS_ERROR(XOpenSQLState.DUPLICATE, 1050, "Table '%s' already exists"),
     
+    ER_BAD_FIELD_ERROR(XOpenSQLState.COLUMN_NOT_FOUND, 1054, "Unknown column '%s' in '%s'"),
+    
     ER_DUP_ENTRY(XOpenSQLState.INTEGRITY_CONSTRAINT_VIOLATION, 1062, "Duplicate entry '%s' for key %d"),
     
     ER_PARSE_ERROR(XOpenSQLState.SYNTAX_ERROR, 1064, "%s near '%s' at line %d"),
