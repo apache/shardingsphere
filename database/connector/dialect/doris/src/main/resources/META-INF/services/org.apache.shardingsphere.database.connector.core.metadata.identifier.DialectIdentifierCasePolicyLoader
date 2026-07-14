@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.database.connector.oracle.metadata.identifier.OracleIdentifierCasePolicyProvider
+org.apache.shardingsphere.database.connector.doris.metadata.identifier.DorisIdentifierCasePolicyLoader

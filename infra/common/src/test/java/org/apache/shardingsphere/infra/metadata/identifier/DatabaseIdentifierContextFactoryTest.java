@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -39,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -60,7 +63,10 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 
 class DatabaseIdentifierContextFactoryTest {
     
@@ -228,24 +234,38 @@ class DatabaseIdentifierContextFactoryTest {
     }
     
     @Test
+    void assertCreateWhenIdentifierCasePolicyLoadingFails() {
+        SQLException expectedCause = new SQLException("identifier policy unavailable");
+        try (MockedStatic<IdentifierCasePolicyResolver> mockedResolver = mockStatic(IdentifierCasePolicyResolver.class)) {
+            mockedResolver.when(() -> IdentifierCasePolicyResolver.resolveStorage(any(DatabaseType.class), any(DataSource.class))).thenThrow(expectedCause);
+            SQLWrapperException actual = assertThrows(SQLWrapperException.class, () -> DatabaseIdentifierContextFactory.create(
+                    ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties())));
+            assertThat(actual.getCause(), is(expectedCause));
+        }
+    }
+    
+    @Test
     void assertCreateEnablesHeterogeneousLookupWhenAnyStorageTypeDiffersFromProtocolEvenIfFirstMatches() {
-        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA,
+                createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE));
         assertTrue(actual.isHeterogeneousTableLookupEnabled());
     }
     
     @Test
     void assertRefreshEnablesHeterogeneousLookupWhenAnyStorageTypeDiffersFromProtocolEvenIfFirstMatches() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
-        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA,
+                createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE));
         assertTrue(actual.isHeterogeneousTableLookupEnabled());
     }
     
     @Test
     void assertCreateEnablesHeterogeneousLookupRegardlessOfStorageUnitIterationOrder() {
+        ConfigurationProperties props = createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE);
         DatabaseIdentifierContext mysqlFirstActual = DatabaseIdentifierContextFactory.create(
-                MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+                MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA, props);
         DatabaseIdentifierContext oracleFirstActual = DatabaseIdentifierContextFactory.create(
-                MYSQL_DATABASE_TYPE, ORACLE_MYSQL_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+                MYSQL_DATABASE_TYPE, ORACLE_MYSQL_MIXED_RESOURCE_META_DATA, props);
         assertTrue(mysqlFirstActual.isHeterogeneousTableLookupEnabled());
         assertTrue(oracleFirstActual.isHeterogeneousTableLookupEnabled());
     }

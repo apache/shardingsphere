@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.database.connector.mysql.metadata.identifier.MySQLIdentifierCasePolicyProvider
+org.apache.shardingsphere.database.connector.mariadb.metadata.identifier.MariaDBIdentifierCasePolicyLoader

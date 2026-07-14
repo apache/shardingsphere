@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * Provider context of identifier case policies.
+ * Dialect loader of identifier case policies.
  */
-@RequiredArgsConstructor
-@Getter
-public final class IdentifierCasePolicyProviderContext {
+@SingletonSPI
+public interface DialectIdentifierCasePolicyLoader extends DatabaseTypedSPI {
     
-    private final DatabaseType databaseType;
-    
-    private final DataSource dataSource;
+    /**
+     * Load identifier case policies from database runtime state.
+     *
+     * @param connection database connection
+     * @return identifier case policies
+     * @throws SQLException SQL exception
+     */
+    IdentifierCasePolicySet load(Connection connection) throws SQLException;
 }

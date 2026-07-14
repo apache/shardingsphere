@@ -19,13 +19,11 @@ package org.apache.shardingsphere.database.connector.postgresql.metadata.identif
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * PostgreSQL provider of identifier case rules.
@@ -33,11 +31,11 @@ import java.util.Optional;
 public final class PostgreSQLIdentifierCasePolicyProvider implements IdentifierCasePolicyProvider {
     
     @Override
-    public Optional<IdentifierCasePolicySet> provide(final IdentifierCasePolicyProviderContext context) {
+    public IdentifierCasePolicySet provide() {
         IdentifierCasePolicySet lowerCasePolicySet = IdentifierCasePolicyFactory.newLowerCasePolicySet();
         Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
         scopedRules.put(IdentifierScope.SCHEMA, IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.SCHEMA));
-        return Optional.of(new IdentifierCasePolicySet(lowerCasePolicySet.getPolicy(IdentifierScope.TABLE), scopedRules));
+        return new IdentifierCasePolicySet(lowerCasePolicySet.getPolicy(IdentifierScope.TABLE), scopedRules);
     }
     
     @Override

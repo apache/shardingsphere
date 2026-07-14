@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.oracle.metadata.identifier;
+package org.apache.shardingsphere.database.connector.mariadb.metadata.identifier;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DialectIdentifierCasePolicyLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.mysql.metadata.identifier.MySQLIdentifierCasePolicyLoader;
 
-import java.util.Optional;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * Oracle provider of identifier case rules.
+ * MariaDB loader of identifier case policies.
  */
-public final class OracleIdentifierCasePolicyProvider implements IdentifierCasePolicyProvider {
+public final class MariaDBIdentifierCasePolicyLoader implements DialectIdentifierCasePolicyLoader {
+    
+    private final MySQLIdentifierCasePolicyLoader delegate = new MySQLIdentifierCasePolicyLoader();
     
     @Override
-    public Optional<IdentifierCasePolicySet> provide(final IdentifierCasePolicyProviderContext context) {
-        return Optional.of(IdentifierCasePolicyFactory.newUpperCasePolicySet());
+    public IdentifierCasePolicySet load(final Connection connection) throws SQLException {
+        return delegate.load(connection);
     }
     
     @Override
     public String getDatabaseType() {
-        return "Oracle";
+        return "MariaDB";
     }
 }

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.database.connector.mysql.metadata.identifier;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DialectIdentifierCasePolicyLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,46 +30,35 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
- * MySQL provider of identifier case policies.
+ * MySQL loader of identifier case policies.
  */
-public final class MySQLIdentifierCasePolicyProvider implements IdentifierCasePolicyProvider {
+public final class MySQLIdentifierCasePolicyLoader implements DialectIdentifierCasePolicyLoader {
     
     private static final String QUERY_LOWER_CASE_TABLE_NAMES = "SELECT @@lower_case_table_names";
     
     @Override
-    public Optional<IdentifierCasePolicySet> provide(final IdentifierCasePolicyProviderContext context) {
-        if (null == context.getDataSource()) {
-            return Optional.empty();
-        }
-        try (Connection connection = context.getDataSource().getConnection()) {
-            if (null == connection) {
-                return Optional.empty();
-            }
-            try (
-                    PreparedStatement preparedStatement = connection.prepareStatement(QUERY_LOWER_CASE_TABLE_NAMES);
-                    ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next() ? createPolicySet(resultSet.getInt(1)) : Optional.empty();
-            }
-        } catch (final SQLException ignored) {
-            return Optional.empty();
+    public IdentifierCasePolicySet load(final Connection connection) throws SQLException {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(QUERY_LOWER_CASE_TABLE_NAMES);
+                ResultSet resultSet = preparedStatement.executeQuery()) {
+            ShardingSpherePreconditions.checkState(resultSet.next(), () -> new SQLException("No lower_case_table_names value was returned."));
+            return createPolicySet(resultSet.getInt(1));
         }
     }
     
-    private Optional<IdentifierCasePolicySet> createPolicySet(final int lowerCaseTableNames) {
-        if (1 == lowerCaseTableNames || 2 == lowerCaseTableNames) {
-            return Optional.of(IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet());
-        }
+    private IdentifierCasePolicySet createPolicySet(final int lowerCaseTableNames) throws SQLException {
         if (0 == lowerCaseTableNames) {
             Map<IdentifierScope, IdentifierCasePolicy> scopedPolicies = new EnumMap<>(IdentifierScope.class);
             scopedPolicies.put(IdentifierScope.SCHEMA, IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet().getPolicy(IdentifierScope.SCHEMA));
             scopedPolicies.put(IdentifierScope.TABLE, IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE));
             scopedPolicies.put(IdentifierScope.VIEW, IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.VIEW));
-            return Optional.of(new IdentifierCasePolicySet(IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE), scopedPolicies));
+            return new IdentifierCasePolicySet(IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE), scopedPolicies);
         }
-        return Optional.empty();
+        ShardingSpherePreconditions.checkState(1 == lowerCaseTableNames || 2 == lowerCaseTableNames,
+                () -> new SQLException(String.format("Unsupported lower_case_table_names value `%s`.", lowerCaseTableNames)));
+        return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
     }
     
     @Override
