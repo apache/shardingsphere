@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.DatabaseMetadataFixture;
-import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestScopeFixture;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestContextFixture;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
@@ -290,16 +290,16 @@ class SearchMetadataToolServiceTest {
     }
     
     private MetadataSearchResult execute(final List<DatabaseMetadataFixture> databaseMetadata, final MetadataSearchRequest request) {
-        try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(databaseMetadata)) {
-            MCPRequestScope requestScope = requestScopeFixture.getRequestScope();
-            return new SearchMetadataToolService(requestScope.getMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class)).execute(request);
+        try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(databaseMetadata)) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
+            return new SearchMetadataToolService(requestContext.getMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class)).execute(request);
         }
     }
     
     private MetadataSearchResult execute(final List<DatabaseMetadataFixture> databaseMetadata, final MCPFeatureQueryFacade queryFacade, final MetadataSearchRequest request) {
-        try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(databaseMetadata)) {
-            MCPRequestScope requestScope = requestScopeFixture.getRequestScope();
-            return new SearchMetadataToolService(requestScope.getMetadataQueryFacade(), queryFacade).execute(request);
+        try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(databaseMetadata)) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
+            return new SearchMetadataToolService(requestContext.getMetadataQueryFacade(), queryFacade).execute(request);
         }
     }
     

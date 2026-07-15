@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.payload.MCPDatabaseCapabilityPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
@@ -27,13 +27,13 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 /**
  * Handler for database capabilities resource URI.
  */
-public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
+public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private static final String URI_PATTERN = "shardingsphere://databases/{database}/capabilities";
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -42,8 +42,8 @@ public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCP
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
-        var databaseCapabilityProvider = databaseContext.getCapabilityFacade();
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+        var databaseCapabilityProvider = requestContext.getCapabilityFacade();
         String databaseName = uriVariables.getValue("database");
         return databaseCapabilityProvider.provide(databaseName).<MCPSuccessPayload>map(MCPDatabaseCapabilityPayload::new).orElseThrow(DatabaseCapabilityNotFoundException::new);
     }

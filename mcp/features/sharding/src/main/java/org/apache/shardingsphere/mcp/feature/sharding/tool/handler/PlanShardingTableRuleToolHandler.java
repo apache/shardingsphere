@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
 import java.util.Map;
@@ -45,7 +45,7 @@ public final class PlanShardingTableRuleToolHandler extends AbstractShardingPlan
     }
     
     @Override
-    protected WorkflowContextSnapshot plan(final MCPWorkflowRequestContext workflowContext, final ShardingWorkflowRequest request) {
-        return planningService.planTableRule(workflowContext.getWorkflowSessionContext(), workflowContext.getQueryFacade(), request);
+    protected WorkflowContextSnapshot plan(final MCPFeatureRequestContext requestContext, final ShardingWorkflowRequest request) {
+        return planningService.planTableRule(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
     }
 }

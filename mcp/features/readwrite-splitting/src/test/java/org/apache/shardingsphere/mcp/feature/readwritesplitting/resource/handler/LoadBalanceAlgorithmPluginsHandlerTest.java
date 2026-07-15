@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handle
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -44,10 +44,10 @@ class LoadBalanceAlgorithmPluginsHandlerTest {
             LoadBalanceAlgorithmPluginsHandler handler = new LoadBalanceAlgorithmPluginsHandler();
             ReadwriteSplittingInspectionService inspectionService = mocked.constructed().getFirst();
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-            MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
-            when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+            MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+            when(requestContext.getQueryFacade()).thenReturn(queryFacade);
             when(inspectionService.queryLoadBalanceAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "ROUND_ROBIN")));
-            MCPSuccessPayload actual = handler.handle(databaseContext, new MCPUriVariables(Map.of()));
+            MCPSuccessPayload actual = handler.handle(requestContext, new MCPUriVariables(Map.of()));
             verify(inspectionService).queryLoadBalanceAlgorithmPlugins(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
             assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"));

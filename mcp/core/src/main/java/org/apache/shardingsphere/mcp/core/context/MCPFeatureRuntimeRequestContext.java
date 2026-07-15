@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.context.RequestScopedMetadataContext;
@@ -31,17 +32,16 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFa
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * MCP request scope.
+ * MCP feature runtime request context.
  */
 @Getter
-public final class MCPRequestScope implements MCPWorkflowRequestContext {
+public final class MCPFeatureRuntimeRequestContext implements MCPFeatureRequestContext {
     
     private final String sessionId;
     
@@ -64,7 +64,7 @@ public final class MCPRequestScope implements MCPWorkflowRequestContext {
     
     private final MCPFeatureQueryFacade queryFacade;
     
-    public MCPRequestScope(final MCPRuntimeContext runtimeContext, final String sessionId) {
+    public MCPFeatureRuntimeRequestContext(final MCPRuntimeContext runtimeContext, final String sessionId) {
         this.sessionId = sessionId;
         activeTransport = runtimeContext.getActiveTransport();
         databaseCapabilityProvider = runtimeContext.getDatabaseCapabilityProvider();
@@ -91,5 +91,4 @@ public final class MCPRequestScope implements MCPWorkflowRequestContext {
     public Optional<MCPSessionIdentity> findSessionIdentity() {
         return sessionIdentity;
     }
-    
 }

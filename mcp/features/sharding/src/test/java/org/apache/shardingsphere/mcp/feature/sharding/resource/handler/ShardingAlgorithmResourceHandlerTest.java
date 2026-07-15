@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -49,9 +49,9 @@ class ShardingAlgorithmResourceHandlerTest {
         try (
                 MockedConstruction<ShardingInspectionService> ignored = mockConstruction(
                         ShardingInspectionService.class, (mock, context) -> stubInspectionService(mock, rows))) {
-            MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
-            when(databaseContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
-            MCPSuccessPayload actual = handlerSupplier.get().handle(databaseContext, uriVariables);
+            MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+            when(requestContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
+            MCPSuccessPayload actual = handlerSupplier.get().handle(requestContext, uriVariables);
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(rows.size()));
             assertThat(actual.toPayload().get("self_uri"), is(expectedSelfUri));
         }

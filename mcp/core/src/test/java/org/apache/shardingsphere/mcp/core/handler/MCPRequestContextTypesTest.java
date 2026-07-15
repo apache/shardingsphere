@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.mcp.core.handler;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -40,7 +39,7 @@ class MCPRequestContextTypesTest {
     }
     
     private static Stream<Class<?>> getSupportedContextTypes() {
-        return Stream.of(MCPRequestContext.class, MCPDatabaseRequestContext.class, MCPWorkflowRequestContext.class);
+        return Stream.of(MCPRequestContext.class, MCPFeatureRequestContext.class);
     }
     
     @Test

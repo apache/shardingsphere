@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.payload.RuntimeDatabaseValidationPayload;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.Map;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
@@ -29,15 +29,15 @@ import org.apache.shardingsphere.mcp.support.database.tool.service.RuntimeDataba
 /**
  * Handler for runtime database validation tool.
  */
-public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<MCPDatabaseRequestContext> {
+public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     public static final String TOOL_NAME = "database_gateway_validate_runtime_database";
     
     private final RuntimeDatabaseValidationService validationService = new RuntimeDatabaseValidationService();
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -46,8 +46,8 @@ public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         return RuntimeDatabaseValidationPayload.from(
-                validationService.validate(RuntimeDatabaseValidationRequest.from(arguments), databaseContext::findRuntimeDatabaseConfiguration));
+                validationService.validate(RuntimeDatabaseValidationRequest.from(arguments), requestContext::findRuntimeDatabaseConfiguration));
     }
 }

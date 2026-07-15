@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlann
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
@@ -59,7 +59,7 @@ class PlanMaskRuleToolHandlerTest {
             MaskWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
             when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPSuccessPayload actual = handler.handle(fixture.workflowContext, Map.of(
+            MCPSuccessPayload actual = handler.handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone",
@@ -79,7 +79,7 @@ class PlanMaskRuleToolHandlerTest {
         try (MockedConstruction<MaskWorkflowPlanningService> mockedConstruction = mockConstruction(MaskWorkflowPlanningService.class)) {
             PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
             when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
-            MCPSuccessPayload actual = handler.handle(createWorkflowContextFixture().workflowContext, Map.of(
+            MCPSuccessPayload actual = handler.handle(createWorkflowContextFixture().requestContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone"));
@@ -112,7 +112,7 @@ class PlanMaskRuleToolHandlerTest {
             MaskWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
             when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            handler.handle(fixture.workflowContext, Map.of(
+            handler.handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
                     "primary_algorithm_properties", Map.of("replace-char", Map.of("secret_ref", "placeholder://secret-value-1"))));
             ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
@@ -173,7 +173,7 @@ class PlanMaskRuleToolHandlerTest {
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {
-        MCPWorkflowRequestContext result = mock(MCPWorkflowRequestContext.class);
+        MCPFeatureRequestContext result = mock(MCPFeatureRequestContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -186,7 +186,7 @@ class PlanMaskRuleToolHandlerTest {
         return new WorkflowContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
     
-    private record WorkflowContextFixture(MCPWorkflowRequestContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    private record WorkflowContextFixture(MCPFeatureRequestContext requestContext, WorkflowSessionContext workflowSessionContext,
                                           MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }
