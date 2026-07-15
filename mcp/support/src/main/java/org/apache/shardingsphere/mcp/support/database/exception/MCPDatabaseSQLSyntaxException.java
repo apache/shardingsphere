@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.handler.execute;
+package org.apache.shardingsphere.mcp.support.database.exception;
 
-import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
 import java.sql.SQLException;
 
 /**
- * Exception for rule DistSQL execution failures that need workflow-aware recovery.
+ * MCP database SQL syntax exception.
  */
-@Getter
-public final class RuleDistSQLExecutionException extends MCPInvalidRequestException {
+public final class MCPDatabaseSQLSyntaxException extends MCPInvalidRequestException {
     
-    private static final long serialVersionUID = -5256057044313402728L;
+    private static final long serialVersionUID = 8170209785725635050L;
     
-    private final String database;
-    
-    private final ClassificationResult classificationResult;
-    
-    public RuleDistSQLExecutionException(final String database, final ClassificationResult classificationResult, final SQLException cause) {
-        super(String.format("Rule DistSQL execution failed for database `%s`; check MCP runtime capability and workflow guidance before asking for corrected SQL.", database), cause);
-        this.database = database;
-        this.classificationResult = classificationResult;
+    public MCPDatabaseSQLSyntaxException(final SQLException cause) {
+        super(cause.getMessage(), cause);
     }
 }

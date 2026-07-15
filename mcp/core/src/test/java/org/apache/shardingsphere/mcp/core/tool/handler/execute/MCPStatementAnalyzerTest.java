@@ -129,6 +129,14 @@ class MCPStatementAnalyzerTest {
         assertThat(actual.getReferencedObjectNames(), contains("*.*"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("dclNamespaceCases")
+    void assertAnalyzeDCLNamespaceReference(final String name, final String sql) {
+        ClassificationResult actual = analyzer.analyze(sql, createCapability("PostgreSQL"));
+        assertThat(actual.getReferencedObjectNames(), contains("other_db"));
+        assertTrue(actual.getReferencedObjects().iterator().next().isNamespaceTarget());
+    }
+    
     @Test
     void assertAnalyzeQualifiedFunctionReference() {
         ClassificationResult actual = analyzer.analyze("SELECT other_db.foo_refresh_orders()", createCapability("MySQL"));
@@ -168,6 +176,12 @@ class MCPStatementAnalyzerTest {
                 Arguments.of("ClickHouse", "SELECT 1"),
                 Arguments.of("Hive", "SELECT 1"),
                 Arguments.of("Presto", "SELECT 1"));
+    }
+    
+    private static Stream<Arguments> dclNamespaceCases() {
+        return Stream.of(
+                Arguments.of("database", "GRANT CONNECT ON DATABASE other_db TO PUBLIC"),
+                Arguments.of("schema", "GRANT USAGE ON SCHEMA other_db TO PUBLIC"));
     }
     
     private static Stream<Arguments> statementCases() {

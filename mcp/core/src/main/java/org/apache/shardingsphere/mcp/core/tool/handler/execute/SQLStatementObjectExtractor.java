@@ -93,11 +93,16 @@ final class SQLStatementObjectExtractor {
         }
         for (int index = 0; index < tokens.size(); index++) {
             if (scanner.isKeyword(tokens.get(index), "ON")) {
+                int objectTypeIndex = index + 1;
                 int objectStartIndex = skipDCLObjectType(tokens, index + 1);
-                addObjectName(tokens, objectStartIndex, findObjectNameEnd(tokens, objectStartIndex), result);
+                addObjectName(tokens, objectStartIndex, findObjectNameEnd(tokens, objectStartIndex), isNamespaceObjectType(tokens, objectTypeIndex), result);
                 return;
             }
         }
+    }
+    
+    private boolean isNamespaceObjectType(final List<SQLStatementToken> tokens, final int index) {
+        return index < tokens.size() && (scanner.isKeyword(tokens.get(index), "DATABASE") || scanner.isKeyword(tokens.get(index), "SCHEMA"));
     }
     
     private int skipDCLObjectType(final List<SQLStatementToken> tokens, final int startIndex) {
@@ -109,7 +114,7 @@ final class SQLStatementObjectExtractor {
         while (index < tokens.size()) {
             int objectNameEnd = findObjectNameEnd(tokens, index);
             if (objectNameEnd - index > 1 && objectNameEnd < tokens.size() && "(".equals(tokens.get(objectNameEnd).text())) {
-                addObjectName(tokens, index, objectNameEnd, result);
+                addObjectName(tokens, index, objectNameEnd, false, result);
                 index = objectNameEnd + 1;
             } else {
                 index++;
@@ -132,7 +137,8 @@ final class SQLStatementObjectExtractor {
         return token.identifier() || "*".equals(token.text());
     }
     
-    private void addObjectName(final List<SQLStatementToken> tokens, final int startIndex, final int stopIndex, final Collection<SQLStatementObjectName> result) {
+    private void addObjectName(final List<SQLStatementToken> tokens, final int startIndex, final int stopIndex, final boolean namespaceTarget,
+                               final Collection<SQLStatementObjectName> result) {
         if (startIndex >= stopIndex) {
             return;
         }
@@ -140,7 +146,7 @@ final class SQLStatementObjectExtractor {
         for (int index = startIndex; index < stopIndex; index += 2) {
             identifiers.add(new IdentifierValue(tokens.get(index).text()));
         }
-        result.add(SQLStatementObjectName.from(identifiers));
+        result.add(namespaceTarget ? SQLStatementObjectName.fromNamespace(identifiers) : SQLStatementObjectName.from(identifiers));
     }
     
     private void extractDirectTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
@@ -188,24 +194,24 @@ final class SQLStatementObjectExtractor {
     
     private void extractDatabaseTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            addName(((CreateDatabaseStatement) sqlStatement).getDatabaseName(), result);
+            addNamespaceName(((CreateDatabaseStatement) sqlStatement).getDatabaseName(), result);
         } else if (sqlStatement instanceof AlterDatabaseStatement) {
-            addName(((AlterDatabaseStatement) sqlStatement).getDatabaseName(), result);
-            ((AlterDatabaseStatement) sqlStatement).getRenameDatabaseName().ifPresent(name -> addName(name, result));
+            addNamespaceName(((AlterDatabaseStatement) sqlStatement).getDatabaseName(), result);
+            ((AlterDatabaseStatement) sqlStatement).getRenameDatabaseName().ifPresent(name -> addNamespaceName(name, result));
         } else if (sqlStatement instanceof DropDatabaseStatement) {
-            addName(((DropDatabaseStatement) sqlStatement).getDatabaseName(), result);
+            addNamespaceName(((DropDatabaseStatement) sqlStatement).getDatabaseName(), result);
         }
     }
     
     private void extractSchemaTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
         if (sqlStatement instanceof CreateSchemaStatement) {
-            ((CreateSchemaStatement) sqlStatement).getSchemaName().ifPresent(schema -> addIdentifier(schema, result));
+            ((CreateSchemaStatement) sqlStatement).getSchemaName().ifPresent(schema -> addNamespaceIdentifier(schema, result));
         } else if (sqlStatement instanceof AlterSchemaStatement) {
-            addIdentifier(((AlterSchemaStatement) sqlStatement).getSchemaName(), result);
-            ((AlterSchemaStatement) sqlStatement).getRenameSchema().ifPresent(schema -> addIdentifier(schema, result));
+            addNamespaceIdentifier(((AlterSchemaStatement) sqlStatement).getSchemaName(), result);
+            ((AlterSchemaStatement) sqlStatement).getRenameSchema().ifPresent(schema -> addNamespaceIdentifier(schema, result));
         } else if (sqlStatement instanceof DropSchemaStatement) {
             for (IdentifierValue each : ((DropSchemaStatement) sqlStatement).getSchemaNames()) {
-                addIdentifier(each, result);
+                addNamespaceIdentifier(each, result);
             }
         }
     }
@@ -319,9 +325,15 @@ final class SQLStatementObjectExtractor {
         }
     }
     
-    private void addIdentifier(final IdentifierValue identifier, final Collection<SQLStatementObjectName> result) {
+    private void addNamespaceName(final String name, final Collection<SQLStatementObjectName> result) {
+        if (null != name && !name.isEmpty()) {
+            result.add(SQLStatementObjectName.fromNormalizedNamespaceName(name));
+        }
+    }
+    
+    private void addNamespaceIdentifier(final IdentifierValue identifier, final Collection<SQLStatementObjectName> result) {
         if (null != identifier) {
-            result.add(SQLStatementObjectName.from(Optional.empty(), identifier));
+            result.add(SQLStatementObjectName.fromNamespace(identifier));
         }
     }
 }

@@ -472,7 +472,7 @@ class MCPSQLExecutionFacadeTest {
     private MCPSQLExecutionFacade createFacade(final MCPDatabaseCapabilityProvider capabilityProvider, final MCPSessionExecutionCoordinator coordinator,
                                                final MCPJdbcTransactionStatementExecutor transactionExecutor, final MCPJdbcStatementExecutor statementExecutor,
                                                final SQLExecutionTraceFactory traceFactory, final MCPStatementAnalyzer statementAnalyzer) {
-        return new MCPSQLExecutionFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, statementAnalyzer, new SQLStatementScanner(), traceFactory);
+        return new MCPSQLExecutionFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, statementAnalyzer, traceFactory);
     }
     
     @SuppressWarnings("unchecked")
@@ -520,6 +520,7 @@ class MCPSQLExecutionFacadeTest {
                 Arguments.of("qualified function", "SELECT other_db.foo_refresh_orders()", "other_db.foo_refresh_orders", "QUERY"),
                 Arguments.of("create database target", "CREATE DATABASE other_db", "other_db", "DDL"),
                 Arguments.of("commented create database target", "/* guard */ CREATE DATABASE other_db", "other_db", "DDL"),
+                Arguments.of("create schema target", "CREATE SCHEMA other_db", "other_db", "DDL"),
                 Arguments.of("drop table object list", "DROP TABLE IF EXISTS logic_db.orders, other_db.items", "other_db.items", "DDL"),
                 Arguments.of("truncate table", "TRUNCATE TABLE other_db.items", "other_db.items", "DDL"));
     }
@@ -540,7 +541,8 @@ class MCPSQLExecutionFacadeTest {
     private static Stream<Arguments> assertExecuteExplainWithSyntaxFailureCases() {
         return Stream.of(
                 Arguments.of("JDBC syntax exception", new MCPInvalidRequestException("bad explain", new SQLSyntaxErrorException("bad explain"))),
-                Arguments.of("SQLState syntax exception", new MCPQueryFailedException("bad explain", new SQLException("bad explain", "42601"))));
+                Arguments.of("SQLState syntax exception", new MCPQueryFailedException("bad explain", new SQLException("bad explain", "42601"))),
+                Arguments.of("MySQL vendor syntax exception", new MCPQueryFailedException("bad explain", new SQLException("bad explain", "42000", 1064))));
     }
     
     private SQLExecutionRequest createExecutionRequest(final String sql) {
