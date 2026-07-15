@@ -19,7 +19,6 @@ package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 
 import java.util.Locale;
 import java.util.function.UnaryOperator;
@@ -84,24 +83,6 @@ public final class IdentifierCasePolicyFactory {
      */
     public static IdentifierCasePolicySet newMySQLInsensitivePolicySet() {
         return newQuotedInsensitivePolicySet();
-    }
-    
-    /**
-     * Create dialect default policy set.
-     *
-     * @param identifierPatternType identifier pattern type
-     * @return dialect default policy set
-     */
-    public static IdentifierCasePolicySet newDialectDefaultPolicySet(final IdentifierPatternType identifierPatternType) {
-        switch (identifierPatternType) {
-            case LOWER_CASE:
-                return newLowerCasePolicySet();
-            case UPPER_CASE:
-                return newUpperCasePolicySet();
-            case KEEP_ORIGIN:
-            default:
-                return newInsensitivePolicySet();
-        }
     }
     
     private static String toLowerCase(final String value) {

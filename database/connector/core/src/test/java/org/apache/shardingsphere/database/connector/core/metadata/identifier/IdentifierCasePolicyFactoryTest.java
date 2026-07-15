@@ -18,13 +18,7 @@
 package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -76,22 +70,5 @@ class IdentifierCasePolicyFactoryTest {
         assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.NORMALIZED));
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("newDialectDefaultPolicySetArguments")
-    void assertNewDialectDefaultPolicySet(final String name, final IdentifierPatternType identifierPatternType, final LookupMode expectedQuotedLookupMode, final LookupMode expectedUnquotedLookupMode,
-                                          final String storedName, final String actualIdentifier, final boolean expected) {
-        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newDialectDefaultPolicySet(identifierPatternType).getPolicy(IdentifierScope.TABLE);
-        assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(expectedQuotedLookupMode));
-        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
-        assertThat(actual.matches(storedName, actualIdentifier, QuoteCharacter.NONE), is(expected));
-    }
-    
-    private static Stream<Arguments> newDialectDefaultPolicySetArguments() {
-        return Stream.of(
-                Arguments.of("lower_case", IdentifierPatternType.LOWER_CASE, LookupMode.EXACT, LookupMode.NORMALIZED, "foo", "FOO", true),
-                Arguments.of("upper_case", IdentifierPatternType.UPPER_CASE, LookupMode.EXACT, LookupMode.NORMALIZED, "FOO", "foo", true),
-                Arguments.of("keep_origin", IdentifierPatternType.KEEP_ORIGIN, LookupMode.EXACT, LookupMode.NORMALIZED, "Foo", "FOO", true));
     }
 }
