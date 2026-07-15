@@ -26,7 +26,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * openGauss provider of identifier case rules.
@@ -34,11 +33,11 @@ import java.util.Optional;
 public final class OpenGaussIdentifierCasePolicyProvider implements IdentifierCasePolicyProvider {
     
     @Override
-    public Optional<IdentifierCasePolicySet> provide(final IdentifierCasePolicyProviderContext context) {
+    public IdentifierCasePolicySet provide(final IdentifierCasePolicyProviderContext context) {
         IdentifierCasePolicySet lowerCasePolicySet = IdentifierCasePolicyFactory.newLowerCasePolicySet();
         Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
         scopedRules.put(IdentifierScope.SCHEMA, IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.SCHEMA));
-        return Optional.of(new IdentifierCasePolicySet(lowerCasePolicySet.getPolicy(IdentifierScope.TABLE), scopedRules));
+        return new IdentifierCasePolicySet(lowerCasePolicySet.getPolicy(IdentifierScope.TABLE), scopedRules);
     }
     
     @Override
