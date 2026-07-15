@@ -267,7 +267,7 @@ class MCPErrorConverterTest {
     @Test
     void assertConvertUnsupportedMessageWithoutRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPUnsupportedException(
-                "database_gateway_execute_query only supports classifier-approved QUERY statements.")).toPayload();
+                "database_gateway_execute_query only supports parser-approved QUERY statements.")).toPayload();
         assertFalse(actual.containsKey("recovery"));
     }
     
@@ -281,7 +281,7 @@ class MCPErrorConverterTest {
         when(classificationResult.getSavepointName()).thenReturn(Optional.empty());
         Map<String, Object> suggestedArguments = Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID'", "execution_mode", "preview");
         Map<String, Object> actual = MCPErrorConverter.convert(new SQLToolMismatchException(
-                "database_gateway_execute_query only supports classifier-approved QUERY statements. "
+                "database_gateway_execute_query only supports parser-approved QUERY statements. "
                         + "Use database_gateway_execute_explain_query for EXPLAIN diagnostics or database_gateway_execute_update for side-effecting SQL.",
                 "database_gateway_execute_query", "database_gateway_execute_update", classificationResult, suggestedArguments)).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");

@@ -52,7 +52,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     private static final String RESULT_KIND_PREVIEW = "preview";
     
     private static final String PREVIEW_REVIEW_GUIDANCE = "Review normalized_sql and side_effect_scope before execution. "
-            + "This preview is classification-only; it does not guarantee parsing, rule validation, algorithm initialization, affected rows, or runtime success.";
+            + "This preview performs database-aware validation and classification; it does not guarantee rule validation, algorithm initialization, affected rows, or runtime success.";
     
     private static final String RULE_DIST_SQL_PREVIEW_REVIEW_GUIDANCE = PREVIEW_REVIEW_GUIDANCE
             + " For natural-language rule changes, prefer the matching database_gateway_plan_* workflow tool before raw execution.";
@@ -77,7 +77,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         String executionMode = resolveExecutionMode(toolArguments);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
         String sql = toolArguments.getStringArgument("sql");
-        ClassificationResult classificationResult = checkUpdateStatement(toolArguments, sql);
+        ClassificationResult classificationResult = checkUpdateStatement(databaseContext, toolArguments, sql);
         if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return createPreviewResponse(toolArguments, classificationResult);
         }
@@ -85,8 +85,8 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
                 SQLExecutionToolHandlerSupport.createExecutionRequest(databaseContext.getSessionId(), toolArguments, sql, TOOL_NAME)));
     }
     
-    private ClassificationResult checkUpdateStatement(final MCPToolArguments toolArguments, final String sql) {
-        ClassificationResult classificationResult = new StatementClassifier().classify(sql);
+    private ClassificationResult checkUpdateStatement(final MCPDatabaseRequestContext databaseContext, final MCPToolArguments toolArguments, final String sql) {
+        ClassificationResult classificationResult = SQLExecutionToolHandlerSupport.analyze(databaseContext, toolArguments, sql);
         if (SQLExecutionToolHandlerSupport.isQueryStatement(classificationResult)) {
             throw new SQLToolMismatchException("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL.",
                     TOOL_NAME, "database_gateway_execute_query", classificationResult,

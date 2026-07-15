@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestScopeFixture;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
-import org.apache.shardingsphere.mcp.core.tool.handler.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionStore;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
@@ -62,8 +61,6 @@ class MCPPerformanceBudgetSmokeTest {
     
     private static final long COMPLETION_BUDGET_MILLIS = 5000L;
     
-    private static final long SQL_CLASSIFIER_BUDGET_MILLIS = 5000L;
-    
     private static final int DESCRIPTOR_ITERATIONS = 100;
     
     private static final int REQUEST_SCOPE_ITERATIONS = 200;
@@ -73,8 +70,6 @@ class MCPPerformanceBudgetSmokeTest {
     private static final int WORKFLOW_PLAN_PAYLOAD_ITERATIONS = 1000;
     
     private static final int COMPLETION_ITERATIONS = 1000;
-    
-    private static final int SQL_CLASSIFIER_ITERATIONS = 1000;
     
     @Test
     void assertDescriptorGenerationBudget() {
@@ -148,18 +143,6 @@ class MCPPerformanceBudgetSmokeTest {
             }
         });
         assertWithinBudget("workflow plan id completion", elapsedMillis, COMPLETION_BUDGET_MILLIS);
-    }
-    
-    @Test
-    void assertSQLClassifierBudget() {
-        StatementClassifier classifier = new StatementClassifier();
-        assertDoesNotThrow(() -> classifier.classify("SELECT * FROM orders WHERE order_id = 1"));
-        long elapsedMillis = measureElapsedMillis(() -> {
-            for (int i = 0; i < SQL_CLASSIFIER_ITERATIONS; i++) {
-                classifier.classify("SELECT * FROM orders WHERE order_id = 1");
-            }
-        });
-        assertWithinBudget("SQL classifier", elapsedMillis, SQL_CLASSIFIER_BUDGET_MILLIS);
     }
     
     private WorkflowContextSnapshot createWorkflowSnapshot(final String planId) {

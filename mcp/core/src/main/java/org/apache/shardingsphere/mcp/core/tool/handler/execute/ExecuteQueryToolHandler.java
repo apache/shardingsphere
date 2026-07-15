@@ -48,17 +48,17 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
     public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String sql = toolArguments.getStringArgument("sql");
-        checkReadOnlyQuery(toolArguments, sql);
+        checkReadOnlyQuery(databaseContext, toolArguments, sql);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
         return SQLExecutionPayload.query(databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(databaseContext.getSessionId(), toolArguments,
                 SQLExecutionToolHandlerSupport.resolveSchema(databaseContext, toolArguments), sql, TOOL_NAME)));
     }
     
-    private void checkReadOnlyQuery(final MCPToolArguments toolArguments, final String sql) {
-        ClassificationResult classificationResult = new StatementClassifier().classify(sql);
+    private void checkReadOnlyQuery(final MCPDatabaseRequestContext databaseContext, final MCPToolArguments toolArguments, final String sql) {
+        ClassificationResult classificationResult = SQLExecutionToolHandlerSupport.analyze(databaseContext, toolArguments, sql);
         if (!SQLExecutionToolHandlerSupport.isQueryStatement(classificationResult)) {
             throw new SQLToolMismatchException(
-                    "database_gateway_execute_query only supports classifier-approved QUERY statements. "
+                    "database_gateway_execute_query only supports parser-approved QUERY statements. "
                             + "Use database_gateway_execute_explain_query for EXPLAIN diagnostics or database_gateway_execute_update for side-effecting SQL.",
                     TOOL_NAME, "database_gateway_execute_update", classificationResult,
                     createSuggestedArguments(toolArguments, classificationResult));

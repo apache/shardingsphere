@@ -23,7 +23,9 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
@@ -33,6 +35,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -53,6 +56,7 @@ class ExecuteQueryToolHandlerTest {
         MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getSessionId()).thenReturn("session-1");
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        mockDatabaseCapability(databaseContext);
         MCPSuccessPayload actual = new ExecuteQueryToolHandler().handle(databaseContext, Map.of("database", "logic_db", "schema", "public", "sql", "select * from orders"));
         assertThat(actual.toPayload().get("statement_class"), is("query"));
         ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);
@@ -75,6 +79,7 @@ class ExecuteQueryToolHandlerTest {
         when(databaseContext.getSessionId()).thenReturn("session-1");
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
+        mockDatabaseCapability(databaseContext);
         new ExecuteQueryToolHandler().handle(databaseContext, Map.of("database", "logic_db", "sql", "select * from orders"));
         ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);
         verify(executionFacade).execute(requestCaptor.capture());
@@ -84,11 +89,11 @@ class ExecuteQueryToolHandlerTest {
     @Test
     void assertRejectExplain() {
         MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
+        mockDatabaseCapability(databaseContext);
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
                 () -> new ExecuteQueryToolHandler().handle(databaseContext,
                         Map.of("database", "logic_db", "schema", "public", "sql", "EXPLAIN SELECT * FROM orders")));
         assertThat(actual.getMessage(), is("Statement is not supported by the MCP contract."));
-        verifyNoInteractions(databaseContext);
     }
     
     @Test
@@ -96,6 +101,7 @@ class ExecuteQueryToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        mockDatabaseCapability(databaseContext);
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
                 () -> new ExecuteQueryToolHandler().handle(databaseContext, Map.of("database", "logic_db", "sql", "SELECT * FROM orders FOR UPDATE")));
         assertThat(actual.getMessage(), is("Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."));
@@ -107,10 +113,11 @@ class ExecuteQueryToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        mockDatabaseCapability(databaseContext);
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
                 () -> new ExecuteQueryToolHandler().handle(databaseContext, Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'")));
         assertThat(actual.getMessage(),
-                is("database_gateway_execute_query only supports classifier-approved QUERY statements. "
+                is("database_gateway_execute_query only supports parser-approved QUERY statements. "
                         + "Use database_gateway_execute_explain_query for EXPLAIN diagnostics or database_gateway_execute_update for side-effecting SQL."));
         verifyNoInteractions(executionFacade);
     }
@@ -120,6 +127,7 @@ class ExecuteQueryToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        mockDatabaseCapability(databaseContext);
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> new ExecuteQueryToolHandler().handle(databaseContext,
                         Map.of("database", "logic_db", "sql", "select * from orders", "max_rows", 5001)));
@@ -137,6 +145,7 @@ class ExecuteQueryToolHandlerTest {
         when(databaseContext.getSessionId()).thenReturn("session-1");
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
+        mockDatabaseCapability(databaseContext);
         new ExecuteQueryToolHandler().handle(databaseContext, Map.of("database", "logic_db", "sql", "select * from orders", "max_rows", 0));
         ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);
         verify(executionFacade).execute(requestCaptor.capture());
@@ -145,5 +154,13 @@ class ExecuteQueryToolHandlerTest {
     
     private SQLExecutionResult createQueryResult() {
         return SQLExecutionResult.resultSet(SupportedMCPStatement.QUERY, "SELECT", List.of(), List.of(), false, 100, 0, "SELECT * FROM orders");
+    }
+    
+    private void mockDatabaseCapability(final MCPDatabaseRequestContext databaseContext) {
+        MCPFeatureCapabilityFacade capabilityFacade = mock(MCPFeatureCapabilityFacade.class);
+        MCPDatabaseCapability capability = mock(MCPDatabaseCapability.class);
+        when(capability.getDatabaseType()).thenReturn("MySQL");
+        when(capabilityFacade.provide("logic_db")).thenReturn(Optional.of(capability));
+        when(databaseContext.getCapabilityFacade()).thenReturn(capabilityFacade);
     }
 }

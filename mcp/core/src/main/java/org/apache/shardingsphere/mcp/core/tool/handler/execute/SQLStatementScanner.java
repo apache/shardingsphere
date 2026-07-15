@@ -75,77 +75,6 @@ final class SQLStatementScanner {
         return sql.substring(startIndex, stopIndex).toUpperCase(Locale.ENGLISH);
     }
     
-    boolean matchesKeyword(final String sql, final int startIndex, final String keyword) {
-        int keywordLength = keyword.length();
-        if (startIndex + keywordLength > sql.length() || !sql.regionMatches(true, startIndex, keyword, 0, keywordLength)) {
-            return false;
-        }
-        return startIndex + keywordLength == sql.length() || !isIdentifierCharacter(sql.charAt(startIndex + keywordLength));
-    }
-    
-    int skipKeyword(final String sql, final int startIndex, final String keyword) {
-        if (!matchesKeyword(sql, startIndex, keyword)) {
-            throw new MCPUnsupportedSQLStatementException();
-        }
-        return startIndex + keyword.length();
-    }
-    
-    int skipIdentifier(final String sql, final int startIndex) {
-        if (startIndex >= sql.length()) {
-            throw new MCPUnsupportedSQLStatementException();
-        }
-        char currentChar = sql.charAt(startIndex);
-        if (isQuotedIdentifierStart(currentChar)) {
-            return skipQuotedText(sql, startIndex) + 1;
-        }
-        int result = startIndex;
-        while (result < sql.length()) {
-            currentChar = sql.charAt(result);
-            if (Character.isWhitespace(currentChar) || '(' == currentChar || ',' == currentChar) {
-                break;
-            }
-            result++;
-        }
-        return result;
-    }
-    
-    int skipParenthesizedSegment(final String sql, final int startIndex) {
-        return skipInsignificant(sql, findClosingParenthesis(sql, startIndex) + 1);
-    }
-    
-    int findClosingParenthesis(final String sql, final int startIndex) {
-        int parenthesesDepth = 0;
-        int result = startIndex;
-        while (result < sql.length()) {
-            char currentChar = sql.charAt(result);
-            if (isLineCommentStart(sql, result)) {
-                result = skipLineComment(sql, result) + 1;
-                continue;
-            }
-            if (isBlockCommentStart(sql, result)) {
-                result = skipBlockComment(sql, result) + 1;
-                continue;
-            }
-            if (isQuotedTextStart(currentChar)) {
-                result = skipQuotedText(sql, result) + 1;
-                continue;
-            }
-            if ('(' == currentChar) {
-                parenthesesDepth++;
-                result++;
-                continue;
-            }
-            if (')' == currentChar) {
-                parenthesesDepth--;
-                if (0 == parenthesesDepth) {
-                    return result;
-                }
-            }
-            result++;
-        }
-        throw new MCPUnsupportedSQLStatementException();
-    }
-    
     List<SQLStatementToken> tokenize(final String sql) {
         List<SQLStatementToken> result = new ArrayList<>(Math.max(1, sql.length() / 4));
         int currentIndex = 0;
@@ -193,23 +122,6 @@ final class SQLStatementScanner {
     
     boolean isKeyword(final SQLStatementToken token, final String keyword) {
         return !token.quotedIdentifier() && token.upperText().equals(keyword);
-    }
-    
-    String normalizeIdentifier(final String identifier) {
-        if (identifier.length() >= 2 && '"' == identifier.charAt(0) && '"' == identifier.charAt(identifier.length() - 1)) {
-            return identifier.substring(1, identifier.length() - 1).replace("\"\"", "\"");
-        }
-        if (identifier.length() >= 2 && '`' == identifier.charAt(0) && '`' == identifier.charAt(identifier.length() - 1)) {
-            return identifier.substring(1, identifier.length() - 1).replace("``", "`");
-        }
-        if (identifier.length() >= 2 && '[' == identifier.charAt(0) && ']' == identifier.charAt(identifier.length() - 1)) {
-            return identifier.substring(1, identifier.length() - 1).replace("]]", "]");
-        }
-        return identifier;
-    }
-    
-    String normalizeIdentifierForComparison(final String identifier) {
-        return normalizeIdentifier(identifier).toUpperCase(Locale.ENGLISH);
     }
     
     boolean containsExecutableComment(final String sql) {
