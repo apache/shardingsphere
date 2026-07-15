@@ -122,6 +122,17 @@ class DatabaseIdentifierContextFactoryTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("refreshWithProtocolTypeAndPropsArguments")
+    void assertRefreshWithProtocolTypeAndProps(final String name, final DatabaseType protocolType, final ConfigurationProperties props, final LookupMode expectedLookupMode,
+                                               final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, protocolType, props);
+        IdentifierCasePolicy actualRule = actual.getPolicy(IdentifierScope.TABLE);
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
+        assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("refreshWithResourceMetaDataAndPropsArguments")
     void assertRefreshWithResourceMetaDataAndProps(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
                                                    final ConfigurationProperties props, final LookupMode expectedLookupMode,
@@ -171,21 +182,6 @@ class DatabaseIdentifierContextFactoryTest {
         assertTrue(actual.isHeterogeneousTableLookupEnabled());
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
-    }
-    
-    @Test
-    void assertCreateDoesNotUseStorageDataSourceForProtocolPolicy() {
-        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE,
-                createResourceMetaDataWithStorageUnit("jdbc:oracle:thin:@localhost:1521:xe", createDataSourceFailingOnConnection()), new ConfigurationProperties(new Properties()));
-        assertTrue(actual.getPolicy(IdentifierScope.LOGICAL_TABLE).matches("t_order", "T_ORDER", QuoteCharacter.NONE));
-    }
-    
-    @Test
-    void assertRefreshDoesNotUseStorageDataSourceForProtocolPolicy() {
-        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
-        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE,
-                createResourceMetaDataWithStorageUnit("jdbc:oracle:thin:@localhost:1521:xe", createDataSourceFailingOnConnection()), new ConfigurationProperties(new Properties()));
-        assertTrue(actual.getPolicy(IdentifierScope.LOGICAL_TABLE).matches("t_order", "T_ORDER", QuoteCharacter.NONE));
     }
     
     @Test
@@ -393,17 +389,23 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static Stream<Arguments> createWithProtocolTypeAndPropsArguments() {
         return Stream.of(
-                Arguments.of("empty props use insensitive rules", DATABASE_TYPE, new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "Foo", "foo", true),
+                Arguments.of("null protocol type and null props use insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
                 Arguments.of("insensitive props normalize identifiers", DATABASE_TYPE,
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
     }
     
     private static Stream<Arguments> createWithResourceMetaDataAndPropsArguments() {
         return Stream.of(
-                Arguments.of("null resource metadata and empty props use insensitive rules", DATABASE_TYPE, null, new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "Foo", "foo",
-                        true),
+                Arguments.of("null resource metadata and null props use insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
                 Arguments.of("storage type overrides protocol type for oracle backend", MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
                         new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true));
+    }
+    
+    private static Stream<Arguments> refreshWithProtocolTypeAndPropsArguments() {
+        return Stream.of(
+                Arguments.of("null protocol type and null props refresh to insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
+                Arguments.of("insensitive props refresh to normalized lookup", DATABASE_TYPE,
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
     }
     
     private static Stream<Arguments> createWithSupportedDatabaseSchemaLookupArguments() {
@@ -437,9 +439,7 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static Stream<Arguments> refreshWithResourceMetaDataAndPropsArguments() {
         return Stream.of(
-                Arguments.of("null resource metadata and empty props refresh to insensitive rules", DATABASE_TYPE, null, new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "Foo",
-                        "foo",
-                        true),
+                Arguments.of("null resource metadata and null props refresh to insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
                 Arguments.of("refresh uses oracle storage type when protocol type is mysql", MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
                         new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true));
     }
@@ -678,19 +678,6 @@ class DatabaseIdentifierContextFactoryTest {
             storageUnits.put("ds_" + i, createStorageUnit("ds_" + i, urls[i]));
         }
         return new ResourceMetaData(Collections.emptyMap(), storageUnits);
-    }
-    
-    private static ResourceMetaData createResourceMetaDataWithStorageUnit(final String url, final DataSource dataSource) {
-        return new ResourceMetaData(Collections.emptyMap(), Collections.singletonMap("ds_0", createStorageUnit("ds_0", url, dataSource)));
-    }
-    
-    private static DataSource createDataSourceFailingOnConnection() {
-        return (DataSource) Proxy.newProxyInstance(DataSource.class.getClassLoader(), new Class[]{DataSource.class}, (proxy, method, args) -> {
-            if ("getConnection".equals(method.getName())) {
-                throw new AssertionError("Storage data source must not be used to resolve protocol policy.");
-            }
-            return null;
-        });
     }
     
     private static StorageUnit createStorageUnit(final String name, final String url) {

@@ -41,7 +41,7 @@ public final class MySQLIdentifierCasePolicyProvider implements IdentifierCasePo
     @Override
     public IdentifierCasePolicySet provide(final IdentifierCasePolicyProviderContext context) {
         if (null == context.getDataSource()) {
-            return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
+            return IdentifierCasePolicyFactory.newInsensitivePolicySet();
         }
         try (Connection connection = context.getDataSource().getConnection()) {
             if (null == connection) {

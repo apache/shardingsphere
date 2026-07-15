@@ -19,20 +19,23 @@ package org.apache.shardingsphere.infra.metadata.identifier;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Database identifier context factory.
@@ -57,8 +60,11 @@ public final class DatabaseIdentifierContextFactory {
      * @return identifier context
      */
     public static DatabaseIdentifierContext create(final DatabaseType protocolType, final ConfigurationProperties props) {
-        ResolvedIdentifierContext resolvedContext = resolve(protocolType, null, props);
-        return new DatabaseIdentifierContext(resolvedContext.policySet, resolvedContext.heterogeneousTableLookupEnabled);
+        ConfigurationProperties actualProps = getProps(props);
+        IdentifierCasePolicyResolver resolver = new IdentifierCasePolicyResolver();
+        IdentifierCasePolicySet protocolPolicySet = resolver.resolve(protocolType, actualProps, null);
+        IdentifierCasePolicySet scopeAwarePolicySet = createScopeAwarePolicySet(protocolPolicySet, protocolPolicySet);
+        return new DatabaseIdentifierContext(scopeAwarePolicySet, false);
     }
     
     /**
@@ -70,8 +76,27 @@ public final class DatabaseIdentifierContextFactory {
      * @return identifier context
      */
     public static DatabaseIdentifierContext create(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
-        ResolvedIdentifierContext resolvedContext = resolve(protocolType, resourceMetaData, props);
-        return new DatabaseIdentifierContext(resolvedContext.policySet, resolvedContext.heterogeneousTableLookupEnabled);
+        ConfigurationProperties actualProps = getProps(props);
+        IdentifierCasePolicyResolver resolver = new IdentifierCasePolicyResolver();
+        IdentifierCasePolicySet protocolPolicySet = resolver.resolve(protocolType, actualProps, getFirstDataSource(resourceMetaData));
+        Optional<DatabaseType> storageDatabaseType = getIdentifierPolicyDatabaseType(resourceMetaData);
+        IdentifierCasePolicySet storagePolicySet = resolver.resolve(storageDatabaseType.orElse(protocolType), actualProps, getFirstDataSource(resourceMetaData));
+        IdentifierCasePolicySet scopeAwarePolicySet = createScopeAwarePolicySet(protocolPolicySet, storagePolicySet);
+        return new DatabaseIdentifierContext(scopeAwarePolicySet, isHeterogeneous(protocolType, getStorageDatabaseTypes(resourceMetaData)));
+    }
+    
+    /**
+     * Refresh identifier context with protocol-aware identifier policies.
+     *
+     * @param identifierContext identifier context
+     * @param protocolType protocol type
+     * @param props configuration properties
+     */
+    public static void refresh(final DatabaseIdentifierContext identifierContext, final DatabaseType protocolType, final ConfigurationProperties props) {
+        ConfigurationProperties actualProps = getProps(props);
+        IdentifierCasePolicyResolver resolver = new IdentifierCasePolicyResolver();
+        IdentifierCasePolicySet protocolPolicySet = resolver.resolve(protocolType, actualProps, null);
+        identifierContext.refresh(createScopeAwarePolicySet(protocolPolicySet, protocolPolicySet), false);
     }
     
     /**
@@ -83,57 +108,70 @@ public final class DatabaseIdentifierContextFactory {
      * @param props configuration properties
      */
     public static void refresh(final DatabaseIdentifierContext identifierContext, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
-        ResolvedIdentifierContext resolvedContext = resolve(protocolType, resourceMetaData, props);
-        identifierContext.refresh(resolvedContext.policySet, resolvedContext.heterogeneousTableLookupEnabled);
+        ConfigurationProperties actualProps = getProps(props);
+        IdentifierCasePolicyResolver resolver = new IdentifierCasePolicyResolver();
+        IdentifierCasePolicySet protocolPolicySet = resolver.resolve(protocolType, actualProps, getFirstDataSource(resourceMetaData));
+        Optional<DatabaseType> storageDatabaseType = getIdentifierPolicyDatabaseType(resourceMetaData);
+        IdentifierCasePolicySet storagePolicySet = resolver.resolve(storageDatabaseType.orElse(protocolType), actualProps, getFirstDataSource(resourceMetaData));
+        identifierContext.refresh(createScopeAwarePolicySet(protocolPolicySet, storagePolicySet), isHeterogeneous(protocolType, getStorageDatabaseTypes(resourceMetaData)));
     }
     
-    private static ResolvedIdentifierContext resolve(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
-        Collection<StorageUnit> storageUnits = getStorageUnits(resourceMetaData);
-        StorageUnit storageUnit = storageUnits.stream().findFirst().orElse(null);
-        IdentifierCasePolicySet protocolPolicySet = IdentifierCasePolicyResolver.resolveProtocol(protocolType, props);
-        IdentifierCasePolicySet storagePolicySet = null == storageUnit
-                ? protocolPolicySet
-                : IdentifierCasePolicyResolver.resolveStorage(storageUnit.getStorageType(), props, storageUnit.getDataSource());
-        return new ResolvedIdentifierContext(createScopeAwarePolicySet(protocolPolicySet, storagePolicySet), isHeterogeneous(protocolType, storageUnits));
+    private static ConfigurationProperties getProps(final ConfigurationProperties props) {
+        return null == props ? new ConfigurationProperties(new Properties()) : props;
     }
     
-    private static Collection<StorageUnit> getStorageUnits(final ResourceMetaData resourceMetaData) {
+    private static DataSource getFirstDataSource(final ResourceMetaData resourceMetaData) {
         if (null == resourceMetaData || null == resourceMetaData.getStorageUnits() || resourceMetaData.getStorageUnits().isEmpty()) {
-            return Collections.emptyList();
+            return null;
         }
-        return resourceMetaData.getStorageUnits().values();
+        return resourceMetaData.getStorageUnits().values().iterator().next().getDataSource();
     }
     
     private static IdentifierCasePolicySet createScopeAwarePolicySet(final IdentifierCasePolicySet protocolPolicySet, final IdentifierCasePolicySet storagePolicySet) {
+        IdentifierCasePolicySet databasePolicySet = IdentifierCasePolicyFactory.newInsensitivePolicySet();
+        IdentifierCasePolicySet storageObjectPolicySet = IdentifierCasePolicyFactory.newQuotedInsensitivePolicySet();
         Map<IdentifierScope, IdentifierCasePolicy> scopedPolicies = new EnumMap<>(IdentifierScope.class);
         for (IdentifierScope each : IdentifierScope.values()) {
-            scopedPolicies.put(each, storagePolicySet.getPolicy(each));
+            if (IdentifierScope.DATABASE == each) {
+                scopedPolicies.put(each, databasePolicySet.getPolicy(each));
+                continue;
+            }
+            if (isStorageObjectScope(each)) {
+                scopedPolicies.put(each, storageObjectPolicySet.getPolicy(each));
+                continue;
+            }
+            scopedPolicies.put(each, IdentifierScope.SCHEMA == each ? protocolPolicySet.getPolicy(each) : storagePolicySet.getPolicy(each));
         }
-        IdentifierCasePolicy databasePolicy = IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.DATABASE);
-        IdentifierCasePolicy storageObjectPolicy = IdentifierCasePolicyFactory.newQuotedInsensitivePolicySet().getPolicy(IdentifierScope.COLUMN);
-        scopedPolicies.put(IdentifierScope.DATABASE, databasePolicy);
-        scopedPolicies.put(IdentifierScope.SCHEMA, protocolPolicySet.getPolicy(IdentifierScope.SCHEMA));
         scopedPolicies.put(IdentifierScope.LOGICAL_TABLE, protocolPolicySet.getPolicy(IdentifierScope.LOGICAL_TABLE));
-        scopedPolicies.put(IdentifierScope.COLUMN, storageObjectPolicy);
-        scopedPolicies.put(IdentifierScope.INDEX, storageObjectPolicy);
-        scopedPolicies.put(IdentifierScope.CONSTRAINT, storageObjectPolicy);
         return new IdentifierCasePolicySet(storagePolicySet.getPolicy(IdentifierScope.TABLE), scopedPolicies);
     }
     
-    private static boolean isHeterogeneous(final DatabaseType protocolType, final Collection<StorageUnit> storageUnits) {
-        return null != protocolType && null != protocolType.getType() && storageUnits.stream()
-                .map(StorageUnit::getStorageType).anyMatch(each -> null != each && null != each.getType() && !isSameProtocolType(protocolType, each));
+    private static boolean isStorageObjectScope(final IdentifierScope identifierScope) {
+        return IdentifierScope.COLUMN == identifierScope || IdentifierScope.INDEX == identifierScope || IdentifierScope.CONSTRAINT == identifierScope;
+    }
+    
+    private static Optional<DatabaseType> getIdentifierPolicyDatabaseType(final ResourceMetaData resourceMetaData) {
+        Collection<DatabaseType> storageDatabaseTypes = getStorageDatabaseTypes(resourceMetaData);
+        return storageDatabaseTypes.stream().findFirst();
+    }
+    
+    private static Collection<DatabaseType> getStorageDatabaseTypes(final ResourceMetaData resourceMetaData) {
+        if (null == resourceMetaData || null == resourceMetaData.getStorageUnits() || resourceMetaData.getStorageUnits().isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<DatabaseType> storageDatabaseTypes = new LinkedHashSet<>(resourceMetaData.getStorageUnits().size(), 1F);
+        for (StorageUnit each : resourceMetaData.getStorageUnits().values()) {
+            storageDatabaseTypes.add(each.getStorageType());
+        }
+        return storageDatabaseTypes;
+    }
+    
+    private static boolean isHeterogeneous(final DatabaseType protocolType, final Collection<DatabaseType> storageDatabaseTypes) {
+        return null != protocolType && null != protocolType.getType() && storageDatabaseTypes.stream()
+                .anyMatch(each -> null != each && null != each.getType() && !isSameProtocolType(protocolType, each));
     }
     
     private static boolean isSameProtocolType(final DatabaseType protocolType, final DatabaseType storageType) {
         return protocolType.getType().equalsIgnoreCase(storageType.getType());
-    }
-    
-    @RequiredArgsConstructor
-    private static final class ResolvedIdentifierContext {
-        
-        private final IdentifierCasePolicySet policySet;
-        
-        private final boolean heterogeneousTableLookupEnabled;
     }
 }

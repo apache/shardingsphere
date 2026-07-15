@@ -91,7 +91,7 @@ public final class MCPJdbcDatabaseProfileLoader {
     
     private IdentifierCasePolicySet resolveIdentifierCasePolicySet(final String databaseName, final DatabaseType databaseType,
                                                                    final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
-        return IdentifierCasePolicyResolver.resolveStorage(databaseType, new ConfigurationProperties(new Properties()),
+        return new IdentifierCasePolicyResolver().resolve(databaseType, new ConfigurationProperties(new Properties()),
                 new RuntimeDatabaseDataSource(databaseName, runtimeDatabaseConfig));
     }
     
