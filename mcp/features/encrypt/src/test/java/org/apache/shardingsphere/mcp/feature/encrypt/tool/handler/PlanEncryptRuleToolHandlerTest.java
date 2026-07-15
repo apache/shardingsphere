@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
@@ -60,7 +60,7 @@ class PlanEncryptRuleToolHandlerTest {
             EncryptWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
             when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = handler.handle(fixture.workflowContext, Map.of(
+            MCPSuccessPayload actual = handler.handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone",
@@ -82,7 +82,7 @@ class PlanEncryptRuleToolHandlerTest {
         try (MockedConstruction<EncryptWorkflowPlanningService> mockedConstruction = mockConstruction(EncryptWorkflowPlanningService.class)) {
             PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
             when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
-            MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, Map.of(
+            MCPSuccessPayload actual = handler.handle(createWorkflowContextFixture().workflowContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone"));
@@ -137,7 +137,7 @@ class PlanEncryptRuleToolHandlerTest {
         try (MockedConstruction<EncryptWorkflowPlanningService> mockedConstruction = mockConstruction(EncryptWorkflowPlanningService.class)) {
             PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
             when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any())).thenReturn(createClarifyingSnapshot());
-            MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, Map.of(
+            MCPSuccessPayload actual = handler.handle(createWorkflowContextFixture().workflowContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone"));

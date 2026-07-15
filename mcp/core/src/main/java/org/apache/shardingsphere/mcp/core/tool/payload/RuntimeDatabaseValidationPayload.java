@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.response;
+package org.apache.shardingsphere.mcp.core.tool.payload;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPRuntimeDatabaseRecoveryPayloadFactory;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationResult;
@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * MCP response for runtime database validation.
+ * Runtime database validation payload.
  */
-public final class RuntimeDatabaseValidationResponse implements MCPResponse {
+public final class RuntimeDatabaseValidationPayload implements MCPSuccessPayload {
     
     private static final String STATUS_READY = "ready";
     
@@ -40,7 +40,7 @@ public final class RuntimeDatabaseValidationResponse implements MCPResponse {
     
     private final Map<String, Object> recovery;
     
-    private RuntimeDatabaseValidationResponse(final RuntimeDatabaseValidationResult validationResult) {
+    private RuntimeDatabaseValidationPayload(final RuntimeDatabaseValidationResult validationResult) {
         this.validationResult = validationResult;
         recovery = isReady()
                 ? Map.of()
@@ -48,13 +48,13 @@ public final class RuntimeDatabaseValidationResponse implements MCPResponse {
     }
     
     /**
-     * Create a runtime database validation response.
+     * Create a runtime database validation payload.
      *
      * @param validationResult validation result
-     * @return validation response
+     * @return validation payload
      */
-    public static RuntimeDatabaseValidationResponse from(final RuntimeDatabaseValidationResult validationResult) {
-        return new RuntimeDatabaseValidationResponse(validationResult);
+    public static RuntimeDatabaseValidationPayload from(final RuntimeDatabaseValidationResult validationResult) {
+        return new RuntimeDatabaseValidationPayload(validationResult);
     }
     
     @Override

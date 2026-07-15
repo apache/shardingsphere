@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 
 import java.util.Map;
 
@@ -42,7 +42,7 @@ public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPReq
     }
     
     @Override
-    public MCPResponse handle(final MCPRequestContext handlerContext, final Map<String, Object> arguments) {
-        return new MCPMapResponse(Map.of("status", "ready", "echo", String.valueOf(arguments.get("message"))));
+    public MCPSuccessPayload handle(final MCPRequestContext handlerContext, final Map<String, Object> arguments) {
+        return new MCPMapPayload(Map.of("status", "ready", "echo", String.valueOf(arguments.get("message"))));
     }
 }

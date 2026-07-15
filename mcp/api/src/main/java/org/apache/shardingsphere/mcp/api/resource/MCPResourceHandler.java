@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.api.resource;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 
 /**
  * MCP resource handler.
@@ -49,8 +49,8 @@ public interface MCPResourceHandler<T extends MCPRequestContext> {
      *
      * @param context request context
      * @param uriVariables URI variables
-     * @return successful resource response
+     * @return successful resource payload
      * @throws ShardingSphereMCPException controlled failure to be converted by runtime
      */
-    MCPResponse handle(T context, MCPUriVariables uriVariables);
+    MCPSuccessPayload handle(T context, MCPUriVariables uriVariables);
 }

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.response;
+package org.apache.shardingsphere.mcp.support.database.payload;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
@@ -26,10 +26,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Response for database capability resources.
+ * Database capability resource payload.
  */
 @RequiredArgsConstructor
-public final class MCPDatabaseCapabilityResponse implements MCPResponse {
+public final class MCPDatabaseCapabilityPayload implements MCPSuccessPayload {
     
     private final MCPDatabaseCapability databaseCapability;
     

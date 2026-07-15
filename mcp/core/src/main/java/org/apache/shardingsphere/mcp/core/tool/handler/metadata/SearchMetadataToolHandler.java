@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
-
-import java.util.Map;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -54,13 +53,13 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String query = toolArguments.getStringArgument("query");
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), query,
                 toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES));
         MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade()).execute(request);
-        return new MCPItemsResponse(searchResult.getItems(), "", SearchMetadataPayloadBuilder.build(databaseContext, request, searchResult, TOOL_NAME), MCPResponseMode.SEARCH);
+        return new MCPItemsPayload(searchResult.getItems(), "", SearchMetadataPayloadBuilder.build(databaseContext, request, searchResult, TOOL_NAME), MCPResponseMode.SEARCH);
     }
 }

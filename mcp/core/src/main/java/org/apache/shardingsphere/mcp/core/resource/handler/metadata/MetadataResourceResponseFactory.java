@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
@@ -28,8 +28,8 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
 
 import java.util.Collections;
@@ -56,14 +56,14 @@ public final class MetadataResourceResponseFactory {
      * @param items mapped metadata items
      * @return metadata resource response
      */
-    public MCPResponse create(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables, final MCPResourceDescriptor descriptor,
-                              final ShardingSphereMCPResourceMetadata metadata, final List<?> items) {
+    public MCPSuccessPayload create(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables, final MCPResourceDescriptor descriptor,
+                                    final ShardingSphereMCPResourceMetadata metadata, final List<?> items) {
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
         if (isDetailResource(metadata)) {
             if (items.isEmpty()) {
                 appendEmptyStateGuidance(navigationPayload, metadata, databaseContext, uriVariables, descriptor.getUriTemplate());
             }
-            return new MCPMapResponse(createDetailPayload(metadata, items, navigationPayload));
+            return new MCPMapPayload(createDetailPayload(metadata, items, navigationPayload));
         }
         List<?> returnedItems = capListItems(items);
         appendListSizeMetadata(navigationPayload, items.size(), returnedItems.size());
@@ -73,7 +73,7 @@ public final class MetadataResourceResponseFactory {
         } else if (isTruncated(items, returnedItems)) {
             appendLargeResultGuidance(navigationPayload, metadata, uriVariables, items.size());
         }
-        return new MCPItemsResponse(returnedItems, navigationPayload);
+        return new MCPItemsPayload(returnedItems, navigationPayload);
     }
     
     private boolean isDetailResource(final ShardingSphereMCPResourceMetadata metadata) {

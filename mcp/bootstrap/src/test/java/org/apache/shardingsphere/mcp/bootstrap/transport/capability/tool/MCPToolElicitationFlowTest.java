@@ -20,12 +20,13 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
@@ -39,6 +40,8 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
@@ -63,11 +66,28 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
         assertInteractiveElicitation(createFormAndUrlClientCapabilities());
     }
     
+    @Test
+    void assertCreateToolSpecificationsHandleContinuationError() {
+        try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
+            String toolName = "database_gateway_plan_encrypt_rule";
+            MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
+            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), any()))
+                    .thenReturn(new MCPMapPayload(createClarifyingPayload()))
+                    .thenThrow(new DatabaseCapabilityNotFoundException());
+            McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT,
+                    Map.of("field_1", "foo_display", "field_2", true)));
+            CallToolResult actual = callTool(createToolSpecification("stdio"), exchange, toolName, Map.of());
+            assertTrue(actual.isError());
+            assertNull(actual.structuredContent());
+            assertThat(getTextContentPayload(actual).get("message"), is("Database capability does not exist."));
+        }
+    }
+    
     private void assertInteractiveElicitation(final McpSchema.ClientCapabilities clientCapabilities) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
-            MCPResponse clarifyingResponse = new MCPMapResponse(createClarifyingPayload());
-            MCPResponse plannedResponse = new MCPMapResponse(Map.of("status", "planned"));
+            MCPSuccessPayload clarifyingResponse = new MCPMapPayload(createClarifyingPayload());
+            MCPSuccessPayload plannedResponse = new MCPMapPayload(Map.of("status", "planned"));
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
             mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), any()))
                     .thenReturn(clarifyingResponse, plannedResponse);
@@ -104,7 +124,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     void assertCreateToolSpecificationsFallbackWithUrlModeForSensitiveQuestion() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
-            MCPResponse response = new MCPMapResponse(createClarifyingPayload(
+            MCPSuccessPayload response = new MCPMapPayload(createClarifyingPayload(
                     createClarifyingQuestion("primary_algorithm_properties.access-token", "string", false, "Provide access token.")));
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
@@ -138,7 +158,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
             Map<String, Object> expectedPayload = createClarifyingPayload(createClarifyingQuestion("requires_review", "boolean", false, "Require review?"));
-            MCPResponse response = new MCPMapResponse(expectedPayload);
+            MCPSuccessPayload response = new MCPMapPayload(expectedPayload);
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createAmbiguousPlanningToolDescriptor(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("field_1", true)));
@@ -153,7 +173,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
             Map<String, Object> expectedPayload = createClarifyingPayload();
-            MCPResponse response = new MCPMapResponse(expectedPayload);
+            MCPSuccessPayload response = new MCPMapPayload(expectedPayload);
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createUrlOnlyElicitationExchange();
@@ -167,7 +187,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     void assertCreateToolSpecificationsFallbackForStreamableHttp() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
-            MCPResponse response = new MCPMapResponse(createClarifyingPayload());
+            MCPSuccessPayload response = new MCPMapPayload(createClarifyingPayload());
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("field_1", "foo_display")));
@@ -181,7 +201,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
             Map<String, Object> expectedPayload = createClarifyingPayload(question);
-            MCPResponse response = new MCPMapResponse(expectedPayload);
+            MCPSuccessPayload response = new MCPMapPayload(expectedPayload);
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("custom_properties.display-name", "foo_display")));
@@ -196,7 +216,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
                                                                                 final String expectedInteraction) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
-            MCPResponse response = new MCPMapResponse(expectedPayload);
+            MCPSuccessPayload response = new MCPMapPayload(expectedPayload);
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("field_1", "foo_display")));
@@ -213,7 +233,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     void assertCreateToolSpecificationsSkipElicitationForNonPlanningTool() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
-            MCPResponse response = new MCPMapResponse(expectedPayload);
+            MCPSuccessPayload response = new MCPMapPayload(expectedPayload);
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptor("database_gateway_search_metadata"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of()));
@@ -227,7 +247,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     void assertCreateToolSpecificationsSkipElicitationWithoutRuntimeDescriptor() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
-            MCPResponse response = new MCPMapResponse(expectedPayload);
+            MCPSuccessPayload response = new MCPMapPayload(expectedPayload);
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptor("fixture_ping"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of()));
@@ -240,7 +260,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     @Test
     void assertCreateToolSpecificationsFallbackWithoutElicitation() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
-            MCPResponse response = new MCPMapResponse(createClarifyingPayload());
+            MCPSuccessPayload response = new MCPMapPayload(createClarifyingPayload());
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createExchange();
@@ -253,7 +273,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     @Test
     void assertCreateToolSpecificationsFallbackWithoutElicitationCapabilities() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
-            MCPResponse response = new MCPMapResponse(createClarifyingPayload());
+            MCPSuccessPayload response = new MCPMapPayload(createClarifyingPayload());
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSchema.ClientCapabilities clientCapabilities = new McpSchema.ClientCapabilities(Collections.emptyMap(), null, null, null);
@@ -304,7 +324,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     @Test
     void assertCreateToolSpecificationsFallbackWhenElicitationFails() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
-            MCPResponse response = new MCPMapResponse(createClarifyingPayload());
+            MCPSuccessPayload response = new MCPMapPayload(createClarifyingPayload());
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createThrowingElicitationExchange();
@@ -326,7 +346,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
                 MockedStatic<Clock> mockedClock = mockStatic(Clock.class)) {
             MutableClock clock = new MutableClock();
             mockedClock.when(Clock::systemUTC).thenReturn(clock);
-            MCPResponse response = new MCPMapResponse(createClarifyingPayload());
+            MCPSuccessPayload response = new MCPMapPayload(createClarifyingPayload());
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("field_1", "foo_display", "field_2", true)));
@@ -346,7 +366,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     
     private void assertCreateToolSpecificationsFallbackWhenElicitedContentInvalid(final Map<String, Object> expectedPayload, final Map<String, Object> elicitedContent) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
-            MCPResponse response = new MCPMapResponse(expectedPayload);
+            MCPSuccessPayload response = new MCPMapPayload(expectedPayload);
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, elicitedContent));
@@ -359,7 +379,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     
     private void assertCreateToolSpecificationsFallbackWhenElicitedContentInvalid(final String expectedReason, final McpSchema.ElicitResult elicitedResult) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
-            MCPResponse response = new MCPMapResponse(createClarifyingPayload());
+            MCPSuccessPayload response = new MCPMapPayload(createClarifyingPayload());
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(elicitedResult);
@@ -373,7 +393,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     private void assertCreateToolSpecificationsFallbackWhenElicitationAction(final McpSchema.ElicitResult.Action action) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
-            MCPResponse response = new MCPMapResponse(expectedPayload);
+            MCPSuccessPayload response = new MCPMapPayload(expectedPayload);
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(action, Map.of()));

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
@@ -97,7 +97,7 @@ class ToolDefinitionRegistryTest {
         try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
             MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata");
-            MCPResponse actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, Map.of("query", "order", "object_types", List.of("index")));
+            MCPSuccessPayload actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, Map.of("query", "order", "object_types", List.of("index")));
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
         }
@@ -246,7 +246,7 @@ class ToolDefinitionRegistryTest {
         }
     }
     
-    private static MCPResponse dispatch(final String toolName, final Map<String, Object> arguments) {
+    private static MCPSuccessPayload dispatch(final String toolName, final Map<String, Object> arguments) {
         return ToolDefinitionRegistry.dispatch(mock(MCPRequestScope.class), ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
     }
     

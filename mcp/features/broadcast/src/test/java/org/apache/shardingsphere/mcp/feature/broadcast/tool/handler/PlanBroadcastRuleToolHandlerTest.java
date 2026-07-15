@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
@@ -56,7 +56,7 @@ class PlanBroadcastRuleToolHandlerTest {
                 MockedConstruction<BroadcastWorkflowPlanningService> mocked = mockConstruction(BroadcastWorkflowPlanningService.class,
                         (mock, context) -> when(mock.plan(any(), any(), any())).thenReturn(createSnapshot("planned")))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanBroadcastRuleToolHandler().handle(fixture.workflowContext, Map.of(
+            MCPSuccessPayload actual = new PlanBroadcastRuleToolHandler().handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
                     "tables", "t_order",
                     "structured_intent_evidence", Map.of("tables", "t_order_item")));
@@ -72,7 +72,7 @@ class PlanBroadcastRuleToolHandlerTest {
         try (
                 MockedConstruction<BroadcastWorkflowPlanningService> ignored = mockConstruction(BroadcastWorkflowPlanningService.class,
                         (mock, context) -> when(mock.plan(any(), any(), any())).thenReturn(createSnapshot("planned")))) {
-            MCPResponse actual = new PlanBroadcastRuleToolHandler().handle(createWorkflowContextFixture().workflowContext,
+            MCPSuccessPayload actual = new PlanBroadcastRuleToolHandler().handle(createWorkflowContextFixture().workflowContext,
                     Map.of("database", "logic_db", "table", "t_order"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertFalse(actualPayload.containsKey("ddl_artifacts"));

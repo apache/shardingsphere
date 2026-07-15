@@ -120,8 +120,10 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     private ClassificationResult classify(final SQLExecutionRequest executionRequest) {
         try {
             return statementClassifier.classify(executionRequest.getSql());
-        } catch (final MCPUnsupportedException | IllegalArgumentException ex) {
+        } catch (final MCPUnsupportedException | MCPInvalidRequestException ex) {
             throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
+        } catch (final IllegalArgumentException ex) {
+            throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), new MCPInvalidRequestException(ex.getMessage(), ex));
         }
     }
     

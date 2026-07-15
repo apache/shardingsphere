@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.protocol.response;
+package org.apache.shardingsphere.mcp.support.protocol.payload;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -28,27 +28,27 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class MCPItemsResponseTest {
+class MCPItemsPayloadTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertToPayloadCases")
-    void assertToPayload(final String name, final MCPItemsResponse response, final Map<String, Object> expectedPayload) {
+    void assertToPayload(final String name, final MCPItemsPayload response, final Map<String, Object> expectedPayload) {
         Map<String, Object> actual = response.toPayload();
         assertThat(actual, is(expectedPayload));
     }
     
     private static Stream<Arguments> assertToPayloadCases() {
         return Stream.of(
-                Arguments.of("without page token", new MCPItemsResponse(List.of("foo_item")),
+                Arguments.of("without page token", new MCPItemsPayload(List.of("foo_item")),
                         Map.of("response_mode", "list", "items", List.of("foo_item"), "count", 1, "has_more", false, "continuation_mode", "none")),
-                Arguments.of("with null page token", new MCPItemsResponse(List.of("foo_item"), (String) null),
+                Arguments.of("with null page token", new MCPItemsPayload(List.of("foo_item"), (String) null),
                         Map.of("response_mode", "list", "items", List.of("foo_item"), "count", 1, "has_more", false, "continuation_mode", "none")),
-                Arguments.of("with page token", new MCPItemsResponse(List.of("foo_item"), "foo_token"),
+                Arguments.of("with page token", new MCPItemsPayload(List.of("foo_item"), "foo_token"),
                         Map.of("response_mode", "list", "items", List.of("foo_item"), "count", 1, "has_more", true, "next_page_token", "foo_token",
                                 "continuation_mode", "pagination")),
-                Arguments.of("with null items", new MCPItemsResponse(null),
+                Arguments.of("with null items", new MCPItemsPayload(null),
                         Map.of("response_mode", "list", "items", List.of(), "count", 0, "has_more", false, "continuation_mode", "none")),
-                Arguments.of("with navigation", new MCPItemsResponse(List.of("foo_item"), Map.of("self_uri", "shardingsphere://foo", "next_resources",
+                Arguments.of("with navigation", new MCPItemsPayload(List.of("foo_item"), Map.of("self_uri", "shardingsphere://foo", "next_resources",
                         List.of(Map.of("uri", "shardingsphere://foo/bar", "resource_kind", "resource", "purpose", "inspect_detail", "reason", "Read child.",
                                 "source_field", "next_resources")))),
                         Map.of("response_mode", "list", "items", List.of("foo_item"), "count", 1, "has_more", false, "continuation_mode", "none", "self_uri", "shardingsphere://foo",

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
@@ -37,9 +37,9 @@ public final class MCPResourceController {
      *
      * @param sessionId session identifier
      * @param resourceUri resource URI
-     * @return MCP response
+     * @return successful resource payload
      */
-    public MCPResponse handle(final String sessionId, final String resourceUri) {
+    public MCPSuccessPayload handle(final String sessionId, final String resourceUri) {
         return ResourceDefinitionRegistry.dispatch(new MCPRequestScope(runtimeContext, sessionId), resourceUri)
                 .orElseThrow(() -> new UnsupportedResourceUriException(resourceUri));
     }

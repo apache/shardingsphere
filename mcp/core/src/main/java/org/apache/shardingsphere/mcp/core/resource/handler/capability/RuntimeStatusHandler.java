@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 
@@ -55,7 +55,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseRequestContext handlerContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPDatabaseRequestContext handlerContext, final MCPUriVariables uriVariables) {
         List<RuntimeDatabaseProfile> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
         boolean hasConfiguredDatabase = !databases.isEmpty();
         Map<String, Object> result = new LinkedHashMap<>(15, 1F);
@@ -74,7 +74,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("diagnostics", createDiagnostics(hasConfiguredDatabase));
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(hasConfiguredDatabase));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActions(hasConfiguredDatabase));
-        return new MCPMapResponse(result);
+        return new MCPMapPayload(result);
     }
     
     private String createSummary(final boolean hasConfiguredDatabase, final int configuredDatabaseCount) {

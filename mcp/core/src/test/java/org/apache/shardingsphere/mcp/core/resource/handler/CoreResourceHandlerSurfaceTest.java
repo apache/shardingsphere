@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
@@ -32,10 +32,10 @@ import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapa
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.metadata.MetadataResourceHandler;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
-import org.apache.shardingsphere.mcp.support.database.response.MCPDatabaseCapabilityResponse;
+import org.apache.shardingsphere.mcp.support.database.payload.MCPDatabaseCapabilityPayload;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -70,15 +70,15 @@ class CoreResourceHandlerSurfaceTest {
     void assertHandle(final HandlerCase handlerCase) {
         try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = handle(handlerCase.getHandler(), requestContext, parseUriVariables(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri()));
+            MCPSuccessPayload actual = handle(handlerCase.getHandler(), requestContext, parseUriVariables(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri()));
             Map<String, Object> actualPayload = actual.toPayload();
             if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
-                assertThat(actual, isA(MCPDatabaseCapabilityResponse.class));
+                assertThat(actual, isA(MCPDatabaseCapabilityPayload.class));
                 assertThat(actualPayload.get("database"), is(handlerCase.getExpectedDatabase()));
                 return;
             }
             if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
-                assertThat(actual, isA(MCPMapResponse.class));
+                assertThat(actual, isA(MCPMapPayload.class));
                 assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
                 assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://guidance"));
                 assertTrue(((List<?>) actualPayload.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
@@ -89,7 +89,7 @@ class CoreResourceHandlerSurfaceTest {
                 return;
             }
             if (HandlerResultType.SERVICE_GUIDANCE == handlerCase.getExpectedType()) {
-                assertThat(actual, isA(MCPMapResponse.class));
+                assertThat(actual, isA(MCPMapPayload.class));
                 assertThat(actualPayload.get("response_mode"), is("guidance"));
                 assertThat(actualPayload.get("guidance_resource"), is("shardingsphere://guidance"));
                 assertTrue(actualPayload.containsKey("model_contract"));
@@ -104,7 +104,7 @@ class CoreResourceHandlerSurfaceTest {
     void assertHandleWithoutIndexMetadata() {
         try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
             MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
-            MCPResponse actual = new MetadataResourceHandler(
+            MCPSuccessPayload actual = new MetadataResourceHandler(
                     "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                     (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().queryIndexes(
                             uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table")))
@@ -112,7 +112,7 @@ class CoreResourceHandlerSurfaceTest {
                             parseUriVariables("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                                     "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
             Map<String, Object> actualPayload = actual.toPayload();
-            assertThat(actual, isA(MCPItemsResponse.class));
+            assertThat(actual, isA(MCPItemsPayload.class));
             assertThat(actualPayload.get("count"), is(0));
             assertThat(actualPayload.get("self_uri"), is("shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
         }
@@ -147,17 +147,17 @@ class CoreResourceHandlerSurfaceTest {
         return new MCPUriPattern(uriTemplate).parse(resourceUri).orElseThrow();
     }
     
-    private <T extends MCPRequestContext> MCPResponse handle(final MCPResourceHandler<T> handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
+    private <T extends MCPRequestContext> MCPSuccessPayload handle(final MCPResourceHandler<T> handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
         return handler.handle(handler.getContextType().cast(requestContext), uriVariables);
     }
     
-    private void assertMetadataResponse(final HandlerCase handlerCase, final MCPResponse actual, final Map<String, Object> actualPayload) {
+    private void assertMetadataResponse(final HandlerCase handlerCase, final MCPSuccessPayload actual, final Map<String, Object> actualPayload) {
         if (actualPayload.containsKey("resource_kind")) {
-            assertThat(actual, isA(MCPMapResponse.class));
+            assertThat(actual, isA(MCPMapPayload.class));
             assertThat(actualPayload.get("resource_kind"), is("detail"));
             assertThat(actualPayload.get("found"), is(!handlerCase.getExpectedObjectNames().isEmpty()));
         } else {
-            assertThat(actual, isA(MCPItemsResponse.class));
+            assertThat(actual, isA(MCPItemsPayload.class));
         }
         assertThat(actualPayload.get("count"), is(handlerCase.getExpectedObjectNames().size()));
         assertThat(actualPayload.get("self_uri"), is(handlerCase.getResourceUri()));

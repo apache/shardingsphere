@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
@@ -47,7 +47,7 @@ class ReadwriteSplittingRulesHandlerTest {
             MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
             when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
             when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(Map.of("name", "readwrite_ds")));
-            MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db")));
+            MCPSuccessPayload actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db")));
             verify(inspectionService).queryRules(queryFacade, "logic_db");
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
             assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/readwrite-splitting/databases/logic_db/rules"));

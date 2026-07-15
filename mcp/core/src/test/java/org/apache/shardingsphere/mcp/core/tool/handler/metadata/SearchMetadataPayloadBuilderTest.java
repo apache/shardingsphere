@@ -22,8 +22,8 @@ import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapabi
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;

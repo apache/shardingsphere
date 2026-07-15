@@ -19,10 +19,11 @@ package org.apache.shardingsphere.mcp.core.tool;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
@@ -56,14 +57,14 @@ class MCPToolControllerTest {
     @Test
     void assertHandle() {
         MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata");
-        MCPResponse response = mock(MCPResponse.class);
+        MCPSuccessPayload response = mock(MCPSuccessPayload.class);
         Map<String, Object> payload = Map.of("items", 1);
         when(response.toPayload()).thenReturn(payload);
         try (MockedStatic<ToolDefinitionRegistry> mocked = mockStatic(ToolDefinitionRegistry.class)) {
             mocked.when(() -> ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata")).thenReturn(toolDefinition);
             mocked.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(Map.of("query", "order"))))
                     .thenReturn(response);
-            MCPResponse actual = new MCPToolController(createRuntimeContext()).handle("session-1", "database_gateway_search_metadata", Map.of("query", "order"));
+            MCPSuccessPayload actual = new MCPToolController(createRuntimeContext()).handle("session-1", "database_gateway_search_metadata", Map.of("query", "order"));
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
             assertThat(actual.toPayload(), is(payload));
         }
@@ -72,7 +73,7 @@ class MCPToolControllerTest {
     @Test
     void assertHandleWithToolDefinition() {
         MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata");
-        MCPResponse response = mock(MCPResponse.class);
+        MCPSuccessPayload response = mock(MCPSuccessPayload.class);
         Map<String, Object> payload = Map.of("items", 1);
         when(response.toPayload()).thenReturn(payload);
         try (MockedStatic<ToolDefinitionRegistry> mocked = mockStatic(ToolDefinitionRegistry.class)) {
@@ -100,17 +101,17 @@ class MCPToolControllerTest {
             mocked.when(() -> ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata")).thenReturn(toolDefinition);
             mocked.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(Map.of("query", "order"))))
                     .thenThrow(new MCPUnsupportedException("Search is not supported."));
-            MCPResponse actual = new MCPToolController(createRuntimeContext()).handle("session-1", "database_gateway_search_metadata", Map.of("query", "order"));
+            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
+                    () -> new MCPToolController(createRuntimeContext()).handle("session-1", "database_gateway_search_metadata", Map.of("query", "order")));
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
-            Map<String, Object> actualPayload = actual.toPayload();
-            assertThat(actualPayload.get("message"), is("Search is not supported."));
+            assertThat(actual.getMessage(), is("Search is not supported."));
         }
     }
     
     @Test
     void assertHandleWithToolCallLimitExceeded() {
         MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata");
-        MCPResponse response = mock(MCPResponse.class);
+        MCPSuccessPayload response = mock(MCPSuccessPayload.class);
         when(response.toPayload()).thenReturn(Map.of("items", 1));
         try (MockedStatic<ToolDefinitionRegistry> mocked = mockStatic(ToolDefinitionRegistry.class)) {
             mocked.when(() -> ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata")).thenReturn(toolDefinition);
@@ -118,12 +119,13 @@ class MCPToolControllerTest {
                     .thenReturn(response);
             MCPToolController controller = createController(1);
             controller.handle("session-1", "database_gateway_search_metadata", Map.of("query", "order"));
-            MCPResponse actual = controller.handle("session-1", "database_gateway_search_metadata", Map.of("query", "order"));
-            Map<String, Object> actualPayload = actual.toPayload();
-            Map<?, ?> actualRecovery = (Map<?, ?>) actualPayload.get("recovery");
+            MCPToolCallLimitExceededException actual = assertThrows(MCPToolCallLimitExceededException.class,
+                    () -> controller.handle("session-1", "database_gateway_search_metadata", Map.of("query", "order")));
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
-            assertThat(actualPayload.get("message"), is("MCP session exceeded the maximum tool call quota of 1."));
-            assertThat(actualRecovery.get("category"), is("tool_call_limit_exceeded"));
+            assertThat(actual.getMessage(), is("MCP session exceeded the maximum tool call quota of 1."));
+            assertThat(actual.getSessionId(), is("session-1"));
+            assertThat(actual.getToolName(), is("database_gateway_search_metadata"));
+            assertThat(actual.getMaxToolCallsPerSession(), is(1));
         }
     }
     
@@ -139,13 +141,13 @@ class MCPToolControllerTest {
         when(handler.handle(any(), eq(Map.of()))).thenAnswer(invocation -> {
             handlerStarted.countDown();
             assertTrue(releaseHandler.await(1L, TimeUnit.SECONDS));
-            return mock(MCPResponse.class);
+            return mock(MCPSuccessPayload.class);
         });
         MCPToolDefinition toolDefinition = new MCPToolDefinition(
                 ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata").getDescriptor(), handler);
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         try {
-            Future<MCPResponse> toolFuture = executorService.submit(() -> new MCPToolController(runtimeContext).handle("session-1", toolDefinition, Map.of()));
+            Future<MCPSuccessPayload> toolFuture = executorService.submit(() -> new MCPToolController(runtimeContext).handle("session-1", toolDefinition, Map.of()));
             assertTrue(handlerStarted.await(1L, TimeUnit.SECONDS));
             assertFalse(toolFuture.isDone());
             Future<?> closeFuture = executorService.submit(() -> {

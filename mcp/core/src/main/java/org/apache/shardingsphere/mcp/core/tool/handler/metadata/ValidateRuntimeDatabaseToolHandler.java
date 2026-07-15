@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.core.tool.response.RuntimeDatabaseValidationResponse;
+import org.apache.shardingsphere.mcp.core.tool.payload.RuntimeDatabaseValidationPayload;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 
 import java.util.Map;
@@ -46,8 +46,8 @@ public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
-        return RuntimeDatabaseValidationResponse.from(
+    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+        return RuntimeDatabaseValidationPayload.from(
                 validationService.validate(RuntimeDatabaseValidationRequest.from(arguments), databaseContext::findRuntimeDatabaseConfiguration));
     }
 }

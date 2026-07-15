@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.response;
+package org.apache.shardingsphere.mcp.support.protocol.payload;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 
 import java.util.Map;
 
 /**
- * MCP response.
+ * MCP payload adapter for a fully assembled successful payload.
  *
- * <p>Tool and resource handlers return this type for successful calls. Controlled failures should be reported by throwing
- * {@link ShardingSphereMCPException}; runtime converts those failures to the protocol-specific MCP error surface.</p>
+ * <p>This thin adapter returns the supplied payload as-is. It does not copy, merge, normalize, validate against a tool schema,
+ * classify errors, or build a transport envelope. Callers must finish constructing the payload before wrapping it and must not mutate it afterwards.</p>
  */
-@FunctionalInterface
-public interface MCPResponse {
+@RequiredArgsConstructor
+public final class MCPMapPayload implements MCPSuccessPayload {
     
-    /**
-     * Convert response to payload.
-     *
-     * @return payload
-     */
-    Map<String, Object> toPayload();
+    private final Map<String, Object> payload;
+    
+    @Override
+    public Map<String, Object> toPayload() {
+        return payload;
+    }
 }

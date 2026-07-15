@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -50,9 +50,9 @@ public final class MCPToolElicitationFallbackResponseFactory {
      * @param payload original payload
      * @param fallbackReason fallback reason
      * @param clientCapabilities client elicitation capabilities
-     * @return MCP response
+     * @return fallback payload
      */
-    public MCPResponse create(final Map<String, Object> payload, final MCPToolElicitationFallbackReason fallbackReason, final MCPClientElicitationCapabilities clientCapabilities) {
+    public MCPSuccessPayload create(final Map<String, Object> payload, final MCPToolElicitationFallbackReason fallbackReason, final MCPClientElicitationCapabilities clientCapabilities) {
         Map<String, Object> result = new LinkedHashMap<>(payload);
         if (clarificationPolicy.hasSensitiveClarificationQuestions(payload)) {
             result.put(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS, createSanitizedClarificationQuestions(payload));
@@ -60,7 +60,7 @@ public final class MCPToolElicitationFallbackResponseFactory {
         }
         result.put(ELICITATION_SUPPORT_FIELD, createElicitationSupportPayload(clientCapabilities, fallbackReason.getSelectedInteraction()));
         result.put(FALLBACK_REASON_FIELD, fallbackReason.getValue());
-        return new MCPMapResponse(result);
+        return new MCPMapPayload(result);
     }
     
     private List<Map<String, Object>> createSanitizedClarificationQuestions(final Map<String, Object> payload) {

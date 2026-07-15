@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
@@ -54,7 +54,7 @@ class WorkflowValidationToolHandlerTest {
         WorkflowHandlerTestFixture.Context fixture = WorkflowHandlerTestFixture.createContext(snapshot);
         WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(
                 WorkflowHandlerTestFixture.createDefinition("encrypt.rule", workflowValidationHandler, mock(MCPWorkflowApplySynchronizationHandler.class)))));
-        MCPResponse actual = handler.handle(fixture.workflowContext(), Map.of("plan_id", "plan-1"));
+        MCPSuccessPayload actual = handler.handle(fixture.workflowContext(), Map.of("plan_id", "plan-1"));
         verify(workflowValidationHandler).validate(eq(fixture.workflowSessionContext()), eq(fixture.metadataQueryFacade()),
                 eq(fixture.queryFacade()), eq(fixture.executionFacade()), eq("session-1"), eq(snapshot));
         assertThat(actual.toPayload().get("status"), is("validated"));

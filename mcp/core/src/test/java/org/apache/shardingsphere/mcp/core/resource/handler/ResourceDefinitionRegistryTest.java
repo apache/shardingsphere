@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
@@ -54,7 +54,7 @@ class ResourceDefinitionRegistryTest {
     
     @Test
     void assertDispatch() {
-        Optional<MCPResponse> actual = ResourceDefinitionRegistry.dispatch(mock(MCPRequestScope.class), "shardingsphere://capabilities");
+        Optional<MCPSuccessPayload> actual = ResourceDefinitionRegistry.dispatch(mock(MCPRequestScope.class), "shardingsphere://capabilities");
         assertTrue(actual.isPresent());
         assertTrue(actual.get().toPayload().containsKey("supportedTools"));
     }

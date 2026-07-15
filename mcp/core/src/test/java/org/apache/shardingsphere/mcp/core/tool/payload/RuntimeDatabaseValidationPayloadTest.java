@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.response;
+package org.apache.shardingsphere.mcp.core.tool.payload;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
@@ -29,11 +29,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class RuntimeDatabaseValidationResponseTest {
+class RuntimeDatabaseValidationPayloadTest {
     
     @Test
     void assertReady() {
-        Map<String, Object> actual = RuntimeDatabaseValidationResponse.from(RuntimeDatabaseValidationResult.ready(
+        Map<String, Object> actual = RuntimeDatabaseValidationPayload.from(RuntimeDatabaseValidationResult.ready(
                 "logic_db", List.of(RuntimeDatabaseValidationCheckResult.passed("configuration", "Resolved the configured runtime database.")))).toPayload();
         assertThat(actual, is(Map.of(
                 "response_mode", "validation",
@@ -51,7 +51,7 @@ class RuntimeDatabaseValidationResponseTest {
     
     @Test
     void assertFailed() {
-        Map<String, Object> actual = RuntimeDatabaseValidationResponse.from(RuntimeDatabaseValidationResult.failed(
+        Map<String, Object> actual = RuntimeDatabaseValidationPayload.from(RuntimeDatabaseValidationResult.failed(
                 "logic_db", List.of(RuntimeDatabaseValidationCheckResult.failed("configuration", "invalid_configuration", "Database is not configured.")),
                 RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION)).toPayload();
         assertThat(actual.get("summary"), is("Runtime database `logic_db` failed validation with category `invalid_configuration`."));
@@ -65,7 +65,7 @@ class RuntimeDatabaseValidationResponseTest {
     
     @Test
     void assertFailedWithoutDatabase() {
-        Map<String, Object> actual = RuntimeDatabaseValidationResponse.from(RuntimeDatabaseValidationResult.failed(
+        Map<String, Object> actual = RuntimeDatabaseValidationPayload.from(RuntimeDatabaseValidationResult.failed(
                 "", List.of(RuntimeDatabaseValidationCheckResult.failed("configuration", "invalid_configuration", "Database is required.")),
                 RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION)).toPayload();
         assertThat(actual.get("database"), is(""));
@@ -74,7 +74,7 @@ class RuntimeDatabaseValidationResponseTest {
     
     @Test
     void assertStablePayload() {
-        RuntimeDatabaseValidationResponse response = RuntimeDatabaseValidationResponse.from(RuntimeDatabaseValidationResult.failed(
+        RuntimeDatabaseValidationPayload response = RuntimeDatabaseValidationPayload.from(RuntimeDatabaseValidationResult.failed(
                 "logic_db", List.of(RuntimeDatabaseValidationCheckResult.failed("database_visibility", "database_not_visible", "Database is not visible.")),
                 RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE));
         Map<String, Object> actual = response.toPayload();

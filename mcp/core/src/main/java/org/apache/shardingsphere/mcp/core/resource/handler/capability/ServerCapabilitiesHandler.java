@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
@@ -47,8 +47,8 @@ public final class ServerCapabilitiesHandler implements MCPResourceHandler<MCPRe
     }
     
     @Override
-    public MCPResponse handle(final MCPRequestContext handlerContext, final MCPUriVariables uriVariables) {
-        return new MCPMapResponse(MCPDescriptorCatalogIndex.createCapabilityPayload(
+    public MCPSuccessPayload handle(final MCPRequestContext handlerContext, final MCPUriVariables uriVariables) {
+        return new MCPMapPayload(MCPDescriptorCatalogIndex.createCapabilityPayload(
                 ResourceDefinitionRegistry.getSupportedResources(), ToolDefinitionRegistry.getSupportedTools(), Set.of(SupportedMCPStatement.values())));
     }
 }

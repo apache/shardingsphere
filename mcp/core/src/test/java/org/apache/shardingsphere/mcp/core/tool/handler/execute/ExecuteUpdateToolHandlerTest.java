@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
@@ -51,7 +51,7 @@ class ExecuteUpdateToolHandlerTest {
         MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getSessionId()).thenReturn("session-1");
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext,
+        MCPSuccessPayload actual = new ExecuteUpdateToolHandler().handle(databaseContext,
                 Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute"));
         assertThat(actual.toPayload().get("response_mode"), is("executed"));
         assertThat(actual.toPayload().get("execution_mode"), is("execute"));
@@ -72,7 +72,7 @@ class ExecuteUpdateToolHandlerTest {
         MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getSessionId()).thenReturn("session-1");
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext,
+        MCPSuccessPayload actual = new ExecuteUpdateToolHandler().handle(databaseContext,
                 Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute"));
         assertThat(actual.toPayload().get("execution_mode"), is("execute"));
         verify(executionFacade).execute(any());
@@ -106,7 +106,7 @@ class ExecuteUpdateToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext,
+        MCPSuccessPayload actual = new ExecuteUpdateToolHandler().handle(databaseContext,
                 Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "preview"));
         assertThat(actual.toPayload().get("response_mode"), is("preview"));
         assertThat(actual.toPayload().get("result_kind"), is("preview"));
@@ -149,7 +149,7 @@ class ExecuteUpdateToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, Map.of("database", "sharding_db", "sql",
+        MCPSuccessPayload actual = new ExecuteUpdateToolHandler().handle(databaseContext, Map.of("database", "sharding_db", "sql",
                 "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))",
                 "execution_mode", "preview"));
         assertThat(actual.toPayload().get("response_mode"), is("preview"));

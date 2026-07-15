@@ -37,7 +37,6 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLSt
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
-import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
@@ -74,7 +73,7 @@ class MCPErrorConverterTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertConvertCases")
     void assertConvert(final String name, final Throwable cause, final String expectedMessage) {
-        MCPErrorResponse actual = MCPErrorConverter.convert(cause);
+        MCPErrorPayload actual = MCPErrorConverter.convert(cause);
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("response_mode"), is("recovery"));
         assertThat(actualPayload.get("message"), is(expectedMessage));
@@ -508,6 +507,7 @@ class MCPErrorConverterTest {
     static Stream<Arguments> assertConvertCases() {
         return Stream.of(
                 Arguments.of("invalid request exception", new MCPInvalidRequestException("Invalid request."), "Invalid request."),
+                Arguments.of("blank invalid request exception", new MCPInvalidRequestException(" "), "Invalid request."),
                 Arguments.of("not found exception", new DatabaseCapabilityNotFoundException(), "Database capability does not exist."),
                 Arguments.of("unsupported exception", new MCPUnsupportedException("Unsupported."), "Unsupported."),
                 Arguments.of("transaction state exception", new MCPTransactionStateException("Transaction already active.", new IllegalStateException()), "Transaction already active."),

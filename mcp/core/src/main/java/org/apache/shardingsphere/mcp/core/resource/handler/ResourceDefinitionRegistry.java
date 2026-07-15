@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
@@ -120,9 +120,9 @@ public final class ResourceDefinitionRegistry {
      *
      * @param requestScope request scope
      * @param resourceUri resource URI
-     * @return handled response
+     * @return handled payload
      */
-    public static Optional<MCPResponse> dispatch(final MCPRequestScope requestScope, final String resourceUri) {
+    public static Optional<MCPSuccessPayload> dispatch(final MCPRequestScope requestScope, final String resourceUri) {
         for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
             Optional<MCPUriVariables> matchedUriVariables = each.getUriPattern().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
@@ -132,11 +132,11 @@ public final class ResourceDefinitionRegistry {
         return Optional.empty();
     }
     
-    private static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceDefinition resourceDefinition, final MCPUriVariables uriVariables) {
+    private static MCPSuccessPayload dispatch(final MCPRequestScope requestScope, final MCPResourceDefinition resourceDefinition, final MCPUriVariables uriVariables) {
         return dispatch(requestScope, resourceDefinition.getHandler(), uriVariables);
     }
     
-    private static <T extends MCPRequestContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
+    private static <T extends MCPRequestContext> MCPSuccessPayload dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
         return resourceHandler.handle(resourceHandler.getContextType().cast(requestScope), uriVariables);
     }
     

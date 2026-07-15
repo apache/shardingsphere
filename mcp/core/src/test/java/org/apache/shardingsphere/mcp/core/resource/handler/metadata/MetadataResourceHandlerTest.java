@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
@@ -52,7 +52,7 @@ class MetadataResourceHandlerTest {
     void assertHandleListResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases",
                 (requestContext, uriVariables) -> List.of(Map.of("database", "logic_db")));
-        MCPResponse actual = handler.handle(mock(MCPDatabaseRequestContext.class), new MCPUriVariables(Map.of()));
+        MCPSuccessPayload actual = handler.handle(mock(MCPDatabaseRequestContext.class), new MCPUriVariables(Map.of()));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("response_mode"), is("list"));
         assertThat(actualPayload.get("summary"), is("Returned 1 of 1 logical-database metadata entries."));
@@ -72,7 +72,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleRootListResourceWithoutRuntimeDatabase() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(mock(MCPDatabaseRequestContext.class), new MCPUriVariables(Map.of()));
+        MCPSuccessPayload actual = handler.handle(mock(MCPDatabaseRequestContext.class), new MCPUriVariables(Map.of()));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
         assertThat(actualEmptyState.get("reason"), is("No ShardingSphere-Proxy logical database is available to MCP. Configure runtimeDatabases before reading metadata."));
@@ -82,7 +82,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleListResourceWithUnknownDatabase() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(createDatabaseContext(Optional.empty()), new MCPUriVariables(Map.of("database", "missing_db")));
+        MCPSuccessPayload actual = handler.handle(createDatabaseContext(Optional.empty()), new MCPUriVariables(Map.of("database", "missing_db")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("unknown_database"));
         assertThat(actualEmptyState.get("reason"), is("The requested logical database is not visible to MCP. Check runtimeDatabases and ShardingSphere-Proxy connectivity."));
@@ -92,7 +92,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleListResourceWithEmptyScope() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(
+        MCPSuccessPayload actual = handler.handle(createDatabaseContext(Optional.of(
                 new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()))),
                 new MCPUriVariables(Map.of("database", "logic_db")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
@@ -104,7 +104,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleSchemaDetailResourceNotVisible() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(
+        MCPSuccessPayload actual = handler.handle(createDatabaseContext(Optional.of(
                 new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()))),
                 new MCPUriVariables(Map.of("database", "logic_db", "schema", "missing_schema")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
@@ -117,7 +117,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleObjectDetailResourceNotVisible() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}", (requestContext, uriVariables) -> List.of());
-        MCPResponse actual = handler.handle(createDatabaseContext(Optional.of(
+        MCPSuccessPayload actual = handler.handle(createDatabaseContext(Optional.of(
                 new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()))),
                 new MCPUriVariables(Map.of("database", "logic_db", "schema", "public", "table", "missing_table")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");

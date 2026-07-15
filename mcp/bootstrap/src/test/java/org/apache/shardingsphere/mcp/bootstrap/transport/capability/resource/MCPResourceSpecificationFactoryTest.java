@@ -25,13 +25,14 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
@@ -50,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -100,7 +102,7 @@ class MCPResourceSpecificationFactoryTest {
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
             mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
             mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://session")))
-                    .thenReturn(Optional.of(new MCPMapResponse(Map.of())));
+                    .thenReturn(Optional.of(new MCPMapPayload(Map.of())));
             SyncResourceSpecification actualSpecification = findResourceSpecification(
                     new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications(), "shardingsphere://session");
             actualSpecification.readHandler().apply(exchange, new ReadResourceRequest("shardingsphere://session"));
@@ -123,7 +125,34 @@ class MCPResourceSpecificationFactoryTest {
     }
     
     @Test
-    void assertReadResourceConvertsRuntimeFailure() {
+    void assertReadResourceWithMissingDatabaseCapability() {
+        SyncResourceTemplateSpecification actualSpecification = findResourceTemplateSpecification(
+                new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceTemplateSpecifications(), "shardingsphere://databases/{database}/capabilities");
+        McpError actual = assertThrows(McpError.class,
+                () -> actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://databases/logic_db/capabilities")));
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.RESOURCE_NOT_FOUND));
+        assertThat(actual.getJsonRpcError().message(), is("Database capability does not exist."));
+    }
+    
+    @Test
+    void assertReadResourceWithInvalidRequest() {
+        MCPResourceDescriptor descriptor = new MCPResourceDescriptor("shardingsphere://invalid", "invalid", "Invalid", "Read invalid request.", "application/json",
+                MCPResourceAnnotations.EMPTY, Map.of());
+        try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
+            mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://invalid")))
+                    .thenThrow(new MCPInvalidRequestException("Invalid resource request."));
+            SyncResourceSpecification actualSpecification = findResourceSpecification(
+                    new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications(), "shardingsphere://invalid");
+            McpError actual = assertThrows(McpError.class,
+                    () -> actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://invalid")));
+            assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+            assertThat(actual.getJsonRpcError().message(), is("Invalid resource request."));
+        }
+    }
+    
+    @Test
+    void assertReadResourceSanitizesRuntimeFailure() {
         MCPResourceDescriptor descriptor = new MCPResourceDescriptor("shardingsphere://runtime-error", "runtime-error", "Runtime Error", "Read runtime error.", "application/json",
                 MCPResourceAnnotations.EMPTY, Map.of());
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
@@ -134,7 +163,8 @@ class MCPResourceSpecificationFactoryTest {
             McpError actual = assertThrows(McpError.class,
                     () -> actualSpecification.readHandler().apply(mock(McpSyncServerExchange.class), new ReadResourceRequest("shardingsphere://runtime-error")));
             assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
-            assertThat(actual.getJsonRpcError().message(), is("runtime failure"));
+            assertThat(actual.getJsonRpcError().message(), is("Service is temporarily unavailable."));
+            assertFalse(String.valueOf(actual.getJsonRpcError().data()).contains("runtime failure"));
         }
     }
     
@@ -157,6 +187,7 @@ class MCPResourceSpecificationFactoryTest {
     private MCPRuntimeContext createRuntimeContext() {
         MCPRuntimeContext result = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
         when(result.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+        when(result.getDatabaseCapabilityProvider().provide(anyString())).thenReturn(Optional.empty());
         return result;
     }
     

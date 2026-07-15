@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.protocol.response;
+package org.apache.shardingsphere.mcp.support.protocol.payload;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-/**
- * MCP response adapter for a fully assembled successful payload.
- *
- * <p>This thin adapter returns the supplied payload as-is. It does not copy, merge, normalize, validate against a tool schema,
- * classify errors, or build a transport envelope. Callers must finish constructing the payload before wrapping it and must not mutate it afterwards.</p>
- */
-@RequiredArgsConstructor
-public final class MCPMapResponse implements MCPResponse {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.sameInstance;
+
+class MCPMapPayloadTest {
     
-    private final Map<String, Object> payload;
-    
-    @Override
-    public Map<String, Object> toPayload() {
-        return payload;
+    @Test
+    void assertToPayload() {
+        Map<String, Object> expectedPayload = Map.of("foo_key", "bar_value");
+        Map<String, Object> actual = new MCPMapPayload(expectedPayload).toPayload();
+        assertThat(actual, sameInstance(expectedPayload));
     }
 }
