@@ -179,7 +179,7 @@
             </right>
         </combine>
         <order-by>
-            <column-item name="COL1" start-index="75" stop-index="78" />
+            <index-item index="1" start-index="75" stop-index="75" />
         </order-by>
     </select>
 
