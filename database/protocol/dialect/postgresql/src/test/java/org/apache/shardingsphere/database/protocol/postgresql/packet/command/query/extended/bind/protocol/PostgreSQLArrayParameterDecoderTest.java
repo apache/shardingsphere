@@ -106,4 +106,22 @@ class PostgreSQLArrayParameterDecoderTest {
         assertThat(actual[1], is("b"));
         assertNull(actual[2]);
     }
+    
+    @Test
+    void assertParseStringArrayEmptyTextMode() {
+        String[] actual = DECODER.decodeStringArray("{}".getBytes(), false);
+        assertThat(actual.length, is(0));
+    }
+    
+    @Test
+    void assertParseInt4ArrayEmptyTextMode() {
+        int[] actual = DECODER.decodeInt4Array("{}".getBytes(), false);
+        assertThat(actual.length, is(0));
+    }
+    
+    @Test
+    void assertParseBoolArrayEmptyTextMode() {
+        boolean[] actual = DECODER.decodeBoolArray("{}".getBytes(), false);
+        assertThat(actual.length, is(0));
+    }
 }
