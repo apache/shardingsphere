@@ -21,35 +21,26 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
-import java.util.Optional;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Batch completion result for Firebird.
  */
 @RequiredArgsConstructor
+@Getter
 public final class FirebirdBatchCompletion {
     
     public static final int EXECUTE_FAILED = -1;
     
-    @Getter
     private final int recordsCount;
     
-    @Getter
     private final int[] updateCounts;
     
-    private final Failure failure;
+    private final Collection<Failure> failures;
     
     public FirebirdBatchCompletion(final int recordsCount, final int[] updateCounts) {
-        this(recordsCount, updateCounts, null);
-    }
-    
-    /**
-     * Get failure of the batch.
-     *
-     * @return failure of the batch
-     */
-    public Optional<Failure> getFailure() {
-        return Optional.ofNullable(failure);
+        this(recordsCount, updateCounts, Collections.emptyList());
     }
     
     /**

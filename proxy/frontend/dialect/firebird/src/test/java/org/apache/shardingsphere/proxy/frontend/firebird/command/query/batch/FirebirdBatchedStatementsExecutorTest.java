@@ -77,7 +77,6 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -120,7 +119,7 @@ class FirebirdBatchedStatementsExecutorTest {
         FirebirdBatchCompletion actual = new FirebirdBatchedStatementsExecutor(mockConnectionSession(), firebirdPreparedStatement, parameterSets).executeBatch();
         assertThat(actual.getRecordsCount(), is(2));
         assertArrayEquals(new int[]{1, 2}, actual.getUpdateCounts());
-        assertFalse(actual.getFailure().isPresent());
+        assertTrue(actual.getFailures().isEmpty());
         InOrder inOrder = inOrder(preparedStatement);
         for (List<Object> each : parameterSets) {
             inOrder.verify(preparedStatement).setObject(1, each.get(0));
@@ -158,7 +157,7 @@ class FirebirdBatchedStatementsExecutorTest {
             FirebirdBatchCompletion actual = new FirebirdBatchedStatementsExecutor(mockConnectionSession(), firebirdPreparedStatement, Collections.singletonList(params)).executeBatch();
             assertThat(actual.getRecordsCount(), is(1));
             assertArrayEquals(new int[]{2}, actual.getUpdateCounts());
-            assertFalse(actual.getFailure().isPresent());
+            assertTrue(actual.getFailures().isEmpty());
         }
     }
     
@@ -193,9 +192,48 @@ class FirebirdBatchedStatementsExecutorTest {
                     Arrays.asList(firstParams, secondParams)).executeBatch();
             assertThat(actual.getRecordsCount(), is(2));
             assertArrayEquals(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, actual.getUpdateCounts());
-            assertTrue(actual.getFailure().isPresent());
-            assertThat(actual.getFailure().get().getMessageIndex(), is(1));
-            assertThat(actual.getFailure().get().getCause(), is(failure));
+            assertThat(actual.getFailures().size(), is(1));
+            FirebirdBatchCompletion.Failure actualFailure = actual.getFailures().iterator().next();
+            assertThat(actualFailure.getMessageIndex(), is(1));
+            assertThat(actualFailure.getCause(), is(failure));
+        }
+    }
+    
+    @Test
+    void assertExecuteBatchWithFirstRouteFailureReportsLaterExecutedMessages() throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:firebirdsql://127.0.0.1/db");
+        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        PreparedStatement firstPreparedStatement = mock(PreparedStatement.class);
+        PreparedStatement secondPreparedStatement = mock(PreparedStatement.class);
+        when(firstPreparedStatement.getConnection()).thenReturn(connection);
+        when(secondPreparedStatement.getConnection()).thenReturn(connection);
+        BatchUpdateException failure = new BatchUpdateException("violation of PRIMARY or UNIQUE KEY constraint", "23000", 335544665, new int[0]);
+        when(firstPreparedStatement.executeBatch()).thenThrow(failure);
+        when(secondPreparedStatement.executeBatch()).thenReturn(new int[]{1});
+        when(backendStatement.createStorageResource(any(ExecutionUnit.class), eq(connection), anyInt(), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
+                .thenReturn(firstPreparedStatement, secondPreparedStatement);
+        ContextManager contextManager = mockContextManager("ds_0", "ds_1");
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        FirebirdServerPreparedStatement firebirdPreparedStatement = new FirebirdServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)",
+                mockInsertStatementContext(), new HintValueContext());
+        List<Object> firstParams = Arrays.asList(1, "foo_1");
+        List<Object> secondParams = Arrays.asList(2, "foo_2");
+        ExecutionUnit firstExecutionUnit = new ExecutionUnit("ds_0", new SQLUnit(firebirdPreparedStatement.getSql(), firstParams));
+        ExecutionUnit secondExecutionUnit = new ExecutionUnit("ds_1", new SQLUnit(firebirdPreparedStatement.getSql(), secondParams));
+        try (
+                MockedConstruction<KernelProcessor> ignored = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(), any(), any()))
+                                .thenReturn(new ExecutionContext(null, Collections.singletonList(firstExecutionUnit), mock(RouteContext.class)),
+                                        new ExecutionContext(null, Collections.singletonList(secondExecutionUnit), mock(RouteContext.class))))) {
+            FirebirdBatchCompletion actual = new FirebirdBatchedStatementsExecutor(mockConnectionSession(), firebirdPreparedStatement,
+                    Arrays.asList(firstParams, secondParams)).executeBatch();
+            assertThat(actual.getRecordsCount(), is(2));
+            assertArrayEquals(new int[]{FirebirdBatchCompletion.EXECUTE_FAILED, 1}, actual.getUpdateCounts());
+            assertThat(actual.getFailures().size(), is(1));
+            FirebirdBatchCompletion.Failure actualFailure = actual.getFailures().iterator().next();
+            assertThat(actualFailure.getMessageIndex(), is(0));
+            assertThat(actualFailure.getCause(), is(failure));
         }
     }
     

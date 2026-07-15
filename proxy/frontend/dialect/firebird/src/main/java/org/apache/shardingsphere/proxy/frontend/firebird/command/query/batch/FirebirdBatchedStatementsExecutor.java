@@ -65,7 +65,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Batched statements executor for Firebird.
@@ -211,8 +213,7 @@ public final class FirebirdBatchedStatementsExecutor {
     
     private FirebirdBatchCompletion createBatchCompletion(final List<BatchExecutionUnitResult> executeResults) {
         int[] messageUpdateCounts = new int[batchMessageCount];
-        int failedMessageIndex = -1;
-        SQLException failureCause = null;
+        Map<Integer, SQLException> failedMessages = new TreeMap<>();
         Iterator<ExecutionUnit> executionUnits = getExecutionUnitsInExecutionOrder().iterator();
         Iterator<BatchExecutionUnitResult> results = executeResults.iterator();
         while (executionUnits.hasNext() && results.hasNext()) {
@@ -221,47 +222,49 @@ public final class FirebirdBatchedStatementsExecutor {
             List<Integer> batchMessageIndexes = executionUnitBatchMessageIndexes.getOrDefault(executionUnit, Collections.emptyList());
             mergeUpdateCounts(messageUpdateCounts, batchMessageIndexes, eachResult.updateCounts);
             if (null != eachResult.failure) {
-                int eachFailedMessageIndex = getFailedMessageIndex(eachResult.updateCounts, batchMessageIndexes);
-                if (-1 == failedMessageIndex || eachFailedMessageIndex < failedMessageIndex) {
-                    failedMessageIndex = eachFailedMessageIndex;
-                    failureCause = eachResult.failure;
-                }
+                markFailedMessages(messageUpdateCounts, failedMessages, batchMessageIndexes, eachResult);
             }
         }
-        return -1 == failedMessageIndex
-                ? new FirebirdBatchCompletion(batchMessageCount, toFirebirdUpdateCounts(messageUpdateCounts, batchMessageCount))
-                : createFailedBatchCompletion(messageUpdateCounts, failedMessageIndex, failureCause);
+        return new FirebirdBatchCompletion(batchMessageCount, toFirebirdUpdateCounts(messageUpdateCounts), createFailures(failedMessages));
     }
     
-    private FirebirdBatchCompletion createFailedBatchCompletion(final int[] messageUpdateCounts, final int failedMessageIndex, final SQLException failureCause) {
-        int[] processedUpdateCounts = toFirebirdUpdateCounts(messageUpdateCounts, failedMessageIndex + 1);
-        processedUpdateCounts[failedMessageIndex] = FirebirdBatchCompletion.EXECUTE_FAILED;
-        return new FirebirdBatchCompletion(failedMessageIndex + 1, processedUpdateCounts, new FirebirdBatchCompletion.Failure(failedMessageIndex, failureCause));
-    }
-    
-    /**
-     * Get the original client index of the failed batch message within one execution unit.
-     *
-     * @param updateCounts unit-local update counts carried by the batch failure
-     * @param batchMessageIndexes original client indexes of the unit's batched messages
-     * @return zero-based original client index of the failed message
-     */
-    private int getFailedMessageIndex(final int[] updateCounts, final List<Integer> batchMessageIndexes) {
+    private void markFailedMessages(final int[] messageUpdateCounts, final Map<Integer, SQLException> failedMessages,
+                                    final List<Integer> batchMessageIndexes, final BatchExecutionUnitResult failedResult) {
         if (batchMessageIndexes.isEmpty()) {
-            return 0;
+            markFailedMessage(messageUpdateCounts, failedMessages, 0, failedResult.failure);
+            return;
         }
-        int failedOffset = updateCounts.length;
-        for (int i = 0; i < updateCounts.length; i++) {
-            if (Statement.EXECUTE_FAILED == updateCounts[i]) {
-                failedOffset = i;
-                break;
+        boolean isAnyMessageMarked = false;
+        for (int i = 0; i < batchMessageIndexes.size(); i++) {
+            if (isFailedMessageOffset(failedResult.updateCounts, i)) {
+                markFailedMessage(messageUpdateCounts, failedMessages, batchMessageIndexes.get(i), failedResult.failure);
+                isAnyMessageMarked = true;
             }
         }
-        return batchMessageIndexes.get(Math.min(failedOffset, batchMessageIndexes.size() - 1));
+        if (!isAnyMessageMarked) {
+            markFailedMessage(messageUpdateCounts, failedMessages, batchMessageIndexes.get(batchMessageIndexes.size() - 1), failedResult.failure);
+        }
     }
     
-    private int[] toFirebirdUpdateCounts(final int[] messageUpdateCounts, final int processedMessageCount) {
-        int[] result = Arrays.copyOf(messageUpdateCounts, processedMessageCount);
+    private void markFailedMessage(final int[] messageUpdateCounts, final Map<Integer, SQLException> failedMessages, final int messageIndex, final SQLException failureCause) {
+        messageUpdateCounts[messageIndex] = Statement.EXECUTE_FAILED;
+        failedMessages.putIfAbsent(messageIndex, failureCause);
+    }
+    
+    private boolean isFailedMessageOffset(final int[] updateCounts, final int offset) {
+        return offset >= updateCounts.length || Statement.EXECUTE_FAILED == updateCounts[offset];
+    }
+    
+    private Collection<FirebirdBatchCompletion.Failure> createFailures(final Map<Integer, SQLException> failedMessages) {
+        Collection<FirebirdBatchCompletion.Failure> result = new LinkedList<>();
+        for (Entry<Integer, SQLException> each : failedMessages.entrySet()) {
+            result.add(new FirebirdBatchCompletion.Failure(each.getKey(), each.getValue()));
+        }
+        return result;
+    }
+    
+    private int[] toFirebirdUpdateCounts(final int[] messageUpdateCounts) {
+        int[] result = Arrays.copyOf(messageUpdateCounts, messageUpdateCounts.length);
         for (int i = 0; i < result.length; i++) {
             if (Statement.EXECUTE_FAILED == result[i]) {
                 result[i] = FirebirdBatchCompletion.EXECUTE_FAILED;

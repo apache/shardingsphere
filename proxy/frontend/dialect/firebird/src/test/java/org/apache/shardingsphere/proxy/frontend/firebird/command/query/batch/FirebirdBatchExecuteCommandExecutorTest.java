@@ -42,6 +42,7 @@ import org.firebirdsql.gds.BlrConstants;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -160,7 +161,8 @@ class FirebirdBatchExecuteCommandExecutorTest {
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
         SQLException failureCause = new SQLException("violation of PRIMARY or UNIQUE KEY constraint", "23000", 335544665);
-        FirebirdBatchCompletion completion = new FirebirdBatchCompletion(2, new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, new FirebirdBatchCompletion.Failure(1, failureCause));
+        FirebirdBatchCompletion completion = new FirebirdBatchCompletion(
+                2, new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, Collections.singletonList(new FirebirdBatchCompletion.Failure(1, failureCause)));
         try (
                 MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
                 MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
@@ -185,7 +187,8 @@ class FirebirdBatchExecuteCommandExecutorTest {
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
         SQLException failureCause = new SQLException("violation", "23000", 335544665);
-        FirebirdBatchCompletion completion = new FirebirdBatchCompletion(1, new int[]{FirebirdBatchCompletion.EXECUTE_FAILED}, new FirebirdBatchCompletion.Failure(0, failureCause));
+        FirebirdBatchCompletion completion = new FirebirdBatchCompletion(
+                1, new int[]{FirebirdBatchCompletion.EXECUTE_FAILED}, Collections.singletonList(new FirebirdBatchCompletion.Failure(0, failureCause)));
         try (
                 MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
                 MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,

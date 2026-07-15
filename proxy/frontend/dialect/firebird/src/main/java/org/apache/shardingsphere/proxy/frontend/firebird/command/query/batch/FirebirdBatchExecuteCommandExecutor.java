@@ -66,7 +66,9 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
                 .setHandle(packet.getStatementHandle())
                 .setRecordsCount(completion.getRecordsCount())
                 .setUpdateCounts(recordCounts ? completion.getUpdateCounts() : new int[0]);
-        completion.getFailure().ifPresent(optional -> result.addDetailedError(optional.getMessageIndex(), new FirebirdStatusVector(optional.getCause())));
+        for (FirebirdBatchCompletion.Failure each : completion.getFailures()) {
+            result.addDetailedError(each.getMessageIndex(), new FirebirdStatusVector(each.getCause()));
+        }
         return result;
     }
 }
