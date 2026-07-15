@@ -22,12 +22,15 @@ import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapa
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.exception.QueryDidNotReturnResultSetException;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseSQLSyntaxException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionColumnDefinition;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResultKind;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
@@ -285,7 +288,7 @@ class MCPJdbcStatementExecutorTest {
     
     @Test
     void assertExecuteRuleDistSQLSyntaxError() throws SQLException {
-        SQLSyntaxErrorException cause = new SQLSyntaxErrorException("syntax error");
+        SQLException cause = new SQLException("syntax error", "42601");
         Statement statement = mock(Statement.class);
         when(statement.execute(anyString())).thenThrow(cause);
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
@@ -308,8 +311,8 @@ class MCPJdbcStatementExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteWithSQLExceptionCases")
-    void assertExecuteWithSQLException(final String name, final SQLException sqlException, final Class<? extends ShardingSphereMCPException> expectedExceptionClass,
-                                       final String expectedMessage) throws SQLException {
+    void assertExecuteWithSQLException(final String name, final String databaseType, final SQLException sqlException,
+                                       final Class<? extends ShardingSphereMCPException> expectedExceptionClass, final MCPJDBCErrorCategory expectedCategory) throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.execute(anyString())).thenThrow(sqlException);
         doThrow(new SQLException("statement close failed")).when(statement).close();
@@ -319,13 +322,16 @@ class MCPJdbcStatementExecutorTest {
         RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
         when(databaseConfig.openConnection(anyString())).thenReturn(connection);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
+        MCPDatabaseCapability databaseCapability = createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE);
+        when(databaseCapability.getDatabaseType()).thenReturn(databaseType);
         ShardingSphereMCPException actual = assertThrows(expectedExceptionClass, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "SELECT status FROM orders", 10, 1000),
                 new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", List.of(), false),
-                createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
+                databaseCapability));
         assertThat(actual.getClass(), is(expectedExceptionClass));
-        assertThat(actual.getMessage(), is(expectedMessage));
+        assertThat(actual.getMessage(), is(sqlException.getMessage()));
         assertThat(actual.getCause(), is(sqlException));
+        assertThat(MCPJDBCExceptionClassifier.classify(databaseType, actual), is(expectedCategory));
     }
     
     @Test
@@ -421,6 +427,7 @@ class MCPJdbcStatementExecutorTest {
     private static MCPDatabaseCapability createDatabaseCapability(final SchemaExecutionSemantics schemaExecutionSemantics) {
         MCPDatabaseCapability result = mock(MCPDatabaseCapability.class);
         when(result.getSchemaExecutionSemantics()).thenReturn(schemaExecutionSemantics);
+        when(result.getDatabaseType()).thenReturn("PostgreSQL");
         return result;
     }
     
@@ -482,13 +489,23 @@ class MCPJdbcStatementExecutorTest {
     
     private static Stream<Arguments> assertExecuteWithSQLExceptionCases() {
         return Stream.of(
-                Arguments.of("timeout", new SQLTimeoutException("timeout"), MCPTimeoutException.class, "timeout"),
-                Arguments.of("unsupported feature", new SQLFeatureNotSupportedException("unsupported feature"), MCPUnsupportedException.class, "unsupported feature"),
-                Arguments.of("syntax error", new SQLSyntaxErrorException("syntax error"), MCPInvalidRequestException.class, "syntax error"),
-                Arguments.of("object not visible", new SQLException("missing table", "42P01"), MCPQueryFailedException.class, "missing table"),
-                Arguments.of("insufficient privileges", new SQLException("permission denied", "42501"), MCPQueryFailedException.class, "permission denied"),
-                Arguments.of("connection interrupted", new SQLTransientConnectionException("connection lost", "08006"), MCPQueryFailedException.class, "connection lost"),
-                Arguments.of("query failed", new SQLException("query failed"), MCPQueryFailedException.class, "query failed"));
+                Arguments.of("timeout", "PostgreSQL", new SQLTimeoutException("timeout"), MCPTimeoutException.class, MCPJDBCErrorCategory.TIMEOUT),
+                Arguments.of("unsupported feature", "PostgreSQL", new SQLFeatureNotSupportedException("unsupported feature"), MCPUnsupportedException.class,
+                        MCPJDBCErrorCategory.FEATURE_NOT_SUPPORTED),
+                Arguments.of("typed syntax error", "PostgreSQL", new SQLSyntaxErrorException("syntax error"), MCPDatabaseSQLSyntaxException.class, MCPJDBCErrorCategory.SYNTAX),
+                Arguments.of("SQLState syntax error", "PostgreSQL", new SQLException("syntax error", "42601"), MCPDatabaseSQLSyntaxException.class, MCPJDBCErrorCategory.SYNTAX),
+                Arguments.of("MySQL syntax error", "MySQL", new SQLException("syntax error", "42000", 1064), MCPDatabaseSQLSyntaxException.class, MCPJDBCErrorCategory.SYNTAX),
+                Arguments.of("object not visible", "PostgreSQL", new SQLException("missing table", "42P01"), MCPDatabaseQueryFailedException.class,
+                        MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
+                Arguments.of("insufficient privileges", "PostgreSQL", new SQLException("permission denied", "42501"), MCPDatabaseQueryFailedException.class,
+                        MCPJDBCErrorCategory.AUTHORIZATION),
+                Arguments.of("MySQL insufficient privileges", "MySQL", new SQLException("permission denied", "42000", 1044), MCPDatabaseQueryFailedException.class,
+                        MCPJDBCErrorCategory.AUTHORIZATION),
+                Arguments.of("connection interrupted", "PostgreSQL", new SQLTransientConnectionException("connection lost", "08006"), MCPDatabaseQueryFailedException.class,
+                        MCPJDBCErrorCategory.CONNECTION),
+                Arguments.of("ambiguous MySQL error", "MySQL", new SQLSyntaxErrorException("query failed", "42000", 1055), MCPDatabaseQueryFailedException.class,
+                        MCPJDBCErrorCategory.QUERY_FAILED),
+                Arguments.of("query failed", "PostgreSQL", new SQLException("query failed"), MCPDatabaseQueryFailedException.class, MCPJDBCErrorCategory.QUERY_FAILED));
     }
     
     private static List<SQLExecutionColumnDefinition> createColumns() {

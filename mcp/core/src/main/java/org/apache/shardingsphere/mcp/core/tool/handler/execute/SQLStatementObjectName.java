@@ -44,10 +44,16 @@ final class SQLStatementObjectName {
     
     private final boolean qualified;
     
+    private final boolean namespaceTarget;
+    
     static SQLStatementObjectName fromNormalizedName(final String objectName) {
         int qualifierSeparatorIndex = objectName.indexOf('.');
         return new SQLStatementObjectName(objectName, -1 == qualifierSeparatorIndex ? objectName : objectName.substring(0, qualifierSeparatorIndex),
-                QuoteCharacter.NONE, -1 != qualifierSeparatorIndex);
+                QuoteCharacter.NONE, -1 != qualifierSeparatorIndex, false);
+    }
+    
+    static SQLStatementObjectName fromNormalizedNamespaceName(final String objectName) {
+        return new SQLStatementObjectName(objectName, objectName, QuoteCharacter.NONE, false, true);
     }
     
     static SQLStatementObjectName from(final Optional<OwnerSegment> owner, final IdentifierValue identifier) {
@@ -60,7 +66,11 @@ final class SQLStatementObjectName {
     static SQLStatementObjectName from(final List<IdentifierValue> identifiers) {
         IdentifierValue firstIdentifier = identifiers.get(0);
         return new SQLStatementObjectName(identifiers.stream().map(IdentifierValue::getValue).collect(Collectors.joining(".")),
-                firstIdentifier.getValue(), firstIdentifier.getQuoteCharacter(), 1 < identifiers.size());
+                firstIdentifier.getValue(), firstIdentifier.getQuoteCharacter(), 1 < identifiers.size(), false);
+    }
+    
+    static SQLStatementObjectName fromNamespace(final IdentifierValue identifier) {
+        return new SQLStatementObjectName(identifier.getValue(), identifier.getValue(), identifier.getQuoteCharacter(), false, true);
     }
     
     private static void addOwnerIdentifiers(final OwnerSegment owner, final Collection<IdentifierValue> result) {

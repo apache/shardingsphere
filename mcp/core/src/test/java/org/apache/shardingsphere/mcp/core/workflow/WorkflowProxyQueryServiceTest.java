@@ -32,6 +32,8 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -116,6 +118,19 @@ class WorkflowProxyQueryServiceTest {
         WorkflowProxyQueryService service = createService(Map.of());
         Exception actual = assertThrows(MCPUnavailableException.class, () -> service.query("logic_db", "", "SHOW MASK RULES"));
         assertThat(actual.getMessage(), is("Database `logic_db` is not configured."));
+    }
+    
+    @Test
+    void assertQueryClassifiesDatabaseFailure() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        Connection connection = mock(Connection.class);
+        Statement statement = mock(Statement.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery("SHOW MASK RULES")).thenThrow(new SQLException("access denied", "42000", 1044));
+        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
+        MCPDatabaseQueryFailedException actual = assertThrows(MCPDatabaseQueryFailedException.class, () -> service.query("logic_db", "", "SHOW MASK RULES"));
+        assertThat(actual.getCategory(), is(MCPJDBCErrorCategory.AUTHORIZATION));
     }
     
     @Test

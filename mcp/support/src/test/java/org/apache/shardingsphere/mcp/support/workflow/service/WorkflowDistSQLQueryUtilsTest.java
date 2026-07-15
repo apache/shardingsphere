@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
@@ -45,9 +47,9 @@ class WorkflowDistSQLQueryUtilsTest {
     }
     
     @Test
-    void assertIsUnsupportedDistSQLQueryFailureWithDistSQLMessage() {
+    void assertIsUnsupportedDistSQLQueryFailureWithoutJDBCEvidence() {
         MCPQueryFailedException actualException = new MCPQueryFailedException("DistSQL syntax is unsupported by this runtime backend.");
-        assertTrue(WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(actualException));
+        assertFalse(WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(actualException));
     }
     
     @Test
@@ -67,7 +69,8 @@ class WorkflowDistSQLQueryUtilsTest {
     @Test
     void assertQueryRuleRowsWithUnsupportedDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW MASK RULES")).thenThrow(new MCPQueryFailedException("DistSQL syntax is unsupported by this runtime backend."));
+        when(queryFacade.query("logic_db", "", "SHOW MASK RULES")).thenThrow(
+                new MCPDatabaseQueryFailedException(MCPJDBCErrorCategory.SYNTAX, new SQLException("syntax error", "42601")));
         assertTrue(WorkflowDistSQLQueryUtils.queryRuleRows(queryFacade, "logic_db", "SHOW MASK RULES").isEmpty());
     }
     

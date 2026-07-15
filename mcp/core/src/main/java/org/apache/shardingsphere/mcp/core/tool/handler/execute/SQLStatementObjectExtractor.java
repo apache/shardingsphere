@@ -188,24 +188,24 @@ final class SQLStatementObjectExtractor {
     
     private void extractDatabaseTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            addName(((CreateDatabaseStatement) sqlStatement).getDatabaseName(), result);
+            addNamespaceName(((CreateDatabaseStatement) sqlStatement).getDatabaseName(), result);
         } else if (sqlStatement instanceof AlterDatabaseStatement) {
-            addName(((AlterDatabaseStatement) sqlStatement).getDatabaseName(), result);
-            ((AlterDatabaseStatement) sqlStatement).getRenameDatabaseName().ifPresent(name -> addName(name, result));
+            addNamespaceName(((AlterDatabaseStatement) sqlStatement).getDatabaseName(), result);
+            ((AlterDatabaseStatement) sqlStatement).getRenameDatabaseName().ifPresent(name -> addNamespaceName(name, result));
         } else if (sqlStatement instanceof DropDatabaseStatement) {
-            addName(((DropDatabaseStatement) sqlStatement).getDatabaseName(), result);
+            addNamespaceName(((DropDatabaseStatement) sqlStatement).getDatabaseName(), result);
         }
     }
     
     private void extractSchemaTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
         if (sqlStatement instanceof CreateSchemaStatement) {
-            ((CreateSchemaStatement) sqlStatement).getSchemaName().ifPresent(schema -> addIdentifier(schema, result));
+            ((CreateSchemaStatement) sqlStatement).getSchemaName().ifPresent(schema -> addNamespaceIdentifier(schema, result));
         } else if (sqlStatement instanceof AlterSchemaStatement) {
-            addIdentifier(((AlterSchemaStatement) sqlStatement).getSchemaName(), result);
-            ((AlterSchemaStatement) sqlStatement).getRenameSchema().ifPresent(schema -> addIdentifier(schema, result));
+            addNamespaceIdentifier(((AlterSchemaStatement) sqlStatement).getSchemaName(), result);
+            ((AlterSchemaStatement) sqlStatement).getRenameSchema().ifPresent(schema -> addNamespaceIdentifier(schema, result));
         } else if (sqlStatement instanceof DropSchemaStatement) {
             for (IdentifierValue each : ((DropSchemaStatement) sqlStatement).getSchemaNames()) {
-                addIdentifier(each, result);
+                addNamespaceIdentifier(each, result);
             }
         }
     }
@@ -319,9 +319,21 @@ final class SQLStatementObjectExtractor {
         }
     }
     
+    private void addNamespaceName(final String name, final Collection<SQLStatementObjectName> result) {
+        if (null != name && !name.isEmpty()) {
+            result.add(SQLStatementObjectName.fromNormalizedNamespaceName(name));
+        }
+    }
+    
     private void addIdentifier(final IdentifierValue identifier, final Collection<SQLStatementObjectName> result) {
         if (null != identifier) {
             result.add(SQLStatementObjectName.from(Optional.empty(), identifier));
+        }
+    }
+    
+    private void addNamespaceIdentifier(final IdentifierValue identifier, final Collection<SQLStatementObjectName> result) {
+        if (null != identifier) {
+            result.add(SQLStatementObjectName.fromNamespace(identifier));
         }
     }
 }

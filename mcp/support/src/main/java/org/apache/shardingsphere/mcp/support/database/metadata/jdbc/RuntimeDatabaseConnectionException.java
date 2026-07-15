@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.Getter;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
 
 import java.sql.SQLException;
-import java.sql.SQLTimeoutException;
-import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Runtime database connection exception with safe model-facing category.
@@ -103,20 +102,13 @@ public final class RuntimeDatabaseConnectionException extends RuntimeException {
     }
     
     private static String resolveCategory(final SQLException cause) {
-        String sqlState = Objects.toString(cause.getSQLState(), "");
-        String message = Objects.toString(cause.getMessage(), "").toLowerCase(Locale.ENGLISH);
-        if (cause instanceof SQLTimeoutException || message.contains("timeout") || message.contains("timed out")) {
-            return CATEGORY_CONNECTION_TIMEOUT;
-        }
-        if (sqlState.startsWith("42501") || message.contains("permission denied") || message.contains("insufficient privilege") || message.contains("not authorized")) {
-            return CATEGORY_AUTHORIZATION_FAILED;
-        }
-        if (sqlState.startsWith("28") || message.contains("authentication") || message.contains("access denied") || message.contains("password")) {
-            return CATEGORY_AUTHENTICATION_FAILED;
-        }
-        if (sqlState.startsWith("08") || message.contains("no suitable driver")) {
-            return CATEGORY_DATABASE_UNAVAILABLE;
-        }
-        return CATEGORY_CONNECTION_FAILED;
+        MCPJDBCErrorCategory category = MCPJDBCExceptionClassifier.classify(cause);
+        return switch (category) {
+            case TIMEOUT -> CATEGORY_CONNECTION_TIMEOUT;
+            case AUTHORIZATION -> CATEGORY_AUTHORIZATION_FAILED;
+            case AUTHENTICATION -> CATEGORY_AUTHENTICATION_FAILED;
+            case CONNECTION -> CATEGORY_DATABASE_UNAVAILABLE;
+            default -> CATEGORY_CONNECTION_FAILED;
+        };
     }
 }

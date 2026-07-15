@@ -34,14 +34,13 @@ import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapa
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 
-import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -60,15 +59,13 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     
     private final MCPStatementAnalyzer statementAnalyzer;
     
-    private final SQLStatementScanner scanner;
-    
     private final SQLExecutionTraceFactory sqlExecutionTraceFactory;
     
     public MCPSQLExecutionFacade(final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final MCPSessionManager sessionManager) {
         this(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
                 new MCPJdbcTransactionStatementExecutor(sessionManager),
                 new MCPJdbcStatementExecutor(sessionManager.getTransactionResourceManager().getRuntimeDatabases(), sessionManager.getTransactionResourceManager()),
-                new MCPStatementAnalyzer(), new SQLStatementScanner(), new SQLExecutionTraceFactory());
+                new MCPStatementAnalyzer(), new SQLExecutionTraceFactory());
     }
     
     @Override
@@ -98,27 +95,11 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         try {
             return execute(executionRequest, classificationResult, databaseCapability);
         } catch (final MCPInvalidRequestException | MCPQueryFailedException ex) {
-            if (hasSQLSyntaxCause(ex)) {
+            if (MCPJDBCErrorCategory.SYNTAX == MCPJDBCExceptionClassifier.classify(databaseCapability.getDatabaseType(), ex)) {
                 throw new ExplainSQLSyntaxException(executionRequest.getDatabase(), executionRequest.getSchema(), sql, executionRequest.getSql(), ex);
             }
             throw ex;
         }
-    }
-    
-    private boolean hasSQLSyntaxCause(final Throwable cause) {
-        Throwable current = cause;
-        while (null != current) {
-            if (current instanceof SQLException && isSQLSyntaxError((SQLException) current)) {
-                return true;
-            }
-            current = current.getCause();
-        }
-        return false;
-    }
-    
-    private boolean isSQLSyntaxError(final SQLException cause) {
-        String sqlState = cause.getSQLState();
-        return cause instanceof SQLSyntaxErrorException || "37000".equals(sqlState) || "42000".equals(sqlState) || "42601".equals(sqlState);
     }
     
     private ClassificationResult classify(final SQLExecutionRequest executionRequest, final MCPDatabaseCapability databaseCapability) {
@@ -175,47 +156,16 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         }
         IdentifierCasePolicy identifierCasePolicy = databaseCapability.getIdentifierCasePolicySet().getPolicy(IdentifierScope.SCHEMA);
         for (SQLStatementObjectName each : classificationResult.getReferencedObjects()) {
-            if (isCrossSchemaReference(each, executionRequest.getDatabase(), classificationResult, identifierCasePolicy)) {
+            if (isCrossSchemaReference(each, executionRequest.getDatabase(), identifierCasePolicy)) {
                 throw recordFailure(executionRequest, classificationResult.getTraceStatementMarker(), new MCPInvalidRequestException(
                         String.format("Cross-schema SQL is not supported for database `%s`: `%s`.", executionRequest.getDatabase(), each.getObjectName())));
             }
         }
     }
     
-    private boolean isCrossSchemaReference(final SQLStatementObjectName objectName, final String databaseName, final ClassificationResult classificationResult,
-                                           final IdentifierCasePolicy identifierCasePolicy) {
-        if (objectName.isQualified()) {
-            return !identifierCasePolicy.matches(databaseName, objectName.getFirstIdentifier(), objectName.getFirstIdentifierQuoteCharacter());
-        }
-        return isDatabaseOrSchemaBoundaryReference(objectName, databaseName, classificationResult, identifierCasePolicy);
-    }
-    
-    private boolean isDatabaseOrSchemaBoundaryReference(final SQLStatementObjectName objectName, final String databaseName, final ClassificationResult classificationResult,
-                                                        final IdentifierCasePolicy identifierCasePolicy) {
-        if (identifierCasePolicy.matches(databaseName, objectName.getFirstIdentifier(), objectName.getFirstIdentifierQuoteCharacter())) {
-            return false;
-        }
-        String actualSql = classificationResult.getNormalizedSql();
-        String upperSql = actualSql.substring(scanner.skipInsignificant(actualSql, 0)).toUpperCase(Locale.ENGLISH);
-        if (SupportedMCPStatement.DDL == classificationResult.getStatementClass()) {
-            return isDatabaseOrSchemaStatement(upperSql, classificationResult.getStatementType()) || containsSetSchemaClause(upperSql);
-        }
-        return SupportedMCPStatement.DCL == classificationResult.getStatementClass() && containsOnDatabaseOrSchemaClause(upperSql);
-    }
-    
-    private boolean isDatabaseOrSchemaStatement(final String upperSql, final String statementType) {
-        if (!"CREATE".equals(statementType) && !"ALTER".equals(statementType) && !"DROP".equals(statementType)) {
-            return false;
-        }
-        return upperSql.startsWith(statementType + " DATABASE ") || upperSql.startsWith(statementType + " SCHEMA ");
-    }
-    
-    private boolean containsSetSchemaClause(final String upperSql) {
-        return upperSql.matches(".*\\bSET\\s+SCHEMA\\b.*");
-    }
-    
-    private boolean containsOnDatabaseOrSchemaClause(final String upperSql) {
-        return upperSql.matches(".*\\bON\\s+(DATABASE|SCHEMA)\\b.*");
+    private boolean isCrossSchemaReference(final SQLStatementObjectName objectName, final String databaseName, final IdentifierCasePolicy identifierCasePolicy) {
+        return (objectName.isQualified() || objectName.isNamespaceTarget())
+                && !identifierCasePolicy.matches(databaseName, objectName.getFirstIdentifier(), objectName.getFirstIdentifierQuoteCharacter());
     }
     
     private <T extends RuntimeException> T recordFailure(final SQLExecutionRequest executionRequest, final String statementMarker, final T ex) {
