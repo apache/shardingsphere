@@ -35,10 +35,6 @@ public final class FirebirdGetBlobSegmentResponsePacket extends FirebirdPacket {
         payload.writeInt2LE(segmentLength);
         if (segmentLength > 0) {
             payload.writeBytes(segment);
-            int pad = (4 - (segmentLength % 4)) & 0x3;
-            if (pad > 0) {
-                payload.getByteBuf().writeZero(pad);
-            }
         }
     }
 }

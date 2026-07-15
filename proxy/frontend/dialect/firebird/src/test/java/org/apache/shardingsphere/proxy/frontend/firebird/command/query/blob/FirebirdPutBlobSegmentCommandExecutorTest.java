@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -55,6 +56,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobUploadCache.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobRegistry.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
     }
     
@@ -63,6 +65,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobUploadCache.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdBlobRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
@@ -81,5 +84,23 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(0));
         assertThat(((FirebirdGenericResponsePacket) response).getId(), is(blobId));
         assertThat(FirebirdBlobUploadCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(segment.length));
+    }
+    
+    @Test
+    void assertExecuteWithDeferredHandle() {
+        int blobHandle = 4;
+        long blobId = 12L;
+        byte[] segment = new byte[]{1, 2};
+        FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobRegistry.getInstance().setLastBlobHandle(CONNECTION_ID, blobHandle);
+        when(packet.getBlobHandle()).thenReturn(0xFFFF);
+        when(packet.getSegment()).thenReturn(segment);
+        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        DatabasePacket response = actual.iterator().next();
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) response).getId(), is(blobId));
+        assertThat(FirebirdBlobUploadCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]), is(segment));
     }
 }

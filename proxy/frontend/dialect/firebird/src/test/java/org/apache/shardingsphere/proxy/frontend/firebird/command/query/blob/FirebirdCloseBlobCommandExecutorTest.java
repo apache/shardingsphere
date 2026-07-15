@@ -84,4 +84,21 @@ class FirebirdCloseBlobCommandExecutorTest {
         assertThat(((FirebirdGenericResponsePacket) response).getId(), is(blobId));
         assertThat(FirebirdBlobRegistry.getInstance().getBlobLength(CONNECTION_ID, blobHandle), is(0));
     }
+    
+    @Test
+    void assertExecuteWithDeferredHandle() {
+        int blobHandle = 9;
+        long blobId = 5L;
+        FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobRegistry.getInstance().openBlob(CONNECTION_ID, blobHandle, new byte[]{1});
+        FirebirdBlobRegistry.getInstance().setLastBlobHandle(CONNECTION_ID, blobHandle);
+        when(packet.getBlobHandle()).thenReturn(0xFFFF);
+        FirebirdCloseBlobCommandExecutor executor = new FirebirdCloseBlobCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        DatabasePacket response = actual.iterator().next();
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) response).getId(), is(blobId));
+        assertThat(FirebirdBlobRegistry.getInstance().getBlobLength(CONNECTION_ID, blobHandle), is(0));
+    }
 }

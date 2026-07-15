@@ -43,8 +43,9 @@ public final class FirebirdGetBlobSegmentCommandExecutor implements CommandExecu
     
     @Override
     public Collection<DatabasePacket> execute() {
-        byte[] payloadSegment = FirebirdBlobRegistry.getInstance().readSegment(connectionSession.getConnectionId(), packet.getBlobHandle(), packet.getSegmentLength());
-        int responseHandle = FirebirdBlobRegistry.getInstance().isEof(connectionSession.getConnectionId(), packet.getBlobHandle()) ? STATE_END_OF_BLOB : 0;
+        int blobHandle = FirebirdBlobRegistry.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
+        byte[] payloadSegment = FirebirdBlobRegistry.getInstance().readSegment(connectionSession.getConnectionId(), blobHandle, packet.getSegmentLength());
+        int responseHandle = FirebirdBlobRegistry.getInstance().isEof(connectionSession.getConnectionId(), blobHandle) ? STATE_END_OF_BLOB : 0;
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(responseHandle).setData(new FirebirdGetBlobSegmentResponsePacket(payloadSegment)));
     }
 }

@@ -40,7 +40,8 @@ public final class FirebirdSeekBlobCommandExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        int position = FirebirdBlobRegistry.getInstance().seek(connectionSession.getConnectionId(), packet.getBlobHandle(), packet.getSeekMode(), packet.getOffset());
+        int blobHandle = FirebirdBlobRegistry.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
+        int position = FirebirdBlobRegistry.getInstance().seek(connectionSession.getConnectionId(), blobHandle, packet.getSeekMode(), packet.getOffset());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(position));
     }
 }

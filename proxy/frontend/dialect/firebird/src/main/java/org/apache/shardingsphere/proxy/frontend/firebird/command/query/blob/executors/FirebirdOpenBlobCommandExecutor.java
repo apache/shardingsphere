@@ -45,6 +45,7 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         byte[] blobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(packet.getBlobId());
         FirebirdBlobRegistry.getInstance().openBlob(connectionSession.getConnectionId(), statementId, blobContent);
+        FirebirdBlobRegistry.getInstance().setLastBlobHandle(connectionSession.getConnectionId(), statementId);
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId).setId(packet.getBlobId()));
     }
 }

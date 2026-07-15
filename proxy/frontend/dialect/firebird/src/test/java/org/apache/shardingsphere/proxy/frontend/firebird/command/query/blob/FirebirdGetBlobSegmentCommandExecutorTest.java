@@ -109,6 +109,22 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
         assertThat(actualSegment, is(new byte[]{4, 5}));
     }
     
+    @Test
+    void assertExecuteWithDeferredHandle() {
+        FirebirdBlobRegistry.getInstance().openBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3});
+        FirebirdBlobRegistry.getInstance().setLastBlobHandle(CONNECTION_ID, BLOB_HANDLE);
+        when(packet.getBlobHandle()).thenReturn(0xFFFF);
+        when(packet.getSegmentLength()).thenReturn(2);
+        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        DatabasePacket response = actual.iterator().next();
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
+        FirebirdGenericResponsePacket actualResponse = (FirebirdGenericResponsePacket) response;
+        assertThat(actualResponse.getHandle(), is(0));
+        assertThat(getResponseSegment(actualResponse), is(new byte[]{1, 2}));
+    }
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getResponseSegment(final FirebirdGenericResponsePacket responsePacket) {
         return (byte[]) Plugins.getMemberAccessor().get(FirebirdGetBlobSegmentResponsePacket.class.getDeclaredField("segment"), responsePacket.getData());

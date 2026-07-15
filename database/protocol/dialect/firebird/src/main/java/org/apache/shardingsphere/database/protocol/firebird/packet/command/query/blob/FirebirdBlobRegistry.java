@@ -36,6 +36,13 @@ import java.util.Arrays;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlobRegistry {
     
+    /**
+     * Sentinel value used by clients (e.g. Jaybird) when the real handle is not yet known
+     * because the preceding {@code op_create_blob2}/{@code op_open_blob2} response has not arrived.
+     * The server substitutes the most recently created object handle.
+     */
+    private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
+    
     private static final FirebirdBlobRegistry INSTANCE = new FirebirdBlobRegistry();
     
     @Getter
@@ -43,6 +50,8 @@ public final class FirebirdBlobRegistry {
     private static byte[] segment;
     
     private final Map<Integer, Map<Integer, FirebirdOpenBlobState>> openBlobsByHandle = new ConcurrentHashMap<>(16);
+    
+    private final Map<Integer, Integer> lastBlobHandleByConnection = new ConcurrentHashMap<>(16);
     
     /**
      * Get registry instance.
@@ -60,6 +69,7 @@ public final class FirebirdBlobRegistry {
      */
     public void registerConnection(final int connectionId) {
         openBlobsByHandle.put(connectionId, new ConcurrentHashMap<>(4));
+        lastBlobHandleByConnection.put(connectionId, 0);
     }
     
     /**
@@ -69,6 +79,33 @@ public final class FirebirdBlobRegistry {
      */
     public void unregisterConnection(final int connectionId) {
         openBlobsByHandle.remove(connectionId);
+        lastBlobHandleByConnection.remove(connectionId);
+    }
+    
+    /**
+     * Track the most recently created or opened BLOB handle for deferred-handle resolution.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     */
+    public void setLastBlobHandle(final int connectionId, final int blobHandle) {
+        lastBlobHandleByConnection.put(connectionId, blobHandle);
+    }
+    
+    /**
+     * Resolve a BLOB handle, substituting the most recently created or opened handle
+     * when the client sends the deferred placeholder {@code INVALID_OBJECT}.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle from the client (may be {@code INVALID_OBJECT})
+     * @return resolved blob handle
+     */
+    public int resolveBlobHandle(final int connectionId, final int blobHandle) {
+        if (INVALID_OBJECT_HANDLE == blobHandle) {
+            int lastHandle = lastBlobHandleByConnection.getOrDefault(connectionId, 0);
+            return 0 == lastHandle ? blobHandle : lastHandle;
+        }
+        return blobHandle;
     }
     
     /**

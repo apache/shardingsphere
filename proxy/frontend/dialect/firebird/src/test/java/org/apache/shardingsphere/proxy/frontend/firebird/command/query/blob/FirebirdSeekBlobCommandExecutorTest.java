@@ -100,4 +100,18 @@ class FirebirdSeekBlobCommandExecutorTest {
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(3));
     }
+    
+    @Test
+    void assertExecuteWithDeferredHandle() {
+        FirebirdBlobRegistry.getInstance().setLastBlobHandle(CONNECTION_ID, 7);
+        when(packet.getBlobHandle()).thenReturn(0xFFFF);
+        when(packet.getSeekMode()).thenReturn(0);
+        when(packet.getOffset()).thenReturn(2);
+        FirebirdSeekBlobCommandExecutor executor = new FirebirdSeekBlobCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        DatabasePacket response = actual.iterator().next();
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(2));
+    }
 }

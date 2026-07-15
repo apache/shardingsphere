@@ -86,4 +86,26 @@ class FirebirdBlobRegistryTest {
         assertThat(FirebirdBlobRegistry.getInstance().seek(CONNECTION_ID, BLOB_HANDLE, 2, -2), is(2));
         FirebirdBlobRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
+    
+    @Test
+    void assertResolveBlobHandleWithDeferredPlaceholder() {
+        FirebirdBlobRegistry.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobRegistry.getInstance().setLastBlobHandle(CONNECTION_ID, BLOB_HANDLE);
+        assertThat(FirebirdBlobRegistry.getInstance().resolveBlobHandle(CONNECTION_ID, 0xFFFF), is(BLOB_HANDLE));
+        FirebirdBlobRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
+    @Test
+    void assertResolveBlobHandleWithoutDeferredPlaceholder() {
+        FirebirdBlobRegistry.getInstance().registerConnection(CONNECTION_ID);
+        assertThat(FirebirdBlobRegistry.getInstance().resolveBlobHandle(CONNECTION_ID, BLOB_HANDLE), is(BLOB_HANDLE));
+        FirebirdBlobRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
+    @Test
+    void assertResolveDeferredHandleWithoutPriorBlob() {
+        FirebirdBlobRegistry.getInstance().registerConnection(CONNECTION_ID);
+        assertThat(FirebirdBlobRegistry.getInstance().resolveBlobHandle(CONNECTION_ID, 0xFFFF), is(0xFFFF));
+        FirebirdBlobRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+    }
 }

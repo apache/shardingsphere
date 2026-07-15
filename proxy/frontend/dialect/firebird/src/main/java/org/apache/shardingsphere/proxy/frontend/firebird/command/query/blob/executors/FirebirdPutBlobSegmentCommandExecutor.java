@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -41,8 +42,9 @@ public final class FirebirdPutBlobSegmentCommandExecutor implements CommandExecu
     
     @Override
     public Collection<DatabasePacket> execute() {
-        FirebirdBlobUploadCache.getInstance().appendSegment(connectionSession.getConnectionId(), packet.getBlobHandle(), packet.getSegment());
-        OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), packet.getBlobHandle());
+        int blobHandle = FirebirdBlobRegistry.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
+        FirebirdBlobUploadCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, packet.getSegment());
+        OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
         FirebirdGenericResponsePacket response = new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId);
         return Collections.singleton(response);

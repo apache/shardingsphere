@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
-import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -28,30 +27,22 @@ import java.util.stream.Stream;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class FirebirdGetBlobSegmentResponsePacketTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertWriteArguments")
-    void assertWrite(final String name,
-                     final byte[] segment, final int expectedLength, final int expectedWriteBytesCount, final int expectedGetByteBufCount, final int expectedPad, final int expectedPadCallCount) {
+    void assertWrite(final String name, final byte[] segment, final int expectedLength, final int expectedWriteBytesCount) {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        ByteBuf byteBuf = mock(ByteBuf.class);
-        if (expectedGetByteBufCount > 0) {
-            when(payload.getByteBuf()).thenReturn(byteBuf);
-        }
         new FirebirdGetBlobSegmentResponsePacket(segment).write(payload);
         verify(payload).writeInt2LE(expectedLength);
         verify(payload, times(expectedWriteBytesCount)).writeBytes(segment);
-        verify(payload, times(expectedGetByteBufCount)).getByteBuf();
-        verify(byteBuf, times(expectedPadCallCount)).writeZero(expectedPad);
     }
     
     private static Stream<Arguments> assertWriteArguments() {
         return Stream.of(
-                Arguments.of("empty_segment", new byte[0], 0, 0, 0, 0, 0),
-                Arguments.of("aligned_segment", new byte[]{1, 2, 3, 4}, 4, 1, 0, 0, 0),
-                Arguments.of("unaligned_segment", new byte[]{1, 2, 3}, 3, 1, 1, 1, 1));
+                Arguments.of("empty_segment", new byte[0], 0, 0),
+                Arguments.of("aligned_segment", new byte[]{1, 2, 3, 4}, 4, 1),
+                Arguments.of("unaligned_segment", new byte[]{1, 2, 3}, 3, 1));
     }
 }
