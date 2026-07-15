@@ -74,6 +74,7 @@
 1. JDBC: Bump the ClickHouse JDBC Driver used by optional modules to version `0.9.8` - [#38878](https://github.com/apache/shardingsphere/pull/38878)
 1. Proxy: Support basic Firebird batch operations: create, send, execute, cancel, and release - [#38605](https://github.com/apache/shardingsphere/pull/38605)
 1. JDBC & Proxy: Add a check to verify database name naming conventions. - [#38883](https://github.com/apache/shardingsphere/pull/38883)
+1. Encrypt: Support SqlServer update statement for Updating data in a remote table by using a linked server when use encrypt feature - [#39122](https://github.com/apache/shardingsphere/pull/39122)
 1. Encrypt: Support SqlServer update statement for Specifying a table alias as the target object when use encrypt feature - [#38733](https://github.com/apache/shardingsphere/pull/38733)
 1. Encrypt: Support SqlServer update statement for Specifying a view as the target object when use encrypt feature - [#38896](https://github.com/apache/shardingsphere/pull/38896)
 1. Encrypt: Support SqlServer for Using the UPDATE statement with information from another table  when use encrypt feature - [#38926](https://github.com/apache/shardingsphere/pull/38926)
