@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -33,12 +34,16 @@ public final class ReadwriteSplittingStatusDistSQLPlanningService {
      *
      * @param request status workflow request
      * @return rule artifact
+     * @throws MCPInvalidRequestException when no status operation can be resolved
      */
     public RuleArtifact planStatus(final ReadwriteSplittingStatusWorkflowRequest request) {
         String operation = resolveStatusOperation(request);
+        if (operation.isEmpty()) {
+            throw new MCPInvalidRequestException("target_status is required for readwrite-splitting status.");
+        }
         return new RuleArtifact(operation.toLowerCase(Locale.ENGLISH), String.format("ALTER READWRITE_SPLITTING RULE %s %s %s FROM %s",
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getRuleName()), operation,
-                WorkflowSQLUtils.formatDistSQLIdentifier(request.getStorageUnit()), WorkflowSQLUtils.formatDistSQLIdentifier(request.getDatabase())));
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getRuleName()), operation,
+                WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getStorageUnit()), WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getDatabase())));
     }
     
     /**
@@ -48,8 +53,11 @@ public final class ReadwriteSplittingStatusDistSQLPlanningService {
      * @return DistSQL status operation
      */
     public String resolveStatusOperation(final ReadwriteSplittingStatusWorkflowRequest request) {
-        String targetStatus = request.getTargetStatus().isEmpty() ? request.getOperationType() : request.getTargetStatus();
-        String actualStatus = targetStatus.trim().toLowerCase(Locale.ENGLISH);
+        return normalizeStatusOperation(request.getTargetStatus());
+    }
+    
+    private String normalizeStatusOperation(final String status) {
+        String actualStatus = status.trim().toLowerCase(Locale.ENGLISH);
         if ("enable".equals(actualStatus) || "enabled".equals(actualStatus)) {
             return "ENABLE";
         }

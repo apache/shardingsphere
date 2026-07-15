@@ -15,4 +15,6 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.infra.spi.type.ordered.fixture.impl.ParentOrderedSPIFixtureImpl
 org.apache.shardingsphere.infra.spi.type.ordered.fixture.impl.OrderedSPIFixtureImpl
+org.apache.shardingsphere.infra.spi.type.ordered.fixture.impl.ComparableOrderedSPIFixtureImpl

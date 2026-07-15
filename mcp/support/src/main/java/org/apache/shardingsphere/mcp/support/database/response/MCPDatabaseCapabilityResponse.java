@@ -41,15 +41,12 @@ public final class MCPDatabaseCapabilityResponse implements MCPResponse {
         result.put("databaseType", databaseCapability.getDatabaseType());
         result.put("supportedObjectTypes", databaseCapability.getSupportedMetadataObjectTypes());
         result.put("supportedStatementClasses", databaseCapability.getSupportedStatementClasses());
-        result.put("supportsTransactionControl", databaseCapability.isSupportsTransactionControl());
-        result.put("supportsSavepoint", databaseCapability.isSupportsSavepoint());
+        result.put("supportsTransactionControl", databaseCapability.supportsTransactionControl());
+        result.put("supportsSavepoint", databaseCapability.supportsSavepoint());
         result.put("defaultSchemaSemantics", databaseCapability.getDefaultSchemaSemantics());
         result.put("schemaExecutionSemantics", databaseCapability.getSchemaExecutionSemantics());
-        result.put("supportsCrossSchemaSql", databaseCapability.isSupportsCrossSchemaSql());
-        result.put("supportsExplainAnalyze", databaseCapability.isSupportsExplainAnalyze());
-        result.put("explainAnalyzeExecutionRisk", databaseCapability.isSupportsExplainAnalyze()
-                ? "EXPLAIN ANALYZE may execute the underlying SELECT on this engine; use it only when the user accepts runtime execution cost."
-                : "EXPLAIN ANALYZE is not supported for this logical database.");
+        result.put("supportsCrossSchemaSql", databaseCapability.supportsCrossSchemaSql());
+        result.put("supportsExplain", databaseCapability.supportsExplain());
         return result;
     }
 }

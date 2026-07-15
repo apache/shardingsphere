@@ -40,4 +40,5 @@ class LLMMCPNextActionsTest {
     void assertGetNextActionsWithNoActions() {
         assertThat(LLMMCPNextActions.getNextActions(Map.of("next_actions", "ignored", "recovery", Map.of("next_actions", "ignored"))), is(List.of()));
     }
+    
 }

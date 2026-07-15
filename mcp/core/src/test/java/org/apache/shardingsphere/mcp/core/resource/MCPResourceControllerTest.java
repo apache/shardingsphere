@@ -46,7 +46,7 @@ class MCPResourceControllerTest {
         when(response.toPayload()).thenReturn(payload);
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
             mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://capabilities"))).thenReturn(Optional.of(response));
-            Map<String, Object> actual = createController().handle("shardingsphere://capabilities").toPayload();
+            Map<String, Object> actual = createController().handle("session-1", "shardingsphere://capabilities").toPayload();
             assertThat(actual, is(payload));
         }
     }
@@ -55,7 +55,7 @@ class MCPResourceControllerTest {
     void assertHandleWithUnsupportedResourceUri() {
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
             mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("unsupported://resource"))).thenReturn(Optional.empty());
-            UnsupportedResourceUriException actual = assertThrows(UnsupportedResourceUriException.class, () -> createController().handle("unsupported://resource"));
+            UnsupportedResourceUriException actual = assertThrows(UnsupportedResourceUriException.class, () -> createController().handle("session-1", "unsupported://resource"));
             assertThat(actual.getResourceUri(), is("unsupported://resource"));
         }
     }
@@ -65,7 +65,7 @@ class MCPResourceControllerTest {
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
             mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://indexes")))
                     .thenThrow(new MCPUnsupportedException("Index resources are not supported."));
-            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> createController().handle("shardingsphere://indexes"));
+            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> createController().handle("session-1", "shardingsphere://indexes"));
             assertThat(actual.getMessage(), is("Index resources are not supported."));
         }
     }

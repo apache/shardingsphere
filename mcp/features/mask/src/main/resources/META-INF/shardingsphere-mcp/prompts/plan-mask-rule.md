@@ -26,16 +26,20 @@ User context:
 - plan_id: {{plan_id}}
 
 Model path:
-1. Collect database, table, and column values from user context or explicit user input before calling database_gateway_plan_mask_rule; schema is optional.
+1. Collect database, table, and column values from user context or explicit user input before calling database_gateway_plan_mask_rule.
+   Schema is optional, and the planning tool verifies database, table, and column visibility before generating DistSQL.
 2. Read shardingsphere://features/mask/algorithms before choosing algorithm_type.
 3. Read existing mask rules for the database or table when database and table are known.
 4. Call database_gateway_plan_mask_rule with gathered logical names and any reviewed algorithm choice.
+   Omit plan_id for a new plan; pass plan_id only when continuing an actual current-session plan returned by a previous planning response.
 5. Use database_gateway_apply_workflow with execution_mode=preview before applying generated mask rule DistSQL.
-6. Before choosing uncertain database, schema, table, column, algorithm, or plan_id values, ask the user or read feature algorithm/rule resources whose URI can be built from already-known identifiers; do not guess identifiers.
+   Call review-then-execute only after the user confirms explicit approved_steps from preview_artifacts.
+6. Before choosing uncertain database, schema, table, column, algorithm, or plan_id values, ask the user or read feature algorithm/rule resources.
+   Build resource URIs only from already-known identifiers; do not guess identifiers.
 
 Ask-user conditions:
 - Ask when field semantics or masking strategy are unclear.
-- Ask before applying generated mask rule DistSQL that changes runtime state.
+- Ask which preview_artifacts.approval_step values are approved before applying generated mask rule DistSQL that changes runtime state.
 
 Stop conditions:
 - Stop after database_gateway_plan_mask_rule returns a planned workflow with plan_id and reviewable artifacts.

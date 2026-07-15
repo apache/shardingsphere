@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.mcp.support.database.capability;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -38,55 +42,55 @@ public final class MCPDatabaseCapability {
     
     private final TransactionCapability transactionCapability;
     
-    private final SchemaSemantics defaultSchemaSemantics;
+    private final DialectSchemaSemantics defaultSchemaSemantics;
     
     private final SchemaExecutionSemantics schemaExecutionSemantics;
     
-    private final boolean supportsCrossSchemaSql;
+    private final IdentifierCasePolicySet identifierCasePolicySet;
     
-    private final boolean supportsExplainAnalyze;
-    
-    public MCPDatabaseCapability(final String databaseName, final String databaseVersion, final MCPDatabaseCapabilityOption option) {
-        this.databaseName = databaseName;
+    MCPDatabaseCapability(final RuntimeDatabaseProfile databaseProfile, final MCPDatabaseCapabilityOption option) {
+        databaseName = databaseProfile.getDatabase();
         databaseType = option.getType();
-        supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(option);
-        supportedStatementClasses = createSupportedStatementClasses(databaseVersion, option);
-        transactionCapability = option.getTransactionCapability();
-        defaultSchemaSemantics = option.getDefaultSchemaSemantics();
-        schemaExecutionSemantics = option.getSchemaExecutionSemantics();
-        supportsCrossSchemaSql = option.isCrossSchemaQuerySupported();
-        supportsExplainAnalyze = option.isExplainAnalyzeSupported(databaseVersion);
+        MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(option.getType());
+        supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(databaseDialect);
+        transactionCapability = databaseProfile.getTransactionCapability();
+        supportedStatementClasses = createSupportedStatementClasses(transactionCapability, option.isExplainSupported());
+        defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
+        schemaExecutionSemantics = createSchemaExecutionSemantics(defaultSchemaSemantics);
+        identifierCasePolicySet = databaseProfile.getIdentifierCasePolicySet();
     }
     
-    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final MCPDatabaseCapabilityOption option) {
+    private static SchemaExecutionSemantics createSchemaExecutionSemantics(final DialectSchemaSemantics defaultSchemaSemantics) {
+        return DialectSchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics ? SchemaExecutionSemantics.FIXED_TO_DATABASE : SchemaExecutionSemantics.BEST_EFFORT;
+    }
+    
+    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final MCPDatabaseDialect databaseDialect) {
         Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(16, 1F);
         result.add(SupportedMCPMetadataObjectType.SCHEMA);
         result.add(SupportedMCPMetadataObjectType.TABLE);
         result.add(SupportedMCPMetadataObjectType.VIEW);
         result.add(SupportedMCPMetadataObjectType.COLUMN);
-        if (option.isIndexSupported()) {
-            result.add(SupportedMCPMetadataObjectType.INDEX);
-        }
-        if (option.isSequenceSupported()) {
+        result.add(SupportedMCPMetadataObjectType.INDEX);
+        if (databaseDialect.isSequenceSupported()) {
             result.add(SupportedMCPMetadataObjectType.SEQUENCE);
         }
         return result;
     }
     
-    private Set<SupportedMCPStatement> createSupportedStatementClasses(final String databaseVersion, final MCPDatabaseCapabilityOption option) {
+    private Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean explainSupported) {
         Set<SupportedMCPStatement> result = new LinkedHashSet<>(16, 1F);
         result.add(SupportedMCPStatement.QUERY);
         result.add(SupportedMCPStatement.DML);
         result.add(SupportedMCPStatement.DDL);
         result.add(SupportedMCPStatement.DCL);
-        if (TransactionCapability.NONE != option.getTransactionCapability()) {
+        if (TransactionCapability.NONE != transactionCapability) {
             result.add(SupportedMCPStatement.TRANSACTION_CONTROL);
         }
-        if (TransactionCapability.LOCAL_WITH_SAVEPOINT == option.getTransactionCapability()) {
+        if (TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability) {
             result.add(SupportedMCPStatement.SAVEPOINT);
         }
-        if (option.isExplainAnalyzeSupported(databaseVersion)) {
-            result.add(SupportedMCPStatement.EXPLAIN_ANALYZE);
+        if (explainSupported) {
+            result.add(SupportedMCPStatement.EXPLAIN);
         }
         return result;
     }
@@ -96,7 +100,7 @@ public final class MCPDatabaseCapability {
      *
      * @return whether transaction control is supported
      */
-    public boolean isSupportsTransactionControl() {
+    public boolean supportsTransactionControl() {
         return TransactionCapability.NONE != transactionCapability;
     }
     
@@ -105,7 +109,25 @@ public final class MCPDatabaseCapability {
      *
      * @return whether savepoint is supported
      */
-    public boolean isSupportsSavepoint() {
+    public boolean supportsSavepoint() {
         return TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability;
+    }
+    
+    /**
+     * Judge whether EXPLAIN query is supported.
+     *
+     * @return whether EXPLAIN query is supported
+     */
+    public boolean supportsExplain() {
+        return supportedStatementClasses.contains(SupportedMCPStatement.EXPLAIN);
+    }
+    
+    /**
+     * Judge whether cross-schema SQL is supported.
+     *
+     * @return whether cross-schema SQL is supported
+     */
+    public boolean supportsCrossSchemaSql() {
+        return SchemaExecutionSemantics.BEST_EFFORT == schemaExecutionSemantics;
     }
 }

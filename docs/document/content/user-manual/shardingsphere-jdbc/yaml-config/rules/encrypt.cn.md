@@ -49,8 +49,8 @@ rules:
 dataSources:
   unique_ds:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    standardJdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
 
@@ -66,9 +66,6 @@ rules:
           assistedQuery:
             name: assisted_query_username
             encryptorName: assisted_encryptor
-          likeQuery:
-            name: like_query_username
-            encryptorName: like_encryptor
         pwd:
           cipher:
             name: pwd
@@ -84,8 +81,6 @@ rules:
         digest-algorithm-name: SHA-1
     assisted_encryptor:
       type: MD5
-    like_encryptor:
-      type: CHAR_DIGEST_LIKE
 ```
 
 然后通过 YamlShardingSphereDataSourceFactory 的 createDataSource 方法创建数据源。

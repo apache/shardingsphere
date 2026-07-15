@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
@@ -35,21 +34,13 @@ import java.util.Map;
 /**
  * Tool handler for broadcast workflow planning.
  */
-public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
+public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPWorkflowRequestContext> {
     
-    private final BroadcastWorkflowPlanningService planningService;
-    
-    public PlanBroadcastRuleToolHandler() {
-        planningService = new BroadcastWorkflowPlanningService();
-    }
-    
-    PlanBroadcastRuleToolHandler(final BroadcastWorkflowPlanningService planningService) {
-        this.planningService = planningService;
-    }
+    private final BroadcastWorkflowPlanningService planningService = new BroadcastWorkflowPlanningService();
     
     @Override
-    public Class<MCPWorkflowHandlerContext> getContextType() {
-        return MCPWorkflowHandlerContext.class;
+    public Class<MCPWorkflowRequestContext> getContextType() {
+        return MCPWorkflowRequestContext.class;
     }
     
     @Override
@@ -58,12 +49,11 @@ public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPWor
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        BroadcastWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(BroadcastWorkflowRequest::new, toolCall.getArguments(),
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
-        WorkflowContextSnapshot snapshot = planningService.plan(
-                workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(new WorkflowToolResponseBuilder().buildPlanResponse(snapshot));
+    public MCPResponse handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
+        BroadcastWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(BroadcastWorkflowRequest::new, arguments,
+                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getQueryFacade(), request);
+        return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final BroadcastWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
@@ -74,17 +64,6 @@ public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPWor
         Object tables = structuredIntentEvidence.get(BroadcastFeatureDefinition.TABLES_FIELD);
         if (null != tables) {
             request.setTables(String.valueOf(tables));
-        }
-    }
-    
-    private void applyUserOverrides(final BroadcastWorkflowRequest request, final Map<String, Object> userOverrides) {
-        Object tables = userOverrides.get(BroadcastFeatureDefinition.TABLES_FIELD);
-        if (null != tables) {
-            request.setTables(String.valueOf(tables));
-        }
-        Object table = userOverrides.get(WorkflowFieldNames.TABLE);
-        if (null != table) {
-            request.setTable(String.valueOf(table));
         }
     }
 }

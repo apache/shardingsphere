@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -230,7 +231,7 @@ class DatabaseMetaDataPersistFacadeTest {
     
     private DialectDatabaseMetaData createDialectDatabaseMetaData() {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
-        when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null));
+        when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.NATIVE_SCHEMA));
         when(result.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
         return result;
     }

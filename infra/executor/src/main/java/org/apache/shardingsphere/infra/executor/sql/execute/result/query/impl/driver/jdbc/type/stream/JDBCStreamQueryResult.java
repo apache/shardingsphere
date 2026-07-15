@@ -32,6 +32,7 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalTime;
@@ -113,6 +114,9 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         }
         if (Clob.class == type) {
             return resultSet.getClob(columnIndex);
+        }
+        if (SQLXML.class == type) {
+            return resultSet.getSQLXML(columnIndex);
         }
         if (Array.class == type) {
             return resultSet.getArray(columnIndex);

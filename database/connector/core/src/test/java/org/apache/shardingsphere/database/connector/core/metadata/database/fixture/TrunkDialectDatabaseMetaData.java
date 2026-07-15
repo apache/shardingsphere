@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 
 public final class TrunkDialectDatabaseMetaData implements DialectDatabaseMetaData {
     
@@ -43,7 +44,7 @@ public final class TrunkDialectDatabaseMetaData implements DialectDatabaseMetaDa
     
     @Override
     public DialectSchemaOption getSchemaOption() {
-        return new DefaultSchemaOption(false, "test");
+        return new DefaultSchemaOption(false, "test", DialectSchemaSemantics.NATIVE_SCHEMA);
     }
     
     @Override

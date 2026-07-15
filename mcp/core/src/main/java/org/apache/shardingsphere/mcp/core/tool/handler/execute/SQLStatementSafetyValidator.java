@@ -65,7 +65,7 @@ final class SQLStatementSafetyValidator {
                 || upperSql.startsWith("COPY ")
                 || upperSql.startsWith("LOAD ")
                 || upperSql.startsWith("CALL ")
-                || scanner.containsMySQLExecutableComment(sql)
+                || scanner.containsExecutableComment(sql)
                 || scanner.containsUserVariableAssignment(sql)
                 || containsBannedDialectPattern(scanner.tokenize(sql));
     }
@@ -227,6 +227,21 @@ final class SQLStatementSafetyValidator {
     }
     
     private String extractStatementType(final String upperSql) {
+        if (upperSql.startsWith("SHOW RULES USED STORAGE UNIT")) {
+            return "SHOW RULES USED STORAGE UNIT";
+        }
+        if (upperSql.startsWith("SHOW STORAGE UNITS")) {
+            return "SHOW STORAGE UNITS";
+        }
+        if (upperSql.startsWith("SHOW DEFAULT SINGLE TABLE STORAGE UNIT")) {
+            return "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
+        }
+        if (upperSql.startsWith("SHOW SINGLE TABLES")) {
+            return "SHOW SINGLE TABLES";
+        }
+        if (upperSql.startsWith("SHOW SINGLE TABLE")) {
+            return "SHOW SINGLE TABLE";
+        }
         if (upperSql.startsWith("START TRANSACTION")) {
             return "START TRANSACTION";
         }

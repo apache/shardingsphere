@@ -9,7 +9,7 @@ weight = 5
 
 - 适合在 Anthropic Messages API 中直接挂接远程 ShardingSphere-MCP，而不单独实现 MCP client。
 - 适合在 Claude API 请求中按需暴露 ShardingSphere-MCP 的元数据查询、受控查询、规则规划和接入前预检能力。
-- 接入完成后，可以在 Claude 会话中查看逻辑库中的表、查看表结构，或调用 `database_gateway_validate_proxy_connectivity` 对已经配置的 runtime database 进行接入前校验。
+- 接入完成后，可以在 Claude 会话中查看逻辑库中的表、查看表结构，或调用 `database_gateway_validate_runtime_database` 对已经配置的 runtime database 进行接入前校验。
 
 ## 前置条件
 
@@ -27,6 +27,7 @@ weight = 5
 
 ### 配置接入
 
+先将 `SHARDINGSPHERE_MCP_REMOTE_URL` 设置为受信网关对外发布的受保护远程 endpoint。
 在 Messages API 请求中，先用 `mcp_servers` 声明 ShardingSphere-MCP，再在 `tools` 数组里添加与之对应的 `mcp_toolset`。最小示例如下：
 
 ```bash
@@ -35,36 +36,34 @@ curl https://api.anthropic.com/v1/messages \
   -H "x-api-key: $ANTHROPIC_API_KEY" \
   -H "anthropic-version: 2023-06-01" \
   -H "anthropic-beta: mcp-client-2025-11-20" \
-  -d '{
-    "model": "claude-sonnet-4-5",
-    "max_tokens": 1024,
-    "messages": [
-      {
-        "role": "user",
-        "content": "Use ShardingSphere-MCP to inspect the tables in the logic database."
-      }
-    ],
-    "mcp_servers": [
-      {
-        "type": "url",
-        "url": "https://example.com/mcp",
-        "name": "shardingsphere"
-      }
-    ],
-    "tools": [
-      {
-        "type": "mcp_toolset",
-        "mcp_server_name": "shardingsphere"
-      }
-    ]
-  }'
+  -d @- <<EOF
+{
+  "model": "claude-sonnet-4-5",
+  "max_tokens": 1024,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Use ShardingSphere-MCP to inspect the tables in the logic database."
+    }
+  ],
+  "mcp_servers": [
+    {
+      "type": "url",
+      "url": "${SHARDINGSPHERE_MCP_REMOTE_URL}",
+      "name": "shardingsphere"
+    }
+  ],
+  "tools": [
+    {
+      "type": "mcp_toolset",
+      "mcp_server_name": "shardingsphere"
+    }
+  ]
+}
+EOF
 ```
 
-如果受保护的远程 endpoint 或网关使用 OAuth 或 Bearer 认证，可以在 `mcp_servers` 条目中增加：
-
-```json
-"authorization_token": "YOUR_TOKEN"
-```
+如果受保护的远程 endpoint 或网关使用 OAuth 或 Bearer 认证，应从受保护来源读取令牌，并在创建请求时向 `mcp_servers` 条目增加 `authorization_token`。
 
 如果只想暴露一部分工具，可以在 `mcp_toolset` 中使用 `default_config` 和 `configs` 做 allowlist 或 denylist。例如，把默认值设为禁用，再显式启用少量工具：
 
@@ -79,7 +78,7 @@ curl https://api.anthropic.com/v1/messages \
     "database_gateway_search_metadata": {
       "enabled": true
     },
-    "database_gateway_validate_proxy_connectivity": {
+    "database_gateway_validate_runtime_database": {
       "enabled": true
     }
   }
@@ -95,9 +94,9 @@ curl https://api.anthropic.com/v1/messages \
 调用成功：
 
 - 在 Claude 会话中执行一条最小验证任务，例如：
-  - 查看 `<logic-database>` 中有哪些表。
+  - 查看 `logic_db` 中有哪些表。
   - 查看 `orders` 表的列和索引。
-  - 对已经配置的 runtime database 调用 `database_gateway_validate_proxy_connectivity`。
+  - 对已经配置的 runtime database 调用 `database_gateway_validate_runtime_database`。
 - 如果 Claude 能返回来自 ShardingSphere-MCP 的工具结果，说明接入已经生效。
 
 如果接入失败，优先检查：

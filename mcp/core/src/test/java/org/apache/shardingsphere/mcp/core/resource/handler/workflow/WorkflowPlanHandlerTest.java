@@ -40,14 +40,15 @@ class WorkflowPlanHandlerTest {
     
     @Test
     void assertHandle() {
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        runtimeContext.getWorkflowSessionContext().save(createSnapshot());
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            Map<String, Object> actual = new WorkflowPlanHandler().handle(requestScope, new MCPUriVariables(Map.of("plan_id", "plan-1"))).toPayload();
-            assertThat(actual.get("plan_id"), is("plan-1"));
-            assertThat(actual.get("workflow_kind"), is("mask.rule"));
-            assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("tool_name"), is("database_gateway_apply_workflow"));
-        }
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
+        sessionManager.createSession("session-1");
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), "http");
+        runtimeContext.getWorkflowSessionContext("session-1").save(createSnapshot());
+        MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1");
+        Map<String, Object> actual = new WorkflowPlanHandler().handle(requestScope, new MCPUriVariables(Map.of("plan_id", "plan-1"))).toPayload();
+        assertThat(actual.get("plan_id"), is("plan-1"));
+        assertThat(actual.get("workflow_kind"), is("mask.rule"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("tool_name"), is("database_gateway_apply_workflow"));
     }
     
     private WorkflowContextSnapshot createSnapshot() {

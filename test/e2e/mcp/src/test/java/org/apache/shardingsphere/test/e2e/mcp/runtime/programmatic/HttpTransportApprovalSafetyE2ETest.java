@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @EnabledIf("isEnabled")
-class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportApprovalSafetyE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isDockerEnabled();
@@ -48,7 +49,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "execute"));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(payload.get("response_mode")), is("executed"));
         assertThat(String.valueOf(payload.get("result_kind")), is("update_count"));
         assertThat(String.valueOf(payload.get("affected_rows")), is("0"));
@@ -57,15 +58,32 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
     }
     
     @Test
-    void assertApplyWorkflowReviewThenExecuteMode() throws IOException, InterruptedException {
+    void assertRejectWorkflowReviewThenExecuteWithoutPreview() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> executionPayload = callApplyWorkflow(httpClient, sessionId, createMaskRulePlan(httpClient, sessionId),
                 Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
-        assertThat(String.valueOf(executionPayload.get("status")), is("completed"));
+        assertThat(String.valueOf(executionPayload.get("status")), is("failed"));
         assertThat(String.valueOf(executionPayload.get("execution_mode")), is("review-then-execute"));
-        assertThat(((List<?>) executionPayload.get("skipped_artifacts")).size(), is(1));
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) executionPayload.get("issues")).getFirst();
+        assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
+        assertModelFacingPayloadContract(executionPayload);
+    }
+    
+    @Test
+    void assertRejectWorkflowReviewThenExecuteWithInvisibleApprovedStep() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        String planId = createMaskRulePlan(httpClient, sessionId);
+        Map<String, Object> previewPayload = callApplyWorkflow(httpClient, sessionId, planId, Map.of("execution_mode", "preview"));
+        assertThat(String.valueOf(previewPayload.get("status")), is("preview"));
+        Map<String, Object> executionPayload = callApplyWorkflow(httpClient, sessionId, planId,
+                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
+        assertThat(String.valueOf(executionPayload.get("status")), is("failed"));
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) executionPayload.get("issues")).getFirst();
+        assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         assertModelFacingPayloadContract(executionPayload);
     }
     
@@ -89,26 +107,10 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractHttpProgrammaticRuntime
         actualArguments.putAll(arguments);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME, actualArguments);
         assertThat(actual.statusCode(), is(200));
-        return getStructuredContent(actual.body());
-    }
-    
-    private String createMaskRulePlan(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_mask_rule", Map.of(
-                "database", "logic_db",
-                "schema", "logic_db",
-                "table", "orders",
-                "column", "status",
-                "operation_type", "create",
-                "algorithm_type", "KEEP_FIRST_N_LAST_M",
-                "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("status")), is("planned"));
-        return String.valueOf(payload.get("plan_id"));
+        return getToolCallPayload(actual.body());
     }
     
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
-        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     

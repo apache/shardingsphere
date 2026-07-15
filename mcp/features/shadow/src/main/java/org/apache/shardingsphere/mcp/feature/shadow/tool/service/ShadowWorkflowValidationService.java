@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
@@ -27,22 +28,29 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  * Shadow workflow validation service.
  */
-public final class ShadowWorkflowValidationService implements MCPWorkflowRuntimeHandler {
+public final class ShadowWorkflowValidationService implements MCPWorkflowRuntimeHandler, MCPWorkflowApplyArtifactValidator {
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
@@ -52,25 +60,26 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     
     public ShadowWorkflowValidationService() {
         inspectionService = new ShadowInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
-    }
-    
-    ShadowWorkflowValidationService(final ShadowInspectionService inspectionService, final WorkflowSynchronizationSupport workflowSynchronizationSupport) {
-        this.inspectionService = inspectionService;
-        this.workflowSynchronizationSupport = workflowSynchronizationSupport;
+        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     }
     
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
                                         final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId,
                                         final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
-        if (!rejectedResponse.isEmpty()) {
-            return rejectedResponse;
+        return validationSupport.validateAndFinalize(workflowSessionContext, sessionId, snapshot, () -> createValidationReport(snapshot, queryFacade));
+    }
+    
+    @Override
+    public List<Map<String, Object>> validate(final WorkflowContextSnapshot snapshot, final Collection<ExecutableWorkflowArtifact> artifacts) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (ExecutableWorkflowArtifact each : artifacts) {
+            if (each.ruleDistSql()) {
+                addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
+            }
         }
-        ValidationReport validationReport = createValidationReport(snapshot, queryFacade);
-        snapshot.setValidationReport(validationReport);
-        return validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
+        return result;
     }
     
     @Override
@@ -79,35 +88,70 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
         workflowSynchronizationSupport.synchronize(() -> createValidationReport(snapshot, queryFacade));
     }
     
+    private void addRuleDistSQLIssues(final List<Map<String, Object>> issues, final WorkflowContextSnapshot snapshot, final String sql, final String displaySql) {
+        if (!isCreateOrAlterShadowDistSQL(sql)) {
+            return;
+        }
+        if (snapshot.getRequest() instanceof ShadowRuleWorkflowRequest) {
+            ShadowRuleWorkflowRequest request = (ShadowRuleWorkflowRequest) snapshot.getRequest();
+            addShadowAlgorithmIssue(issues, request.getAlgorithmType(), request.getAlgorithmProperties(), displaySql);
+        }
+        if (snapshot.getRequest() instanceof ShadowDefaultAlgorithmWorkflowRequest) {
+            ShadowDefaultAlgorithmWorkflowRequest request = (ShadowDefaultAlgorithmWorkflowRequest) snapshot.getRequest();
+            addShadowAlgorithmIssue(issues, request.getAlgorithmType(), request.getAlgorithmProperties(), displaySql);
+        }
+    }
+    
+    private boolean isCreateOrAlterShadowDistSQL(final String sql) {
+        String actualSQL = sql.trim().toUpperCase(Locale.ENGLISH);
+        return actualSQL.startsWith("CREATE SHADOW RULE") || actualSQL.startsWith("ALTER SHADOW RULE")
+                || actualSQL.startsWith("CREATE DEFAULT SHADOW ALGORITHM") || actualSQL.startsWith("ALTER DEFAULT SHADOW ALGORITHM");
+    }
+    
+    private void addShadowAlgorithmIssue(final List<Map<String, Object>> issues, final String algorithmType, final Map<String, String> properties, final String displaySql) {
+        if (algorithmType.isEmpty()) {
+            return;
+        }
+        if (!WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(ShadowAlgorithm.class, algorithmType, properties)) {
+            issues.add(createValidationIssue(String.format("Generated shadow DistSQL references algorithm `%s`, but it cannot be loaded or initialized by ShadowAlgorithm SPI.",
+                    algorithmType), displaySql));
+        }
+    }
+    
+    private Map<String, Object> createValidationIssue(final String message, final String sql) {
+        return new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", WorkflowLifecycle.STEP_REVIEW,
+                message, "Regenerate the workflow artifact through the feature planner before approval.", true, Map.of("sql", sql)).toMap();
+    }
+    
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         ValidationReport result = new ValidationReport();
-        String databaseType = queryFacade.getDatabaseType(snapshot.getRequest().getDatabase());
-        result.setRuleValidation(validateByRequestType(snapshot, queryFacade, result, databaseType));
+        queryFacade.checkDatabaseCapability(snapshot.getRequest().getDatabase());
+        result.setRuleValidation(validateByRequestType(snapshot, queryFacade, result));
         result.setOverallStatus(validationSupport.resolveOverallStatus(result.getRuleValidation()));
         return result;
     }
     
     private ValidationSection validateByRequestType(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade,
-                                                    final ValidationReport validationReport, final String databaseType) {
+                                                    final ValidationReport validationReport) {
         if (snapshot.getRequest() instanceof ShadowRuleWorkflowRequest) {
-            return validateRule(snapshot, queryFacade, validationReport, databaseType);
+            return validateRule(snapshot, queryFacade, validationReport);
         }
         if (snapshot.getRequest() instanceof ShadowDefaultAlgorithmWorkflowRequest) {
-            return validateDefaultAlgorithm(snapshot, queryFacade, validationReport, databaseType);
+            return validateDefaultAlgorithm(snapshot, queryFacade, validationReport);
         }
-        return validateAlgorithmCleanup(snapshot, queryFacade, validationReport, databaseType);
+        return validateAlgorithmCleanup(snapshot, queryFacade, validationReport);
     }
     
     private ValidationSection validateRule(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade,
-                                           final ValidationReport validationReport, final String databaseType) {
+                                           final ValidationReport validationReport) {
         ShadowRuleWorkflowRequest request = (ShadowRuleWorkflowRequest) snapshot.getRequest();
         List<Map<String, Object>> rules = inspectionService.queryRules(queryFacade, request.getDatabase());
-        boolean ruleExists = containsRule(rules, databaseType, request.getRuleName());
+        boolean ruleExists = containsRule(rules, queryFacade, request.getDatabase(), request.getRuleName());
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && ruleExists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !ruleExists) {
             addMismatch(validationReport, "shadow_rule", request.getRuleName(), "Shadow rule state does not match the planned DistSQL artifact.");
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Shadow rule state does not match the planned DistSQL artifact.");
         }
-        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !matchesRuleShape(rules, databaseType, request)) {
+        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !matchesRuleShape(rules, queryFacade, request)) {
             addMismatch(validationReport, "shadow_rule", request.getRuleName(), "Shadow rule exists but source, shadow, table or algorithm type differs.");
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Shadow rule shape differs from the planned DistSQL artifact.");
         }
@@ -115,7 +159,7 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     }
     
     private ValidationSection validateDefaultAlgorithm(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade,
-                                                       final ValidationReport validationReport, final String databaseType) {
+                                                       final ValidationReport validationReport) {
         ShadowDefaultAlgorithmWorkflowRequest request = (ShadowDefaultAlgorithmWorkflowRequest) snapshot.getRequest();
         List<Map<String, Object>> defaultAlgorithm = inspectionService.queryDefaultAlgorithm(queryFacade, request.getDatabase());
         boolean exists = !defaultAlgorithm.isEmpty();
@@ -132,30 +176,36 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     }
     
     private ValidationSection validateAlgorithmCleanup(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade,
-                                                       final ValidationReport validationReport, final String databaseType) {
+                                                       final ValidationReport validationReport) {
         ShadowAlgorithmCleanupWorkflowRequest request = (ShadowAlgorithmCleanupWorkflowRequest) snapshot.getRequest();
         List<Map<String, Object>> algorithms = inspectionService.queryAlgorithms(queryFacade, request.getDatabase());
-        if (containsAlgorithm(algorithms, databaseType, request.getAlgorithmName())) {
+        if (containsAlgorithm(algorithms, queryFacade, request.getDatabase(), request.getAlgorithmName())) {
             addMismatch(validationReport, "shadow_algorithm", request.getAlgorithmName(), "Shadow algorithm still exists after cleanup.");
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, algorithms, "Shadow algorithm still exists after cleanup.");
         }
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, algorithms, "Shadow algorithm cleanup state matches the planned DistSQL artifact.");
     }
     
-    private boolean containsRule(final List<Map<String, Object>> rules, final String databaseType, final String ruleName) {
-        return rules.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "rule_name")));
+    private boolean containsRule(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
+        return rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(
+                databaseName, IdentifierScope.TABLE, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "rule_name")));
     }
     
-    private boolean matchesRuleShape(final List<Map<String, Object>> rules, final String databaseType, final ShadowRuleWorkflowRequest request) {
-        return rules.stream().filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name")))
-                .anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getSourceStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "source_name"))
-                        && WorkflowSQLUtils.isSameIdentifier(databaseType, request.getShadowStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "shadow_name"))
-                        && WorkflowSQLUtils.isSameIdentifier(databaseType, request.getTableName(), WorkflowRuleValueUtils.getRuleValue(each, "shadow_table"))
+    private boolean matchesRuleShape(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final ShadowRuleWorkflowRequest request) {
+        return rules.stream().filter(each -> queryFacade.isSameIdentifier(
+                request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name")))
+                .anyMatch(each -> queryFacade.isSameIdentifier(
+                        request.getDatabase(), IdentifierScope.TABLE, request.getSourceStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "source_name"))
+                        && queryFacade.isSameIdentifier(
+                                request.getDatabase(), IdentifierScope.TABLE, request.getShadowStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "shadow_name"))
+                        && queryFacade.isSameIdentifier(
+                                request.getDatabase(), IdentifierScope.TABLE, request.getTableName(), WorkflowRuleValueUtils.getRuleValue(each, "shadow_table"))
                         && WorkflowRuleValueUtils.getRuleValue(each, "algorithm_type").equalsIgnoreCase(request.getAlgorithmType()));
     }
     
-    private boolean containsAlgorithm(final List<Map<String, Object>> algorithms, final String databaseType, final String algorithmName) {
-        return algorithms.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, algorithmName,
+    private boolean containsAlgorithm(final List<Map<String, Object>> algorithms, final MCPFeatureQueryFacade queryFacade,
+                                      final String databaseName, final String algorithmName) {
+        return algorithms.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, algorithmName,
                 WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
     }
     

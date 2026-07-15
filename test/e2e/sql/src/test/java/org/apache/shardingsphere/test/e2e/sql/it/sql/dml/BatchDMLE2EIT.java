@@ -106,7 +106,6 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        init(testParam);
         try (
                 Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {
@@ -115,8 +114,6 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
             }
             preparedStatement.clearBatch();
             assertThat(preparedStatement.executeBatch().length, is(0));
-        } finally {
-            tearDown(testParam);
         }
     }
     

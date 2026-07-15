@@ -28,17 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class MCPModelContractAssertionsTest {
     
     @Test
-    void assertNoBannedPublicFields() {
-        assertDoesNotThrow(() -> MCPModelContractAssertions.assertNoBannedPublicFields(Map.of("next_actions", List.of(Map.of("type", "terminal")))));
-    }
-    
-    @Test
-    void assertNoBannedPublicFieldsWithNestedBannedField() {
-        assertThrows(AssertionError.class, () -> MCPModelContractAssertions.assertNoBannedPublicFields(
-                Map.of("recovery", List.of(Map.of("requires_user_approval", true)))));
-    }
-    
-    @Test
     void assertCanonicalNextActionLists() {
         assertDoesNotThrow(() -> MCPModelContractAssertions.assertCanonicalNextActionLists(Map.of("next_actions", List.of(
                 Map.of("order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_execute_update", "arguments", Map.of())))));
@@ -65,5 +54,19 @@ class MCPModelContractAssertionsTest {
     void assertCanonicalNextActionListsWithMissingRequiredField() {
         assertThrows(AssertionError.class, () -> MCPModelContractAssertions.assertCanonicalNextActionLists(
                 Map.of("next_actions", List.of(Map.of("order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_execute_update")))));
+    }
+    
+    @Test
+    void assertCanonicalNextActionListsWithRemovedField() {
+        assertThrows(AssertionError.class, () -> MCPModelContractAssertions.assertCanonicalNextActionLists(
+                Map.of("next_actions", List.of(Map.of(
+                        "order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_execute_update", "arguments", Map.of(), "target_tool", "legacy")))));
+    }
+    
+    @Test
+    void assertCanonicalNextActionListsWithUnsupportedField() {
+        assertThrows(AssertionError.class, () -> MCPModelContractAssertions.assertCanonicalNextActionLists(
+                Map.of("next_actions", List.of(Map.of(
+                        "order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_execute_update", "arguments", Map.of(), "extra_context", "bad")))));
     }
 }

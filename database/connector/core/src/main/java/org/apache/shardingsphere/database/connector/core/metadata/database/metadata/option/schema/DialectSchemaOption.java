@@ -53,4 +53,11 @@ public interface DialectSchemaOption {
      * @return default system schema name
      */
     Optional<String> getDefaultSystemSchema();
+    
+    /**
+     * Get schema semantics.
+     *
+     * @return schema semantics
+     */
+    DialectSchemaSemantics getSchemaSemantics();
 }

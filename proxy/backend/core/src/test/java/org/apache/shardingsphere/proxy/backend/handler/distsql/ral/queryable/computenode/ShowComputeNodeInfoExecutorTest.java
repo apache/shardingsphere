@@ -49,7 +49,7 @@ class ShowComputeNodeInfoExecutorTest {
     @Test
     void assertGetColumnNames() {
         ShowComputeNodeInfoStatement sqlStatement = mock(ShowComputeNodeInfoStatement.class);
-        assertThat(executor.getColumnNames(sqlStatement), is(Arrays.asList("instance_id", "host", "port", "status", "mode_type", "worker_id", "labels", "version")));
+        assertThat(executor.getColumnNames(sqlStatement), is(Arrays.asList("instance_id", "host", "port", "status", "mode_type", "worker_id", "version")));
     }
     
     @Test
@@ -66,15 +66,13 @@ class ShowComputeNodeInfoExecutorTest {
         assertThat(row.getCell(4), is("OK"));
         assertThat(row.getCell(5), is("Standalone"));
         assertThat(row.getCell(6), is("0"));
-        assertThat(row.getCell(7), is(""));
-        assertThat(row.getCell(8), is("foo_version"));
+        assertThat(row.getCell(7), is("foo_version"));
     }
     
     @Test
     void assertExecuteWithJdbcInstance() {
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData("jdbc_instance", "10.0.0.1", "jdbc_version", "logic_db"));
         computeNodeInstance.setWorkerId(5);
-        computeNodeInstance.getLabels().add("blue");
         ContextManager contextManager = mock(ContextManager.class);
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(new ComputeNodeInstanceContext(computeNodeInstance, new ModeConfiguration("Cluster", null), new EventBusContext()));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodeInfoStatement.class), contextManager);
@@ -85,8 +83,7 @@ class ShowComputeNodeInfoExecutorTest {
         assertThat(row.getCell(4), is("OK"));
         assertThat(row.getCell(5), is("Cluster"));
         assertThat(row.getCell(6), is("5"));
-        assertThat(row.getCell(7), is("blue"));
-        assertThat(row.getCell(8), is("jdbc_version"));
+        assertThat(row.getCell(7), is("jdbc_version"));
     }
     
     private ComputeNodeInstanceContext createInstanceContext() {

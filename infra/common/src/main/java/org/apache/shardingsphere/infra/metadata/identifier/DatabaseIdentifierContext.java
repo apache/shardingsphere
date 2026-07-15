@@ -17,59 +17,54 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-
-import java.util.Objects;
 
 /**
  * Database identifier context.
  */
+@AllArgsConstructor
 public final class DatabaseIdentifierContext {
     
-    private volatile IdentifierCaseRuleSet ruleSet;
+    private volatile IdentifierCasePolicySet policySet;
     
     @Getter
     private volatile boolean heterogeneousTableLookupEnabled;
     
-    public DatabaseIdentifierContext(final IdentifierCaseRuleSet ruleSet) {
-        this(ruleSet, false);
-    }
-    
-    public DatabaseIdentifierContext(final IdentifierCaseRuleSet ruleSet, final boolean heterogeneousTableLookupEnabled) {
-        this.ruleSet = Objects.requireNonNull(ruleSet, "ruleSet cannot be null.");
-        this.heterogeneousTableLookupEnabled = heterogeneousTableLookupEnabled;
+    public DatabaseIdentifierContext(final IdentifierCasePolicySet policySet) {
+        this(policySet, false);
     }
     
     /**
-     * Get identifier case rule for scope.
+     * Get identifier case policy for scope.
      *
      * @param identifierScope identifier scope
-     * @return identifier case rule
+     * @return identifier case policy
      */
-    public IdentifierCaseRule getRule(final IdentifierScope identifierScope) {
-        return ruleSet.getRule(identifierScope);
+    public IdentifierCasePolicy getPolicy(final IdentifierScope identifierScope) {
+        return policySet.getPolicy(identifierScope);
     }
     
     /**
      * Refresh identifier context.
      *
-     * @param ruleSet identifier case rule set
+     * @param policySet identifier case policy set
      */
-    public synchronized void refresh(final IdentifierCaseRuleSet ruleSet) {
-        this.ruleSet = Objects.requireNonNull(ruleSet, "ruleSet cannot be null.");
+    public synchronized void refresh(final IdentifierCasePolicySet policySet) {
+        this.policySet = policySet;
     }
     
     /**
      * Refresh identifier context.
      *
-     * @param ruleSet identifier case rule set
+     * @param policySet identifier case policy set
      * @param heterogeneousTableLookupEnabled heterogeneous table lookup enabled or not
      */
-    public synchronized void refresh(final IdentifierCaseRuleSet ruleSet, final boolean heterogeneousTableLookupEnabled) {
-        this.ruleSet = Objects.requireNonNull(ruleSet, "ruleSet cannot be null.");
+    public synchronized void refresh(final IdentifierCasePolicySet policySet, final boolean heterogeneousTableLookupEnabled) {
+        this.policySet = policySet;
         this.heterogeneousTableLookupEnabled = heterogeneousTableLookupEnabled;
     }
 }

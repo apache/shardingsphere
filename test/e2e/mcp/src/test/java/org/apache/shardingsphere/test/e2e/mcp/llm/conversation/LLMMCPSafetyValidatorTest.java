@@ -39,10 +39,26 @@ class LLMMCPSafetyValidatorTest {
     }
     
     @Test
-    void assertAllowExplainAnalyzeQuery() {
+    void assertRejectExplainFromQueryTool() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_query",
-                Map.of("sql", "EXPLAIN ANALYZE SELECT * FROM orders"));
+                Map.of("sql", "EXPLAIN SELECT * FROM orders"));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().failureType(), is("invalid_tool_arguments"));
+    }
+    
+    @Test
+    void assertAllowExplainQuery() {
+        Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_explain_query",
+                Map.of("sql", "SELECT * FROM orders", "explain_sql", "EXPLAIN SELECT * FROM orders"));
         assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertRejectMutatingExplainQuery() {
+        Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_explain_query",
+                Map.of("sql", "UPDATE orders SET status = 'PAID'", "explain_sql", "EXPLAIN UPDATE orders SET status = 'PAID'"));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().failureType(), is("unsafe_sql_attempted"));
     }
     
     @Test

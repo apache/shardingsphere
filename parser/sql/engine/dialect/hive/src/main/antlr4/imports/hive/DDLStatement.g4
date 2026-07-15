@@ -82,6 +82,8 @@ alterTable
     | alterTableCommonClause dropBranch
     | alterTableCommonClause dropTag
     | alterTableCommonClause deleteOrphanFile
+    | alterTableCommonClause cherryPickClause
+    | alterTableCommonClause tableRollback
     ;
 
 createView
@@ -539,4 +541,13 @@ dropTag
 deleteOrphanFile
     : EXECUTE DELETE ORPHAN_FILES
     | EXECUTE DELETE ORPHAN_FILES OLDER THAN LP_ string_ RP_
+    ;
+
+cherryPickClause
+    : EXECUTE CHERRY_PICK NUMBER_
+    ;
+
+tableRollback
+    : EXECUTE ROLLBACK LP_ string_ RP_
+    | EXECUTE ROLLBACK LP_ NUMBER_ RP_
     ;

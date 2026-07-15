@@ -27,7 +27,7 @@ Sharding Algorithm definition
 | INTERVAL                 | N                    | Fixed interval sharding algorithm                                       | [`org.apache.shardingsphere.sharding.algorithm.sharding.datetime.IntervalShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/datetime/IntervalShardingAlgorithm.java)                                                 |
 | CLASS_BASED              | N                    | Class based sharding algorithm                                          | [`org.apache.shardingsphere.sharding.algorithm.sharding.classbased.ClassBasedShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/classbased/ClassBasedShardingAlgorithm.java)                                         |
 | INLINE                   | N                    | Inline sharding algorithm                                               | [`org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/inline/InlineShardingAlgorithm.java)                                                         |
-| COMPLEX_INLINE           | N                    | Complex inline sharding algorithm                                       | [`org.apache.shardingsphere.sharding.algorithm.sharding.complex.ComplexInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/inline/ComplexInlineShardingAlgorithm.java)                                          |
+| COMPLEX_INLINE           | N                    | Complex inline sharding algorithm                                       | [`org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/inline/ComplexInlineShardingAlgorithm.java)                                          |
 | HINT_INLINE              | N                    | Hint inline sharding algorithm                                          | [`org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/hint/HintInlineShardingAlgorithm.java)                                                     |
 
 ## ShardingAuditAlgorithm
@@ -67,7 +67,7 @@ Obtain the current date for routing definition
 
 ### Fully-qualified class name
 
-`org.apache.shardingsphere.infra.expr.core.InlineExpressionParser`
+`org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser`
 
 ### Definition
 
@@ -79,5 +79,5 @@ Row Value Expressions definition
 |----------------------|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
 | GROOVY               | Row Value Expressions that uses the Groovy syntax                                                    | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`     |
 | LITERAL              | Row Value Expressions that uses a standard list                                                      | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser`   |
-| INTERVAL             | Row Value Expressions based on fixed interval that uses the Key-Value syntax                         | `org.apache.shardingsphere.infra.expr.interval.IntervalInlineExpressionParser` |                                                                             |
+| INTERVAL             | Row Value Expressions based on fixed interval that uses the Key-Value syntax                         | `org.apache.shardingsphere.infra.expr.interval.IntervalInlineExpressionParser` |
 | ESPRESSO             | Row Value Expressions that uses the Groovy syntax based on GraalVM Truffle's Espresso implementation | `org.apache.shardingsphere.infra.expr.espresso.EspressoInlineExpressionParser` |

@@ -114,9 +114,19 @@ class CDCE2EIT {
             PipelineDataSource targetDataSource = DataSourceTestUtils.createStandardDataSource(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
                     containerComposer.getUsername(), containerComposer.getPassword());
             initSchemaAndTable(containerComposer, targetDataSource, orderQualifiedTable, 0);
-            final CDCClient cdcClient = buildCDCClientAndStart(targetDataSource, containerComposer);
+            String jobId = runCDCIncrementalTaskAndGetJobId(containerComposer, distSQLFacade, jdbcDataSource, targetDataSource, orderQualifiedTable, orderDAO);
+            Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
+                    .until(() -> distSQLFacade.listJobs().stream().noneMatch(each -> Boolean.parseBoolean(each.get("active").toString())));
+            distSQLFacade.drop(jobId);
+            assertTrue(distSQLFacade.listJobs().isEmpty());
+        }
+    }
+    
+    private String runCDCIncrementalTaskAndGetJobId(final PipelineContainerComposer containerComposer, final PipelineE2EDistSQLFacade distSQLFacade, final PipelineDataSource jdbcDataSource,
+                                                    final PipelineDataSource targetDataSource, final QualifiedTable orderQualifiedTable, final IntPkLargeOrderDAO orderDAO) throws SQLException {
+        try (CDCClient ignored = buildCDCClientAndStart(targetDataSource, containerComposer)) {
             Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
-            String jobId = distSQLFacade.listJobIds().get(0);
+            String jobId = distSQLFacade.listJobIds().getFirst();
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
             String orderTableName = orderQualifiedTable.format();
             new E2EIncrementalTask(jdbcDataSource, orderTableName, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20).run();
@@ -129,11 +139,7 @@ class CDCE2EIT {
             assertDataMatched(jdbcDataSource, targetDataSource, orderQualifiedTable);
             assertDataMatched(jdbcDataSource, targetDataSource, new QualifiedTable(null, "t_address"));
             assertDataMatched(jdbcDataSource, targetDataSource, new QualifiedTable(null, "t_single"));
-            cdcClient.close();
-            Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
-                    .until(() -> distSQLFacade.listJobs().stream().noneMatch(each -> Boolean.parseBoolean(each.get("active").toString())));
-            distSQLFacade.drop(jobId);
-            assertTrue(distSQLFacade.listJobs().isEmpty());
+            return jobId;
         }
     }
     
@@ -167,7 +173,7 @@ class CDCE2EIT {
     private void assertDataMatched(final PipelineDataSource sourceDataSource, final PipelineDataSource targetDataSource, final QualifiedTable qualifiedTable) {
         StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
-        List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0)));
+        List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().getFirst()));
         ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0, sourceDataSource.getDatabaseType().getType());
         progressContext.getTableCheckRangePositions().add(new TableCheckRangePosition(0, null, qualifiedTable.getTableName(),
                 UniqueKeyIngestPosition.ofUnsplit(), UniqueKeyIngestPosition.ofUnsplit(), null));

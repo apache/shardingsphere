@@ -46,6 +46,7 @@ public class ResourceUtils {
     public static void closeJdbcDataSource(final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
+            close(dataSource);
             contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values().stream().map(StorageUnit::getDataSource).forEach(ResourceUtils::close);
             contextManager.close();
         }
@@ -62,6 +63,7 @@ public class ResourceUtils {
     public static void closeJdbcDataSource(final DataSource dataSource, final String logicDataBaseName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
+            close(dataSource);
             contextManager.getStorageUnits(logicDataBaseName).values().stream().map(StorageUnit::getDataSource).forEach(ResourceUtils::close);
             contextManager.close();
         }

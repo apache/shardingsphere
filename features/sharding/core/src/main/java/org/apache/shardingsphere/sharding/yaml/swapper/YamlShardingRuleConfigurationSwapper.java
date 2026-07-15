@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingAutoTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableRuleConfigurationSwapper;
@@ -55,8 +54,6 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
     
     private final YamlShardingAutoTableRuleConfigurationSwapper autoTableSwapper = new YamlShardingAutoTableRuleConfigurationSwapper();
     
-    private final YamlShardingCacheConfigurationSwapper shardingCacheSwapper = new YamlShardingCacheConfigurationSwapper();
-    
     @Override
     public YamlShardingRuleConfiguration swapToYamlConfiguration(final ShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
@@ -67,9 +64,6 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
         setYamlKeyGenerateStrategies(data, result);
         setYamlAlgorithms(data, result);
         result.setDefaultShardingColumn(data.getDefaultShardingColumn());
-        if (null != data.getShardingCache()) {
-            result.setShardingCache(shardingCacheSwapper.swapToYamlConfiguration(data.getShardingCache()));
-        }
         return result;
     }
     
@@ -124,9 +118,6 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
         setKeyGenerateStrategies(yamlConfig, result);
         setAlgorithms(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
-        if (null != yamlConfig.getShardingCache()) {
-            result.setShardingCache(shardingCacheSwapper.swapToObject(yamlConfig.getShardingCache()));
-        }
         return result;
     }
     

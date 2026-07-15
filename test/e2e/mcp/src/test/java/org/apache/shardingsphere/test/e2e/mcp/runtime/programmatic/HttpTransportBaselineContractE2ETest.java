@@ -18,8 +18,13 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
+import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
+import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPBaselineContractAssertions;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
@@ -33,9 +38,9 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 
-@EnabledIf("isEnabled")
-class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final String BASELINE_RESOURCE_PATH = "baseline-contract/model-contract/";
     
@@ -44,6 +49,7 @@ class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRunti
     }
     
     @Test
+    @EnabledIf("isEnabled")
     void assertCapabilitiesBaselineContract() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -53,22 +59,53 @@ class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRunti
         MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "capabilities.yaml", createCapabilitiesContract(getFirstResourcePayload(actual.body())));
     }
     
+    @Test
+    @EnabledIf("isEnabled")
+    void assertGuidanceBaselineContract() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://guidance");
+        assertThat(actual.statusCode(), is(200));
+        MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "guidance.yaml", createGuidanceContract(getFirstResourcePayload(actual.body())));
+    }
+    
+    @Test
+    void assertCapabilitiesBaselineContractProjection() {
+        Map<String, Object> actual = new ServerCapabilitiesHandler().handle(mock(MCPRequestContext.class), new MCPUriVariables(Map.of())).toPayload();
+        MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "capabilities.yaml", createCapabilitiesContract(actual));
+    }
+    
+    @Test
+    void assertGuidanceBaselineContractProjection() {
+        Map<String, Object> actual = new ServerGuidanceHandler().handle(mock(MCPRequestContext.class), new MCPUriVariables(Map.of())).toPayload();
+        MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "guidance.yaml", createGuidanceContract(actual));
+    }
+    
     private Map<String, Object> createCapabilitiesContract(final Map<String, Object> payload) {
-        Map<String, Object> result = new LinkedHashMap<>(13, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("response_mode", payload.get("response_mode"));
+        result.put("guidanceResource", payload.get("guidanceResource"));
+        result.put("protocolAvailability", payload.get("protocolAvailability"));
+        result.put("resources", summarizeCapabilityResourceIdentities(MCPInteractionPayloads.getOptionalObjectList(payload, "resources")));
+        result.put("resourceTemplates", summarizeCapabilityResourceTemplateIdentities(MCPInteractionPayloads.getOptionalObjectList(payload, "resourceTemplates")));
+        result.put("tools", summarizeCapabilityTools(MCPInteractionPayloads.getOptionalObjectList(payload, "tools")));
+        result.put("prompts", summarizePrompts(MCPInteractionPayloads.getOptionalObjectList(payload, "prompts")));
+        result.put("completionTargets", payload.get("completionTargets"));
+        return result;
+    }
+    
+    private Map<String, Object> createGuidanceContract(final Map<String, Object> payload) {
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        result.put("response_mode", payload.get("response_mode"));
+        result.put("guidance_resource", payload.get("guidance_resource"));
         result.put("model_first_summary", payload.get("model_first_summary"));
         result.put("model_contract", payload.get("model_contract"));
         result.put("surface_summary", payload.get("surface_summary"));
         result.put("field_naming_contract", payload.get("field_naming_contract"));
         result.put("next_action_contract", payload.get("next_action_contract"));
         result.put("common_flows", payload.get("common_flows"));
-        result.put("protocolAvailability", payload.get("protocolAvailability"));
-        result.put("fingerprints", payload.get("fingerprints"));
-        result.put("resources", summarizeCapabilityResourceIdentities(castToMapList(payload.get("resources"))));
-        result.put("resourceTemplates", summarizeCapabilityResourceTemplateIdentities(castToMapList(payload.get("resourceTemplates"))));
-        result.put("tools", summarizeCapabilityTools(castToMapList(payload.get("tools"))));
-        result.put("prompts", summarizePrompts(castToMapList(payload.get("prompts"))));
-        result.put("completionTargets", payload.get("completionTargets"));
+        result.put("security_hints", payload.get("security_hints"));
         return result;
     }
     
@@ -97,11 +134,12 @@ class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRunti
     }
     
     private Map<String, Object> summarizeResourceMeta(final Map<String, Object> resource) {
-        Map<String, Object> meta = castToMap(resource.getOrDefault("_meta", Map.of()));
+        Map<String, Object> meta = MCPInteractionPayloads.getOptionalObject(resource, "_meta");
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put(MCPShardingSphereMetadataKeys.RESOURCE_KIND, meta.get(MCPShardingSphereMetadataKeys.RESOURCE_KIND));
         putIfNotEmpty(result, MCPShardingSphereMetadataKeys.RELATED_TOOLS, (List<?>) meta.get(MCPShardingSphereMetadataKeys.RELATED_TOOLS));
-        putIfNotEmpty(result, MCPShardingSphereMetadataKeys.URI_VARIABLES, summarizeParameters(castToMapList(meta.get(MCPShardingSphereMetadataKeys.URI_VARIABLES))));
+        putIfNotEmpty(result, MCPShardingSphereMetadataKeys.URI_VARIABLES,
+                summarizeParameters(MCPInteractionPayloads.getOptionalObjectList(meta, MCPShardingSphereMetadataKeys.URI_VARIABLES)));
         return removeNullValues(result);
     }
     
@@ -130,7 +168,7 @@ class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRunti
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("name", prompt.get("name"));
         result.put("title", prompt.get("title"));
-        result.put("arguments", summarizeParameters(castToMapList(prompt.get("arguments"))));
+        result.put("arguments", summarizeParameters(MCPInteractionPayloads.getOptionalObjectList(prompt, "arguments")));
         return result;
     }
     
@@ -149,10 +187,4 @@ class HttpTransportBaselineContractE2ETest extends AbstractHttpProgrammaticRunti
         return result;
     }
     
-    private List<Map<String, Object>> castToMapList(final Object value) {
-        if (null == value) {
-            return List.of();
-        }
-        return ((List<?>) value).stream().map(this::castToMap).toList();
-    }
 }

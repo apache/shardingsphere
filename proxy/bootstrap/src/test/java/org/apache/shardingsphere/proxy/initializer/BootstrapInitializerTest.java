@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.initializer;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
@@ -79,7 +80,7 @@ class BootstrapInitializerTest {
     }
     
     @Test
-    void assertInitWithoutModeConfiguration() throws SQLException, ReflectiveOperationException {
+    void assertInitWithoutModeConfiguration() throws SQLException {
         InstanceMetaDataBuilder instanceMetaDataBuilder = mock(InstanceMetaDataBuilder.class);
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         registerSingletonService(InstanceMetaDataBuilder.class, instanceMetaDataBuilder);
@@ -100,12 +101,11 @@ class BootstrapInitializerTest {
         assertTrue(actualParameter.getGlobalDataSources().isEmpty());
         assertTrue(actualParameter.getGlobalRuleConfigs().isEmpty());
         assertTrue(actualParameter.getProps().isEmpty());
-        assertTrue(actualParameter.getLabels().isEmpty());
         assertThat(actualParameter.getInstanceMetaData(), is(instanceMetaData));
     }
     
     @Test
-    void assertInitWithModeConfiguration() throws SQLException, ReflectiveOperationException {
+    void assertInitWithModeConfiguration() throws SQLException {
         YamlModeConfiguration yamlModeConfig = new YamlModeConfiguration();
         yamlModeConfig.setType("Cluster");
         InstanceMetaDataBuilder instanceMetaDataBuilder = mock(InstanceMetaDataBuilder.class);
@@ -128,12 +128,11 @@ class BootstrapInitializerTest {
         assertTrue(actualParameter.getGlobalDataSources().isEmpty());
         assertTrue(actualParameter.getGlobalRuleConfigs().isEmpty());
         assertTrue(actualParameter.getProps().isEmpty());
-        assertTrue(actualParameter.getLabels().isEmpty());
         assertThat(actualParameter.getInstanceMetaData(), is(instanceMetaData));
     }
     
     @Test
-    void assertInitWithRepeatedBootstrap() throws SQLException, ReflectiveOperationException {
+    void assertInitWithRepeatedBootstrap() throws SQLException {
         InstanceMetaDataBuilder instanceMetaDataBuilder = mock(InstanceMetaDataBuilder.class);
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         registerSingletonService(InstanceMetaDataBuilder.class, instanceMetaDataBuilder);
@@ -158,7 +157,8 @@ class BootstrapInitializerTest {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> void registerSingletonService(final Class<T> serviceClass, final T serviceInstance) throws ReflectiveOperationException {
+    @SneakyThrows(ReflectiveOperationException.class)
+    private <T> void registerSingletonService(final Class<T> serviceClass, final T serviceInstance) {
         MemberAccessor accessor = Plugins.getMemberAccessor();
         Field servicesField = ShardingSphereServiceLoader.class.getDeclaredField("REGISTERED_SERVICES");
         Map<Class<?>, Object> registeredServices = (Map<Class<?>, Object>) accessor.get(servicesField, null);

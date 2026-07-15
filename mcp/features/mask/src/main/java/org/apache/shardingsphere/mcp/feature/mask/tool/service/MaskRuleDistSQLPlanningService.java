@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Mask rule DistSQL planning service.
@@ -35,35 +33,22 @@ public final class MaskRuleDistSQLPlanningService {
      * Plan mask rule artifact.
      *
      * @param request workflow request
-     * @param existingRules existing table rule rows
-     * @param databaseType database type
      * @return rule artifact
      */
-    public RuleArtifact planMaskRule(final WorkflowRequest request, final List<Map<String, Object>> existingRules, final String databaseType) {
+    public RuleArtifact planMaskRule(final WorkflowRequest request) {
         validateMaskIdentifiers(request);
-        String prefix = "alter".equalsIgnoreCase(request.getOperationType()) || !existingRules.isEmpty() ? "ALTER MASK RULE" : "CREATE MASK RULE";
-        return new RuleArtifact(request.getOperationType(), createMaskRuleSql(prefix, request.getTable(), buildMaskColumnSegments(request, existingRules, databaseType)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, createMaskRuleSql("CREATE MASK RULE", request.getTable(), List.of(createTargetMaskColumnSegment(request))));
     }
     
     /**
      * Plan mask drop artifact.
      *
      * @param request workflow request
-     * @param existingRules existing table rule rows
-     * @param databaseType database type
      * @return rule artifact
      */
-    public RuleArtifact planMaskDropRule(final WorkflowRequest request, final List<Map<String, Object>> existingRules, final String databaseType) {
+    public RuleArtifact planMaskDropRule(final WorkflowRequest request) {
         validateMaskIdentifiers(request);
-        List<String> remainingColumnSegments = new LinkedList<>();
-        for (Map<String, Object> each : existingRules) {
-            if (!WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column"))) {
-                remainingColumnSegments.add(createExistingMaskColumnSegment(each));
-            }
-        }
-        return remainingColumnSegments.isEmpty()
-                ? new RuleArtifact("drop", String.format("DROP MASK RULE %s", WorkflowSQLUtils.formatDistSQLIdentifier(request.getTable())))
-                : new RuleArtifact("drop", createMaskRuleSql("ALTER MASK RULE", request.getTable(), remainingColumnSegments));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP MASK RULE %s", WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getTable())));
     }
     
     private void validateMaskIdentifiers(final WorkflowRequest request) {
@@ -71,39 +56,14 @@ public final class MaskRuleDistSQLPlanningService {
         WorkflowSQLUtils.checkSupportedIdentifier("column", request.getColumn());
     }
     
-    private List<String> buildMaskColumnSegments(final WorkflowRequest request, final List<Map<String, Object>> existingRules, final String databaseType) {
-        List<String> result = new LinkedList<>();
-        boolean targetColumnHandled = false;
-        for (Map<String, Object> each : existingRules) {
-            if (WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column"))) {
-                result.add(createTargetMaskColumnSegment(request));
-                targetColumnHandled = true;
-                continue;
-            }
-            result.add(createExistingMaskColumnSegment(each));
-        }
-        if (!targetColumnHandled) {
-            result.add(createTargetMaskColumnSegment(request));
-        }
-        return result;
-    }
-    
     private String createTargetMaskColumnSegment(final WorkflowRequest request) {
-        return String.format("(NAME=%s, %s)", WorkflowSQLUtils.formatDistSQLIdentifier(request.getColumn()),
+        return String.format("(NAME=%s, %s)", WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getColumn()),
                 WorkflowSQLUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties()));
-    }
-    
-    private String createExistingMaskColumnSegment(final Map<String, Object> rule) {
-        String columnName = WorkflowRuleValueUtils.getRuleValue(rule, "column");
-        WorkflowSQLUtils.checkSupportedIdentifier("column", columnName);
-        String algorithmType = WorkflowRuleValueUtils.getRuleValue(rule, "algorithm_type");
-        Map<String, String> algorithmProperties = WorkflowSQLUtils.createPropertyMap(rule.get("algorithm_props"));
-        return String.format("(NAME=%s, %s)", WorkflowSQLUtils.formatDistSQLIdentifier(columnName), WorkflowSQLUtils.createAlgorithmFragment(algorithmType, algorithmProperties));
     }
     
     private String createMaskRuleSql(final String prefix, final String tableName, final List<String> columnSegments) {
         WorkflowSQLUtils.checkSupportedIdentifier("table", tableName);
-        return String.format("%s %s (%sCOLUMNS(%s%s%s))", prefix, WorkflowSQLUtils.formatDistSQLIdentifier(tableName), System.lineSeparator(), System.lineSeparator(),
+        return String.format("%s %s (%sCOLUMNS(%s%s%s))", prefix, WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(tableName), System.lineSeparator(), System.lineSeparator(),
                 String.join(", " + System.lineSeparator(), columnSegments), System.lineSeparator());
     }
 }

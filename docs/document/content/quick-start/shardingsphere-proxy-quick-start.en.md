@@ -8,7 +8,7 @@ weight = 2
 
 ![shardingsphere-proxy](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)
 
-ShardingSphere-Proxy is positioned as a transparent database proxy. It theoretically supports any client operation data using MySQL, PostgreSQL and openGauss protocols, and is friendly to heterogeneous languages and operation and maintenance scenarios.
+ShardingSphere-Proxy is positioned as a transparent database proxy. It theoretically supports any client operation data using MySQL, PostgreSQL, openGauss and Firebird protocols, and is friendly to heterogeneous languages and operation and maintenance scenarios.
 
 ## Limitations
 
@@ -40,9 +40,9 @@ Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml
 
 3. Import dependencies.
 
-If the backend database is PostgreSQL or openGauss, no additional dependencies are required.
+If the backend database is PostgreSQL, openGauss or Firebird, no additional dependencies are required.
 
-If the backend database is MySQL, please download [mysql-connector-java-5.1.49.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar) or [mysql-connector-java-8.0.11.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.11/mysql-connector-java-8.0.11.jar) and put it into the `%SHARDINGSPHERE_PROXY_HOME%/ext-lib` directory.
+If the backend database is MySQL, please download [mysql-connector-j-8.4.0.jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.4.0/mysql-connector-j-8.4.0.jar) and put it into the `%SHARDINGSPHERE_PROXY_HOME%/ext-lib` directory.
 
 4. Start server.
 

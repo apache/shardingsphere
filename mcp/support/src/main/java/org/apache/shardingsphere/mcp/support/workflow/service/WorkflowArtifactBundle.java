@@ -73,6 +73,27 @@ public final class WorkflowArtifactBundle {
     }
     
     /**
+     * Convert workflow artifacts into executable artifacts with masked display SQL.
+     *
+     * @param propertySource workflow property source
+     * @param propertyRequirements property requirements
+     * @return executable workflow artifacts
+     */
+    public List<ExecutableWorkflowArtifact> toExecutableArtifacts(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        List<ExecutableWorkflowArtifact> result = new LinkedList<>();
+        for (DDLArtifact each : ddlArtifacts) {
+            result.add(new ExecutableWorkflowArtifact(WorkflowArtifactPayloadUtils.STEP_DDL, each.getArtifactType(), each.getSql(), false));
+        }
+        for (IndexPlan each : indexPlans) {
+            result.add(new ExecutableWorkflowArtifact(WorkflowArtifactPayloadUtils.STEP_INDEX_DDL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX, each.getSql(), false));
+        }
+        for (RuleArtifact each : ruleArtifacts) {
+            result.add(createMaskedRuleExecutableArtifact(each, propertySource, propertyRequirements));
+        }
+        return result;
+    }
+    
+    /**
      * Convert rule artifacts into executable artifacts.
      *
      * @return executable rule artifacts
@@ -83,6 +104,27 @@ public final class WorkflowArtifactBundle {
             result.add(new ExecutableWorkflowArtifact(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, each.getSql(), true));
         }
         return result;
+    }
+    
+    /**
+     * Convert rule artifacts into executable artifacts with masked display SQL.
+     *
+     * @param propertySource workflow property source
+     * @param propertyRequirements property requirements
+     * @return executable rule artifacts
+     */
+    public List<ExecutableWorkflowArtifact> toRuleExecutableArtifacts(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        List<ExecutableWorkflowArtifact> result = new LinkedList<>();
+        for (RuleArtifact each : ruleArtifacts) {
+            result.add(createMaskedRuleExecutableArtifact(each, propertySource, propertyRequirements));
+        }
+        return result;
+    }
+    
+    private ExecutableWorkflowArtifact createMaskedRuleExecutableArtifact(final RuleArtifact ruleArtifact, final WorkflowPropertySource propertySource,
+                                                                          final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        return new ExecutableWorkflowArtifact(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, ruleArtifact.getSql(),
+                WorkflowArtifactMaskUtils.maskSensitiveSql(ruleArtifact.getSql(), propertySource, propertyRequirements), true);
     }
     
     Map<String, Object> toPayload(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
@@ -101,6 +143,10 @@ public final class WorkflowArtifactBundle {
         return result;
     }
     
-    public record ExecutableWorkflowArtifact(String approvalStep, String artifactType, String sql, boolean ruleDistSql) {
+    public record ExecutableWorkflowArtifact(String approvalStep, String artifactType, String sql, String displaySql, boolean ruleDistSql) {
+
+        public ExecutableWorkflowArtifact(final String approvalStep, final String artifactType, final String sql, final boolean ruleDistSql) {
+            this(approvalStep, artifactType, sql, sql, ruleDistSql);
+        }
     }
 }

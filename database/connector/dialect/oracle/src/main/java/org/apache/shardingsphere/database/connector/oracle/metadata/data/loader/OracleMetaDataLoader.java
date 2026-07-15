@@ -177,11 +177,16 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private boolean versionContainsCollation(final DatabaseMetaData databaseMetaData) throws SQLException {
-        return databaseMetaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && databaseMetaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION;
+        return isVersionAtLeast(databaseMetaData, COLLATION_START_MAJOR_VERSION, COLLATION_START_MINOR_VERSION);
     }
     
     private boolean versionContainsIdentityColumn(final DatabaseMetaData databaseMetaData) throws SQLException {
-        return databaseMetaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && databaseMetaData.getDatabaseMinorVersion() >= IDENTITY_COLUMN_START_MINOR_VERSION;
+        return isVersionAtLeast(databaseMetaData, COLLATION_START_MAJOR_VERSION, IDENTITY_COLUMN_START_MINOR_VERSION);
+    }
+    
+    private boolean isVersionAtLeast(final DatabaseMetaData databaseMetaData, final int major, final int minor) throws SQLException {
+        int majorVersion = databaseMetaData.getDatabaseMajorVersion();
+        return majorVersion > major || majorVersion == major && databaseMetaData.getDatabaseMinorVersion() >= minor;
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames, final String schema) throws SQLException {

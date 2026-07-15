@@ -19,11 +19,10 @@ package org.apache.shardingsphere.mcp.core.context;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.context.RequestScopedMetadataContext;
@@ -32,7 +31,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFa
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
 import java.util.Map;
@@ -42,7 +41,9 @@ import java.util.Optional;
  * MCP request scope.
  */
 @Getter
-public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatabaseHandlerContext, MCPWorkflowHandlerContext, AutoCloseable {
+public final class MCPRequestScope implements MCPWorkflowRequestContext {
+    
+    private final String sessionId;
     
     private final String activeTransport;
     
@@ -53,9 +54,7 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
     @Getter(AccessLevel.NONE)
-    private final RequestScopedMetadataContext metadataContext;
-    
-    private final Optional<MCPSessionAttribution> sessionAttribution;
+    private final Optional<MCPSessionIdentity> sessionIdentity;
     
     private final WorkflowSessionContext workflowSessionContext;
     
@@ -65,37 +64,17 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
     
     private final MCPFeatureQueryFacade queryFacade;
     
-    /**
-     * Create MCP request scope.
-     *
-     * @param runtimeContext runtime context
-     */
-    public MCPRequestScope(final MCPRuntimeContext runtimeContext) {
-        this(runtimeContext, "");
-    }
-    
-    /**
-     * Create MCP request scope.
-     *
-     * @param runtimeContext runtime context
-     * @param sessionId session id
-     */
     public MCPRequestScope(final MCPRuntimeContext runtimeContext, final String sessionId) {
-        MCPSessionManager sessionManager = runtimeContext.getSessionManager();
+        this.sessionId = sessionId;
         activeTransport = runtimeContext.getActiveTransport();
         databaseCapabilityProvider = runtimeContext.getDatabaseCapabilityProvider();
+        MCPSessionManager sessionManager = runtimeContext.getSessionManager();
         runtimeDatabases = sessionManager.getTransactionResourceManager().getRuntimeDatabases();
-        metadataContext = new RequestScopedMetadataContext(runtimeDatabases, databaseCapabilityProvider);
-        sessionAttribution = sessionManager.findSessionAttribution(sessionId);
-        workflowSessionContext = runtimeContext.getWorkflowSessionContext();
-        metadataQueryFacade = new MetadataQueryService(databaseCapabilityProvider, metadataContext);
+        sessionIdentity = sessionManager.findSessionIdentity(sessionId);
+        workflowSessionContext = runtimeContext.getWorkflowSessionContext(sessionId);
+        metadataQueryFacade = new MetadataQueryService(databaseCapabilityProvider, new RequestScopedMetadataContext(runtimeDatabases, databaseCapabilityProvider));
         executionFacade = new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionManager);
         queryFacade = new WorkflowProxyQueryService(sessionManager, databaseCapabilityProvider);
-    }
-    
-    @Override
-    public MCPDatabaseHandlerContext getDatabaseContext() {
-        return this;
     }
     
     @Override
@@ -109,12 +88,8 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
     }
     
     @Override
-    public Optional<MCPSessionAttribution> findSessionAttribution() {
-        return sessionAttribution;
+    public Optional<MCPSessionIdentity> findSessionIdentity() {
+        return sessionIdentity;
     }
     
-    @Override
-    public void close() {
-        metadataContext.close();
-    }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Dialect function option.
@@ -26,18 +25,9 @@ import java.util.Collections;
 public interface DialectFunctionOption {
     
     /**
-     * Get if null function name.
-     *
-     * @return if null function name
-     */
-    String getIfNullFunctionName();
-    
-    /**
      * Get unparenthesized function names.
      *
      * @return unparenthesized function names
      */
-    default Collection<String> getUnparenthesizedFunctionNames() {
-        return Collections.emptySet();
-    }
+    Collection<String> getUnparenthesizedFunctionNames();
 }

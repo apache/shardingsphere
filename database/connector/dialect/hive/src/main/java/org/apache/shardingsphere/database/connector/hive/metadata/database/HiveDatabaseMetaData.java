@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
 import org.apache.shardingsphere.database.connector.hive.metadata.database.option.HiveFunctionOption;
 
@@ -49,7 +50,7 @@ public final class HiveDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectSchemaOption getSchemaOption() {
-        return new DefaultSchemaOption(false, "default");
+        return new DefaultSchemaOption(false, "default", DialectSchemaSemantics.DATABASE_AS_SCHEMA);
     }
     
     @Override

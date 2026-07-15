@@ -24,6 +24,23 @@ weight = 1
 | 执行变更 | 确认自动执行，或导出人工执行包后由运维执行。         | 有副作用的变更必须经过确认。  |
 | 校验结果 | 执行后按功能插件返回规则状态或 workflow 执行结果。 | 确认变更是否生效。       |
 
+## 计划响应字段
+
+规划工具会返回 `plan_id`，用于把已生成计划连接到 workflow resource、预览、执行和校验工具。
+执行前应先通过 workflow resource 审查已持久化的计划。
+当用户需要再次确认时，应先预览再执行。
+
+面向模型的规划响应可能包含：
+
+- `summary`：简短的模型可读状态摘要，说明计划需要补充信息、可以预览，或已经失败。
+- `algorithm_recommendations`：根据 Proxy 可见插件目录或用户显式输入选择的候选算法。
+- `property_requirements`：所选算法的必填或可选属性；缺少必填属性时，workflow 会保持在澄清状态，而不是生成不安全产物。
+- `resources_to_read` 和 `next_actions`：继续 workflow 所需的资源和工具导航提示。
+- `distsql_artifacts`：在当前功能插件边界内生成的可审查规则 DistSQL。
+
+预览、执行、人工执行包导出和校验响应也会返回 `summary` 和 `next_actions`。
+Client 应优先遵循这些字段，而不是自行猜测替代调用，或向用户询问 payload 中已经包含的信息。
+
 ## 变更执行选择
 
 | 用户说法         | 用户会得到什么           | 关注点                    |
@@ -39,12 +56,12 @@ weight = 1
 
 推荐处理方式：
 
-- 在计划中保留占位符。
-- 由 AI 应用或运维侧通过密钥管理系统、受保护环境变量或运维控制通道取得真实值。
-- 在受控环境中替换占位符并执行。
+- 在算法属性中使用敏感值占位符对象，例如 `{"secret_ref": "placeholder://secret-value-1"}`。
+- 先通过 `execution_mode=preview` 审查规则 DistSQL；预览响应只显示中性占位符或 `******`。
+- 如果工作流仍包含敏感值占位符，自动执行会在产生副作用前停止，并返回 `secret_reference_manual_execution_required`。
+- 使用人工执行包时，执行人员在 MCP 和 AI 应用之外的受控环境中替换真实值后再执行。
 
-ShardingSphere-MCP 不直接读取密钥管理系统。
-使用人工执行包时，可以在待执行语句中保留占位符，由执行人员在受控环境替换。
+ShardingSphere-MCP 只记录需要人工替换的敏感值槽位，不会从外部系统获取真实敏感值。
 
 ## 审查重点
 

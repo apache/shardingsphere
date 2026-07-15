@@ -23,7 +23,10 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import java.util.Map;
 
 /**
- * MCP map response.
+ * MCP response adapter for a fully assembled successful payload.
+ *
+ * <p>This thin adapter returns the supplied payload as-is. It does not copy, merge, normalize, validate against a tool schema,
+ * classify errors, or build a transport envelope. Callers must finish constructing the payload before wrapping it and must not mutate it afterwards.</p>
  */
 @RequiredArgsConstructor
 public final class MCPMapResponse implements MCPResponse {

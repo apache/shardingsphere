@@ -58,8 +58,4 @@ class LLMMCPJsonValuesTest {
         assertThat(LLMMCPJsonValues.castToList(null), is(List.of()));
     }
     
-    @Test
-    void assertCastToStringMap() {
-        assertThat(LLMMCPJsonValues.castToStringMap(Map.of("schema", "public")), is(Map.of("schema", "public")));
-    }
 }

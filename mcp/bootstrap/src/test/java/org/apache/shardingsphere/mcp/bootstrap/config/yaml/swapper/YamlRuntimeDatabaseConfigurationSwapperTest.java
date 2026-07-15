@@ -32,27 +32,10 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         RuntimeDatabaseConfiguration actual = swapper.swapToObject(createYamlConfig());
-        assertThat(actual.getDatabaseType(), is("MySQL"));
         assertThat(actual.getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
         assertThat(actual.getUsername(), is(" demo "));
         assertThat(actual.getPassword(), is(" secret "));
         assertThat(actual.getDriverClassName(), is(" com.mysql.cj.jdbc.Driver "));
-    }
-    
-    @Test
-    void assertSwapToObjectWithDatabaseTypeMissing() {
-        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
-        yamlConfig.setDatabaseType(null);
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("MCP runtime database configuration property `databaseType` is required."));
-    }
-    
-    @Test
-    void assertSwapToObjectWithBlankDatabaseType() {
-        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
-        yamlConfig.setDatabaseType("   ");
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("MCP runtime database configuration property `databaseType` is required."));
     }
     
     @Test
@@ -120,8 +103,7 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         YamlRuntimeDatabaseConfiguration actual = swapper.swapToYamlConfiguration(
-                new RuntimeDatabaseConfiguration("MySQL", "jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver"));
-        assertThat(actual.getDatabaseType(), is("MySQL"));
+                new RuntimeDatabaseConfiguration("jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver"));
         assertThat(actual.getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
         assertThat(actual.getUsername(), is("demo"));
         assertThat(actual.getPassword(), is(""));
@@ -130,7 +112,6 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     
     private YamlRuntimeDatabaseConfiguration createYamlConfig() {
         YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
-        result.setDatabaseType("MySQL");
         result.setJdbcUrl("jdbc:mysql://localhost:3306/logic_db");
         result.setUsername(" demo ");
         result.setPassword(" secret ");

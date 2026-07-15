@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.context;
 
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -32,33 +32,30 @@ import static org.hamcrest.Matchers.is;
 class MCPRequestScopeTest {
     
     @Test
-    void assertFindSessionAttribution() {
+    void assertFindSessionIdentity() {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
-        MCPSessionAttribution sessionAttribution = new MCPSessionAttribution("subject", "gateway", Map.of("cluster", "demo"));
+        MCPSessionIdentity sessionIdentity = new MCPSessionIdentity("subject", "gateway", Map.of("cluster", "demo"));
         sessionManager.createSession("session-1");
-        sessionManager.bindSessionAttribution("session-1", sessionAttribution);
+        sessionManager.bindSessionIdentity("session-1", sessionIdentity);
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1")) {
-            assertThat(requestScope.findSessionAttribution(), is(Optional.of(sessionAttribution)));
-        }
+        MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1");
+        assertThat(requestScope.findSessionIdentity(), is(Optional.of(sessionIdentity)));
     }
     
     @Test
-    void assertFindSessionAttributionWithoutSession() {
+    void assertFindSessionIdentityWithoutSession() {
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            assertThat(requestScope.findSessionAttribution(), is(Optional.empty()));
-        }
+        MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1");
+        assertThat(requestScope.findSessionIdentity(), is(Optional.empty()));
     }
     
     @Test
     void assertFindRuntimeDatabaseConfiguration() {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("MySQL", "jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig)),
                 new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            assertThat(requestScope.findRuntimeDatabaseConfiguration("logic_db"), is(Optional.of(runtimeDatabaseConfig)));
-            assertThat(requestScope.findRuntimeDatabaseConfiguration("missing_db"), is(Optional.empty()));
-        }
+        MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1");
+        assertThat(requestScope.findRuntimeDatabaseConfiguration("logic_db"), is(Optional.of(runtimeDatabaseConfig)));
+        assertThat(requestScope.findRuntimeDatabaseConfiguration("missing_db"), is(Optional.empty()));
     }
 }

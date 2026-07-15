@@ -5,7 +5,7 @@ weight = 3
 
 ## 描述
 
-`DROP SHADOW RULE` 语法用于为指定逻辑库删除影子库压测规则。
+`DROP SHADOW RULE` 语法用于从当前逻辑库中删除影子库压测规则。
 
 ### 语法定义
 
@@ -13,7 +13,7 @@ weight = 3
 {{% tab name="语法" %}}
 ```sql
 DropShadowRule ::=
-  'DROP' 'SHADOW' 'RULE' ifExists? ruleName ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'RULE' ifExists? ruleName (',' ruleName)*
 
 ifExists ::=
   'IF' 'EXISTS'
@@ -21,8 +21,6 @@ ifExists ::=
 ruleName ::=
   identifier
 
-databaseName ::=
-  identifier
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -32,21 +30,20 @@ databaseName ::=
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
 - `ifExists` 子句用于避免 `Shadow rule not exists` 错误。
 
 ### 示例
 
-- 为指定数据库删除影子库压测规则
+- 删除影子库压测规则
  
 ```sql
-DROP SHADOW RULE shadow_rule FROM shadow_db;
+DROP SHADOW RULE shadow_rule;
 ```
 
-- 为当前数据库删除影子库压测规则
+- 删除多个影子库压测规则
 
 ```sql
-DROP SHADOW RULE shadow_rule;
+DROP SHADOW RULE shadow_rule, shadow_rule_1;
 ```
 
 - 使用 `ifExists` 子句删除影子库压测规则
@@ -57,7 +54,7 @@ DROP SHADOW RULE IF EXISTS shadow_rule;
 
 ### 保留字
 
-`DROP`、`SHADOW`、`RULE`、`FROM`
+`DROP`、`SHADOW`、`RULE`、`IF`、`EXISTS`
 
 ### 相关链接
 

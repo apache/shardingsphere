@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.lifecycle.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sharding.cache.route.CachedShardingSQLRouter;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextCheckerFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -39,7 +38,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DM
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Sharding SQL router.
@@ -50,18 +48,6 @@ public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule> 
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
                                            final ShardingRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
-        if (rule.isShardingCacheEnabled()) {
-            Optional<RouteContext> result = new CachedShardingSQLRouter()
-                    .loadRouteContext(this::createRouteContext0, queryContext, globalRuleMetaData, database, rule.getShardingCache(), tableNames, props);
-            if (result.isPresent()) {
-                return result.get();
-            }
-        }
-        return createRouteContext0(queryContext, globalRuleMetaData, database, rule, tableNames, props);
-    }
-    
-    private RouteContext createRouteContext0(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule,
-                                             final Collection<String> tableNames, final ConfigurationProperties props) {
         Collection<String> logicTableNames = rule.getShardingLogicTableNames(tableNames);
         if (logicTableNames.isEmpty()) {
             return new RouteContext();

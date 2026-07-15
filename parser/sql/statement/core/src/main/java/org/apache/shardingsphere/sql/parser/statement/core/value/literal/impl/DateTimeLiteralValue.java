@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl;
 
+import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.LiteralValue;
 
 /**
@@ -26,21 +28,24 @@ public final class DateTimeLiteralValue implements LiteralValue<String> {
     
     private final String dateTimeType;
     
+    @Getter
     private final String dateTimeValue;
+    
+    private final QuoteCharacter quoteCharacter;
     
     private final boolean containsBrace;
     
     public DateTimeLiteralValue(final String dateTimeType, final String dateTimeValue, final boolean containsBrace) {
         this.dateTimeType = dateTimeType;
-        this.dateTimeValue = containsBrace ? dateTimeValue.substring(1, dateTimeValue.length() - 1) : dateTimeValue;
+        quoteCharacter = QuoteCharacter.getQuoteCharacter(dateTimeValue);
+        this.dateTimeValue = quoteCharacter.unwrap(dateTimeValue);
         this.containsBrace = containsBrace;
     }
     
     @Override
     public String getValue() {
-        if (containsBrace) {
-            return "{" + dateTimeType + " " + dateTimeValue + "}";
-        }
-        return dateTimeType + " " + dateTimeValue;
+        String quotedDateTimeValue = quoteCharacter.wrap(dateTimeValue);
+        return containsBrace ? "{" + dateTimeType + " " + quotedDateTimeValue + "}" : dateTimeType + " " + quotedDateTimeValue;
     }
+    
 }

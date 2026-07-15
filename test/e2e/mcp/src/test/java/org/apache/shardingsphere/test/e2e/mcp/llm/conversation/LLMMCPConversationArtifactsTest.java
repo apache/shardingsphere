@@ -36,7 +36,7 @@ class LLMMCPConversationArtifactsTest {
     void assertAddRawModelOutput() {
         LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts("provider", "model");
         artifacts.addRawModelOutput("raw-output");
-        assertThat(artifacts.createArtifactBundle(createScenario(), LLME2EAssertionReport.isSuccess("ok")).getRawModelOutputs(), is(List.of("raw-output")));
+        assertThat(artifacts.createArtifactBundle(createScenario(), LLME2EAssertionReport.success("ok")).getRawModelOutputs(), is(List.of("raw-output")));
     }
     
     @Test
@@ -51,21 +51,7 @@ class LLMMCPConversationArtifactsTest {
     void assertAddRuntimeLogLine() {
         LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts("provider", "model");
         artifacts.addRuntimeLogLine("runtime-log");
-        assertThat(artifacts.createArtifactBundle(createScenario(), LLME2EAssertionReport.isSuccess("ok")).getMcpRuntimeLogLines(), is(List.of("runtime-log")));
-    }
-    
-    @Test
-    void assertSetCapabilityFingerprints() {
-        LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts("provider", "model");
-        artifacts.setCapabilityFingerprints(Map.of("tools", 1));
-        assertThat(artifacts.createArtifactBundle(createScenario(), LLME2EAssertionReport.isSuccess("ok")).getCapabilityFingerprints(), is(Map.of("tools", 1)));
-    }
-    
-    @Test
-    void assertSetCapabilityFingerprintsWithNull() {
-        LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts("provider", "model");
-        artifacts.setCapabilityFingerprints(null);
-        assertThat(artifacts.createArtifactBundle(createScenario(), LLME2EAssertionReport.isSuccess("ok")).getCapabilityFingerprints(), is(Map.of()));
+        assertThat(artifacts.createArtifactBundle(createScenario(), LLME2EAssertionReport.success("ok")).getMcpRuntimeLogLines(), is(List.of("runtime-log")));
     }
     
     @Test
@@ -90,20 +76,18 @@ class LLMMCPConversationArtifactsTest {
     @Test
     void assertCreateArtifactBundle() {
         LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts("provider", "model");
-        artifacts.setCapabilityFingerprints(Map.of("tools", 1));
         artifacts.setFinalAnswerJson("{\"ok\":true}");
         artifacts.addRawModelOutput("raw-output");
         MCPInteractionTraceRecord traceRecord = createTrace();
         artifacts.addInteractionTrace(traceRecord);
         artifacts.addRuntimeLogLine("runtime-log");
-        LLME2EAssertionReport assertionReport = LLME2EAssertionReport.isSuccess("ok");
+        LLME2EAssertionReport assertionReport = LLME2EAssertionReport.success("ok");
         LLME2EArtifactBundle actual = artifacts.createArtifactBundle(createScenario(), assertionReport);
         assertThat(actual.getScenarioId(), is("scenario"));
         assertThat(actual.getSystemPrompt(), is("system"));
         assertThat(actual.getUserPrompt(), is("user"));
         assertThat(actual.getModelProvider(), is("provider"));
         assertThat(actual.getModelName(), is("model"));
-        assertThat(actual.getCapabilityFingerprints(), is(Map.of("tools", 1)));
         assertThat(actual.getFinalAnswerJson(), is("{\"ok\":true}"));
         assertThat(actual.getRawModelOutputs(), is(List.of("raw-output")));
         assertThat(actual.getInteractionTrace(), is(List.of(traceRecord)));

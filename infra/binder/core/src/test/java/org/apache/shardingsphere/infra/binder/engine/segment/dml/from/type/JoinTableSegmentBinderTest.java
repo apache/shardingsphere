@@ -30,9 +30,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -210,6 +212,29 @@ class JoinTableSegmentBinderTest {
         assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o")));
         assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o2")));
         assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("i")));
+    }
+    
+    @Test
+    void assertBindWithFunctionTable() {
+        SimpleTableSegment leftTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        leftTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        FunctionTableSegment rightTable = new FunctionTableSegment(67, 127, new FunctionSegment(80, 98, "explode", "explode(type_array)"));
+        rightTable.setAlias(new AliasSegment(100, 113, new IdentifierValue("exploded_array")));
+        rightTable.getColumns().add(new ColumnSegment(118, 127, new IdentifierValue("item_value")));
+        JoinTableSegment joinTableSegment = new JoinTableSegment();
+        joinTableSegment.setLeft(leftTable);
+        joinTableSegment.setRight(rightTable);
+        joinTableSegment.setJoinType(JoinType.COMMA.name());
+        ShardingSphereMetaData metaData = createMetaData();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(
+                metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts, LinkedHashMultimap.create());
+        List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getDerivedJoinTableProjectionSegments());
+        assertThat(actualProjections.size(), is(4));
+        assertThat(actualProjections.get(3), isA(ColumnProjectionSegment.class));
+        assertThat(actualProjections.get(3).getColumnLabel(), is("item_value"));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("exploded_array")));
     }
     
     private JoinTableSegment mockLeftJoinSegment() {

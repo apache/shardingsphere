@@ -46,6 +46,7 @@ customKeyword
     | AUTOCOMMIT
     | INNODB
     | REDO_LOG
+    | FIRST_VALUE
     | LAST_VALUE
     | PRIMARY
     | MAXVALUE
@@ -412,6 +413,7 @@ identifierKeywordsUnambiguous
     | ROUTINE
     | ROW_COUNT
     | ROW_FORMAT
+    | REWRITE
     | RTREE
     | SCHEDULE
     | SCHEMA_NAME
@@ -865,7 +867,7 @@ assignmentOperator
     ;
 
 comparisonOperator
-    : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
+    : EQ_ | DEQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
 predicate
@@ -901,6 +903,7 @@ simpleExpr
     | parameterMarker
     | literals
     | columnRef
+    | simpleExpr LBT_ expr RBT_
     | simpleExpr collateClause
     | variable
     | simpleExpr OR_ simpleExpr
@@ -1005,7 +1008,7 @@ windowFunction
     : funcName = (ROW_NUMBER | RANK | DENSE_RANK | CUME_DIST | PERCENT_RANK) LP_ RP_ windowingClause
     | funcName = NTILE (simpleExpr) windowingClause
     | funcName = (LEAD | LAG) LP_ expr leadLagInfo? RP_ nullTreatment? windowingClause
-    | funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? windowingClause
+    | funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr (COMMA_ expr)? RP_ nullTreatment? windowingClause
     | funcName = NTH_VALUE LP_ expr COMMA_ simpleExpr RP_ (FROM (FIRST | LAST))? nullTreatment? windowingClause
     ;
 
@@ -1047,8 +1050,10 @@ castType
     | castTypeName = (UNSIGNED | UNSIGNED_INT | UNSIGNED_INTEGER)
     | castTypeName = DATE
     | castTypeName = TIME typeDatetimePrecision?
+    | castTypeName = TIMESTAMP typeDatetimePrecision? (WITH LOCAL TIME ZONE)?
     | castTypeName = DATETIME typeDatetimePrecision?
     | castTypeName = DECIMAL (fieldLength | precision)?
+    | castTypeName = STRING
     | castTypeName = JSON
     | castTypeName = REAL
     | castTypeName = DOUBLE PRECISION
@@ -1108,7 +1113,8 @@ completeRegularFunction
 
 regularFunctionName
     : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INSERT | INTERVAL | MOD
-    | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION | REPEAT
+    | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | DAYOFWEEK | GEOMETRYCOLLECTION | REPEAT
+    | GROUPING | MAP | STRUCT
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
     | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP 
     | CURRENT_DATE | CURRENT_TIME | UTC_TIMESTAMP | identifier
@@ -1165,7 +1171,7 @@ orderByClause
     ;
 
 orderByItem
-    : (numberLiterals | expr) direction?
+    : (numberLiterals | expr) direction? (NULLS (FIRST | LAST))?
     ;
 
 dataType
@@ -1196,6 +1202,7 @@ dataType
     | dataTypeName = TEXT fieldLength? charsetWithOptBinary?
     | dataTypeName = MEDIUMTEXT charsetWithOptBinary?
     | dataTypeName = LONGTEXT charsetWithOptBinary?
+    | dataTypeName = STRING
     | dataTypeName = ENUM stringList charsetWithOptBinary?
     | dataTypeName = SET stringList charsetWithOptBinary?
     | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMCOLLECTION | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
@@ -1361,7 +1368,7 @@ rowFormatType
     ;
 
 rowFormatDelimited
-    : (COLUMNS TERMINATED BY string_ (ESCAPED BY string_)?)?
+    : ((COLUMNS | FIELDS) TERMINATED BY string_ (ESCAPED BY string_)?)?
       (COLLECTION ITEMS TERMINATED BY string_)?
       (MAP KEYS TERMINATED BY string_)?
       (LINES TERMINATED BY string_)?

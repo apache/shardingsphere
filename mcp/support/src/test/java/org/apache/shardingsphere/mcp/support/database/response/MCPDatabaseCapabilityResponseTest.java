@@ -17,41 +17,65 @@
 
 package org.apache.shardingsphere.mcp.support.database.response;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MCPDatabaseCapabilityResponseTest {
     
-    @Test
-    void assertToPayload() {
-        MCPDatabaseCapability actualCapability = new MCPDatabaseCapability("logic_db", "8.0.32", TypedSPILoader.getService(MCPDatabaseCapabilityOption.class, "MySQL"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertToPayloadArguments")
+    void assertToPayload(final String name, final boolean supportsExplain) {
+        MCPDatabaseCapability actualCapability = mock(MCPDatabaseCapability.class);
+        when(actualCapability.getDatabaseName()).thenReturn("logic_db");
+        when(actualCapability.getDatabaseType()).thenReturn("FixtureDB");
+        when(actualCapability.getSupportedMetadataObjectTypes()).thenReturn(EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
+                SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX));
+        Set<SupportedMCPStatement> supportedStatementClasses = EnumSet.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL,
+                SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT);
+        if (supportsExplain) {
+            supportedStatementClasses.add(SupportedMCPStatement.EXPLAIN);
+        }
+        when(actualCapability.getSupportedStatementClasses()).thenReturn(supportedStatementClasses);
+        when(actualCapability.supportsTransactionControl()).thenReturn(true);
+        when(actualCapability.supportsSavepoint()).thenReturn(true);
+        when(actualCapability.getDefaultSchemaSemantics()).thenReturn(DialectSchemaSemantics.DATABASE_AS_SCHEMA);
+        when(actualCapability.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
+        when(actualCapability.supportsExplain()).thenReturn(supportsExplain);
         Map<String, Object> actual = new MCPDatabaseCapabilityResponse(actualCapability).toPayload();
         assertThat(actual, is(Map.ofEntries(
                 Map.entry("response_mode", "detail"),
                 Map.entry("database", "logic_db"),
-                Map.entry("databaseType", "MySQL"),
+                Map.entry("databaseType", "FixtureDB"),
                 Map.entry("supportedObjectTypes", EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
                         SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX)),
-                Map.entry("supportedStatementClasses", EnumSet.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL,
-                        SupportedMCPStatement.DCL, SupportedMCPStatement.TRANSACTION_CONTROL, SupportedMCPStatement.SAVEPOINT, SupportedMCPStatement.EXPLAIN_ANALYZE)),
+                Map.entry("supportedStatementClasses", supportedStatementClasses),
                 Map.entry("supportsTransactionControl", true),
                 Map.entry("supportsSavepoint", true),
-                Map.entry("defaultSchemaSemantics", SchemaSemantics.DATABASE_AS_SCHEMA),
+                Map.entry("defaultSchemaSemantics", DialectSchemaSemantics.DATABASE_AS_SCHEMA),
                 Map.entry("schemaExecutionSemantics", SchemaExecutionSemantics.FIXED_TO_DATABASE),
                 Map.entry("supportsCrossSchemaSql", false),
-                Map.entry("supportsExplainAnalyze", true),
-                Map.entry("explainAnalyzeExecutionRisk", "EXPLAIN ANALYZE may execute the underlying SELECT on this engine; use it only when the user accepts runtime execution cost."))));
+                Map.entry("supportsExplain", supportsExplain))));
+    }
+    
+    private static Stream<Arguments> assertToPayloadArguments() {
+        return Stream.of(
+                Arguments.of("supported", true),
+                Arguments.of("unsupported", false));
     }
 }

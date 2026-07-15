@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.mcp.support.database.spi;
 
-import java.util.Collection;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * MCP feature direct query facade.
@@ -46,14 +47,24 @@ public interface MCPFeatureQueryFacade {
     List<Map<String, Object>> queryWithAnyDatabase(String sql);
     
     /**
-     * Get runtime database type.
+     * Check whether runtime database capability exists.
      *
      * @param databaseName database name
-     * @return database type
+     * @throws DatabaseCapabilityNotFoundException when database capability does not exist
      */
-    default String getDatabaseType(final String databaseName) {
-        return "";
-    }
+    void checkDatabaseCapability(String databaseName);
+    
+    /**
+     * Judge whether an identifier references an existing identifier in a runtime database.
+     *
+     * @param databaseName database name
+     * @param identifierScope identifier scope
+     * @param identifier identifier
+     * @param existingIdentifier existing identifier
+     * @return whether the identifiers are the same
+     * @throws DatabaseCapabilityNotFoundException when database capability does not exist
+     */
+    boolean isSameIdentifier(String databaseName, IdentifierScope identifierScope, String identifier, String existingIdentifier);
     
     /**
      * Query column definition.
@@ -66,14 +77,4 @@ public interface MCPFeatureQueryFacade {
      */
     String queryColumnDefinition(String databaseName, String schemaName, String tableName, String columnName);
     
-    /**
-     * Query information schema columns.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @return actual column names
-     */
-    Set<String> queryInformationSchemaColumnNames(String databaseName, String schemaName, String tableName, Collection<String> columnNames);
 }

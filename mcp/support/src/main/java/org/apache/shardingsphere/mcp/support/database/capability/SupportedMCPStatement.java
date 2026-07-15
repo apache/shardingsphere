@@ -22,5 +22,5 @@ package org.apache.shardingsphere.mcp.support.database.capability;
  */
 public enum SupportedMCPStatement {
     
-    QUERY, DML, DDL, DCL, TRANSACTION_CONTROL, SAVEPOINT, EXPLAIN_ANALYZE
+    QUERY, DML, DDL, DCL, TRANSACTION_CONTROL, SAVEPOINT, EXPLAIN
 }

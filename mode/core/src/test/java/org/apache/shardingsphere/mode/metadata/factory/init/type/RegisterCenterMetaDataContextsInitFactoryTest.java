@@ -125,13 +125,6 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
         return result;
     }
     
-    private Map<String, DatabaseConfiguration> createDatabaseConfigsWithoutStorageUnits() {
-        Map<String, DatabaseConfiguration> result = new LinkedHashMap<>(2, 1F);
-        result.put("foo_db", createDatabaseConfigWithoutStorageUnits());
-        result.put("bar_db", createDatabaseConfigWithoutStorageUnits());
-        return result;
-    }
-    
     private DatabaseConfiguration createDatabaseConfigWithoutStorageUnits() {
         DatabaseConfiguration result = mock(DatabaseConfiguration.class);
         when(result.getStorageUnits()).thenReturn(Collections.emptyMap());
@@ -146,6 +139,6 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter(final Map<String, DatabaseConfiguration> databaseConfigs) {
-        return new ContextManagerBuilderParameter(null, databaseConfigs, Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), null);
+        return new ContextManagerBuilderParameter(null, databaseConfigs, Collections.emptyMap(), Collections.emptyList(), new Properties(), null);
     }
 }

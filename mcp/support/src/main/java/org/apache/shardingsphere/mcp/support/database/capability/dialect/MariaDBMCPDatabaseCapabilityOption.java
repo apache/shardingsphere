@@ -17,17 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
-
 /**
  * MCP database capability option for MariaDB.
  */
 public final class MariaDBMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public MariaDBMCPDatabaseCapabilityOption() {
-        super("MariaDB", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, true);
+        super("MariaDB", true);
     }
 }

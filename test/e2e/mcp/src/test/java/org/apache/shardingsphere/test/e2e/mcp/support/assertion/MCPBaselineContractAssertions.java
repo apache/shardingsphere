@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.assertion;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -33,12 +35,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Baseline contract assertions for normalized MCP model-facing payloads.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPBaselineContractAssertions {
     
     private static final String PLAN_ID_PLACEHOLDER = "<plan_id>";
-    
-    private MCPBaselineContractAssertions() {
-    }
     
     /**
      * Assert one model-facing payload projection against a normalized baseline YAML resource.

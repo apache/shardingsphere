@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
@@ -26,7 +28,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTr
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMMCPConversationArtifacts {
@@ -37,12 +38,13 @@ final class LLMMCPConversationArtifacts {
     
     private final List<String> rawModelOutputs = new LinkedList<>();
     
+    @Getter(AccessLevel.PACKAGE)
     private final List<MCPInteractionTraceRecord> interactionTrace = new LinkedList<>();
     
     private final List<String> mcpRuntimeLogLines = new LinkedList<>();
     
-    private Map<String, Object> capabilityFingerprints = Map.of();
-    
+    @Getter(AccessLevel.PACKAGE)
+    @Setter(AccessLevel.PACKAGE)
     private String finalAnswerJson = "";
     
     void addRawModelOutput(final String rawModelOutput) {
@@ -57,28 +59,22 @@ final class LLMMCPConversationArtifacts {
         mcpRuntimeLogLines.add(runtimeLogLine);
     }
     
-    void setCapabilityFingerprints(final Map<String, Object> capabilityFingerprints) {
-        this.capabilityFingerprints = null == capabilityFingerprints ? Map.of() : capabilityFingerprints;
-    }
-    
-    List<MCPInteractionTraceRecord> getInteractionTrace() {
-        return interactionTrace;
-    }
-    
     int nextSequence() {
         return interactionTrace.size() + 1;
     }
     
-    String getFinalAnswerJson() {
-        return finalAnswerJson;
-    }
-    
-    void setFinalAnswerJson(final String finalAnswerJson) {
-        this.finalAnswerJson = finalAnswerJson;
-    }
-    
     LLME2EArtifactBundle createArtifactBundle(final LLME2EScenario scenario, final LLME2EAssertionReport assertionReport) {
-        return new LLME2EArtifactBundle(scenario.getScenarioId(), scenario.getSystemPrompt(), scenario.getUserPrompt(), modelProvider, modelName,
-                capabilityFingerprints, finalAnswerJson, rawModelOutputs, interactionTrace, mcpRuntimeLogLines, assertionReport);
+        return LLME2EArtifactBundle.builder()
+                .scenarioId(scenario.getScenarioId())
+                .systemPrompt(scenario.getSystemPrompt())
+                .userPrompt(scenario.getUserPrompt())
+                .modelProvider(modelProvider)
+                .modelName(modelName)
+                .finalAnswerJson(finalAnswerJson)
+                .rawModelOutputs(rawModelOutputs)
+                .interactionTrace(interactionTrace)
+                .mcpRuntimeLogLines(mcpRuntimeLogLines)
+                .assertionReport(assertionReport)
+                .build();
     }
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
@@ -30,21 +30,13 @@ import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 /**
  * Readwrite-splitting rules handler.
  */
-public final class ReadwriteSplittingRulesHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class ReadwriteSplittingRulesHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
     
-    private final ReadwriteSplittingInspectionService inspectionService;
-    
-    public ReadwriteSplittingRulesHandler() {
-        inspectionService = new ReadwriteSplittingInspectionService();
-    }
-    
-    ReadwriteSplittingRulesHandler(final ReadwriteSplittingInspectionService inspectionService) {
-        this.inspectionService = inspectionService;
-    }
+    private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -53,7 +45,7 @@ public final class ReadwriteSplittingRulesHandler implements MCPResourceHandler<
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(inspectionService.queryRules(databaseContext.getQueryFacade(), uriVariables.getValue("database")),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }

@@ -17,7 +17,7 @@ chapter = true
 | *名称*       | *数据类型*                         | *说明*                                                                                                                          | *默认值*      |
 |------------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------|------------|
 | type       | String                         | 运行模式类型<br />可选配置：Standalone、Cluster                                                                                           | Standalone |
-| repository | PersistRepositoryConfiguration | 持久化仓库配置<br />Standalone 类型使用 StandalonePersistRepositoryConfiguration<br />Cluster 类型使用 ClusterPersistRepositoryConfiguration |            | | false      |
+| repository | PersistRepositoryConfiguration | 持久化仓库配置<br />Standalone 类型使用 StandalonePersistRepositoryConfiguration<br />Cluster 类型使用 ClusterPersistRepositoryConfiguration |            |
 
 ### Standalone 持久化配置
 

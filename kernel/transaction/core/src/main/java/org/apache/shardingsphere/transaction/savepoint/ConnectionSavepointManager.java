@@ -97,7 +97,7 @@ public final class ConnectionSavepointManager {
         if (!result.isPresent()) {
             return;
         }
-        DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
+        DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData());
         databaseType = databaseType.getTrunkDatabaseType().orElse(databaseType);
         Optional<SavepointReleaseSQLProvider> savepointReleaseSQLProvider = DatabaseTypedSPILoader.findService(SavepointReleaseSQLProvider.class, databaseType);
         if (savepointReleaseSQLProvider.isPresent()) {

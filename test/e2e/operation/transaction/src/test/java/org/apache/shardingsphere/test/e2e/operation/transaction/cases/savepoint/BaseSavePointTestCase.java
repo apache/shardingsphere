@@ -61,12 +61,7 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 1);
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(2, 2, 2);");
-            final Savepoint savepoint = connection.setSavepoint("point2");
-            assertAccountRowCount(connection, 2);
-            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(3, 3, 3);");
-            assertAccountRowCount(connection, 3);
-            connection.releaseSavepoint(savepoint);
-            assertAccountRowCount(connection, 3);
+            releaseSavepointAfterInsert(connection, connection.setSavepoint("point2"));
             connection.commit();
             assertAccountRowCount(connection, 3);
         }
@@ -82,5 +77,13 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
             assertAccountRowCount(connection, 5);
             connection.commit();
         }
+    }
+    
+    private void releaseSavepointAfterInsert(final Connection connection, final Savepoint savepoint) throws SQLException {
+        assertAccountRowCount(connection, 2);
+        executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(3, 3, 3);");
+        assertAccountRowCount(connection, 3);
+        connection.releaseSavepoint(savepoint);
+        assertAccountRowCount(connection, 3);
     }
 }

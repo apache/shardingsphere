@@ -20,6 +20,8 @@ package org.apache.shardingsphere.authentication.result;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 /**
  * Authentication result.
  */
@@ -34,4 +36,6 @@ public final class AuthenticationResult {
     private final String database;
     
     private final boolean finished;
+    
+    private final Map<String, String> connectionAttributes;
 }

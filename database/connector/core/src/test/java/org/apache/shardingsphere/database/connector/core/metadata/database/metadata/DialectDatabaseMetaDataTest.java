@@ -19,13 +19,14 @@ package org.apache.shardingsphere.database.connector.core.metadata.database.meta
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,11 +40,6 @@ import static org.mockito.Mockito.mock;
 class DialectDatabaseMetaDataTest {
     
     private final DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, CALLS_REAL_METHODS);
-    
-    @Test
-    void assertIsCaseSensitive() {
-        assertFalse(dialectDatabaseMetaData.isCaseSensitive());
-    }
     
     @Test
     void assertGetDataTypeOption() {
@@ -60,6 +56,7 @@ class DialectDatabaseMetaDataTest {
         DialectSchemaOption actual = dialectDatabaseMetaData.getSchemaOption();
         assertFalse(actual.isSchemaAvailable());
         assertThat(actual.getDefaultSchema(), is(Optional.empty()));
+        assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
     }
     
     @Test
@@ -69,7 +66,9 @@ class DialectDatabaseMetaDataTest {
     
     @Test
     void assertGetIndexOption() {
-        assertFalse(dialectDatabaseMetaData.getIndexOption().isSchemaUniquenessLevel());
+        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
+        assertFalse(actual.isSchemaUniquenessLevel());
+        assertThat(actual.getIndexNameMaxLength(), is(Integer.MAX_VALUE));
     }
     
     @Test
@@ -87,7 +86,6 @@ class DialectDatabaseMetaDataTest {
         assertFalse(actual.isSupportAutoCommitInNestedTransaction());
         assertFalse(actual.isSupportDDLInXATransaction());
         assertTrue(actual.isSupportMetaDataRefreshInTransaction());
-        assertThat(actual.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
         assertFalse(actual.isReturnRollbackStatementWhenCommitFailed());
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertTrue(actual.getXaDriverClassNames().isEmpty());

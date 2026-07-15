@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
@@ -50,10 +46,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -71,8 +71,9 @@ class PackagedDistributionE2ETest {
             "shardingsphere-mcp-feature-broadcast", "shardingsphere-mcp-feature-readwrite-splitting", "shardingsphere-mcp-feature-shadow",
             "shardingsphere-mcp-feature-sharding");
     
-    private static final List<String> CORE_TOOL_NAMES = List.of("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity",
-            "database_gateway_execute_query", "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow");
+    private static final List<String> CORE_TOOL_NAMES = List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database",
+            "database_gateway_execute_query", "database_gateway_execute_explain_query", "database_gateway_execute_update",
+            "database_gateway_apply_workflow", "database_gateway_validate_workflow");
     
     private static final List<String> REMOVED_FEATURE_TOOL_NAMES = OfficialMCPToolNames.getAll().stream().filter(each -> !CORE_TOOL_NAMES.contains(each)).toList();
     
@@ -105,7 +106,7 @@ class PackagedDistributionE2ETest {
     
     @Test
     void assertLaunchPackagedDistributionOverHttp() throws IOException, InterruptedException, SQLException {
-        PreparedPackagedDistribution distribution = preparePackagedDistribution("http", RuntimeTransport.HTTP);
+        PreparedPackagedDistribution distribution = prepareReusableOfficialPackagedDistribution(RuntimeTransport.HTTP);
         try (
                 PackagedDistributionHttpRuntime runtime = new PackagedDistributionHttpRuntime(distribution);
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
@@ -117,7 +118,7 @@ class PackagedDistributionE2ETest {
     
     @Test
     void assertLaunchPackagedDistributionOverStdio() throws IOException, InterruptedException, SQLException {
-        PreparedPackagedDistribution distribution = preparePackagedDistribution("stdio", RuntimeTransport.STDIO);
+        PreparedPackagedDistribution distribution = prepareReusableOfficialPackagedDistribution(RuntimeTransport.STDIO);
         try (MCPInteractionClient interactionClient = new PackagedDistributionStdioInteractionClient(distribution.home(), distribution.configFile())) {
             interactionClient.open();
             assertOfficialRuntime(distribution.home(), RuntimeTransport.STDIO, interactionClient);
@@ -174,9 +175,15 @@ class PackagedDistributionE2ETest {
                 MySQLRuntimeTestSupport.createRuntimeDatabases(mysqlContainer, LOGICAL_DATABASE_NAME));
     }
     
+    private PreparedPackagedDistribution prepareReusableOfficialPackagedDistribution(final RuntimeTransport transport) throws IOException, SQLException {
+        prepareMySQLContainer();
+        return PackagedDistributionTestSupport.prepareReusable(tempDir.resolve("official-distribution-home-" + transport.name().toLowerCase(Locale.ENGLISH)), transport,
+                MySQLRuntimeTestSupport.createRuntimeDatabases(mysqlContainer, LOGICAL_DATABASE_NAME));
+    }
+    
     private Path createDockerConfigurationFile(final RuntimeTransport transport) throws IOException, SQLException {
         prepareMySQLContainer();
-        return PackagedDistributionTestSupport.createDockerConfigurationFile(tempDir.resolve("container-" + transport.name().toLowerCase() + ".yaml"), transport,
+        return PackagedDistributionTestSupport.createDockerConfigurationFile(tempDir.resolve("container-" + transport.name().toLowerCase(Locale.ENGLISH) + ".yaml"), transport,
                 MySQLRuntimeTestSupport.createDockerHostRuntimeDatabases(mysqlContainer, LOGICAL_DATABASE_NAME));
     }
     
@@ -230,12 +237,13 @@ class PackagedDistributionE2ETest {
     private void assertRuntimeDiagnostics(final Map<String, Object> runtimeStatus, final RuntimeTransport transport) {
         assertThat(runtimeStatus.get("status"), is("available"));
         assertThat(runtimeStatus.get("active_transport"), is(getTransportName(transport)));
-        Map<String, Object> actualRedactionSummary = MCPInteractionPayloads.castToMap(runtimeStatus.get("redaction_summary"));
+        Map<String, Object> actualRedactionSummary = MCPInteractionPayloads.getRequiredObject(runtimeStatus, "redaction_summary");
         assertThat(actualRedactionSummary.get("marker"), is("******"));
-        Map<String, Object> actualDiagnostics = MCPInteractionPayloads.castToMap(runtimeStatus.get("diagnostics"));
+        Map<String, Object> actualDiagnostics = MCPInteractionPayloads.getRequiredObject(runtimeStatus, "diagnostics");
         assertThat(actualDiagnostics.get("current_category"), is("ready"));
         assertTrue(((List<?>) actualDiagnostics.get("safe_categories")).contains("invalid_configuration"));
-        assertTrue(MCPInteractionPayloads.castToList(actualDiagnostics.get("operator_next_actions")).stream().anyMatch(each -> "invalid_configuration".equals(each.get("category"))));
+        assertTrue(MCPInteractionPayloads.getRequiredObjectList(actualDiagnostics, "operator_next_actions").stream()
+                .anyMatch(each -> "invalid_configuration".equals(each.get("category"))));
         assertRuntimeStatusSecretSafe(runtimeStatus);
     }
     
@@ -287,7 +295,7 @@ class PackagedDistributionE2ETest {
     
     private void assertDiscoveredTools(final List<Map<String, Object>> tools) {
         List<String> actualToolNames = tools.stream().map(each -> String.valueOf(each.get("name"))).toList();
-        assertThat(actualToolNames, hasItems("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query",
+        assertThat(actualToolNames, hasItems("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
                 "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow", "fixture_ping"));
         for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualToolNames.contains(each));
@@ -295,7 +303,7 @@ class PackagedDistributionE2ETest {
     }
     
     private void assertDiscoveredResources(final Map<String, Object> payload) {
-        List<Map<String, Object>> actualResources = MCPInteractionPayloads.castToList(payload.get("resources"));
+        List<Map<String, Object>> actualResources = MCPInteractionPayloads.getRequiredObjectList(payload, "resources");
         assertTrue(actualResources.stream().anyMatch(each -> FIXTURE_RESOURCE_URI.equals(each.get("uri"))));
     }
     
@@ -305,15 +313,15 @@ class PackagedDistributionE2ETest {
     }
     
     private void assertFixtureResource(final Map<String, Object> payload) {
-        List<Map<String, Object>> actualItems = MCPInteractionPayloads.castToList(payload.get("items"));
+        List<Map<String, Object>> actualItems = MCPInteractionPayloads.getRequiredObjectList(payload, "items");
         assertThat(actualItems.size(), is(1));
-        assertThat(actualItems.get(0).get("feature"), is("test-fixture"));
-        assertThat(actualItems.get(0).get("status"), is("ready"));
+        assertThat(actualItems.getFirst().get("feature"), is("test-fixture"));
+        assertThat(actualItems.getFirst().get("status"), is("ready"));
     }
     
     private void assertCapabilities(final Map<String, Object> payload) {
         List<String> actualSupportedTools = ((List<?>) payload.get("supportedTools")).stream().map(String::valueOf).toList();
-        assertThat(actualSupportedTools, hasItems("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query",
+        assertThat(actualSupportedTools, hasItems("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
                 "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow", "fixture_ping"));
         for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualSupportedTools.contains(each));
@@ -330,6 +338,6 @@ class PackagedDistributionE2ETest {
     }
     
     private List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
-        return MCPInteractionPayloads.castToList(payload.get("items"));
+        return MCPInteractionPayloads.getRequiredObjectList(payload, "items");
     }
 }

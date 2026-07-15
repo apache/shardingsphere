@@ -16,7 +16,7 @@ weight = 16
 LockClusterWith ::=
   'LOCK' 'CLUSTER' 'WITH' lockStrategy ('TIMEOUT' timeoutMillis)?
 
-timeoutmillis ::=
+timeoutMillis ::=
   long
 ```
 

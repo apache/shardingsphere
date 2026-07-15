@@ -17,21 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
-
 /**
  * MCP database capability option for Presto.
  */
 public final class PrestoMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
     public PrestoMCPDatabaseCapabilityOption() {
-        super("Presto", TransactionCapability.LOCAL, false, SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, false);
-    }
-    
-    @Override
-    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return true;
+        super("Presto", true);
     }
 }

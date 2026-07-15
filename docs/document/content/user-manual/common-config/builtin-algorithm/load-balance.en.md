@@ -5,9 +5,8 @@ weight = 4
 
 ## Background
 
-ShardingSphere built-in provides a variety of load balancer algorithms, including polling algorithm, random access algorithm and weight access algorithm, which can meet users' needs in most business scenarios.
-
-Moreover, considering the complexity of the business scenario, the built-in algorithm also provides an extension mode. Users can implement the load balancer algorithm they need based on SPI interface.
+ShardingSphere provides built-in load balancer algorithms, including polling algorithm, random access algorithm and weight access algorithm.
+Users can implement the corresponding SPI to provide a custom load balancer algorithm for complex business scenarios.
 
 ## Parameters
 

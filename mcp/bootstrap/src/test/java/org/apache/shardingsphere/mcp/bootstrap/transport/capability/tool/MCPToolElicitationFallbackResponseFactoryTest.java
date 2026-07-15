@@ -66,7 +66,10 @@ class MCPToolElicitationFallbackResponseFactoryTest extends AbstractMCPToolSpeci
         assertTrue((boolean) actualQuestion.get(MCPPayloadFieldNames.SECRET));
         assertThat(actualQuestion.get(MCPPayloadFieldNames.MESSAGE), is("Sensitive input must be provided through configured secure channels before continuing the same planner."));
         assertFalse(actualQuestion.containsKey(MCPPayloadFieldNames.DISPLAY_MESSAGE));
-        assertThat(((Map<?, ?>) ((List<?>) actualPayload.get(MCPPayloadFieldNames.NEXT_ACTIONS)).get(0)).get("type"), is("terminal"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get(MCPPayloadFieldNames.NEXT_ACTIONS)).get(0);
+        assertThat(actualNextAction.get("type"), is("terminal"));
+        assertThat(actualNextAction.get(MCPPayloadFieldNames.REASON),
+                is("MCP form elicitation is limited to non-sensitive STDIO continuations; URL mode is not implemented by the MCP runtime."));
         assertFalse(String.valueOf(actualPayload).contains("Provide access token."));
     }
     

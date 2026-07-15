@@ -20,9 +20,9 @@ Users describe the encryption goal in an AI application that integrates Sharding
 
 Examples:
 
-- Check whether `<logic-database>.orders.status` already has an encryption rule.
+- Check whether `logic_db.orders.status` already has an encryption rule.
 - List data encryption algorithms available from the current Proxy.
-- Plan reversible encryption for `<logic-database>.orders.status` with equality query support, and preview it without execution.
+- Plan reversible encryption for `logic_db.orders.status` with equality query support, and preview it without execution.
 - Continue the previous plan with the AES algorithm and provide the key through a protected channel.
 - Confirm and execute the previous encryption rule plan, then validate the result.
 
@@ -34,7 +34,7 @@ When using natural language, include the following information when possible:
 
 | Information                         | Description                                                                                            | Example                                                                              |
 |-------------------------------------|--------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| Logical database, table, and column | Specify the ShardingSphere-Proxy logical object to configure.                                          | "Configure encryption for `<logic-database>.orders.status`."                         |
+| Logical database, table, and column | Specify the ShardingSphere-Proxy logical object to configure.                                          | "Configure encryption for `logic_db.orders.status`."                         |
 | Schema or namespace                 | Recommended for multi-schema logical databases.                                                        | "The schema is `public`."                                                            |
 | Operation type                      | Create, alter, or drop an encryption rule.                                                             | "Create an encryption rule" or "drop the encryption rule for this column."           |
 | Encryption goal                     | Describe whether reversible encryption, equality query, or LIKE query is required.                     | "Use reversible encryption and support equality queries."                            |
@@ -58,6 +58,29 @@ After a plan is generated, review:
 - Whether logical, cipher, assisted query, or LIKE query column names in the rule DistSQL match expectations.
 - Whether keys, credentials, or other sensitive parameters are passed only through placeholders or protected channels.
 - Whether query capability, runtime rules, or existing business SQL may be affected.
+
+## Sensitive parameter handling
+
+Encryption algorithms may require keys, salts, or other sensitive properties.
+Users can provide these values through secret reference objects and confirm the source and scope before execution.
+
+Example:
+
+```json
+{
+  "primary_algorithm_properties": {
+    "aes-key-value": {
+      "secret_ref": "placeholder://secret-value-1"
+    }
+  }
+}
+```
+
+When ShardingSphere-MCP returns model-facing plans, workflow resources, previews, execution results, validation results, recovery data, and error messages, recognized sensitive properties are masked.
+Built-in algorithms and custom algorithm properties marked as secret in algorithm property templates can be recognized and masked consistently.
+The `secret_ref` in a placeholder object only marks a sensitive slot for manual replacement. Planning, preview, execution results, and validation output do not echo `secret_ref` or real sensitive values.
+Undeclared custom properties should not be written in plaintext in normal conversations, logs, or ticket descriptions.
+If a rule change still contains sensitive placeholders, automatic execution returns `secret_reference_manual_execution_required` before side effects. Operators should replace real values outside MCP and the AI application, then execute manually.
 
 ## Review Rule Column Names
 
@@ -100,10 +123,6 @@ For the general review flow of rule changes, see [Rule Change Flow](../plugin-wo
 
 - ShardingSphere-MCP plans rule DistSQL from Proxy-visible rule and algorithm state. Planning does not read or infer the real physical table structure.
 - If a physical column referenced by the rule does not exist, users should handle DDL and data processing outside ShardingSphere-MCP.
-
-### ShardingSphere capability boundaries
-
-- Existing data migration, backfill, or data cleansing is not handled.
 
 ### Identifier handling boundaries
 

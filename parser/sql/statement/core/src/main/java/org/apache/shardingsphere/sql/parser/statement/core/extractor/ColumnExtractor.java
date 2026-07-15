@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlSe
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -403,6 +404,9 @@ public final class ColumnExtractor {
     }
     
     private static void extractFromTable(final Collection<ColumnSegment> columnSegments, final TableSegment tableSegment, final boolean containsSubQuery) {
+        if (tableSegment instanceof SimpleTableSegment) {
+            ((SimpleTableSegment) tableSegment).getTableSampleExpression().ifPresent(optional -> columnSegments.addAll(ExpressionExtractor.extractColumns(optional, containsSubQuery)));
+        }
         if (tableSegment instanceof CollectionTableSegment) {
             columnSegments.addAll(ExpressionExtractor.extractColumns(((CollectionTableSegment) tableSegment).getExpressionSegment(), containsSubQuery));
         }

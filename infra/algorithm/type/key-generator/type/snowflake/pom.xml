@@ -26,6 +26,10 @@
     <artifactId>shardingsphere-infra-algorithm-key-generator-snowflake</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <argLine>-Duser.timezone=Asia/Shanghai</argLine>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.session;
 
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -83,6 +83,15 @@ class MCPSessionManagerTest {
     }
     
     @Test
+    void assertCloseListenerCompletesBeforeSessionCanBeRecreated() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession("session-1");
+        sessionManager.addSessionCloseListener(sessionId -> assertThrows(IllegalStateException.class, () -> sessionManager.createSession(sessionId)));
+        sessionManager.closeSession("session-1");
+        assertDoesNotThrow(() -> sessionManager.createSession("session-1"));
+    }
+    
+    @Test
     void assertCloseSessionWithTransactionResourceManager() throws SQLException {
         Connection connection = mock(Connection.class);
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
@@ -124,7 +133,7 @@ class MCPSessionManagerTest {
         sessionManager.createSession("session-2");
         sessionManager.getTransactionResourceManager().beginTransaction("session-1", "logic_db");
         sessionManager.getTransactionResourceManager().beginTransaction("session-2", "logic_db");
-        sessionManager.closeAllSessions();
+        new MCPSessionExecutionCoordinator(sessionManager).closeAllSessions();
         verify(firstConnection).rollback();
         verify(firstConnection).setAutoCommit(true);
         verify(firstConnection).close();
@@ -136,30 +145,30 @@ class MCPSessionManagerTest {
     }
     
     @Test
-    void assertBindSessionAttribution() {
+    void assertBindSessionIdentity() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
-        MCPSessionAttribution sessionAttribution = new MCPSessionAttribution("subject", "gateway", Map.of("region", "ap-south"));
+        MCPSessionIdentity sessionIdentity = new MCPSessionIdentity("subject", "gateway", Map.of("region", "ap-south"));
         sessionManager.createSession("session-1");
-        assertDoesNotThrow(() -> sessionManager.bindSessionAttribution("session-1", sessionAttribution));
-        assertThat(sessionManager.findSessionAttribution("session-1"), is(Optional.of(sessionAttribution)));
+        assertDoesNotThrow(() -> sessionManager.bindSessionIdentity("session-1", sessionIdentity));
+        assertThat(sessionManager.findSessionIdentity("session-1"), is(Optional.of(sessionIdentity)));
     }
     
     @Test
-    void assertBindSessionAttributionWithDifferentBinding() {
+    void assertBindSessionIdentityWithDifferentBinding() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
-        sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("subject", "gateway", Map.of()));
+        sessionManager.bindSessionIdentity("session-1", new MCPSessionIdentity("subject", "gateway", Map.of()));
         IllegalStateException actual = assertThrows(IllegalStateException.class,
-                () -> sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("other", "gateway", Map.of())));
-        assertThat(actual.getMessage(), is("Session attribution does not match existing binding for session `session-1`."));
+                () -> sessionManager.bindSessionIdentity("session-1", new MCPSessionIdentity("other", "gateway", Map.of())));
+        assertThat(actual.getMessage(), is("Session identity does not match existing binding for session `session-1`."));
     }
     
     @Test
-    void assertCloseSessionRemovesSessionAttribution() {
+    void assertCloseSessionRemovesSessionIdentity() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
-        sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("subject", "gateway", Map.of()));
+        sessionManager.bindSessionIdentity("session-1", new MCPSessionIdentity("subject", "gateway", Map.of()));
         sessionManager.closeSession("session-1");
-        assertThat(sessionManager.findSessionAttribution("session-1"), is(Optional.empty()));
+        assertThat(sessionManager.findSessionIdentity("session-1"), is(Optional.empty()));
     }
 }

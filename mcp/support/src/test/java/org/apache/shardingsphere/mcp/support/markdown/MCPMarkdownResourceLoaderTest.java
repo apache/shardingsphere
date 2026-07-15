@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.markdown;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -38,29 +40,29 @@ class MCPMarkdownResourceLoaderTest {
     private static final String MISSING_RESOURCE = "META-INF/shardingsphere-mcp/prompts/fixture-missing.md";
     
     @Test
-    void assertLoadRequired() {
-        assertThat(MCPMarkdownResourceLoader.loadRequired(TEMPLATE_RESOURCE, "fixture markdown"), is("Fixture template for {{database}}."));
+    void assertLoad() {
+        assertThat(MCPMarkdownResourceLoader.load(TEMPLATE_RESOURCE, "fixture markdown"), is("Fixture template for {{database}}."));
     }
     
     @Test
-    void assertLoadRequiredUsesFallbackClassLoader() {
+    void assertLoadUsesFallbackClassLoader() {
         assertThat(loadWithContextClassLoader(null, TEMPLATE_RESOURCE), is("Fixture template for {{database}}."));
     }
     
     @Test
-    void assertLoadRequiredPreservesAuthoredLeadingComment() {
+    void assertLoadPreservesAuthoredLeadingComment() {
         assertThat(loadWithContextClassLoader(new FixtureResourceClassLoader("fixture-authored-comment.md", "<!-- authored comment -->\nVisible content."), "fixture-authored-comment.md"),
                 is("<!-- authored comment -->\nVisible content."));
     }
     
     @Test
-    void assertLoadRequiredRejectsMissingResource() {
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPMarkdownResourceLoader.loadRequired(MISSING_RESOURCE, "fixture markdown"));
+    void assertLoadRejectsMissingResource() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPMarkdownResourceLoader.load(MISSING_RESOURCE, "fixture markdown"));
         assertThat(actual.getMessage(), is("MCP fixture markdown resource `META-INF/shardingsphere-mcp/prompts/fixture-missing.md` is not found."));
     }
     
     @Test
-    void assertLoadRequiredRejectsUnreadableResource() {
+    void assertLoadRejectsUnreadableResource() {
         IllegalStateException actual = assertThrows(IllegalStateException.class,
                 () -> loadWithContextClassLoader(new FixtureResourceClassLoader("fixture-unreadable.md"), "fixture-unreadable.md"));
         assertThat(actual.getMessage(), is("Failed to load MCP fixture markdown resource `fixture-unreadable.md`."));
@@ -68,8 +70,8 @@ class MCPMarkdownResourceLoaderTest {
     }
     
     @Test
-    void assertLoadRequiredRejectsBlankResource() {
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPMarkdownResourceLoader.loadRequired(BLANK_RESOURCE, "fixture markdown"));
+    void assertLoadRejectsBlankResource() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPMarkdownResourceLoader.load(BLANK_RESOURCE, "fixture markdown"));
         assertThat(actual.getMessage(), is("MCP fixture markdown resource `META-INF/shardingsphere-mcp/prompts/fixture-blank.md` is blank."));
     }
     
@@ -78,12 +80,13 @@ class MCPMarkdownResourceLoaderTest {
         ClassLoader originalClassLoader = currentThread.getContextClassLoader();
         try {
             currentThread.setContextClassLoader(classLoader);
-            return MCPMarkdownResourceLoader.loadRequired(resourceName, "fixture markdown");
+            return MCPMarkdownResourceLoader.load(resourceName, "fixture markdown");
         } finally {
             currentThread.setContextClassLoader(originalClassLoader);
         }
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class FixtureResourceClassLoader extends ClassLoader {
         
         private final String resourceName;
@@ -92,11 +95,6 @@ class MCPMarkdownResourceLoaderTest {
         
         private FixtureResourceClassLoader(final String resourceName) {
             this(resourceName, null);
-        }
-        
-        private FixtureResourceClassLoader(final String resourceName, final String content) {
-            this.resourceName = resourceName;
-            this.content = content;
         }
         
         @Override

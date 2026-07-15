@@ -83,7 +83,15 @@ class ShadowTest {
     }
     
     private void processSuccess() throws SQLException {
-        final Collection<Long> orderIds = insertData();
+        Collection<Long> orderIds = insertData();
+        assertInsertedData();
+        deleteData(orderIds);
+        assertThat(selectAll(), is(Collections.singletonList(new Order(1L, 0, 2, 2L, "INSERT_TEST"))));
+        assertTrue(orderItemRepository.selectAll().isEmpty());
+        assertTrue(addressRepository.selectAll().isEmpty());
+    }
+    
+    private void assertInsertedData() throws SQLException {
         assertThat(selectAll(), is(Arrays.asList(
                 new Order(1L, 0, 2, 2L, "INSERT_TEST"),
                 new Order(2L, 0, 4, 4L, "INSERT_TEST"),
@@ -108,10 +116,6 @@ class ShadowTest {
                 new OrderItem(10L, 5L, 10, "13800000001", "INSERT_TEST"))));
         assertThat(addressRepository.selectAll(),
                 is(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
-        deleteData(orderIds);
-        assertThat(selectAll(), is(Collections.singletonList(new Order(1L, 0, 2, 2L, "INSERT_TEST"))));
-        assertTrue(orderItemRepository.selectAll().isEmpty());
-        assertTrue(addressRepository.selectAll().isEmpty());
     }
     
     private Collection<Long> insertData() throws SQLException {

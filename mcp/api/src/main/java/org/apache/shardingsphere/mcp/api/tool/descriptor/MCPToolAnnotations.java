@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * MCP tool annotations.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MCPToolAnnotations {
     
@@ -36,4 +35,13 @@ public final class MCPToolAnnotations {
     private final boolean idempotentHint;
     
     private final boolean openWorldHint;
+    
+    @Builder
+    private MCPToolAnnotations(final String title, final boolean readOnlyHint, final boolean destructiveHint, final boolean idempotentHint, final boolean openWorldHint) {
+        this.title = title;
+        this.readOnlyHint = readOnlyHint;
+        this.destructiveHint = destructiveHint;
+        this.idempotentHint = idempotentHint;
+        this.openWorldHint = openWorldHint;
+    }
 }

@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -49,27 +50,36 @@ class ZookeeperTest {
     
     private TestShardingService testShardingService;
     
+    private TestingServer testingServer;
+    
     @BeforeEach
-    void beforeEach() {
+    void beforeEach() throws Exception {
         assertNull(System.getProperty(systemPropKeyPrefix + "server-lists"));
+        testingServer = new TestingServer();
     }
     
     @AfterEach
-    void afterEach() throws SQLException {
-        ResourceUtils.closeJdbcDataSource(logicDataSource);
+    void afterEach() throws SQLException, IOException {
         System.clearProperty(systemPropKeyPrefix + "server-lists");
+        try {
+            if (null != logicDataSource) {
+                ResourceUtils.closeJdbcDataSource(logicDataSource);
+            }
+        } finally {
+            if (null != testingServer) {
+                testingServer.close();
+            }
+        }
     }
     
     @Test
     void assertShardingInLocalTransactions() throws Exception {
-        try (TestingServer testingServer = new TestingServer()) {
-            String connectString = testingServer.getConnectString();
-            logicDataSource = createDataSource(connectString);
-            testShardingService = new TestShardingService(logicDataSource);
-            initEnvironment();
-            testShardingService.processSuccess();
-            testShardingService.cleanEnvironment();
-        }
+        String connectString = testingServer.getConnectString();
+        logicDataSource = createDataSource(connectString);
+        testShardingService = new TestShardingService(logicDataSource);
+        initEnvironment();
+        testShardingService.processSuccess();
+        testShardingService.cleanEnvironment();
     }
     
     /**

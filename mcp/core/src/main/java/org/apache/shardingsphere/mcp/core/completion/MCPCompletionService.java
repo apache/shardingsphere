@@ -17,21 +17,23 @@
 
 package org.apache.shardingsphere.mcp.core.completion;
 
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
+import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
+import org.apache.shardingsphere.mcp.support.protocol.MCPCompletionAction;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -55,9 +57,17 @@ public final class MCPCompletionService {
     
     private final Collection<MCPCompletionProvider<?>> completionProviders;
     
+    private final MCPCompletionRateLimiter completionRateLimiter;
+    
+    private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
+    
     public MCPCompletionService(final MCPRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
         completionProviders = MCPCompletionProviderLoader.load();
+        completionRateLimiter = new MCPCompletionRateLimiter();
+        MCPSessionManager sessionManager = runtimeContext.getSessionManager();
+        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
+        sessionManager.addSessionCloseListener(completionRateLimiter::releaseSession);
     }
     
     /**
@@ -72,6 +82,10 @@ public final class MCPCompletionService {
      */
     public MCPCompletionResult complete(final String sessionId, final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
                                         final Map<String, String> contextArguments) {
+        sessionExecutionCoordinator.executeWithSessionLock(sessionId, () -> {
+            completionRateLimiter.acquire(sessionId);
+            return null;
+        });
         validateDeclaredArgument(descriptor, argumentName);
         Map<String, String> actualContextArguments = new LinkedHashMap<>(contextArguments);
         MCPCompletionProviderResult providerResult = completeCandidates(sessionId, descriptor, argumentName, actualContextArguments);
@@ -87,7 +101,7 @@ public final class MCPCompletionService {
         }
         List<MCPCompletionCandidate> returnedCandidates = filteredCandidates.stream().limit(maxValues).toList();
         Map<String, Object> meta = createMeta(descriptor, argumentName, prefix, matchStrategy, actualContextArguments, inferredContextArguments, providerResult.getMissingContextArguments(),
-                providerResult.getGuidanceResourceUri(), candidates, filteredCandidates, returnedCandidates);
+                providerResult.getNearestResourceUri(), candidates, filteredCandidates, returnedCandidates);
         return new MCPCompletionResult(returnedCandidates.stream().map(MCPCompletionCandidate::getValue).toList(), filteredCandidates.size(), filteredCandidates.size() > returnedCandidates.size(),
                 meta);
     }
@@ -133,25 +147,23 @@ public final class MCPCompletionService {
     
     private MCPCompletionProviderResult completeCandidates(final String sessionId, final MCPCompletionTargetDescriptor descriptor, final String argumentName,
                                                            final Map<String, String> contextArguments) {
-        MCPCompletionRequestContext requestContext = new MCPCompletionRequestContext(sessionId, descriptor, argumentName, contextArguments);
+        MCPCompletionRequest request = new MCPCompletionRequest(descriptor, argumentName, contextArguments);
         for (MCPCompletionProvider<?> each : completionProviders) {
-            if (each.supports(requestContext)) {
-                try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, sessionId)) {
-                    return completeCandidates(requestScope, each, requestContext);
-                }
+            if (each.supports(request)) {
+                return completeCandidates(new MCPRequestScope(runtimeContext, sessionId), each, request);
             }
         }
         return MCPCompletionProviderResult.empty();
     }
     
-    private <T extends MCPHandlerContext> MCPCompletionProviderResult completeCandidates(final MCPRequestScope requestScope, final MCPCompletionProvider<T> provider,
-                                                                                         final MCPCompletionRequestContext requestContext) {
-        return provider.complete(provider.getContextType().cast(requestScope), requestContext);
+    private <T extends MCPRequestContext> MCPCompletionProviderResult completeCandidates(final MCPRequestScope requestScope, final MCPCompletionProvider<T> provider,
+                                                                                         final MCPCompletionRequest request) {
+        return provider.complete(provider.getContextType().cast(requestScope), request);
     }
     
     private Map<String, Object> createMeta(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix, final String matchStrategy,
                                            final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments, final Collection<String> missingContextArguments,
-                                           final String guidanceResourceUri, final Collection<MCPCompletionCandidate> candidates, final Collection<MCPCompletionCandidate> filteredCandidates,
+                                           final String nearestResourceUri, final Collection<MCPCompletionCandidate> candidates, final Collection<MCPCompletionCandidate> filteredCandidates,
                                            final Collection<MCPCompletionCandidate> returnedCandidates) {
         Map<String, Object> result = new LinkedHashMap<>(14, 1F);
         result.put(MCPShardingSphereMetadataKeys.RESPONSE_MODE, MCPResponseMode.LIST);
@@ -169,9 +181,9 @@ public final class MCPCompletionService {
         String diagnostic = createDiagnostic(candidates, filteredCandidates, missingContextArguments);
         result.put(MCPShardingSphereMetadataKeys.DIAGNOSTIC, diagnostic);
         if (!"ok".equals(diagnostic)) {
-            result.put(MCPShardingSphereMetadataKeys.RECOVERY, createRecovery(prefix, diagnostic, missingContextArguments, guidanceResourceUri));
+            result.put(MCPShardingSphereMetadataKeys.RECOVERY, createRecovery(prefix, diagnostic, missingContextArguments, nearestResourceUri));
         }
-        List<Map<String, Object>> nextActions = createNextActions(descriptor, argumentName, prefix, contextArguments, diagnostic, missingContextArguments, guidanceResourceUri);
+        List<Map<String, Object>> nextActions = createNextActions(descriptor, argumentName, prefix, contextArguments, diagnostic, missingContextArguments, nearestResourceUri);
         if (!nextActions.isEmpty()) {
             result.put(MCPShardingSphereMetadataKeys.NEXT_ACTIONS, nextActions);
         }
@@ -197,24 +209,24 @@ public final class MCPCompletionService {
     
     private List<Map<String, Object>> createNextActions(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
                                                         final Map<String, String> contextArguments, final String diagnostic, final Collection<String> missingContextArguments,
-                                                        final String guidanceResourceUri) {
+                                                        final String nearestResourceUri) {
         if ("missing_context".equals(diagnostic)) {
-            return guidanceResourceUri.isEmpty()
-                    ? List.of(createCompletionAction(descriptor, new ArrayList<>(missingContextArguments).get(0), "", contextArguments, missingContextArguments,
+            return nearestResourceUri.isEmpty()
+                    ? List.of(createCompletionAction(descriptor, missingContextArguments.iterator().next(), "", contextArguments, missingContextArguments,
                             "Complete or provide the missing context argument before retrying this completion."))
-                    : List.of(MCPNextActionUtils.readResource(guidanceResourceUri, "Read the nearest metadata resource before retrying this completion."));
+                    : List.of(MCPNextActionUtils.readResource(nearestResourceUri, "Read the nearest metadata resource before retrying this completion."));
         }
         if ("prefix_filtered_all_candidates".equals(diagnostic)) {
             return List.of(createCompletionAction(descriptor, argumentName, prefix, contextArguments, List.of(), "Retry completion with a shorter or empty prefix."));
         }
         if ("no_candidates".equals(diagnostic)) {
-            return List.of(MCPNextActionUtils.readResource(guidanceResourceUri.isEmpty() ? "shardingsphere://capabilities" : guidanceResourceUri,
+            return List.of(MCPNextActionUtils.readResource(nearestResourceUri.isEmpty() ? "shardingsphere://capabilities" : nearestResourceUri,
                     "Read the nearest metadata resource before choosing another argument source."));
         }
         return List.of();
     }
     
-    private Map<String, Object> createRecovery(final String prefix, final String diagnostic, final Collection<String> missingContextArguments, final String guidanceResourceUri) {
+    private Map<String, Object> createRecovery(final String prefix, final String diagnostic, final Collection<String> missingContextArguments, final String nearestResourceUri) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         String recoveryCategory = "missing_context".equals(diagnostic) ? "missing_context" : "empty_scope";
         result.put("response_mode", MCPResponseMode.RECOVERY);
@@ -227,16 +239,26 @@ public final class MCPCompletionService {
         if (!missingContextArguments.isEmpty()) {
             result.put("missing_fields", missingContextArguments);
         }
-        if (!guidanceResourceUri.isEmpty()) {
-            result.put("parent_resource_uri", guidanceResourceUri);
+        if (!nearestResourceUri.isEmpty()) {
+            result.put("parent_resource_uri", nearestResourceUri);
         }
         return result;
     }
     
     private Map<String, Object> createCompletionAction(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String argumentPrefix,
                                                        final Map<String, String> contextArguments, final Collection<String> missingContextArguments, final String reason) {
-        return MCPNextActionUtils.completeArgument(descriptor.getReferenceType(), descriptor.getReference(), argumentName, argumentPrefix, contextArguments, missingContextArguments,
-                descriptor.getReferenceType(), descriptor.getReference(), contextArguments, reason);
+        return MCPNextActionUtils.completeArgument(MCPCompletionAction.builder()
+                .referenceType(descriptor.getReferenceType())
+                .reference(descriptor.getReference())
+                .argumentName(argumentName)
+                .argumentPrefix(argumentPrefix)
+                .contextArguments(contextArguments)
+                .missingContextArguments(missingContextArguments)
+                .resumeTargetType(descriptor.getReferenceType())
+                .resumeTarget(descriptor.getReference())
+                .resumeArguments(contextArguments)
+                .reason(reason)
+                .build());
     }
     
     private String createDiagnostic(final Collection<MCPCompletionCandidate> candidates, final Collection<MCPCompletionCandidate> filteredCandidates,

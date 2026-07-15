@@ -43,9 +43,14 @@ class WorkflowContextSnapshotTest {
         originalSnapshot.getClarifiedIntent().getUnresolvedFields().add("schema");
         originalSnapshot.getClarifiedIntent().getInferredValues().put("requires_decrypt", false);
         originalSnapshot.getFeatureData().getAlgorithmProperties("primary").put("mode", "changed");
-        originalSnapshot.getInteractionPlan().getValidationStrategy().put("layers", new LinkedList<>(List.of("rule")));
+        originalSnapshot.getInteractionPlan().getValidationStrategy().put("layers", List.of("rule"));
         getStringList(originalSnapshot.getIssues().get(0).getDetails(), "missing_fields").add("schema");
         getStringList(originalSnapshot.getValidationReport().getMismatches().get(0), "layers").add("rule");
+        originalSnapshot.getAlgorithmCandidates().clear();
+        originalSnapshot.getPropertyRequirements().clear();
+        originalSnapshot.getDdlArtifacts().clear();
+        originalSnapshot.getRuleArtifacts().clear();
+        originalSnapshot.getIndexPlans().clear();
         assertThat(actualSnapshot.getRequest().getTable(), is("orders"));
         assertThat(actualSnapshot.getClarifiedIntent().getClarificationMessages(), is(List.of("provide schema")));
         assertTrue(actualSnapshot.getClarifiedIntent().getUnresolvedFields().isEmpty());
@@ -54,6 +59,11 @@ class WorkflowContextSnapshotTest {
         assertThat(actualSnapshot.getInteractionPlan().getValidationStrategy().get("layers"), is(List.of("ddl")));
         assertThat(actualSnapshot.getIssues().get(0).getDetails().get("missing_fields"), is(List.of("column")));
         assertThat(actualSnapshot.getValidationReport().getMismatches().get(0).get("layers"), is(List.of("ddl")));
+        assertThat(actualSnapshot.getAlgorithmCandidates().size(), is(1));
+        assertThat(actualSnapshot.getPropertyRequirements().size(), is(1));
+        assertThat(actualSnapshot.getDdlArtifacts().size(), is(1));
+        assertThat(actualSnapshot.getRuleArtifacts().size(), is(1));
+        assertThat(actualSnapshot.getIndexPlans().size(), is(1));
     }
     
     @Test
@@ -91,12 +101,13 @@ class WorkflowContextSnapshotTest {
         result.setFeatureData(featureData);
         InteractionPlan interactionPlan = new InteractionPlan();
         interactionPlan.setCurrentStep("review");
-        interactionPlan.getValidationStrategy().put("layers", new LinkedList<>(List.of("ddl")));
+        interactionPlan.getValidationStrategy().put("layers", List.of("ddl"));
         result.setInteractionPlan(interactionPlan);
         Map<String, Object> issueDetails = new LinkedHashMap<>(1, 1F);
         issueDetails.put("missing_fields", new LinkedList<>(List.of("column")));
         result.getIssues().add(new WorkflowIssue("code", "error", "stage", "message", "action", true, issueDetails));
-        result.getAlgorithmCandidates().add(new AlgorithmCandidate("primary", "AES", true, true, false, 90, "reason", ""));
+        result.getAlgorithmCandidates().add(AlgorithmCandidate.builder().algorithmRole("primary").algorithmType("AES")
+                .supportsDecrypt(true).supportsEquivalentFilter(true).supportsLike(false).recommendationScore(90).recommendationReason("reason").riskNotes("").build());
         result.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "key", true, true, "desc", ""));
         result.getDdlArtifacts().add(new DDLArtifact("ddl", "ALTER TABLE t ADD c VARCHAR(32)", 1));
         result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t"));

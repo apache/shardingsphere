@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.tcl.local.type;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
@@ -32,19 +30,12 @@ import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionEx
 /**
  * Set transaction proxy backend handler.
  */
+@RequiredArgsConstructor
 public final class SetTransactionProxyBackendHandler implements ProxyBackendHandler {
     
     private final SetTransactionStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
-    
-    private final DialectDatabaseMetaData dialectDatabaseMetaData;
-    
-    public SetTransactionProxyBackendHandler(final SetTransactionStatement sqlStatement, final ConnectionSession connectionSession) {
-        this.sqlStatement = sqlStatement;
-        this.connectionSession = connectionSession;
-        dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
-    }
     
     @Override
     public ResponseHeader execute() {
@@ -66,7 +57,6 @@ public final class SetTransactionProxyBackendHandler implements ProxyBackendHand
         if (!sqlStatement.getIsolationLevel().isPresent()) {
             return;
         }
-        connectionSession.setDefaultIsolationLevel(TransactionUtils.getTransactionIsolationLevel(dialectDatabaseMetaData.getTransactionOption().getDefaultIsolationLevel()));
         connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().get());
     }
 }

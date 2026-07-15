@@ -99,8 +99,8 @@ class LLMChatModelClientTest {
                     createToolDefinitions(), "required", true);
             assertThat(actual.getContent(), is("done"));
             assertThat(actual.getToolCalls().size(), is(1));
-            assertThat(actual.getToolCalls().get(0).getName(), is("mcp_read_resource"));
-            assertCompletePayload(readPayload(actualBodies.get(0)));
+            assertThat(actual.getToolCalls().getFirst().getName(), is("mcp_read_resource"));
+            assertCompletePayload(readPayload(actualBodies.getFirst()));
         } finally {
             server.stop(0);
         }
@@ -161,9 +161,22 @@ class LLMChatModelClientTest {
     }
     
     private LLME2EConfiguration createConfiguration(final String baseUrl, final int readyTimeoutSeconds) {
-        return new LLME2EConfiguration(baseUrl, "openai-compatible", REQUIRED_MODEL, "mcp-llm-score", readyTimeoutSeconds, 30, 10,
-                Path.of("target/llm-e2e"), "run-id", RuntimeMode.DOCKER, "llama.cpp", "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server",
-                "test-base-server-image-digest", MODEL_METADATA);
+        return LLME2EConfiguration.builder()
+                .baseUrl(baseUrl)
+                .modelProvider("openai-compatible")
+                .modelName(REQUIRED_MODEL)
+                .apiKey("mcp-llm-score")
+                .readyTimeoutSeconds(readyTimeoutSeconds)
+                .requestTimeoutSeconds(30)
+                .maxTurns(10)
+                .artifactRoot(Path.of("target/llm-e2e"))
+                .runId("run-id")
+                .runtimeMode(RuntimeMode.DOCKER)
+                .serverImage("apache/shardingsphere-mcp-llm-runtime:local")
+                .baseServerImage("ghcr.io/ggml-org/llama.cpp:server-b9191")
+                .baseServerImageDigest("test-base-server-image-digest")
+                .modelMetadata(MODEL_METADATA)
+                .build();
     }
     
     private HttpServer startModelServer(final String modelName, final List<String> requestBodies) throws IOException {

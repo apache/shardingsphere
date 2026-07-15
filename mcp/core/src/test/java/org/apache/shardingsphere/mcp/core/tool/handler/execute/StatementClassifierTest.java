@@ -32,7 +32,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StatementClassifierTest {
     
@@ -57,12 +59,11 @@ class StatementClassifierTest {
         assertThat(actualException.getMessage(), is(expectedMessage));
     }
     
-    @Test
-    void assertClassifyExplainAnalyzeInnerStatementClass() {
-        ClassificationResult actualResult = statementClassifier.classify("EXPLAIN ANALYZE UPDATE foo_orders SET status = 'DONE'");
-        assertThat(actualResult.getStatementClass(), is(SupportedMCPStatement.EXPLAIN_ANALYZE));
-        assertThat(actualResult.getAnalyzedStatementClass().orElseThrow(), is(SupportedMCPStatement.DML));
-        assertThat(actualResult.getTargetObjectName().orElse(""), is("foo_orders"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertClassifyMetadataStatementTypeCases")
+    void assertClassifyMetadataStatementType(final String name, final String sql, final String expectedStatementType) {
+        MetadataIntrospectionSQLStatementException actual = assertThrows(MetadataIntrospectionSQLStatementException.class, () -> statementClassifier.classify(sql));
+        assertThat(actual.getStatementType(), is(expectedStatementType));
     }
     
     @Test
@@ -76,6 +77,21 @@ class StatementClassifierTest {
     void assertClassifyDMLReferencedObjectNames() {
         ClassificationResult actualResult = statementClassifier.classify("UPDATE logic_db.foo_orders SET status = 'DONE' FROM other_db.foo_order_items");
         assertThat(actualResult.getReferencedObjectNames(), contains("logic_db.foo_orders", "other_db.foo_order_items"));
+    }
+    
+    @Test
+    void assertClassifyRuleDistSQLSideEffectScope() {
+        ClassificationResult actualResult = statementClassifier.classify(
+                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), KEY_GENERATE_STRATEGY(COLUMN=id, TYPE(NAME='snowflake')))");
+        assertTrue(actualResult.isRuleDistSQL());
+        assertThat(actualResult.getSideEffectScope(), is("rule-metadata"));
+    }
+    
+    @Test
+    void assertClassifyPhysicalDDLSideEffectScope() {
+        ClassificationResult actualResult = statementClassifier.classify("CREATE TABLE foo_orders(order_id BIGINT)");
+        assertFalse(actualResult.isRuleDistSQL());
+        assertThat(actualResult.getSideEffectScope(), is("physical-structure"));
     }
     
     @Test
@@ -174,8 +190,8 @@ class StatementClassifierTest {
                         "RELEASE SAVEPOINT foo_sp_1", "", "foo_sp_1"),
                 Arguments.of("rollback to savepoint", "ROLLBACK TO SAVEPOINT foo_sp_1", SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO SAVEPOINT",
                         "ROLLBACK TO SAVEPOINT foo_sp_1", "", "foo_sp_1"),
-                Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM foo_orders", SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE",
-                        "EXPLAIN ANALYZE SELECT * FROM foo_orders", "foo_orders", ""));
+                Arguments.of("rollback to savepoint name without optional keyword", "ROLLBACK TO foo_sp_1", SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO",
+                        "ROLLBACK TO foo_sp_1", "", "foo_sp_1"));
     }
     
     private static Stream<Arguments> assertClassifyReferencedObjectNamesWithObjectListsCases() {
@@ -240,13 +256,26 @@ class StatementClassifierTest {
                         new String[]{"other_db.foo_refresh_orders"}));
     }
     
+    private static Stream<Arguments> assertClassifyMetadataStatementTypeCases() {
+        return Stream.of(
+                Arguments.of("show storage units", "SHOW STORAGE UNITS FROM logic_db", "SHOW STORAGE UNITS"),
+                Arguments.of("show rules used storage unit", "SHOW RULES USED STORAGE UNIT write_ds FROM logic_db", "SHOW RULES USED STORAGE UNIT"),
+                Arguments.of("show single tables", "SHOW SINGLE TABLES FROM logic_db", "SHOW SINGLE TABLES"),
+                Arguments.of("show single table", "SHOW SINGLE TABLE t_user FROM logic_db", "SHOW SINGLE TABLE"),
+                Arguments.of("show default single table storage unit", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM logic_db", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT"));
+    }
+    
     private static Stream<Arguments> assertClassifyWithInvalidStatementCases() {
         return Stream.of(
                 Arguments.of("blank sql", "   ", IllegalArgumentException.class, "sql cannot be empty."),
                 Arguments.of("multiple statements", "SELECT 1; SELECT 2", MCPMultipleSQLStatementsException.class, "Only one SQL statement is allowed."),
                 Arguments.of("savepoint without name", "SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
+                Arguments.of("savepoint with extra token", "SAVEPOINT foo_sp_1 extra", IllegalArgumentException.class, "Savepoint name is required."),
                 Arguments.of("release savepoint without name", "RELEASE SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
+                Arguments.of("release savepoint with extra token", "RELEASE SAVEPOINT foo_sp_1 extra", IllegalArgumentException.class, "Savepoint name is required."),
+                Arguments.of("rollback to without name", "ROLLBACK TO", IllegalArgumentException.class, "Savepoint name is required."),
                 Arguments.of("rollback to savepoint without name", "ROLLBACK TO SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
+                Arguments.of("rollback to savepoint with extra token", "ROLLBACK TO SAVEPOINT foo_sp_1 extra", IllegalArgumentException.class, "Savepoint name is required."),
                 Arguments.of("banned use", "USE foo_db", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned set", "SET search_path public", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned copy", "COPY foo_orders FROM '/tmp/foo.csv'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
@@ -260,6 +289,8 @@ class StatementClassifierTest {
                 Arguments.of("banned with select into table", "WITH foo_result AS (SELECT * FROM foo_orders) SELECT * INTO bar_orders_archive FROM foo_result",
                         MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned mysql executable comment", "SELECT * FROM logic_db.foo_orders /*!50000 JOIN other_db.foo_order_items ON 1 = 1 */",
+                        MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned mariadb executable comment", "SELECT * FROM logic_db.foo_orders /*M!100000 JOIN other_db.foo_order_items ON 1 = 1 */",
                         MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned nextval function", "SELECT nextval('foo_seq')", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned setval function", "SELECT pg_catalog.setval('foo_seq', 1)", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
@@ -295,8 +326,9 @@ class StatementClassifierTest {
                         "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."),
                 Arguments.of("locking read lock in share mode", "SELECT * FROM foo_orders LOCK IN SHARE MODE", MCPLockingReadStatementException.class,
                         "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."),
-                Arguments.of("explain analyze locking read", "EXPLAIN ANALYZE SELECT * FROM foo_orders FOR SHARE", MCPLockingReadStatementException.class,
-                        "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract."),
+                Arguments.of("explain query", "EXPLAIN SELECT * FROM foo_orders", MCPUnsupportedSQLStatementException.class, "Statement is not supported by the MCP contract."),
+                Arguments.of("explain locking read", "EXPLAIN SELECT * FROM foo_orders FOR SHARE", MCPUnsupportedSQLStatementException.class, "Statement is not supported by the MCP contract."),
+                Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM foo_orders", MCPUnsupportedSQLStatementException.class, "Statement is not supported by the MCP contract."),
                 Arguments.of("metadata show", "SHOW", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
                 Arguments.of("metadata show tables", "SHOW TABLES", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
                 Arguments.of("metadata describe", "DESCRIBE", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),

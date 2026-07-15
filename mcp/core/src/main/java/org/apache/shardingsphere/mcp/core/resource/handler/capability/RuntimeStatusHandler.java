@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -41,13 +40,13 @@ import java.util.Optional;
 /**
  * Handler for runtime status resource URI.
  */
-public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
     
     private static final String URI_PATTERN = "shardingsphere://runtime";
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
@@ -56,25 +55,41 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext handlerContext, final MCPUriVariables uriVariables) {
-        List<MCPDatabaseMetadata> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
+    public MCPResponse handle(final MCPDatabaseRequestContext handlerContext, final MCPUriVariables uriVariables) {
+        List<RuntimeDatabaseProfile> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
         boolean hasConfiguredDatabase = !databases.isEmpty();
-        Map<String, Object> result = new LinkedHashMap<>(14, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(15, 1F);
         result.put("response_mode", MCPResponseMode.RUNTIME);
+        result.put(MCPPayloadFieldNames.SUMMARY, createSummary(hasConfiguredDatabase, databases.size()));
         result.put("server_status", hasConfiguredDatabase ? "ready" : "configuration_required");
         result.put("status", hasConfiguredDatabase ? "available" : "configuration_required");
         result.put("transport", handlerContext.getActiveTransport());
         result.put("active_transport", handlerContext.getActiveTransport());
+        result.put("transport_security_summary", createTransportSecuritySummary(handlerContext.getActiveTransport()));
         result.put("configured_database_count", databases.size());
         result.put("databases", databases.stream().map(each -> createDatabaseStatus(handlerContext, each)).toList());
         result.put("readiness", createReadiness(hasConfiguredDatabase));
         result.put("runtime_protection", MCPRuntimeProtectionPolicy.createRuntimeProtectionPayload());
         result.put("redaction_summary", Map.of("categories", List.of(), "redacted_count", 0, "marker", "******"));
         result.put("diagnostics", createDiagnostics(hasConfiguredDatabase));
-        result.put("capability_fingerprint", MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint());
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(hasConfiguredDatabase));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActions(hasConfiguredDatabase));
         return new MCPMapResponse(result);
+    }
+    
+    private String createSummary(final boolean hasConfiguredDatabase, final int configuredDatabaseCount) {
+        return hasConfiguredDatabase
+                ? String.format("Runtime is ready with %d configured logical database(s).", configuredDatabaseCount)
+                : "Runtime requires at least one configured logical database before metadata discovery or SQL execution.";
+    }
+    
+    private Map<String, Object> createTransportSecuritySummary(final String activeTransport) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("transport", activeTransport);
+        result.put("authentication", "http".equalsIgnoreCase(activeTransport) ? "not_enabled_by_mcp_transport" : "local_client_process");
+        result.put("recommended_exposure", "http".equalsIgnoreCase(activeTransport) ? "loopback_or_trusted_gateway" : "local_stdio_session");
+        result.put("model_action", "Do not request or echo JDBC URLs, credentials, raw environment variables, or stack traces.");
+        return result;
     }
     
     private Map<String, Object> createReadiness(final boolean hasConfiguredDatabase) {
@@ -106,7 +121,8 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
                 RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT,
                 RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION,
                 RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE,
-                RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED);
+                RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED,
+                RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE);
     }
     
     private List<Map<String, Object>> createDiagnosticOperatorActions() {
@@ -115,9 +131,10 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED, "Check runtime database credentials outside MCP."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED, "Check metadata and SQL privileges for the configured runtime database account."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT, "Check database reachability and timeout settings."),
-                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION, "Fix runtimeDatabases databaseType, driver, or binding configuration."),
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION, "Fix runtimeDatabases JDBC URL, driver, or binding configuration."),
                 createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE, "Check database service availability and network access."),
-                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED, "Inspect runtime database connection settings outside MCP."));
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED, "Inspect runtime database connection settings outside MCP."),
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_NOT_VISIBLE, "Check the configured logical database name and account visibility outside MCP."));
     }
     
     private Map<String, Object> createDiagnosticOperatorAction(final String category, final String operatorAction) {
@@ -139,21 +156,21 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     }
     
     private List<Map<String, Object>> createNextActions(final boolean hasConfiguredDatabase) {
-        Map<String, Object> capabilityAction = MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read the full capability catalog before choosing tools.");
         if (hasConfiguredDatabase) {
-            return List.of();
+            return List.of(MCPNextActionUtils.readResource("shardingsphere://databases", "Read logical databases before choosing a database scope."));
         }
+        Map<String, Object> capabilityAction = MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read the full capability catalog before choosing tools.");
         return MCPNextActionUtils.ordered(capabilityAction, MCPNextActionUtils.dependsOn(MCPNextActionUtils.askUser(
                 "Ask the operator to configure at least one runtimeDatabases entry before metadata discovery or SQL execution.", List.of("runtimeDatabases")), 1));
     }
     
-    private Map<String, Object> createDatabaseStatus(final MCPDatabaseHandlerContext handlerContext, final MCPDatabaseMetadata database) {
+    private Map<String, Object> createDatabaseStatus(final MCPDatabaseRequestContext handlerContext, final RuntimeDatabaseProfile database) {
         Optional<MCPDatabaseCapability> capability = handlerContext.getCapabilityFacade().provide(database.getDatabase());
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("database", database.getDatabase());
         result.put("database_type", database.getDatabaseType());
         result.put("driver_category", database.getDatabaseType().toLowerCase());
-        result.put("schema_count", database.getSchemas().size());
+        result.put("schema_count", 0);
         result.put("metadata_visibility", "ready");
         result.put("capabilities", capability.map(this::createCapabilityStatus).orElseGet(this::createUnavailableCapabilityStatus));
         result.put("capability_visibility", capability.isPresent() ? "ready" : "unavailable");
@@ -166,7 +183,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     private Map<String, Object> createCapabilityStatus(final MCPDatabaseCapability capability) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("available", true);
-        result.put("supports_explain_analyze", capability.isSupportsExplainAnalyze());
+        result.put("supports_explain", capability.supportsExplain());
         result.put("supported_statement_classes", capability.getSupportedStatementClasses().stream().map(Enum::name).toList());
         result.put("supported_metadata_object_types", capability.getSupportedMetadataObjectTypes().stream().map(Enum::name).toList());
         return result;

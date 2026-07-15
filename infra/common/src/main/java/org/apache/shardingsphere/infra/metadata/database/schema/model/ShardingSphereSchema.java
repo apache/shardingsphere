@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -47,17 +46,15 @@ public final class ShardingSphereSchema {
     @Getter
     private final DatabaseType protocolType;
     
-    @Getter(AccessLevel.NONE)
     private DatabaseIdentifierContext identifierContext;
     
-    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereTable> tableIndex;
     
-    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereTable> logicalTableIndex;
     
-    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereView> viewIndex;
+    
+    private IdentifierIndex<ShardingSphereSequence> sequenceIndex;
     
     /**
      * Construct schema with the temporary default identifier context.
@@ -74,8 +71,10 @@ public final class ShardingSphereSchema {
         tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
         logicalTableIndex = null;
         viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
+        sequenceIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.SEQUENCE);
         tableIndex.rebuild(Collections.emptyMap());
         viewIndex.rebuild(Collections.emptyMap());
+        sequenceIndex.rebuild(Collections.emptyMap());
     }
     
     /**
@@ -89,12 +88,29 @@ public final class ShardingSphereSchema {
      * @param views views
      */
     public ShardingSphereSchema(final String name, final DatabaseType protocolType, final Collection<ShardingSphereTable> tables, final Collection<ShardingSphereView> views) {
+        this(name, protocolType, tables, views, Collections.emptyList());
+    }
+    
+    /**
+     * Construct schema with tables, views and sequences by using the temporary default identifier context.
+     *
+     * <p>TODO(haoran): Replace this fallback with explicit identifier context injection after all schema creation paths migrate.</p>
+     *
+     * @param name schema name
+     * @param protocolType protocol type
+     * @param tables tables
+     * @param views views
+     * @param sequences sequences
+     */
+    public ShardingSphereSchema(final String name, final DatabaseType protocolType, final Collection<ShardingSphereTable> tables,
+                                final Collection<ShardingSphereView> views, final Collection<ShardingSphereSequence> sequences) {
         this(name, protocolType);
         Map<String, ShardingSphereTable> tableMap = createTableMap(tables);
         Map<String, ShardingSphereView> viewMap = createViewMap(views);
         tableMap.values().forEach(this::refreshTableIdentifierContext);
         tableIndex.rebuild(tableMap);
         viewIndex.rebuild(viewMap);
+        sequenceIndex.rebuild(createSequenceMap(sequences));
     }
     
     /**
@@ -182,6 +198,12 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
+        if (null != tableIndex.remove(tableName)) {
+            if (null != logicalTableIndex) {
+                logicalTableIndex.remove(tableName);
+            }
+            return;
+        }
         Optional<ShardingSphereTable> table = findTable(new IdentifierValue(tableName, QuoteCharacter.NONE));
         if (table.isPresent()) {
             tableIndex.remove(table.get().getName());
@@ -265,6 +287,9 @@ public final class ShardingSphereSchema {
      * @param viewName view name
      */
     public void removeView(final String viewName) {
+        if (null != viewIndex.remove(viewName)) {
+            return;
+        }
         ShardingSphereView view = getView(viewName);
         if (null == view) {
             return;
@@ -273,24 +298,105 @@ public final class ShardingSphereSchema {
     }
     
     /**
+     * Get all sequences.
+     *
+     * @return all sequences
+     */
+    public Collection<ShardingSphereSequence> getAllSequences() {
+        return sequenceIndex.getAll();
+    }
+    
+    /**
+     * Judge whether contains sequence.
+     *
+     * @param sequenceName sequence name
+     * @return contains sequence or not
+     */
+    public boolean containsSequence(final String sequenceName) {
+        return containsSequence(new IdentifierValue(sequenceName, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Judge whether contains sequence.
+     *
+     * @param sequenceName sequence name
+     * @return contains sequence or not
+     */
+    private boolean containsSequence(final IdentifierValue sequenceName) {
+        return findSequence(sequenceName).isPresent();
+    }
+    
+    /**
+     * Get sequence.
+     *
+     * @param sequenceName sequence name
+     * @return sequence
+     */
+    public ShardingSphereSequence getSequence(final String sequenceName) {
+        return getSequence(new IdentifierValue(sequenceName, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Get sequence.
+     *
+     * @param sequenceName sequence name
+     * @return sequence
+     */
+    private ShardingSphereSequence getSequence(final IdentifierValue sequenceName) {
+        return findSequence(sequenceName).orElse(null);
+    }
+    
+    private Optional<ShardingSphereSequence> findSequence(final IdentifierValue sequenceName) {
+        return sequenceIndex.find(sequenceName);
+    }
+    
+    /**
+     * Add sequence.
+     *
+     * @param sequence sequence
+     */
+    public void putSequence(final ShardingSphereSequence sequence) {
+        sequenceIndex.put(sequence.getName(), sequence);
+    }
+    
+    /**
+     * Remove sequence.
+     *
+     * @param sequenceName sequence name
+     */
+    public void removeSequence(final String sequenceName) {
+        if (null != sequenceIndex.remove(sequenceName)) {
+            return;
+        }
+        ShardingSphereSequence sequence = getSequence(sequenceName);
+        if (null == sequence) {
+            return;
+        }
+        sequenceIndex.remove(sequence.getName());
+    }
+    
+    /**
      * Refresh shared database identifier context.
      *
      * @param identifierContext database identifier context
      */
     public void refreshIdentifierContext(final DatabaseIdentifierContext identifierContext) {
-        final Collection<ShardingSphereTable> tables = new LinkedList<>(tableIndex.getAll());
-        final Collection<ShardingSphereView> views = new LinkedList<>(viewIndex.getAll());
         this.identifierContext = identifierContext;
+        Collection<ShardingSphereTable> tables = new LinkedList<>(tableIndex.getAll());
         tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
         logicalTableIndex = createLogicalTableIndex(identifierContext);
-        viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
         tables.forEach(this::refreshTableIdentifierContext);
         Map<String, ShardingSphereTable> tableMap = createTableMap(tables);
         tableIndex.rebuild(tableMap);
         if (null != logicalTableIndex) {
             logicalTableIndex.rebuild(tableMap);
         }
+        Collection<ShardingSphereView> views = new LinkedList<>(viewIndex.getAll());
+        viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
         viewIndex.rebuild(createViewMap(views));
+        Collection<ShardingSphereSequence> sequences = new LinkedList<>(sequenceIndex.getAll());
+        sequenceIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.SEQUENCE);
+        sequenceIndex.rebuild(createSequenceMap(sequences));
     }
     
     /**
@@ -350,7 +456,7 @@ public final class ShardingSphereSchema {
      * @return empty schema or not
      */
     public boolean isEmpty() {
-        return tableIndex.isEmpty() && viewIndex.isEmpty();
+        return tableIndex.isEmpty() && viewIndex.isEmpty() && sequenceIndex.isEmpty();
     }
     
     private void refreshTableIdentifierContext(final ShardingSphereTable table) {
@@ -365,6 +471,11 @@ public final class ShardingSphereSchema {
     private Map<String, ShardingSphereView> createViewMap(final Collection<ShardingSphereView> views) {
         return views.stream().collect(Collectors.toMap(ShardingSphereView::getName, each -> each, (oldValue, currentValue) -> currentValue,
                 () -> new LinkedHashMap<>(views.size(), 1F)));
+    }
+    
+    private Map<String, ShardingSphereSequence> createSequenceMap(final Collection<ShardingSphereSequence> sequences) {
+        return sequences.stream().collect(Collectors.toMap(ShardingSphereSequence::getName, each -> each, (oldValue, currentValue) -> currentValue,
+                () -> new LinkedHashMap<>(sequences.size(), 1F)));
     }
     
     private IdentifierIndex<ShardingSphereTable> createLogicalTableIndex(final DatabaseIdentifierContext context) {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
@@ -31,11 +32,23 @@ public final class EncryptFeatureDefinition {
     
     public static final String PLAN_PROMPT_NAME = "plan_encrypt_rule";
     
-    public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf("encrypt.rule");
+    public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.ENCRYPT_RULE);
     
     public static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/encrypt/algorithms";
     
     public static final String RULES_RESOURCE_URI = "shardingsphere://features/encrypt/databases/{database}/rules";
     
     public static final String RULE_RESOURCE_URI = "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules";
+    
+    public static final String ALGORITHM_ROLE_PRIMARY = "primary";
+    
+    public static final String ALGORITHM_ROLE_ASSISTED_QUERY = "assisted_query";
+    
+    public static final String ALGORITHM_ROLE_LIKE_QUERY = "like_query";
+    
+    public static final String ALGORITHM_CAPABILITY_DECRYPT = "supports_decrypt";
+    
+    public static final String ALGORITHM_CAPABILITY_EQUIVALENT_FILTER = "supports_equivalent_filter";
+    
+    public static final String ALGORITHM_CAPABILITY_LIKE = "supports_like";
 }

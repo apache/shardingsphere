@@ -152,6 +152,34 @@ rules:
           likeQuery:
             name: user_telephone_like
             encryptorName: rewrite_it_like_encryptor_fixture
+    ScrapReason:
+      columns:
+        Remark:
+          cipher:
+            name: remark_cipher
+            encryptorName: rewrite_normal_fixture
+    StateRegion:
+      columns:
+        CountryRegionName:
+          cipher:
+            name: country_region_name_cipher
+            encryptorName: rewrite_normal_fixture
+    vStateProvinceCountryRegion:
+      columns:
+        CountryRegionName:
+          cipher:
+            name: country_region_name_cipher
+            encryptorName: rewrite_normal_fixture
+    SalesPerson:
+      columns:
+        Bonus:
+          cipher:
+            name: bonus_cipher
+            encryptorName: rewrite_normal_fixture
+        CommissionPct:
+          cipher:
+            name: commission_pct_cipher
+            encryptorName: rewrite_normal_fixture
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE

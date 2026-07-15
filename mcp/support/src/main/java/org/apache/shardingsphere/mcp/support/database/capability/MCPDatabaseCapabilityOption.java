@@ -27,54 +27,11 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 public interface MCPDatabaseCapabilityOption extends TypedSPI {
     
     /**
-     * Get transaction capability.
+     * Judge whether MCP can execute a single database-native EXPLAIN statement and read its result set.
      *
-     * @return transaction capability
+     * @return whether MCP EXPLAIN execution is supported
      */
-    TransactionCapability getTransactionCapability();
-    
-    /**
-     * Judge whether index metadata is supported.
-     *
-     * @return whether index metadata is supported
-     */
-    boolean isIndexSupported();
-    
-    /**
-     * Get default schema semantics.
-     *
-     * @return default schema semantics
-     */
-    SchemaSemantics getDefaultSchemaSemantics();
-    
-    /**
-     * Get execution-time schema semantics.
-     *
-     * @return execution-time schema semantics
-     */
-    SchemaExecutionSemantics getSchemaExecutionSemantics();
-    
-    /**
-     * Judge whether cross-schema query is supported.
-     *
-     * @return whether cross-schema query is supported
-     */
-    boolean isCrossSchemaQuerySupported();
-    
-    /**
-     * Judge whether explain analyze is supported for database version.
-     *
-     * @param databaseVersion database version
-     * @return whether explain analyze is supported
-     */
-    boolean isExplainAnalyzeSupported(String databaseVersion);
-    
-    /**
-     * Judge whether sequence metadata is supported.
-     *
-     * @return whether sequence metadata is supported
-     */
-    boolean isSequenceSupported();
+    boolean isExplainSupported();
     
     @Override
     String getType();

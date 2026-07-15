@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.join.Oute
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.multiset.MultisetExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -180,6 +181,20 @@ public final class ExpressionExtractor {
             }
             if (each instanceof CaseWhenExpression) {
                 extractParameterMarkerInCaseWhenExpression(segments, (CaseWhenExpression) each);
+            }
+            if (each instanceof SubqueryExpressionSegment) {
+                extractParameterMarkerExpressions(segments, ((SubqueryExpressionSegment) each).getSubquery());
+            }
+            if (each instanceof SubquerySegment) {
+                extractParameterMarkerExpressions(segments, (SubquerySegment) each);
+            }
+        }
+    }
+    
+    private static void extractParameterMarkerExpressions(final List<ParameterMarkerExpressionSegment> segments, final SubquerySegment subquerySegment) {
+        for (ParameterMarkerSegment each : subquerySegment.getSelect().getParameterMarkers()) {
+            if (each instanceof ParameterMarkerExpressionSegment) {
+                segments.add((ParameterMarkerExpressionSegment) each);
             }
         }
     }

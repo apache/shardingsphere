@@ -26,7 +26,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   write_db_shadow:
     url: jdbc:mysql://mysql.readwrite_splitting_and_shadow.host:3306/write_db_shadow?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
@@ -36,7 +36,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   read_0:
     url: jdbc:mysql://mysql.readwrite_splitting_and_shadow.host:3306/read_0?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
@@ -46,7 +46,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   read_1:
     url: jdbc:mysql://mysql.readwrite_splitting_and_shadow.host:3306/read_1?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
@@ -56,7 +56,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
     
 rules:

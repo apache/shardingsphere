@@ -27,10 +27,11 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.database.option.SQLServerFunctionOption;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -56,12 +57,12 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public DialectSchemaOption getSchemaOption() {
-        return new DefaultSchemaOption(false, "dbo");
+        return new DefaultSchemaOption(false, "dbo", DialectSchemaSemantics.NATIVE_SCHEMA);
     }
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false,
+        return new DialectTransactionOption(false, false, false, false, true, false, false,
                 Collections.singleton("com.microsoft.sqlserver.jdbc.SQLServerXADataSource"));
     }
     
@@ -76,8 +77,14 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
+    public Optional<DialectSequenceOption> getSequenceOption() {
+        return Optional.of(new DialectSequenceOption(
+                "SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id"));
+    }
+    
+    @Override
     public Optional<DialectAlterTableOption> getAlterTableOption() {
-        return Optional.of(new DialectAlterTableOption(false, false, false, new DialectAddColumnOption("ADD", "")));
+        return Optional.of(new DialectAlterTableOption(false, false, false, new DialectAddColumnOption("")));
     }
     
     @Override

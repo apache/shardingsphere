@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
@@ -50,9 +51,9 @@ class WorkflowArtifactPayloadUtilsTest {
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS)).size(), is(1));
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN)).size(), is(1));
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).size(), is(1));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).get(0)).get("sql"),
+        assertThat(((Map<?, ?>) ((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).getFirst()).get("sql"),
                 is("CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='******'))"));
-        Map<?, ?> actualRedaction = (Map<?, ?>) ((Map<?, ?>) ((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).get(0)).get("redaction");
+        Map<?, ?> actualRedaction = (Map<?, ?>) ((Map<?, ?>) ((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).getFirst()).get("redaction");
         assertThat(actualRedaction.get("marker"), is("******"));
         assertThat(actualRedaction.get("redacted_count"), is(1));
         assertThat(actualRedaction.get("redacted_properties"), is(List.of("primary.aes-key-value")));
@@ -71,6 +72,21 @@ class WorkflowArtifactPayloadUtilsTest {
         assertFalse(actual.containsKey(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS));
         assertFalse(actual.containsKey(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN));
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).size(), is(1));
+        assertTrue(WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot));
+    }
+    
+    @Test
+    void assertRuleWorkflowWithFeatureStateIsRuleDistSQLOnly() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.setFeatureData(new TestWorkflowFeatureData());
+        assertTrue(WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot));
+    }
+    
+    @Test
+    void assertRuleWorkflowWithoutPhysicalArtifactsIsRuleDistSQLOnly() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         assertTrue(WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot));
     }
     
@@ -105,5 +121,18 @@ class WorkflowArtifactPayloadUtilsTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setWorkflowKind(WorkflowKind.valueOf(workflowKind));
         return WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot);
+    }
+    
+    private static final class TestWorkflowFeatureData implements WorkflowFeatureData {
+        
+        @Override
+        public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+            return Map.of();
+        }
+        
+        @Override
+        public WorkflowFeatureData copy() {
+            return new TestWorkflowFeatureData();
+        }
     }
 }

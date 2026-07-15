@@ -9,7 +9,7 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 - Use this page when you want to connect a remote ShardingSphere-MCP server directly in the ChatGPT web product without writing backend integration code.
 - Use this integration when ChatGPT conversations should select a remote MCP app and directly call ShardingSphere-MCP tools for metadata queries, controlled queries, rule planning, or preflight validation.
-- After integration, ChatGPT can inspect logic databases, inspect table structures, or call `database_gateway_validate_proxy_connectivity` for preflight validation against configured runtime databases.
+- After integration, ChatGPT can inspect logic databases, inspect table structures, or call `database_gateway_validate_runtime_database` for preflight validation against configured runtime databases.
 
 ## Prerequisites
 
@@ -45,9 +45,9 @@ Recognition succeeds when:
 Invocation succeeds when:
 
 - Start with a minimal validation task such as:
-  - Show the tables in `<logic-database>`.
+  - Show the tables in `logic_db`.
   - Show columns and indexes for the `orders` table.
-  - Call `database_gateway_validate_proxy_connectivity` for a configured runtime database.
+  - Call `database_gateway_validate_runtime_database` for a configured runtime database.
 - If ChatGPT recognizes the app and can invoke its imported tools, the integration is working.
 
 If the integration fails, check these items first:

@@ -49,6 +49,9 @@ STDIO 示例：
 | `shardingsphere://capabilities`                      | 运行时数据库、连接目标、功能插件和副作用边界。      | 判断当前 MCP Server 可用于哪些数据库任务。 |
 | `shardingsphere://databases/{database}/capabilities` | 指定运行时数据库的 SQL、事务、模式和元数据对象能力。 | 判断某个数据库的可用操作和限制。            |
 
+当 client 无法确定 database、schema、table、column、algorithm、storage unit 或 workflow `plan_id` 时，应一次只针对一个参数调用 `completion/complete`。
+如果 completion 返回缺少上下文或没有候选值，应遵循返回 meta 中的 `next_actions`；这些动作通常会指向重试补全前需要读取的最近 resource 或 resource template。
+
 ## 资源
 
 | 资源 URI 或模板                                                                               | 用途                                                           |
@@ -74,13 +77,16 @@ STDIO 示例：
 | `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}`   | 读取一个视图列的详情。                                                  |
 | `shardingsphere://workflows/{plan_id}`                                                   | 查看当前治理变更计划、补问信息、变更产物和下一步动作。                                  |
 
+Workflow resources 和 workflow tools 会包含简短的 `summary` 以及结构化 `next_actions`，让 client 不必先读取所有嵌套字段，也能继续预览、执行、人工执行、校验或恢复。
+
 ## 工具
 
 | 工具                                             | 用途                                         | 副作用                                          |
 |------------------------------------------------|--------------------------------------------|----------------------------------------------|
 | `database_gateway_search_metadata`             | 按名称片段和对象类型搜索运行时数据库元数据，并返回后续资源读取提示。         | 无。                                           |
-| `database_gateway_validate_proxy_connectivity` | 校验运行时数据库配置是否可用，用于接入失败时定位连接问题。              | 无。                                           |
-| `database_gateway_execute_query`               | 执行一个已判定为查询类的 `SELECT` 或 `EXPLAIN ANALYZE`。 | 无；拒绝 DML、DDL、DCL、事务控制、savepoint 和其他有副作用 SQL。 |
+| `database_gateway_validate_runtime_database` | 校验运行时数据库配置是否可用，用于接入失败时定位连接问题。              | 无。                                           |
+| `database_gateway_execute_query`               | 执行一个已判定为查询类的 `SELECT`。           | 无；拒绝 DML、DDL、DCL、事务控制、savepoint 和其他有副作用 SQL。 |
+| `database_gateway_execute_explain_query`       | 为一个 classifier 允许的 `SELECT` 执行模型生成的数据库原生 `EXPLAIN`。 | 无；拒绝 `EXPLAIN ANALYZE`、`EXPLAIN PLAN FOR`、多语句和有副作用 SQL。 |
 | `database_gateway_execute_update`              | 预览或执行一个可能修改数据、元数据、规则或事务状态的 SQL。            | 有；应先预览并确认。                                   |
 | `database_gateway_apply_workflow`              | 预览、执行或导出功能插件生成的治理变更计划。                     | 取决于执行方式；预览和人工执行包不修改运行时状态。                    |
 | `database_gateway_validate_workflow`           | 规则变更执行后，按功能插件自身边界校验规则状态或 workflow 执行结果。    | 无。                                           |
@@ -141,8 +147,8 @@ curl -i -sS http://127.0.0.1:18088/mcp \
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
-  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>' \
+  -H 'MCP-Session-Id: demo-session-id' \
+  -H 'MCP-Protocol-Version: 2025-11-25' \
   --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://databases"}}'
 ```
 
@@ -152,8 +158,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  -H 'MCP-Session-Id: <MCP-Session-Id value>' \
-  -H 'MCP-Protocol-Version: <MCP-Protocol-Version value>' \
+  -H 'MCP-Session-Id: demo-session-id' \
+  -H 'MCP-Protocol-Version: 2025-11-25' \
   --data '{
     "jsonrpc":"2.0",
     "id":"tool-1",
@@ -161,8 +167,8 @@ curl -sS http://127.0.0.1:18088/mcp \
     "params":{
       "name":"database_gateway_search_metadata",
       "arguments":{
-        "database":"<logic-database>",
-        "query":"<metadata-keyword>",
+        "database":"logic_db",
+        "query":"orders",
         "object_types":["table","view"]
       }
     }

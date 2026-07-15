@@ -5,7 +5,7 @@ weight = 6
 
 ### Description
 
-`MIGRATE TABLE INTO` syntax is used to migration table from source to target
+`MIGRATE TABLE INTO` syntax is used to migrate table from source to target
 
 ### Syntax
 

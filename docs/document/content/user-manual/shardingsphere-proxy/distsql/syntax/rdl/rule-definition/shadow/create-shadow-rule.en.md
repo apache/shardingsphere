@@ -19,16 +19,16 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 shadowRuleDefinition ::=
-  ruleName '(' storageUnitMapping shadowTableRule (',' shadowTableRule)* ')'
+  ruleName '(' storageUnitMapping ',' shadowTableRule (',' shadowTableRule)* ')'
     
 storageUnitMapping ::=
   'SOURCE' '=' storageUnitName ',' 'SHADOW' '=' storageUnitName
 
 shadowTableRule ::=
-  tableName '(' shadowAlgorithm ')'
+  tableName '(' shadowAlgorithm (',' shadowAlgorithm)* ')'
     
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 ruleName ::=
   identifier
@@ -46,7 +46,7 @@ algorithmType ::=
   string
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string
@@ -70,7 +70,7 @@ value ::=
 - If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName`
   and `algorithmType`;
 - `algorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SQL_HINT`;
-- `ifNotExists` caluse is used for avoid `Duplicate shadow rule` error.
+- `ifNotExists` clause is used to avoid `Duplicate shadow rule` error.
 
 ### Example
 

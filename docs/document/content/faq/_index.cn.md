@@ -108,7 +108,7 @@ DROP DATABASE sharding_db;
 
 ## 分片
 
-### Cloud not resolve placeholder ... in string value ... 异常的解决方法?
+### Could not resolve placeholder ... in string value ... 异常的解决方法?
 
 回答：
 
@@ -268,7 +268,7 @@ ShardingSphere 使用 lombok 实现极简代码。关于更多使用和安装细
 生成的代码例如 `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` 等 Java 文件由于较大，默认配置的 IDEA 可能不会索引该文件。
 可以调整 IDEA 的属性：`idea.max.intellisense.filesize=10000`。
 
-### 使用 SQLSever 和 PostgreSQL 时，聚合列不加别名会抛异常？
+### 使用 SQL Server 和 PostgreSQL 时，聚合列不加别名会抛异常？
 
 回答：
 

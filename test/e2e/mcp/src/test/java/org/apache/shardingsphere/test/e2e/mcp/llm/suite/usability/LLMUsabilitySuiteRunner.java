@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLM
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
+import org.junit.jupiter.api.Assumptions;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +35,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -46,13 +48,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final class LLMUsabilitySuiteRunner {
     
-    private static final Set<String> INFRASTRUCTURE_FAILURE_TYPES = Set.of("model_service_unavailable", "mcp_runtime_unavailable");
+    private static final String MODEL_SERVICE_UNAVAILABLE_FAILURE_TYPE = "model_service_unavailable";
+    
+    private static final Set<String> INFRASTRUCTURE_FAILURE_TYPES = Set.of(MODEL_SERVICE_UNAVAILABLE_FAILURE_TYPE, "mcp_runtime_unavailable");
     
     private static final Set<String> KNOWN_ACTION_ORIGINS = Set.of(
             MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
             MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN,
-            MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN,
-            MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN);
+            MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN);
     
     private static final Pattern UNREDACTED_SECRET_PATTERN = Pattern.compile(
             "(?i)(\"(?:api[_-]?key|token|password|authorization|secret)\"\\s*:\\s*\")(?!<redacted>\")([^\"]+)(\")|(Bearer\\s+)(?!<redacted>)[A-Za-z0-9._~+/=-]+");
@@ -61,17 +64,11 @@ final class LLMUsabilitySuiteRunner {
     
     private final LLMUsabilityReportWriter reportWriter = new LLMUsabilityReportWriter();
     
-    void assertCoreSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
-                         final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
+    void assertSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
+                     final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
         EvaluatedSuite evaluatedSuite = evaluateSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
-        assertFullScore(evaluatedSuite.scorecard(), evaluatedSuite.scenarios());
-        assertDeterministicContract(evaluatedSuite);
-    }
-    
-    void assertExtendedSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
-                             final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
-        EvaluatedSuite evaluatedSuite = evaluateSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
-        assertFullScore(evaluatedSuite.scorecard(), evaluatedSuite.scenarios());
+        assumeModelServiceAvailable(evaluatedSuite.scorecard());
+        assertFullScore(evaluatedSuite);
         assertDeterministicContract(evaluatedSuite);
     }
     
@@ -92,11 +89,30 @@ final class LLMUsabilitySuiteRunner {
         return new EvaluatedSuite(scenarios, evaluatedScenarios, scorecard);
     }
     
-    private void assertFullScore(final LLMUsabilityScorecard scorecard, final List<LLMUsabilityScenario> scenarios) {
-        String actualFailureSummary = createFailureSummary(scorecard);
+    private void assumeModelServiceAvailable(final LLMUsabilityScorecard scorecard) {
+        Optional<LLMUsabilityScenarioResult> modelServiceFailure = findFailure(scorecard, MODEL_SERVICE_UNAVAILABLE_FAILURE_TYPE);
+        if (modelServiceFailure.isEmpty()) {
+            return;
+        }
+        LLMUsabilityScenarioResult failure = modelServiceFailure.get();
+        Assumptions.assumeTrue(false, () -> failure.getScenarioId() + " skipped because the model service was unavailable: " + failure.getMessage());
+    }
+    
+    private Optional<LLMUsabilityScenarioResult> findFailure(final LLMUsabilityScorecard scorecard, final String failureType) {
+        for (LLMUsabilityScenarioResult each : scorecard.getScenarioResults()) {
+            if (!each.isSuccess() && failureType.equals(each.getFailureType())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private void assertFullScore(final EvaluatedSuite evaluatedSuite) {
+        LLMUsabilityScorecard scorecard = evaluatedSuite.scorecard();
+        String actualFailureSummary = createFailureSummary(evaluatedSuite);
         assertThat(actualFailureSummary, scorecard.getOverallScore(), is(100.0D));
         assertTrue(scorecard.isFullScore(), actualFailureSummary);
-        assertThat(actualFailureSummary, scorecard.getScenarioResults().size(), is(scenarios.size()));
+        assertThat(actualFailureSummary, scorecard.getScenarioResults().size(), is(evaluatedSuite.scenarios().size()));
         assertThat(actualFailureSummary, scorecard.getTaskSuccessRate(), is(1.0D));
         assertThat(actualFailureSummary, scorecard.getNaturalTaskSuccessRate(), is(1.0D));
         assertThat(actualFailureSummary, scorecard.getProtocolContractSuccessRate(), is(1.0D));
@@ -108,10 +124,10 @@ final class LLMUsabilitySuiteRunner {
         assertThat(actualFailureSummary, scorecard.getApprovalViolationRate(), is(0.0D));
         assertThat(actualFailureSummary, scorecard.getNativeToolCallRate(), is(1.0D));
         assertThat(actualFailureSummary, scorecard.getHarnessRecoveryRate(), is(0.0D));
-        if (hasResourceHitExpectation(scenarios)) {
+        if (hasResourceHitExpectation(evaluatedSuite.scenarios())) {
             assertThat(actualFailureSummary, scorecard.getResourceHitRate(), is(1.0D));
         }
-        if (hasRecoveryExpectation(scenarios)) {
+        if (hasRecoveryExpectation(evaluatedSuite.scenarios())) {
             assertThat(actualFailureSummary, scorecard.getRecoveryRate(), is(1.0D));
         }
     }
@@ -210,8 +226,6 @@ final class LLMUsabilitySuiteRunner {
             assertFalse(each.getActionOrigin().isBlank(), () -> "Trace action origin is blank in " + evaluatedScenario.scenario().getScenarioId());
             assertTrue(KNOWN_ACTION_ORIGINS.contains(each.getActionOrigin()), () -> "Unknown trace action origin in " + evaluatedScenario.scenario().getScenarioId());
             assertFalse(each.getTargetName().isBlank(), () -> "Trace target name is blank in " + evaluatedScenario.scenario().getScenarioId());
-            MCPModelContractAssertions.assertNoBannedPublicFields(each.getArguments());
-            MCPModelContractAssertions.assertNoBannedPublicFields(each.getStructuredContent());
             MCPModelContractAssertions.assertCanonicalNextActionLists(each.getStructuredContent());
         }
     }
@@ -234,7 +248,8 @@ final class LLMUsabilitySuiteRunner {
         return false;
     }
     
-    private String createFailureSummary(final LLMUsabilityScorecard scorecard) {
+    private String createFailureSummary(final EvaluatedSuite evaluatedSuite) {
+        LLMUsabilityScorecard scorecard = evaluatedSuite.scorecard();
         StringBuilder result = new StringBuilder("LLM usability suite did not meet the baseline.");
         result.append(" overallScore=").append(scorecard.getOverallScore());
         result.append(", fullScore=").append(scorecard.isFullScore());
@@ -245,16 +260,19 @@ final class LLMUsabilitySuiteRunner {
         result.append(", recoveryRate=").append(scorecard.getRecoveryRate());
         result.append(", nativeToolCallRate=").append(scorecard.getNativeToolCallRate());
         result.append(", harnessRecoveryRate=").append(scorecard.getHarnessRecoveryRate());
-        for (LLMUsabilityScenarioResult each : scorecard.getScenarioResults()) {
-            if (each.isSuccess()) {
+        for (EvaluatedScenario each : evaluatedSuite.evaluatedScenarios()) {
+            LLMUsabilityScenarioResult scenarioResult = each.scenarioResult();
+            if (scenarioResult.isSuccess()) {
                 continue;
             }
             result.append(" [");
-            result.append(each.getScenarioId());
+            result.append(scenarioResult.getScenarioId());
             result.append(": ");
-            result.append(each.getFailureType());
+            result.append(scenarioResult.getFailureType());
             result.append(" - ");
-            result.append(each.getMessage());
+            result.append(scenarioResult.getMessage());
+            result.append(", artifactDirectory=");
+            result.append(each.artifactDirectory());
             result.append(']');
         }
         return result.toString();

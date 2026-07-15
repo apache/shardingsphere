@@ -18,11 +18,11 @@ weight = 13
 |--------------------------|------------------------------------------------------|-------------------|-------|
 | sqlFederationEnabled     | boolean                                              | 是否开启联邦查询          | -     |
 | allQueryUseSQLFederation | boolean                                              | 是否全部查询 SQL 使用联邦查询 | -     |
-| executionPlanCache       | org.apache.shardingsphere.sql.parser.api.CacheOption | 执行计划缓存            | -     |
+| executionPlanCache       | org.apache.shardingsphere.sql.parser.engine.api.CacheOption | 执行计划缓存            | -     |
 
 ## 本地缓存配置
 
-类名称：org.apache.shardingsphere.sql.parser.api.CacheOption
+类名称：org.apache.shardingsphere.sql.parser.engine.api.CacheOption
 
 可配置属性：
 

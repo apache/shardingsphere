@@ -98,9 +98,33 @@ class MCPDescriptorCatalogIndexTest {
     }
     
     @Test
+    void assertFindPlanningToolNameByWorkflowKind() {
+        assertThat(MCPDescriptorCatalogIndex.findPlanningToolNameByWorkflowKind("encrypt.rule").orElseThrow(), is("database_gateway_plan_encrypt_rule"));
+    }
+    
+    @Test
+    void assertFindPlanningToolNameByUnknownWorkflowKind() {
+        assertFalse(MCPDescriptorCatalogIndex.findPlanningToolNameByWorkflowKind("unknown.rule").isPresent());
+    }
+    
+    @Test
+    void assertFindWorkflowKindsByGenericPromptCompletionTarget() {
+        MCPCompletionTargetDescriptor descriptor = new MCPCompletionTargetDescriptor("prompt", "recover_workflow", List.of("plan_id"), 50, Map.of());
+        assertTrue(MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(descriptor).isEmpty());
+    }
+    
+    @Test
+    void assertFindWorkflowKindsByResourceCompletionTarget() {
+        MCPCompletionTargetDescriptor descriptor = new MCPCompletionTargetDescriptor("resource", "shardingsphere://workflows/{plan_id}", List.of("plan_id"), 50, Map.of());
+        assertTrue(MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(descriptor).isEmpty());
+    }
+    
+    @Test
     void assertGetCompletionTargetDescriptors() {
         Collection<MCPCompletionTargetDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getCompletionTargetDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "prompt".equals(each.getReferenceType()) && "inspect_metadata".equals(each.getReference())));
+        assertTrue(actualDescriptors.stream().filter(each -> "resource".equals(each.getReferenceType()))
+                .allMatch(each -> MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(each.getReference()).isTemplated()));
     }
     
     @Test
@@ -129,10 +153,14 @@ class MCPDescriptorCatalogIndexTest {
         assertThat(actual.get("supportedResources"), is(List.of("shardingsphere://workflows/{plan_id}")));
         assertThat(actual.get("supportedTools"), is(List.of("database_gateway_apply_workflow")));
         assertThat(actual.get("supportedStatementClasses"), is(List.of("SELECT")));
+        assertFalse(actual.containsKey("fingerprints"));
     }
     
     @Test
-    void assertGetDescriptorCatalogFingerprint() {
-        assertFalse(MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint().isEmpty());
+    void assertCreateGuidancePayload() {
+        Map<String, Object> actual = MCPDescriptorCatalogIndex.createGuidancePayload();
+        assertThat(actual.get("response_mode"), is("guidance"));
+        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
+        assertTrue(actual.containsKey("model_contract"));
     }
 }

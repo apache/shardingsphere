@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -30,7 +32,8 @@ class AbstractMCPInteractionClientTest {
     
     @Test
     void assertCall() throws IOException, InterruptedException {
-        FakeMCPInteractionClient client = new FakeMCPInteractionClient(Map.of("result", Map.of("structuredContent", Map.of("status", "ok"))));
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient(Map.of("result", Map.of(
+                "content", List.of(Map.of("type", "text", "text", "ok")), "structuredContent", Map.of("status", "ok"))));
         assertThat(client.call("fixture_ping", Map.of("message", "hello")), is(Map.of("status", "ok")));
         assertThat(client.requestId, is("fixture_ping-1"));
         assertThat(client.method, is("tools/call"));
@@ -90,6 +93,12 @@ class AbstractMCPInteractionClientTest {
     }
     
     @Test
+    void assertNormalizeListPromptsError() throws IOException, InterruptedException {
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient(Map.of("error", Map.of("message", "denied")));
+        assertThat(client.listPrompts(), is(Map.of("error_code", "json_rpc_error", "message", "denied")));
+    }
+    
+    @Test
     void assertGetPrompt() throws IOException, InterruptedException {
         FakeMCPInteractionClient client = new FakeMCPInteractionClient(Map.of("result", Map.of("messages", List.of(Map.of("role", "user")))));
         assertThat(client.getPrompt("inspect_metadata", Map.of("database", "logic_db")), is(Map.of("messages", List.of(Map.of("role", "user")))));
@@ -100,8 +109,9 @@ class AbstractMCPInteractionClientTest {
     
     @Test
     void assertComplete() throws IOException, InterruptedException {
-        FakeMCPInteractionClient client = new FakeMCPInteractionClient(Map.of("result", Map.of("completion", "public")));
-        assertThat(client.complete(Map.of("type", "ref/prompt", "name", "inspect_metadata"), "schema", "pub", Map.of("database", "logic_db")), is(Map.of("completion", "public")));
+        Map<String, Object> completion = Map.of("values", List.of("public"));
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient(Map.of("result", Map.of("completion", completion)));
+        assertThat(client.complete(Map.of("type", "ref/prompt", "name", "inspect_metadata"), "schema", "pub", Map.of("database", "logic_db")), is(Map.of("completion", completion)));
         assertThat(client.requestId, is("completion-complete-1"));
         assertThat(client.method, is("completion/complete"));
         assertThat(client.params, is(Map.of(
@@ -112,13 +122,14 @@ class AbstractMCPInteractionClientTest {
     
     @Test
     void assertCompleteWithoutContextArguments() throws IOException, InterruptedException {
-        FakeMCPInteractionClient client = new FakeMCPInteractionClient(Map.of("result", Map.of("completion", "public")));
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient(Map.of("result", Map.of("completion", Map.of("values", List.of("public")))));
         client.complete(Map.of("type", "ref/prompt", "name", "inspect_metadata"), "schema", "pub", Map.of());
         assertThat(client.params, is(Map.of(
                 "ref", Map.of("type", "ref/prompt", "name", "inspect_metadata"),
                 "argument", Map.of("name", "schema", "value", "pub"))));
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class FakeMCPInteractionClient extends AbstractMCPInteractionClient {
         
         private final Map<String, Object> response;
@@ -131,12 +142,13 @@ class AbstractMCPInteractionClientTest {
         
         private Map<String, Object> params = Map.of();
         
-        private FakeMCPInteractionClient(final Map<String, Object> response) {
-            this.response = response;
+        @Override
+        public void open() {
         }
         
         @Override
-        public void open() {
+        public Map<String, Object> getInitializePayload() {
+            throw new UnsupportedOperationException("initialize payload is not available.");
         }
         
         @Override

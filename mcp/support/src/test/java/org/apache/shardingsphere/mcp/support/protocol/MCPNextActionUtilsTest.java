@@ -37,8 +37,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("title"), is("Read resource"));
         assertThat(actual.get("resource_uri"), is("shardingsphere://capabilities"));
         assertThat(actual.get("reason"), is("Read capabilities."));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -49,8 +47,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("title"), is("Call database_gateway_search_metadata"));
         assertThat(actual.get("tool_name"), is("database_gateway_search_metadata"));
         assertThat(actual.get("arguments"), is(Map.of("query", "orders")));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -60,8 +56,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("title"), is("Retry database_gateway_execute_update"));
         assertThat(actual.get("tool_name"), is("database_gateway_execute_update"));
         assertThat(actual.get("arguments"), is(Map.of("execution_mode", "preview")));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -71,40 +65,41 @@ class MCPNextActionUtilsTest {
     
     @Test
     void assertCompleteArgument() {
-        Map<String, Object> actual = MCPNextActionUtils.completeArgument("ref/prompt", "inspect_metadata", "schema", "pub", Map.of("database", "logic_db"),
-                List.of("table"), "tool", "database_gateway_search_metadata", Map.of("query", "orders"), "Complete schema.");
+        Map<String, Object> actual = MCPNextActionUtils.completeArgument(MCPCompletionAction.builder()
+                .referenceType("ref/prompt").reference("inspect_metadata").argumentName("schema").argumentPrefix("pub")
+                .contextArguments(Map.of("database", "logic_db")).missingContextArguments(List.of("table"))
+                .resumeTargetType("tool").resumeTarget("database_gateway_search_metadata").resumeArguments(Map.of("query", "orders"))
+                .reason("Complete schema.").build());
         assertThat(actual.get("type"), is("completion"));
         assertThat(actual.get("title"), is("Complete schema"));
-        assertThat(actual.get("reference_type"), is("ref/prompt"));
-        assertThat(actual.get("reference"), is("inspect_metadata"));
-        assertThat(actual.get("argument_name"), is("schema"));
-        assertThat(actual.get("argument_prefix"), is("pub"));
-        assertThat(actual.get("context_arguments"), is(Map.of("database", "logic_db")));
+        assertThat(actual.get("ref"), is(Map.of("type", "ref/prompt", "name", "inspect_metadata")));
+        assertThat(actual.get("argument"), is(Map.of("name", "schema", "value", "pub")));
+        assertThat(actual.get("context"), is(Map.of("arguments", Map.of("database", "logic_db"))));
         assertThat(actual.get("missing_context_arguments"), is(List.of("table")));
-        assertThat(actual.get("resume_target_type"), is("tool"));
-        assertThat(actual.get("resume_target"), is("database_gateway_search_metadata"));
+        assertThat(actual.get("resume_ref"), is(Map.of("type", "tool", "name", "database_gateway_search_metadata")));
         assertThat(actual.get("resume_arguments"), is(Map.of("query", "orders")));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
     void assertCompleteArgumentNormalizesReferenceTypes() {
-        Map<String, Object> actual = MCPNextActionUtils.completeArgument("prompt", "inspect_metadata", "schema", "pub", Map.of("database", "logic_db"),
-                List.of("table"), "resource", "shardingsphere://databases/{database}/schemas/{schema}", Map.of("database", "logic_db"), "Complete schema.");
-        assertThat(actual.get("reference_type"), is("ref/prompt"));
-        assertThat(actual.get("resume_target_type"), is("ref/resource"));
+        Map<String, Object> actual = MCPNextActionUtils.completeArgument(MCPCompletionAction.builder()
+                .referenceType("prompt").reference("inspect_metadata").argumentName("schema").argumentPrefix("pub")
+                .contextArguments(Map.of("database", "logic_db")).missingContextArguments(List.of("table"))
+                .resumeTargetType("resource").resumeTarget("shardingsphere://databases/{database}/schemas/{schema}").resumeArguments(Map.of("database", "logic_db"))
+                .reason("Complete schema.").build());
+        assertThat(actual.get("ref"), is(Map.of("type", "ref/prompt", "name", "inspect_metadata")));
+        assertThat(actual.get("resume_ref"), is(Map.of("type", "ref/resource", "uri", "shardingsphere://databases/{database}/schemas/{schema}")));
     }
     
     @Test
     void assertCompleteArgumentWithoutResumeTarget() {
-        Map<String, Object> actual = MCPNextActionUtils.completeArgument("ref/resource", "shardingsphere://databases/{database}", "database", "", Map.of(), List.of(), "", "", Map.of(),
-                "Complete database.");
+        Map<String, Object> actual = MCPNextActionUtils.completeArgument(MCPCompletionAction.builder()
+                .referenceType("ref/resource").reference("shardingsphere://databases/{database}").argumentName("database").reason("Complete database.").build());
         assertThat(actual.get("type"), is("completion"));
-        assertFalse(actual.containsKey("resume_target_type"));
-        assertFalse(actual.containsKey("resume_target"));
+        assertThat(actual.get("missing_context_arguments"), is(List.of()));
+        assertFalse(actual.containsKey("context"));
+        assertFalse(actual.containsKey("resume_ref"));
         assertFalse(actual.containsKey("resume_arguments"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -114,8 +109,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("title"), is("Ask user"));
         assertThat(actual.get("question"), is("Choose execution mode."));
         assertThat(actual.get("required_inputs"), is(List.of("execution_mode")));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -124,8 +117,6 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("type"), is("terminal"));
         assertThat(actual.get("title"), is("Stop"));
         assertThat(actual.get("reason"), is("Done."));
-        assertFalse(actual.containsKey("requires_user_approval"));
-        assertNoRemovedAliases(actual);
     }
     
     @Test
@@ -138,17 +129,19 @@ class MCPNextActionUtilsTest {
     }
     
     @Test
+    void assertOrderedCollectionCopiesActions() {
+        Map<String, Object> action = Map.of("type", "terminal");
+        List<Map<String, Object>> actual = MCPNextActionUtils.ordered(List.of(action, Map.of("type", "tool_call")));
+        assertThat(actual.get(0).get("order"), is(1));
+        assertThat(actual.get(1).get("order"), is(2));
+        assertFalse(action.containsKey("order"));
+    }
+    
+    @Test
     void assertDependsOnCopiesAction() {
         Map<String, Object> action = Map.of("type", "tool_call");
         Map<String, Object> actual = MCPNextActionUtils.dependsOn(action, 1);
         assertThat(actual.get("depends_on"), is(List.of(1)));
         assertFalse(action.containsKey("depends_on"));
-    }
-    
-    private void assertNoRemovedAliases(final Map<String, Object> action) {
-        assertFalse(action.containsKey("target_tool"));
-        assertFalse(action.containsKey("target_resource"));
-        assertFalse(action.containsKey("required_arguments"));
-        assertFalse(action.containsKey("action_kind"));
     }
 }

@@ -181,13 +181,13 @@ e2e.native.database.password=123456
 #### 运行调试模式
 
   - 标准测试引擎
-    运行 `org.apache.shardingsphere.test.e2e.it.sql.${SQL-TYPE}.General${SQL-TYPE}E2EIT` 以启动不同 SQL 类型的测试引擎。
+    运行 `org.apache.shardingsphere.test.e2e.sql.it.sql.${SQL-TYPE}.General${SQL-TYPE}E2EIT` 以启动不同 SQL 类型的测试引擎。
 
   - 批量测试引擎
-    运行 `org.apache.shardingsphere.test.e2e.it.sql.dml.BatchDMLE2EIT`，以启动为 DML 语句提供的测试 `addBatch()` 的批量测试引擎。
+    运行 `org.apache.shardingsphere.test.e2e.sql.it.sql.dml.BatchDMLE2EIT`，以启动为 DML 语句提供的测试 `addBatch()` 的批量测试引擎。
 
   - 附加测试引擎
-    运行 `org.apache.shardingsphere.test.e2e.it.sql.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` 以启动使用更多 JDBC 方法调用的测试引擎。
+    运行 `org.apache.shardingsphere.test.e2e.sql.it.sql.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` 以启动使用更多 JDBC 方法调用的测试引擎。
     附加测试引擎需要通过设置 `e2e.run.additional.cases=true` 开启。
 
 #### 运行 Docker 模式

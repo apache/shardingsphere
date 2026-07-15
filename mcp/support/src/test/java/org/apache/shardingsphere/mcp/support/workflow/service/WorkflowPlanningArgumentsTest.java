@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,16 +37,36 @@ class WorkflowPlanningArgumentsTest {
         assertThat(new WorkflowPlanningArguments(rawArguments).getStringArgument("name"), is(expectedValue));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getBooleanArgumentCases")
-    void assertGetBooleanArgument(final String name, final Map<String, Object> rawArguments, final boolean defaultValue, final boolean expectedValue) {
-        assertThat(new WorkflowPlanningArguments(rawArguments).getBooleanArgument("enabled", defaultValue), is(expectedValue));
+    @Test
+    void assertApplyStringArgument() {
+        AtomicReference<String> actual = new AtomicReference<>("unchanged");
+        new WorkflowPlanningArguments(Map.of("name", " foo_name ")).applyStringArgument("name", actual::set);
+        assertThat(actual.get(), is("foo_name"));
+    }
+    
+    @Test
+    void assertApplyStringArgumentWithMissingArgument() {
+        AtomicReference<String> actual = new AtomicReference<>("unchanged");
+        new WorkflowPlanningArguments(Map.of()).applyStringArgument("name", actual::set);
+        assertThat(actual.get(), is("unchanged"));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getMapArgumentCases")
     void assertGetMapArgument(final String name, final Map<String, Object> rawArguments, final Map<String, String> expectedValue) {
         assertThat(new WorkflowPlanningArguments(rawArguments).getMapArgument("props"), is(expectedValue));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getAlgorithmPropertyMapArgumentCases")
+    void assertGetAlgorithmPropertyMapArgument(final String name, final Map<String, Object> rawArguments, final Map<String, String> expectedValue) {
+        assertThat(new WorkflowPlanningArguments(rawArguments).getAlgorithmPropertyMapArgument("props", "primary"), is(expectedValue));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSecretReferenceMapArgumentCases")
+    void assertGetSecretReferenceMapArgument(final String name, final Map<String, Object> rawArguments, final boolean expectedMalformed) {
+        assertThat(new WorkflowPlanningArguments(rawArguments).getSecretReferenceMapArgument("props").get("aes-key-value").isMalformed(), is(expectedMalformed));
     }
     
     private static Stream<Arguments> getStringArgumentCases() {
@@ -55,20 +76,23 @@ class WorkflowPlanningArgumentsTest {
                 Arguments.of("number string", Map.of("name", 42), "42"));
     }
     
-    private static Stream<Arguments> getBooleanArgumentCases() {
-        return Stream.of(
-                Arguments.of("missing boolean", Map.of(), true, true),
-                Arguments.of("boolean literal", Map.of("enabled", false), true, false),
-                Arguments.of("parsed boolean", Map.of("enabled", " true "), false, true),
-                Arguments.of("blank boolean", Map.of("enabled", "   "), true, true));
-    }
-    
     private static Stream<Arguments> getMapArgumentCases() {
         return Stream.of(
                 Arguments.of("missing map", Map.of(), Map.of()),
                 Arguments.of("map argument", Map.of("props", Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")),
-                        Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")),
-                Arguments.of("entry list argument", Map.of("props", List.of(" aes-key-value = 123456 ", "digest-algorithm-name=SHA-1")),
                         Map.of("aes-key-value", "123456", "digest-algorithm-name", "SHA-1")));
+    }
+    
+    private static Stream<Arguments> getAlgorithmPropertyMapArgumentCases() {
+        return Stream.of(
+                Arguments.of("secret reference object", Map.of("props", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1"))),
+                        Map.of("aes-key-value", "secret_reference:primary.aes-key-value")),
+                Arguments.of("literal map argument", Map.of("props", Map.of("digest-algorithm-name", "SHA-256")), Map.of("digest-algorithm-name", "SHA-256")));
+    }
+    
+    private static Stream<Arguments> getSecretReferenceMapArgumentCases() {
+        return Stream.of(
+                Arguments.of("valid secret reference", Map.of("props", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1"))), false),
+                Arguments.of("malformed secret reference", Map.of("props", Map.of("aes-key-value", Map.of("label", "placeholder"))), true));
     }
 }

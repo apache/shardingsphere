@@ -19,12 +19,14 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import java.util.Collection;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Workflow-scoped planning arguments.
@@ -45,22 +47,16 @@ public final class WorkflowPlanningArguments {
     }
     
     /**
-     * Get boolean argument.
+     * Apply a non-empty string argument.
      *
      * @param name argument name
-     * @param defaultValue default value
-     * @return argument value
+     * @param consumer argument consumer
      */
-    public boolean getBooleanArgument(final String name, final boolean defaultValue) {
-        Object result = arguments.get(name);
-        if (null == result) {
-            return defaultValue;
+    public void applyStringArgument(final String name, final Consumer<String> consumer) {
+        String value = getStringArgument(name);
+        if (!value.isEmpty()) {
+            consumer.accept(value);
         }
-        if (result instanceof Boolean) {
-            return (Boolean) result;
-        }
-        String actualValue = result.toString().trim();
-        return actualValue.isEmpty() ? defaultValue : Boolean.parseBoolean(actualValue);
     }
     
     /**
@@ -74,10 +70,28 @@ public final class WorkflowPlanningArguments {
         if (rawValue instanceof Map) {
             return createMapArgument((Map<?, ?>) rawValue);
         }
-        if (rawValue instanceof Collection) {
-            return createMapArgument((Collection<?>) rawValue);
-        }
         return Collections.emptyMap();
+    }
+    
+    /**
+     * Get algorithm property map argument.
+     *
+     * @param name argument name
+     * @param algorithmRole algorithm role
+     * @return algorithm property map
+     */
+    public Map<String, String> getAlgorithmPropertyMapArgument(final String name, final String algorithmRole) {
+        return WorkflowSecretReferenceUtils.createAlgorithmProperties(arguments.get(name), algorithmRole);
+    }
+    
+    /**
+     * Get secret reference map argument.
+     *
+     * @param name argument name
+     * @return secret reference map
+     */
+    public Map<String, SecretReferenceValue> getSecretReferenceMapArgument(final String name) {
+        return WorkflowSecretReferenceUtils.createSecretReferences(arguments.get(name));
     }
     
     private Map<String, String> createMapArgument(final Map<?, ?> rawValue) {
@@ -91,20 +105,4 @@ public final class WorkflowPlanningArguments {
         return result;
     }
     
-    private Map<String, String> createMapArgument(final Collection<?> rawValue) {
-        Map<String, String> result = new LinkedHashMap<>(rawValue.size(), 1F);
-        for (Object each : rawValue) {
-            String actualEntry = Objects.toString(each, "").trim();
-            int separatorIndex = actualEntry.indexOf('=');
-            if (-1 == separatorIndex) {
-                continue;
-            }
-            String actualKey = actualEntry.substring(0, separatorIndex).trim();
-            String actualValue = actualEntry.substring(separatorIndex + 1).trim();
-            if (!actualKey.isEmpty()) {
-                result.put(actualKey, actualValue);
-            }
-        }
-        return result;
-    }
 }

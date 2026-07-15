@@ -30,13 +30,12 @@ Recommended path for a new feature:
 1. Create a module under `mcp/features/<feature>`.
 2. Depend on `mcp/api`.
 3. Depend on `mcp/support` when database metadata, SQL execution, or workflow support is needed.
-4. Depend on `mcp/core` only when service-level handler context is needed.
-5. Do not depend on `mcp/bootstrap`.
-6. Implement `MCPHandlerProvider`.
-7. Return the feature's handlers from `getToolHandlers()` and `getResourceHandlers()`.
-8. If the feature owns workflow definitions, implement `MCPWorkflowDefinitionProvider` on the same provider.
-9. Register `org.apache.shardingsphere.mcp.api.MCPHandlerProvider` under `src/main/resources/META-INF/services/`.
-10. Add descriptors under `META-INF/shardingsphere-mcp/mcp-descriptors`.
+4. Do not depend on `mcp/core` or `mcp/bootstrap`; runtime implementations are not feature extension contracts.
+5. Implement `MCPHandlerProvider`.
+6. Return the feature's handlers from `getToolHandlers()` and `getResourceHandlers()`.
+7. If the feature owns workflow definitions, implement `MCPWorkflowDefinitionProvider` on the same provider.
+8. Register `org.apache.shardingsphere.mcp.api.MCPHandlerProvider` under `src/main/resources/META-INF/services/`.
+9. Add descriptors under `META-INF/shardingsphere-mcp/mcp-descriptors`.
 
 If the feature should be shipped as an official default capability:
 
@@ -45,20 +44,37 @@ If the feature should be shipped as an official default capability:
 
 If the feature is optional, place the built jar under the distribution `plugins/` directory.
 
+## Feature workflow template
+
+Features that plan, preview, apply, and validate rule changes should use the Data Encryption MCP feature's rule workflow as the template.
+The template implementation should satisfy:
+
+- Keep feature business logic under `mcp/features/<feature>`; `mcp/support` and `mcp/core` should only host generic workflow, execution, redaction, descriptor, and runtime contracts.
+- Handlers declare canonical tool names, context types, and workflow definitions; descriptors and prompts own the model-facing contract, and handlers should not duplicate descriptive fields.
+- Read feature-owned resources, such as algorithms, rules, or existing configuration resources, before planning reviewable DistSQL artifacts.
+- Expose only artifacts supported by the current feature in the output schema; do not keep unsupported fields as placeholders or make models depend on real physical table structure.
+- Side-effecting execution must run preview first, then execute only user-approved `approved_steps`.
+- Sensitive properties must be masked in model-facing plan, preview, execution, validation, recovery, and error outputs; the execution path uses original values from the controlled context.
+- Validation should read Proxy-visible rule state or feature state, and should not use physical operations outside the current feature as acceptance conditions.
+- Startup descriptor validation should cover tool/resource/prompt name uniqueness, schema fields, side-effect annotations, related resources,
+  follow-up tools, completion targets, and workflow recovery paths.
+
 ## Handler and Descriptor
 
 When adding a public tool:
 
-- Implement `MCPToolHandler<T extends MCPHandlerContext>`.
+- Implement `MCPToolHandler<T extends MCPRequestContext>`.
 - Declare the context type.
 - Declare the canonical tool name.
+- `handle(...)` returns only a successful `MCPResponse`. For controlled failures such as invalid arguments, missing resources, query failure, timeout, or unsupported operations, throw a `ShardingSphereMCPException` subclass or a clear runtime exception and let runtime convert it to an MCP tool error result.
 - Maintain input schema, output schema, annotations, related resources, follow-up tools, and side-effect notes in the descriptor.
 
 When adding a public resource:
 
-- Implement `MCPResourceHandler<T extends MCPHandlerContext>`.
+- Implement `MCPResourceHandler<T extends MCPRequestContext>`.
 - Declare the context type.
-- Declare the canonical URI template.
+- Declare the canonical resource URI template. A fixed URI is also a URI template without variables.
+- `handle(...)` returns only a successful `MCPResponse`. Do not build error responses in handlers; runtime converts failures to MCP resource read errors.
 - Maintain URI parameter meaning, object scope, MIME type, title, description, annotations, and relationship metadata in the descriptor.
 
 When runtime code needs the descriptor for a handler, resolve it from `MCPDescriptorCatalogIndex` by canonical tool name or resource URI template.
@@ -66,9 +82,14 @@ Do not duplicate descriptor fields inside handlers.
 
 ## Context selection
 
-- Use `MCPServiceHandlerContext` for service-level handlers.
-- Use `MCPDatabaseHandlerContext` for database metadata or execution handlers.
-- Use `MCPWorkflowHandlerContext` for workflow handlers.
+- Use `MCPRequestContext` when a handler only needs the session ID, active transport, or session identity.
+- Use `MCPDatabaseRequestContext` for database metadata or execution handlers.
+- Use `MCPWorkflowRequestContext` for workflow handlers.
+
+`MCPRequestScope` is the runtime-owned, per-request implementation of these capabilities. Its name describes its lifecycle; handlers depend on the smallest context interface they need.
+
+Completion requests use a per-session 60-second fixed-window rate limit. The default is 600 requests per minute and can be changed with the
+`shardingsphere.mcp.maxCompletionRequestsPerMinute` Java system property.
 
 ## Naming and uniqueness
 

@@ -58,6 +58,7 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
     }
     
     private SqlUpdate convertUpdate(final UpdateStatement updateStatement) {
+        checkResolvedTargetTable(updateStatement);
         SqlNode table = TableConverter.convert(updateStatement.getTable()).orElseThrow(IllegalStateException::new);
         SqlIdentifier alias = convertTableAlias(updateStatement);
         SqlNode condition = updateStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
@@ -68,6 +69,12 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
             expressions.add(ExpressionConverter.convert(each.getValue()).orElseThrow(IllegalStateException::new));
         }
         return new SqlUpdate(SqlParserPos.ZERO, getTargetTableName(table), columns, expressions, condition, null, alias);
+    }
+    
+    private void checkResolvedTargetTable(final UpdateStatement updateStatement) {
+        if (updateStatement.isTargetTableIsFromAlias() && !updateStatement.getTable().getAlias().isPresent()) {
+            throw new IllegalStateException("Update target table alias must be resolved before SQL Federation conversion.");
+        }
     }
     
     private SqlIdentifier convertTableAlias(final UpdateStatement updateStatement) {

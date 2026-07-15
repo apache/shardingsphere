@@ -24,6 +24,8 @@ import java.util.Map;
 
 /**
  * MCP resource descriptor.
+ *
+ * <p>The URI template is the canonical resource identifier. A fixed resource URI is a URI template without variables.</p>
  */
 @RequiredArgsConstructor
 @Getter
@@ -44,9 +46,9 @@ public final class MCPResourceDescriptor {
     private final Map<String, Object> meta;
     
     /**
-     * Judge whether the resource is a URI template.
+     * Judge whether the resource URI template contains variables.
      *
-     * @return true if the resource is a URI template
+     * @return true if the resource URI template contains variables
      */
     public boolean isTemplated() {
         return null != uriTemplate && uriTemplate.contains("{");

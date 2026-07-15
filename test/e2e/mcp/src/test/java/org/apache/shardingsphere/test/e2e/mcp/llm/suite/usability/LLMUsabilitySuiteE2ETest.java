@@ -32,6 +32,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -44,6 +45,7 @@ import java.util.stream.Stream;
 
 @Tag("llm-e2e")
 @EnabledIf("isEnabled")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String RUNTIME_KIND = "mysql";
@@ -53,6 +55,8 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private static final String TABLE_NAME = "orders";
     
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
+    
+    private static final String FULL_TRANSPORT_MATRIX_PROPERTY = "mcp.e2e.llm.full-transport-matrix";
     
     private static LLMRuntimeSupport.ModelRuntime llmRuntime;
     
@@ -79,12 +83,16 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         }
     }
     
-    @AfterEach
+    @AfterAll
     void closeRuntimeFixture() {
         if (null != currentRuntimeFixture) {
             currentRuntimeFixture.close();
             currentRuntimeFixture = null;
         }
+    }
+    
+    @AfterEach
+    void clearCurrentTransport() {
         currentTransport = null;
     }
     
@@ -93,9 +101,15 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     static Stream<Arguments> getTestCases() {
-        return Stream.of(
-                Arguments.of("llm-usability-mysql-http", RuntimeTransport.HTTP),
-                Arguments.of("llm-usability-mysql-stdio", RuntimeTransport.STDIO));
+        return isFullTransportMatrixEnabled()
+                ? Stream.of(
+                        Arguments.of("llm-usability-mysql-http", RuntimeTransport.HTTP),
+                        Arguments.of("llm-usability-mysql-stdio", RuntimeTransport.STDIO))
+                : Stream.of(Arguments.of("llm-usability-mysql-http", RuntimeTransport.HTTP));
+    }
+    
+    private static boolean isFullTransportMatrixEnabled() {
+        return Boolean.parseBoolean(System.getProperty(FULL_TRANSPORT_MATRIX_PROPERTY, "false"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -105,11 +119,11 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration(), getRequiredLLMRuntimeEvidence());
         conversationExecutor.assertModelReady();
         prepareRuntimeFixture();
-        suiteRunner.assertCoreSuite(suiteId + "/core",
+        suiteRunner.assertSuite(suiteId + "/core",
                 this::createCoreScenarios,
                 each -> conversationExecutor.runConversation(suiteId + "/core/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());
-        suiteRunner.assertExtendedSuite(suiteId + "/extended",
+        suiteRunner.assertSuite(suiteId + "/extended",
                 this::createExtendedScenarios,
                 each -> conversationExecutor.runConversation(suiteId + "/extended/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());

@@ -44,7 +44,7 @@ public final class AlterViewPushDownMetaDataRefresher implements PushDownMetaDat
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        String actualViewName = TableRefreshUtils.getActualViewName(database, schemaName, sqlStatement.getView().getTableName().getIdentifier(), props);
+        String actualViewName = TableRefreshUtils.getActualViewName(database, schemaName, sqlStatement.getView().getTableName().getIdentifier());
         Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
         Collection<ShardingSphereView> alteredViews = new LinkedList<>();
         Collection<String> droppedTables = new LinkedList<>();

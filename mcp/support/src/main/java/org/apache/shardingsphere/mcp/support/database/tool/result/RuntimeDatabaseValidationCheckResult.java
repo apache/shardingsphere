@@ -1,0 +1,78 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.support.database.tool.result;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * Runtime database validation check result.
+ */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public final class RuntimeDatabaseValidationCheckResult {
+    
+    private static final String STATUS_PASSED = "passed";
+    
+    private static final String STATUS_FAILED = "failed";
+    
+    private static final String STATUS_SKIPPED = "skipped";
+    
+    private final String name;
+    
+    private final String status;
+    
+    private final String category;
+    
+    private final String message;
+    
+    /**
+     * Create a passed check result.
+     *
+     * @param name check name
+     * @param message check message
+     * @return check result
+     */
+    public static RuntimeDatabaseValidationCheckResult passed(final String name, final String message) {
+        return new RuntimeDatabaseValidationCheckResult(name, STATUS_PASSED, "ready", message);
+    }
+    
+    /**
+     * Create a failed check result.
+     *
+     * @param name check name
+     * @param category failure category
+     * @param message check message
+     * @return check result
+     */
+    public static RuntimeDatabaseValidationCheckResult failed(final String name, final String category, final String message) {
+        return new RuntimeDatabaseValidationCheckResult(name, STATUS_FAILED, category, message);
+    }
+    
+    /**
+     * Create a skipped check result.
+     *
+     * @param name check name
+     * @param message check message
+     * @return check result
+     */
+    public static RuntimeDatabaseValidationCheckResult skipped(final String name, final String message) {
+        return new RuntimeDatabaseValidationCheckResult(name, STATUS_SKIPPED, "skipped", message);
+    }
+}

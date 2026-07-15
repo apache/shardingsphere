@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 
 import java.util.List;
 
@@ -39,24 +40,28 @@ final class SQLStatementObjectNameReader {
                 continue;
             }
             if ("(".equals(token.text())) {
-                return new SQLStatementObjectName("", currentIndex);
+                return new SQLStatementObjectName("", "", QuoteCharacter.NONE, false, currentIndex);
             }
             return readQualifiedName(tokens, currentIndex);
         }
-        return new SQLStatementObjectName("", currentIndex);
+        return new SQLStatementObjectName("", "", QuoteCharacter.NONE, false, currentIndex);
     }
     
     SQLStatementObjectName readQualifiedName(final List<SQLStatementToken> tokens, final int startIndex) {
         if (startIndex >= tokens.size() || !isObjectNameSegment(tokens.get(startIndex))) {
-            return new SQLStatementObjectName("", startIndex);
+            return new SQLStatementObjectName("", "", QuoteCharacter.NONE, false, startIndex);
         }
-        StringBuilder result = new StringBuilder(scanner.normalizeIdentifier(tokens.get(startIndex).text()));
+        SQLStatementToken firstToken = tokens.get(startIndex);
+        String firstIdentifier = scanner.normalizeIdentifier(firstToken.text());
+        StringBuilder result = new StringBuilder(firstIdentifier);
         int currentIndex = startIndex + 1;
+        boolean qualified = false;
         while (currentIndex + 1 < tokens.size() && ".".equals(tokens.get(currentIndex).text()) && isObjectNameSegment(tokens.get(currentIndex + 1))) {
             result.append('.').append(scanner.normalizeIdentifier(tokens.get(currentIndex + 1).text()));
             currentIndex += 2;
+            qualified = true;
         }
-        return new SQLStatementObjectName(result.toString(), currentIndex);
+        return new SQLStatementObjectName(result.toString(), firstIdentifier, QuoteCharacter.getQuoteCharacter(firstToken.text()), qualified, currentIndex);
     }
     
     int skipObjectTail(final List<SQLStatementToken> tokens, final int startIndex) {

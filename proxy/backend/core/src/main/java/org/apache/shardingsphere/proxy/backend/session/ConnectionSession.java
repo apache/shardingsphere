@@ -31,6 +31,8 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBack
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -56,8 +58,6 @@ public final class ConnectionSession {
     
     private volatile boolean readOnly;
     
-    private TransactionIsolationLevel defaultIsolationLevel;
-    
     private TransactionIsolationLevel isolationLevel;
     
     private final ProxyDatabaseConnectionManager databaseConnectionManager;
@@ -76,6 +76,8 @@ public final class ConnectionSession {
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
     
     private volatile String processId;
+    
+    private volatile Map<String, String> connectionAttributes = Collections.emptyMap();
     
     private QueryContext queryContext;
     

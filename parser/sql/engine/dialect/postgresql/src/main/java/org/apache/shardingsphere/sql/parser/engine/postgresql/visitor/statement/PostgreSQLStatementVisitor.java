@@ -81,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Na
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NullsOrderContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OptOnConflictContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OuterJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ParameterMarkerContext;
@@ -117,6 +118,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wh
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
@@ -463,7 +465,60 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        return visit(ctx.funcApplication());
+        ASTNode result = visit(ctx.funcApplication());
+        return null == ctx.overClause() ? result : appendWindow(ctx, result);
+    }
+    
+    private ASTNode appendWindow(final FuncExprContext ctx, final ASTNode node) {
+        WindowItemSegment window = (WindowItemSegment) visit(ctx.overClause());
+        if (node instanceof AggregationDistinctProjectionSegment) {
+            AggregationDistinctProjectionSegment result = createAggregationDistinctSegmentWithWindow(ctx, (AggregationDistinctProjectionSegment) node, window);
+            return result;
+        }
+        if (node instanceof AggregationProjectionSegment) {
+            AggregationProjectionSegment result = createAggregationSegmentWithWindow(ctx, (AggregationProjectionSegment) node, window);
+            return result;
+        }
+        if (node instanceof FunctionSegment) {
+            FunctionSegment result = createFunctionSegmentWithWindow(ctx, (FunctionSegment) node, window);
+            return result;
+        }
+        return node;
+    }
+    
+    private AggregationDistinctProjectionSegment createAggregationDistinctSegmentWithWindow(final FuncExprContext ctx, final AggregationDistinctProjectionSegment segment,
+                                                                                            final WindowItemSegment window) {
+        AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getType(), getOriginalText(ctx),
+                segment.getDistinctInnerExpression(), segment.getSeparator().orElse(null));
+        result.getParameters().addAll(segment.getParameters());
+        result.setWindow(window);
+        return result;
+    }
+    
+    private AggregationProjectionSegment createAggregationSegmentWithWindow(final FuncExprContext ctx, final AggregationProjectionSegment segment, final WindowItemSegment window) {
+        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getType(), getOriginalText(ctx),
+                segment.getSeparator().orElse(null));
+        result.getParameters().addAll(segment.getParameters());
+        result.setWindow(window);
+        return result;
+    }
+    
+    private FunctionSegment createFunctionSegmentWithWindow(final FuncExprContext ctx, final FunctionSegment segment, final WindowItemSegment window) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getFunctionName(), getOriginalText(ctx));
+        result.setOwner(segment.getOwner());
+        result.getParameters().addAll(segment.getParameters());
+        result.setWindow(window);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitOverClause(final OverClauseContext ctx) {
+        if (null != ctx.windowSpecification()) {
+            return createWindowItem(ctx.windowSpecification());
+        }
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        result.setWindowName(new IdentifierValue(ctx.colId().getText()));
+        return result;
     }
     
     @Override
@@ -1020,14 +1075,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitSimpleSelect(final SimpleSelectContext ctx) {
         SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(databaseType);
-        if (null == ctx.targetList()) {
-            selectStatementBuilder.projections(new ProjectionsSegment(-1, -1));
-        } else {
+        if (null != ctx.targetList()) {
             ProjectionsSegment projects = (ProjectionsSegment) visit(ctx.targetList());
             if (null != ctx.distinctClause()) {
                 projects.setDistinctRow(true);
             }
             selectStatementBuilder.projections(projects);
+        } else if (null != ctx.valuesClause()) {
+            selectStatementBuilder.projections(createValuesProjections(ctx.valuesClause()));
+        } else {
+            selectStatementBuilder.projections(new ProjectionsSegment(-1, -1));
         }
         if (null != ctx.intoClause()) {
             selectStatementBuilder.into((TableSegment) visit(ctx.intoClause()));
@@ -1048,6 +1105,18 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             selectStatementBuilder.window((WindowSegment) visit(ctx.windowClause()));
         }
         return selectStatementBuilder.build();
+    }
+    
+    private ProjectionsSegment createValuesProjections(final ValuesClauseContext ctx) {
+        ProjectionsSegment result = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        Collection<InsertValuesSegment> values = createInsertValuesSegments(ctx);
+        if (values.isEmpty()) {
+            return result;
+        }
+        for (ExpressionSegment each : values.iterator().next().getValues()) {
+            result.getProjections().add(new ExpressionProjectionSegment(each.getStartIndex(), each.getStopIndex(), each.getText(), each));
+        }
+        return result;
     }
     
     @Override
@@ -1077,24 +1146,36 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         windowItems.add((WindowItemSegment) visit(ctx.windowDefinition()));
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitWindowDefinition(final WindowDefinitionContext ctx) {
         WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         result.setWindowName(new IdentifierValue(ctx.colId().getText()));
-        if (null != ctx.windowSpecification().partitionClause()) {
-            CollectionValue<ExpressionSegment> value = (CollectionValue<ExpressionSegment>) visit(ctx.windowSpecification().partitionClause().exprList());
+        setWindowSpecification(ctx.windowSpecification(), result);
+        return result;
+    }
+    
+    private WindowItemSegment createWindowItem(final WindowSpecificationContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.existingWindowName()) {
+            result.setWindowName(new IdentifierValue(ctx.existingWindowName().colId().getText()));
+        }
+        setWindowSpecification(ctx, result);
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void setWindowSpecification(final WindowSpecificationContext ctx, final WindowItemSegment result) {
+        if (null != ctx.partitionClause()) {
+            CollectionValue<ExpressionSegment> value = (CollectionValue<ExpressionSegment>) visit(ctx.partitionClause().exprList());
             result.setPartitionListSegments(value.getValue());
         }
-        if (null != ctx.windowSpecification().sortClause()) {
-            OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.windowSpecification().sortClause());
+        if (null != ctx.sortClause()) {
+            OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.sortClause());
             result.setOrderBySegment(orderBySegment);
         }
-        if (null != ctx.windowSpecification().frameClause()) {
-            result.setFrameClause(new CommonExpressionSegment(ctx.windowSpecification().frameClause().start.getStartIndex(), ctx.windowSpecification().frameClause().stop.getStopIndex(),
-                    ctx.windowSpecification().frameClause().getText()));
+        if (null != ctx.frameClause()) {
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
         }
-        return result;
     }
     
     @Override
@@ -1103,7 +1184,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         for (GroupByItemContext each : ctx.groupByList().groupByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
-        return new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items);
+        return new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items, false, containsGroupingExtension(ctx.groupByList().groupByItem()));
+    }
+    
+    private boolean containsGroupingExtension(final Collection<GroupByItemContext> groupByItems) {
+        for (GroupByItemContext each : groupByItems) {
+            if (null != each.emptyGroupingSet() || null != each.cubeClause() || null != each.rollupClause() || null != each.groupingSetsClause()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override
@@ -1346,13 +1436,22 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitAliasClause(final AliasClauseContext ctx) {
-        StringBuilder aliasName = new StringBuilder(ctx.colId().getText());
+        AliasSegment result = new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
         if (null != ctx.nameList()) {
-            aliasName.append(ctx.LP_().getText());
-            aliasName.append(ctx.nameList().getText());
-            aliasName.append(ctx.RP_().getText());
+            result.getColumnAliases().addAll(generateAliasColumns(ctx.nameList()));
         }
-        return new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(aliasName.toString()));
+        return result;
+    }
+    
+    private Collection<IdentifierValue> generateAliasColumns(final NameListContext ctx) {
+        Collection<IdentifierValue> result = new LinkedList<>();
+        if (null != ctx.nameList()) {
+            result.addAll(generateAliasColumns(ctx.nameList()));
+        }
+        if (null != ctx.name()) {
+            result.add(new IdentifierValue(ctx.name().getText()));
+        }
+        return result;
     }
     
     private OwnerSegment createTableOwner(final IndirectionContext ctx) {

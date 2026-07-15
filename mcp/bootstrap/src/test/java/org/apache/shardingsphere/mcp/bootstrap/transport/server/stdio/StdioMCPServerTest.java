@@ -22,37 +22,56 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFac
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.MockedConstruction;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class StdioMCPServerTest {
     
+    private MockedConstruction<MCPSyncServerFactory> mockedSyncServerFactories;
+    
+    private MockedConstruction<SessionManagedStdioTransportProvider> mockedTransportProviders;
+    
+    @BeforeEach
+    void setUp() {
+        mockedSyncServerFactories = mockConstruction(MCPSyncServerFactory.class);
+        mockedTransportProviders = mockConstruction(SessionManagedStdioTransportProvider.class);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        mockedTransportProviders.close();
+        mockedSyncServerFactories.close();
+    }
+    
     @Test
     void assertStart() {
-        MCPSyncServerFactory syncServerFactory = mock(MCPSyncServerFactory.class);
-        SessionManagedStdioTransportProvider transportProvider = mock(SessionManagedStdioTransportProvider.class);
         McpSyncServer syncServer = mock(McpSyncServer.class);
+        StdioMCPServer actual = createServer();
+        MCPSyncServerFactory syncServerFactory = getSyncServerFactory();
+        SessionManagedStdioTransportProvider transportProvider = getTransportProvider();
         when(syncServerFactory.create(transportProvider)).thenReturn(syncServer);
-        createServer(syncServerFactory, transportProvider).start();
+        actual.start();
         verify(syncServerFactory).create(transportProvider);
     }
     
     @Test
     void assertStartOnce() {
-        MCPSyncServerFactory syncServerFactory = mock(MCPSyncServerFactory.class);
-        SessionManagedStdioTransportProvider transportProvider = mock(SessionManagedStdioTransportProvider.class);
         McpSyncServer syncServer = mock(McpSyncServer.class);
+        StdioMCPServer actual = createServer();
+        MCPSyncServerFactory syncServerFactory = getSyncServerFactory();
+        SessionManagedStdioTransportProvider transportProvider = getTransportProvider();
         when(syncServerFactory.create(transportProvider)).thenReturn(syncServer);
-        StdioMCPServer actual = createServer(syncServerFactory, transportProvider);
         actual.start();
         actual.start();
         verify(syncServerFactory).create(transportProvider);
@@ -60,11 +79,11 @@ class StdioMCPServerTest {
     
     @Test
     void assertStop() {
-        MCPSyncServerFactory syncServerFactory = mock(MCPSyncServerFactory.class);
-        SessionManagedStdioTransportProvider transportProvider = mock(SessionManagedStdioTransportProvider.class);
         McpSyncServer syncServer = mock(McpSyncServer.class);
+        StdioMCPServer actual = createServer();
+        MCPSyncServerFactory syncServerFactory = getSyncServerFactory();
+        SessionManagedStdioTransportProvider transportProvider = getTransportProvider();
         when(syncServerFactory.create(transportProvider)).thenReturn(syncServer);
-        StdioMCPServer actual = createServer(syncServerFactory, transportProvider);
         actual.start();
         actual.stop();
         verify(syncServer).closeGracefully();
@@ -72,12 +91,12 @@ class StdioMCPServerTest {
     
     @Test
     void assertStartAfterStop() {
-        MCPSyncServerFactory syncServerFactory = mock(MCPSyncServerFactory.class);
-        SessionManagedStdioTransportProvider transportProvider = mock(SessionManagedStdioTransportProvider.class);
         McpSyncServer firstSyncServer = mock(McpSyncServer.class);
         McpSyncServer secondSyncServer = mock(McpSyncServer.class);
+        StdioMCPServer actual = createServer();
+        MCPSyncServerFactory syncServerFactory = getSyncServerFactory();
+        SessionManagedStdioTransportProvider transportProvider = getTransportProvider();
         when(syncServerFactory.create(transportProvider)).thenReturn(firstSyncServer, secondSyncServer);
-        StdioMCPServer actual = createServer(syncServerFactory, transportProvider);
         actual.start();
         actual.stop();
         actual.start();
@@ -90,23 +109,19 @@ class StdioMCPServerTest {
         assertDoesNotThrow(() -> new StdioMCPServer(createRuntimeContext()).stop());
     }
     
-    private StdioMCPServer createServer(final MCPSyncServerFactory syncServerFactory, final SessionManagedStdioTransportProvider transportProvider) {
-        StdioMCPServer result = new StdioMCPServer(createRuntimeContext());
-        try {
-            setField(result, "syncServerFactory", syncServerFactory);
-            setField(result, "transportProvider", transportProvider);
-            return result;
-        } catch (final ReflectiveOperationException ex) {
-            throw new AssertionError(ex);
-        }
+    private StdioMCPServer createServer() {
+        return new StdioMCPServer(createRuntimeContext());
+    }
+    
+    private MCPSyncServerFactory getSyncServerFactory() {
+        return mockedSyncServerFactories.constructed().getFirst();
+    }
+    
+    private SessionManagedStdioTransportProvider getTransportProvider() {
+        return mockedTransportProviders.constructed().getFirst();
     }
     
     private MCPRuntimeContext createRuntimeContext() {
         return new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), "stdio");
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        Plugins.getMemberAccessor().set(field, target, value);
     }
 }

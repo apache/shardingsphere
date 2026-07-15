@@ -9,7 +9,7 @@ weight = 1
 
 - 适合在 Codex CLI 或 Codex IDE 扩展中使用已经启动的 ShardingSphere-MCP HTTP Server。
 - 适合把数据库元数据查询、只读 SQL 查询、规则规划和接入前预检能力带入 Codex 会话。
-- 接入完成后，可以在 Codex 中查看逻辑库中的表、查看表结构、执行受控只读查询，或调用 `database_gateway_validate_proxy_connectivity` 进行接入前校验。
+- 接入完成后，可以在 Codex 中查看逻辑库中的表、查看表结构、执行受控只读查询，或调用 `database_gateway_validate_runtime_database` 进行接入前校验。
 
 ## 前置条件
 
@@ -51,9 +51,9 @@ url = "http://127.0.0.1:18088/mcp"
 调用成功：
 
 - 在 Codex 会话中执行一条最小验证任务，例如：
-  - 查看 `<logic-database>` 中有哪些表。
+  - 查看 `logic_db` 中有哪些表。
   - 查看 `orders` 表的列和索引。
-  - 对已经配置的 runtime database 执行 `database_gateway_validate_proxy_connectivity`。
+  - 对已经配置的 runtime database 执行 `database_gateway_validate_runtime_database`。
 - 如果工具列表和查询结果可返回，说明接入已经生效。
 
 ## 注意事项

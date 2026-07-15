@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Objects;
 
 @Getter
+@RequiredArgsConstructor
 public final class FirebirdBlobUpload {
     
     private final int blobHandle;
@@ -32,11 +34,6 @@ public final class FirebirdBlobUpload {
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     
     private boolean closed;
-    
-    public FirebirdBlobUpload(final int blobHandle, final long blobId) {
-        this.blobHandle = blobHandle;
-        this.blobId = blobId;
-    }
     
     /**
      * Append a BLOB data segment.
@@ -54,10 +51,6 @@ public final class FirebirdBlobUpload {
     
     public byte[] getBytes() {
         return buffer.toByteArray();
-    }
-    
-    public boolean isClosed() {
-        return closed;
     }
     
     /**

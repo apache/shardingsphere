@@ -17,14 +17,22 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,13 +41,12 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class WorkflowSQLUtilsTest {
-    
-    @Test
-    void assertIsSafeIdentifier() {
-        assertTrue(WorkflowSQLUtils.isSafeIdentifier("orders_01"));
-    }
     
     @Test
     void assertCheckSafeIdentifierAllowsSafeIdentifier() {
@@ -68,22 +75,6 @@ class WorkflowSQLUtilsTest {
         assertThat(WorkflowSQLUtils.normalizeIdentifier("`bad table`"), is("bad table"));
         assertThat(WorkflowSQLUtils.normalizeIdentifier("\"Order Detail\""), is("Order Detail"));
         assertThat(WorkflowSQLUtils.normalizeIdentifier("[Order Detail]"), is("Order Detail"));
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierFoldsPostgreSQLUnquotedIdentifier() {
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "Phone"), is("phone"));
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("openGauss", "Phone"), is("phone"));
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierPreservesSpecialIdentifier() {
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "Phone Number"), is("Phone Number"));
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierPreservesDelimitedIdentifier() {
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "\"Phone\""), is("Phone"));
     }
     
     @Test
@@ -136,9 +127,32 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierQuotesSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("orders_01");
+        assertThat(actualValue, is("`orders_01`"));
+    }
+    
+    @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierQuotesDelimitedSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("`orders`");
+        assertThat(actualValue, is("`orders`"));
+    }
+    
+    @Test
+    void assertFormatGeneratedRuleDistSQLIdentifierReturnsEmptyForBlankIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier("");
+        assertThat(actualValue, is(""));
+    }
+    
+    @Test
     void assertFormatSQLIdentifierUsesMysqlQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "order detail");
-        assertThat(actualValue, is("`order detail`"));
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockQuoteCharacter("MySQL", QuoteCharacter.BACK_QUOTE, typedSPILoader, databaseTypedSPILoader);
+            String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "order detail");
+            assertThat(actualValue, is("`order detail`"));
+        }
     }
     
     @Test
@@ -161,54 +175,72 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertFormatSQLIdentifierUsesFallbackQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("", "order detail");
-        assertThat(actualValue, is("`order detail`"));
+    void assertFormatSQLIdentifierRejectsEmptyDatabaseType() {
+        assertThrows(ServiceProviderNotFoundException.class, () -> WorkflowSQLUtils.formatSQLIdentifier("", "order detail"));
     }
     
     @Test
     void assertFormatSQLIdentifierUsesPostgreSQLQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "order detail");
-        assertThat(actualValue, is("\"order detail\""));
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockQuoteCharacter("PostgreSQL", QuoteCharacter.QUOTE, typedSPILoader, databaseTypedSPILoader);
+            String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "order detail");
+            assertThat(actualValue, is("\"order detail\""));
+        }
+    }
+    
+    @Test
+    void assertFormatSQLIdentifierUsesSQLServerQuoteStyle() {
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockQuoteCharacter("SQLServer", QuoteCharacter.BRACKETS, typedSPILoader, databaseTypedSPILoader);
+            String actualValue = WorkflowSQLUtils.formatSQLIdentifier("SQLServer", "order detail");
+            assertThat(actualValue, is("[order detail]"));
+        }
     }
     
     @Test
     void assertFormatSQLIdentifierPreservesDelimitedSafeIdentifier() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "\"orders\"");
-        assertThat(actualValue, is("\"orders\""));
+        try (
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockQuoteCharacter("PostgreSQL", QuoteCharacter.QUOTE, typedSPILoader, databaseTypedSPILoader);
+            String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "\"orders\"");
+            assertThat(actualValue, is("\"orders\""));
+        }
     }
     
     @Test
     void assertIsSameIdentifierWithCaseInsensitiveDatabase() {
-        assertTrue(WorkflowSQLUtils.isSameIdentifier("MySQL", "Phone", "phone"));
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE), "Phone", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierFoldsPostgreSQLUnquotedIdentifier() {
-        assertTrue(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "phone"));
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "Phone", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierPreservesPostgreSQLDelimitedIdentifier() {
-        assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "\"Phone\"", "phone"));
+        assertFalse(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "\"Phone\"", "phone"));
     }
     
     @Test
-    void assertIsSameIdentifierKeepsPostgreSQLExistingQuotedIdentifierDistinct() {
-        assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "Phone"));
-        assertTrue(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "\"Phone\"", "Phone"));
+    void assertIsSameIdentifierRejectsUnquotedPostgreSQLQuotedName() {
+        assertFalse(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "Phone", "Phone"));
+    }
+    
+    @Test
+    void assertIsSameIdentifierMatchesQuotedPostgreSQLName() {
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "\"Phone\"", "Phone"));
     }
     
     @Test
     void assertEscapeLiteralEscapesSingleQuote() {
         String actualValue = WorkflowSQLUtils.escapeLiteral("O'Brien");
         assertThat(actualValue, is("O''Brien"));
-    }
-    
-    @Test
-    void assertCreatePropertiesTrimsValues() {
-        Properties actualProperties = WorkflowSQLUtils.createProperties(Map.of("aes-key-value", " 123456 "));
-        assertThat(actualProperties.getProperty("aes-key-value"), is("123456"));
     }
     
     @Test
@@ -229,46 +261,18 @@ class WorkflowSQLUtilsTest {
         assertThat(actualFragment, is(""));
     }
     
-    @Test
-    void assertParsePropertyEntriesSkipsMalformedEntriesAndTrimsValues() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.parsePropertyEntries(List.of("aes-key-value = 123456 ", " malformed ", " iv = abc "));
-        assertThat(actualEntries.size(), is(2));
-        assertThat(actualEntries.get("aes-key-value"), is("123456"));
-        assertThat(actualEntries.get("iv"), is("abc"));
-    }
-    
-    @Test
-    void assertCreatePropertyMapReturnsEmptyForNull() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(null);
-        assertThat(actualEntries, is(Map.of()));
-    }
-    
-    @Test
-    void assertCreatePropertyMapHandlesProperties() {
-        Properties props = new Properties();
-        props.setProperty("aes-key-value", " 123456 ");
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(props);
-        assertThat(actualEntries, is(Map.of("aes-key-value", "123456")));
-    }
-    
-    @Test
-    void assertCreatePropertyMapHandlesMap() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(Map.of("aes-key-value", " 123456 "));
-        assertThat(actualEntries, is(Map.of("aes-key-value", "123456")));
-    }
-    
-    @Test
-    void assertCreatePropertyMapHandlesString() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap("{'aes-key-value':'123456','iv':'abc'}");
-        assertThat(actualEntries, is(Map.of("aes-key-value", "123456", "iv", "abc")));
-    }
-    
     private static Stream<Arguments> getDistSQLKeywordCases() {
         return Stream.of(
                 Arguments.of("quote if keyword", "if", "`if`"),
                 Arguments.of("quote exists keyword", "exists", "`exists`"),
                 Arguments.of("quote true keyword", "true", "`true`"),
                 Arguments.of("quote false keyword", "false", "`false`"),
+                Arguments.of("quote name keyword", "name", "`name`"),
+                Arguments.of("quote cipher keyword", "cipher", "`cipher`"),
+                Arguments.of("quote order keyword", "order", "`order`"),
+                Arguments.of("quote type keyword", "type", "`type`"),
+                Arguments.of("quote table keyword", "table", "`table`"),
+                Arguments.of("quote from keyword", "from", "`from`"),
                 Arguments.of("quote properties keyword", "properties", "`properties`"),
                 Arguments.of("quote encrypt algorithm keyword", "encrypt_algorithm", "`encrypt_algorithm`"),
                 Arguments.of("quote assisted query column keyword", "assisted_query_column", "`assisted_query_column`"),
@@ -282,5 +286,22 @@ class WorkflowSQLUtilsTest {
                 Arguments.of("keep MySQL user identifier", "MySQL", "user", "user"),
                 Arguments.of("keep PostgreSQL key identifier", "PostgreSQL", "key", "key"),
                 Arguments.of("keep PostgreSQL user identifier", "PostgreSQL", "user", "user"));
+    }
+    
+    private static void mockQuoteCharacter(final String databaseType, final QuoteCharacter quoteCharacter,
+                                           final MockedStatic<TypedSPILoader> typedSPILoader, final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, typedSPILoader, databaseTypedSPILoader);
+        when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(quoteCharacter);
+    }
+    
+    private static DialectDatabaseMetaData mockDialectDatabaseMetaData(final String databaseType,
+                                                                       final MockedStatic<TypedSPILoader> typedSPILoader,
+                                                                       final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
+        DatabaseType databaseTypeFromSPI = mock(DatabaseType.class);
+        when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
+        DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
+        databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(result));
+        return result;
     }
 }

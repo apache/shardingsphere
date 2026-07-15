@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
-import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -36,6 +35,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,7 +49,19 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     
     private static final String BROADCAST_PLAN_TOOL_NAME = "database_gateway_plan_broadcast_rule";
     
+    private static final String READWRITE_SPLITTING_PLAN_TOOL_NAME = "database_gateway_plan_readwrite_splitting_rule";
+    
+    private static final String SHADOW_PLAN_TOOL_NAME = "database_gateway_plan_shadow_rule";
+    
+    private static final String SHARDING_PLAN_TOOL_NAME = "database_gateway_plan_sharding_table_rule";
+    
     private static final String BROADCAST_RULES_RESOURCE_URI = "shardingsphere://features/broadcast/databases/%s/rules";
+    
+    private static final String READWRITE_SPLITTING_RULES_RESOURCE_URI = "shardingsphere://features/readwrite-splitting/databases/%s/rules";
+    
+    private static final String SHADOW_RULES_RESOURCE_URI = "shardingsphere://features/shadow/databases/%s/rules";
+    
+    private static final String SHARDING_TABLE_RULES_RESOURCE_URI = "shardingsphere://features/sharding/databases/%s/table-rules";
     
     private static final List<String> FORBIDDEN_ARTIFACT_TOKENS = List.of(
             "create table", "alter table", "drop table", "create index", "drop index", "migrate", "migration", "backfill", "data probe", "physical metadata",
@@ -67,19 +79,19 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             Map<String, Object> actualPlanResponse = interactionClient.call(scenario.toolName(), createPlanArguments(scenario));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             assertThat(String.valueOf(actualPlanResponse.get("current_step")), is("review"));
-            assertTrue(String.valueOf(getMapList(actualPlanResponse.get("distsql_artifacts"))).contains(scenario.expectedDistSQLToken()));
+            assertTrue(String.valueOf(getObjectListOrEmpty(actualPlanResponse.get("distsql_artifacts"))).contains(scenario.expectedDistSQLToken()));
             assertNoForbiddenArtifacts(actualPlanResponse);
             assertModelFacingPayloadContract(actualPlanResponse);
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
             Map<String, Object> actualManualApplyResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "manual-only"));
             assertThat(String.valueOf(actualManualApplyResponse.get("status")), is("awaiting-manual-execution"));
-            assertThat(getStringList(actualManualApplyResponse.get("executed_distsql")).size(), is(0));
+            assertThat(getStringListOrEmpty(actualManualApplyResponse.get("executed_distsql")).size(), is(0));
             assertNoForbiddenArtifacts(actualManualApplyResponse);
             assertModelFacingPayloadContract(actualManualApplyResponse);
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertThat(String.valueOf(actualValidationResponse.get("status")), is("failed"));
             assertThat(String.valueOf(actualValidationResponse.get("overall_status")), is("failed"));
-            assertFalse(getMapList(actualValidationResponse.get("issues")).isEmpty());
+            assertFalse(getObjectListOrEmpty(actualValidationResponse.get("issues")).isEmpty());
             assertModelFacingPayloadContract(actualValidationResponse);
         }
     }
@@ -87,16 +99,63 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     @Test
     void assertBroadcastWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actualPlanResponse = interactionClient.call(BROADCAST_PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "tables", "orders"));
+            Map<String, Object> arguments = Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "tables", "orders");
+            Map<String, Object> actualPlanResponse = interactionClient.call(BROADCAST_PLAN_TOOL_NAME, arguments);
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
-            Map<String, Object> actualApplyResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "review-then-execute"));
+            Map<String, Object> actualApplyResponse = interactionClient.call(APPLY_TOOL_NAME,
+                    createReviewThenExecuteArguments(planId, getApprovedSteps(previewWorkflow(interactionClient, planId))));
             assertApplyCompleted(actualApplyResponse);
-            assertThat(getStringList(actualApplyResponse.get("executed_distsql")).size(), is(1));
+            assertThat(getStringListOrEmpty(actualApplyResponse.get("executed_distsql")).size(), is(1));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
             List<Map<String, Object>> actualRules = getPayloadItems(interactionClient.readResource(String.format(BROADCAST_RULES_RESOURCE_URI, getLogicalDatabaseName())));
             assertThat(actualRules.stream().map(each -> String.valueOf(each.get("broadcast_table"))).toList(), hasItem("orders"));
+            assertDuplicateCreateFails(interactionClient, BROADCAST_PLAN_TOOL_NAME, arguments);
+        }
+    }
+    
+    @Test
+    void assertReadwriteSplittingWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            assertStorageUnitsExposeWorkflowTopology(interactionClient);
+            planApplyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "rule", "readwrite_ds", "write_storage_unit", "ds_0",
+                            "read_storage_units", "ds_1", "transactional_read_query_strategy", "DYNAMIC", "load_balancer_type", "ROUND_ROBIN"));
+            List<Map<String, Object>> actualRules = getPayloadItems(interactionClient.readResource(
+                    String.format(READWRITE_SPLITTING_RULES_RESOURCE_URI, getLogicalDatabaseName())));
+            Map<String, Object> actualRule = findItemByField(actualRules, "name", "readwrite_ds");
+            assertThat(String.valueOf(actualRule.get("write_storage_unit_name")), is("ds_0"));
+            assertTrue(String.valueOf(actualRule.get("read_storage_unit_names")).contains("ds_1"));
+            assertThat(String.valueOf(actualRule.get("transactional_read_query_strategy")).toUpperCase(Locale.ENGLISH), is("DYNAMIC"));
+        }
+    }
+    
+    @Test
+    void assertShadowWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            planApplyAndValidateWorkflow(interactionClient, SHADOW_PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "rule", "shadow_rule", "source_storage_unit", "ds_0",
+                            "shadow_storage_unit", "ds_shadow", "table", "orders", "algorithm_type", "VALUE_MATCH",
+                            "algorithm_properties", Map.of("operation", "insert", "column", "order_id", "value", "1")));
+            List<Map<String, Object>> actualRules = getPayloadItems(interactionClient.readResource(String.format(SHADOW_RULES_RESOURCE_URI, getLogicalDatabaseName())));
+            Map<String, Object> actualRule = findItemByField(actualRules, "rule_name", "shadow_rule");
+            assertThat(String.valueOf(actualRule.get("source_name")), is("ds_0"));
+            assertThat(String.valueOf(actualRule.get("shadow_name")), is("ds_shadow"));
+            assertThat(String.valueOf(actualRule.get("shadow_table")), is("orders"));
+            assertThat(String.valueOf(actualRule.get("algorithm_type")).toUpperCase(Locale.ENGLISH), is("VALUE_MATCH"));
+        }
+    }
+    
+    @Test
+    void assertShardingWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            planApplyAndValidateWorkflow(interactionClient, SHARDING_PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "table", "orders", "column", "order_id",
+                            "data_nodes", "ds_0.orders", "strategy_type", "standard", "algorithm_type", "INLINE",
+                            "algorithm_properties", Map.of("algorithm-expression", "orders")));
+            List<Map<String, Object>> actualRules = getPayloadItems(interactionClient.readResource(
+                    String.format(SHARDING_TABLE_RULES_RESOURCE_URI, getLogicalDatabaseName())));
+            assertThat(actualRules.stream().map(each -> String.valueOf(each.get("table"))).toList(), hasItem("orders"));
         }
     }
     
@@ -104,16 +163,16 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
         return Stream.of(
                 Arguments.of("broadcast", new FeatureWorkflowScenario(BROADCAST_PLAN_TOOL_NAME,
                         Map.of("operation_type", "create", "tables", "orders"), "CREATE BROADCAST TABLE RULE")),
-                Arguments.of("readwrite-splitting", new FeatureWorkflowScenario("database_gateway_plan_readwrite_splitting_rule",
+                Arguments.of("readwrite-splitting", new FeatureWorkflowScenario(READWRITE_SPLITTING_PLAN_TOOL_NAME,
                         Map.of("operation_type", "create", "rule", "readwrite_ds", "write_storage_unit", "ds_0",
-                                "read_storage_units", "ds_0", "transactional_read_query_strategy", "DYNAMIC"),
+                                "read_storage_units", "ds_1", "transactional_read_query_strategy", "DYNAMIC"),
                         "CREATE READWRITE_SPLITTING RULE")),
-                Arguments.of("shadow", new FeatureWorkflowScenario("database_gateway_plan_shadow_rule",
+                Arguments.of("shadow", new FeatureWorkflowScenario(SHADOW_PLAN_TOOL_NAME,
                         Map.of("operation_type", "create", "rule", "shadow_rule", "source_storage_unit", "ds_0",
-                                "shadow_storage_unit", "ds_0_shadow", "table", "orders", "algorithm_type", "VALUE_MATCH",
+                                "shadow_storage_unit", "ds_shadow", "table", "orders", "algorithm_type", "VALUE_MATCH",
                                 "algorithm_properties", Map.of("operation", "insert", "column", "order_id", "value", "1")),
                         "CREATE SHADOW RULE")),
-                Arguments.of("sharding", new FeatureWorkflowScenario("database_gateway_plan_sharding_table_rule",
+                Arguments.of("sharding", new FeatureWorkflowScenario(SHARDING_PLAN_TOOL_NAME,
                         Map.of("operation_type", "create", "table", "orders", "column", "order_id",
                                 "data_nodes", "ds_0.orders", "strategy_type", "standard", "algorithm_type", "INLINE",
                                 "algorithm_properties", Map.of("algorithm-expression", "orders")),
@@ -131,9 +190,36 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
         FORBIDDEN_ARTIFACT_TOKENS.forEach(each -> assertFalse(actualPayload.contains(each)));
     }
     
-    private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
-        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
-        MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
+    private void assertStorageUnitsExposeWorkflowTopology(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
+        List<Map<String, Object>> actualStorageUnits = getPayloadItems(interactionClient.readResource(
+                String.format("shardingsphere://databases/%s/storage-units", getLogicalDatabaseName())));
+        assertThat(actualStorageUnits.stream().map(each -> String.valueOf(each.get("name"))).toList(), hasItems("ds_0", "ds_1", "ds_shadow"));
+        List<Map<String, Object>> actualStorageUnitDetail = getPayloadItems(interactionClient.readResource(
+                String.format("shardingsphere://databases/%s/storage-units/ds_0", getLogicalDatabaseName())));
+        assertThat(actualStorageUnitDetail.size(), is(1));
+        assertThat(String.valueOf(actualStorageUnitDetail.getFirst().get("name")), is("ds_0"));
+    }
+    
+    private void planApplyAndValidateWorkflow(final MCPInteractionClient interactionClient, final String toolName,
+                                              final Map<String, Object> arguments) throws IOException, InterruptedException {
+        Map<String, Object> actualPlanResponse = interactionClient.call(toolName, arguments);
+        assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
+        assertNoForbiddenArtifacts(actualPlanResponse);
+        assertModelFacingPayloadContract(actualPlanResponse);
+        String planId = String.valueOf(actualPlanResponse.get("plan_id"));
+        Map<String, Object> actualApplyResponse = applyReviewedWorkflow(interactionClient, planId);
+        assertApplyCompleted(actualApplyResponse);
+        assertThat(getStringListOrEmpty(actualApplyResponse.get("executed_distsql")).size(), is(1));
+        assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
+        assertDuplicateCreateFails(interactionClient, toolName, arguments);
+    }
+    
+    private void assertDuplicateCreateFails(final MCPInteractionClient interactionClient, final String toolName,
+                                            final Map<String, Object> arguments) throws IOException, InterruptedException {
+        Map<String, Object> actual = interactionClient.call(toolName, arguments);
+        assertThat(String.valueOf(actual.get("status")), is("failed"));
+        assertFalse(getObjectListOrEmpty(actual.get("issues")).isEmpty());
+        assertModelFacingPayloadContract(actual);
     }
     
     private record FeatureWorkflowScenario(String toolName, Map<String, Object> planArguments, String expectedDistSQLToken) {

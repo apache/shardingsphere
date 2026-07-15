@@ -14,7 +14,7 @@ weight = 6
 
 ## 自然语言示例
 
-- 查看 `<logic-database>` 已配置的影子规则和影子算法插件。
+- 查看 `logic_db` 已配置的影子规则和影子算法插件。
 - 为表 `t_order` 规划影子规则，源存储单元是 `ds_0`，影子存储单元是 `ds_shadow`，算法使用列匹配策略。
 - 只有在 Proxy 可见状态证明 `shadow_by_user_id` 未被使用时，才删除这个影子算法。
 
@@ -22,7 +22,10 @@ weight = 6
 
 - 确认规则计划使用影子 DistSQL，并引用已有存储单元。
 - 确认默认算法计划只修改默认影子算法。
+- 选择影子算法前，审查 `algorithm_recommendations`；`SQL_HINT` 没有必填属性。
+- `VALUE_MATCH` 需要 `operation`、`column` 和 `value`；`REGEX_MATCH` 需要 `operation`、`column` 和 `regex`。
 - 确认清理计划包含目标算法未被使用的证据。
+- 执行 workflow 前，确认返回的 `plan_id`、`resources_to_read`、`next_actions` 和 `distsql_artifacts`。
 
 规则变更的通用审查流程见[规则变更流程](../plugin-workflow/)。
 

@@ -77,21 +77,14 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @param globalResourceMetaData global resource meta data
      * @param globalRuleMetaData global rule meta data
      * @param props configuration properties
+     * @deprecated Will be deleted, currently only testing references
      */
+    @Deprecated
     public ShardingSphereMetaData(final Collection<ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
                                   final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
         this(databases, globalResourceMetaData, globalRuleMetaData, props, resolveProtocolType(databases, props), DatabaseIdentifierContextFactory.createDefault());
     }
     
-    /**
-     * Construct metadata with protocol-aware identifier rules.
-     *
-     * @param databases databases
-     * @param globalResourceMetaData global resource meta data
-     * @param globalRuleMetaData global rule meta data
-     * @param props configuration properties
-     * @param protocolType protocol type
-     */
     public ShardingSphereMetaData(final Collection<ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
                                   final RuleMetaData globalRuleMetaData, final ConfigurationProperties props, final DatabaseType protocolType) {
         this(databases, globalResourceMetaData, globalRuleMetaData, props, protocolType, DatabaseIdentifierContextFactory.create(protocolType, props));

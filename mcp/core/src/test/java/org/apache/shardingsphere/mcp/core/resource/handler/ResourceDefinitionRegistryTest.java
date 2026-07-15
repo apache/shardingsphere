@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.mcp.core.resource.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
-import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -85,21 +84,40 @@ class ResourceDefinitionRegistryTest {
     @Test
     void assertGetSupportedResources() {
         Collection<String> actual = ResourceDefinitionRegistry.getSupportedResources();
-        assertThat(actual.size(), is(20));
-        assertTrue(actual.contains("shardingsphere://capabilities"));
-        assertTrue(actual.contains("shardingsphere://runtime"));
-        assertTrue(actual.contains("shardingsphere://workflows/{plan_id}"));
-        assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
-        assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"));
-        assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"));
-        assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
+        assertThat(actual, is(List.of(
+                "shardingsphere://capabilities",
+                "shardingsphere://guidance",
+                "shardingsphere://runtime",
+                "shardingsphere://workflows/{plan_id}",
+                "shardingsphere://databases/{database}/capabilities",
+                "shardingsphere://databases",
+                "shardingsphere://databases/{database}",
+                "shardingsphere://databases/{database}/storage-units",
+                "shardingsphere://databases/{database}/storage-units/{storageUnit}",
+                "shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules",
+                "shardingsphere://databases/{database}/single-tables",
+                "shardingsphere://databases/{database}/single-tables/{table}",
+                "shardingsphere://databases/{database}/single-table/default-storage-unit",
+                "shardingsphere://databases/{database}/schemas",
+                "shardingsphere://databases/{database}/schemas/{schema}",
+                "shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                "shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables",
+                "shardingsphere://databases/{database}/schemas/{schema}/views",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
+                "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
+                "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
+                "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}")));
     }
     
     @Test
     void assertGetSupportedResourceDescriptors() {
-        Collection<MCPResourceDescriptor> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors();
-        assertThat(actual.size(), is(20));
-        assertTrue(actual.stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.getUriTemplate())));
+        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).toList();
+        assertThat(actual, is(ResourceDefinitionRegistry.getSupportedResources()));
     }
     
     private static Stream<Arguments> getSupportedResourcesFailureCases() {
@@ -129,15 +147,15 @@ class ResourceDefinitionRegistryTest {
     }
     
     private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
-        MCPResourceHandler<MCPServiceHandlerContext> result = mock(MCPResourceHandler.class);
-        when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
+        MCPResourceHandler<MCPRequestContext> result = mock(MCPResourceHandler.class);
+        when(result.getContextType()).thenReturn(MCPRequestContext.class);
         when(result.getResourceUriTemplate()).thenReturn(uriTemplate);
         return result;
     }
     
     private static MCPResourceHandler<?> createUnsupportedResourceHandler() {
-        MCPResourceHandler<MCPHandlerContext> result = mock(MCPResourceHandler.class);
-        when(result.getContextType()).thenReturn(MCPHandlerContext.class);
+        MCPResourceHandler<UnsupportedRequestContext> result = mock(MCPResourceHandler.class);
+        when(result.getContextType()).thenReturn(UnsupportedRequestContext.class);
         when(result.getResourceUriTemplate()).thenReturn("shardingsphere://unsupported");
         return result;
     }
@@ -185,7 +203,7 @@ class ResourceDefinitionRegistryTest {
     
     private static String getRequiredUriMessage() {
         MCPResourceHandler<?> handler = createResourceHandler(null);
-        return String.format("Resource URI or URI template is required for `%s`.", handler.getClass().getName());
+        return String.format("Resource URI template is required for `%s`.", handler.getClass().getName());
     }
     
     private static String getDuplicateUriTemplateMessage() {
@@ -204,6 +222,9 @@ class ResourceDefinitionRegistryTest {
     
     private static String getUnsupportedResourceHandlerMessage() {
         MCPResourceHandler<?> handler = createUnsupportedResourceHandler();
-        return String.format("Unsupported handler context type `%s` for `%s`.", MCPHandlerContext.class.getName(), handler.getClass().getName());
+        return String.format("Unsupported request context type `%s` for `%s`.", UnsupportedRequestContext.class.getName(), handler.getClass().getName());
+    }
+    
+    private interface UnsupportedRequestContext extends MCPRequestContext {
     }
 }

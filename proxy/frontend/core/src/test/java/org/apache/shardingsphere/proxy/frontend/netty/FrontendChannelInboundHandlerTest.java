@@ -64,6 +64,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -129,11 +130,13 @@ class FrontendChannelInboundHandlerTest {
     @Test
     void assertChannelReadNotAuthenticated() throws Exception {
         channel.register();
-        AuthenticationResult authenticationResult = AuthenticationResultBuilder.finished("username", "hostname", "database");
+        Map<String, String> connectionAttributes = Collections.singletonMap("program_name", "mysql");
+        AuthenticationResult authenticationResult = AuthenticationResultBuilder.finished("username", "hostname", "database", connectionAttributes);
         when(authenticationEngine.authenticate(any(ChannelHandlerContext.class), any(PacketPayload.class))).thenReturn(authenticationResult);
         channel.writeInbound(Unpooled.EMPTY_BUFFER);
         assertThat(connectionSession.getConnectionContext().getGrantee(), is(new Grantee("username", "hostname")));
         assertThat(connectionSession.getUsedDatabaseName(), is("database"));
+        assertThat(connectionSession.getConnectionAttributes(), is(connectionAttributes));
     }
     
     @Test

@@ -19,30 +19,10 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HttpTransportOriginUtilsTest {
-    
-    @Test
-    void assertNormalizeOrigins() {
-        assertThat(HttpTransportOriginUtils.normalizeOrigins(List.of(" HTTPS://Gateway.Example.Test ", "http://127.0.0.1:8080")),
-                is(List.of("https://gateway.example.test", "http://127.0.0.1:8080")));
-    }
-    
-    @Test
-    void assertIsValidOrigin() {
-        assertTrue(HttpTransportOriginUtils.isValidOrigin("https://gateway.example.test"));
-    }
-    
-    @Test
-    void assertIsValidOriginWithPath() {
-        assertFalse(HttpTransportOriginUtils.isValidOrigin("https://gateway.example.test/path"));
-    }
     
     @Test
     void assertNormalizeOrigin() {

@@ -57,7 +57,7 @@ class PrestoTest {
     private String baseJdbcUrl;
     
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("prestodb/presto:0.296")
+    private final GenericContainer<?> container = new GenericContainer<>("prestodb/presto:0.298.1")
             .withExposedPorts(8080)
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/properties/presto-iceberg.properties").toAbsolutePath()),
@@ -86,7 +86,7 @@ class PrestoTest {
         baseJdbcUrl = "jdbc:presto://localhost:" + container.getMappedPort(8080) + "/iceberg";
         logicDataSource = createDataSource();
         TestShardingService testShardingService = new TestShardingService(logicDataSource);
-        testShardingService.processSuccessWithoutTransactions();
+        testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
     }
     

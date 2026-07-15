@@ -14,7 +14,7 @@ It generates readwrite-splitting DistSQL only. It does not generate storage unit
 
 ## Natural language examples
 
-- List readwrite-splitting rules and load-balance algorithm plugins in `<logic-database>`.
+- List readwrite-splitting rules and load-balance algorithm plugins in `logic_db`.
 - Plan a readwrite-splitting rule named `rw_ds` with write storage unit `write_ds` and read storage units `read_ds_0, read_ds_1`.
 - Disable read storage unit `read_ds_1` for rule `rw_ds`, then validate the status.
 
@@ -23,6 +23,9 @@ It generates readwrite-splitting DistSQL only. It does not generate storage unit
 - Confirm that rule plans use `CREATE`, `ALTER`, or `DROP READWRITE_SPLITTING RULE`.
 - Confirm that status plans use `ALTER READWRITE_SPLITTING RULE ... ENABLE` or `DISABLE`.
 - Confirm that storage unit names are existing logical storage units and are not created by the workflow.
+- Review `algorithm_recommendations` before selecting a load-balance algorithm.
+- `RANDOM` and `ROUND_ROBIN` do not require load-balance properties. `WEIGHT` requires one property per read storage unit.
+- Confirm the returned `plan_id`, `resources_to_read`, `next_actions`, and `distsql_artifacts` before applying the workflow.
 
 For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).
 

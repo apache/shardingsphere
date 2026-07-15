@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="optimize_table" value="OPTIMIZE TABLE table1,table2" db-types="MySQL,Doris" />
+    <sql-case id="optimize_table_rewrite_data" value="OPTIMIZE TABLE t REWRITE DATA" db-types="Hive" />
 </sql-cases>

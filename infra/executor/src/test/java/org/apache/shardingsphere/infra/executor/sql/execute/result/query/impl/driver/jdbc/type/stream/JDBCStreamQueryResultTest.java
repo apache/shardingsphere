@@ -26,9 +26,11 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -138,6 +140,14 @@ class JDBCStreamQueryResultTest {
     }
     
     @Test
+    void assertGetValueByLocalTime() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        LocalTime value = LocalTime.of(1, 2, 3);
+        when(resultSet.getObject(1, LocalTime.class)).thenReturn(value);
+        assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, LocalTime.class), is(value));
+    }
+    
+    @Test
     void assertGetValueByBlob() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         Blob value = mock(Blob.class);
@@ -151,6 +161,14 @@ class JDBCStreamQueryResultTest {
         Clob value = mock(Clob.class);
         when(resultSet.getClob(1)).thenReturn(value);
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, Clob.class), is(value));
+    }
+    
+    @Test
+    void assertGetValueBySQLXML() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        SQLXML value = mock(SQLXML.class);
+        when(resultSet.getSQLXML(1)).thenReturn(value);
+        assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, SQLXML.class), is(value));
     }
     
     @Test
@@ -173,6 +191,13 @@ class JDBCStreamQueryResultTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getObject(1, ZonedDateTime.class)).thenReturn(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1), ZoneId.systemDefault()));
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, ZonedDateTime.class), is(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1), ZoneId.systemDefault())));
+    }
+    
+    @Test
+    void assertGetValueByObject() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1)).thenReturn("value");
+        assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, Object.class), is("value"));
     }
     
     @Test
@@ -274,6 +299,17 @@ class JDBCStreamQueryResultTest {
         assertFalse(actual.wasNull());
         actual.next();
         assertTrue(actual.wasNull());
+    }
+    
+    @Test
+    void assertGetJDBCResultSetWhenContained() throws SQLException {
+        ResultSet resultSet = getResultSet();
+        assertThat(new JDBCStreamQueryResult(resultSet, true).getJDBCResultSet().orElseThrow(IllegalStateException::new), is(resultSet));
+    }
+    
+    @Test
+    void assertGetJDBCResultSetWhenNotContained() throws SQLException {
+        assertFalse(new JDBCStreamQueryResult(getResultSet()).getJDBCResultSet().isPresent());
     }
     
     @Test

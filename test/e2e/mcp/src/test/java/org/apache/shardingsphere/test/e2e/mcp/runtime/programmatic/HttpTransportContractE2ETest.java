@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
-import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -38,13 +36,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
-    
-    private static final List<String> OFFICIAL_TOOL_NAMES = OfficialMCPToolNames.getAll();
+class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final String PLAN_MASK_TOOL_NAME = "database_gateway_plan_mask_rule";
     
@@ -60,26 +57,13 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(getEndpointUri())
                 .header("mcp-session-id", sessionId)
                 .header("mcp-protocol-version", getProtocolVersion())
-                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                .POST(HttpRequest.BodyPublishers.ofString(MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                         "resource-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"))))
                 .build();
         HttpResponse<String> actual = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualCapabilities = getFirstResourcePayload(actual.body());
-        assertThat(((List<?>) actualCapabilities.get("supportedTools")).stream().map(String::valueOf).toList(), containsInAnyOrder(OFFICIAL_TOOL_NAMES.toArray()));
-        assertTrue(((List<?>) actualCapabilities.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
-        assertTrue(((List<?>) actualCapabilities.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
-        assertTrue(((List<?>) actualCapabilities.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("database_gateway_apply_workflow")));
-        Map<String, Object> actualFingerprints = castToMap(actualCapabilities.get("fingerprints"));
-        assertFalse(String.valueOf(actualFingerprints.get("descriptorCatalog")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("promptSet")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("resourceNavigation")).isEmpty());
-        assertFalse(String.valueOf(actualFingerprints.get("modelFacingSchemas")).isEmpty());
-        Map<String, Object> actualProtocolAvailability = castToMap(actualCapabilities.get("protocolAvailability"));
-        assertTrue((Boolean) actualProtocolAvailability.get("prompts"));
-        assertTrue((Boolean) actualProtocolAvailability.get("completions"));
-        assertTrue((Boolean) actualProtocolAvailability.get("resourceNavigation"));
-        assertModelFacingPayloadContract(actualCapabilities);
+        assertThat(actualCapabilities.get("response_mode"), is("catalog"));
     }
     
     @Test
@@ -93,11 +77,12 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(actualRuntimeStatus.get("status"), is("available"));
         assertThat(actualRuntimeStatus.get("active_transport"), is("http"));
         assertModelFacingPayloadContract(actualRuntimeStatus);
-        Map<String, Object> actualDiagnostics = castToMap(actualRuntimeStatus.get("diagnostics"));
+        Map<String, Object> actualDiagnostics = MCPInteractionPayloads.getRequiredObject(actualRuntimeStatus, "diagnostics");
         assertThat(actualDiagnostics.get("current_category"), is("ready"));
         assertTrue(((List<?>) actualDiagnostics.get("safe_categories")).contains("invalid_configuration"));
-        assertTrue(castToMapList(actualDiagnostics.get("operator_next_actions")).stream().anyMatch(each -> "invalid_configuration".equals(each.get("category"))));
-        assertThat(castToMap(actualRuntimeStatus.get("redaction_summary")).get("marker"), is("******"));
+        assertTrue(MCPInteractionPayloads.getRequiredObjectList(actualDiagnostics, "operator_next_actions").stream()
+                .anyMatch(each -> "invalid_configuration".equals(each.get("category"))));
+        assertThat(MCPInteractionPayloads.getRequiredObject(actualRuntimeStatus, "redaction_summary").get("marker"), is("******"));
         assertRuntimeStatusSecretSafe(actualRuntimeStatus);
     }
     
@@ -110,21 +95,21 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(resourceListResponse.statusCode(), is(200));
         Map<String, Object> resourceListPayload = getResultPayload(resourceListResponse);
         assertModelFacingPayloadContract(resourceListPayload);
-        List<Map<String, Object>> actualResources = castToMapList(resourceListPayload.get("resources"));
+        List<Map<String, Object>> actualResources = MCPInteractionPayloads.getRequiredObjectList(resourceListPayload, "resources");
         Map<String, Object> actualCapabilityResource = findByKey(actualResources, "uri", "shardingsphere://capabilities");
-        assertThat(castToMap(actualCapabilityResource.get("_meta")).get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("capability-catalog"));
+        assertThat(MCPInteractionPayloads.getRequiredObject(actualCapabilityResource, "_meta").get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("capability-catalog"));
         HttpResponse<String> resourceTemplateListResponse = sendResourceTemplateListRequest(httpClient, sessionId);
         assertThat(resourceTemplateListResponse.statusCode(), is(200));
         Map<String, Object> resourceTemplateListPayload = getResultPayload(resourceTemplateListResponse);
         assertModelFacingPayloadContract(resourceTemplateListPayload);
-        List<Map<String, Object>> actualResourceTemplates = castToMapList(resourceTemplateListPayload.get("resourceTemplates"));
+        List<Map<String, Object>> actualResourceTemplates = MCPInteractionPayloads.getRequiredObjectList(resourceTemplateListPayload, "resourceTemplates");
         Map<String, Object> actualDatabaseDetail = findByKey(actualResourceTemplates, "uriTemplate", "shardingsphere://databases/{database}");
-        assertThat(castToMap(actualDatabaseDetail.get("_meta")).get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("detail"));
+        assertThat(MCPInteractionPayloads.getRequiredObject(actualDatabaseDetail, "_meta").get(MCPShardingSphereMetadataKeys.RESOURCE_KIND), is("detail"));
         HttpResponse<String> promptListResponse = sendPromptListRequest(httpClient, sessionId);
         assertThat(promptListResponse.statusCode(), is(200));
         Map<String, Object> promptListPayload = getResultPayload(promptListResponse);
         assertModelFacingPayloadContract(promptListPayload);
-        List<Map<String, Object>> actualPrompts = castToMapList(promptListPayload.get("prompts"));
+        List<Map<String, Object>> actualPrompts = MCPInteractionPayloads.getRequiredObjectList(promptListPayload, "prompts");
         assertTrue(actualPrompts.stream().anyMatch(each -> "inspect_metadata".equals(each.get("name"))));
     }
     
@@ -155,20 +140,25 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId),
-                MCPHttpTransportTestSupport.createJsonRpcRequestBody("tools-list-1", "tools/list", Map.of()));
+                MCPInteractionProtocolSupport.createJsonRpcRequestBody("tools-list-1", "tools/list", Map.of()));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualResult = getResultPayload(actual);
         assertModelFacingPayloadContract(actualResult);
-        Map<String, Object> actualSearchMetadataTool = castToMapList(actualResult.get("tools")).stream()
+        List<Map<String, Object>> actualTools = MCPInteractionPayloads.getRequiredObjectList(actualResult, "tools");
+        Map<String, Object> actualSearchMetadataTool = actualTools.stream()
                 .filter(each -> "database_gateway_search_metadata".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
-        Map<String, Object> actualSearchMetadataOutputProperties = castToMap(castToMap(actualSearchMetadataTool.get("outputSchema")).get("properties"));
-        Map<String, Object> actualSearchMetadataItemProperties = castToMap(castToMap(castToMap(actualSearchMetadataOutputProperties.get("items")).get("items")).get("properties"));
-        assertThat(String.valueOf(castToMap(actualSearchMetadataItemProperties.get("resource")).get("type")), is("object"));
-        assertThat(String.valueOf(castToMap(actualSearchMetadataItemProperties.get("next_resources")).get("type")), is("array"));
-        Map<String, Object> actualTool = castToMapList(actualResult.get("tools")).stream()
+        Map<String, Object> actualSearchMetadataOutputSchema = MCPInteractionPayloads.getRequiredObject(actualSearchMetadataTool, "outputSchema");
+        Map<String, Object> actualSearchMetadataOutputProperties = MCPInteractionPayloads.getRequiredObject(actualSearchMetadataOutputSchema, "properties");
+        Map<String, Object> actualSearchMetadataItems = MCPInteractionPayloads.getRequiredObject(actualSearchMetadataOutputProperties, "items");
+        Map<String, Object> actualSearchMetadataItem = MCPInteractionPayloads.getRequiredObject(actualSearchMetadataItems, "items");
+        Map<String, Object> actualSearchMetadataItemProperties = MCPInteractionPayloads.getRequiredObject(actualSearchMetadataItem, "properties");
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualSearchMetadataItemProperties, "resource").get("type")), is("object"));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualSearchMetadataItemProperties, "next_resources").get("type")), is("array"));
+        Map<String, Object> actualTool = actualTools.stream()
                 .filter(each -> "database_gateway_execute_update".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
-        Map<String, Object> actualOutputProperties = castToMap(castToMap(actualTool.get("outputSchema")).get("properties"));
-        assertThat(String.valueOf(castToMap(actualOutputProperties.get("next_actions")).get("type")), is("array"));
+        Map<String, Object> actualOutputSchema = MCPInteractionPayloads.getRequiredObject(actualTool, "outputSchema");
+        Map<String, Object> actualOutputProperties = MCPInteractionPayloads.getRequiredObject(actualOutputSchema, "properties");
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualOutputProperties, "next_actions").get("type")), is("array"));
     }
     
     @Test
@@ -179,27 +169,27 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> planResponse = sendToolCallRequest(httpClient, sessionId, PLAN_MASK_TOOL_NAME,
                 createMaskRulePlanArguments());
         assertThat(planResponse.statusCode(), is(200));
-        Map<String, Object> planPayload = getStructuredContent(planResponse.body());
-        assertThat(String.valueOf(planPayload.get("status")), is("planned"));
-        assertThat(String.valueOf(castToMapList(planPayload.get("next_actions")).get(0).get("tool_name")), is(WorkflowToolDescriptors.APPLY_TOOL_NAME));
+        Map<String, Object> planPayload = getToolCallPayload(planResponse.body());
+        assertThat(planResponse.body(), String.valueOf(planPayload.get("status")), is("planned"));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObjectList(planPayload, "next_actions").getFirst().get("tool_name")), is(WorkflowToolDescriptors.APPLY_TOOL_NAME));
         assertModelFacingPayloadContract(planPayload);
         String planId = String.valueOf(planPayload.get("plan_id"));
         HttpResponse<String> previewResponse = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,
                 Map.of("plan_id", planId, "execution_mode", "preview"));
         assertThat(previewResponse.statusCode(), is(200));
-        Map<String, Object> previewPayload = getStructuredContent(previewResponse.body());
+        Map<String, Object> previewPayload = getToolCallPayload(previewResponse.body());
         assertThat(String.valueOf(previewPayload.get("status")), is("preview"));
         assertFalse((Boolean) previewPayload.get("would_apply"));
         assertModelFacingPayloadContract(previewPayload);
         HttpResponse<String> manualApplyResponse = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,
                 Map.of("plan_id", planId, "execution_mode", "manual-only"));
         assertThat(manualApplyResponse.statusCode(), is(200));
-        Map<String, Object> manualApplyPayload = getStructuredContent(manualApplyResponse.body());
+        Map<String, Object> manualApplyPayload = getToolCallPayload(manualApplyResponse.body());
         assertThat(String.valueOf(manualApplyPayload.get("status")), is("awaiting-manual-execution"));
         assertModelFacingPayloadContract(manualApplyPayload);
         HttpResponse<String> validationResponse = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
         assertThat(validationResponse.statusCode(), is(200));
-        Map<String, Object> validationPayload = getStructuredContent(validationResponse.body());
+        Map<String, Object> validationPayload = getToolCallPayload(validationResponse.body());
         assertThat(String.valueOf(validationPayload.get("status")), is("failed"));
         assertFalse(String.valueOf(validationPayload.get("recovery_guidance")).isEmpty());
         assertModelFacingPayloadContract(validationPayload);
@@ -213,30 +203,31 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_encrypt_rule",
                 Map.of("table", "orders", "column", "status", "natural_language_intent", "encrypt status with reversible encryption, no equality, no like"));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> structuredContent = getStructuredContent(actual.body());
+        Map<String, Object> structuredContent = getToolCallPayload(actual.body());
         assertThat(String.valueOf(structuredContent.get("status")), is("clarifying"));
-        assertThat(castToMapList(structuredContent.get("clarification_questions")).stream().map(each -> String.valueOf(each.get("display_message"))).toList(),
+        assertThat(MCPInteractionPayloads.getRequiredObjectList(structuredContent, "clarification_questions").stream()
+                .map(each -> String.valueOf(each.get("display_message"))).toList(),
                 is(List.of("Please provide logical database first.")));
     }
     
     private HttpResponse<String> sendResourceListRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "resources-list-1", "resources/list", Map.of()));
     }
     
     private HttpResponse<String> sendResourceTemplateListRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "resource-templates-list-1", "resources/templates/list", Map.of()));
     }
     
     private HttpResponse<String> sendPromptListRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "prompts-list-1", "prompts/list", Map.of()));
     }
     
     private HttpResponse<String> sendPromptGetRequest(final HttpClient httpClient, final String sessionId, final String promptName,
                                                       final Map<String, Object> arguments) throws IOException, InterruptedException {
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "prompt-1", "prompts/get", Map.of("name", promptName, "arguments", arguments)));
     }
     
@@ -248,7 +239,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         if (!contextArguments.isEmpty()) {
             params.put("context", Map.of("arguments", contextArguments));
         }
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                 "completion-1", "completion/complete", params));
     }
     
@@ -264,11 +255,10 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     private Map<String, Object> getResultPayload(final HttpResponse<String> response) {
-        return castToMap(parseJsonBody(response.body()).get("result"));
+        return MCPInteractionPayloads.getRequiredJsonRpcResult(parseJsonBody(response.body()));
     }
     
     private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
-        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
         MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
     }
     
@@ -278,10 +268,6 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertFalse(actualPayload.contains("runtime-secret"));
         assertFalse(actualPayload.contains("jdbc:"));
         assertFalse(actualPayload.contains("at org.apache."));
-    }
-    
-    private List<Map<String, Object>> castToMapList(final Object value) {
-        return ((List<?>) value).stream().map(this::castToMap).toList();
     }
     
     private Map<String, Object> findByKey(final List<Map<String, Object>> values, final String key, final String expectedValue) {

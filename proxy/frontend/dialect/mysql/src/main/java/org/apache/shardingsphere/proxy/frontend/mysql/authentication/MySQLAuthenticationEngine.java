@@ -59,6 +59,7 @@ import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -104,7 +105,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         ShardingSpherePreconditions.checkState(authorizeDatabase(rule, grantee, currentAuthResult.getDatabase()),
                 () -> new DatabaseAccessDeniedException(currentAuthResult.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase()));
         writeOKPacket(context);
-        return AuthenticationResultBuilder.finished(grantee.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase());
+        return AuthenticationResultBuilder.finished(grantee.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase(), currentAuthResult.getConnectionAttributes());
     }
     
     private AuthenticationResult authenticatePhaseFastPath(final ChannelHandlerContext context, final PacketPayload payload, final AuthorityRule rule) {
@@ -120,6 +121,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         authResponse = handshakeResponsePacket.getAuthResponse();
         setMultiStatementsOption(context, handshakeResponsePacket);
         setCharacterSet(context, handshakeResponsePacket);
+        setConnectionAttributes(context, handshakeResponsePacket);
         String database = handshakeResponsePacket.getDatabase();
         ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(database) || ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(database),
                 () -> new UnknownDatabaseException(database));
@@ -127,12 +129,13 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         String hostname = getHostAddress(context);
         ShardingSphereUser user = rule.findUser(new Grantee(username, hostname)).orElseGet(() -> new ShardingSphereUser(username, "", hostname));
         Authenticator authenticator = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(user);
+        Map<String, String> connectionAttributes = handshakeResponsePacket.getConnectionAttributes();
         if (0 == authResponse.length || isClientPluginAuthenticate(handshakeResponsePacket) && !authenticator.getAuthenticationMethodName().equals(handshakeResponsePacket.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
             context.writeAndFlush(new MySQLAuthSwitchRequestPacket(authenticator.getAuthenticationMethodName(), authPluginData));
-            return AuthenticationResultBuilder.continued(username, hostname, database);
+            return AuthenticationResultBuilder.continued(username, hostname, database, connectionAttributes);
         }
-        return AuthenticationResultBuilder.finished(username, hostname, database);
+        return AuthenticationResultBuilder.finished(username, hostname, database, connectionAttributes);
     }
     
     private void setMultiStatementsOption(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {
@@ -143,6 +146,10 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLCharacterSets characterSet = MySQLCharacterSets.findById(handshakeResponsePacket.getCharacterSet());
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(characterSet.getCharset());
         context.channel().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).set(characterSet);
+    }
+    
+    private void setConnectionAttributes(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {
+        context.channel().attr(MySQLConstants.CONNECTION_ATTRIBUTES_ATTRIBUTE_KEY).set(handshakeResponsePacket.getConnectionAttributes());
     }
     
     private boolean isClientPluginAuthenticate(final MySQLHandshakeResponse41Packet packet) {

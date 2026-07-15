@@ -19,37 +19,37 @@ package org.apache.shardingsphere.mcp.support.completion;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 
 /**
  * MCP completion provider.
  *
- * @param <T> handler context type
+ * @param <T> required request context type
  */
 @SingletonSPI
-public interface MCPCompletionProvider<T extends MCPHandlerContext> extends ShardingSphereSPI {
+public interface MCPCompletionProvider<T extends MCPRequestContext> extends ShardingSphereSPI {
     
     /**
-     * Get required handler context type.
+     * Get required request context type.
      *
-     * @return handler context type
+     * @return required request context type
      */
     Class<T> getContextType();
     
     /**
      * Judge whether this provider supports the completion request.
      *
-     * @param requestContext completion request context
+     * @param request completion request
      * @return whether this provider supports the completion request
      */
-    boolean supports(MCPCompletionRequestContext requestContext);
+    boolean supports(MCPCompletionRequest request);
     
     /**
      * Complete one MCP argument.
      *
-     * @param handlerContext handler context
-     * @param requestContext completion request context
+     * @param context request context
+     * @param request completion request
      * @return completion provider result
      */
-    MCPCompletionProviderResult complete(T handlerContext, MCPCompletionRequestContext requestContext);
+    MCPCompletionProviderResult complete(T context, MCPCompletionRequest request);
 }

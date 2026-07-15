@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdTransactionIdGeneratorTest {
     
@@ -42,5 +43,16 @@ class FirebirdTransactionIdGeneratorTest {
     void assertNextTransactionId() {
         assertThat(FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID), is(1));
         assertThat(FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID), is(2));
+    }
+    
+    @Test
+    void assertGetTransactionId() {
+        assertThat(FirebirdTransactionIdGenerator.getInstance().getTransactionId(CONNECTION_ID), is(0));
+    }
+    
+    @Test
+    void assertGetTransactionIdWithoutRegisteredConnection() {
+        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        assertThrows(IllegalStateException.class, () -> FirebirdTransactionIdGenerator.getInstance().getTransactionId(CONNECTION_ID));
     }
 }

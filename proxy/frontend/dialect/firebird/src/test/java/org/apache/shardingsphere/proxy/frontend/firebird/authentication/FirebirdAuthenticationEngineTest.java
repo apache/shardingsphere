@@ -233,7 +233,7 @@ class FirebirdAuthenticationEngineTest {
         Attribute<Charset> charsetAttr = mock(Attribute.class);
         when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
-                AuthenticationResultBuilder.continued(currentUsername, "", currentDatabase));
+                AuthenticationResultBuilder.continued(currentUsername, "", currentDatabase, Collections.emptyMap()));
         FirebirdSRPAuthenticationData authData = mock(FirebirdSRPAuthenticationData.class);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("authData"), authenticationEngine, authData);
         FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
@@ -305,7 +305,7 @@ class FirebirdAuthenticationEngineTest {
         Attribute<Charset> charsetAttr = mock(Attribute.class);
         when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
-                AuthenticationResultBuilder.continued("absent", "", "db"));
+                AuthenticationResultBuilder.continued("absent", "", "db", Collections.emptyMap()));
         FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
         try (MockedConstruction<FirebirdAttachPacket> ignored = mockConstruction(FirebirdAttachPacket.class, (attachPacket, construction) -> when(attachPacket.getEncoding()).thenReturn("UTF8"))) {
             assertThrows(AccessDeniedException.class, () -> authenticationEngine.authenticate(context, payload));
@@ -323,7 +323,7 @@ class FirebirdAuthenticationEngineTest {
         Attribute<Charset> charsetAttr = mock(Attribute.class);
         when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
-                AuthenticationResultBuilder.continued("root", "", "db"));
+                AuthenticationResultBuilder.continued("root", "", "db", Collections.emptyMap()));
         FirebirdSRPAuthenticationData authData = mock(FirebirdSRPAuthenticationData.class);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("authData"), authenticationEngine, authData);
         FirebirdAuthenticator authenticator = mock(FirebirdAuthenticator.class);

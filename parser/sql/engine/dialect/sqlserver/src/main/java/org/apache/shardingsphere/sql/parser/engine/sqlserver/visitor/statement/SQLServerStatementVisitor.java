@@ -1365,7 +1365,16 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
                 items.add((OrderByItemSegment) visit(each));
             }
         }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, null != ctx.ROLLUP());
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, null != ctx.ROLLUP(), null != ctx.ROLLUP() || containsGroupingExtension(ctx.groupByItem()));
+    }
+    
+    private boolean containsGroupingExtension(final Collection<GroupByItemContext> groupByItems) {
+        for (GroupByItemContext each : groupByItems) {
+            if (null != each.rollupCubeClause() || null != each.groupingSetsClause()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private Collection<OrderByItemSegment> generateOrderByItemsFromGroupByItem(final GroupByItemContext ctx) {
@@ -1702,10 +1711,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.withClause()) {
             result.with((WithSegment) visit(ctx.withClause()));
         }
-        result.table((TableSegment) visit(ctx.tableReferences()));
+        TableSegment targetTable = (TableSegment) visit(ctx.tableReferences());
+        result.table(targetTable);
         result.setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        TableSegment fromTable = null;
         if (null != ctx.fromClause()) {
-            result.from((TableSegment) visit(ctx.fromClause()));
+            fromTable = (TableSegment) visit(ctx.fromClause());
+            result.from(fromTable);
         }
         if (null != ctx.withTableHint()) {
             result.withTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
@@ -1719,9 +1731,63 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.outputClause()) {
             result.output((OutputSegment) visit(ctx.outputClause()));
         }
+        result.targetTableIsFromAlias(isTargetTableAliasInFromClause(targetTable, fromTable));
         UpdateStatement updateStatement = result.build();
         updateStatement.addParameterMarkers(getParameterMarkerSegments());
         return updateStatement;
+    }
+    
+    private boolean isTargetTableAliasInFromClause(final TableSegment targetTable, final TableSegment fromTable) {
+        if (null == fromTable || !(targetTable instanceof SimpleTableSegment)) {
+            return false;
+        }
+        SimpleTableSegment targetSimpleTable = (SimpleTableSegment) targetTable;
+        String targetName = targetSimpleTable.getTableName().getIdentifier().getValue();
+        return isAliasInFromClause(targetSimpleTable, targetName, fromTable) || isTableNameWithAliasInFromClause(targetSimpleTable, fromTable);
+    }
+    
+    private boolean isAliasInFromClause(final SimpleTableSegment targetTable, final String targetName, final TableSegment fromSegment) {
+        if (targetTable.getOwner().isPresent()) {
+            return false;
+        }
+        if (fromSegment instanceof SimpleTableSegment) {
+            return targetName.equalsIgnoreCase(((SimpleTableSegment) fromSegment).getAliasName().orElse(null));
+        }
+        if (fromSegment instanceof JoinTableSegment) {
+            return isAliasInFromClause(targetTable, targetName, ((JoinTableSegment) fromSegment).getLeft())
+                    || isAliasInFromClause(targetTable, targetName, ((JoinTableSegment) fromSegment).getRight());
+        }
+        return false;
+    }
+    
+    private boolean isTableNameWithAliasInFromClause(final SimpleTableSegment targetTable, final TableSegment fromSegment) {
+        if (fromSegment instanceof SimpleTableSegment) {
+            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) fromSegment;
+            return simpleTableSegment.getAliasName().isPresent()
+                    && targetTable.getTableName().getIdentifier().getValue().equalsIgnoreCase(simpleTableSegment.getTableName().getIdentifier().getValue())
+                    && isSameOwner(targetTable, simpleTableSegment);
+        }
+        if (fromSegment instanceof JoinTableSegment) {
+            return isTableNameWithAliasInFromClause(targetTable, ((JoinTableSegment) fromSegment).getLeft())
+                    || isTableNameWithAliasInFromClause(targetTable, ((JoinTableSegment) fromSegment).getRight());
+        }
+        return false;
+    }
+    
+    private boolean isSameOwner(final SimpleTableSegment targetTable, final SimpleTableSegment fromTable) {
+        if (!targetTable.getOwner().isPresent() && !fromTable.getOwner().isPresent()) {
+            return true;
+        }
+        if (!targetTable.getOwner().isPresent() || !fromTable.getOwner().isPresent()) {
+            return false;
+        }
+        return isSameOwner(targetTable.getOwner().get(), fromTable.getOwner().get());
+    }
+    
+    private boolean isSameOwner(final OwnerSegment targetOwner, final OwnerSegment fromOwner) {
+        return targetOwner.getIdentifier().getValue().equalsIgnoreCase(fromOwner.getIdentifier().getValue())
+                && targetOwner.getOwner().isPresent() == fromOwner.getOwner().isPresent()
+                && (!targetOwner.getOwner().isPresent() || isSameOwner(targetOwner.getOwner().get(), fromOwner.getOwner().get()));
     }
     
     @Override

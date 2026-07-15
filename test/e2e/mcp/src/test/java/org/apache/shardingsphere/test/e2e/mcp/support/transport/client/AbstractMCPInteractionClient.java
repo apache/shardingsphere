@@ -28,12 +28,13 @@ abstract class AbstractMCPInteractionClient implements MCPInteractionClient {
     
     @Override
     public final Map<String, Object> call(final String actionName, final Map<String, Object> arguments) throws IOException, InterruptedException {
-        return MCPInteractionPayloads.getStructuredContent(sendInitializedRequest(actionName + "-1", "tools/call", Map.of("name", actionName, "arguments", arguments)));
+        return MCPInteractionPayloads.getToolCallPayload(sendInitializedRequest(actionName + "-1", "tools/call", Map.of("name", actionName, "arguments", arguments)));
     }
     
     @Override
     public final List<Map<String, Object>> listTools() throws IOException, InterruptedException {
-        return MCPInteractionPayloads.castToList(MCPInteractionPayloads.getJsonRpcResult(sendInitializedRequest("tools-list-1", "tools/list", Map.of())).get("tools"));
+        return MCPInteractionPayloads.getRequiredObjectList(
+                MCPInteractionPayloads.getRequiredJsonRpcResult(sendInitializedRequest("tools-list-1", "tools/list", Map.of())), "tools");
     }
     
     @Override
@@ -43,7 +44,7 @@ abstract class AbstractMCPInteractionClient implements MCPInteractionClient {
     
     @Override
     public final Map<String, Object> listResourceTemplates() throws IOException, InterruptedException {
-        return MCPInteractionPayloads.getJsonRpcResult(sendInitializedRequest("resources-templates-list-1", "resources/templates/list", Map.of()));
+        return getObjectListResultOrError(sendInitializedRequest("resources-templates-list-1", "resources/templates/list", Map.of()), "resourceTemplates");
     }
     
     @Override
@@ -58,12 +59,12 @@ abstract class AbstractMCPInteractionClient implements MCPInteractionClient {
     
     @Override
     public final Map<String, Object> listPrompts() throws IOException, InterruptedException {
-        return MCPInteractionPayloads.getJsonRpcResult(sendInitializedRequest("prompts-list-1", "prompts/list", Map.of()));
+        return getObjectListResultOrError(sendInitializedRequest("prompts-list-1", "prompts/list", Map.of()), "prompts");
     }
     
     @Override
     public final Map<String, Object> getPrompt(final String promptName, final Map<String, Object> arguments) throws IOException, InterruptedException {
-        return MCPInteractionPayloads.getJsonRpcResult(sendInitializedRequest("prompts-get-1", "prompts/get", Map.of("name", promptName, "arguments", arguments)));
+        return getObjectListResultOrError(sendInitializedRequest("prompts-get-1", "prompts/get", Map.of("name", promptName, "arguments", arguments)), "messages");
     }
     
     @Override
@@ -75,7 +76,13 @@ abstract class AbstractMCPInteractionClient implements MCPInteractionClient {
         if (!contextArguments.isEmpty()) {
             params.put("context", Map.of("arguments", contextArguments));
         }
-        return MCPInteractionPayloads.getJsonRpcResult(sendInitializedRequest("completion-complete-1", "completion/complete", params));
+        Map<String, Object> payload = sendInitializedRequest("completion-complete-1", "completion/complete", params);
+        if (MCPInteractionPayloads.hasJsonRpcError(payload)) {
+            return MCPInteractionPayloads.getJsonRpcErrorPayload(payload);
+        }
+        Map<String, Object> result = MCPInteractionPayloads.getRequiredJsonRpcResult(payload);
+        MCPInteractionPayloads.getRequiredObject(result, "completion");
+        return result;
     }
     
     protected abstract void ensureOpened();
@@ -85,5 +92,14 @@ abstract class AbstractMCPInteractionClient implements MCPInteractionClient {
     private Map<String, Object> sendInitializedRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException, InterruptedException {
         ensureOpened();
         return sendRequest(requestId, method, params);
+    }
+    
+    private Map<String, Object> getObjectListResultOrError(final Map<String, Object> payload, final String fieldName) {
+        if (MCPInteractionPayloads.hasJsonRpcError(payload)) {
+            return MCPInteractionPayloads.getJsonRpcErrorPayload(payload);
+        }
+        Map<String, Object> result = MCPInteractionPayloads.getRequiredJsonRpcResult(payload);
+        MCPInteractionPayloads.getRequiredObjectList(result, fieldName);
+        return result;
     }
 }

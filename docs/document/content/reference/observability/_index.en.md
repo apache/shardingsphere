@@ -1,6 +1,6 @@
 +++
 pre = "<b>7.10. </b>"
-title = "Oberservability"
+title = "Observability"
 weight = 10
 +++
 

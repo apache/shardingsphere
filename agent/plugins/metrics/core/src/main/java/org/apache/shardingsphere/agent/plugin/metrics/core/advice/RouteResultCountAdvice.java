@@ -24,27 +24,38 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsColl
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Route result count advice.
  */
 public final class RouteResultCountAdvice extends AbstractInstanceMethodAdvice {
     
-    private final MetricConfiguration routedResultConfig = new MetricConfiguration("routed_result_total",
-            MetricCollectorType.COUNTER, "Total count of routed result", Arrays.asList("object", "name"));
+    private final MetricConfiguration routedStorageUnitResultConfig = new MetricConfiguration("routed_storage_unit_total",
+            MetricCollectorType.COUNTER, "Total count of routed storage unit total", Arrays.asList("database", "name"));
+    
+    private final MetricConfiguration routedTableResultConfig = new MetricConfiguration("routed_table_total",
+            MetricCollectorType.COUNTER, "Total count of routed table total", Arrays.asList("database", "name"));
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         if (null == result) {
             return;
         }
+        ShardingSphereDatabase database = (ShardingSphereDatabase) args[2];
         for (RouteUnit each : ((RouteContext) result).getRouteUnits()) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(routedResultConfig, pluginType).inc("data_source", each.getDataSourceMapper().getActualName());
-            each.getTableMappers().forEach(table -> MetricsCollectorRegistry.<CounterMetricsCollector>get(routedResultConfig, pluginType).inc("table", table.getActualName()));
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(routedStorageUnitResultConfig, pluginType).inc(database.getName(), each.getDataSourceMapper().getActualName());
+        }
+        QueryContext queryContext = (QueryContext) args[0];
+        Collection<String> tableNames = queryContext.getSqlStatementContext().getTablesContext().getTableNames();
+        for (String each : tableNames) {
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(routedTableResultConfig, pluginType).inc(database.getName(), each);
         }
     }
 }

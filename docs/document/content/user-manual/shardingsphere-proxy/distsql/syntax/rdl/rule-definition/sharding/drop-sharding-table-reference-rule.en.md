@@ -29,7 +29,7 @@ ruleName ::=
 
 ### Supplement
 
-- `ifExists` clause is used for avoid `Sharding reference rule not exists` error.
+- `ifExists` clause is used to avoid `Sharding reference rule not exists` error.
 ### Example
 
 - Drop a specified sharding table reference rule

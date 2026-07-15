@@ -7,7 +7,7 @@ weight = 2
 
 ### Environment
 
-Supported MySQL versions: 5.1.15 to 8.0.x.
+Supported MySQL versions: 5.1.15 to 8.4.x.
 
 ### Authority required
 
@@ -237,7 +237,7 @@ Result example:
 COMMIT MIGRATION 'j0102p00002333dcb3d9db141cef14bed6fbf1ab54';
 ```
 
-Please refer to [RAL#Migration](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#migration) for more details.
+Please refer to [RAL#Migration](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/migration/) for more details.
 
 ## PostgreSQL user guide
 
@@ -444,7 +444,7 @@ Result example:
 COMMIT MIGRATION 'j0102p00002333dcb3d9db141cef14bed6fbf1ab54';
 ```
 
-Please refer to [RAL#Migration](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#migration) for more details.
+Please refer to [RAL#Migration](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/migration/) for more details.
 
 ## openGauss user guide
 
@@ -702,4 +702,4 @@ Result example:
 COMMIT MIGRATION 'j0102p00002333dcb3d9db141cef14bed6fbf1ab54';
 ```
 
-Please refer to [RAL#Migration](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#migration) for more details.
+Please refer to [RAL#Migration](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/migration/) for more details.

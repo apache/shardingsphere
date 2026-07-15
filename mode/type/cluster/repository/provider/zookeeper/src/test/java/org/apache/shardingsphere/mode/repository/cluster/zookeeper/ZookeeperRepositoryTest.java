@@ -34,15 +34,20 @@ import org.apache.zookeeper.data.Stat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -98,23 +103,27 @@ class ZookeeperRepositoryTest {
         assertThrows(ClusterRepositoryPersistException.class, () -> repository.isExisted("/test"));
     }
     
-    @Test
-    void assertPersistEphemeralNotExist() {
-        repository.persistEphemeral("/test/ephemeral", "value3");
-        assertThat(repository.query("/test/ephemeral"), is("value3"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("persistEphemeralData")
+    void assertPersistEphemeral(final String name, final boolean existed, final String key, final String value) {
+        if (existed) {
+            fixture.ephemeralData.put(key, "old_value".getBytes(StandardCharsets.UTF_8));
+        }
+        repository.persistEphemeral(key, value);
+        assertThat(repository.query(key), is(value));
+    }
+    
+    private static Stream<Arguments> persistEphemeralData() {
+        return Stream.of(
+                Arguments.of("not existed key", false, "/test/ephemeral", "value3"),
+                Arguments.of("existed key", true, "/test/ephemeral", "value4"),
+                Arguments.of("existed child key", true, "/test/ephemeral/child", "value5"));
     }
     
     @Test
     void assertPersistEphemeralThrowsExceptionWhenConnectionLost() {
         fixture.throwConnectionLossOnCheckExists = true;
         assertThrows(ClusterRepositoryPersistException.class, () -> repository.persistEphemeral("/test/ephemeral", "value3"));
-    }
-    
-    @Test
-    void assertPersistEphemeralExist() {
-        repository.persistEphemeral("/test/ephemeral", "value3");
-        repository.persistEphemeral("/test/ephemeral", "value4");
-        assertThat(repository.query("/test/ephemeral"), is("value4"));
     }
     
     @Test

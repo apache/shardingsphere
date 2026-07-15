@@ -22,8 +22,8 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectio
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequestContext;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 
 import java.util.Map;
 import java.util.Objects;
@@ -31,27 +31,27 @@ import java.util.Objects;
 /**
  * Mask algorithm completion provider.
  */
-public final class MaskAlgorithmCompletionProvider implements MCPCompletionProvider<MCPDatabaseHandlerContext> {
+public final class MaskAlgorithmCompletionProvider implements MCPCompletionProvider<MCPDatabaseRequestContext> {
     
     private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPDatabaseRequestContext> getContextType() {
+        return MCPDatabaseRequestContext.class;
     }
     
     @Override
-    public boolean supports(final MCPCompletionRequestContext requestContext) {
-        return "algorithm_type".equals(requestContext.getArgumentName()) && isMaskReference(requestContext);
+    public boolean supports(final MCPCompletionRequest request) {
+        return "algorithm_type".equals(request.getArgumentName()) && isMaskReference(request);
     }
     
-    private boolean isMaskReference(final MCPCompletionRequestContext requestContext) {
-        String reference = requestContext.getDescriptor().getReference();
+    private boolean isMaskReference(final MCPCompletionRequest request) {
+        String reference = request.getDescriptor().getReference();
         return MaskFeatureDefinition.PLAN_PROMPT_NAME.equals(reference) || MaskFeatureDefinition.ALGORITHMS_RESOURCE_URI.equals(reference);
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPDatabaseHandlerContext handlerContext, final MCPCompletionRequestContext requestContext) {
+    public MCPCompletionProviderResult complete(final MCPDatabaseRequestContext handlerContext, final MCPCompletionRequest request) {
         return new MCPCompletionProviderResult(ruleInspectionService.queryMaskAlgorithms(handlerContext.getQueryFacade()).stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty()).toList());
     }

@@ -42,7 +42,7 @@ public final class MCPRegistryMetadataCommand {
     
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     
-    private static final String SCHEMA_URL = "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json";
+    private static final String REGISTRY_SCHEMA_URL = "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json";
     
     private static final String SERVER_NAME = "io.github.apache/shardingsphere-mcp";
     
@@ -53,6 +53,10 @@ public final class MCPRegistryMetadataCommand {
     private static final Set<String> SUPPORTED_TRANSPORTS = Set.of("stdio", "streamable-http");
     
     private static final String PACKAGE_SHAPE_ERROR_MESSAGE = "server.json packages must contain exactly one stdio OCI package and one streamable-http OCI package.";
+    
+    private static final String STREAMABLE_HTTP_RUNTIME_HINT = "docker";
+    
+    private static final String STREAMABLE_HTTP_PORT_ARGUMENT = "127.0.0.1:18088:18088";
     
     /**
      * Main entrance.
@@ -151,7 +155,7 @@ public final class MCPRegistryMetadataCommand {
     }
     
     private static void validateServerJson(final Map<String, Object> server, final boolean allowSnapshot) {
-        ShardingSpherePreconditions.checkState(SCHEMA_URL.equals(server.get("$schema")), () -> new IllegalArgumentException("server.json must use the official MCP Registry schema."));
+        ShardingSpherePreconditions.checkState(REGISTRY_SCHEMA_URL.equals(server.get("$schema")), () -> new IllegalArgumentException("server.json must use the official MCP Registry schema."));
         ShardingSpherePreconditions.checkState(SERVER_NAME.equals(server.get("name")),
                 () -> new IllegalArgumentException("server.json name must match the published ShardingSphere MCP server name."));
         validateString(server, "description", 100);
@@ -186,10 +190,22 @@ public final class MCPRegistryMetadataCommand {
                 () -> new IllegalArgumentException("MCP Registry package transport type must be stdio or streamable-http."));
         if ("streamable-http".equals(transportType)) {
             validateHttpUrl(transport.get("url"));
+            validateStreamableHttpRuntime(packageMetadata);
         }
         validateEnvironmentVariable(packageMetadata, "SHARDINGSPHERE_MCP_TRANSPORT");
         validateEnvironmentVariable(packageMetadata, "SHARDINGSPHERE_MCP_CONFIG");
         return transportType;
+    }
+    
+    private static void validateStreamableHttpRuntime(final Map<String, Object> packageMetadata) {
+        ShardingSpherePreconditions.checkState(STREAMABLE_HTTP_RUNTIME_HINT.equals(packageMetadata.get("runtimeHint")),
+                () -> new IllegalArgumentException("streamable-http OCI package runtimeHint must be docker."));
+        Object runtimeArguments = packageMetadata.get("runtimeArguments");
+        ShardingSpherePreconditions.checkState(runtimeArguments instanceof List<?> && 1 == ((List<?>) runtimeArguments).size(),
+                () -> new IllegalArgumentException("streamable-http OCI package must define one Docker port runtime argument."));
+        Map<String, Object> portArgument = asMap(((List<?>) runtimeArguments).get(0), "streamable-http OCI package runtime argument must be an object.");
+        ShardingSpherePreconditions.checkState("named".equals(portArgument.get("type")) && "-p".equals(portArgument.get("name")) && STREAMABLE_HTTP_PORT_ARGUMENT.equals(portArgument.get("value")),
+                () -> new IllegalArgumentException("streamable-http OCI package must expose Docker port 18088 on 127.0.0.1."));
     }
     
     private static List<Map<String, Object>> getPackages(final Map<String, Object> server) {

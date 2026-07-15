@@ -78,15 +78,16 @@
       An operator asks for current order counts and an execution explanation on a configured runtime database. Explain how the model should
       answer using MCP while preserving a read-only SQL boundary.
     </question>
-    <answer>metadata_resources|database_gateway_execute_query|no_update_or_apply</answer>
+    <answer>metadata|database_gateway_execute_query|database_gateway_execute_explain_query|read_only</answer>
     <expected_answer>
-      The model should confirm the target database and schema through metadata resources, then call database_gateway_execute_query for SELECT
-      or supported EXPLAIN style statements with a bounded max_rows value. It should report the structured result evidence instead of guessing
-      counts, and it must not call database_gateway_execute_update, database_gateway_apply_workflow, or any approval-gated side-effect path for
-      this read-only request.
+      The model should confirm the target database and schema through metadata resources, call database_gateway_execute_query for the SELECT
+      count, then generate database-native EXPLAIN SQL without ANALYZE and call database_gateway_execute_explain_query with the original SELECT
+      as sql and the generated statement as explain_sql. It should report both structured results instead of guessing, and it must not call
+      database_gateway_execute_update, database_gateway_apply_workflow, or any approval-gated side-effect path for this read-only request.
     </expected_answer>
     <verification>
-      <step>Confirm the answer uses database_gateway_execute_query for SELECT or EXPLAIN style SQL.</step>
+      <step>Confirm the answer uses database_gateway_execute_query only for SELECT.</step>
+      <step>Confirm the answer uses database_gateway_execute_explain_query with separate sql and explain_sql arguments and excludes EXPLAIN ANALYZE.</step>
       <step>Confirm the answer requires metadata-backed database and schema selection before the query.</step>
       <step>Confirm the answer forbids update and workflow apply tools for this request.</step>
     </verification>
@@ -147,38 +148,46 @@
   </qa_pair>
   <qa_pair id="q08" category="encrypt" read_only="true">
     <question>
-      A user asks for an encrypt rule for a logical column that may need cipher, assisted query, and like query columns. Explain how the model
-      should build a reviewable plan without applying changes to the runtime database.
+      A user asks for reviewable feature-rule plans across encrypt, broadcast, readwrite-splitting, shadow, and sharding modules, but has not
+      approved runtime metadata changes. Explain how the model should discover feature resources, choose the right planning tools, and stop
+      before side effects.
     </question>
-    <answer>metadata|encrypt_algorithms|plan_encrypt_rule|no_apply_execute</answer>
+    <answer>feature_resources|plan_feature_workflows|no_apply_execute</answer>
     <expected_answer>
-      The model should inspect the table and column metadata first, use completion or descriptor information to choose supported encrypt
-      algorithms, and call database_gateway_plan_encrypt_rule with explicit logical, cipher, assisted query, and like query intent where needed.
-      The response should be treated as a reviewable workflow plan containing rule details, DistSQL, physical DDL where applicable, validation
-      layers, and next_actions. It must not call workflow apply in execute mode or perform data migration.
+      The model should first use tools/list, resources/templates/list, and resources/read to discover the feature resources for encrypt,
+      broadcast, readwrite-splitting, shadow, and sharding instead of guessing tool names. It should call the matching planning tool only
+      after required logical database, rule, table, storage-unit, or algorithm inputs are known: database_gateway_plan_encrypt_rule,
+      database_gateway_plan_broadcast_rule, database_gateway_plan_readwrite_splitting_rule, database_gateway_plan_shadow_rule, or
+      database_gateway_plan_sharding_table_rule. The model should then report plan_id, reviewable DistSQL artifacts, resources_to_read,
+      and next_actions. It must not call database_gateway_apply_workflow in execute mode, execute SQL updates, create physical metadata,
+      or perform physical data changes while the request is still a read-only review.
     </expected_answer>
     <verification>
-      <step>Confirm the answer starts from table and column metadata rather than guessed columns.</step>
-      <step>Confirm the answer uses database_gateway_plan_encrypt_rule for the encrypt workflow plan.</step>
-      <step>Confirm the answer covers cipher, assisted query, like query, validation, and no data migration.</step>
+      <step>Confirm the answer discovers feature resources and tool schemas before selecting a planning workflow.</step>
+      <step>Confirm the answer mentions representative planning tools for encrypt, broadcast, readwrite-splitting, shadow, and sharding.</step>
+      <step>Confirm the answer preserves plan_id, resources_to_read, next_actions, and forbids workflow execution mode.</step>
     </verification>
   </qa_pair>
   <qa_pair id="q09" category="mask" read_only="true">
     <question>
-      A user asks for a mask rule on a column but gives an algorithm name that may be unsupported and a field semantic that may be incomplete.
-      Describe how the model should recover while staying read-only.
+      A user asks for mask, readwrite-splitting, shadow, and sharding planning but supplies uncertain algorithm or plugin type names. Describe
+      how the model should use completion, resources/read, and shardingsphere:// plugin resources to recover without leaking configuration
+      details or mutating metadata.
     </question>
-    <answer>mask_descriptors_or_completion|plan_mask_rule_when_complete|return_recovery_next_actions</answer>
+    <answer>completion_or_plugin_resources|bounded_candidates|return_next_actions</answer>
     <expected_answer>
-      The model should inspect mask descriptors and algorithm completion data before planning, then call database_gateway_plan_mask_rule only
-      when the table, column, algorithm, and field semantics are specific enough. If the algorithm or semantic details are missing, it should
-      return the recovery message and next_actions from the planning response or ask for the missing information. It must not invent an
-      algorithm, apply a workflow, or alter runtime metadata while recovering.
+      The model should use completion/complete or resources/read against the nearest shardingsphere:// plugin resource before choosing
+      uncertain algorithm fields: shardingsphere://features/mask/algorithms,
+      shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins, shardingsphere://features/shadow/algorithm-plugins,
+      shardingsphere://features/sharding/algorithm-plugins, and shardingsphere://features/sharding/key-generate-algorithm-plugins.
+      It should treat returned values as bounded candidates, keep context arguments such as database or resource reference explicit, and avoid
+      exposing secret property values as completion suggestions. If completion has no safe candidate, it should use the recovery message,
+      resources_to_read, and next_actions from the planning response instead of inventing an algorithm or applying a workflow.
     </expected_answer>
     <verification>
-      <step>Confirm the answer uses descriptor or completion evidence before planning a mask rule.</step>
-      <step>Confirm the answer uses database_gateway_plan_mask_rule only after required inputs are specific.</step>
-      <step>Confirm the answer preserves recovery next_actions and forbids invented algorithms or metadata changes.</step>
+      <step>Confirm the answer uses completion/complete or resources/read plugin resources before selecting uncertain algorithm names.</step>
+      <step>Confirm the answer covers mask, readwrite-splitting, shadow, and sharding plugin completion sources.</step>
+      <step>Confirm the answer keeps completion bounded, secret-safe, and uses recovery next_actions instead of mutation.</step>
     </verification>
   </qa_pair>
   <qa_pair id="q10" category="transport_security" read_only="true">
@@ -188,13 +197,13 @@
     </question>
     <answer>no_builtin_auth|origin_403|gateway_auth_boundary</answer>
     <expected_answer>
-      The built-in ShardingSphere MCP HTTP runtime does not provide authorization in this release; transport.type only selects the active
+      The built-in ShardingSphere MCP HTTP runtime does not provide authentication or authorization; transport.type only selects the active
       transport, and bindHost controls the listener address. Missing Origin is accepted for non-browser clients, but any present Origin on a
       non-loopback binding is rejected with 403. Authentication and authorization must be enforced by the trusted network, reverse proxy, or
       gateway, and the answer should not invent OAuth or token YAML fields.
     </expected_answer>
     <verification>
-      <step>Confirm the answer says built-in Streamable HTTP authorization is absent in this release.</step>
+      <step>Confirm the answer says built-in Streamable HTTP authentication and authorization are absent.</step>
       <step>Confirm the answer states present Origin headers are rejected for non-loopback bindings.</step>
       <step>Confirm the answer places authentication at a trusted gateway or network boundary.</step>
     </verification>

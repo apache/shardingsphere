@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
 /**
  * Workflow lifecycle utility methods.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowLifecycleUtils {
-    
-    private WorkflowLifecycleUtils() {
-    }
     
     /**
      * Check whether the workflow snapshot belongs to the current session.
@@ -36,7 +36,7 @@ public final class WorkflowLifecycleUtils {
      * @return whether the snapshot belongs to the session
      */
     public static boolean isOwnedBySession(final String sessionId, final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getSessionId() || snapshot.getSessionId().isBlank() || snapshot.getSessionId().equals(sessionId);
+        return sessionId.equals(snapshot.getSessionId());
     }
     
     /**
@@ -50,16 +50,6 @@ public final class WorkflowLifecycleUtils {
     }
     
     /**
-     * Resolve the workflow operation type from the snapshot.
-     *
-     * @param snapshot workflow snapshot
-     * @return workflow operation type
-     */
-    public static String resolveOperationType(final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getClarifiedIntent() ? "" : snapshot.getClarifiedIntent().getOperationType();
-    }
-    
-    /**
      * Check whether the workflow is a drop operation.
      *
      * @param snapshot workflow snapshot
@@ -67,5 +57,9 @@ public final class WorkflowLifecycleUtils {
      */
     public static boolean isDropWorkflow(final WorkflowContextSnapshot snapshot) {
         return WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(resolveOperationType(snapshot));
+    }
+    
+    private static String resolveOperationType(final WorkflowContextSnapshot snapshot) {
+        return null == snapshot.getClarifiedIntent() ? "" : snapshot.getClarifiedIntent().getOperationType();
     }
 }

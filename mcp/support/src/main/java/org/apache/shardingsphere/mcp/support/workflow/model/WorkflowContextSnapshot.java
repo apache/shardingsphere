@@ -96,11 +96,11 @@ public final class WorkflowContextSnapshot {
         result.setFeatureData(null == featureData ? null : featureData.copy());
         result.setInteractionPlan(copyInteractionPlan(interactionPlan));
         issues.forEach(each -> result.getIssues().add(copyWorkflowIssue(each)));
-        algorithmCandidates.forEach(each -> result.getAlgorithmCandidates().add(copyAlgorithmCandidate(each)));
-        propertyRequirements.forEach(each -> result.getPropertyRequirements().add(copyPropertyRequirement(each)));
-        ddlArtifacts.forEach(each -> result.getDdlArtifacts().add(new DDLArtifact(each.getArtifactType(), each.getSql(), each.getExecutionOrder())));
-        ruleArtifacts.forEach(each -> result.getRuleArtifacts().add(new RuleArtifact(each.getOperationType(), each.getSql())));
-        indexPlans.forEach(each -> result.getIndexPlans().add(new IndexPlan(each.getIndexName(), each.getColumnName(), each.getReason(), each.getSql())));
+        result.getAlgorithmCandidates().addAll(algorithmCandidates);
+        result.getPropertyRequirements().addAll(propertyRequirements);
+        result.getDdlArtifacts().addAll(ddlArtifacts);
+        result.getRuleArtifacts().addAll(ruleArtifacts);
+        result.getIndexPlans().addAll(indexPlans);
         result.setValidationReport(copyValidationReport(validationReport));
         return result;
     }
@@ -141,17 +141,6 @@ public final class WorkflowContextSnapshot {
     private static WorkflowIssue copyWorkflowIssue(final WorkflowIssue original) {
         return new WorkflowIssue(original.getCode(), original.getSeverity(), original.getStage(), original.getMessage(),
                 original.getUserAction(), original.isRetryable(), copyMap(original.getDetails()));
-    }
-    
-    private static AlgorithmCandidate copyAlgorithmCandidate(final AlgorithmCandidate original) {
-        return new AlgorithmCandidate(original.getAlgorithmRole(), original.getAlgorithmType(), original.getSupportsDecrypt(),
-                original.getSupportsEquivalentFilter(), original.getSupportsLike(), original.getRecommendationScore(),
-                original.getRecommendationReason(), original.getRiskNotes());
-    }
-    
-    private static AlgorithmPropertyRequirement copyPropertyRequirement(final AlgorithmPropertyRequirement original) {
-        return new AlgorithmPropertyRequirement(original.getAlgorithmRole(), original.getPropertyKey(), original.isRequired(),
-                original.isSecret(), original.getDescription(), original.getDefaultValue());
     }
     
     private static ValidationReport copyValidationReport(final ValidationReport original) {

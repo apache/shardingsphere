@@ -50,7 +50,7 @@ class OpenGaussTest {
     
     @SuppressWarnings("resource")
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("opengauss/opengauss-server:7.0.0-RC1")
+    private final GenericContainer<?> container = new GenericContainer<>("opengauss/opengauss-server:7.0.0-RC3.B025-openEuler22.03")
             .withEnv("GS_PASSWORD", password)
             .withExposedPorts(5432);
     

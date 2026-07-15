@@ -164,9 +164,9 @@ final class SQLStatementScanner {
                 currentIndex = stopIndex + 1;
                 continue;
             }
-            if (isWordCharacter(currentChar)) {
+            if (isIdentifierCharacter(currentChar)) {
                 int stopIndex = currentIndex;
-                while (stopIndex < sql.length() && isWordCharacter(sql.charAt(stopIndex))) {
+                while (stopIndex < sql.length() && isIdentifierCharacter(sql.charAt(stopIndex))) {
                     stopIndex++;
                 }
                 result.add(new SQLStatementToken(sql.substring(currentIndex, stopIndex), false));
@@ -211,7 +211,7 @@ final class SQLStatementScanner {
         return normalizeIdentifier(identifier).toUpperCase(Locale.ENGLISH);
     }
     
-    boolean containsMySQLExecutableComment(final String sql) {
+    boolean containsExecutableComment(final String sql) {
         int currentIndex = 0;
         while (currentIndex < sql.length()) {
             if (isLineCommentStart(sql, currentIndex)) {
@@ -219,7 +219,7 @@ final class SQLStatementScanner {
                 continue;
             }
             if (isBlockCommentStart(sql, currentIndex)) {
-                if (currentIndex + 2 < sql.length() && '!' == sql.charAt(currentIndex + 2)) {
+                if (isExecutableCommentStart(sql, currentIndex)) {
                     return true;
                 }
                 currentIndex = skipBlockComment(sql, currentIndex) + 1;
@@ -232,6 +232,13 @@ final class SQLStatementScanner {
             currentIndex++;
         }
         return false;
+    }
+    
+    private boolean isExecutableCommentStart(final String sql, final int startIndex) {
+        if (startIndex + 2 < sql.length() && '!' == sql.charAt(startIndex + 2)) {
+            return true;
+        }
+        return startIndex + 3 < sql.length() && 'M' == Character.toUpperCase(sql.charAt(startIndex + 2)) && '!' == sql.charAt(startIndex + 3);
     }
     
     boolean containsUserVariableAssignment(final String sql) {
@@ -323,10 +330,6 @@ final class SQLStatementScanner {
     
     private boolean isIdentifierCharacter(final char value) {
         return Character.isLetterOrDigit(value) || '_' == value || '$' == value;
-    }
-    
-    private boolean isWordCharacter(final char value) {
-        return isIdentifierCharacter(value);
     }
     
     private boolean isQuotedIdentifierStart(final char value) {

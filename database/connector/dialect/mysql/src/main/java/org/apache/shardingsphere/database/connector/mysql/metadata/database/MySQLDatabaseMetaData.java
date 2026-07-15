@@ -27,12 +27,15 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLDataTypeOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLFunctionOption;
+import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLGeneratedKeyOption;
 
-import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -67,13 +70,18 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
+    public DialectSchemaOption getSchemaOption() {
+        return new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA);
+    }
+    
+    @Override
     public DialectConnectionOption getConnectionOption() {
         return new DialectConnectionOption(true, true);
     }
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_REPEATABLE_READ, false, false,
+        return new DialectTransactionOption(false, false, true, false, true, false, false,
                 Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource"));
     }
     
@@ -84,7 +92,7 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public Optional<DialectGeneratedKeyOption> getGeneratedKeyOption() {
-        return Optional.of(new DialectGeneratedKeyOption("GENERATED_KEY"));
+        return Optional.of(new MySQLGeneratedKeyOption());
     }
     
     @Override

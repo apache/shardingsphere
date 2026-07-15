@@ -43,7 +43,7 @@ class AlterSchemaPushDownMetaDataRefresherTest {
     
     @Test
     void assertRefreshRenamesSchema() {
-        final SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
+        SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
         AlterSchemaStatement sqlStatement = new AlterSchemaStatement(databaseType);
         sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
         sqlStatement.setRenameSchema(new IdentifierValue("BAR_SCHEMA"));
@@ -53,21 +53,8 @@ class AlterSchemaPushDownMetaDataRefresherTest {
     }
     
     @Test
-    void assertRefreshRenamesSchemaWithSensitiveProps() {
-        final SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
-        AlterSchemaStatement sqlStatement = new AlterSchemaStatement(databaseType);
-        sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
-        sqlStatement.setRenameSchema(new IdentifierValue("BAR_SCHEMA"));
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(props));
-        assertThat(persistService.getSourceSchemaName(), is("FOO_SCHEMA"));
-        assertThat(persistService.getRenamedSchemaName(), is("bar_schema"));
-    }
-    
-    @Test
     void assertRefreshDoesNothingWithoutRename() {
-        final SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
+        SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
         AlterSchemaStatement sqlStatement = new AlterSchemaStatement(databaseType);
         sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
         refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));

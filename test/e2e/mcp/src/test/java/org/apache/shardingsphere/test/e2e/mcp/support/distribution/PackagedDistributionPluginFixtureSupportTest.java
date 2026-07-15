@@ -66,7 +66,8 @@ class PackagedDistributionPluginFixtureSupportTest {
             assertThat(descriptorResources.toList(), hasItem(DESCRIPTOR_ENTRY));
             try {
                 currentThread.setContextClassLoader(classLoader);
-                assertThat(MCPDescriptorCatalogLoader.load().getToolDescriptors().stream().map(MCPToolDescriptor::getName).toList(), hasItem("fixture_ping"));
+                assertThat(MCPDescriptorCatalogLoader.load().getProtocolDescriptors().getToolDescriptors().stream()
+                        .map(MCPToolDescriptor::getName).toList(), hasItem("fixture_ping"));
             } finally {
                 currentThread.setContextClassLoader(originalClassLoader);
             }

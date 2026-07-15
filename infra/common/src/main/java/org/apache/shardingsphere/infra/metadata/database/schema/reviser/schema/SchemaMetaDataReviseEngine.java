@@ -18,15 +18,20 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,6 +45,8 @@ public final class SchemaMetaDataReviseEngine {
     private final Collection<ShardingSphereRule> rules;
     
     private final ConfigurationProperties props;
+    
+    private final Collection<ShardingSphereSchema> revisionCandidateSchemas;
     
     /**
      * Revise schema meta data.
@@ -58,13 +65,32 @@ public final class SchemaMetaDataReviseEngine {
     
     private <T extends ShardingSphereRule> SchemaMetaData revise(final SchemaMetaData originalMetaData, final T rule, final MetaDataReviseEntry<T> reviseEntry) {
         TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, reviseEntry);
+        Collection<TableMetaData> revisionCandidateTableMetaDataList = createRevisionCandidateTableMetaDataList(originalMetaData);
         Optional<? extends SchemaTableAggregationReviser<T>> aggregationReviser = reviseEntry.getSchemaTableAggregationReviser(props);
         if (!aggregationReviser.isPresent()) {
-            return new SchemaMetaData(originalMetaData.getName(), originalMetaData.getTables().stream().map(tableMetaDataReviseEngine::revise).collect(Collectors.toList()));
+            return new SchemaMetaData(originalMetaData.getName(), originalMetaData.getTables().stream()
+                    .map(each -> tableMetaDataReviseEngine.revise(each, originalMetaData.getTables(), revisionCandidateTableMetaDataList)).collect(Collectors.toList()));
         }
         for (TableMetaData each : originalMetaData.getTables()) {
-            aggregationReviser.get().add(tableMetaDataReviseEngine.revise(each));
+            aggregationReviser.get().add(tableMetaDataReviseEngine.revise(each, originalMetaData.getTables(), revisionCandidateTableMetaDataList));
         }
         return new SchemaMetaData(originalMetaData.getName(), aggregationReviser.get().aggregate(rule));
+    }
+    
+    private Collection<TableMetaData> createRevisionCandidateTableMetaDataList(final SchemaMetaData originalMetaData) {
+        return revisionCandidateSchemas.stream().filter(each -> each.getName().equalsIgnoreCase(originalMetaData.getName()))
+                .flatMap(each -> each.getAllTables().stream()).map(SchemaMetaDataReviseEngine::convertToTableMetaData).collect(Collectors.toList());
+    }
+    
+    private static TableMetaData convertToTableMetaData(final ShardingSphereTable table) {
+        return new TableMetaData(table.getName(), Collections.emptyList(), convertToIndexMetaData(table.getAllIndexes()), Collections.emptyList(), table.getType());
+    }
+    
+    private static Collection<IndexMetaData> convertToIndexMetaData(final Collection<ShardingSphereIndex> indexes) {
+        return indexes.stream().map(each -> {
+            IndexMetaData result = new IndexMetaData(each.getName(), each.getColumns());
+            result.setUnique(each.isUnique());
+            return result;
+        }).collect(Collectors.toList());
     }
 }

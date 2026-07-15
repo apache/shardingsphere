@@ -17,24 +17,22 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+
+import java.util.Map;
 
 /**
  * Tool handler for sharding key generate strategy planning.
  */
 public final class PlanShardingKeyGenerateStrategyToolHandler extends AbstractShardingPlanningToolHandler {
     
-    public PlanShardingKeyGenerateStrategyToolHandler() {
-    }
+    private final ShardingPlanningRequestBinder requestBinder = new ShardingPlanningRequestBinder();
     
-    PlanShardingKeyGenerateStrategyToolHandler(final ShardingWorkflowPlanningService planningService) {
-        super(planningService);
-    }
+    private final ShardingWorkflowPlanningService planningService = new ShardingWorkflowPlanningService();
     
     @Override
     public String getToolName() {
@@ -42,8 +40,13 @@ public final class PlanShardingKeyGenerateStrategyToolHandler extends AbstractSh
     }
     
     @Override
-    protected WorkflowContextSnapshot plan(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall, final ShardingWorkflowRequest request) {
-        return getPlanningService().planKeyGenerateStrategy(
-                workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
+    protected ShardingWorkflowRequest bindRequest(final Map<String, Object> arguments) {
+        return requestBinder.bindKeyGenerateStrategy(arguments);
+    }
+    
+    @Override
+    protected WorkflowContextSnapshot plan(final MCPWorkflowRequestContext workflowContext, final ShardingWorkflowRequest request) {
+        return planningService.planKeyGenerateStrategy(
+                workflowContext.getWorkflowSessionContext(), workflowContext.getQueryFacade(), request);
     }
 }

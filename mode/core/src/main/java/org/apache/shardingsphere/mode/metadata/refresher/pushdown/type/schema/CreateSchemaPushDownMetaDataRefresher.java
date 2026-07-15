@@ -36,7 +36,7 @@ public final class CreateSchemaPushDownMetaDataRefresher implements PushDownMeta
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        getSchemaName(sqlStatement).ifPresent(optional -> metaDataManagerPersistService.createSchema(database, SchemaRefreshUtils.getActualSchemaName(database, optional, props)));
+        getSchemaName(sqlStatement).ifPresent(optional -> metaDataManagerPersistService.createSchema(database, SchemaRefreshUtils.getActualSchemaName(database, optional)));
     }
     
     private static Optional<IdentifierValue> getSchemaName(final CreateSchemaStatement sqlStatement) {

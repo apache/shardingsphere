@@ -245,6 +245,10 @@ class ShowUnloadedSingleTablesExecutorTest {
                 Collections.singletonMap("t_order", Collections.singleton(new DataNode("ds_0", (String) null, "t_order"))));
         Map<String, Collection<DataNode>> allLoadedRuleDataNodes = new HashMap<>(
                 Collections.singletonMap("t_order", Collections.singleton(new DataNode("ds_0", (String) null, "t_order"))));
+        Map<String, Collection<DataNode>> allLoadedUpperCaseActualDataNodes = new HashMap<>(
+                Collections.singletonMap("T_ORDER", Collections.singleton(new DataNode("ds_0", (String) null, "T_ORDER"))));
+        Map<String, Collection<DataNode>> allLoadedUpperCaseRuleDataNodes = new HashMap<>(
+                Collections.singletonMap("T_ORDER", Collections.singleton(new DataNode("ds_0", (String) null, "T_ORDER"))));
         Map<String, Collection<DataNode>> partiallyLoadedActualDataNodes = new HashMap<>(
                 Collections.singletonMap("t_order", new LinkedList<>(Arrays.asList(new DataNode("ds_0", "public", "t_order"), new DataNode("ds_1", "public", "t_order")))));
         Map<String, Collection<DataNode>> partiallyLoadedRuleDataNodes = new HashMap<>(
@@ -262,6 +266,7 @@ class ShowUnloadedSingleTablesExecutorTest {
                 Collections.singletonMap("t_order", new LinkedList<>(Arrays.asList(new DataNode("ds_0", "schema_b", "t_order"), new DataNode("ds_0", "schema_a", "t_order")))));
         return Stream.of(
                 Arguments.of("all loaded tables are excluded", false, allLoadedActualDataNodes, allLoadedRuleDataNodes, Collections.<List<String>>emptyList()),
+                Arguments.of("all loaded uppercase tables are excluded", false, allLoadedUpperCaseActualDataNodes, allLoadedUpperCaseRuleDataNodes, Collections.<List<String>>emptyList()),
                 Arguments.of("remaining tables are sorted by table name",
                         false, unorderedActualDataNodes, Collections.emptyMap(), Arrays.asList(Arrays.asList("t_order", "ds_0"), Arrays.asList("t_order_item", "ds_1"))),
                 Arguments.of("partially loaded table keeps remaining nodes",

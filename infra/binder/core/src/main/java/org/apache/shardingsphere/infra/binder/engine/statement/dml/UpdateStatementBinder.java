@@ -46,8 +46,15 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
         WithSegment boundWith = sqlStatement.getWith().map(optional -> WithSegmentBinder.bind(optional, binderContext, outerTableBinderContexts)).orElse(null);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        TableSegment boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
-        TableSegment boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+        TableSegment boundFrom;
+        TableSegment boundTable;
+        if (sqlStatement.isTargetTableIsFromAlias()) {
+            boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+            boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
+        } else {
+            boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
+            boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+        }
         SetAssignmentSegment boundSetAssignment = sqlStatement.getAssignment()
                 .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
@@ -59,7 +66,8 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
     private UpdateStatement copy(final UpdateStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final TableSegment boundFrom,
                                  final SetAssignmentSegment boundSetAssignment, final WhereSegment boundWhere, final OrderBySegment boundOrderBy) {
         UpdateStatement result = UpdateStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).table(boundTable)
-                .from(boundFrom).setAssignment(boundSetAssignment).where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null)).build();
+                .from(boundFrom).setAssignment(boundSetAssignment).where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null))
+                .targetTableIsFromAlias(sqlStatement.isTargetTableIsFromAlias()).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

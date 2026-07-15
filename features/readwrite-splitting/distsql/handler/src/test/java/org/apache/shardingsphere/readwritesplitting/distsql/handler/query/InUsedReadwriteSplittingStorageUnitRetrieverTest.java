@@ -49,6 +49,12 @@ class InUsedReadwriteSplittingStorageUnitRetrieverTest {
         assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singleton("foo_ds")));
     }
     
+    @Test
+    void assertGetInUsedResourcesWithDifferentCaseDataSource() {
+        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("FOO_UNIT_READ", null);
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.emptySet()));
+    }
+    
     private ReadwriteSplittingRule mockRule() {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class, RETURNS_DEEP_STUBS);
         ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupRuleConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(

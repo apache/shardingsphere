@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.database.
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -27,7 +28,7 @@ import java.util.Collections;
  */
 public final class FirebirdSystemDatabase implements DialectSystemDatabase {
     
-    private static final Collection<String> SYSTEM_SCHEMAS = Collections.singleton("system_tables");
+    private static final Collection<String> SYSTEM_SCHEMAS = Arrays.asList("system_lobs", "system_tables");
     
     @Override
     public Collection<String> getSystemDatabases() {
@@ -36,7 +37,7 @@ public final class FirebirdSystemDatabase implements DialectSystemDatabase {
     
     @Override
     public Collection<String> getSystemSchemas(final String databaseName) {
-        return SYSTEM_SCHEMAS;
+        return Collections.singleton("system_tables");
     }
     
     @Override

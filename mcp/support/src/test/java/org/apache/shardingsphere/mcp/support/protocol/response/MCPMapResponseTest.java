@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
 class MCPMapResponseTest {
     
@@ -30,6 +30,6 @@ class MCPMapResponseTest {
     void assertToPayload() {
         Map<String, Object> expectedPayload = Map.of("foo_key", "bar_value");
         Map<String, Object> actual = new MCPMapResponse(expectedPayload).toPayload();
-        assertThat(actual, is(expectedPayload));
+        assertThat(actual, sameInstance(expectedPayload));
     }
 }

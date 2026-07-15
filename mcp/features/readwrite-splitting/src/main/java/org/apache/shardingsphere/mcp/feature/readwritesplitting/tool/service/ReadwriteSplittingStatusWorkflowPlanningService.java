@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -53,42 +53,30 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
     
     private final ReadwriteSplittingWorkflowIntentResolver intentResolver = new ReadwriteSplittingWorkflowIntentResolver();
     
-    private final ReadwriteSplittingInspectionService inspectionService;
+    private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
-    private final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService;
-    
-    public ReadwriteSplittingStatusWorkflowPlanningService() {
-        inspectionService = new ReadwriteSplittingInspectionService();
-        distSQLPlanningService = new ReadwriteSplittingStatusDistSQLPlanningService();
-    }
-    
-    ReadwriteSplittingStatusWorkflowPlanningService(final ReadwriteSplittingInspectionService inspectionService,
-                                                    final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService) {
-        this.inspectionService = inspectionService;
-        this.distSQLPlanningService = distSQLPlanningService;
-    }
+    private final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService = new ReadwriteSplittingStatusDistSQLPlanningService();
     
     /**
      * Plan readwrite-splitting storage-unit status workflow.
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
-    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final String sessionId,
+    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                         final ReadwriteSplittingStatusWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ReadwriteSplittingStatusWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
-        planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
+        applyResolvedStatusIntent(mergedRequest, clarifiedIntent);
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
-        String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
+        queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
         List<Map<String, Object>> statuses = inspectionService.queryRuleStatus(queryFacade, mergedRequest.getDatabase(), mergedRequest.getRuleName());
-        if (!ensureTargetStatusRow(mergedRequest, statuses, result, databaseType)) {
+        if (!ensureTargetStatusRow(mergedRequest, statuses, result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         result.getRuleArtifacts().add(distSQLPlanningService.planStatus(mergedRequest));
@@ -101,16 +89,27 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
                 intentResolver.resolveStatusIntent(result), "Readwrite-splitting status workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
     }
     
+    private void applyResolvedStatusIntent(final ReadwriteSplittingStatusWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+        request.setFieldSemantics(clarifiedIntent.getFieldSemantics());
+        Object targetStatus = clarifiedIntent.getInferredValues().get(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD);
+        if (request.getTargetStatus().isEmpty() && targetStatus instanceof String) {
+            request.setTargetStatus((String) targetStatus);
+        }
+    }
+    
     private boolean ensurePlanningContext(final ReadwriteSplittingStatusWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (request.getDatabase().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Database is required before planning readwrite-splitting status DistSQL.", "Provide the logical database name.", true, Map.of()));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!ensureSupportedIdentifier("database", request.getDatabase(), snapshot) || !ensureSupportedIdentifier(ReadwriteSplittingFeatureDefinition.RULE_FIELD, request.getRuleName(), snapshot)
-                || !ensureSupportedIdentifier(ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request.getStorageUnit(), snapshot)) {
+        if (!planningSupport.ensureOptionalSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, WorkflowLifecycle.STEP_INTAKING)
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.RULE_FIELD, List.of(request.getRuleName()),
+                        snapshot, WorkflowLifecycle.STEP_INTAKING)
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, List.of(request.getStorageUnit()),
+                        snapshot, WorkflowLifecycle.STEP_INTAKING)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -120,7 +119,7 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         addMissingInput(missingInputs, distSQLPlanningService.resolveStatusOperation(request), ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD);
         if (!missingInputs.isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide readwrite-splitting rule name, read storage unit and target status.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Readwrite-splitting status DistSQL requires explicit rule, storage unit and status inputs.",
                     "Provide target_status as enable or disable.", true, Map.of("missing_inputs", missingInputs)));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
@@ -135,30 +134,20 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
         }
     }
     
-    private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
-        if (identifier.isEmpty() || WorkflowSQLUtils.isSupportedIdentifier(identifier)) {
-            return true;
-        }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "intaking",
-                String.format("%s identifier `%s` contains unsupported characters.", fieldName, identifier),
-                "Use a reviewable logical identifier without NUL or line terminators.", false, Map.of("field", fieldName, "identifier", identifier)));
-        return false;
-    }
-    
     private boolean ensureTargetStatusRow(final ReadwriteSplittingStatusWorkflowRequest request, final List<Map<String, Object>> statuses,
-                                          final WorkflowContextSnapshot snapshot, final String databaseType) {
-        if (statuses.stream().anyMatch(each -> matchesStatusTarget(request, each, databaseType))) {
+                                          final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
+        if (statuses.stream().anyMatch(each -> matchesStatusTarget(request, each, queryFacade))) {
             return true;
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", "discovering",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", WorkflowLifecycle.STEP_DISCOVERING,
                 String.format("Readwrite-splitting status target `%s.%s` does not exist.", request.getRuleName(), request.getStorageUnit()),
                 "Confirm the target rule and read storage unit before planning status changes.", false,
                 Map.of("rule", request.getRuleName(), "storage_unit", request.getStorageUnit())));
         return false;
     }
     
-    private boolean matchesStatusTarget(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> status, final String databaseType) {
-        return WorkflowSQLUtils.isSameIdentifier(databaseType, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(status, "name"))
-                && WorkflowSQLUtils.isSameIdentifier(databaseType, request.getStorageUnit(), WorkflowRuleValueUtils.getRuleValue(status, "storage_unit"));
+    private boolean matchesStatusTarget(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> status, final MCPFeatureQueryFacade queryFacade) {
+        return queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(status, "name"))
+                && queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getStorageUnit(), WorkflowRuleValueUtils.getRuleValue(status, "storage_unit"));
     }
 }

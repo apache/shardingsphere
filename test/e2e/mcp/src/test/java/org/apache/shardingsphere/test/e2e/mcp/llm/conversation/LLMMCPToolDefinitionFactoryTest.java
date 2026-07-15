@@ -46,14 +46,18 @@ class LLMMCPToolDefinitionFactoryTest {
     @Test
     void assertProtocolBridgeToolDefinitionsKeepBridgeSchemas() {
         List<String> bridgeToolNames = List.of(
+                MCPInteractionActionNames.LIST_TOOLS,
                 MCPInteractionActionNames.LIST_RESOURCES,
+                MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
                 MCPInteractionActionNames.READ_RESOURCE,
                 MCPInteractionActionNames.LIST_PROMPTS,
                 MCPInteractionActionNames.GET_PROMPT,
                 MCPInteractionActionNames.COMPLETE);
         List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().create(bridgeToolNames);
         assertThat(getToolNames(actual), is(bridgeToolNames));
+        assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_TOOLS)));
         assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_RESOURCES)));
+        assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES)));
         assertReadResourceBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.READ_RESOURCE)));
         assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_PROMPTS)));
         assertGetPromptBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.GET_PROMPT)));
@@ -98,7 +102,7 @@ class LLMMCPToolDefinitionFactoryTest {
     
     private void assertCompleteBridgeSchema(final Map<?, ?> parameters) {
         assertThat(parameters.get("type"), is("object"));
-        Map<?, ?> reference = getField(parameters, "reference");
+        Map<?, ?> reference = getField(parameters, "ref");
         assertThat(reference.get("type"), is("object"));
         assertThat(getFieldType(reference, "type"), is("string"));
         assertThat(((Map<?, ?>) getProperties(reference).get("type")).get("enum"), is(List.of("ref/prompt", "ref/resource")));
@@ -106,10 +110,16 @@ class LLMMCPToolDefinitionFactoryTest {
         assertThat(getFieldType(reference, "uri"), is("string"));
         assertThat(reference.get("required"), is(List.of("type")));
         assertFalse((Boolean) reference.get("additionalProperties"));
-        assertThat(getFieldType(parameters, "argument_name"), is("string"));
-        assertThat(getFieldType(parameters, "argument_value"), is("string"));
-        assertThat(getFieldType(parameters, "context_arguments"), is("object"));
-        assertThat(parameters.get("required"), is(List.of("reference", "argument_name")));
+        Map<?, ?> argument = getField(parameters, "argument");
+        assertThat(getFieldType(argument, "name"), is("string"));
+        assertThat(getFieldType(argument, "value"), is("string"));
+        assertThat(argument.get("required"), is(List.of("name")));
+        assertFalse((Boolean) argument.get("additionalProperties"));
+        Map<?, ?> context = getField(parameters, "context");
+        assertThat(getFieldType(context, "arguments"), is("object"));
+        assertThat(context.get("required"), is(List.of("arguments")));
+        assertFalse((Boolean) context.get("additionalProperties"));
+        assertThat(parameters.get("required"), is(List.of("ref", "argument")));
         assertFalse((Boolean) parameters.get("additionalProperties"));
     }
     

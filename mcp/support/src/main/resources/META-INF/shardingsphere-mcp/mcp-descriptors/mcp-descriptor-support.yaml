@@ -114,11 +114,23 @@ prompts:
         - database_gateway_validate_workflow
         - database_gateway_plan_encrypt_rule
         - database_gateway_plan_mask_rule
+        - database_gateway_plan_broadcast_rule
+        - database_gateway_plan_readwrite_splitting_rule
+        - database_gateway_plan_readwrite_splitting_status
+        - database_gateway_plan_shadow_rule
+        - database_gateway_plan_default_shadow_algorithm
+        - database_gateway_plan_shadow_algorithm_cleanup
+        - database_gateway_plan_sharding_table_rule
+        - database_gateway_plan_sharding_table_reference_rule
+        - database_gateway_plan_sharding_default_strategy
+        - database_gateway_plan_sharding_key_generator
+        - database_gateway_plan_sharding_key_generate_strategy
+        - database_gateway_plan_sharding_rule_component_cleanup
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_validate_workflow confirms the current plan or after a replacement plan is created."
         - "Stop when the plan_id is unavailable and the matching planning tool needs fresh user inputs."
       org.apache.shardingsphere/ask-user-conditions:
-        - "Ask which workflow kind to re-plan when the failure summary does not identify encrypt or mask."
+        - "Ask which workflow kind to re-plan when the failure summary or recovery payload does not identify the matching planning tool."
         - "Ask before applying recovered artifacts that would change runtime state."
 
 completionTargets:
@@ -128,12 +140,20 @@ completionTargets:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: prompt
     reference: safe_sql_execution
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: prompt
     reference: recover_workflow
     arguments:
@@ -163,7 +183,9 @@ resourceNavigation:
 tools:
   - name: database_gateway_apply_workflow
     title: Apply Workflow
-    description: "Preview or apply a previously planned ShardingSphere MCP workflow. Use execution_mode=preview before side effects unless the plan has already been reviewed."
+    description: >-
+      Preview or apply a previously planned ShardingSphere MCP workflow. Use execution_mode=preview before side effects;
+      automatic execution requires a previewed plan and explicit approved_steps.
     inputSchema:
       type: object
       properties:
@@ -179,7 +201,7 @@ tools:
             - manual-only
         approved_steps:
           type: array
-          description: "Optional execution filter. Omit to apply every artifact after review, or pass only visible preview_artifacts.approval_step values."
+          description: "Required when execution_mode=review-then-execute. Pass only user-reviewed preview_artifacts.approval_step values; an empty or omitted list does not approve artifacts."
           items:
             type: string
             description: "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql."
@@ -196,12 +218,16 @@ tools:
       properties:
         response_mode:
           type: string
-          description: "Stable response mode marker: preview, executed, manual_only, or terminal."
+          description: "Stable response mode marker: preview, executed, manual_only, recovery, or terminal."
           enum:
             - preview
             - executed
             - manual_only
+            - recovery
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow apply summary."
         plan_id:
           type: string
           description: "Workflow plan identifier that was applied."
@@ -211,6 +237,16 @@ tools:
         status:
           type: string
           description: "Apply status such as preview, completed, failed, or awaiting-manual-execution."
+        category:
+          type: string
+          description: "Recovery category when response_mode=recovery, including manual execution required for sensitive placeholders."
+          enum:
+            - secret_reference_malformed
+            - secret_reference_missing
+            - secret_reference_manual_execution_required
+        message:
+          type: string
+          description: "Recovery or execution message. Secret-placeholder failures never include raw secret_ref identifiers or real sensitive values."
         issues:
           type: array
           description: "Workflow issues reported while checking or applying artifacts."
@@ -304,6 +340,9 @@ tools:
         manual_follow_up:
           type: object
           description: "Manual-only confirmation contract; database_gateway_validate_workflow is blocked until manual_artifacts_executed is confirmed, while independent query checks remain allowed."
+        secret_reference_summary:
+          type: object
+          description: "Safe summary returned for sensitive placeholders. It contains role/property labels, manual placeholders, and counts only, never raw secret_ref identifiers or real sensitive values."
         argument_provenance:
           type: object
           description: "Source of reusable apply arguments, such as server_generated or server_defaulted."
@@ -331,6 +370,9 @@ tools:
               reason:
                 type: string
                 description: "Why the model should take the action."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
               required_inputs:
                 type: array
                 description: "User inputs required when type is ask_user."
@@ -339,6 +381,7 @@ tools:
                 description: "Action order values that must complete before this action."
       examples:
         - response_mode: preview
+          summary: Previewed 0 workflow artifacts. Nothing has been applied.
           plan_id: encrypt-rule-20260505-001
           execution_mode: preview
           applied_artifacts: []
@@ -349,13 +392,9 @@ tools:
           review_summary: Previewed 0 workflow artifacts. Nothing has been applied.
           next_actions:
             - order: 1
-              type: tool_call
-              title: Call database_gateway_apply_workflow
-              tool_name: database_gateway_apply_workflow
-              arguments:
-                plan_id: encrypt-rule-20260505-001
-                execution_mode: review-then-execute
-              reason: Apply workflow artifacts after reviewing the previewed side effects.
+              type: terminal
+              title: Stop
+              reason: Preview has no artifacts to approve.
     annotations:
       title: Apply Workflow
       readOnlyHint: false
@@ -373,7 +412,9 @@ tools:
         - database_gateway_validate_workflow
   - name: database_gateway_validate_workflow
     title: Validate Workflow
-    description: "Validate a planned or applied workflow against visible metadata and generated artifacts. Use after planning for review, and after database_gateway_apply_workflow to confirm the runtime state."
+    description: >-
+      Validate a planned or applied workflow against visible metadata and generated artifacts. Use after planning for review,
+      and after database_gateway_apply_workflow to confirm the runtime state.
     inputSchema:
       type: object
       properties:
@@ -392,6 +433,9 @@ tools:
           enum:
             - validation
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow validation summary."
         plan_id:
           type: string
           description: "Workflow plan identifier that was validated."
@@ -503,6 +547,7 @@ tools:
                 description: "Action order values that must complete before this action."
       examples:
         - response_mode: validation
+          summary: Workflow validation passed for plan `encrypt-rule-20260505-001`.
           plan_id: encrypt-rule-20260505-001
           status: passed
           sections: []

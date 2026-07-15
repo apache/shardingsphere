@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Readwrite-splitting MCP feature definition.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingFeatureDefinition {
     
     public static final String PLAN_RULE_TOOL_NAME = "database_gateway_plan_readwrite_splitting_rule";
@@ -32,9 +36,9 @@ public final class ReadwriteSplittingFeatureDefinition {
     
     public static final String PLAN_STATUS_PROMPT_NAME = "plan_readwrite_splitting_status";
     
-    public static final WorkflowKind RULE_WORKFLOW_KIND = WorkflowKind.valueOf("readwrite.rule");
+    public static final WorkflowKind RULE_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.READWRITE_RULE);
     
-    public static final WorkflowKind STATUS_WORKFLOW_KIND = WorkflowKind.valueOf("readwrite.status");
+    public static final WorkflowKind STATUS_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.READWRITE_STATUS);
     
     public static final String RULE_FIELD = "rule";
     
@@ -64,6 +68,4 @@ public final class ReadwriteSplittingFeatureDefinition {
     
     public static final String LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI = "shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins";
     
-    private ReadwriteSplittingFeatureDefinition() {
-    }
 }

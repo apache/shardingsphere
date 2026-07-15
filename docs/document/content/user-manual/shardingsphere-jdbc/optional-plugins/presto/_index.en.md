@@ -39,7 +39,7 @@ In addition, this Iceberg Connector will start a Hive Metastore Server using a l
 ```yaml
 services:
   presto:
-    image: prestodb/presto:0.296
+    image: prestodb/presto:0.298.1
     ports:
       - "8080:8080"
     volumes:
@@ -207,8 +207,11 @@ ShardingSphere JDBC DataSource does not yet support the execution of Presto's `c
 
 ### Transaction Limitations
 
-Presto does not support local transactions, XA transactions, or Seata's AT mode transactions at the ShardingSphere integration level.
-There are bugs with Presto's own transaction support, see https://github.com/prestodb/presto/issues/25204 .
+Presto supports ShardingSphere integration-level local transactions, but not XA transactions or Seata's AT mode transactions.
+
+For XA transaction, a PR containing the corresponding implementation should be submitted at https://github.com/prestodb/presto .
+
+For Seata's AT mode transactions, a PR containing the corresponding implementation should be submitted at https://github.com/apache/incubator-seata .
 
 ### Connector Limitations
 

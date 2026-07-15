@@ -69,7 +69,6 @@ class ProxyConfigurationLoaderTest {
         YamlProxyServerConfiguration serverConfig = actual.getServerConfiguration();
         assertNull(serverConfig.getMode());
         assertNull(serverConfig.getAuthority());
-        assertNull(serverConfig.getLabels());
         assertTrue(serverConfig.getProps().isEmpty());
         assertTrue(serverConfig.getRules().isEmpty());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
@@ -159,6 +158,15 @@ class ProxyConfigurationLoaderTest {
         assertNotNull(actual.getServerConfiguration());
         assertTrue(actual.getServerConfiguration().getRules().isEmpty());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
+    }
+    
+    @Test
+    void assertLoadWithHyphenDatabaseName(@TempDir final Path tempDir) throws IOException {
+        writeConfigurationFile(tempDir, "global.yaml", "");
+        writeConfigurationFile(tempDir, "database-invalid.yaml", "databaseName: invalid-db\n");
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> ProxyConfigurationLoader.load(tempDir.toString()));
+        assertThat(actual.getMessage(),
+                is("Database name `invalid-db` is invalid, the database name should start with a letter and can contain letters, numbers and underscores only."));
     }
     
     @Test

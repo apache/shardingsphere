@@ -42,7 +42,6 @@ public final class MySQLComResetConnectionExecutor implements CommandExecutor {
         ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
         transactionManager.rollback();
         connectionSession.setAutoCommit(true);
-        connectionSession.setDefaultIsolationLevel(null);
         connectionSession.setIsolationLevel(null);
         connectionSession.getServerPreparedStatementRegistry().clear();
         return Collections.singleton(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession, true)));
