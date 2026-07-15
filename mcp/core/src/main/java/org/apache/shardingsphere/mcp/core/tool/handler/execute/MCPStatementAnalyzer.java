@@ -60,7 +60,7 @@ final class MCPStatementAnalyzer {
     
     private final SQLStatementSafetyValidator safetyValidator = new SQLStatementSafetyValidator(scanner);
     
-    private final SQLStatementObjectExtractor objectExtractor = new SQLStatementObjectExtractor();
+    private final SQLStatementObjectExtractor objectExtractor = new SQLStatementObjectExtractor(scanner);
     
     private final Collection<MCPRuleDistSQLStatementClassifier> ruleDistSQLStatementClassifiers =
             ShardingSphereServiceLoader.getServiceInstances(MCPRuleDistSQLStatementClassifier.class);
@@ -84,7 +84,7 @@ final class MCPStatementAnalyzer {
         String leadingKeyword = scanner.extractLeadingKeyword(actualSql);
         SupportedMCPStatement statementClass = resolveStatementClass(sqlStatement, leadingKeyword, ruleDistSQL);
         String statementType = resolveStatementType(sqlStatement, statementClass, leadingKeyword);
-        return new ClassificationResult(statementClass, statementType, actualSql, "", objectExtractor.extract(sqlStatement), ruleDistSQL);
+        return new ClassificationResult(statementClass, statementType, actualSql, "", objectExtractor.extract(sqlStatement, actualSql), ruleDistSQL);
     }
     
     private ClassificationResult analyzeSavepointStatement(final String actualSql, final String leadingSql, final String upperLeadingSql) {

@@ -54,6 +54,10 @@ final class SQLStatementObjectName {
         List<IdentifierValue> identifiers = new LinkedList<>();
         owner.ifPresent(optional -> addOwnerIdentifiers(optional, identifiers));
         identifiers.add(identifier);
+        return from(identifiers);
+    }
+    
+    static SQLStatementObjectName from(final List<IdentifierValue> identifiers) {
         IdentifierValue firstIdentifier = identifiers.get(0);
         return new SQLStatementObjectName(identifiers.stream().map(IdentifierValue::getValue).collect(Collectors.joining(".")),
                 firstIdentifier.getValue(), firstIdentifier.getQuoteCharacter(), 1 < identifiers.size());

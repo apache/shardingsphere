@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
@@ -28,6 +30,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
@@ -53,14 +57,21 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementObjectExtractor {
     
-    Collection<SQLStatementObjectName> extract(final SQLStatement sqlStatement) {
+    private static final Set<String> DCL_OBJECT_TYPE_KEYWORDS = Set.of("TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA", "FUNCTION", "PROCEDURE");
+    
+    private final SQLStatementScanner scanner;
+    
+    Collection<SQLStatementObjectName> extract(final SQLStatement sqlStatement, final String sql) {
         Collection<SQLStatementObjectName> result = new LinkedHashSet<>();
         extractDirectTargets(sqlStatement, result);
         TableExtractor tableExtractor = new TableExtractor();
@@ -70,7 +81,66 @@ final class SQLStatementObjectExtractor {
         extractMergeTables(sqlStatement, result);
         extractCommonTableExpressionTables(sqlStatement, result);
         removeCommonTableExpressionAliases(sqlStatement, result);
+        List<SQLStatementToken> tokens = scanner.tokenize(sql);
+        extractDCLTarget(sqlStatement, tokens, result);
+        extractQualifiedFunctions(tokens, result);
         return result;
+    }
+    
+    private void extractDCLTarget(final SQLStatement sqlStatement, final List<SQLStatementToken> tokens, final Collection<SQLStatementObjectName> result) {
+        if (!(sqlStatement instanceof GrantStatement) && !(sqlStatement instanceof RevokeStatement)) {
+            return;
+        }
+        for (int index = 0; index < tokens.size(); index++) {
+            if (scanner.isKeyword(tokens.get(index), "ON")) {
+                int objectStartIndex = skipDCLObjectType(tokens, index + 1);
+                addObjectName(tokens, objectStartIndex, findObjectNameEnd(tokens, objectStartIndex), result);
+                return;
+            }
+        }
+    }
+    
+    private int skipDCLObjectType(final List<SQLStatementToken> tokens, final int startIndex) {
+        return startIndex < tokens.size() && DCL_OBJECT_TYPE_KEYWORDS.contains(tokens.get(startIndex).upperText()) ? startIndex + 1 : startIndex;
+    }
+    
+    private void extractQualifiedFunctions(final List<SQLStatementToken> tokens, final Collection<SQLStatementObjectName> result) {
+        int index = 0;
+        while (index < tokens.size()) {
+            int objectNameEnd = findObjectNameEnd(tokens, index);
+            if (objectNameEnd - index > 1 && objectNameEnd < tokens.size() && "(".equals(tokens.get(objectNameEnd).text())) {
+                addObjectName(tokens, index, objectNameEnd, result);
+                index = objectNameEnd + 1;
+            } else {
+                index++;
+            }
+        }
+    }
+    
+    private int findObjectNameEnd(final List<SQLStatementToken> tokens, final int startIndex) {
+        if (startIndex >= tokens.size() || !isObjectNameToken(tokens.get(startIndex))) {
+            return startIndex;
+        }
+        int result = startIndex + 1;
+        while (result + 1 < tokens.size() && ".".equals(tokens.get(result).text()) && isObjectNameToken(tokens.get(result + 1))) {
+            result += 2;
+        }
+        return result;
+    }
+    
+    private boolean isObjectNameToken(final SQLStatementToken token) {
+        return token.identifier() || "*".equals(token.text());
+    }
+    
+    private void addObjectName(final List<SQLStatementToken> tokens, final int startIndex, final int stopIndex, final Collection<SQLStatementObjectName> result) {
+        if (startIndex >= stopIndex) {
+            return;
+        }
+        List<IdentifierValue> identifiers = new LinkedList<>();
+        for (int index = startIndex; index < stopIndex; index += 2) {
+            identifiers.add(new IdentifierValue(tokens.get(index).text()));
+        }
+        result.add(SQLStatementObjectName.from(identifiers));
     }
     
     private void extractDirectTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {

@@ -118,6 +118,24 @@ class MCPStatementAnalyzerTest {
     }
     
     @Test
+    void assertAnalyzeDCLReference() {
+        ClassificationResult actual = analyzer.analyze("GRANT SELECT ON other_db.orders TO PUBLIC", createCapability("MySQL"));
+        assertThat(actual.getReferencedObjectNames(), contains("other_db.orders"));
+    }
+    
+    @Test
+    void assertAnalyzeGlobalDCLReference() {
+        ClassificationResult actual = analyzer.analyze("GRANT SELECT ON *.* TO PUBLIC", createCapability("MySQL"));
+        assertThat(actual.getReferencedObjectNames(), contains("*.*"));
+    }
+    
+    @Test
+    void assertAnalyzeQualifiedFunctionReference() {
+        ClassificationResult actual = analyzer.analyze("SELECT other_db.foo_refresh_orders()", createCapability("MySQL"));
+        assertThat(actual.getReferencedObjectNames(), contains("other_db.foo_refresh_orders"));
+    }
+    
+    @Test
     void assertAnalyzeRuleDistSQL() {
         ClassificationResult actual = analyzer.analyze(
                 "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))", createCapability("MySQL"));
@@ -174,8 +192,8 @@ class MCPStatementAnalyzerTest {
                         "ALTER TABLE orders ADD COLUMN status VARCHAR(10)", "orders", ""),
                 Arguments.of("drop table", "MySQL", "DROP TABLE orders", SupportedMCPStatement.DDL, "DROP", "DROP TABLE orders", "orders", ""),
                 Arguments.of("truncate table", "MySQL", "TRUNCATE TABLE orders", SupportedMCPStatement.DDL, "TRUNCATE", "TRUNCATE TABLE orders", "orders", ""),
-                Arguments.of("grant", "MySQL", "GRANT SELECT ON orders TO PUBLIC", SupportedMCPStatement.DCL, "GRANT", "GRANT SELECT ON orders TO PUBLIC", "", ""),
-                Arguments.of("revoke", "MySQL", "REVOKE SELECT ON orders FROM PUBLIC", SupportedMCPStatement.DCL, "REVOKE", "REVOKE SELECT ON orders FROM PUBLIC", "", ""),
+                Arguments.of("grant", "MySQL", "GRANT SELECT ON orders TO PUBLIC", SupportedMCPStatement.DCL, "GRANT", "GRANT SELECT ON orders TO PUBLIC", "orders", ""),
+                Arguments.of("revoke", "MySQL", "REVOKE SELECT ON orders FROM PUBLIC", SupportedMCPStatement.DCL, "REVOKE", "REVOKE SELECT ON orders FROM PUBLIC", "orders", ""),
                 Arguments.of("begin", "MySQL", "BEGIN", SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "BEGIN", "", ""),
                 Arguments.of("start transaction", "MySQL", "START TRANSACTION", SupportedMCPStatement.TRANSACTION_CONTROL, "START TRANSACTION", "START TRANSACTION", "", ""),
                 Arguments.of("commit", "MySQL", "COMMIT", SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "COMMIT", "", ""),

@@ -305,26 +305,25 @@ class MCPSQLExecutionFacadeTest {
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
-    @Test
-    void assertExecuteWithQualifiedCurrentDatabase() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertExecuteWithQualifiedCurrentDatabaseCases")
+    void assertExecuteWithQualifiedCurrentDatabase(final String name, final String sql, final SupportedMCPStatement supportedStatement) {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
-        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM logic_db.orders", "",
-                List.of(SQLStatementObjectName.fromNormalizedName("logic_db.orders")), false);
+        MCPDatabaseCapability capability = createCapability(Set.of(supportedStatement));
         SQLExecutionResult expectedResult = mock(SQLExecutionResult.class);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
-        SQLExecutionRequest request = createExecutionRequest("SELECT * FROM logic_db.orders");
-        when(statementExecutor.execute(request, classification, capability)).thenReturn(expectedResult);
+        SQLExecutionRequest request = createExecutionRequest(sql);
+        when(statementExecutor.execute(eq(request), any(), eq(capability))).thenReturn(expectedResult);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createMCPStatementAnalyzer(classification));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
         SQLExecutionResult actual = facade.execute(request);
         assertThat(actual, is(expectedResult));
-        verify(statementExecutor).execute(request, classification, capability);
-        verify(traceFactory).create("session-1", "logic_db", "SELECT * FROM logic_db.orders", true, "QUERY");
+        verify(statementExecutor).execute(eq(request), any(), eq(capability));
+        verify(traceFactory).create("session-1", "logic_db", sql, true, supportedStatement.name());
         verifyNoInteractions(transactionExecutor);
     }
     
@@ -514,6 +513,11 @@ class MCPSQLExecutionFacadeTest {
                 Arguments.of("alter table", "ALTER TABLE other_db.orders ADD COLUMN status VARCHAR(10)", "other_db.orders", "DDL"),
                 Arguments.of("alter table foreign key reference",
                         "ALTER TABLE logic_db.order_items ADD CONSTRAINT order_fk FOREIGN KEY (order_id) REFERENCES other_db.orders(id)", "other_db.orders", "DDL"),
+                Arguments.of("grant table", "GRANT SELECT ON other_db.orders TO PUBLIC", "other_db.orders", "DCL"),
+                Arguments.of("revoke table", "REVOKE SELECT ON other_db.orders FROM PUBLIC", "other_db.orders", "DCL"),
+                Arguments.of("grant database wildcard", "GRANT SELECT ON other_db.* TO PUBLIC", "other_db.*", "DCL"),
+                Arguments.of("grant global wildcard", "GRANT SELECT ON *.* TO PUBLIC", "*.*", "DCL"),
+                Arguments.of("qualified function", "SELECT other_db.foo_refresh_orders()", "other_db.foo_refresh_orders", "QUERY"),
                 Arguments.of("create database target", "CREATE DATABASE other_db", "other_db", "DDL"),
                 Arguments.of("commented create database target", "/* guard */ CREATE DATABASE other_db", "other_db", "DDL"),
                 Arguments.of("drop table object list", "DROP TABLE IF EXISTS logic_db.orders, other_db.items", "other_db.items", "DDL"),
@@ -524,6 +528,13 @@ class MCPSQLExecutionFacadeTest {
         return Stream.of(
                 Arguments.of("case-sensitive unquoted identifier", "SELECT * FROM Logic_DB.orders", IdentifierCasePolicyFactory.newSensitivePolicySet()),
                 Arguments.of("quoted identifier exact match", "SELECT * FROM \"Logic_DB\".orders", IdentifierCasePolicyFactory.newInsensitivePolicySet()));
+    }
+    
+    private static Stream<Arguments> assertExecuteWithQualifiedCurrentDatabaseCases() {
+        return Stream.of(
+                Arguments.of("table", "SELECT * FROM logic_db.orders", SupportedMCPStatement.QUERY),
+                Arguments.of("function", "SELECT logic_db.foo_refresh_orders()", SupportedMCPStatement.QUERY),
+                Arguments.of("grant", "GRANT SELECT ON logic_db.orders TO PUBLIC", SupportedMCPStatement.DCL));
     }
     
     private static Stream<Arguments> assertExecuteExplainWithSyntaxFailureCases() {
