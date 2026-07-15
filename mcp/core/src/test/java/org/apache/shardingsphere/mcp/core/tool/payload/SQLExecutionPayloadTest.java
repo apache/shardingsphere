@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.response;
+package org.apache.shardingsphere.mcp.core.tool.payload;
 
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionColumnDefinition;
@@ -33,12 +33,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class SQLExecutionResponseTest {
+class SQLExecutionPayloadTest {
     
     @Test
     void assertQueryResultSet() {
         SQLExecutionColumnDefinition column = new SQLExecutionColumnDefinition("order_id", "INT", "INT", false);
-        Map<String, Object> actual = SQLExecutionResponse.query(SQLExecutionResult.resultSet(
+        Map<String, Object> actual = SQLExecutionPayload.query(SQLExecutionResult.resultSet(
                 SupportedMCPStatement.QUERY, "SELECT", List.of(column), List.of(List.of(1)), false, 10, 5000, "SELECT order_id FROM orders")).toPayload();
         assertThat(actual, is(Map.ofEntries(
                 Map.entry("response_mode", "query"), Map.entry("result_kind", "result_set"), Map.entry("statement_class", "query"), Map.entry("statement_type", "SELECT"),
@@ -52,7 +52,7 @@ class SQLExecutionResponseTest {
     
     @Test
     void assertTruncatedQueryResultSet() {
-        Map<String, Object> actual = SQLExecutionResponse.query(SQLExecutionResult.resultSet(
+        Map<String, Object> actual = SQLExecutionPayload.query(SQLExecutionResult.resultSet(
                 SupportedMCPStatement.QUERY, "SELECT", List.of(), List.of(), true, 10, 0, "SELECT * FROM orders")).toPayload();
         assertThat(actual.get("summary"), is("Executed SELECT statement and returned 0 row(s). Result was truncated."));
         assertThat(actual.get("next_actions"), is(List.of(MCPNextActionUtils.askUser(
@@ -61,7 +61,7 @@ class SQLExecutionResponseTest {
     
     @Test
     void assertExecutedUpdateCount() {
-        Map<String, Object> actual = SQLExecutionResponse.executed(SQLExecutionResult.updateCount(
+        Map<String, Object> actual = SQLExecutionPayload.executed(SQLExecutionResult.updateCount(
                 SupportedMCPStatement.DML, "UPDATE", 2, 100, 0, "UPDATE orders SET status = 'PAID'")).toPayload();
         assertThat(actual.get("response_mode"), is("executed"));
         assertThat(actual.get("execution_mode"), is("execute"));
@@ -72,7 +72,7 @@ class SQLExecutionResponseTest {
     
     @Test
     void assertExecutedResultSet() {
-        Map<String, Object> actual = SQLExecutionResponse.executed(SQLExecutionResult.resultSet(
+        Map<String, Object> actual = SQLExecutionPayload.executed(SQLExecutionResult.resultSet(
                 SupportedMCPStatement.DML, "SELECT", List.of(), List.of(List.of(1)), false, 100, 0, "WITH changed AS (...) SELECT * FROM changed")).toPayload();
         assertThat(actual.get("summary"), is("Executed side-effecting SQL (statement type SELECT) and returned 1 row(s)."));
         assertThat(actual.get("response_mode"), is("executed"));
@@ -81,7 +81,7 @@ class SQLExecutionResponseTest {
     
     @Test
     void assertTruncatedExecutedResultSet() {
-        Map<String, Object> actual = SQLExecutionResponse.executed(SQLExecutionResult.resultSet(
+        Map<String, Object> actual = SQLExecutionPayload.executed(SQLExecutionResult.resultSet(
                 SupportedMCPStatement.DML, "SELECT", List.of(), List.of(List.of(1)), true, 1, 0, "WITH changed AS (...) SELECT * FROM changed")).toPayload();
         assertThat(actual.get("summary"), is("Executed side-effecting SQL (statement type SELECT) and returned 1 row(s). "
                 + "Returned rows were truncated; do not replay the statement automatically."));
@@ -102,7 +102,7 @@ class SQLExecutionResponseTest {
             "DDL, CREATE, Statement executed."
     })
     void assertStatementAcknowledgement(final SupportedMCPStatement statementClass, final String statementType, final String expectedMessage) {
-        Map<String, Object> actual = SQLExecutionResponse.executed(SQLExecutionResult.statementAck(
+        Map<String, Object> actual = SQLExecutionPayload.executed(SQLExecutionResult.statementAck(
                 statementClass, statementType, 100, 0, statementType)).toPayload();
         assertThat(actual.get("message"), is(expectedMessage));
         assertThat(actual.get("summary"), is(expectedMessage));
@@ -110,7 +110,7 @@ class SQLExecutionResponseTest {
     
     @Test
     void assertUnnamedColumns() {
-        Map<String, Object> actual = SQLExecutionResponse.query(SQLExecutionResult.resultSet(
+        Map<String, Object> actual = SQLExecutionPayload.query(SQLExecutionResult.resultSet(
                 SupportedMCPStatement.QUERY, "SELECT", List.of(), List.of(List.of(1)), false, 100, 0, "SELECT 1")).toPayload();
         assertThat(actual.get("row_object_status"), is("unnamed_columns"));
         assertFalse(actual.containsKey("row_objects"));
@@ -118,7 +118,7 @@ class SQLExecutionResponseTest {
     
     @Test
     void assertBlankColumnName() {
-        Map<String, Object> actual = SQLExecutionResponse.query(SQLExecutionResult.resultSet(SupportedMCPStatement.QUERY, "SELECT",
+        Map<String, Object> actual = SQLExecutionPayload.query(SQLExecutionResult.resultSet(SupportedMCPStatement.QUERY, "SELECT",
                 List.of(new SQLExecutionColumnDefinition("", "INT", "INT", false)), List.of(List.of(1)), false, 100, 0, "SELECT 1")).toPayload();
         assertThat(actual.get("row_object_status"), is("unnamed_columns"));
         assertFalse(actual.containsKey("row_objects"));
@@ -128,7 +128,7 @@ class SQLExecutionResponseTest {
     void assertDuplicateColumnLabels() {
         List<SQLExecutionColumnDefinition> columns = List.of(
                 new SQLExecutionColumnDefinition("order_id", "INT", "INT", false), new SQLExecutionColumnDefinition("order_id", "INT", "INT", false));
-        Map<String, Object> actual = SQLExecutionResponse.query(SQLExecutionResult.resultSet(
+        Map<String, Object> actual = SQLExecutionPayload.query(SQLExecutionResult.resultSet(
                 SupportedMCPStatement.QUERY, "SELECT", columns, List.of(List.of(1, 2)), false, 100, 0, "SELECT order_id, order_id FROM orders")).toPayload();
         assertThat(actual.get("row_object_status"), is("duplicate_column_labels"));
         assertFalse(actual.containsKey("row_objects"));
@@ -140,7 +140,7 @@ class SQLExecutionResponseTest {
         for (int i = 0; i < 101; i++) {
             rows.add(List.of(i));
         }
-        Map<String, Object> actual = SQLExecutionResponse.query(SQLExecutionResult.resultSet(SupportedMCPStatement.QUERY, "SELECT",
+        Map<String, Object> actual = SQLExecutionPayload.query(SQLExecutionResult.resultSet(SupportedMCPStatement.QUERY, "SELECT",
                 List.of(new SQLExecutionColumnDefinition("order_id", "INT", "INT", false)), rows, false, 100, 0, "SELECT order_id FROM orders")).toPayload();
         assertThat(actual.get("row_object_status"), is("omitted_large_result"));
         assertFalse(actual.containsKey("row_objects"));

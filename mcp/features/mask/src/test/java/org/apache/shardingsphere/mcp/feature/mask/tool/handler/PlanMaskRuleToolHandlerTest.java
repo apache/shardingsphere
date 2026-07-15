@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
@@ -59,7 +59,7 @@ class PlanMaskRuleToolHandlerTest {
             MaskWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
             when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = handler.handle(fixture.workflowContext, Map.of(
+            MCPSuccessPayload actual = handler.handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone",
@@ -79,7 +79,7 @@ class PlanMaskRuleToolHandlerTest {
         try (MockedConstruction<MaskWorkflowPlanningService> mockedConstruction = mockConstruction(MaskWorkflowPlanningService.class)) {
             PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
             when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
-            MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, Map.of(
+            MCPSuccessPayload actual = handler.handle(createWorkflowContextFixture().workflowContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone"));

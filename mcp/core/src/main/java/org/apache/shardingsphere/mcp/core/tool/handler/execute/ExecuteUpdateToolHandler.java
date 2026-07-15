@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.core.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.LinkedHashMap;
@@ -72,7 +72,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String executionMode = resolveExecutionMode(toolArguments);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
@@ -81,7 +81,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return createPreviewResponse(toolArguments, classificationResult);
         }
-        return SQLExecutionResponse.executed(databaseContext.getExecutionFacade().execute(
+        return SQLExecutionPayload.executed(databaseContext.getExecutionFacade().execute(
                 SQLExecutionToolHandlerSupport.createExecutionRequest(databaseContext.getSessionId(), toolArguments, sql, TOOL_NAME)));
     }
     
@@ -106,7 +106,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         throw new MCPInvalidExecutionModeException(TOOL_NAME, EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
     }
     
-    private MCPResponse createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
+    private MCPSuccessPayload createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> result = new LinkedHashMap<>(17, 1F);
         result.put("response_mode", MCPResponseMode.PREVIEW);
         result.put("result_kind", RESULT_KIND_PREVIEW);
@@ -130,7 +130,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(toolArguments));
         result.put("argument_provenance", createArgumentProvenance(suggestedArguments));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createPreviewNextActions(suggestedArguments));
-        return new MCPMapResponse(result);
+        return new MCPMapPayload(result);
     }
     
     private List<Map<String, Object>> createPreviewNextActions(final Map<String, Object> suggestedArguments) {

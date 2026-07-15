@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
 import java.util.List;
@@ -119,7 +120,7 @@ public final class StatementClassifier {
         if (!savepointName.isEmpty()) {
             return;
         }
-        ShardingSpherePreconditions.checkState(!isSavepointStatementType(statementType), () -> new IllegalArgumentException("Savepoint name is required."));
+        ShardingSpherePreconditions.checkState(!isSavepointStatementType(statementType), () -> new MCPInvalidRequestException("Savepoint name is required."));
     }
     
     private boolean isSavepointStatementType(final String statementType) {

@@ -66,7 +66,7 @@ When adding a public tool:
 - Implement `MCPToolHandler<T extends MCPRequestContext>`.
 - Declare the context type.
 - Declare the canonical tool name.
-- `handle(...)` returns only a successful `MCPResponse`. For controlled failures such as invalid arguments, missing resources, query failure, timeout, or unsupported operations, throw a `ShardingSphereMCPException` subclass or a clear runtime exception and let runtime convert it to an MCP tool error result.
+- `handle(...)` returns only a successful `MCPSuccessPayload`. For controlled failures such as invalid arguments, missing resources, query failure, timeout, or unsupported operations, throw the corresponding `ShardingSphereMCPException` subclass and let runtime convert it to an MCP tool error result. Unexpected runtime failures are sanitized as JSON-RPC internal errors.
 - Maintain input schema, output schema, annotations, related resources, follow-up tools, and side-effect notes in the descriptor.
 
 When adding a public resource:
@@ -74,7 +74,7 @@ When adding a public resource:
 - Implement `MCPResourceHandler<T extends MCPRequestContext>`.
 - Declare the context type.
 - Declare the canonical resource URI template. A fixed URI is also a URI template without variables.
-- `handle(...)` returns only a successful `MCPResponse`. Do not build error responses in handlers; runtime converts failures to MCP resource read errors.
+- `handle(...)` returns only a successful `MCPSuccessPayload`. Do not build error payloads in handlers; throw the corresponding `ShardingSphereMCPException` subclass and let runtime convert it to an MCP resource read error. Unexpected runtime failures are sanitized as JSON-RPC internal errors.
 - Maintain URI parameter meaning, object scope, MIME type, title, description, annotations, and relationship metadata in the descriptor.
 
 When runtime code needs the descriptor for a handler, resolve it from `MCPDescriptorCatalogIndex` by canonical tool name or resource URI template.

@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.tool;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
@@ -52,10 +51,10 @@ public final class MCPToolController {
      * @param sessionId session identifier
      * @param toolName tool name
      * @param arguments tool arguments
-     * @return tool response
+     * @return successful tool payload
      * @throws UnsupportedToolException unsupported tool exception
      */
-    public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
         return handle(sessionId, ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
     }
     
@@ -65,18 +64,12 @@ public final class MCPToolController {
      * @param sessionId session identifier
      * @param toolDefinition tool definition
      * @param arguments tool arguments
-     * @return tool response
+     * @return successful tool payload
      */
-    public MCPResponse handle(final String sessionId, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments) {
-        try {
-            return sessionExecutionCoordinator.executeWithSessionLock(sessionId, () -> {
-                toolCallLimiter.acquire(sessionId, toolDefinition.getDescriptor().getName());
-                return ToolDefinitionRegistry.dispatch(new MCPRequestScope(runtimeContext, sessionId), toolDefinition, arguments);
-            });
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return MCPErrorConverter.convert(ex);
-        }
+    public MCPSuccessPayload handle(final String sessionId, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments) {
+        return sessionExecutionCoordinator.executeWithSessionLock(sessionId, () -> {
+            toolCallLimiter.acquire(sessionId, toolDefinition.getDescriptor().getName());
+            return ToolDefinitionRegistry.dispatch(new MCPRequestScope(runtimeContext, sessionId), toolDefinition, arguments);
+        });
     }
 }

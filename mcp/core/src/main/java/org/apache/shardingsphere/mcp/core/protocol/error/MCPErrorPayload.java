@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.protocol.response;
+package org.apache.shardingsphere.mcp.core.protocol.error;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
@@ -27,9 +26,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Response for MCP errors.
+ * Structured application error payload for MCP protocol adapters.
  */
-public final class MCPErrorResponse implements MCPResponse {
+public final class MCPErrorPayload {
     
     @Getter
     private final String message;
@@ -38,17 +37,21 @@ public final class MCPErrorResponse implements MCPResponse {
     
     private final String requestId;
     
-    public MCPErrorResponse(final String message) {
+    public MCPErrorPayload(final String message) {
         this(message, Map.of());
     }
     
-    public MCPErrorResponse(final String message, final Map<String, Object> recovery) {
+    public MCPErrorPayload(final String message, final Map<String, Object> recovery) {
         this.message = message;
         this.recovery = recovery;
         requestId = UUID.randomUUID().toString();
     }
     
-    @Override
+    /**
+     * Convert to a protocol-neutral error payload.
+     *
+     * @return error payload
+     */
     public Map<String, Object> toPayload() {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("response_mode", MCPResponseMode.RECOVERY);

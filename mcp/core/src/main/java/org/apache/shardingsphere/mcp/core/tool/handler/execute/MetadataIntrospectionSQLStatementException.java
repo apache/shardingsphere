@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.Getter;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
 /**
  * Metadata introspection SQL statement exception.
  */
 @Getter
-public final class MetadataIntrospectionSQLStatementException extends IllegalArgumentException {
+public final class MetadataIntrospectionSQLStatementException extends MCPInvalidRequestException {
     
     private static final long serialVersionUID = -1603782806267446414L;
     

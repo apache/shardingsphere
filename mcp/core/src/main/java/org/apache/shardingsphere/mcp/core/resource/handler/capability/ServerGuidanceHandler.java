@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 
 /**
  * Handler for server guidance resource URI.
@@ -42,7 +42,7 @@ public final class ServerGuidanceHandler implements MCPResourceHandler<MCPReques
     }
     
     @Override
-    public MCPResponse handle(final MCPRequestContext handlerContext, final MCPUriVariables uriVariables) {
-        return new MCPMapResponse(MCPDescriptorCatalogIndex.createGuidancePayload());
+    public MCPSuccessPayload handle(final MCPRequestContext handlerContext, final MCPUriVariables uriVariables) {
+        return new MCPMapPayload(MCPDescriptorCatalogIndex.createGuidancePayload());
     }
 }

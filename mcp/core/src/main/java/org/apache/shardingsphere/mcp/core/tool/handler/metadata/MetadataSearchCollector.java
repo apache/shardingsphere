@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;

@@ -22,13 +22,16 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema.ErrorCodes;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -43,6 +46,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -96,7 +101,7 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
     void assertCreateToolSpecificationsHandleToolDefinitionDescriptor() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptor("fixture_ping"));
-            mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), new MCPMapResponse(Map.of("status", "ok")));
+            mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), new MCPMapPayload(Map.of("status", "ok")));
             CallToolResult actual = callTool(createToolSpecification("stdio"), createExchange(), "fixture_ping", Map.of());
             assertThat(actual.structuredContent(), is(Map.of("status", "ok")));
             assertThat(actual.content().getFirst().type(), is("text"));
@@ -122,18 +127,56 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
     }
     
     @Test
+    void assertCreateToolSpecificationsHandleExecutionError() {
+        try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
+            MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema("fixture_ping"));
+            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(Map.of())))
+                    .thenThrow(new DatabaseCapabilityNotFoundException());
+            CallToolResult actual = callTool(createToolSpecification("stdio"), createExchange(), "fixture_ping", Map.of());
+            assertTrue(actual.isError());
+            assertNull(actual.structuredContent());
+            assertThat(getTextContentPayload(actual).get("message"), is("Database capability does not exist."));
+        }
+    }
+    
+    @Test
+    void assertCreateToolSpecificationsHandleBlankExecutionError() {
+        try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
+            MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema("fixture_ping"));
+            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(Map.of())))
+                    .thenThrow(new MCPInvalidRequestException(" "));
+            CallToolResult actual = callTool(createToolSpecification("stdio"), createExchange(), "fixture_ping", Map.of());
+            assertTrue(actual.isError());
+            assertThat(getTextContentPayload(actual).get("message"), is("Invalid request."));
+        }
+    }
+    
+    @Test
+    void assertCreateToolSpecificationsSanitizeUnexpectedError() {
+        try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
+            MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema("fixture_ping"));
+            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(Map.of())))
+                    .thenThrow(new IllegalStateException("sensitive detail"));
+            McpError actual = assertThrows(McpError.class, () -> callTool(createToolSpecification("stdio"), createExchange(), "fixture_ping", Map.of()));
+            assertThat(actual.getJsonRpcError().code(), is(ErrorCodes.INTERNAL_ERROR));
+            assertThat(actual.getJsonRpcError().message(), is("Service is temporarily unavailable."));
+            assertFalse(String.valueOf(actual.getJsonRpcError().data()).contains("sensitive detail"));
+        }
+    }
+    
+    @Test
     void assertCreateToolSpecificationsRejectInvalidInputSchema() {
         SyncToolSpecification actualSpecification = findToolSpecification(
                 new MCPToolSpecificationFactory(createRuntimeContext("")).createToolSpecifications(), "database_gateway_search_metadata");
         CallToolResult actual = callTool(actualSpecification, createExchange(), "database_gateway_search_metadata", Map.of("query", "order", "object_types", List.of("TABLE")));
-        @SuppressWarnings("unchecked")
-        Map<String, Object> actualPayload = (Map<String, Object>) actual.structuredContent();
+        Map<String, Object> actualPayload = getTextContentPayload(actual);
         Map<?, ?> actualRecovery = (Map<?, ?>) actualPayload.get("recovery");
         assertThat(actualPayload.get("message"), is("object_types[0] must be one of [database, schema, table, view, column, index, storage_unit, sequence]."));
         assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
         assertThat(actualRecovery.get("field"), is("object_types[0]"));
         assertThat(actualRecovery.get("allowed_values"), is(List.of("database", "schema", "table", "view", "column", "index", "storage_unit", "sequence")));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("query", "order")));
+        assertNull(actual.structuredContent());
         assertTrue(actual.isError());
     }
     
@@ -141,11 +184,11 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
     void assertCreateToolSpecificationsValidateStructuredOutput() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createStrictToolDescriptor("database_gateway_search_metadata"));
-            mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), new MCPMapResponse(Map.of("count", 1)));
+            mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), new MCPMapPayload(Map.of("count", 1)));
             CallToolResult actual = callTool(createToolSpecification(createRuntimeContext("")), createExchange(), "database_gateway_search_metadata", Map.of());
-            @SuppressWarnings("unchecked")
-            Map<String, Object> actualPayload = (Map<String, Object>) actual.structuredContent();
+            Map<String, Object> actualPayload = getTextContentPayload(actual);
             assertTrue(String.valueOf(actualPayload.get("message")).contains("database_gateway_search_metadata"));
+            assertNull(actual.structuredContent());
             assertTrue(actual.isError());
         }
     }

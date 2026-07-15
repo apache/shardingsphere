@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.response;
+package org.apache.shardingsphere.mcp.api.protocol.payload;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 
-import java.util.List;
 import java.util.Map;
 
 /**
- * Search-metadata result.
+ * Successful MCP application payload.
+ *
+ * <p>Tool and resource handlers return this type when the MCP operation completed normally. A payload may still describe a negative domain result,
+ * such as a failed database validation. Controlled execution failures should be reported by throwing {@link ShardingSphereMCPException};
+ * the runtime converts those failures to the protocol-specific MCP error surface.</p>
  */
-@RequiredArgsConstructor
-@Getter
-public final class MetadataSearchResult {
+@FunctionalInterface
+public interface MCPSuccessPayload {
     
-    private final List<MetadataSearchHit> items;
-    
-    private final Map<String, Object> searchContext;
-    
-    private final int totalMatchCount;
-    
-    private final int returnedCount;
-    
-    private final boolean truncated;
-    
-    private final int largeResultThreshold;
+    /**
+     * Convert to a protocol-neutral payload.
+     *
+     * @return payload
+     */
+    Map<String, Object> toPayload();
 }

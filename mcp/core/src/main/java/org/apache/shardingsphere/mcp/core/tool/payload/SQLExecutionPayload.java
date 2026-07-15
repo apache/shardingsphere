@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.response;
+package org.apache.shardingsphere.mcp.core.tool.payload;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionColumnDefinition;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResultKind;
@@ -35,10 +35,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * MCP response for SQL execution results.
+ * SQL execution payload.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLExecutionResponse implements MCPResponse {
+public final class SQLExecutionPayload implements MCPSuccessPayload {
     
     private static final int ROW_OBJECT_LIMIT = 100;
     
@@ -52,23 +52,23 @@ public final class SQLExecutionResponse implements MCPResponse {
     private final String responseMode;
     
     /**
-     * Create a response for a read-only query result.
+     * Create a payload for a read-only query result.
      *
      * @param executionResult SQL execution result
-     * @return query response
+     * @return query payload
      */
-    public static SQLExecutionResponse query(final SQLExecutionResult executionResult) {
-        return new SQLExecutionResponse(executionResult, MCPResponseMode.QUERY);
+    public static SQLExecutionPayload query(final SQLExecutionResult executionResult) {
+        return new SQLExecutionPayload(executionResult, MCPResponseMode.QUERY);
     }
     
     /**
-     * Create a response for an executed side-effecting statement result.
+     * Create a payload for an executed side-effecting statement result.
      *
      * @param executionResult SQL execution result
-     * @return executed response
+     * @return executed payload
      */
-    public static SQLExecutionResponse executed(final SQLExecutionResult executionResult) {
-        return new SQLExecutionResponse(executionResult, MCPResponseMode.EXECUTED);
+    public static SQLExecutionPayload executed(final SQLExecutionResult executionResult) {
+        return new SQLExecutionPayload(executionResult, MCPResponseMode.EXECUTED);
     }
     
     @Override

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
@@ -52,11 +52,11 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflow
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
         WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(arguments, this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getMetadataQueryFacade(),
                 workflowContext.getQueryFacade(), request);
-        return new MCPMapResponse(new MaskWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
+        return new MCPMapPayload(new MaskWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     
     private void bindFeatureArguments(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {

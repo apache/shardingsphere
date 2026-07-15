@@ -21,16 +21,20 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ToolAnnotations;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
+import java.sql.SQLException;
 import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
@@ -94,15 +98,29 @@ public final class MCPToolSpecificationFactory {
         try {
             Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());
             MCPToolDefinition definition = ToolDefinitionRegistry.getToolDefinition(request.name());
-            MCPResponse response = controller.handle(exchange.sessionId(), definition, arguments);
-            return callToolResultFactory.create(definition.getDescriptor(), getMcpResponse(exchange, response, definition, arguments));
+            MCPSuccessPayload payload = controller.handle(exchange.sessionId(), definition, arguments);
+            return callToolResultFactory.create(definition.getDescriptor(), getEffectivePayload(exchange, payload, definition, arguments));
         } catch (final UnsupportedToolException ignored) {
             throw MCPTransportErrorFactory.createError(new UnsupportedToolException(request.name()));
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            if (isToolExecutionError(ex)) {
+                return callToolResultFactory.create(MCPErrorConverter.convert(ex));
+            }
+            throw MCPTransportErrorFactory.createError(ex);
         }
     }
     
-    private MCPResponse getMcpResponse(final McpSyncServerExchange exchange, final MCPResponse response, final MCPToolDefinition definition, final Map<String, Object> arguments) {
-        Map<String, Object> payload = response.toPayload();
-        return elicitationHandler.shouldHandle(definition.getDescriptor(), payload) ? elicitationHandler.handle(exchange, definition, arguments, payload).orElse(response) : response;
+    private boolean isToolExecutionError(final Exception cause) {
+        return cause instanceof ShardingSphereMCPException || cause instanceof RuntimeDatabaseConnectionException || cause instanceof SQLException;
+    }
+    
+    private MCPSuccessPayload getEffectivePayload(final McpSyncServerExchange exchange, final MCPSuccessPayload successPayload, final MCPToolDefinition definition,
+                                                  final Map<String, Object> arguments) {
+        Map<String, Object> payload = successPayload.toPayload();
+        return elicitationHandler.shouldHandle(definition.getDescriptor(), payload)
+                ? elicitationHandler.handle(exchange, definition, arguments, payload).orElse(successPayload)
+                : successPayload;
     }
 }

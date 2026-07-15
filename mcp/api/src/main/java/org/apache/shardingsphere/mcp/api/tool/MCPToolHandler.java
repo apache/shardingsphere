@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.api.tool;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 
 import java.util.Map;
 
@@ -49,8 +49,8 @@ public interface MCPToolHandler<T extends MCPRequestContext> {
      *
      * @param context request context
      * @param arguments tool arguments
-     * @return successful tool response
+     * @return successful tool payload
      * @throws ShardingSphereMCPException controlled failure to be converted by runtime
      */
-    MCPResponse handle(T context, Map<String, Object> arguments);
+    MCPSuccessPayload handle(T context, Map<String, Object> arguments);
 }

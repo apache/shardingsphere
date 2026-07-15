@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.protocol.response;
+package org.apache.shardingsphere.mcp.core.protocol.error;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,11 +28,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MCPErrorResponseTest {
+class MCPErrorPayloadTest {
     
     @Test
     void assertToPayload() {
-        Map<String, Object> actual = new MCPErrorResponse("foo_message").toPayload();
+        Map<String, Object> actual = new MCPErrorPayload("foo_message").toPayload();
         assertNotNull(actual.get("request_id"));
         assertFalse(actual.containsKey("recovery"));
         assertThat(actual.get("response_mode"), is("recovery"));
@@ -42,7 +42,7 @@ class MCPErrorResponseTest {
     
     @Test
     void assertToPayloadWithRecovery() {
-        Map<String, Object> actual = new MCPErrorResponse("foo_message", Map.of("recoverable", true)).toPayload();
+        Map<String, Object> actual = new MCPErrorPayload("foo_message", Map.of("recoverable", true)).toPayload();
         assertNotNull(actual.get("request_id"));
         assertThat(actual.get("response_mode"), is("recovery"));
         assertThat(actual.get("message"), is("foo_message"));
@@ -53,7 +53,7 @@ class MCPErrorResponseTest {
     
     @Test
     void assertToPayloadWithTopLevelNextActions() {
-        Map<String, Object> actual = new MCPErrorResponse("", Map.of("next_actions", List.of(Map.of("order", 1, "type", "terminal", "title", "Stop")))).toPayload();
+        Map<String, Object> actual = new MCPErrorPayload("", Map.of("next_actions", List.of(Map.of("order", 1, "type", "terminal", "title", "Stop")))).toPayload();
         assertThat(actual.get("summary"), is("Recovery guidance is available."));
         assertThat(actual.get("next_actions"), is(List.of(Map.of("order", 1, "type", "terminal", "title", "Stop"))));
     }

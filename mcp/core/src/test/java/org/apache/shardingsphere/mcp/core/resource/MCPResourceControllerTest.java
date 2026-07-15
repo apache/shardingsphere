@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
@@ -41,7 +41,7 @@ class MCPResourceControllerTest {
     
     @Test
     void assertHandle() {
-        MCPResponse response = mock(MCPResponse.class);
+        MCPSuccessPayload response = mock(MCPSuccessPayload.class);
         Map<String, Object> payload = Map.of("resource", "capabilities");
         when(response.toPayload()).thenReturn(payload);
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 
 import java.util.List;
@@ -51,14 +51,14 @@ public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDa
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
         String database = uriVariables.getValue("database");
         String table = uriVariables.getValue("table");
         MCPFeatureQueryFacade queryFacade = databaseContext.getQueryFacade();
         queryFacade.checkDatabaseCapability(database);
         List<Map<String, Object>> items = ruleInspectionService.queryBroadcastRules(queryFacade, database).stream()
                 .filter(each -> queryFacade.isSameIdentifier(database, IdentifierScope.TABLE, table, WorkflowRuleValueUtils.getRuleValue(each, "broadcast_table"))).toList();
-        return new MCPItemsResponse(items, MCPResourceNavigationPayloadBuilder.create(
+        return new MCPItemsPayload(items, MCPResourceNavigationPayloadBuilder.create(
                 MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, BroadcastFeatureDefinition.RULES_RESOURCE_URI));
     }
 }

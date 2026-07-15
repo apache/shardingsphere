@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
@@ -64,7 +64,7 @@ class WorkflowExecutionToolHandlerTest {
                         (mock, context) -> when(mock.apply(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed")))) {
             WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(
                     WorkflowHandlerTestFixture.createDefinition("encrypt.rule", mock(MCPWorkflowValidationHandler.class), workflowApplySynchronizationHandler, workflowApplyArtifactValidator))));
-            MCPResponse actual = handler.handle(fixture.workflowContext(), Map.of(WorkflowFieldNames.PLAN_ID, "plan-1",
+            MCPSuccessPayload actual = handler.handle(fixture.workflowContext(), Map.of(WorkflowFieldNames.PLAN_ID, "plan-1",
                     WorkflowFieldNames.APPROVED_STEPS, List.of("ddl"), WorkflowFieldNames.EXECUTION_MODE, "manual-only"));
             WorkflowExecutionService executionService = mockedExecutionServices.constructed().getFirst();
             verify(executionService).apply(eq(fixture.workflowSessionContext()), eq(fixture.metadataQueryFacade()), eq(fixture.queryFacade()), eq(fixture.executionFacade()),

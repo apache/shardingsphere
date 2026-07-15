@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
@@ -114,15 +114,15 @@ public final class ToolDefinitionRegistry {
      * @param requestScope request scope
      * @param definition tool definition
      * @param arguments tool arguments
-     * @return tool response
+     * @return successful tool payload
      */
-    public static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolDefinition definition, final Map<String, Object> arguments) {
+    public static MCPSuccessPayload dispatch(final MCPRequestScope requestScope, final MCPToolDefinition definition, final Map<String, Object> arguments) {
         MCPToolDescriptor descriptor = definition.getDescriptor();
         new MCPToolArgumentContract(descriptor.getName(), descriptor.getInputSchema()).validate(arguments);
         return dispatch(requestScope, definition.getHandler(), arguments);
     }
     
-    private static <T extends MCPRequestContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> handler, final Map<String, Object> arguments) {
+    private static <T extends MCPRequestContext> MCPSuccessPayload dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> handler, final Map<String, Object> arguments) {
         return handler.handle(handler.getContextType().cast(requestScope), arguments);
     }
 }

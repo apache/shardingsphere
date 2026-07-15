@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLStatementsException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 
@@ -29,7 +30,7 @@ final class SQLStatementScanner {
     
     String normalizeSingleStatement(final String sql) {
         String result = sql.trim();
-        ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new IllegalArgumentException("sql cannot be empty."));
+        ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new MCPInvalidRequestException("sql cannot be empty."));
         int statementDelimiterIndex = findStatementDelimiter(result);
         if (-1 == statementDelimiterIndex) {
             return result;
@@ -38,7 +39,7 @@ final class SQLStatementScanner {
             throw new MCPMultipleSQLStatementsException();
         }
         result = result.substring(0, statementDelimiterIndex).trim();
-        ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new IllegalArgumentException("sql cannot be empty."));
+        ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new MCPInvalidRequestException("sql cannot be empty."));
         return result;
     }
     

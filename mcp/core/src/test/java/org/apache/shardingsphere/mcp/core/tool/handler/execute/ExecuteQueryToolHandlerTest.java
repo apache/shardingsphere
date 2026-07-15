@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -53,7 +53,7 @@ class ExecuteQueryToolHandlerTest {
         MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
         when(databaseContext.getSessionId()).thenReturn("session-1");
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
-        MCPResponse actual = new ExecuteQueryToolHandler().handle(databaseContext, Map.of("database", "logic_db", "schema", "public", "sql", "select * from orders"));
+        MCPSuccessPayload actual = new ExecuteQueryToolHandler().handle(databaseContext, Map.of("database", "logic_db", "schema", "public", "sql", "select * from orders"));
         assertThat(actual.toPayload().get("statement_class"), is("query"));
         ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);
         verify(executionFacade).execute(requestCaptor.capture());

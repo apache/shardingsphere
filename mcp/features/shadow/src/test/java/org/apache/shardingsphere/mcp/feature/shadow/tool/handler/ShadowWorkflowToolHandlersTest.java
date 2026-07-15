@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
@@ -60,7 +60,7 @@ class ShadowWorkflowToolHandlersTest {
                 MockedConstruction<ShadowWorkflowPlanningService> mocked = mockConstruction(ShadowWorkflowPlanningService.class,
                         (mock, context) -> when(mock.planRule(any(), any(), any())).thenReturn(createSnapshot(createRuleRequest(), ShadowFeatureDefinition.RULE_WORKFLOW_KIND.getValue())))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanShadowRuleToolHandler().handle(fixture.workflowContext, Map.of(
+            MCPSuccessPayload actual = new PlanShadowRuleToolHandler().handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
                     "algorithm_type", "SQL_HINT",
                     "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order")));
@@ -85,7 +85,7 @@ class ShadowWorkflowToolHandlersTest {
                         mockConstruction(ShadowWorkflowPlanningService.class, (mock, context) -> when(mock.planDefaultAlgorithm(any(), any(), any())).thenReturn(createSnapshot(
                                 new ShadowDefaultAlgorithmWorkflowRequest(), ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND.getValue())))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanDefaultShadowAlgorithmToolHandler()
+            MCPSuccessPayload actual = new PlanDefaultShadowAlgorithmToolHandler()
                     .handle(fixture.workflowContext, Map.of("database", "logic_db", "algorithm_type", "SQL_HINT"));
             ArgumentCaptor<ShadowDefaultAlgorithmWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowDefaultAlgorithmWorkflowRequest.class);
             verify(mocked.constructed().getFirst()).planDefaultAlgorithm(
@@ -102,7 +102,7 @@ class ShadowWorkflowToolHandlersTest {
                         mockConstruction(ShadowWorkflowPlanningService.class, (mock, context) -> when(mock.planAlgorithmCleanup(any(), any(), any())).thenReturn(createSnapshot(
                                 new ShadowAlgorithmCleanupWorkflowRequest(), ShadowFeatureDefinition.ALGORITHM_CLEANUP_WORKFLOW_KIND.getValue())))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanShadowAlgorithmCleanupToolHandler()
+            MCPSuccessPayload actual = new PlanShadowAlgorithmCleanupToolHandler()
                     .handle(fixture.workflowContext, Map.of("database", "logic_db", "algorithm_name", "unused_algorithm"));
             ArgumentCaptor<ShadowAlgorithmCleanupWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowAlgorithmCleanupWorkflowRequest.class);
             verify(mocked.constructed().getFirst()).planAlgorithmCleanup(

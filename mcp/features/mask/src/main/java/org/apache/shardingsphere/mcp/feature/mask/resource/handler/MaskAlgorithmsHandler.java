@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
@@ -45,8 +45,8 @@ public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.queryMaskAlgorithms(databaseContext.getQueryFacade()),
+    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
+        return new MCPItemsPayload(ruleInspectionService.queryMaskAlgorithms(databaseContext.getQueryFacade()),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
 }

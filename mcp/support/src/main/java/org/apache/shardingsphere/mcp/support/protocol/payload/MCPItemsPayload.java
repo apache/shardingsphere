@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.protocol.response;
+package org.apache.shardingsphere.mcp.support.protocol.payload;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
@@ -27,11 +27,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ShardingSphere application items response.
+ * ShardingSphere application item-list payload.
  *
  * <p>Payload pagination fields are application-level fields, not MCP list cursor fields.</p>
  */
-public final class MCPItemsResponse implements MCPResponse {
+public final class MCPItemsPayload implements MCPSuccessPayload {
     
     private static final String CONTINUATION_MODE = "continuation_mode";
     
@@ -47,19 +47,19 @@ public final class MCPItemsResponse implements MCPResponse {
     
     private final String responseMode;
     
-    public MCPItemsResponse(final List<?> items) {
+    public MCPItemsPayload(final List<?> items) {
         this(items, "");
     }
     
-    public MCPItemsResponse(final List<?> items, final String nextPageToken) {
+    public MCPItemsPayload(final List<?> items, final String nextPageToken) {
         this(items, nextPageToken, Collections.emptyMap(), MCPResponseMode.LIST);
     }
     
-    public MCPItemsResponse(final List<?> items, final Map<String, Object> navigation) {
+    public MCPItemsPayload(final List<?> items, final Map<String, Object> navigation) {
         this(items, "", navigation, MCPResponseMode.LIST);
     }
     
-    public MCPItemsResponse(final List<?> items, final String nextPageToken, final Map<String, Object> navigation, final String responseMode) {
+    public MCPItemsPayload(final List<?> items, final String nextPageToken, final Map<String, Object> navigation, final String responseMode) {
         this.items = null == items ? Collections.emptyList() : items;
         this.nextPageToken = nextPageToken;
         this.navigation = null == navigation ? Collections.emptyMap() : navigation;

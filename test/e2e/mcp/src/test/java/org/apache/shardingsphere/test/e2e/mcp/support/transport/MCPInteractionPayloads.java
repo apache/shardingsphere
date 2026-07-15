@@ -102,7 +102,13 @@ public final class MCPInteractionPayloads {
             return getJsonRpcErrorPayload(payload);
         }
         Map<String, Object> result = getRequiredJsonRpcResult(payload);
-        getRequiredObjectList(result, "content");
+        List<Map<String, Object>> contents = getRequiredObjectList(result, "content");
+        if (Boolean.TRUE.equals(result.get("isError"))) {
+            if (contents.isEmpty() || !"text".equals(contents.getFirst().get("type"))) {
+                throw new IllegalStateException("MCP tool error must include JSON text content.");
+            }
+            return parseJsonText(getRequiredString(contents.getFirst(), "text"));
+        }
         return getRequiredObject(result, "structuredContent");
     }
     

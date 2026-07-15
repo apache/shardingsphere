@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedExcept
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
-import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
@@ -73,7 +72,7 @@ public final class MCPErrorConverter {
      * @param cause throwable
      * @return MCP error
      */
-    public static MCPErrorResponse convert(final Throwable cause) {
+    public static MCPErrorPayload convert(final Throwable cause) {
         for (ErrorMapping each : ERROR_MAPPINGS) {
             if (each.matches(cause)) {
                 return createError(cause, each.defaultMessage());
@@ -82,9 +81,10 @@ public final class MCPErrorConverter {
         return createError(cause, "Service is temporarily unavailable.");
     }
     
-    private static MCPErrorResponse createError(final Throwable cause, final String defaultMessage) {
-        String message = MCPQueryRecoveryPayloadFactory.isQueryFailure(cause) ? defaultMessage : Objects.toString(cause.getMessage(), defaultMessage).trim();
-        return new MCPErrorResponse(message, MCPRecoveryPayloadFactory.create(cause));
+    private static MCPErrorPayload createError(final Throwable cause, final String defaultMessage) {
+        String causeMessage = Objects.toString(cause.getMessage(), "").trim();
+        String message = MCPQueryRecoveryPayloadFactory.isQueryFailure(cause) || causeMessage.isEmpty() ? defaultMessage : causeMessage;
+        return new MCPErrorPayload(message, MCPRecoveryPayloadFactory.create(cause));
     }
     
     private record ErrorMapping(Class<? extends Throwable> causeType, String defaultMessage) {

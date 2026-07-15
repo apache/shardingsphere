@@ -118,7 +118,7 @@ public final class MCPResourceSpecificationFactory {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw MCPTransportErrorFactory.createError(ex);
+            throw MCPTransportErrorFactory.createResourceError(ex);
         }
     }
 }

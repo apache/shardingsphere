@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
@@ -57,7 +57,7 @@ class ShardingWorkflowToolHandlersTest {
                         (mock, context) -> when(mock.planTableRule(any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
                                 createRequest(), "CREATE SHARDING TABLE RULE `t_order`(DATANODES('ds_${0..1}.t_order_${0..1}'))")))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanShardingTableRuleToolHandler().handle(fixture.workflowContext, Map.of(
+            MCPSuccessPayload actual = new PlanShardingTableRuleToolHandler().handle(fixture.workflowContext, Map.of(
                     "database", "logic_db",
                     "algorithm_type", "INLINE",
                     "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"),
@@ -103,7 +103,7 @@ class ShardingWorkflowToolHandlersTest {
                         (mock, context) -> when(mock.planDefaultStrategy(any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
                                 createRequest(), "CREATE DEFAULT SHARDING DATABASE STRATEGY (TYPE='none')")))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanShardingDefaultStrategyToolHandler()
+            MCPSuccessPayload actual = new PlanShardingDefaultStrategyToolHandler()
                     .handle(fixture.workflowContext, Map.of("database", "logic_db", "default_strategy_type", "DATABASE", "strategy_type", "none"));
             ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
             verify(mocked.constructed().getFirst()).planDefaultStrategy(
@@ -154,7 +154,7 @@ class ShardingWorkflowToolHandlersTest {
                         (mock, context) -> when(mock.planComponentCleanup(any(), any(), any())).thenReturn(createSnapshot(ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND,
                                 createRequest(), "DROP SHARDING ALGORITHM `unused_algorithm`")))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPResponse actual = new PlanShardingRuleComponentCleanupToolHandler().handle(fixture.workflowContext, Map.of(
+            MCPSuccessPayload actual = new PlanShardingRuleComponentCleanupToolHandler().handle(fixture.workflowContext, Map.of(
                     "database", "logic_db", "component_type", "algorithm", "component_name", "unused_algorithm"));
             ArgumentCaptor<ShardingWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShardingWorkflowRequest.class);
             verify(mocked.constructed().getFirst()).planComponentCleanup(

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database.response;
+package org.apache.shardingsphere.mcp.support.database.payload;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MCPDatabaseCapabilityResponseTest {
+class MCPDatabaseCapabilityPayloadTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertToPayloadArguments")
@@ -57,7 +57,7 @@ class MCPDatabaseCapabilityResponseTest {
         when(actualCapability.getDefaultSchemaSemantics()).thenReturn(DialectSchemaSemantics.DATABASE_AS_SCHEMA);
         when(actualCapability.getSchemaExecutionSemantics()).thenReturn(SchemaExecutionSemantics.FIXED_TO_DATABASE);
         when(actualCapability.supportsExplain()).thenReturn(supportsExplain);
-        Map<String, Object> actual = new MCPDatabaseCapabilityResponse(actualCapability).toPayload();
+        Map<String, Object> actual = new MCPDatabaseCapabilityPayload(actualCapability).toPayload();
         assertThat(actual, is(Map.ofEntries(
                 Map.entry("response_mode", "detail"),
                 Map.entry("database", "logic_db"),

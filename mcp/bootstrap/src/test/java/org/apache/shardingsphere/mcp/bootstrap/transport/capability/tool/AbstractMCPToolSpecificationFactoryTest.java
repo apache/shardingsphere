@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import io.modelcontextprotocol.spec.McpSchema.TextContent;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -111,7 +114,7 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
     }
     
     protected void mockToolDispatch(final MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry, final MCPToolDefinition toolDefinition,
-                                    final Map<String, Object> arguments, final MCPResponse response) {
+                                    final Map<String, Object> arguments, final MCPSuccessPayload response) {
         mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(arguments)))
                 .thenReturn(response);
     }
@@ -173,7 +176,12 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         return (Map<String, Object>) actual.structuredContent();
     }
     
-    protected CallToolResult createCallToolResult(final String toolName, final MCPResponse response) {
+    protected Map<String, Object> getTextContentPayload(final CallToolResult actual) {
+        return JsonUtils.fromJsonString(((TextContent) actual.content().getFirst()).text(), new TypeReference<>() {
+        });
+    }
+    
+    protected CallToolResult createCallToolResult(final String toolName, final MCPSuccessPayload response) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
@@ -46,7 +46,7 @@ class MaskAlgorithmsHandlerTest {
         try (
                 MockedConstruction<MaskRuleInspectionService> mockedConstruction = mockConstruction(MaskRuleInspectionService.class,
                         (mock, context) -> when(mock.queryMaskAlgorithms(queryFacade)).thenReturn(List.of(Map.of("type", "MD5"))))) {
-            MCPResponse actual = new MaskAlgorithmsHandler().handle(databaseContext, new MCPUriVariables(Map.of()));
+            MCPSuccessPayload actual = new MaskAlgorithmsHandler().handle(databaseContext, new MCPUriVariables(Map.of()));
             verify(mockedConstruction.constructed().getFirst()).queryMaskAlgorithms(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
             assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/mask/algorithms"));

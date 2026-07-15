@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
@@ -45,8 +45,8 @@ public final class EncryptRuleHandler implements MCPResourceHandler<MCPDatabaseR
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue("table")),
+    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
+        return new MCPItemsPayload(ruleInspectionService.queryEncryptRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue("table")),
                 MCPResourceNavigationPayloadBuilder.create(
                         MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, EncryptFeatureDefinition.RULES_RESOURCE_URI));
     }

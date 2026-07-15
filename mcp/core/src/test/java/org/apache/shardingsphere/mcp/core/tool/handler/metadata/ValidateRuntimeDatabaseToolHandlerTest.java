@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
@@ -53,7 +53,7 @@ class ValidateRuntimeDatabaseToolHandlerTest {
             MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
             RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
             when(databaseContext.findRuntimeDatabaseConfiguration("logic_db")).thenReturn(Optional.of(runtimeDatabaseConfig));
-            MCPResponse actual = new ValidateRuntimeDatabaseToolHandler().handle(databaseContext, Map.of("database", "logic_db"));
+            MCPSuccessPayload actual = new ValidateRuntimeDatabaseToolHandler().handle(databaseContext, Map.of("database", "logic_db"));
             assertThat(actual.toPayload().get("response_mode"), is("validation"));
             ArgumentCaptor<RuntimeDatabaseValidationRequest> requestCaptor = ArgumentCaptor.forClass(RuntimeDatabaseValidationRequest.class);
             ArgumentCaptor<Function<String, Optional<RuntimeDatabaseConfiguration>>> resolverCaptor = ArgumentCaptor.forClass(Function.class);

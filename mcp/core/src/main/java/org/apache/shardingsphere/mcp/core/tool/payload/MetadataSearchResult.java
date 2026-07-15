@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.protocol.response;
+package org.apache.shardingsphere.mcp.core.tool.payload;
 
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.sameInstance;
-
-class MCPMapResponseTest {
+/**
+ * Search-metadata result.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class MetadataSearchResult {
     
-    @Test
-    void assertToPayload() {
-        Map<String, Object> expectedPayload = Map.of("foo_key", "bar_value");
-        Map<String, Object> actual = new MCPMapResponse(expectedPayload).toPayload();
-        assertThat(actual, sameInstance(expectedPayload));
-    }
+    private final List<MetadataSearchHit> items;
+    
+    private final Map<String, Object> searchContext;
+    
+    private final int totalMatchCount;
+    
+    private final int returnedCount;
+    
+    private final boolean truncated;
+    
+    private final int largeResultThreshold;
 }

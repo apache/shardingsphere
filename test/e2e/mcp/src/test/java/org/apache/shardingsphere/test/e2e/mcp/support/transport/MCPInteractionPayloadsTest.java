@@ -101,6 +101,22 @@ class MCPInteractionPayloadsTest {
     }
     
     @Test
+    void assertGetToolCallErrorPayloadFromTextContent() {
+        Map<String, Object> payload = Map.of("result", Map.of(
+                "isError", true,
+                "content", List.of(Map.of("type", "text", "text", "{\"response_mode\":\"recovery\",\"message\":\"Invalid request.\"}"))));
+        Map<String, Object> actual = MCPInteractionPayloads.getToolCallPayload(payload);
+        assertThat(actual.get("response_mode"), is("recovery"));
+        assertThat(actual.get("message"), is("Invalid request."));
+    }
+    
+    @Test
+    void assertGetToolCallErrorPayloadWithoutTextContent() {
+        Map<String, Object> payload = Map.of("result", Map.of("isError", true, "content", List.of()));
+        assertThrows(IllegalStateException.class, () -> MCPInteractionPayloads.getToolCallPayload(payload));
+    }
+    
+    @Test
     void assertGetToolCallPayloadWithoutProtocolContent() {
         assertThrows(IllegalStateException.class,
                 () -> MCPInteractionPayloads.getToolCallPayload(Map.of("result", Map.of("structuredContent", Map.of("status", "ok")))));

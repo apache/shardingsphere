@@ -22,9 +22,9 @@ import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationRespons
 import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
 import java.util.Map;
@@ -36,24 +36,27 @@ final class MCPCallToolResultFactory {
     
     private final JsonSchemaValidator outputSchemaValidator = new DefaultJsonSchemaValidator();
     
-    CallToolResult create(final MCPToolDescriptor descriptor, final MCPResponse response) {
-        if (response instanceof MCPErrorResponse) {
-            return create(response.toPayload(), true);
-        }
-        Map<String, Object> payload = response.toPayload();
+    CallToolResult create(final MCPToolDescriptor descriptor, final MCPSuccessPayload successPayload) {
+        Map<String, Object> payload = successPayload.toPayload();
         if (descriptor.getOutputSchema().isEmpty()) {
-            return create(payload, false);
+            return createSuccess(payload);
         }
         ValidationResponse validation = outputSchemaValidator.validate(descriptor.getOutputSchema(), payload);
         return validation.valid()
-                ? create(payload, false)
-                : create(new MCPErrorResponse(String.format(
-                        "Tool `%s` structuredContent does not match declared outputSchema: %s", descriptor.getName(),
-                        Objects.toString(validation.errorMessage(), "validation failed"))).toPayload(), true);
+                ? createSuccess(payload)
+                : create(new MCPErrorPayload(String.format("Tool `%s` structuredContent does not match declared outputSchema: %s",
+                        descriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed"))));
     }
     
-    private CallToolResult create(final Map<String, Object> payload, final boolean isError) {
-        CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(isError);
+    CallToolResult create(final MCPErrorPayload errorPayload) {
+        Map<String, Object> payload = errorPayload.toPayload();
+        CallToolResult.Builder result = CallToolResult.builder().addTextContent(JsonUtils.toJsonString(payload)).isError(true);
+        appendResourceLinks(payload, result);
+        return result.build();
+    }
+    
+    private CallToolResult createSuccess(final Map<String, Object> payload) {
+        CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(false);
         appendResourceLinks(payload, result);
         return result.build();
     }

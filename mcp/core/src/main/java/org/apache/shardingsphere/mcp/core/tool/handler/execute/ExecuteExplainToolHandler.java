@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.core.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 
@@ -44,7 +44,7 @@ public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPDataba
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String sql = toolArguments.getStringArgument("sql");
         String explainSql = toolArguments.getStringArgument("explain_sql");
@@ -52,6 +52,6 @@ public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPDataba
         String schema = SQLExecutionToolHandlerSupport.resolveSchema(databaseContext, toolArguments);
         SQLExecutionRequest executionRequest = SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(databaseContext.getSessionId(), toolArguments,
                 schema, explainSql, TOOL_NAME);
-        return SQLExecutionResponse.query(databaseContext.getExecutionFacade().executeExplain(executionRequest, sql));
+        return SQLExecutionPayload.query(databaseContext.getExecutionFacade().executeExplain(executionRequest, sql));
     }
 }

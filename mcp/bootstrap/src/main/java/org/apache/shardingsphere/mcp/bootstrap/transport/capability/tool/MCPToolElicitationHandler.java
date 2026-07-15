@@ -21,7 +21,7 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
@@ -60,7 +60,7 @@ final class MCPToolElicitationHandler {
         return clarificationPolicy.requiresPlanningClarification(descriptor, payload);
     }
     
-    Optional<MCPResponse> handle(final McpSyncServerExchange exchange, final MCPToolDefinition definition, final Map<String, Object> arguments, final Map<String, Object> payload) {
+    Optional<MCPSuccessPayload> handle(final McpSyncServerExchange exchange, final MCPToolDefinition definition, final Map<String, Object> arguments, final Map<String, Object> payload) {
         MCPClientElicitationCapabilities clientCapabilities = MCPClientElicitationCapabilities.from(exchange);
         Optional<MCPToolClarificationPolicy.ClarificationForm> clarificationForm = clarificationPolicy.createClarificationForm(payload, definition.getDescriptor());
         if (clarificationForm.isEmpty()) {
@@ -108,10 +108,10 @@ final class MCPToolElicitationHandler {
                 MCPShardingSphereMetadataKeys.FORM_REQUEST_ID, formRequestId);
     }
     
-    private Optional<MCPResponse> continueOrFallback(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments,
-                                                     final Map<String, Object> payload, final MCPToolClarificationPolicy.ClarificationForm clarificationForm,
-                                                     final FormContinuationContext continuationContext, final McpSchema.ElicitResult elicitedResult,
-                                                     final MCPClientElicitationCapabilities clientCapabilities) {
+    private Optional<MCPSuccessPayload> continueOrFallback(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments,
+                                                           final Map<String, Object> payload, final MCPToolClarificationPolicy.ClarificationForm clarificationForm,
+                                                           final FormContinuationContext continuationContext, final McpSchema.ElicitResult elicitedResult,
+                                                           final MCPClientElicitationCapabilities clientCapabilities) {
         if (null == elicitedResult || null == elicitedResult.action()) {
             return Optional.of(fallbackResponseFactory.create(payload, MCPToolElicitationFallbackReason.MALFORMED_ELICITATION_RESULT, clientCapabilities));
         }

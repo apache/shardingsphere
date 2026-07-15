@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.workflow;
 
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
@@ -44,8 +44,8 @@ public final class WorkflowPlanHandler implements MCPResourceHandler<MCPWorkflow
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowRequestContext handlerContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPWorkflowRequestContext handlerContext, final MCPUriVariables uriVariables) {
         WorkflowContextSnapshot snapshot = handlerContext.getWorkflowSessionContext().getRequired(uriVariables.getValue(WorkflowFieldNames.PLAN_ID));
-        return new MCPMapResponse(WorkflowPlanPayloadBuilder.build(snapshot));
+        return new MCPMapPayload(WorkflowPlanPayloadBuilder.build(snapshot));
     }
 }

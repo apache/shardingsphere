@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
@@ -88,7 +88,7 @@ class MetadataResourceResponseFactoryTest {
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("type"), is("terminal"));
     }
     
-    private MCPResponse createResponse(final String uriTemplate, final MCPUriVariables uriVariables, final List<?> items) {
+    private MCPSuccessPayload createResponse(final String uriTemplate, final MCPUriVariables uriVariables, final List<?> items) {
         MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
         ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(uriTemplate);
         return new MetadataResourceResponseFactory().create(mock(MCPDatabaseRequestContext.class), uriVariables, descriptor, metadata, items);

@@ -119,9 +119,10 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         arguments.put("client_hint", "narrow");
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, scenario.toolName(), arguments);
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> result = MCPInteractionPayloads.getRequiredJsonRpcResult(parseJsonBody(actual.body()));
+        Map<String, Object> responsePayload = parseJsonBody(actual.body());
+        Map<String, Object> result = MCPInteractionPayloads.getRequiredJsonRpcResult(responsePayload);
         assertTrue((Boolean) result.get("isError"));
-        Map<String, Object> payload = MCPInteractionPayloads.getRequiredObject(result, "structuredContent");
+        Map<String, Object> payload = MCPInteractionPayloads.getToolCallPayload(responsePayload);
         Map<String, Object> recovery = getRecoveryPayload(payload, "validation");
         assertThat(recovery.get("category"), is("unknown_argument"));
         assertThat(recovery.get("argument_path"), is("client_hint"));

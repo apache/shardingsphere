@@ -315,6 +315,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         Map<String, Object> payload = parseJsonBody(response.body());
         Map<String, Object> result = MCPInteractionPayloads.getRequiredJsonRpcResult(payload);
         assertTrue((boolean) result.get("isError"));
+        assertFalse(result.containsKey("structuredContent"));
         Map<String, Object> structuredContent = MCPInteractionPayloads.getToolCallPayload(payload);
         assertThat(structuredContent.get("response_mode"), is("recovery"));
         Map<String, Object> actualRecovery = MCPInteractionPayloads.getRequiredObject(structuredContent, "recovery");
