@@ -115,6 +115,16 @@
         <output sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + SubTotal, [bonus_cipher] = 'encrypt_3000.00' FROM dbo.SalesPerson AS sp JOIN dbo.SalesOrderHeader AS so ON sp.BusinessEntityID = so.SalesPersonID AND so.OrderDate = (SELECT MAX(OrderDate) FROM dbo.SalesOrderHeader WHERE SalesPersonID = sp.BusinessEntityID)" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="update_sales_person_with_linked_server_for_literals" db-types="SQLServer">
+        <input sql="UPDATE MyLinkedServer.encrypt.dbo.SalesPerson SET Bonus = 3000.00 WHERE BusinessEntityID = 1" />
+        <output sql="UPDATE MyLinkedServer.encrypt.dbo.SalesPerson SET [bonus_cipher] = 'encrypt_3000.00' WHERE BusinessEntityID = 1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_account_with_database_and_schema_for_literals" db-types="PostgreSQL,openGauss">
+        <input sql="UPDATE encrypt.public.t_account SET amount = 1000 WHERE account_id = 1" />
+        <output sql="UPDATE public.t_account SET &quot;cipher_amount&quot; = 'encrypt_1000' WHERE account_id = 1" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="update_sales_person_from_cross_schema_join_for_literals" db-types="SQLServer">
         <input sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + SubTotal, Bonus = 3000.00 FROM Sales.SalesPerson AS sp JOIN dbo.SalesOrderHeader AS so ON sp.EmpID = so.SalesPersonID WHERE dbo.SalesPerson.BusinessEntityID = sp.EmpID" />
         <output sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + SubTotal, [bonus_cipher] = 'encrypt_3000.00' FROM Sales.SalesPerson AS sp JOIN dbo.SalesOrderHeader AS so ON sp.EmpID = so.SalesPersonID WHERE dbo.SalesPerson.BusinessEntityID = sp.EmpID" />
