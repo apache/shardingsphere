@@ -54,7 +54,7 @@ public final class IdentifierCasePolicyResolver {
         }
         IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(databaseType, dataSource);
         return DatabaseTypedSPILoader.findService(IdentifierCasePolicyProvider.class, databaseType)
-                .flatMap(each -> each.provide(context))
+                .map(each -> each.provide(context))
                 .orElseGet(IdentifierCasePolicyFactory::newInsensitivePolicySet);
     }
 }

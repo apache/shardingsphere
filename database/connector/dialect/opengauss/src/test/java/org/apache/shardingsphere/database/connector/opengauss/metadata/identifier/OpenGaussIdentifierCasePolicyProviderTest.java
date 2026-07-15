@@ -49,11 +49,11 @@ class OpenGaussIdentifierCasePolicyProviderTest {
     @Test
     void assertProvide() {
         IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(databaseType, null);
-        IdentifierCasePolicy tableRule = provider.provide(context).orElseThrow(AssertionError::new).getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy tableRule = provider.provide(context).getPolicy(IdentifierScope.TABLE);
         assertThat(tableRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(tableRule.matches("foo", "FOO", QuoteCharacter.NONE));
         assertFalse(tableRule.matches("Foo", "foo", QuoteCharacter.NONE));
-        IdentifierCasePolicy schemaRule = provider.provide(context).orElseThrow(AssertionError::new).getPolicy(IdentifierScope.SCHEMA);
+        IdentifierCasePolicy schemaRule = provider.provide(context).getPolicy(IdentifierScope.SCHEMA);
         assertThat(schemaRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(schemaRule.matches("UPPER_SCHEMA", "upper_schema", QuoteCharacter.NONE));
         assertFalse(schemaRule.matches("UPPER_SCHEMA", "upper_schema", QuoteCharacter.QUOTE));

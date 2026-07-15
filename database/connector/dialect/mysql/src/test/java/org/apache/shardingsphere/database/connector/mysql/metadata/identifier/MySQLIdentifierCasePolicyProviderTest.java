@@ -46,7 +46,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class MySQLIdentifierCasePolicyProviderTest {
     
@@ -57,55 +56,40 @@ class MySQLIdentifierCasePolicyProviderTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideArguments")
     void assertProvide(final String name, final IdentifierCasePolicyProviderContext context, final LookupMode expectedQuotedLookupMode,
-                       final LookupMode expectedUnquotedLookupMode, final Boolean expectedMatch) {
-        IdentifierCasePolicy actual = provider.provide(context).map(policySet -> policySet.getPolicy(IdentifierScope.TABLE)).orElse(null);
-        assertLookupMode(actual, QuoteCharacter.BACK_QUOTE, expectedQuotedLookupMode);
-        assertLookupMode(actual, QuoteCharacter.NONE, expectedUnquotedLookupMode);
-        assertMatch(actual, expectedMatch);
+                       final LookupMode expectedUnquotedLookupMode, final boolean expectedMatch) {
+        IdentifierCasePolicy actual = provider.provide(context).getPolicy(IdentifierScope.TABLE);
+        assertThat(actual.getLookupMode(QuoteCharacter.BACK_QUOTE), is(expectedQuotedLookupMode));
+        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
+        assertThat(actual.matches("foo", "FOO", QuoteCharacter.NONE), is(expectedMatch));
     }
     
     @Test
     void assertProvideWithQuotedTableName() {
-        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 1)))
-                .map(policySet -> policySet.getPolicy(IdentifierScope.TABLE)).orElseThrow(AssertionError::new);
+        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 1))).getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
         assertThat(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE), is(Boolean.TRUE));
     }
     
-    private void assertMatch(final IdentifierCasePolicy actual, final Boolean expected) {
-        if (null == expected) {
-            assertNull(actual);
-        } else {
-            assertThat(actual.matches("foo", "FOO", QuoteCharacter.NONE), is(expected));
-        }
-    }
-    
-    private void assertLookupMode(final IdentifierCasePolicy actual, final QuoteCharacter quoteCharacter, final LookupMode expected) {
-        if (null == expected) {
-            assertNull(actual);
-        } else {
-            assertThat(actual.getLookupMode(quoteCharacter), is(expected));
-        }
-    }
-    
     private static Stream<Arguments> provideArguments() {
         return Stream.of(
-                Arguments.of("null_data_source", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, null), null, null, null),
-                Arguments.of("null_connection", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new NullConnectionFixtureDataSource()), null, null, null),
+                Arguments.of("null_data_source", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, null), LookupMode.EXACT, LookupMode.NORMALIZED, true),
+                Arguments.of("null_connection", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new NullConnectionFixtureDataSource()), LookupMode.EXACT, LookupMode.NORMALIZED, true),
                 Arguments.of("lower_case_table_names_0", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0)),
-                        LookupMode.EXACT, LookupMode.EXACT, Boolean.FALSE),
+                        LookupMode.EXACT, LookupMode.EXACT, false),
                 Arguments.of("lower_case_table_names_1", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 1)),
-                        LookupMode.NORMALIZED, LookupMode.NORMALIZED, Boolean.TRUE),
+                        LookupMode.NORMALIZED, LookupMode.NORMALIZED, true),
                 Arguments.of("lower_case_table_names_2", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 2)),
-                        LookupMode.NORMALIZED, LookupMode.NORMALIZED, Boolean.TRUE),
-                Arguments.of("no_result_row", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(false, 0)), null, null, null),
-                Arguments.of("sql_exception", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FailingFixtureDataSource()), null, null, null));
+                        LookupMode.NORMALIZED, LookupMode.NORMALIZED, true),
+                Arguments.of("no_result_row", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(false, 0)), LookupMode.EXACT, LookupMode.NORMALIZED, true),
+                Arguments.of("sql_exception", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FailingFixtureDataSource()), LookupMode.EXACT, LookupMode.NORMALIZED, true),
+                Arguments.of("unexpected_lower_case_table_names", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 3)), LookupMode.EXACT, LookupMode.NORMALIZED,
+                        true));
     }
     
     @Test
     void assertProvideWithLowerCaseTableNamesZeroUsesScopedPolicies() {
         IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0));
-        IdentifierCasePolicySet actual = provider.provide(context).orElseThrow(AssertionError::new);
+        IdentifierCasePolicySet actual = provider.provide(context);
         assertThat(actual.getPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE), is(Boolean.TRUE));
         assertThat(actual.getPolicy(IdentifierScope.TABLE).matches("foo_tbl", "FOO_TBL", QuoteCharacter.NONE), is(Boolean.FALSE));
         assertThat(actual.getPolicy(IdentifierScope.VIEW).matches("foo_view", "FOO_VIEW", QuoteCharacter.NONE), is(Boolean.FALSE));

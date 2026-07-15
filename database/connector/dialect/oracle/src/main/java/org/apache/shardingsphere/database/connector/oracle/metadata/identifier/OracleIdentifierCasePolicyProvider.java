@@ -22,16 +22,14 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 
-import java.util.Optional;
-
 /**
  * Oracle provider of identifier case rules.
  */
 public final class OracleIdentifierCasePolicyProvider implements IdentifierCasePolicyProvider {
     
     @Override
-    public Optional<IdentifierCasePolicySet> provide(final IdentifierCasePolicyProviderContext context) {
-        return Optional.of(IdentifierCasePolicyFactory.newUpperCasePolicySet());
+    public IdentifierCasePolicySet provide(final IdentifierCasePolicyProviderContext context) {
+        return IdentifierCasePolicyFactory.newUpperCasePolicySet();
     }
     
     @Override
