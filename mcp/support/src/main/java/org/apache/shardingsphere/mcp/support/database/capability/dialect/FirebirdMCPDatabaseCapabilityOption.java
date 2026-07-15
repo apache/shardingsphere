@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+
 /**
  * MCP database capability option for Firebird.
  */
-public final class FirebirdMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class FirebirdMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public FirebirdMCPDatabaseCapabilityOption() {
-        super("Firebird", false);
+    @Override
+    public boolean isExplainSupported() {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "Firebird";
     }
 }

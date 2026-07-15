@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+
 /**
  * MCP database capability option for Presto.
  */
-public final class PrestoMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class PrestoMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public PrestoMCPDatabaseCapabilityOption() {
-        super("Presto", true);
+    @Override
+    public boolean isExplainSupported() {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "Presto";
     }
 }

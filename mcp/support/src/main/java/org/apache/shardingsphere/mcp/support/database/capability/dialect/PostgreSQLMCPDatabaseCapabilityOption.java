@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+
 /**
  * MCP database capability option for PostgreSQL.
  */
-public final class PostgreSQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class PostgreSQLMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public PostgreSQLMCPDatabaseCapabilityOption() {
-        super("PostgreSQL", true);
+    @Override
+    public boolean isExplainSupported() {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
     }
 }

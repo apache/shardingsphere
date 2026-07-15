@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+
 /**
  * MCP database capability option for openGauss.
  */
-public final class OpenGaussMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class OpenGaussMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public OpenGaussMCPDatabaseCapabilityOption() {
-        super("openGauss", true);
+    @Override
+    public boolean isExplainSupported() {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "openGauss";
     }
 }

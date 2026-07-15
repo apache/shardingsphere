@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+
 /**
  * MCP database capability option for Oracle.
  */
-public final class OracleMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class OracleMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public OracleMCPDatabaseCapabilityOption() {
-        super("Oracle", false);
+    @Override
+    public boolean isExplainSupported() {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "Oracle";
     }
 }
