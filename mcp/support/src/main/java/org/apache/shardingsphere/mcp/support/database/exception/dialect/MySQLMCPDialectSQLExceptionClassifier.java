@@ -36,9 +36,17 @@ public final class MySQLMCPDialectSQLExceptionClassifier implements MCPDialectSQ
     
     private static final int ER_PARSE_ERROR = 1064;
     
+    private static final int ER_TABLEACCESS_DENIED_ERROR = 1142;
+    
+    private static final int ER_COLUMNACCESS_DENIED_ERROR = 1143;
+    
     private static final int ER_SYNTAX_ERROR = 1149;
     
+    private static final int ER_SPECIFIC_ACCESS_DENIED_ERROR = 1227;
+    
     private static final int ER_SP_DOES_NOT_EXIST = 1305;
+    
+    private static final int ER_PROCACCESS_DENIED_ERROR = 1370;
     
     @Override
     public Optional<MCPJDBCErrorCategory> classify(final SQLException cause) {
@@ -47,6 +55,10 @@ public final class MySQLMCPDialectSQLExceptionClassifier implements MCPDialectSQ
         }
         switch (cause.getErrorCode()) {
             case ER_DBACCESS_DENIED_ERROR:
+            case ER_TABLEACCESS_DENIED_ERROR:
+            case ER_COLUMNACCESS_DENIED_ERROR:
+            case ER_SPECIFIC_ACCESS_DENIED_ERROR:
+            case ER_PROCACCESS_DENIED_ERROR:
                 return Optional.of(MCPJDBCErrorCategory.AUTHORIZATION);
             case ER_BAD_DB_ERROR:
             case ER_SP_DOES_NOT_EXIST:

@@ -64,9 +64,17 @@ final class SQLStatementObjectName {
     }
     
     static SQLStatementObjectName from(final List<IdentifierValue> identifiers) {
+        return from(identifiers, false);
+    }
+    
+    private static SQLStatementObjectName from(final List<IdentifierValue> identifiers, final boolean namespaceTarget) {
         IdentifierValue firstIdentifier = identifiers.get(0);
         return new SQLStatementObjectName(identifiers.stream().map(IdentifierValue::getValue).collect(Collectors.joining(".")),
-                firstIdentifier.getValue(), firstIdentifier.getQuoteCharacter(), 1 < identifiers.size(), false);
+                firstIdentifier.getValue(), firstIdentifier.getQuoteCharacter(), 1 < identifiers.size(), namespaceTarget);
+    }
+    
+    static SQLStatementObjectName fromNamespace(final List<IdentifierValue> identifiers) {
+        return from(identifiers, true);
     }
     
     static SQLStatementObjectName fromNamespace(final IdentifierValue identifier) {

@@ -54,10 +54,17 @@ class MCPJDBCExceptionClassifierTest {
     }
     
     @Test
-    void assertClassifySuppressedException() {
+    void assertClassifyNextExceptionAfterDialectFallback() {
+        SQLException cause = new SQLException("batch failed", "42000", 1055);
+        cause.setNextException(new SQLException("syntax error", "42000", 1064));
+        assertThat(MCPJDBCExceptionClassifier.classify("MySQL", cause), is(MCPJDBCErrorCategory.SYNTAX));
+    }
+    
+    @Test
+    void assertClassifyIgnoresSuppressedException() {
         SQLException cause = new SQLException("query failed");
         cause.addSuppressed(new SQLTimeoutException("timeout"));
-        assertThat(MCPJDBCExceptionClassifier.classify(cause), is(MCPJDBCErrorCategory.TIMEOUT));
+        assertThat(MCPJDBCExceptionClassifier.classify(cause), is(MCPJDBCErrorCategory.QUERY_FAILED));
     }
     
     @Test

@@ -54,11 +54,15 @@ class MySQLMCPDialectSQLExceptionClassifierTest {
     
     private static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
-                Arguments.of("access denied", 1044, MCPJDBCErrorCategory.AUTHORIZATION),
+                Arguments.of("database access denied", 1044, MCPJDBCErrorCategory.AUTHORIZATION),
                 Arguments.of("unknown database", 1049, MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
                 Arguments.of("parse error", 1064, MCPJDBCErrorCategory.SYNTAX),
+                Arguments.of("table access denied", 1142, MCPJDBCErrorCategory.AUTHORIZATION),
+                Arguments.of("column access denied", 1143, MCPJDBCErrorCategory.AUTHORIZATION),
                 Arguments.of("syntax error", 1149, MCPJDBCErrorCategory.SYNTAX),
+                Arguments.of("specific access denied", 1227, MCPJDBCErrorCategory.AUTHORIZATION),
                 Arguments.of("missing routine", 1305, MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
+                Arguments.of("routine access denied", 1370, MCPJDBCErrorCategory.AUTHORIZATION),
                 Arguments.of("ambiguous error", 1055, MCPJDBCErrorCategory.QUERY_FAILED));
     }
 }

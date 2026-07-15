@@ -81,15 +81,12 @@ public final class MCPJDBCExceptionClassifier {
             }
             if (current instanceof SQLException) {
                 Optional<MCPJDBCErrorCategory> category = classifySQLException(dialectClassifier, (SQLException) current);
-                if (category.isPresent()) {
+                if (category.isPresent() && MCPJDBCErrorCategory.QUERY_FAILED != category.get()) {
                     return category.get();
                 }
                 addIfPresent(pending, ((SQLException) current).getNextException());
             }
             addIfPresent(pending, current.getCause());
-            for (Throwable each : current.getSuppressed()) {
-                addIfPresent(pending, each);
-            }
         }
         return MCPJDBCErrorCategory.QUERY_FAILED;
     }

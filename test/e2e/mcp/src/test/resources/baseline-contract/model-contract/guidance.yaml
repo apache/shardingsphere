@@ -104,7 +104,7 @@ model_contract:
   metadata_first_resource: shardingsphere://databases
   preflight_rule: Use database_gateway_validate_runtime_database with a configured
     database name before onboarding or troubleshooting runtime connectivity.
-  sql_tool_selection: {read_only: Use database_gateway_execute_query for one classifier-approved
+  sql_tool_selection: {read_only: Use database_gateway_execute_query for one parser-approved
       SELECT statement., explain: Use database_gateway_execute_explain_query with
       the original SELECT and a model-generated database-native EXPLAIN SQL; do not
       use EXPLAIN ANALYZE., side_effecting: Use database_gateway_execute_update with
