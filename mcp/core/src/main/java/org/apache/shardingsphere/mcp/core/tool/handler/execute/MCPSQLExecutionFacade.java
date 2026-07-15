@@ -123,7 +123,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         } catch (final MCPUnsupportedException | MCPInvalidRequestException ex) {
             throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         } catch (final IllegalArgumentException ex) {
-            throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), new MCPInvalidRequestException(ex.getMessage(), ex));
+            throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         }
     }
     

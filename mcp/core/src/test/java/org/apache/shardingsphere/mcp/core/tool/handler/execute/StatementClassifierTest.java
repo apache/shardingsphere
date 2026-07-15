@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPLockingReadStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLStatementsException;
@@ -267,15 +268,16 @@ class StatementClassifierTest {
     
     private static Stream<Arguments> assertClassifyWithInvalidStatementCases() {
         return Stream.of(
-                Arguments.of("blank sql", "   ", IllegalArgumentException.class, "sql cannot be empty."),
+                Arguments.of("blank sql", "   ", MCPInvalidRequestException.class, "sql cannot be empty."),
+                Arguments.of("statement delimiter only", ";", MCPInvalidRequestException.class, "sql cannot be empty."),
                 Arguments.of("multiple statements", "SELECT 1; SELECT 2", MCPMultipleSQLStatementsException.class, "Only one SQL statement is allowed."),
-                Arguments.of("savepoint without name", "SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
-                Arguments.of("savepoint with extra token", "SAVEPOINT foo_sp_1 extra", IllegalArgumentException.class, "Savepoint name is required."),
-                Arguments.of("release savepoint without name", "RELEASE SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
-                Arguments.of("release savepoint with extra token", "RELEASE SAVEPOINT foo_sp_1 extra", IllegalArgumentException.class, "Savepoint name is required."),
-                Arguments.of("rollback to without name", "ROLLBACK TO", IllegalArgumentException.class, "Savepoint name is required."),
-                Arguments.of("rollback to savepoint without name", "ROLLBACK TO SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
-                Arguments.of("rollback to savepoint with extra token", "ROLLBACK TO SAVEPOINT foo_sp_1 extra", IllegalArgumentException.class, "Savepoint name is required."),
+                Arguments.of("savepoint without name", "SAVEPOINT", MCPInvalidRequestException.class, "Savepoint name is required."),
+                Arguments.of("savepoint with extra token", "SAVEPOINT foo_sp_1 extra", MCPInvalidRequestException.class, "Savepoint name is required."),
+                Arguments.of("release savepoint without name", "RELEASE SAVEPOINT", MCPInvalidRequestException.class, "Savepoint name is required."),
+                Arguments.of("release savepoint with extra token", "RELEASE SAVEPOINT foo_sp_1 extra", MCPInvalidRequestException.class, "Savepoint name is required."),
+                Arguments.of("rollback to without name", "ROLLBACK TO", MCPInvalidRequestException.class, "Savepoint name is required."),
+                Arguments.of("rollback to savepoint without name", "ROLLBACK TO SAVEPOINT", MCPInvalidRequestException.class, "Savepoint name is required."),
+                Arguments.of("rollback to savepoint with extra token", "ROLLBACK TO SAVEPOINT foo_sp_1 extra", MCPInvalidRequestException.class, "Savepoint name is required."),
                 Arguments.of("banned use", "USE foo_db", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned set", "SET search_path public", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned copy", "COPY foo_orders FROM '/tmp/foo.csv'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),

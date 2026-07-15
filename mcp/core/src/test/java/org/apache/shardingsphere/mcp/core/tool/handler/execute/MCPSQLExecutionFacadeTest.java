@@ -144,7 +144,7 @@ class MCPSQLExecutionFacadeTest {
     }
     
     @Test
-    void assertExecuteWithInvalidStatement() {
+    void assertExecuteWithUnexpectedClassifierFailure() {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         StatementClassifier statementClassifier = mock(StatementClassifier.class);
@@ -155,7 +155,7 @@ class MCPSQLExecutionFacadeTest {
         SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, statementClassifier);
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> facade.execute(request));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Malformed SQL."));
         verify(traceFactory).create("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(capabilityProvider, transactionExecutor, statementExecutor);
