@@ -1229,7 +1229,7 @@ tools:
   - name: database_gateway_execute_query
     title: Execute Query SQL
     description: >-
-      Execute exactly one classifier-approved SELECT statement against a ShardingSphere logical database. Use for inspection only;
+      Execute exactly one parser-approved SELECT statement against a ShardingSphere logical database. Use for inspection only;
       DML, DDL, DCL, transaction control, savepoints, and known side-effecting query forms are rejected.
     inputSchema:
       type: object
@@ -1242,7 +1242,7 @@ tools:
           description: "Optional schema or namespace hint for unqualified object names."
         sql:
           type: string
-          description: "One classifier-approved SELECT statement. Do not include EXPLAIN, multiple statements, or mutating SQL."
+          description: "One parser-approved SELECT statement. Do not include EXPLAIN, multiple statements, or mutating SQL."
         max_rows:
           type: integer
           description: "Optional maximum number of rows to return. Omit or pass 0 to use the server default of 100."
@@ -1386,7 +1386,7 @@ tools:
   - name: database_gateway_execute_explain_query
     title: Execute Explain Query SQL
     description: >-
-      Execute exactly one model-generated database-native EXPLAIN SQL for one classifier-approved SELECT statement. Pass the original SELECT as sql
+      Execute exactly one model-generated database-native EXPLAIN SQL for one parser-approved SELECT statement. Pass the original SELECT as sql
       and the generated EXPLAIN as explain_sql. EXPLAIN ANALYZE and EXPLAIN PLAN FOR workflows are rejected.
     inputSchema:
       type: object
@@ -1399,7 +1399,7 @@ tools:
           description: "Optional schema or namespace hint for unqualified object names."
         sql:
           type: string
-          description: "Original classifier-approved SELECT statement to explain. Do not include EXPLAIN, multiple statements, or mutating SQL."
+          description: "Original parser-approved SELECT statement to explain. Do not include EXPLAIN, multiple statements, or mutating SQL."
         explain_sql:
           type: string
           description: "Database-native EXPLAIN SQL generated for sql. It must start with EXPLAIN, include sql without rewriting it, and must not use ANALYZE."
@@ -1548,7 +1548,7 @@ tools:
     title: Preview or Execute Side-Effecting SQL
     description: >-
       Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state.
-      Use execution_mode=preview first when the side-effect scope has not been reviewed. Preview is classification-only,
+      Use execution_mode=preview first when the side-effect scope has not been reviewed. Preview performs database-aware validation and classification,
       not a database dry run. For natural-language rule changes, prefer the matching database_gateway_plan_* workflow tool.
     inputSchema:
       type: object
@@ -1627,7 +1627,7 @@ tools:
         preview_semantics:
           type: string
           description: >-
-            Preview meaning. classification_only means the server classified SQL and side-effect scope without parsing, rule validation,
+            Preview meaning. classification_only means the server parsed and classified SQL and side-effect scope without rule validation,
             algorithm initialization, affected-row estimation, runtime execution, or database dry-run guarantees.
           enum:
             - classification_only
@@ -1636,7 +1636,7 @@ tools:
           description: "Execution or preview status returned by the server."
         normalized_sql:
           type: string
-          description: "Classifier-normalized SQL returned by preview or executed responses."
+          description: "Normalized single SQL statement accepted by MCP for the target database."
         affected_rows:
           type: integer
           description: "Affected row count when the database reports one."
@@ -1745,7 +1745,7 @@ tools:
           would_execute: false
           affected_rows_estimated: false
           review_guidance: >-
-            Review normalized_sql and side_effect_scope before execution. This preview is classification-only; it does not guarantee parsing,
+            Review normalized_sql and side_effect_scope before execution. This preview performs database-aware validation and classification; it does not guarantee
             rule validation, algorithm initialization, affected rows, or runtime success.
           review_summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
           suggested_arguments:
@@ -1768,32 +1768,22 @@ tools:
                 - 1
               reason: Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.
         - response_mode: executed
-          summary: Executed side-effecting SQL (statement type SELECT) and returned 1 row(s). Returned rows were truncated; do not replay the statement automatically.
-          result_kind: result_set
+          summary: Executed UPDATE statement and affected 1 row(s).
+          result_kind: update_count
           execution_mode: execute
           statement_class: dml
-          statement_type: SELECT
+          statement_type: UPDATE
           status: OK
-          normalized_sql: "WITH updated AS (UPDATE orders SET status = 'PAID' WHERE order_id = 1 RETURNING order_id) SELECT order_id FROM updated"
-          columns:
-            - columnName: order_id
-              logicalType: BIGINT
-              nativeType: BIGINT
-              nullable: false
-          rows:
-            - - 1
-          row_objects:
-            - order_id: 1
-          row_object_status: available
-          returned_row_count: 1
+          normalized_sql: "UPDATE orders SET status = 'PAID' WHERE order_id = 1"
+          affected_rows: 1
           applied_max_rows: 1
           applied_timeout_ms: 0
-          truncated: true
+          truncated: false
           next_actions:
             - order: 1
               type: terminal
               title: Stop
-              reason: The side-effecting statement already executed and returned truncated rows; do not replay it automatically. Use a separate read-only query if more data is needed.
+              reason: The side-effecting statement already executed; do not replay it automatically.
     annotations:
       title: Preview or Execute Side-Effecting SQL
       readOnlyHint: false

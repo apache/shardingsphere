@@ -70,8 +70,8 @@ class MCPPromptSpecificationFactoryTest {
         assertRenderedLines(actualText, List.of(
                 "- database: logic_db",
                 "- sql_intent: count orders",
-                "2. Use database_gateway_execute_query only for one classifier-approved SELECT statement.",
-                "   Treat preview as classification-only, not as a database dry run.",
+                "2. Use database_gateway_execute_query only for one parser-approved SELECT statement.",
+                "   Treat preview as database-aware validation and classification, not as a database dry run.",
                 "6. Never split or batch multiple SQL statements into one MCP call."));
     }
     

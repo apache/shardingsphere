@@ -24,7 +24,9 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 
@@ -34,8 +36,16 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class SQLExecutionToolHandlerSupport {
     
+    private static final MCPStatementAnalyzer STATEMENT_ANALYZER = new MCPStatementAnalyzer();
+    
     static boolean isQueryStatement(final ClassificationResult classificationResult) {
         return SupportedMCPStatement.QUERY == classificationResult.getStatementClass();
+    }
+    
+    static ClassificationResult analyze(final MCPDatabaseRequestContext databaseContext, final MCPToolArguments toolArguments, final String sql) {
+        String database = toolArguments.getStringArgument("database");
+        MCPDatabaseCapability databaseCapability = databaseContext.getCapabilityFacade().provide(database).orElseThrow(DatabaseCapabilityNotFoundException::new);
+        return STATEMENT_ANALYZER.analyze(sql, databaseCapability);
     }
     
     static void checkExecutionArguments(final MCPToolArguments toolArguments, final String sourceTool) {

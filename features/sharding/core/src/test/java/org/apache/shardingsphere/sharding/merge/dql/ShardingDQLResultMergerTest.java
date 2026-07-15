@@ -166,7 +166,7 @@ class ShardingDQLResultMergerTest {
     
     @Test
     void assertBuildIteratorStreamMergedResultWithSQLServerOffsetFetch() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(sqlserverDatabaseType);
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(sqlserverDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         SelectStatement selectStatement = buildSelectStatement(sqlserverDatabaseType);
         selectStatement = withProjections(selectStatement, new ProjectionsSegment(0, 0));

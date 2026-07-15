@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.handler.execute;
+package org.apache.shardingsphere.mcp.feature.readwritesplitting;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPRuleDistSQLStatementClassifier;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class SQLCommonTableExpression {
+/**
+ * Rule DistSQL statement classifier for readwrite-splitting.
+ */
+public final class ReadwriteSplittingRuleDistSQLStatementClassifier implements MCPRuleDistSQLStatementClassifier {
     
-    private final String aliasName;
-    
-    private final SQLStatementStructure statementStructure;
-    
-    String aliasName() {
-        return aliasName;
-    }
-    
-    SQLStatementStructure statementStructure() {
-        return statementStructure;
+    @Override
+    public boolean isRuleDistSQL(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof AlterReadwriteSplittingStorageUnitStatusStatement;
     }
 }

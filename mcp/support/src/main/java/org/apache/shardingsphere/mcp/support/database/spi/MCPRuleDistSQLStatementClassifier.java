@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.protocol.exception;
+package org.apache.shardingsphere.mcp.support.database.spi;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Exception for unsupported SQL statements.
+ * Classifier for feature-specific rule DistSQL statements.
  */
-public final class MCPUnsupportedSQLStatementException extends MCPUnsupportedException {
+public interface MCPRuleDistSQLStatementClassifier extends ShardingSphereSPI {
     
-    private static final long serialVersionUID = 8307677954728619722L;
-    
-    public MCPUnsupportedSQLStatementException() {
-        super("Statement is not supported by the MCP contract.");
-    }
-    
-    public MCPUnsupportedSQLStatementException(final RuntimeException cause) {
-        super("Statement is not supported by the MCP contract.", cause);
-    }
+    /**
+     * Judge whether the SQL statement mutates rule metadata.
+     *
+     * @param sqlStatement SQL statement
+     * @return whether the SQL statement mutates rule metadata
+     */
+    boolean isRuleDistSQL(SQLStatement sqlStatement);
 }
