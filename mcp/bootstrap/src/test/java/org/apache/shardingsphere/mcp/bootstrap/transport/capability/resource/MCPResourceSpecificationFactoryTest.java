@@ -28,7 +28,7 @@ import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
@@ -98,17 +98,17 @@ class MCPResourceSpecificationFactoryTest {
                 MCPResourceAnnotations.EMPTY, Map.of());
         McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
         when(exchange.sessionId()).thenReturn("session-1");
-        ArgumentCaptor<MCPRequestScope> requestScopeCaptor = ArgumentCaptor.forClass(MCPRequestScope.class);
+        ArgumentCaptor<MCPFeatureRuntimeRequestContext> requestContextCaptor = ArgumentCaptor.forClass(MCPFeatureRuntimeRequestContext.class);
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
             mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
-            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://session")))
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://session")))
                     .thenReturn(Optional.of(new MCPMapPayload(Map.of())));
             SyncResourceSpecification actualSpecification = findResourceSpecification(
                     new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications(), "shardingsphere://session");
             actualSpecification.readHandler().apply(exchange, new ReadResourceRequest("shardingsphere://session"));
-            mocked.verify(() -> ResourceDefinitionRegistry.dispatch(requestScopeCaptor.capture(), eq("shardingsphere://session")));
+            mocked.verify(() -> ResourceDefinitionRegistry.dispatch(requestContextCaptor.capture(), eq("shardingsphere://session")));
         }
-        assertThat(requestScopeCaptor.getValue().getSessionId(), is("session-1"));
+        assertThat(requestContextCaptor.getValue().getSessionId(), is("session-1"));
     }
     
     @Test
@@ -140,7 +140,7 @@ class MCPResourceSpecificationFactoryTest {
                 MCPResourceAnnotations.EMPTY, Map.of());
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
             mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
-            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://invalid")))
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://invalid")))
                     .thenThrow(new MCPInvalidRequestException("Invalid resource request."));
             SyncResourceSpecification actualSpecification = findResourceSpecification(
                     new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications(), "shardingsphere://invalid");
@@ -157,7 +157,7 @@ class MCPResourceSpecificationFactoryTest {
                 MCPResourceAnnotations.EMPTY, Map.of());
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
             mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
-            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://runtime-error"))).thenThrow(new RuntimeException("runtime failure"));
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://runtime-error"))).thenThrow(new RuntimeException("runtime failure"));
             SyncResourceSpecification actualSpecification = findResourceSpecification(
                     new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications(), "shardingsphere://runtime-error");
             McpError actual = assertThrows(McpError.class,

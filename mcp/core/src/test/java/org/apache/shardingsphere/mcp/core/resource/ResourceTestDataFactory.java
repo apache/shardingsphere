@@ -29,7 +29,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
@@ -157,25 +157,25 @@ public final class ResourceTestDataFactory {
     }
     
     /**
-     * Create request scope fixture from metadata.
+     * Create request context fixture from metadata.
      *
      * @param databaseMetadataList database metadata list
-     * @return request scope fixture
+     * @return request context fixture
      */
-    public static RequestScopeFixture createRequestScopeFixture(final List<DatabaseMetadataFixture> databaseMetadataList) {
-        return createRequestScopeFixture(createRuntimeContext(databaseMetadataList), databaseMetadataList);
+    public static RequestContextFixture createRequestContextFixture(final List<DatabaseMetadataFixture> databaseMetadataList) {
+        return createRequestContextFixture(createRuntimeContext(databaseMetadataList), databaseMetadataList);
     }
     
     /**
-     * Create request scope fixture from runtime context and metadata.
+     * Create request context fixture from runtime context and metadata.
      *
      * @param runtimeContext runtime context
      * @param databaseMetadataList database metadata list
-     * @return request scope fixture
+     * @return request context fixture
      */
-    public static RequestScopeFixture createRequestScopeFixture(final MCPRuntimeContext runtimeContext, final List<DatabaseMetadataFixture> databaseMetadataList) {
+    public static RequestContextFixture createRequestContextFixture(final MCPRuntimeContext runtimeContext, final List<DatabaseMetadataFixture> databaseMetadataList) {
         MetadataSPIMocks metadataSPIMocks = mockMetadataSPI(databaseMetadataList);
-        return new RequestScopeFixture(new MCPRequestScope(runtimeContext, "session-1"), metadataSPIMocks);
+        return new RequestContextFixture(new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1"), metadataSPIMocks);
     }
     
     private static MCPDatabaseCapabilityProvider createDatabaseCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
@@ -366,10 +366,10 @@ public final class ResourceTestDataFactory {
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class RequestScopeFixture implements AutoCloseable {
+    public static final class RequestContextFixture implements AutoCloseable {
         
         @Getter
-        private final MCPRequestScope requestScope;
+        private final MCPFeatureRuntimeRequestContext requestContext;
         
         private final MetadataSPIMocks metadataSPIMocks;
         

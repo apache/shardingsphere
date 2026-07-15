@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.Map;
 import java.util.Objects;
@@ -31,13 +31,13 @@ import java.util.Objects;
 /**
  * Mask algorithm completion provider.
  */
-public final class MaskAlgorithmCompletionProvider implements MCPCompletionProvider<MCPDatabaseRequestContext> {
+public final class MaskAlgorithmCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
     
     private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -51,7 +51,7 @@ public final class MaskAlgorithmCompletionProvider implements MCPCompletionProvi
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPDatabaseRequestContext handlerContext, final MCPCompletionRequest request) {
+    public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
         return new MCPCompletionProviderResult(ruleInspectionService.queryMaskAlgorithms(handlerContext.getQueryFacade()).stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty()).toList());
     }

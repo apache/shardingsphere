@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinitio
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
@@ -34,13 +34,13 @@ import java.util.Map;
 /**
  * Tool handler for broadcast workflow planning.
  */
-public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPWorkflowRequestContext> {
+public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private final BroadcastWorkflowPlanningService planningService = new BroadcastWorkflowPlanningService();
     
     @Override
-    public Class<MCPWorkflowRequestContext> getContextType() {
-        return MCPWorkflowRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -49,10 +49,10 @@ public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPWor
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         BroadcastWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(BroadcastWorkflowRequest::new, arguments,
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence);
-        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getQueryFacade(), request);
+        WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
         return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
     }
     

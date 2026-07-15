@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ import java.util.Set;
 /**
  * Sharding algorithm completion provider.
  */
-public final class ShardingAlgorithmCompletionProvider implements MCPCompletionProvider<MCPDatabaseRequestContext> {
+public final class ShardingAlgorithmCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
     
     private static final String ALGORITHM_TYPE_FIELD = "algorithm_type";
     
@@ -48,8 +48,8 @@ public final class ShardingAlgorithmCompletionProvider implements MCPCompletionP
     private final ShardingInspectionService inspectionService = new ShardingInspectionService();
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -70,12 +70,12 @@ public final class ShardingAlgorithmCompletionProvider implements MCPCompletionP
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPDatabaseRequestContext handlerContext, final MCPCompletionRequest request) {
+    public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
         return new MCPCompletionProviderResult(queryPlugins(handlerContext, request).stream()
                 .map(each -> createAlgorithmCandidate(each, request.getArgumentName())).filter(each -> !each.getValue().isEmpty()).toList());
     }
     
-    private List<Map<String, Object>> queryPlugins(final MCPDatabaseRequestContext handlerContext, final MCPCompletionRequest request) {
+    private List<Map<String, Object>> queryPlugins(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
         return KEY_GENERATOR_TYPE_FIELD.equals(request.getArgumentName())
                 ? inspectionService.queryKeyGenerateAlgorithmPlugins(handlerContext.getQueryFacade())
                 : inspectionService.queryAlgorithmPlugins(handlerContext.getQueryFacade());

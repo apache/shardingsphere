@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
@@ -30,13 +30,13 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPay
 /**
  * Mask algorithms handler.
  */
-public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
+public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -45,8 +45,8 @@ public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsPayload(ruleInspectionService.queryMaskAlgorithms(databaseContext.getQueryFacade()),
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+        return new MCPItemsPayload(ruleInspectionService.queryMaskAlgorithms(requestContext.getQueryFacade()),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
 }

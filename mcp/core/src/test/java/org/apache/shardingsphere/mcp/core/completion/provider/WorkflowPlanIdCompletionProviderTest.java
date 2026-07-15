@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
@@ -42,7 +42,7 @@ class WorkflowPlanIdCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new WorkflowPlanIdCompletionProvider().getContextType(), is(MCPWorkflowRequestContext.class));
+        assertThat(new WorkflowPlanIdCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @Test
@@ -57,7 +57,7 @@ class WorkflowPlanIdCompletionProviderTest {
                 createSnapshot("plan-ready", WorkflowLifecycle.STATUS_PLANNED),
                 createSnapshot("plan-previewed", WorkflowLifecycle.STATUS_PREVIEWED),
                 createSnapshot("plan-draft", WorkflowLifecycle.STATUS_CLARIFYING)));
-        MCPWorkflowRequestContext handlerContext = mock(MCPWorkflowRequestContext.class);
+        MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
         when(handlerContext.getSessionId()).thenReturn("session-1");
         when(handlerContext.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         MCPCompletionProviderResult actual = new WorkflowPlanIdCompletionProvider().complete(handlerContext, createRequestContext());

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgum
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
-import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestScopeFixture;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestContextFixture;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -94,8 +94,8 @@ class ToolDefinitionRegistryTest {
     void assertDispatch() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
         runtimeContext.getSessionManager().createSession("session-1");
-        try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata");
             MCPSuccessPayload actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, Map.of("query", "order", "object_types", List.of("index")));
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
@@ -247,7 +247,7 @@ class ToolDefinitionRegistryTest {
     }
     
     private static MCPSuccessPayload dispatch(final String toolName, final Map<String, Object> arguments) {
-        return ToolDefinitionRegistry.dispatch(mock(MCPRequestScope.class), ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
+        return ToolDefinitionRegistry.dispatch(mock(MCPFeatureRuntimeRequestContext.class), ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
     }
     
     private static MCPToolDescriptor createNestedFixtureToolDescriptor() {

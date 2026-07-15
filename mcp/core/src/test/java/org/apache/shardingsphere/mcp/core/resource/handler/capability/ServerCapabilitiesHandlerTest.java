@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
@@ -75,13 +75,13 @@ class ServerCapabilitiesHandlerTest {
     }
     
     private Map<String, Object> createCapabilitiesPayload() {
-        MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(), "session-1");
-        return new ServerCapabilitiesHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(), "session-1");
+        return new ServerCapabilitiesHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
     }
     
     private Map<String, Object> createGuidancePayload() {
-        MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(), "session-1");
-        return new ServerGuidanceHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(), "session-1");
+        return new ServerGuidanceHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
     }
     
     private void assertBaselineTopLevelKeys(final Map<String, Object> capabilities) {

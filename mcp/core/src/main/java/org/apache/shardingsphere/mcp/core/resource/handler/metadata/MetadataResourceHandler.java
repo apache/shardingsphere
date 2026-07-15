@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 
@@ -33,15 +33,15 @@ import java.util.function.BiFunction;
  * Metadata resource handler backed by one metadata loader function.
  */
 @RequiredArgsConstructor
-public final class MetadataResourceHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
+public final class MetadataResourceHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private final String uriTemplate;
     
-    private final BiFunction<MCPDatabaseRequestContext, MCPUriVariables, List<?>> metadataLoader;
+    private final BiFunction<MCPFeatureRequestContext, MCPUriVariables, List<?>> metadataLoader;
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -50,13 +50,13 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
-        List<?> items = metadataLoader.apply(databaseContext, uriVariables);
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+        List<?> items = metadataLoader.apply(requestContext, uriVariables);
         MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
         ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(descriptor.getUriTemplate());
         boolean detailResource = "detail".equals(metadata.getResourceKind());
-        List<?> payloadItems = new MetadataResourcePayloadMapper(databaseContext.getMetadataQueryFacade(), uriVariables, detailResource).map(metadata, items);
-        return new MetadataResourceResponseFactory().create(databaseContext, uriVariables, descriptor, metadata, payloadItems);
+        List<?> payloadItems = new MetadataResourcePayloadMapper(requestContext.getMetadataQueryFacade(), uriVariables, detailResource).map(metadata, items);
+        return new MetadataResourceResponseFactory().create(requestContext, uriVariables, descriptor, metadata, payloadItems);
     }
     
 }

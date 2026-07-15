@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
@@ -33,7 +33,7 @@ import java.util.Set;
 /**
  * Handler for search-metadata tool.
  */
-public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDatabaseRequestContext> {
+public final class SearchMetadataToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private static final String TOOL_NAME = "database_gateway_search_metadata";
     
@@ -43,8 +43,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
             SupportedMCPMetadataObjectType.STORAGE_UNIT, SupportedMCPMetadataObjectType.SEQUENCE);
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -53,13 +53,13 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String query = toolArguments.getStringArgument("query");
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), query,
                 toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES));
-        MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade()).execute(request);
-        return new MCPItemsPayload(searchResult.getItems(), "", SearchMetadataPayloadBuilder.build(databaseContext, request, searchResult, TOOL_NAME), MCPResponseMode.SEARCH);
+        MetadataSearchResult searchResult = new SearchMetadataToolService(requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade()).execute(request);
+        return new MCPItemsPayload(searchResult.getItems(), "", SearchMetadataPayloadBuilder.build(requestContext, request, searchResult, TOOL_NAME), MCPResponseMode.SEARCH);
     }
 }

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 final class WorkflowHandlerTestFixture {
     
     static Context createContext(final WorkflowContextSnapshot snapshot) {
-        MCPWorkflowRequestContext result = mock(MCPWorkflowRequestContext.class);
+        MCPFeatureRequestContext result = mock(MCPFeatureRequestContext.class);
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -84,7 +84,7 @@ final class WorkflowHandlerTestFixture {
         return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), validationHandler, applySynchronizationHandler, applyArtifactValidator);
     }
     
-    record Context(MCPWorkflowRequestContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    record Context(MCPFeatureRequestContext requestContext, WorkflowSessionContext workflowSessionContext,
                    MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

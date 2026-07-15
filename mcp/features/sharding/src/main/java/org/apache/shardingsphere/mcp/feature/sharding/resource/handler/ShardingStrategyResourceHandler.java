@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.List;
 import java.util.Map;
@@ -100,18 +100,18 @@ public final class ShardingStrategyResourceHandler extends AbstractShardingResou
     }
     
     @Override
-    protected List<Map<String, Object>> query(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
+    protected List<Map<String, Object>> query(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getValue("database");
         return switch (resourceKind) {
-            case DEFAULT_STRATEGY -> getInspectionService().queryDefaultStrategy(databaseContext.getQueryFacade(), databaseName);
-            case KEY_GENERATORS -> getInspectionService().queryKeyGenerators(databaseContext.getQueryFacade(), databaseName);
-            case KEY_GENERATOR -> getInspectionService().queryKeyGenerator(databaseContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.KEY_GENERATOR_FIELD));
-            case KEY_GENERATE_STRATEGIES -> getInspectionService().queryKeyGenerateStrategies(databaseContext.getQueryFacade(), databaseName);
+            case DEFAULT_STRATEGY -> getInspectionService().queryDefaultStrategy(requestContext.getQueryFacade(), databaseName);
+            case KEY_GENERATORS -> getInspectionService().queryKeyGenerators(requestContext.getQueryFacade(), databaseName);
+            case KEY_GENERATOR -> getInspectionService().queryKeyGenerator(requestContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.KEY_GENERATOR_FIELD));
+            case KEY_GENERATE_STRATEGIES -> getInspectionService().queryKeyGenerateStrategies(requestContext.getQueryFacade(), databaseName);
             case KEY_GENERATE_STRATEGY -> getInspectionService().queryKeyGenerateStrategy(
-                    databaseContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.STRATEGY_FIELD));
-            case UNUSED_KEY_GENERATORS -> getInspectionService().queryUnusedKeyGenerators(databaseContext.getQueryFacade(), databaseName);
+                    requestContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.STRATEGY_FIELD));
+            case UNUSED_KEY_GENERATORS -> getInspectionService().queryUnusedKeyGenerators(requestContext.getQueryFacade(), databaseName);
             case KEY_GENERATOR_USED_TABLE_RULES -> getInspectionService().queryTableRulesUsedKeyGenerator(
-                    databaseContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.KEY_GENERATOR_FIELD));
+                    requestContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.KEY_GENERATOR_FIELD));
         };
     }
     

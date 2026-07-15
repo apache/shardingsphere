@@ -23,10 +23,10 @@ import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
-import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestScopeFixture;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestContextFixture;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
@@ -68,8 +68,8 @@ class CoreResourceHandlerSurfaceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
-        try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = handle(handlerCase.getHandler(), requestContext, parseUriVariables(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri()));
             Map<String, Object> actualPayload = actual.toPayload();
             if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
@@ -102,8 +102,8 @@ class CoreResourceHandlerSurfaceTest {
     
     @Test
     void assertHandleWithoutIndexMetadata() {
-        try (RequestScopeFixture requestScopeFixture = ResourceTestDataFactory.createRequestScopeFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new MetadataResourceHandler(
                     "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                     (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().queryIndexes(
@@ -120,7 +120,7 @@ class CoreResourceHandlerSurfaceTest {
     
     @Test
     void assertHandleWithUnsupportedSequenceResource() {
-        MCPRequestScope requestContext = new MCPRequestScope(runtimeContext, "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/sequences",
                 (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().querySequences(
@@ -133,7 +133,7 @@ class CoreResourceHandlerSurfaceTest {
     
     @Test
     void assertHandleWithUnsupportedStorageUnitResource() {
-        MCPRequestScope requestContext = new MCPRequestScope(runtimeContext, "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
                 "shardingsphere://databases/{database}/storage-units",
                 (featureContext, uriVariables) -> {
@@ -147,7 +147,7 @@ class CoreResourceHandlerSurfaceTest {
         return new MCPUriPattern(uriTemplate).parse(resourceUri).orElseThrow();
     }
     
-    private <T extends MCPRequestContext> MCPSuccessPayload handle(final MCPResourceHandler<T> handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
+    private <T extends MCPRequestContext> MCPSuccessPayload handle(final MCPResourceHandler<T> handler, final MCPFeatureRuntimeRequestContext requestContext, final MCPUriVariables uriVariables) {
         return handler.handle(handler.getContextType().cast(requestContext), uriVariables);
     }
     

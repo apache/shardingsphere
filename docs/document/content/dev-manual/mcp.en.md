@@ -16,7 +16,7 @@ The MCP path is organized as `api + support + features + core + bootstrap`:
 - `mcp/support`: database metadata, execution, capability, workflow contexts, models, facades, SPI, and reusable helpers.
 - `mcp/features/encrypt`: Encrypt MCP feature.
 - `mcp/features/mask`: Mask MCP feature.
-- `mcp/core`: handler discovery, registry, request scope, session, SQL execution trace, metadata discovery, and runtime context.
+- `mcp/core`: handler discovery, registry, request context, session, SQL execution trace, metadata discovery, and runtime context.
 - `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP/STDIO transport, configuration loading, and lifecycle management.
 - `distribution/mcp`: standalone packaging, startup scripts, configuration, and Dockerfile.
 - `test/e2e/mcp`: end-to-end contract validation.
@@ -83,10 +83,9 @@ Do not duplicate descriptor fields inside handlers.
 ## Context selection
 
 - Use `MCPRequestContext` when a handler only needs the session ID, active transport, or session identity.
-- Use `MCPDatabaseRequestContext` for database metadata or execution handlers.
-- Use `MCPWorkflowRequestContext` for workflow handlers.
+- Use `MCPFeatureRequestContext` when a handler or completion provider needs database metadata, execution, or workflow capabilities.
 
-`MCPRequestScope` is the runtime-owned, per-request implementation of these capabilities. Its name describes its lifecycle; handlers depend on the smallest context interface they need.
+`MCPFeatureRuntimeRequestContext` is the runtime-owned, per-request implementation. Handlers and completion providers depend only on context interfaces, not on the core implementation class.
 
 Completion requests use a per-session 60-second fixed-window rate limit. The default is 600 requests per minute and can be changed with the
 `shardingsphere.mcp.maxCompletionRequestsPerMinute` Java system property.

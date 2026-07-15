@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 
 import java.util.Map;
@@ -29,13 +29,13 @@ import java.util.Map;
 /**
  * Execute model-assisted EXPLAIN SQL tool handler.
  */
-public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPDatabaseRequestContext> {
+public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private static final String TOOL_NAME = "database_gateway_execute_explain_query";
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -44,14 +44,14 @@ public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPDataba
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String sql = toolArguments.getStringArgument("sql");
         String explainSql = toolArguments.getStringArgument("explain_sql");
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
-        String schema = SQLExecutionToolHandlerSupport.resolveSchema(databaseContext, toolArguments);
-        SQLExecutionRequest executionRequest = SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(databaseContext.getSessionId(), toolArguments,
+        String schema = SQLExecutionToolHandlerSupport.resolveSchema(requestContext, toolArguments);
+        SQLExecutionRequest executionRequest = SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(requestContext.getSessionId(), toolArguments,
                 schema, explainSql, TOOL_NAME);
-        return SQLExecutionPayload.query(databaseContext.getExecutionFacade().executeExplain(executionRequest, sql));
+        return SQLExecutionPayload.query(requestContext.getExecutionFacade().executeExplain(executionRequest, sql));
     }
 }

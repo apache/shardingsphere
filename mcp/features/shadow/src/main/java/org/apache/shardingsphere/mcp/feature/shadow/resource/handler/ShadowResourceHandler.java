@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
@@ -36,7 +36,7 @@ import java.util.Map;
  * Shadow resource handler.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShadowResourceHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
+public final class ShadowResourceHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private final String resourceUriTemplate;
     
@@ -117,8 +117,8 @@ public final class ShadowResourceHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -127,21 +127,21 @@ public final class ShadowResourceHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsPayload(query(databaseContext, uriVariables),
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+        return new MCPItemsPayload(query(requestContext, uriVariables),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
     
-    private List<Map<String, Object>> query(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
+    private List<Map<String, Object>> query(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
         return switch (resourceKind) {
-            case RULES -> inspectionService.queryRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case RULE -> inspectionService.queryRule(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShadowFeatureDefinition.RULE_FIELD));
-            case TABLE_RULES -> inspectionService.queryTableRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case TABLE_RULE -> inspectionService.queryTableRule(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShadowFeatureDefinition.TABLE_FIELD));
-            case ALGORITHMS -> inspectionService.queryAlgorithms(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case DEFAULT_ALGORITHM -> inspectionService.queryDefaultAlgorithm(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case RULE_COUNT -> inspectionService.queryRuleCount(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case ALGORITHM_PLUGINS -> inspectionService.queryAlgorithmPlugins(databaseContext.getQueryFacade());
+            case RULES -> inspectionService.queryRules(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case RULE -> inspectionService.queryRule(requestContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShadowFeatureDefinition.RULE_FIELD));
+            case TABLE_RULES -> inspectionService.queryTableRules(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case TABLE_RULE -> inspectionService.queryTableRule(requestContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShadowFeatureDefinition.TABLE_FIELD));
+            case ALGORITHMS -> inspectionService.queryAlgorithms(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case DEFAULT_ALGORITHM -> inspectionService.queryDefaultAlgorithm(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case RULE_COUNT -> inspectionService.queryRuleCount(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case ALGORITHM_PLUGINS -> inspectionService.queryAlgorithmPlugins(requestContext.getQueryFacade());
         };
     }
     

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeReq
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * Execute side-effecting SQL tool handler.
  */
-public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabaseRequestContext> {
+public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private static final String TOOL_NAME = "database_gateway_execute_update";
     
@@ -62,8 +62,8 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     private static final String PREVIEW_EXECUTION_REASON = "Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.";
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -72,21 +72,21 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String executionMode = resolveExecutionMode(toolArguments);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
         String sql = toolArguments.getStringArgument("sql");
-        ClassificationResult classificationResult = checkUpdateStatement(databaseContext, toolArguments, sql);
+        ClassificationResult classificationResult = checkUpdateStatement(requestContext, toolArguments, sql);
         if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return createPreviewResponse(toolArguments, classificationResult);
         }
-        return SQLExecutionPayload.executed(databaseContext.getExecutionFacade().execute(
-                SQLExecutionToolHandlerSupport.createExecutionRequest(databaseContext.getSessionId(), toolArguments, sql, TOOL_NAME)));
+        return SQLExecutionPayload.executed(requestContext.getExecutionFacade().execute(
+                SQLExecutionToolHandlerSupport.createExecutionRequest(requestContext.getSessionId(), toolArguments, sql, TOOL_NAME)));
     }
     
-    private ClassificationResult checkUpdateStatement(final MCPDatabaseRequestContext databaseContext, final MCPToolArguments toolArguments, final String sql) {
-        ClassificationResult classificationResult = SQLExecutionToolHandlerSupport.analyze(databaseContext, toolArguments, sql);
+    private ClassificationResult checkUpdateStatement(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments, final String sql) {
+        ClassificationResult classificationResult = SQLExecutionToolHandlerSupport.analyze(requestContext, toolArguments, sql);
         if (SQLExecutionToolHandlerSupport.isQueryStatement(classificationResult)) {
             throw new SQLToolMismatchException("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL.",
                     TOOL_NAME, "database_gateway_execute_query", classificationResult,

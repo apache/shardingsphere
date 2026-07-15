@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.Map;
 import java.util.Objects;
@@ -31,13 +31,13 @@ import java.util.Objects;
 /**
  * Readwrite-splitting load-balance algorithm completion provider.
  */
-public final class ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider implements MCPCompletionProvider<MCPDatabaseRequestContext> {
+public final class ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
     
     private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -52,7 +52,7 @@ public final class ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider impl
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPDatabaseRequestContext handlerContext, final MCPCompletionRequest request) {
+    public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
         return new MCPCompletionProviderResult(inspectionService.queryLoadBalanceAlgorithmPlugins(handlerContext.getQueryFacade()).stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty()).toList());
     }

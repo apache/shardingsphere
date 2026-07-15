@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class ShadowAlgorithmCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new ShadowAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
+        assertThat(new ShadowAlgorithmCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @Test
@@ -72,7 +72,7 @@ class ShadowAlgorithmCompletionProviderTest {
         when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS")).thenReturn(List.of(
                 Map.of("type", "VALUE_MATCH", "description", "Value match shadow algorithm", "password", "hidden"),
                 Map.of("type", "")));
-        MCPDatabaseRequestContext handlerContext = mock(MCPDatabaseRequestContext.class);
+        MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new ShadowAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext(ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME));
