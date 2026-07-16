@@ -116,7 +116,7 @@ class BroadcastWorkflowPlanningServiceTest {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order_item", "t_order_item")).thenReturn(true);
-        when(result.query(eq("logic_db"), eq(""), any())).thenReturn(broadcastRules);
+        when(result.query(eq("logic_db"), any())).thenReturn(broadcastRules);
         return result;
     }
     

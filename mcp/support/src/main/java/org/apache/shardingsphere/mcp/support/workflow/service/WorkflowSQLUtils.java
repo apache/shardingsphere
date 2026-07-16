@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
 
 import java.util.Locale;
 import java.util.Map;
@@ -119,22 +118,6 @@ public final class WorkflowSQLUtils {
         String actualIdentifier = normalizeIdentifier(trimToEmpty(identifier));
         checkSupportedIdentifier("identifier", actualIdentifier);
         return actualIdentifier.isEmpty() ? actualIdentifier : wrapIdentifier(QuoteCharacter.BACK_QUOTE, actualIdentifier);
-    }
-    
-    /**
-     * Format a database SQL identifier.
-     *
-     * @param databaseType database type
-     * @param identifier identifier to format
-     * @return formatted SQL identifier
-     */
-    public static String formatSQLIdentifier(final String databaseType, final String identifier) {
-        String rawIdentifier = trimToEmpty(identifier);
-        String actualIdentifier = normalizeIdentifier(rawIdentifier);
-        checkSupportedIdentifier("identifier", actualIdentifier);
-        return actualIdentifier.isEmpty() || !isSpecialSQLIdentifier(actualIdentifier) && !isDelimitedIdentifier(rawIdentifier)
-                ? actualIdentifier
-                : wrapIdentifier(MCPDatabaseDialect.of(databaseType).getIdentifierQuoteCharacter(), actualIdentifier);
     }
     
     /**

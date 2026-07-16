@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.MockedStatic;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,10 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 class WorkflowSQLUtilsTest {
     
@@ -145,74 +133,6 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertFormatSQLIdentifierUsesMysqlQuoteStyle() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockQuoteCharacter("MySQL", QuoteCharacter.BACK_QUOTE, typedSPILoader, databaseTypedSPILoader);
-            String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "order detail");
-            assertThat(actualValue, is("`order detail`"));
-        }
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierKeepsSafeIdentifier() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "orders_01");
-        assertThat(actualValue, is("orders_01"));
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierKeepsPostgreSQLMixedCaseIdentifier() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "Phone");
-        assertThat(actualValue, is("Phone"));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getSQLPlainIdentifierCases")
-    void assertFormatSQLIdentifierKeepsPlainIdentifier(final String name, final String databaseType, final String identifier, final String expectedValue) {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier(databaseType, identifier);
-        assertThat(actualValue, is(expectedValue));
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierRejectsEmptyDatabaseType() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> WorkflowSQLUtils.formatSQLIdentifier("", "order detail"));
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierUsesPostgreSQLQuoteStyle() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockQuoteCharacter("PostgreSQL", QuoteCharacter.QUOTE, typedSPILoader, databaseTypedSPILoader);
-            String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "order detail");
-            assertThat(actualValue, is("\"order detail\""));
-        }
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierUsesSQLServerQuoteStyle() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockQuoteCharacter("SQLServer", QuoteCharacter.BRACKETS, typedSPILoader, databaseTypedSPILoader);
-            String actualValue = WorkflowSQLUtils.formatSQLIdentifier("SQLServer", "order detail");
-            assertThat(actualValue, is("[order detail]"));
-        }
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierPreservesDelimitedSafeIdentifier() {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockQuoteCharacter("PostgreSQL", QuoteCharacter.QUOTE, typedSPILoader, databaseTypedSPILoader);
-            String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "\"orders\"");
-            assertThat(actualValue, is("\"orders\""));
-        }
-    }
-    
-    @Test
     void assertIsSameIdentifierWithCaseInsensitiveDatabase() {
         assertTrue(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE), "Phone", "phone"));
     }
@@ -286,28 +206,4 @@ class WorkflowSQLUtilsTest {
                 Arguments.of("quote uppercase algorithm keyword", "AES", "`AES`"));
     }
     
-    private static Stream<Arguments> getSQLPlainIdentifierCases() {
-        return Stream.of(
-                Arguments.of("keep MySQL rank identifier", "MySQL", "rank", "rank"),
-                Arguments.of("keep MySQL user identifier", "MySQL", "user", "user"),
-                Arguments.of("keep PostgreSQL key identifier", "PostgreSQL", "key", "key"),
-                Arguments.of("keep PostgreSQL user identifier", "PostgreSQL", "user", "user"));
-    }
-    
-    private static void mockQuoteCharacter(final String databaseType, final QuoteCharacter quoteCharacter,
-                                           final MockedStatic<TypedSPILoader> typedSPILoader, final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, typedSPILoader, databaseTypedSPILoader);
-        when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(quoteCharacter);
-    }
-    
-    private static DialectDatabaseMetaData mockDialectDatabaseMetaData(final String databaseType,
-                                                                       final MockedStatic<TypedSPILoader> typedSPILoader,
-                                                                       final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
-        DatabaseType databaseTypeFromSPI = mock(DatabaseType.class);
-        when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
-        typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
-        DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
-        databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(result));
-        return result;
-    }
 }

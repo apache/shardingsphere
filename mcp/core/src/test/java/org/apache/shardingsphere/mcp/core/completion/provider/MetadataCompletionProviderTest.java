@@ -191,7 +191,7 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteStorageUnit() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade),
                 createRequestContext("storageUnit", Map.of("database", "logic_db")));
         assertCandidate(actual, "write_ds");
@@ -202,7 +202,7 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteStorageUnitAlias() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade),
                 createRequestContext("write_storage_unit", Map.of("database", "logic_db")));
         assertCandidate(actual, "write_ds");
@@ -213,7 +213,7 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteStorageUnitWithSingleDatabaseDefaulted() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(
                 createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade, List.of(createDatabaseProfile("logic_db"))), createRequestContext("storageUnit", Map.of()));
         assertCandidate(actual, "write_ds");

@@ -62,14 +62,14 @@ class WorkflowDistSQLQueryUtilsTest {
     void assertQueryRuleRows() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         List<Map<String, Object>> expected = List.of(Map.of("name", "orders"));
-        when(queryFacade.query("logic_db", "", "SHOW MASK RULES")).thenReturn(expected);
+        when(queryFacade.query("logic_db", "SHOW MASK RULES")).thenReturn(expected);
         assertThat(WorkflowDistSQLQueryUtils.queryRuleRows(queryFacade, "logic_db", "SHOW MASK RULES"), is(expected));
     }
     
     @Test
     void assertQueryRuleRowsWithUnsupportedDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW MASK RULES")).thenThrow(
+        when(queryFacade.query("logic_db", "SHOW MASK RULES")).thenThrow(
                 new MCPDatabaseQueryFailedException(MCPJDBCErrorCategory.SYNTAX, new SQLException("syntax error", "42601")));
         assertTrue(WorkflowDistSQLQueryUtils.queryRuleRows(queryFacade, "logic_db", "SHOW MASK RULES").isEmpty());
     }
@@ -78,7 +78,7 @@ class WorkflowDistSQLQueryUtilsTest {
     void assertQueryRuleRowsWithConnectionFailure() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPQueryFailedException expected = new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused."));
-        when(queryFacade.query("logic_db", "", "SHOW MASK RULES")).thenThrow(expected);
+        when(queryFacade.query("logic_db", "SHOW MASK RULES")).thenThrow(expected);
         MCPQueryFailedException actual = assertThrows(MCPQueryFailedException.class, () -> WorkflowDistSQLQueryUtils.queryRuleRows(queryFacade, "logic_db", "SHOW MASK RULES"));
         assertThat(actual, sameInstance(expected));
     }

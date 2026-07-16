@@ -118,7 +118,7 @@ class SearchMetadataToolHandlerTest {
     @Test
     void assertHandleSearchMetadataWithStorageUnit() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
         when(requestContext.getMetadataQueryFacade()).thenReturn(mock(MCPMetadataQueryFacade.class));
         when(requestContext.getQueryFacade()).thenReturn(queryFacade);
