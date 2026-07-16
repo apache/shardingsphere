@@ -85,6 +85,17 @@ class ShadowAlgorithmCompletionProviderTest {
     }
     
     @Test
+    void assertCompleteDefaultAlgorithm() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "VALUE_MATCH"), Map.of("type", "SQL_HINT")));
+        MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
+        when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
+        MCPCompletionProviderResult actual = new ShadowAlgorithmCompletionProvider().complete(handlerContext,
+                createRequestContext(ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME));
+        assertThat(actual.getCandidates().stream().map(MCPCompletionCandidate::getValue).toList(), is(List.of("SQL_HINT")));
+    }
+    
+    @Test
     void assertSPIRegistration() {
         assertTrue(ServiceLoader.load(MCPCompletionProvider.class).stream().anyMatch(each -> ShadowAlgorithmCompletionProvider.class.equals(each.type())));
     }

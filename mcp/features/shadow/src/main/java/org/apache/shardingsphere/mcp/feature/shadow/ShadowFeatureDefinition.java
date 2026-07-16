@@ -60,6 +60,8 @@ public final class ShadowFeatureDefinition {
     
     public static final String ALGORITHM_PROPERTIES_FIELD = "algorithm_properties";
     
+    public static final String DEFAULT_ALGORITHM_TYPE = "SQL_HINT";
+    
     public static final String RULES_RESOURCE_URI = "shardingsphere://features/shadow/databases/{database}/rules";
     
     public static final String RULE_RESOURCE_URI = "shardingsphere://features/shadow/databases/{database}/rules/{rule}";

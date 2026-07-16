@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
@@ -113,16 +113,24 @@ public final class WorkflowPlanningContextValidator {
         if (schemas.isEmpty()) {
             schemas = metadataQueryFacade.querySchemas(databaseName);
         }
-        Optional<ShardingSphereTable> table = findTable(schemas, request, queryFacade, databaseName);
+        Optional<ShardingSphereSchema> schema = findSchema(schemas, request, queryFacade, databaseName);
+        Optional<ShardingSphereTable> table = findTable(schema, request, queryFacade, databaseName);
         if (!ensureTableExists(table, request, snapshot)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
-        if (!ensureColumnExists(table.orElseThrow(), request, snapshot, queryFacade, databaseName)) {
+        if (!ensureColumnExists(metadataQueryFacade.queryTableColumns(databaseName, schema.orElseThrow().getName(), table.orElseThrow().getName()),
+                request, snapshot, queryFacade, databaseName)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
         return true;
+    }
+    
+    private Optional<ShardingSphereSchema> findSchema(final Collection<ShardingSphereSchema> schemas, final WorkflowRequest request,
+                                                      final MCPFeatureQueryFacade queryFacade, final String databaseName) {
+        return schemas.stream().filter(each -> matchesMetadataIdentifier(
+                queryFacade, databaseName, IdentifierScope.SCHEMA, request.getSchema(), each.getName())).findFirst();
     }
     
     private boolean ensureIdentifiers(final String fieldName, final Collection<String> identifiers, final WorkflowContextSnapshot snapshot, final String issueStage, final boolean allowEmpty) {
@@ -226,13 +234,12 @@ public final class WorkflowPlanningContextValidator {
         return schema;
     }
     
-    private Optional<ShardingSphereTable> findTable(final Collection<ShardingSphereSchema> schemas, final WorkflowRequest request,
+    private Optional<ShardingSphereTable> findTable(final Optional<ShardingSphereSchema> schema, final WorkflowRequest request,
                                                     final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return schemas.stream().filter(each -> matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.SCHEMA, request.getSchema(), each.getName())).findFirst()
-                .flatMap(schema -> schema.getAllTables().stream()
-                        .filter(each -> TableType.TABLE == each.getType()
-                                && matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.TABLE, request.getTable(), each.getName()))
-                        .findFirst());
+        return schema.flatMap(optional -> optional.getAllTables().stream()
+                .filter(each -> TableType.TABLE == each.getType()
+                        && matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.TABLE, request.getTable(), each.getName()))
+                .findFirst());
     }
     
     private boolean matchesMetadataIdentifier(final MCPFeatureQueryFacade queryFacade, final String databaseName, final IdentifierScope identifierScope,
@@ -251,9 +258,9 @@ public final class WorkflowPlanningContextValidator {
         return false;
     }
     
-    private boolean ensureColumnExists(final ShardingSphereTable table, final WorkflowRequest request, final WorkflowContextSnapshot snapshot,
+    private boolean ensureColumnExists(final Collection<MCPColumnMetadata> columns, final WorkflowRequest request, final WorkflowContextSnapshot snapshot,
                                        final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        for (ShardingSphereColumn each : table.getAllColumns()) {
+        for (MCPColumnMetadata each : columns) {
             if (matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.COLUMN, request.getColumn(), each.getName())) {
                 return true;
             }

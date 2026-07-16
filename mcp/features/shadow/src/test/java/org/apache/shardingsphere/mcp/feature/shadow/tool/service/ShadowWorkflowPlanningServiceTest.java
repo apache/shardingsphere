@@ -109,6 +109,20 @@ class ShadowWorkflowPlanningServiceTest {
     }
     
     @Test
+    void assertRejectNonHintDefaultAlgorithm() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setAlgorithmType("VALUE_MATCH");
+        ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
+        when(getInspectionService().queryAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "VALUE_MATCH")));
+        WorkflowContextSnapshot actual = service.planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
+    }
+    
+    @Test
     void assertPlanAlgorithmCleanup() {
         ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
         ShadowInspectionService inspectionService = getInspectionService();

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.core.completion.provider;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderRes
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
@@ -152,7 +152,7 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
         String schema = getSchema(contextArguments);
         String table = contextArguments.getOrDefault("table", "");
         return database.isEmpty() || schema.isEmpty() || table.isEmpty() ? List.of()
-                : handlerContext.getMetadataQueryFacade().queryTableColumns(database, schema, table).stream().map(ShardingSphereColumn::getName)
+                : handlerContext.getMetadataQueryFacade().queryTableColumns(database, schema, table).stream().map(MCPColumnMetadata::getName)
                         .map(each -> new MCPCompletionCandidate(each, "column", "metadata")).toList();
     }
     

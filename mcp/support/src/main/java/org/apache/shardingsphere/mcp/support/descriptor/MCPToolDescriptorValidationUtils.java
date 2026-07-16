@@ -44,6 +44,10 @@ public final class MCPToolDescriptorValidationUtils {
             "validation_strategy", "delivery_mode", "execution_mode", "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint",
             "distsql_artifacts", MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS);
     
+    private static final Collection<String> REQUIRED_WORKFLOW_PLAN_SCHEMA_FIELDS = List.of(
+            "response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
+            MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS);
+    
     private static final Collection<String> REQUIRED_WORKFLOW_PLAN_META_FIELDS = List.of(
             "org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/artifact-categories", "org.apache.shardingsphere/side-effect-scope",
             "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
@@ -55,6 +59,7 @@ public final class MCPToolDescriptorValidationUtils {
      */
     public static void validateRequiredWorkflowPlanOutputFields(final MCPToolDescriptor descriptor) {
         validateRequiredOutputFields(descriptor, REQUIRED_WORKFLOW_PLAN_OUTPUT_FIELDS);
+        validateRequiredWorkflowPlanSchemaFields(descriptor);
     }
     
     /**
@@ -67,6 +72,17 @@ public final class MCPToolDescriptorValidationUtils {
         Collection<String> requiredFields = new LinkedList<>(REQUIRED_WORKFLOW_PLAN_OUTPUT_FIELDS);
         requiredFields.addAll(additionalFields);
         validateRequiredOutputFields(descriptor, requiredFields);
+        validateRequiredWorkflowPlanSchemaFields(descriptor);
+    }
+    
+    private static void validateRequiredWorkflowPlanSchemaFields(final MCPToolDescriptor descriptor) {
+        Object required = descriptor.getOutputSchema().get("required");
+        ShardingSpherePreconditions.checkState(required instanceof Collection,
+                () -> new IllegalStateException(String.format("Tool `%s` outputSchema must declare required workflow fields.", descriptor.getName())));
+        for (String each : REQUIRED_WORKFLOW_PLAN_SCHEMA_FIELDS) {
+            ShardingSpherePreconditions.checkState(((Collection<?>) required).contains(each),
+                    () -> new IllegalStateException(String.format("Tool `%s` outputSchema must require `%s`.", descriptor.getName(), each)));
+        }
     }
     
     /**

@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -292,7 +293,12 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests) throws IOException {
-        return ProductionMCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, this::createElicitationResult);
+        return createElicitationClient(transport, elicitationRequests, this::createElicitationResult);
+    }
+    
+    protected McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests,
+                                                    final BiFunction<List<McpSchema.ElicitRequest>, McpSchema.ElicitRequest, McpSchema.ElicitResult> handler) throws IOException {
+        return ProductionMCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, handler);
     }
     
     private McpClientTransport createClientTransport(final RuntimeTransport transport) throws IOException {

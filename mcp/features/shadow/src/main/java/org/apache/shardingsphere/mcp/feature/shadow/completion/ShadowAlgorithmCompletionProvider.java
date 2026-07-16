@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Shadow algorithm completion provider.
@@ -54,8 +55,12 @@ public final class ShadowAlgorithmCompletionProvider implements MCPCompletionPro
     
     @Override
     public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-        return new MCPCompletionProviderResult(inspectionService.queryAlgorithmPlugins(handlerContext.getQueryFacade()).stream()
-                .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty()).toList());
+        Stream<MCPCompletionCandidate> candidates = inspectionService.queryAlgorithmPlugins(handlerContext.getQueryFacade()).stream()
+                .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty());
+        if (ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME.equals(request.getDescriptor().getReference())) {
+            candidates = candidates.filter(each -> ShadowFeatureDefinition.DEFAULT_ALGORITHM_TYPE.equalsIgnoreCase(each.getValue()));
+        }
+        return new MCPCompletionProviderResult(candidates.toList());
     }
     
     private MCPCompletionCandidate createAlgorithmCandidate(final Map<String, Object> row) {

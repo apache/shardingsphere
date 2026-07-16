@@ -321,7 +321,14 @@ tools:
         distsql_artifacts:
           type: array
           description: "Generated broadcast rule DistSQL artifacts for review."
-      required: []
+      required:
+        - response_mode
+        - plan_id
+        - workflow_kind
+        - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       additionalProperties: true
       examples:
         - response_mode: planning

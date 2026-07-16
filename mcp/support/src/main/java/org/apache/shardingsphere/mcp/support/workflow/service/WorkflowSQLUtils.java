@@ -175,13 +175,28 @@ public final class WorkflowSQLUtils {
      */
     public static String createAlgorithmFragment(final String algorithmType, final Map<String, String> properties) {
         String actualType = trimToEmpty(algorithmType).toLowerCase(Locale.ENGLISH);
-        if (actualType.isEmpty()) {
+        return createAlgorithmFragmentWithType(actualType, properties);
+    }
+    
+    /**
+     * Create an algorithm fragment for DistSQL while preserving the algorithm type case.
+     *
+     * @param algorithmType algorithm type
+     * @param properties algorithm properties
+     * @return DistSQL algorithm fragment
+     */
+    public static String createAlgorithmFragmentWithExactType(final String algorithmType, final Map<String, String> properties) {
+        return createAlgorithmFragmentWithType(trimToEmpty(algorithmType), properties);
+    }
+    
+    private static String createAlgorithmFragmentWithType(final String algorithmType, final Map<String, String> properties) {
+        if (algorithmType.isEmpty()) {
             return "";
         }
         Properties actualProperties = WorkflowAlgorithmUtils.createProperties(properties);
         return actualProperties.isEmpty()
-                ? String.format("TYPE(NAME='%s')", escapeLiteral(actualType))
-                : String.format("TYPE(NAME='%s', PROPERTIES(%s))", escapeLiteral(actualType), createPropertiesFragment(actualProperties));
+                ? String.format("TYPE(NAME='%s')", escapeLiteral(algorithmType))
+                : String.format("TYPE(NAME='%s', PROPERTIES(%s))", escapeLiteral(algorithmType), createPropertiesFragment(actualProperties));
     }
     
     private static String createPropertiesFragment(final Properties props) {
