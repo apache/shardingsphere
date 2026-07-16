@@ -47,6 +47,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -75,7 +76,7 @@ class ShardingWorkflowValidationServiceTest {
         workflowSessionContext.save(snapshot);
         ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
         when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(createTableRuleRow("ds_0.t_order_0,ds_1.t_order_1", Map.of(
-                "algorithm-expression", "t_order_${order_id % 2}"))));
+                "algorithm-expression", "t_order_${order_id % 2}"), "")));
         MCPFeatureQueryFacade queryFacade = createQueryFacade();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -158,10 +159,45 @@ class ShardingWorkflowValidationServiceTest {
         workflowSessionContext.save(snapshot);
         ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
         when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(createTableRuleRow("ds_0.t_order_0", Map.of(
-                "algorithm-expression", "t_order_${order_id % 2}"))));
+                "algorithm-expression", "t_order_${order_id % 2}"), "")));
         Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
                 createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentNamedKeyGenerator() {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setKeyGenerateColumn("order_id");
+        request.setKeyGeneratorName("snowflake_generator");
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
+        workflowSessionContext.save(snapshot);
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(createTableRuleRowWithKeyGenerator()));
+        when(inspectionService.queryTableRulesUsedKeyGenerator(any(), eq("logic_db"), eq("snowflake_generator"))).thenReturn(List.of());
+        Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
+                createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableRuleWithNamedKeyGenerator() {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setKeyGenerateColumn("order_id");
+        request.setKeyGeneratorName("snowflake_generator");
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
+        workflowSessionContext.save(snapshot);
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(createTableRuleRowWithKeyGenerator()));
+        when(inspectionService.queryTableRulesUsedKeyGenerator(any(), eq("logic_db"), eq("snowflake_generator")))
+                .thenReturn(List.of(Map.of("type", "table", "name", "t_order")));
+        Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
+                createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("validated"));
     }
     
     @Test
@@ -402,14 +438,19 @@ class ShardingWorkflowValidationServiceTest {
         return result;
     }
     
-    private Map<String, Object> createTableRuleRow(final String dataNodes, final Map<String, String> algorithmProperties) {
+    private Map<String, Object> createTableRuleRow(final String dataNodes, final Map<String, String> algorithmProperties, final String keyGenerateColumn) {
         return Map.of(
                 "table", "t_order",
                 "actual_data_nodes", dataNodes,
                 "table_strategy_type", "STANDARD",
                 "table_sharding_column", "order_id",
                 "table_sharding_algorithm_type", "INLINE",
-                "table_sharding_algorithm_props", algorithmProperties);
+                "table_sharding_algorithm_props", algorithmProperties,
+                "key_generate_column", keyGenerateColumn);
+    }
+    
+    private Map<String, Object> createTableRuleRowWithKeyGenerator() {
+        return createTableRuleRow("ds_0.t_order_0,ds_1.t_order_1", Map.of("algorithm-expression", "t_order_${order_id % 2}"), "order_id");
     }
     
     private ShardingWorkflowRequest createCleanupRequest() {

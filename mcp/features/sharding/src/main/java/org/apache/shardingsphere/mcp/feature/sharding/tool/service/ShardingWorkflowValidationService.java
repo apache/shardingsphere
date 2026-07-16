@@ -261,9 +261,12 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
                 WorkflowRuleValueUtils.getRuleValue(row, "key_generate_column"))) {
             return false;
         }
-        return request.getKeyGeneratorType().isEmpty()
-                || WorkflowRuleValueUtils.getRuleValue(row, "key_generator_type").equalsIgnoreCase(request.getKeyGeneratorType())
-                        && WorkflowAlgorithmUtils.createPropertyMap(row.get("key_generator_props")).equals(request.getKeyGeneratorProperties());
+        if (!request.getKeyGeneratorName().isEmpty()) {
+            return containsNamedRow(inspectionService.queryTableRulesUsedKeyGenerator(queryFacade, request.getDatabase(), request.getKeyGeneratorName()),
+                    queryFacade, request.getDatabase(), "name", request.getTable());
+        }
+        return WorkflowRuleValueUtils.getRuleValue(row, "key_generator_type").equalsIgnoreCase(request.getKeyGeneratorType())
+                && WorkflowAlgorithmUtils.createPropertyMap(row.get("key_generator_props")).equals(request.getKeyGeneratorProperties());
     }
     
     private boolean matchesTableAuditors(final Map<String, Object> row, final ShardingWorkflowRequest request) {
