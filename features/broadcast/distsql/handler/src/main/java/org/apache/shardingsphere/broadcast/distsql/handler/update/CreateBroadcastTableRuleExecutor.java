@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
@@ -54,7 +55,7 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
     }
     
     private Collection<String> getDuplicatedRuleNames(final CreateBroadcastTableRuleStatement sqlStatement) {
-        Collection<String> result = new HashSet<>(null == rule ? Collections.emptySet() : rule.getTables());
+        Collection<String> result = new CaseInsensitiveSet<>(null == rule ? Collections.emptySet() : rule.getTables());
         result.retainAll(sqlStatement.getTables());
         return result;
     }
