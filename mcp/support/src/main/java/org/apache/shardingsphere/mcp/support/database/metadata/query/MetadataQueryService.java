@@ -148,7 +148,7 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
     
     private List<MCPColumnMetadata> sortColumns(final Collection<MCPColumnMetadata> columns) {
         return columns.stream().sorted(Comparator.comparing(MCPColumnMetadata::getRelationName)
-                .thenComparingInt(MCPColumnMetadata::getOrdinalPosition).thenComparing(MCPColumnMetadata::getName)).toList();
+                .thenComparing(MCPColumnMetadata::getName)).toList();
     }
     
     @Override

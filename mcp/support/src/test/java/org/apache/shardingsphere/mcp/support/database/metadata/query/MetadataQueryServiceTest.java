@@ -192,8 +192,8 @@ class MetadataQueryServiceTest {
     @Test
     void assertQueryTableColumns() {
         List<MCPColumnMetadata> actual = metadataQueryService.queryTableColumns("logic_db", "public", "orders");
-        assertThat(actual.stream().map(MCPColumnMetadata::getName).toList(), is(List.of("order_id", "amount")));
-        assertThat(actual.get(0).getJdbcType(), is(Types.INTEGER));
+        assertThat(actual.stream().map(MCPColumnMetadata::getName).toList(), is(List.of("amount", "order_id")));
+        assertThat(actual.get(1).getJdbcType(), is(Types.INTEGER));
     }
     
     @Test
@@ -277,7 +277,7 @@ class MetadataQueryServiceTest {
     void assertQuerySchemaColumns() {
         List<MCPColumnMetadata> actual = metadataQueryService.querySchemaColumns("logic_db", "public");
         assertThat(actual.stream().map(each -> each.getRelationName() + "." + each.getName()).toList(),
-                is(List.of("order_items.item_id", "orders.order_id", "orders.amount", "orders_view.order_id")));
+                is(List.of("order_items.item_id", "orders.amount", "orders.order_id", "orders_view.order_id")));
     }
     
     @Test

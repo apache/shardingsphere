@@ -122,6 +122,23 @@ class MCPJdbcMetadataLoaderTest extends AbstractMCPJdbcMetadataLoaderTest {
     }
     
     @Test
+    void assertLoadColumnsWithLogicalCatalogFallback() throws SQLException {
+        Connection connection = createMetadataDetailConnection("MySQL");
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        when(connection.getCatalog()).thenReturn("logic_db");
+        when(databaseMetaData.getSearchStringEscape()).thenReturn("\\");
+        ResultSet emptyColumns = mockMultiRowResultSet(List.of());
+        ResultSet fallbackColumns = mockMultiRowResultSet(List.of(
+                Map.of("TABLE_NAME", "orders", "COLUMN_NAME", "order_id", "ORDINAL_POSITION", 1,
+                        "DATA_TYPE", Types.BIGINT, "TYPE_NAME", "BIGINT", "NULLABLE", DatabaseMetaData.columnNoNulls)));
+        when(databaseMetaData.getColumns(eq("logic_db"), isNull(), eq("orders"), eq("%"))).thenReturn(emptyColumns);
+        when(databaseMetaData.getColumns(isNull(), isNull(), eq("orders"), eq("%"))).thenReturn(fallbackColumns);
+        List<MCPColumnMetadata> actual = loadColumns(createMockRuntimeDatabaseConfiguration(connection), "logic_db", "orders",
+                Map.of("MySQL", DialectSchemaSemantics.DATABASE_AS_SCHEMA));
+        assertThat(actual.stream().map(MCPColumnMetadata::getName).toList(), is(List.of("order_id")));
+    }
+    
+    @Test
     void assertLoadSchemaColumnsInOneQuery() throws SQLException {
         Connection connection = createMetadataDetailConnection();
         DatabaseMetaData databaseMetaData = connection.getMetaData();

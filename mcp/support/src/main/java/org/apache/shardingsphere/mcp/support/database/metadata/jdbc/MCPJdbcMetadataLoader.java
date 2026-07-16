@@ -189,10 +189,21 @@ public final class MCPJdbcMetadataLoader {
     
     private List<MCPColumnMetadata> loadColumnMetadata(final Connection connection, final DatabaseMetaData databaseMetaData, final RuntimeDatabaseProfile databaseProfile,
                                                        final String schemaName, final String relationNamePattern) throws SQLException {
-        List<MCPColumnMetadata> result = new LinkedList<>();
         DialectSchemaSemantics schemaSemantics = MCPDatabaseDialect.of(databaseProfile.getDatabaseType()).getDefaultSchemaSemantics();
         String catalogName = DialectSchemaSemantics.DATABASE_AS_SCHEMA == schemaSemantics ? resolveCatalogName(connection, schemaName) : null;
         String schemaNamePattern = DialectSchemaSemantics.NATIVE_SCHEMA == schemaSemantics ? escapePattern(databaseMetaData, schemaName) : null;
+        List<MCPColumnMetadata> result = queryColumnMetadata(databaseMetaData, catalogName, schemaNamePattern, relationNamePattern);
+        if (result.isEmpty() && null != catalogName) {
+            result = queryColumnMetadata(databaseMetaData, null, schemaNamePattern, relationNamePattern);
+        }
+        result.sort(Comparator.comparing(MCPColumnMetadata::getRelationName)
+                .thenComparingInt(MCPColumnMetadata::getOrdinalPosition).thenComparing(MCPColumnMetadata::getName));
+        return result;
+    }
+    
+    private List<MCPColumnMetadata> queryColumnMetadata(final DatabaseMetaData databaseMetaData, final String catalogName,
+                                                        final String schemaNamePattern, final String relationNamePattern) throws SQLException {
+        List<MCPColumnMetadata> result = new LinkedList<>();
         try (ResultSet columns = databaseMetaData.getColumns(catalogName, schemaNamePattern, relationNamePattern, "%")) {
             while (columns.next()) {
                 String columnName = Objects.toString(columns.getString("COLUMN_NAME"), "").trim();
@@ -204,8 +215,6 @@ public final class MCPJdbcMetadataLoader {
                 }
             }
         }
-        result.sort(Comparator.comparing(MCPColumnMetadata::getRelationName)
-                .thenComparingInt(MCPColumnMetadata::getOrdinalPosition).thenComparing(MCPColumnMetadata::getName));
         return result;
     }
     
