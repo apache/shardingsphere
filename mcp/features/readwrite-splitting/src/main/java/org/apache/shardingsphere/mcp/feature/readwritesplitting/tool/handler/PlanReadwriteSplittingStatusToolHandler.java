@@ -62,7 +62,7 @@ public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHan
     }
     
     private Map<String, Object> createPlanResponse(final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         if (snapshot.getRequest() instanceof final ReadwriteSplittingStatusWorkflowRequest request) {
             replaceIntentInference(result, request);
             replaceArgumentProvenance(result, request);

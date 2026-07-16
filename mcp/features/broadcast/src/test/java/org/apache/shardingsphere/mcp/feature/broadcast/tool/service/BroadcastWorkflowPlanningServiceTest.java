@@ -46,8 +46,6 @@ class BroadcastWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("broadcast.rule"));
         assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("CREATE BROADCAST TABLE RULE `t_order`, `t_order_item`"));
-        assertFalse(actual.getDdlArtifacts().iterator().hasNext());
-        assertFalse(actual.getIndexPlans().iterator().hasNext());
     }
     
     @Test

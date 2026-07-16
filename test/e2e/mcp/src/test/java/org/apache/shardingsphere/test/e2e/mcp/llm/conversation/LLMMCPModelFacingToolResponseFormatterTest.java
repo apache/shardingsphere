@@ -78,14 +78,11 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     @Test
     void assertFormatWithArtifactSummaries() {
         Map<String, Object> actual = format(Map.of(
-                "manual_artifacts", List.of(Map.of(
-                        "ddl_artifacts", List.of("a", "b"),
-                        "index_plan", List.of("c"),
-                        "distsql_artifacts", List.of("d", "e", "f"))),
-                "exported_artifacts", List.of(Map.of("ddl_artifacts", List.of("g")))));
+                "manual_artifacts", List.of(Map.of("distsql_artifacts", List.of("d", "e", "f"))),
+                "exported_artifacts", List.of(Map.of("distsql_artifacts", List.of("g")))));
         assertThat(actual, is(Map.of(
-                "manual_artifacts", List.of(Map.of("ddl_artifact_count", 2, "index_plan_count", 1, "distsql_artifact_count", 3)),
-                "exported_artifacts", List.of(Map.of("ddl_artifact_count", 1)))));
+                "manual_artifacts", List.of(Map.of("distsql_artifact_count", 3)),
+                "exported_artifacts", List.of(Map.of("distsql_artifact_count", 1)))));
     }
     
     @Test

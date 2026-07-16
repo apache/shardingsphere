@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -35,40 +36,24 @@ public final class WorkflowApplyOutcome {
     
     private final List<Map<String, Object>> stepResults = new LinkedList<>();
     
-    private final List<String> executedDdl = new LinkedList<>();
-    
     private final List<String> executedDistSql = new LinkedList<>();
-    
-    private final List<String> skippedArtifacts = new LinkedList<>();
     
     private final List<Map<String, Object>> issues = new LinkedList<>();
     
-    void addSkippedArtifact(final WorkflowArtifactBundle.ExecutableWorkflowArtifact artifact) {
-        skippedArtifacts.add(artifact.displaySql());
-        stepResults.add(createStepResult(artifact.artifactType(), WorkflowLifecycle.STATUS_SKIPPED, artifact.displaySql()));
-    }
-    
     void addExecutedArtifact(final WorkflowArtifactBundle.ExecutableWorkflowArtifact artifact) {
-        if (artifact.ruleDistSql()) {
-            executedDistSql.add(artifact.displaySql());
-        } else {
-            executedDdl.add(artifact.displaySql());
-        }
-        stepResults.add(createStepResult(artifact.artifactType(), WorkflowLifecycle.STATUS_PASSED, artifact.displaySql()));
+        executedDistSql.add(artifact.displaySql());
+        stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, WorkflowLifecycle.STATUS_PASSED, artifact.displaySql()));
     }
     
-    void addFailedArtifact(final String issueCode, final String artifactType, final String artifactSql, final String errorMessage) {
-        stepResults.add(createStepResult(artifactType, WorkflowLifecycle.STATUS_FAILED, artifactSql));
-        issues.add(new WorkflowIssue(issueCode, "error", WorkflowLifecycle.STEP_EXECUTING, errorMessage, "Fix the failed artifact and retry execution.", true,
-                Map.of("artifact_type", artifactType, "sql", artifactSql)).toMap());
+    void addFailedArtifact(final String artifactSql, final String errorMessage) {
+        stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, WorkflowLifecycle.STATUS_FAILED, artifactSql));
+        issues.add(new WorkflowIssue(WorkflowIssueCode.RULE_EXECUTION_FAILED, "error", WorkflowLifecycle.STEP_EXECUTING, errorMessage,
+                "Fix the failed artifact and retry execution.", true,
+                Map.of("artifact_type", WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, "sql", artifactSql)).toMap());
     }
     
     void addIssue(final Map<String, Object> issue) {
         issues.add(issue);
-    }
-    
-    boolean hasSkippedArtifacts() {
-        return !skippedArtifacts.isEmpty();
     }
     
     void addSynchronizationFailure(final String issueCode, final String errorMessage, final List<Map<String, Object>> mismatches) {
@@ -85,7 +70,7 @@ public final class WorkflowApplyOutcome {
     
     Map<String, Object> createResponse(final String status, final WorkflowContextSnapshot snapshot, final String executionMode, final Map<String, Object> manualArtifactPackage) {
         return new WorkflowApplyResponseBuilder().build(snapshot, status, executionMode,
-                issues, stepResults, executedDdl, executedDistSql, skippedArtifacts, manualArtifactPackage);
+                issues, stepResults, executedDistSql, manualArtifactPackage);
     }
     
     private static Map<String, Object> createStepResult(final String artifactType, final String status, final String sql) {

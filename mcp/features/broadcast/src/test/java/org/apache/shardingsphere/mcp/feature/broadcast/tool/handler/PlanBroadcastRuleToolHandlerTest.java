@@ -75,8 +75,6 @@ class PlanBroadcastRuleToolHandlerTest {
             MCPSuccessPayload actual = new PlanBroadcastRuleToolHandler().handle(createWorkflowContextFixture().requestContext,
                     Map.of("database", "logic_db", "table", "t_order"));
             Map<String, Object> actualPayload = actual.toPayload();
-            assertFalse(actualPayload.containsKey("ddl_artifacts"));
-            assertFalse(actualPayload.containsKey("index_plan"));
             assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("CREATE BROADCAST TABLE RULE"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
             List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);

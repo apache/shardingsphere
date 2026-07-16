@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.feature.shadow;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
@@ -40,11 +39,11 @@ public final class ShadowFeatureDefinition {
     
     public static final String PLAN_ALGORITHM_CLEANUP_PROMPT_NAME = "plan_shadow_algorithm_cleanup";
     
-    public static final WorkflowKind RULE_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHADOW_RULE);
+    public static final WorkflowKind RULE_WORKFLOW_KIND = WorkflowKind.valueOf("shadow.rule");
     
-    public static final WorkflowKind DEFAULT_ALGORITHM_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHADOW_DEFAULT_ALGORITHM);
+    public static final WorkflowKind DEFAULT_ALGORITHM_WORKFLOW_KIND = WorkflowKind.valueOf("shadow.default");
     
-    public static final WorkflowKind ALGORITHM_CLEANUP_WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.SHADOW_ALGORITHM_CLEANUP);
+    public static final WorkflowKind ALGORITHM_CLEANUP_WORKFLOW_KIND = WorkflowKind.valueOf("shadow.cleanup");
     
     public static final String RULE_FIELD = "rule";
     
@@ -77,5 +76,11 @@ public final class ShadowFeatureDefinition {
     public static final String RULE_COUNT_RESOURCE_URI = "shardingsphere://features/shadow/databases/{database}/rule-count";
     
     public static final String ALGORITHM_PLUGINS_RESOURCE_URI = "shardingsphere://features/shadow/algorithm-plugins";
+    
+    public static final String STORAGE_UNITS_RESOURCE_URI = "shardingsphere://databases/{database}/storage-units";
+    
+    public static final String SINGLE_TABLES_RESOURCE_URI = "shardingsphere://databases/{database}/single-tables";
+    
+    public static final String SINGLE_TABLE_RESOURCE_URI = "shardingsphere://databases/{database}/single-tables/{table}";
     
 }

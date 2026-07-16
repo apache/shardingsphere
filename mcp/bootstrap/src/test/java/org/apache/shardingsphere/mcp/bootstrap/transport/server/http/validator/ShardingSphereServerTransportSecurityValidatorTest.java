@@ -21,6 +21,7 @@ import io.modelcontextprotocol.spec.HttpHeaders;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.SessionAttributionResolver;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.OriginHeaderConstraint;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
@@ -72,5 +73,19 @@ class ShardingSphereServerTransportSecurityValidatorTest {
         assertThat(exception.getMessage(), is("Session attribution is not bound for this MCP session."));
         assertThat(exception.getCategory(), is("session_attribution_mismatch"));
         assertThat(sessionManager.findSessionIdentity("session-1"), is(Optional.empty()));
+    }
+    
+    @Test
+    void assertValidateOriginBeforeSessionIdentity() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
+        sessionManager.createSession("session-1");
+        sessionManager.bindSessionIdentity("session-1", new MCPSessionIdentity("subject", "gateway", Map.of()));
+        ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(new OriginHeaderConstraint(true)),
+                new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
+        MCPTransportSecurityException exception = assertThrows(MCPTransportSecurityException.class, () -> actual.validateHeaders(Map.of(
+                "Origin", List.of("https://example.com"), HttpHeaders.MCP_SESSION_ID, List.of("session-1"),
+                "X-Test-Subject", List.of("other"), "X-Test-Source", List.of("gateway"))));
+        assertThat(exception.getStatusCode(), is(403));
+        assertThat(exception.getCategory(), is(MCPTransportSecurityException.CATEGORY_ORIGIN_NOT_ALLOWED));
     }
 }

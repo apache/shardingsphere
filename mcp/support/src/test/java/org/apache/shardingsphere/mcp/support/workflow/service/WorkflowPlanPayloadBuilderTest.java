@@ -20,9 +20,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
-import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -148,125 +146,7 @@ class WorkflowPlanPayloadBuilderTest {
     }
     
     @Test
-    void assertBuildKeepsMaskRulePayloadRuleOnly() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setSchema("public");
-        request.setTable("orders");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Mask workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        assertThat(actual.get("summary"), is("Workflow plan `plan-1` for mask.rule is ready for preview."));
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of()));
-        Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
-        assertThat(actualReviewFocus.get("next_review_action"), is("call_database_gateway_apply_workflow_preview"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
-        assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
-        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
-    }
-    
-    @Test
-    void assertBuildKeepsBroadcastRulePayloadRuleOnly() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("broadcast.rule"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setSchema("public");
-        request.setTable("orders");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Broadcast workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of()));
-        assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
-    }
-    
-    @Test
-    void assertBuildIncludesReadwriteResources() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("readwrite.rule"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Readwrite workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of("shardingsphere://databases/logic_db/storage-units")));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("tool_name"), is("database_gateway_apply_workflow"));
-    }
-    
-    @Test
-    void assertBuildIncludesReadwriteStatusResources() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("readwrite.status"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Readwrite status workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of("shardingsphere://databases/logic_db/storage-units")));
-    }
-    
-    @Test
-    void assertBuildIncludesShadowResources() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("shadow.rule"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setTable("t_order");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Shadow workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of(
-                "shardingsphere://databases/logic_db/storage-units",
-                "shardingsphere://databases/logic_db/single-tables",
-                "shardingsphere://databases/logic_db/single-tables/t_order")));
-    }
-    
-    @Test
-    void assertBuildIncludesShardingTableRuleResources() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("sharding.table.rule"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setSchema("public");
-        request.setTable("orders");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Sharding workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of(
-                "shardingsphere://databases/logic_db/storage-units",
-                "shardingsphere://databases/logic_db/single-tables",
-                "shardingsphere://databases/logic_db/single-tables/orders")));
-        assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
-    }
-    
-    @Test
-    void assertBuildRuleDistSQLOnly() {
+    void assertBuildWithArtifacts() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         snapshot.setWorkflowKind(WorkflowKind.valueOf("sharding.table.rule"));
@@ -277,13 +157,9 @@ class WorkflowPlanPayloadBuilderTest {
         request.setTable("orders");
         snapshot.setRequest(request);
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Sharding workflow plan.", List.of("Review"), List.of("rules")));
-        snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id BIGINT", 1));
-        snapshot.getIndexPlans().add(new IndexPlan("idx_order_id", "order_id", "lookup", "CREATE INDEX idx_order_id ON orders(order_id)"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE SHARDING TABLE RULE orders(DATANODES('ds.orders'))"));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, request);
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, request);
         assertThat(actual.get("workflow_kind"), is("sharding.table.rule"));
-        assertFalse(actual.containsKey(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS));
-        assertFalse(actual.containsKey(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN));
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).size(), is(1));
         assertThat(((Map<?, ?>) ((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).getFirst()).get("sql"),
                 is("CREATE SHARDING TABLE RULE orders(DATANODES('ds.orders'))"));
@@ -345,7 +221,4 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actualNextAction.get("required_inputs"), is(List.of("workflow_kind", "issues")));
     }
     
-    private List<String> extractResourceUris(final List<?> resources) {
-        return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
-    }
 }

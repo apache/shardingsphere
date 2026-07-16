@@ -52,13 +52,9 @@ public final class WorkflowIssueCode {
     
     public static final String ENCRYPT_DROP_SCOPE_LIMITED = "WF-LIFE-003";
     
-    public static final String PHYSICAL_CLEANUP_REQUIRED = "WF-LIFE-004";
-    
     public static final String ENCRYPT_RULE_REWRITE_LIMITED = "WF-LIFE-005";
     
     public static final String MASK_RULE_REWRITE_LIMITED = "WF-LIFE-006";
-    
-    public static final String DDL_EXECUTION_FAILED = "WF-DDL-001";
     
     public static final String RULE_EXECUTION_FAILED = "WF-RULE-001";
     
@@ -67,8 +63,6 @@ public final class WorkflowIssueCode {
     public static final String MANUAL_EXECUTION_PENDING = "WF-MODE-001";
     
     public static final String UNSUPPORTED_IDENTIFIER = "WF-SQL-001";
-    
-    public static final String DDL_STATE_MISMATCH = "WF-VAL-001";
     
     public static final String RULE_STATE_MISMATCH = "WF-VAL-002";
     

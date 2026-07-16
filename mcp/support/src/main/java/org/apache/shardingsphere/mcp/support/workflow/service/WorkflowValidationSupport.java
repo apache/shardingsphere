@@ -152,7 +152,6 @@ public final class WorkflowValidationSupport {
     
     private List<Map<String, Object>> createValidationSections(final ValidationReport validationReport) {
         List<Map<String, Object>> result = new LinkedList<>();
-        addValidationSection(result, "ddl", validationReport.getDdlValidation());
         addValidationSection(result, "rule", validationReport.getRuleValidation());
         addValidationSection(result, "logical_metadata", validationReport.getLogicalMetadataValidation());
         addValidationSection(result, "sql_executability", validationReport.getSqlExecutabilityValidation());

@@ -43,6 +43,7 @@ import org.mockito.MockedConstruction;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -195,6 +196,20 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
+    void assertServiceGetRejectsOriginBeforeAccept() throws ServletException, IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("Origin")));
+        when(request.getHeaders("Origin")).thenReturn(Collections.enumeration(List.of("https://example.com")));
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(response.getWriter()).thenReturn(mock(PrintWriter.class));
+        createServlet(mock(MCPSessionManager.class)).service(request, response);
+        verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response, never()).sendError(HttpServletResponse.SC_BAD_REQUEST, "Accept must include text/event-stream.");
+        verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+    
+    @Test
     void assertRejectUnsupportedEventStreamGet() throws ServletException, IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
@@ -269,6 +284,21 @@ class StreamableHttpMCPServletTest {
         StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
         actual.service(request, response);
         verify(response).sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Content-Type must be application/json.");
+        verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+    
+    @Test
+    void assertServicePostRejectsOriginBeforeContentType() throws ServletException, IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getContentType()).thenReturn("text/plain");
+        when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("Origin")));
+        when(request.getHeaders("Origin")).thenReturn(Collections.enumeration(List.of("https://example.com")));
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(response.getWriter()).thenReturn(mock(PrintWriter.class));
+        createServlet(mock(MCPSessionManager.class)).service(request, response);
+        verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response, never()).sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Content-Type must be application/json.");
         verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
     

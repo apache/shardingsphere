@@ -182,8 +182,8 @@ class ToolDefinitionRegistryTest {
     void assertDispatchWithInvalidApprovedSteps() {
         MCPInvalidApprovedStepsException actual = assertThrows(MCPInvalidApprovedStepsException.class,
                 () -> dispatch("database_gateway_apply_workflow", Map.of("plan_id", "plan-1", "execution_mode", "preview", "approved_steps", List.of("all"))));
-        assertThat(actual.getMessage(), is("approved_steps must contain only [ddl, index_ddl, rule_distsql]."));
-        assertThat(actual.getAllowedValues(), is(List.of("ddl", "index_ddl", "rule_distsql")));
+        assertThat(actual.getMessage(), is("approved_steps must contain only [rule_distsql]."));
+        assertThat(actual.getAllowedValues(), is(List.of("rule_distsql")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("plan_id", "plan-1", "execution_mode", "preview")));
     }
     
