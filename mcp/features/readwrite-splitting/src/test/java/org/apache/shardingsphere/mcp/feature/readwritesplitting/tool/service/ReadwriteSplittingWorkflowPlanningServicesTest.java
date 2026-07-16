@@ -189,7 +189,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     private MCPFeatureQueryFacade mockRuleQueryFacade(final List<Map<String, Object>> rules) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
-        when(result.query(eq("logic_db"), eq(""), any())).thenReturn(rules);
+        when(result.query(eq("logic_db"), any())).thenReturn(rules);
         return result;
     }
     
@@ -197,7 +197,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "read_ds_0", "read_ds_0")).thenReturn(true);
-        when(result.query(eq("logic_db"), eq(""), any())).thenReturn(statuses);
+        when(result.query(eq("logic_db"), any())).thenReturn(statuses);
         return result;
     }
     

@@ -53,7 +53,7 @@ public final class WorkflowDistSQLQueryUtils {
      */
     public static List<Map<String, Object>> queryRuleRows(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String sql) {
         try {
-            return queryFacade.query(databaseName, "", sql);
+            return queryFacade.query(databaseName, sql);
         } catch (final MCPQueryFailedException ex) {
             if (isUnsupportedDistSQLQueryFailure(ex)) {
                 return List.of();

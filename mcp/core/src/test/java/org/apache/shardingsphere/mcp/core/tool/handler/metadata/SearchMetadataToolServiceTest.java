@@ -246,7 +246,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithStorageUnitObjectType() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db"))
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db"))
                 .thenReturn(List.of(Map.of("name", "write_ds"), Map.of("name", "read_ds")));
         MetadataSearchResult actual = execute(createDatabaseMetadata(), queryFacade,
                 new MetadataSearchRequest("logic_db", "", "write", Set.of(SupportedMCPMetadataObjectType.STORAGE_UNIT)));

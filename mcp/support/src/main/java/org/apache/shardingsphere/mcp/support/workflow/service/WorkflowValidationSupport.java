@@ -96,19 +96,6 @@ public final class WorkflowValidationSupport {
     }
     
     /**
-     * Create the baseline projection SQL used by workflow validation.
-     *
-     * @param snapshot workflow snapshot
-     * @param databaseType database type
-     * @return projection validation SQL
-     */
-    public String createProjectionValidationSql(final WorkflowContextSnapshot snapshot, final String databaseType) {
-        String columnName = WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getColumn());
-        String tableName = WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getTable());
-        return String.format("SELECT %s FROM %s", columnName, tableName);
-    }
-    
-    /**
      * Persist validation result and create response payload.
      *
      * @param workflowSessionContext workflow session context
