@@ -34,6 +34,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -63,7 +64,7 @@ class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
         TableNameReviser tableNameReviser = mock(TableNameReviser.class);
         TableMetaData originalMetaData = new TableMetaData("originalTableName", new LinkedList<>(), null, null);
         when(metaDataReviseEntry.getTableNameReviser()).thenReturn(Optional.of(tableNameReviser));
-        when(tableNameReviser.revise(anyString(), eq(rule))).thenReturn("revisedTableName");
+        when(tableNameReviser.revise(anyString(), eq(rule), any())).thenReturn("revisedTableName");
         TableMetaData revisedMetaData = engine.revise(originalMetaData);
         assertThat(revisedMetaData.getName(), is("revisedTableName"));
     }
