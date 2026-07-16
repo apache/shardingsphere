@@ -23,12 +23,13 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.mask.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
@@ -62,6 +63,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -112,6 +114,7 @@ class MaskWorkflowPlanningServiceTest {
         MCPMetadataQueryFacade metadataQueryFacade = createMetadataQueryFacade();
         when(metadataQueryFacade.querySchemas(any())).thenReturn(List.of(
                 new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(new ShardingSphereTable("orders", List.of(), List.of(), List.of(), TableType.TABLE)), List.of())));
+        when(metadataQueryFacade.queryTableColumns(any(), any(), any())).thenReturn(List.of());
         WorkflowContextSnapshot actual = createService(mock(MaskRuleInspectionService.class), mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class))
                 .plan(new TestWorkflowSessionContext(), metadataQueryFacade, createQueryFacade(), createRequest("create"));
@@ -142,7 +145,7 @@ class MaskWorkflowPlanningServiceTest {
         request.getPrimaryAlgorithmProperties().put("from-x", "1");
         MCPMetadataQueryFacade metadataQueryFacade = createMetadataQueryFacade();
         when(metadataQueryFacade.querySchemas(any())).thenReturn(List.of(
-                new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(createTableMetadata("amount")), List.of())));
+                new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(createTableMetadata()), List.of())));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), createEmptyPropertyTemplateService(),
                 new MaskRuleDistSQLPlanningService()).plan(new TestWorkflowSessionContext(), metadataQueryFacade, createQueryFacade(), request);
         assertThat(actual.getStatus(), is("clarifying"));
@@ -302,6 +305,8 @@ class MaskWorkflowPlanningServiceTest {
         MCPMetadataQueryFacade result = mock(MCPMetadataQueryFacade.class);
         when(result.queryDatabase(any())).thenReturn(Optional.of(createDatabaseMetadata()));
         when(result.querySchemas(any())).thenReturn(List.of(createSchemaMetadata()));
+        when(result.queryTableColumns(any(), any(), eq("orders"))).thenReturn(List.of(
+                createColumnMetadata("phone"), createColumnMetadata("amount"), createColumnMetadata("email")));
         return result;
     }
     
@@ -314,15 +319,11 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     private ShardingSphereTable createTableMetadata() {
-        return createTableMetadata("phone");
+        return new ShardingSphereTable("orders", List.of(), List.of(), List.of(), TableType.TABLE);
     }
     
-    private ShardingSphereTable createTableMetadata(final String columnName) {
-        return new ShardingSphereTable("orders", List.of(createColumnMetadata(columnName)), List.of(), List.of(), TableType.TABLE);
-    }
-    
-    private ShardingSphereColumn createColumnMetadata(final String columnName) {
-        return new ShardingSphereColumn(columnName, java.sql.Types.OTHER, false, false, false, true, false, true);
+    private MCPColumnMetadata createColumnMetadata(final String columnName) {
+        return new MCPColumnMetadata("orders", columnName, 1, java.sql.Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
     }
     
     private MaskWorkflowPlanningService createService(final MaskRuleInspectionService ruleInspectionService,

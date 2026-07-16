@@ -238,7 +238,7 @@ prompts:
         required: false
       - name: algorithm_type
         title: Algorithm Type
-        description: "Default shadow algorithm type."
+        description: "Default shadow algorithm type. ShardingSphere requires SQL_HINT for the default algorithm."
         required: false
       - name: plan_id
         title: Workflow Plan ID
@@ -589,6 +589,9 @@ tools:
         - plan_id
         - workflow_kind
         - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       additionalProperties: true
       examples:
         - response_mode: planning
@@ -654,6 +657,9 @@ tools:
             - drop
         algorithm_type:
           type: string
+          enum:
+            - SQL_HINT
+          description: "Default shadow algorithm type. ShardingSphere requires SQL_HINT."
         algorithm_properties:
           type: object
           additionalProperties:
@@ -665,6 +671,8 @@ tools:
           properties:
             algorithm_type:
               type: string
+              enum:
+                - SQL_HINT
           required: []
           additionalProperties: false
         delivery_mode:

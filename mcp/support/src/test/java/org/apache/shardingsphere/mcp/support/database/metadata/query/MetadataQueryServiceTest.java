@@ -26,7 +26,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.syste
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMet
 import org.apache.shardingsphere.mcp.support.database.metadata.context.RequestScopedMetadataContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +50,7 @@ import org.mockito.MockedStatic;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.sql.Types;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -166,7 +167,7 @@ class MetadataQueryServiceTest {
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getName(), is("order_items"));
         assertThat(actual.get(1).getName(), is("orders"));
-        assertThat(actual.get(1).getAllColumns().size(), is(1));
+        assertTrue(actual.get(1).getAllColumns().isEmpty());
     }
     
     @Test
@@ -179,8 +180,8 @@ class MetadataQueryServiceTest {
         Optional<ShardingSphereTable> actual = metadataQueryService.queryTable("logic_db", "public", "orders");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("orders"));
-        assertThat(actual.get().getAllColumns().size(), is(1));
-        assertThat(actual.get().getAllIndexes().size(), is(1));
+        assertTrue(actual.get().getAllColumns().isEmpty());
+        assertTrue(actual.get().getAllIndexes().isEmpty());
     }
     
     @Test
@@ -190,9 +191,9 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryTableColumns() {
-        List<ShardingSphereColumn> actual = metadataQueryService.queryTableColumns("logic_db", "public", "orders");
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getName(), is("order_id"));
+        List<MCPColumnMetadata> actual = metadataQueryService.queryTableColumns("logic_db", "public", "orders");
+        assertThat(actual.stream().map(MCPColumnMetadata::getName).toList(), is(List.of("order_id", "amount")));
+        assertThat(actual.get(0).getJdbcType(), is(Types.INTEGER));
     }
     
     @Test
@@ -201,8 +202,13 @@ class MetadataQueryServiceTest {
     }
     
     @Test
+    void assertQueryTableColumnsWithMissingTable() {
+        assertTrue(metadataQueryService.queryTableColumns("logic_db", "public", "missing_table").isEmpty());
+    }
+    
+    @Test
     void assertQueryTableColumn() {
-        Optional<ShardingSphereColumn> actual = metadataQueryService.queryTableColumn("logic_db", "public", "orders", "order_id");
+        Optional<MCPColumnMetadata> actual = metadataQueryService.queryTableColumn("logic_db", "public", "orders", "order_id");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("order_id"));
     }
@@ -217,7 +223,7 @@ class MetadataQueryServiceTest {
         List<ShardingSphereTable> actual = metadataQueryService.queryViews("logic_db", "public");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getName(), is("orders_view"));
-        assertThat(actual.get(0).getAllColumns().size(), is(1));
+        assertTrue(actual.get(0).getAllColumns().isEmpty());
     }
     
     @Test
@@ -230,7 +236,7 @@ class MetadataQueryServiceTest {
         Optional<ShardingSphereTable> actual = metadataQueryService.queryView("logic_db", "public", "orders_view");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("orders_view"));
-        assertThat(actual.get().getAllColumns().size(), is(1));
+        assertTrue(actual.get().getAllColumns().isEmpty());
     }
     
     @Test
@@ -240,7 +246,7 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryViewColumns() {
-        List<ShardingSphereColumn> actual = metadataQueryService.queryViewColumns("logic_db", "public", "orders_view");
+        List<MCPColumnMetadata> actual = metadataQueryService.queryViewColumns("logic_db", "public", "orders_view");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getName(), is("order_id"));
     }
@@ -251,8 +257,13 @@ class MetadataQueryServiceTest {
     }
     
     @Test
+    void assertQueryViewColumnsWithMissingView() {
+        assertTrue(metadataQueryService.queryViewColumns("logic_db", "public", "missing_view").isEmpty());
+    }
+    
+    @Test
     void assertQueryViewColumn() {
-        Optional<ShardingSphereColumn> actual = metadataQueryService.queryViewColumn("logic_db", "public", "orders_view", "order_id");
+        Optional<MCPColumnMetadata> actual = metadataQueryService.queryViewColumn("logic_db", "public", "orders_view", "order_id");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("order_id"));
     }
@@ -260,6 +271,23 @@ class MetadataQueryServiceTest {
     @Test
     void assertQueryViewColumnWithUnsupportedDatabase() {
         assertFalse(metadataQueryService.queryViewColumn("unknown_db", "public", "orders_view", "order_id").isPresent());
+    }
+    
+    @Test
+    void assertQuerySchemaColumns() {
+        List<MCPColumnMetadata> actual = metadataQueryService.querySchemaColumns("logic_db", "public");
+        assertThat(actual.stream().map(each -> each.getRelationName() + "." + each.getName()).toList(),
+                is(List.of("order_items.item_id", "orders.order_id", "orders.amount", "orders_view.order_id")));
+    }
+    
+    @Test
+    void assertQuerySchemaColumnsWithMissingSchema() {
+        assertTrue(metadataQueryService.querySchemaColumns("logic_db", "missing_schema").isEmpty());
+    }
+    
+    @Test
+    void assertQuerySchemaColumnsWithUnsupportedDatabase() {
+        assertTrue(metadataQueryService.querySchemaColumns("unknown_db", "public").isEmpty());
     }
     
     @Test
@@ -272,6 +300,11 @@ class MetadataQueryServiceTest {
     @Test
     void assertQueryIndexesWithoutIndexMetadata() {
         assertTrue(metadataQueryService.queryIndexes("warehouse", "warehouse", "facts").isEmpty());
+    }
+    
+    @Test
+    void assertQueryIndexesWithMissingTable() {
+        assertTrue(metadataQueryService.queryIndexes("logic_db", "public", "missing_table").isEmpty());
     }
     
     @Test

@@ -261,6 +261,12 @@ class WorkflowSQLUtilsTest {
         assertThat(actualFragment, is(""));
     }
     
+    @Test
+    void assertCreateAlgorithmFragmentWithExactTypePreservesCase() {
+        String actualFragment = WorkflowSQLUtils.createAlgorithmFragmentWithExactType(" SQL_HINT ", Map.of());
+        assertThat(actualFragment, is("TYPE(NAME='SQL_HINT')"));
+    }
+    
     private static Stream<Arguments> getDistSQLKeywordCases() {
         return Stream.of(
                 Arguments.of("quote if keyword", "if", "`if`"),

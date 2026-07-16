@@ -132,6 +132,9 @@ public final class ShadowWorkflowPlanningService {
         if (!ensureDefaultAlgorithmPlanningContext(mergedRequest, result.getClarifiedIntent(), result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
+        if (!ensureDefaultAlgorithmType(mergedRequest, result)) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+        }
         if (!isReadyForAlgorithmArtifactPlanning(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
@@ -224,6 +227,18 @@ public final class ShadowWorkflowPlanningService {
             addMissingInput(missingInputs, request.getAlgorithmType(), ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD);
         }
         return ensureNoMissingInputs(missingInputs, clarifiedIntent, snapshot, "Default shadow algorithm DistSQL requires an explicit algorithm type and properties.");
+    }
+    
+    private boolean ensureDefaultAlgorithmType(final ShadowDefaultAlgorithmWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())
+                || ShadowFeatureDefinition.DEFAULT_ALGORITHM_TYPE.equalsIgnoreCase(request.getAlgorithmType())) {
+            return true;
+        }
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
+                "Default shadow algorithm must implement the hint algorithm contract.",
+                "Use algorithm_type=SQL_HINT for the default shadow algorithm.", false, Map.of("algorithm_type", request.getAlgorithmType())));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        return false;
     }
     
     private boolean ensureCleanupPlanningContext(final ShadowAlgorithmCleanupWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {

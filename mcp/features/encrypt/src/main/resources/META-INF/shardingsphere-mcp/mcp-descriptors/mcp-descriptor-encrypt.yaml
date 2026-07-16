@@ -418,6 +418,14 @@ tools:
         resources_to_read:
           type: array
           description: "Typed resources the model should read when more rule or algorithm context is useful."
+      required:
+        - response_mode
+        - plan_id
+        - workflow_kind
+        - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       examples:
         - response_mode: planning
           summary: Workflow plan `encrypt-rule-20260505-001` for encrypt.rule is ready for preview.

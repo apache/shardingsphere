@@ -867,7 +867,14 @@ tools:
               arguments: {type: object, description: "Canonical arguments to provide to the target tool."}
               reason: {type: string, description: "Why the model should take this action."}
               required_inputs: {type: array, description: "User inputs needed before continuing."}
-      required: []
+      required:
+        - response_mode
+        - plan_id
+        - workflow_kind
+        - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       additionalProperties: true
       examples:
         - response_mode: planning
