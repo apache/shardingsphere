@@ -63,7 +63,6 @@ import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticatorType;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -159,7 +158,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         String username = startupPacket.getUsername();
         ShardingSpherePreconditions.checkNotEmpty(username, EmptyUsernameException::new);
         context.writeAndFlush(getIdentifierPacket(username, rule, startupPacket.getVersion()));
-        currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase(), Collections.emptyMap());
+        currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase(), startupPacket.getConnectionAttributes());
         return currentAuthResult;
     }
     
