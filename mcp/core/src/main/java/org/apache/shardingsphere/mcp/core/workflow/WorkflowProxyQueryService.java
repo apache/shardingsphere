@@ -19,12 +19,14 @@ package org.apache.shardingsphere.mcp.core.workflow;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -39,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Direct query service for Proxy-backed workflow reads.
@@ -61,7 +64,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
                 ResultSet resultSet = executeQuery(connection, statement, schemaName, sql)) {
             return extractRows(resultSet);
         } catch (final SQLException ex) {
-            throw new MCPQueryFailedException(ex.getMessage(), ex);
+            throw createQueryFailedException(actualDatabaseName, ex);
         }
     }
     
@@ -101,8 +104,16 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
             return formatColumnDefinition(resultSetMetaData.getColumnType(1), resultSetMetaData.getColumnTypeName(1),
                     resultSetMetaData.getPrecision(1), resultSetMetaData.getScale(1));
         } catch (final SQLException ex) {
-            throw new MCPQueryFailedException(ex.getMessage(), ex);
+            throw new MCPDatabaseQueryFailedException(MCPJDBCExceptionClassifier.classify(databaseType, ex), ex);
         }
+    }
+    
+    private MCPDatabaseQueryFailedException createQueryFailedException(final String databaseName, final SQLException cause) {
+        Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(databaseName);
+        MCPJDBCErrorCategory category = databaseCapability.isPresent()
+                ? MCPJDBCExceptionClassifier.classify(databaseCapability.get().getDatabaseType(), cause)
+                : MCPJDBCExceptionClassifier.classify(cause);
+        return new MCPDatabaseQueryFailedException(category, cause);
     }
     
     private Connection openConnection(final String databaseName) throws SQLException {

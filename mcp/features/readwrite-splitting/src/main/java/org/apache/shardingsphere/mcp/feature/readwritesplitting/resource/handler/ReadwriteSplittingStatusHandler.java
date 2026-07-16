@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
@@ -30,13 +30,13 @@ import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
 /**
  * Readwrite-splitting status handler.
  */
-public final class ReadwriteSplittingStatusHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
+public final class ReadwriteSplittingStatusHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -45,8 +45,8 @@ public final class ReadwriteSplittingStatusHandler implements MCPResourceHandler
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsPayload(inspectionService.queryStatuses(databaseContext.getQueryFacade(), uriVariables.getValue("database")),
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+        return new MCPItemsPayload(inspectionService.queryStatuses(requestContext.getQueryFacade(), uriVariables.getValue("database")),
                 MCPResourceNavigationPayloadBuilder.create(
                         MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, ReadwriteSplittingFeatureDefinition.RULES_RESOURCE_URI));
     }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
@@ -30,13 +30,13 @@ import java.util.Map;
 /**
  * Execute read-only SQL query tool handler.
  */
-public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabaseRequestContext> {
+public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private static final String TOOL_NAME = "database_gateway_execute_query";
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -45,20 +45,20 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String sql = toolArguments.getStringArgument("sql");
-        checkReadOnlyQuery(toolArguments, sql);
+        checkReadOnlyQuery(requestContext, toolArguments, sql);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
-        return SQLExecutionPayload.query(databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(databaseContext.getSessionId(), toolArguments,
-                SQLExecutionToolHandlerSupport.resolveSchema(databaseContext, toolArguments), sql, TOOL_NAME)));
+        return SQLExecutionPayload.query(requestContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(requestContext.getSessionId(), toolArguments,
+                SQLExecutionToolHandlerSupport.resolveSchema(requestContext, toolArguments), sql, TOOL_NAME)));
     }
     
-    private void checkReadOnlyQuery(final MCPToolArguments toolArguments, final String sql) {
-        ClassificationResult classificationResult = new StatementClassifier().classify(sql);
+    private void checkReadOnlyQuery(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments, final String sql) {
+        ClassificationResult classificationResult = SQLExecutionToolHandlerSupport.analyze(requestContext, toolArguments, sql);
         if (!SQLExecutionToolHandlerSupport.isQueryStatement(classificationResult)) {
             throw new SQLToolMismatchException(
-                    "database_gateway_execute_query only supports classifier-approved QUERY statements. "
+                    "database_gateway_execute_query only supports parser-approved QUERY statements. "
                             + "Use database_gateway_execute_explain_query for EXPLAIN diagnostics or database_gateway_execute_update for side-effecting SQL.",
                     TOOL_NAME, "database_gateway_execute_update", classificationResult,
                     createSuggestedArguments(toolArguments, classificationResult));

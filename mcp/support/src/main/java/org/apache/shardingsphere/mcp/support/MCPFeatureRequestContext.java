@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.database;
+package org.apache.shardingsphere.mcp.support;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -23,13 +23,16 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFa
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
 import java.util.Optional;
 
 /**
- * Database-aware MCP request context.
+ * MCP feature request context.
+ *
+ * <p>The runtime owns this context. Feature handlers and completion providers must use it only during the current synchronous invocation.</p>
  */
-public interface MCPDatabaseRequestContext extends MCPRequestContext {
+public interface MCPFeatureRequestContext extends MCPRequestContext {
     
     /**
      * Get metadata query facade.
@@ -66,4 +69,11 @@ public interface MCPDatabaseRequestContext extends MCPRequestContext {
      * @return runtime database configuration
      */
     Optional<RuntimeDatabaseConfiguration> findRuntimeDatabaseConfiguration(String databaseName);
+    
+    /**
+     * Get workflow session context bound to the current MCP session.
+     *
+     * @return workflow session context
+     */
+    WorkflowSessionContext getWorkflowSessionContext();
 }

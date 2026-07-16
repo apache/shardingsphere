@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -41,12 +41,12 @@ class MaskRuleHandlerTest {
     @Test
     void assertHandle() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+        MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+        when(requestContext.getQueryFacade()).thenReturn(queryFacade);
         try (
                 MockedConstruction<MaskRuleInspectionService> mockedConstruction = mockConstruction(MaskRuleInspectionService.class,
                         (mock, context) -> when(mock.queryMaskRules(queryFacade, "logic_db", "orders")).thenReturn(List.of(Map.of("column", "phone"))))) {
-            MCPSuccessPayload actual = new MaskRuleHandler().handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
+            MCPSuccessPayload actual = new MaskRuleHandler().handle(requestContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
             verify(mockedConstruction.constructed().getFirst()).queryMaskRules(queryFacade, "logic_db", "orders");
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
             assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/mask/databases/logic_db/tables/orders/rules"));

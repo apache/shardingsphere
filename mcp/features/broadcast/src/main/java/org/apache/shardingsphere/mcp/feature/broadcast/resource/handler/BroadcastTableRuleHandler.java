@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
@@ -36,13 +36,13 @@ import java.util.Map;
 /**
  * Broadcast table rule handler.
  */
-public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
+public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private final BroadcastRuleInspectionService ruleInspectionService = new BroadcastRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -51,10 +51,10 @@ public final class BroadcastTableRuleHandler implements MCPResourceHandler<MCPDa
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
         String database = uriVariables.getValue("database");
         String table = uriVariables.getValue("table");
-        MCPFeatureQueryFacade queryFacade = databaseContext.getQueryFacade();
+        MCPFeatureQueryFacade queryFacade = requestContext.getQueryFacade();
         queryFacade.checkDatabaseCapability(database);
         List<Map<String, Object>> items = ruleInspectionService.queryBroadcastRules(queryFacade, database).stream()
                 .filter(each -> queryFacade.isSameIdentifier(database, IdentifierScope.TABLE, table, WorkflowRuleValueUtils.getRuleValue(each, "broadcast_table"))).toList();

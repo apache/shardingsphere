@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -44,13 +44,13 @@ public final class SearchMetadataPayloadBuilder {
     /**
      * Build search metadata payload metadata.
      *
-     * @param databaseContext database handler context
+     * @param requestContext database handler context
      * @param request metadata search request
      * @param searchResult metadata search result
      * @param toolName search metadata tool name
      * @return search metadata payload metadata
      */
-    public static Map<String, Object> build(final MCPDatabaseRequestContext databaseContext, final MetadataSearchRequest request,
+    public static Map<String, Object> build(final MCPFeatureRequestContext requestContext, final MetadataSearchRequest request,
                                             final MetadataSearchResult searchResult, final String toolName) {
         Map<String, Object> result = new LinkedHashMap<>(9, 1F);
         result.put(MCPPayloadFieldNames.SUMMARY, createSummary(searchResult));
@@ -62,7 +62,7 @@ public final class SearchMetadataPayloadBuilder {
             result.put("large_result_guidance", createLargeResultGuidance(searchResult));
         }
         if (searchResult.getItems().isEmpty()) {
-            result.put("empty_state", createEmptyState(databaseContext, request));
+            result.put("empty_state", createEmptyState(requestContext, request));
             result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(createEmptySearchNextAction(request, toolName)));
             return result;
         }
@@ -182,8 +182,8 @@ public final class SearchMetadataPayloadBuilder {
         return result;
     }
     
-    private static Map<String, Object> createEmptyState(final MCPDatabaseRequestContext databaseContext, final MetadataSearchRequest request) {
-        String category = resolveEmptyStateCategory(databaseContext, request);
+    private static Map<String, Object> createEmptyState(final MCPFeatureRequestContext requestContext, final MetadataSearchRequest request) {
+        String category = resolveEmptyStateCategory(requestContext, request);
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("state", request.getQuery().isEmpty() ? "no_items" : "no_match");
         result.put("category", category);
@@ -191,29 +191,29 @@ public final class SearchMetadataPayloadBuilder {
         return result;
     }
     
-    private static String resolveEmptyStateCategory(final MCPDatabaseRequestContext databaseContext, final MetadataSearchRequest request) {
-        if (!hasRuntimeDatabase(databaseContext)) {
+    private static String resolveEmptyStateCategory(final MCPFeatureRequestContext requestContext, final MetadataSearchRequest request) {
+        if (!hasRuntimeDatabase(requestContext)) {
             return MCPDiagnosticCategory.NO_RUNTIME_DATABASE;
         }
-        if (!request.getDatabase().isEmpty() && !isKnownDatabase(databaseContext, request.getDatabase())) {
+        if (!request.getDatabase().isEmpty() && !isKnownDatabase(requestContext, request.getDatabase())) {
             return MCPDiagnosticCategory.UNKNOWN_DATABASE;
         }
-        if (!request.getSchema().isEmpty() && !isKnownSchema(databaseContext, request.getDatabase(), request.getSchema())) {
+        if (!request.getSchema().isEmpty() && !isKnownSchema(requestContext, request.getDatabase(), request.getSchema())) {
             return MCPDiagnosticCategory.SCHEMA_NOT_VISIBLE;
         }
         return request.getQuery().isEmpty() ? MCPDiagnosticCategory.EMPTY_SCOPE : MCPDiagnosticCategory.OBJECT_NOT_VISIBLE;
     }
     
-    private static boolean isKnownDatabase(final MCPDatabaseRequestContext databaseContext, final String databaseName) {
-        return Optional.ofNullable(databaseContext.getCapabilityFacade()).flatMap(capabilityFacade -> capabilityFacade.findDatabaseProfile(databaseName)).isPresent();
+    private static boolean isKnownDatabase(final MCPFeatureRequestContext requestContext, final String databaseName) {
+        return Optional.ofNullable(requestContext.getCapabilityFacade()).flatMap(capabilityFacade -> capabilityFacade.findDatabaseProfile(databaseName)).isPresent();
     }
     
-    private static boolean isKnownSchema(final MCPDatabaseRequestContext databaseContext, final String databaseName, final String schemaName) {
-        return databaseContext.getMetadataQueryFacade().querySchema(databaseName, schemaName).isPresent();
+    private static boolean isKnownSchema(final MCPFeatureRequestContext requestContext, final String databaseName, final String schemaName) {
+        return requestContext.getMetadataQueryFacade().querySchema(databaseName, schemaName).isPresent();
     }
     
-    private static boolean hasRuntimeDatabase(final MCPDatabaseRequestContext databaseContext) {
-        return !databaseContext.getMetadataQueryFacade().queryDatabases().isEmpty();
+    private static boolean hasRuntimeDatabase(final MCPFeatureRequestContext requestContext) {
+        return !requestContext.getMetadataQueryFacade().queryDatabases().isEmpty();
     }
     
     private static String createEmptyStateReason(final String category, final MetadataSearchRequest request) {

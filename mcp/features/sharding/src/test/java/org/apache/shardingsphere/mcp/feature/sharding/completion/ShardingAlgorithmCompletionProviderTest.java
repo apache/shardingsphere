@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class ShardingAlgorithmCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new ShardingAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
+        assertThat(new ShardingAlgorithmCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @Test
@@ -96,8 +96,8 @@ class ShardingAlgorithmCompletionProviderTest {
         assertTrue(ServiceLoader.load(MCPCompletionProvider.class).stream().anyMatch(each -> ShardingAlgorithmCompletionProvider.class.equals(each.type())));
     }
     
-    private MCPDatabaseRequestContext createHandlerContext(final MCPFeatureQueryFacade queryFacade) {
-        MCPDatabaseRequestContext result = mock(MCPDatabaseRequestContext.class);
+    private MCPFeatureRequestContext createHandlerContext(final MCPFeatureQueryFacade queryFacade) {
+        MCPFeatureRequestContext result = mock(MCPFeatureRequestContext.class);
         when(result.getQueryFacade()).thenReturn(queryFacade);
         return result;
     }

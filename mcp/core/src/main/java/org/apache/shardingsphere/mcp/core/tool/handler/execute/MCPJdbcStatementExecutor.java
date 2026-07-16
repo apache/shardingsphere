@@ -22,6 +22,10 @@ import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapa
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.support.database.exception.QueryDidNotReturnResultSetException;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseSQLSyntaxException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionColumnDefinition;
@@ -37,9 +41,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.SQLSyntaxErrorException;
-import java.sql.SQLTimeoutException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,17 +80,25 @@ public final class MCPJdbcStatementExecutor {
                 return executeWithBorrowedConnection(transactionConnection.get(), executionRequest, classificationResult, databaseCapability);
             }
             return executeWithOwnedConnection(openOwnedConnection(executionRequest.getDatabase()), executionRequest, classificationResult, databaseCapability);
-        } catch (final SQLTimeoutException ex) {
-            throw new MCPTimeoutException(ex.getMessage(), ex);
-        } catch (final SQLFeatureNotSupportedException ex) {
-            throw new MCPUnsupportedException(ex.getMessage(), ex);
-        } catch (final SQLSyntaxErrorException ex) {
-            if (classificationResult.isRuleDistSQL()) {
-                throw new RuleDistSQLExecutionException(executionRequest.getDatabase(), classificationResult, ex);
-            }
-            throw new MCPInvalidRequestException(ex.getMessage(), ex);
         } catch (final SQLException ex) {
-            throw new MCPQueryFailedException(ex.getMessage(), ex);
+            throw createExecutionException(executionRequest, classificationResult, databaseCapability, ex);
+        }
+    }
+    
+    private RuntimeException createExecutionException(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult,
+                                                      final MCPDatabaseCapability databaseCapability, final SQLException cause) {
+        MCPJDBCErrorCategory category = MCPJDBCExceptionClassifier.classify(databaseCapability.getDatabaseType(), cause);
+        switch (category) {
+            case TIMEOUT:
+                return new MCPTimeoutException(cause.getMessage(), cause);
+            case FEATURE_NOT_SUPPORTED:
+                return new MCPUnsupportedException(cause.getMessage(), cause);
+            case SYNTAX:
+                return classificationResult.isRuleDistSQL()
+                        ? new RuleDistSQLExecutionException(executionRequest.getDatabase(), classificationResult, cause)
+                        : new MCPDatabaseSQLSyntaxException(cause);
+            default:
+                return new MCPDatabaseQueryFailedException(category, cause);
         }
     }
     

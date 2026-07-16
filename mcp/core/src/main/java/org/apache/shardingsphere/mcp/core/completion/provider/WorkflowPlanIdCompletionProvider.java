@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
@@ -35,14 +35,14 @@ import java.util.Set;
 /**
  * Workflow plan id completion provider.
  */
-public final class WorkflowPlanIdCompletionProvider implements MCPCompletionProvider<MCPWorkflowRequestContext> {
+public final class WorkflowPlanIdCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
     
     private static final Set<String> COMPLETION_ELIGIBLE_WORKFLOW_STATUSES = Set.of(WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION,
             WorkflowLifecycle.STATUS_EXECUTED, WorkflowLifecycle.STATUS_FAILED, WorkflowLifecycle.STATUS_PLANNED, WorkflowLifecycle.STATUS_PREVIEWED, WorkflowLifecycle.STATUS_VALIDATED);
     
     @Override
-    public Class<MCPWorkflowRequestContext> getContextType() {
-        return MCPWorkflowRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -51,11 +51,11 @@ public final class WorkflowPlanIdCompletionProvider implements MCPCompletionProv
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPWorkflowRequestContext handlerContext, final MCPCompletionRequest request) {
+    public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
         return new MCPCompletionProviderResult(completePlanIds(handlerContext, request));
     }
     
-    private List<MCPCompletionCandidate> completePlanIds(final MCPWorkflowRequestContext handlerContext, final MCPCompletionRequest request) {
+    private List<MCPCompletionCandidate> completePlanIds(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
         Collection<String> workflowKinds = MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(request.getDescriptor());
         return handlerContext.getWorkflowSessionContext().list().stream()
                 .filter(this::isCompletionEligiblePlan)

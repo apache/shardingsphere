@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
@@ -50,10 +50,10 @@ class ValidateRuntimeDatabaseToolHandlerTest {
                 MockedConstruction<RuntimeDatabaseValidationService> mocked =
                         mockConstruction(RuntimeDatabaseValidationService.class, (mock, context) -> when(mock.validate(any(), any())).thenReturn(RuntimeDatabaseValidationResult.ready(
                                 "logic_db", List.of(RuntimeDatabaseValidationCheckResult.passed("configuration", "Validated the request.")))))) {
-            MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
+            MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
             RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-            when(databaseContext.findRuntimeDatabaseConfiguration("logic_db")).thenReturn(Optional.of(runtimeDatabaseConfig));
-            MCPSuccessPayload actual = new ValidateRuntimeDatabaseToolHandler().handle(databaseContext, Map.of("database", "logic_db"));
+            when(requestContext.findRuntimeDatabaseConfiguration("logic_db")).thenReturn(Optional.of(runtimeDatabaseConfig));
+            MCPSuccessPayload actual = new ValidateRuntimeDatabaseToolHandler().handle(requestContext, Map.of("database", "logic_db"));
             assertThat(actual.toPayload().get("response_mode"), is("validation"));
             ArgumentCaptor<RuntimeDatabaseValidationRequest> requestCaptor = ArgumentCaptor.forClass(RuntimeDatabaseValidationRequest.class);
             ArgumentCaptor<Function<String, Optional<RuntimeDatabaseConfiguration>>> resolverCaptor = ArgumentCaptor.forClass(Function.class);

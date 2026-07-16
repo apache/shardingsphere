@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.completion;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -150,15 +150,15 @@ public final class MCPCompletionService {
         MCPCompletionRequest request = new MCPCompletionRequest(descriptor, argumentName, contextArguments);
         for (MCPCompletionProvider<?> each : completionProviders) {
             if (each.supports(request)) {
-                return completeCandidates(new MCPRequestScope(runtimeContext, sessionId), each, request);
+                return completeCandidates(new MCPFeatureRuntimeRequestContext(runtimeContext, sessionId), each, request);
             }
         }
         return MCPCompletionProviderResult.empty();
     }
     
-    private <T extends MCPRequestContext> MCPCompletionProviderResult completeCandidates(final MCPRequestScope requestScope, final MCPCompletionProvider<T> provider,
+    private <T extends MCPRequestContext> MCPCompletionProviderResult completeCandidates(final MCPFeatureRuntimeRequestContext requestContext, final MCPCompletionProvider<T> provider,
                                                                                          final MCPCompletionRequest request) {
-        return provider.complete(provider.getContextType().cast(requestScope), request);
+        return provider.complete(provider.getContextType().cast(requestContext), request);
     }
     
     private Map<String, Object> createMeta(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix, final String matchStrategy,

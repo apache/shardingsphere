@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
-import java.sql.SQLSyntaxErrorException;
+import java.sql.SQLException;
 
 /**
  * Exception for rule DistSQL execution failures that need workflow-aware recovery.
@@ -34,7 +34,7 @@ public final class RuleDistSQLExecutionException extends MCPInvalidRequestExcept
     
     private final ClassificationResult classificationResult;
     
-    public RuleDistSQLExecutionException(final String database, final ClassificationResult classificationResult, final SQLSyntaxErrorException cause) {
+    public RuleDistSQLExecutionException(final String database, final ClassificationResult classificationResult, final SQLException cause) {
         super(String.format("Rule DistSQL execution failed for database `%s`; check MCP runtime capability and workflow guidance before asking for corrected SQL.", database), cause);
         this.database = database;
         this.classificationResult = classificationResult;

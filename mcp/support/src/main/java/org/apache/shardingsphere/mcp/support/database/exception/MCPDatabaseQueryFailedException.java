@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.handler.execute;
+package org.apache.shardingsphere.mcp.support.database.exception;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class SQLCommonTableExpression {
+import java.sql.SQLException;
+
+/**
+ * Classified MCP database query failure.
+ */
+@Getter
+public final class MCPDatabaseQueryFailedException extends MCPQueryFailedException {
     
-    private final String aliasName;
+    private static final long serialVersionUID = 6131347880409413845L;
     
-    private final SQLStatementStructure statementStructure;
+    private final MCPJDBCErrorCategory category;
     
-    String aliasName() {
-        return aliasName;
-    }
-    
-    SQLStatementStructure statementStructure() {
-        return statementStructure;
+    public MCPDatabaseQueryFailedException(final MCPJDBCErrorCategory category, final SQLException cause) {
+        super(cause.getMessage(), cause);
+        this.category = category;
     }
 }

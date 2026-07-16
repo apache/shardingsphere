@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmProp
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -35,15 +35,15 @@ import java.util.Map;
 /**
  * Tool handler for mask workflow planning.
  */
-public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflowRequestContext> {
+public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private final MaskWorkflowPlanningService planningService = new MaskWorkflowPlanningService();
     
     private final MaskAlgorithmPropertyTemplateService propertyTemplateService = new MaskAlgorithmPropertyTemplateService();
     
     @Override
-    public Class<MCPWorkflowRequestContext> getContextType() {
-        return MCPWorkflowRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -52,10 +52,10 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflow
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(arguments, this::bindFeatureArguments, this::applyStructuredIntentEvidence);
-        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getMetadataQueryFacade(),
-                workflowContext.getQueryFacade(), request);
+        WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getMetadataQueryFacade(),
+                requestContext.getQueryFacade(), request);
         return new MCPMapPayload(new MaskWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     

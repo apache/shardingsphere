@@ -66,7 +66,7 @@ prompts:
         - "Ask the user to choose an object when search results remain ambiguous after metadata lookup."
   - name: safe_sql_execution
     title: Safe SQL Execution
-    description: "Guide the model to choose database_gateway_execute_query for classifier-approved query SQL and database_gateway_execute_update preview before side effects."
+    description: "Guide the model to choose database_gateway_execute_query for parser-approved query SQL and database_gateway_execute_update preview before side effects."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/safe-sql-execution.md
     arguments:
@@ -93,7 +93,7 @@ prompts:
         - "Stop after database_gateway_execute_update preview unless execution is still intended."
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask before database_gateway_execute_update execution when the previewed side effects are ambiguous."
-        - "Ask when the SQL intent cannot be classified as classifier-approved query SQL or side-effecting SQL."
+        - "Ask when the SQL intent cannot be classified as parser-approved query SQL or side-effecting SQL."
   - name: recover_workflow
     title: Recover Workflow
     description: "Guide the model to recover a failed or stale ShardingSphere workflow by checking the current-session plan_id and re-planning when the plan is unavailable."

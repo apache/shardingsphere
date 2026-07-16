@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -44,12 +44,12 @@ class BroadcastTableRuleHandlerTest {
             BroadcastTableRuleHandler handler = new BroadcastTableRuleHandler();
             BroadcastRuleInspectionService ruleInspectionService = mocked.constructed().getFirst();
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-            MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
-            when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+            MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+            when(requestContext.getQueryFacade()).thenReturn(queryFacade);
             when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
             when(ruleInspectionService.queryBroadcastRules(queryFacade, "logic_db"))
                     .thenReturn(List.of(Map.of("broadcast_table", "t_order"), Map.of("broadcast_table", "t_order_item")));
-            MCPSuccessPayload actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "t_order")));
+            MCPSuccessPayload actual = handler.handle(requestContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "t_order")));
             verify(ruleInspectionService).queryBroadcastRules(queryFacade, "logic_db");
             List<?> items = (List<?>) actual.toPayload().get("items");
             assertThat(items.size(), is(1));

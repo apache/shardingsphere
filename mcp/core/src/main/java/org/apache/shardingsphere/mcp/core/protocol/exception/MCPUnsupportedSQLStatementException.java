@@ -29,4 +29,8 @@ public final class MCPUnsupportedSQLStatementException extends MCPUnsupportedExc
     public MCPUnsupportedSQLStatementException() {
         super("Statement is not supported by the MCP contract.");
     }
+    
+    public MCPUnsupportedSQLStatementException(final RuntimeException cause) {
+        super("Statement is not supported by the MCP contract.", cause);
+    }
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * Generic workflow execution tool handler.
  */
-public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWorkflowRequestContext> {
+public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private final WorkflowExecutionService executionService;
     
@@ -51,8 +51,8 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
     }
     
     @Override
-    public Class<MCPWorkflowRequestContext> getContextType() {
-        return MCPWorkflowRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -61,7 +61,7 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String executionMode = toolArguments.getStringArgument(WorkflowFieldNames.EXECUTION_MODE);
         if (executionMode.isEmpty()) {
@@ -69,11 +69,11 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
                     WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE, WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY),
                     createPreviewSuggestedArguments(arguments));
         }
-        WorkflowSessionContext workflowSessionContext = workflowContext.getWorkflowSessionContext();
+        WorkflowSessionContext workflowSessionContext = requestContext.getWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
         WorkflowRuntimeDefinition workflowRuntimeDefinition = workflowRuntimeDefinitionRegistry.getRequired(snapshot);
-        return new MCPMapPayload(executionService.apply(workflowSessionContext, workflowContext.getMetadataQueryFacade(), workflowContext.getQueryFacade(),
-                workflowContext.getExecutionFacade(), workflowRuntimeDefinition.getApplySynchronizationHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(), workflowContext.getSessionId(),
+        return new MCPMapPayload(executionService.apply(workflowSessionContext, requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade(),
+                requestContext.getExecutionFacade(), workflowRuntimeDefinition.getApplySynchronizationHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(), requestContext.getSessionId(),
                 snapshot, toolArguments.getStringCollectionArgument(WorkflowFieldNames.APPROVED_STEPS), executionMode));
     }
     

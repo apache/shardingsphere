@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.workflow;
+package org.apache.shardingsphere.mcp.feature.readwritesplitting;
 
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPRuleDistSQLStatementClassifier;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Workflow-aware MCP request context.
+ * Rule DistSQL statement classifier for readwrite-splitting.
  */
-public interface MCPWorkflowRequestContext extends MCPDatabaseRequestContext {
+public final class ReadwriteSplittingRuleDistSQLStatementClassifier implements MCPRuleDistSQLStatementClassifier {
     
-    /**
-     * Get workflow session context bound to the current MCP session.
-     *
-     * @return workflow session context
-     */
-    WorkflowSessionContext getWorkflowSessionContext();
+    @Override
+    public boolean isRuleDistSQL(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof AlterReadwriteSplittingStorageUnitStatusStatement;
+    }
 }

@@ -44,6 +44,9 @@ import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecut
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseSQLSyntaxException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -267,7 +270,7 @@ class MCPErrorConverterTest {
     @Test
     void assertConvertUnsupportedMessageWithoutRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPUnsupportedException(
-                "database_gateway_execute_query only supports classifier-approved QUERY statements.")).toPayload();
+                "database_gateway_execute_query only supports parser-approved QUERY statements.")).toPayload();
         assertFalse(actual.containsKey("recovery"));
     }
     
@@ -281,7 +284,7 @@ class MCPErrorConverterTest {
         when(classificationResult.getSavepointName()).thenReturn(Optional.empty());
         Map<String, Object> suggestedArguments = Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID'", "execution_mode", "preview");
         Map<String, Object> actual = MCPErrorConverter.convert(new SQLToolMismatchException(
-                "database_gateway_execute_query only supports classifier-approved QUERY statements. "
+                "database_gateway_execute_query only supports parser-approved QUERY statements. "
                         + "Use database_gateway_execute_explain_query for EXPLAIN diagnostics or database_gateway_execute_update for side-effecting SQL.",
                 "database_gateway_execute_query", "database_gateway_execute_update", classificationResult, suggestedArguments)).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
@@ -522,9 +525,15 @@ class MCPErrorConverterTest {
     static Stream<Arguments> assertConvertQueryFailureWithRecoveryCases() {
         return Stream.of(
                 Arguments.of("sql syntax", new SQLSyntaxErrorException("Bad SQL.", "42601"), "Invalid request.", "sql_syntax_error", "ask_user"),
+                Arguments.of("classified SQL syntax", new MCPDatabaseSQLSyntaxException(new SQLException("Bad SQL.", "42000", 1064)),
+                        "Invalid request.", "sql_syntax_error", "ask_user"),
                 Arguments.of("object not visible", new MCPQueryFailedException("Query failed.", new SQLException("Missing table.", "42P01")), "MCP query failed.", "object_not_visible",
                         "resource_read"),
                 Arguments.of("insufficient privileges", new SQLException("Permission denied.", "42501"), "MCP query failed.", "insufficient_privileges", "ask_user"),
+                Arguments.of("classified insufficient privileges", new MCPDatabaseQueryFailedException(
+                        MCPJDBCErrorCategory.AUTHORIZATION, new SQLSyntaxErrorException("Permission denied.", "42000", 1044)),
+                        "MCP query failed.", "insufficient_privileges", "ask_user"),
+                Arguments.of("ambiguous class 42", new SQLException("Query failed.", "42000"), "MCP query failed.", "query_failed", "resource_read"),
                 Arguments.of("execution timeout", new MCPTimeoutException("Timed out.", new SQLTimeoutException("Timed out.")), "MCP operation timeout.", "execution_timeout",
                         "resource_read"),
                 Arguments.of("connection interrupted", new MCPQueryFailedException("Query failed.", new SQLTransientConnectionException("Connection lost.", "08006")), "MCP query failed.",

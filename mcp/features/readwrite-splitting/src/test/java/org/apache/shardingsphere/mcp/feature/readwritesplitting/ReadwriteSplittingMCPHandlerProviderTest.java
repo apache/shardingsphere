@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingRuleWorkflowValidationService;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingStatusWorkflowValidationService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +48,7 @@ class ReadwriteSplittingMCPHandlerProviderTest {
                 ReadwriteSplittingFeatureDefinition.RULE_STATUS_RESOURCE_URI,
                 ReadwriteSplittingFeatureDefinition.RULE_COUNT_RESOURCE_URI,
                 ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI));
-        assertTrue(actual.stream().allMatch(each -> MCPDatabaseRequestContext.class.equals(each.getContextType())));
+        assertTrue(actual.stream().allMatch(each -> MCPFeatureRequestContext.class.equals(each.getContextType())));
     }
     
     @Test

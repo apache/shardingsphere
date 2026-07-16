@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,14 +54,14 @@ class ResourceDefinitionRegistryTest {
     
     @Test
     void assertDispatch() {
-        Optional<MCPSuccessPayload> actual = ResourceDefinitionRegistry.dispatch(mock(MCPRequestScope.class), "shardingsphere://capabilities");
+        Optional<MCPSuccessPayload> actual = ResourceDefinitionRegistry.dispatch(mock(MCPFeatureRuntimeRequestContext.class), "shardingsphere://capabilities");
         assertTrue(actual.isPresent());
         assertTrue(actual.get().toPayload().containsKey("supportedTools"));
     }
     
     @Test
     void assertDispatchWithoutMatchedHandler() {
-        assertFalse(ResourceDefinitionRegistry.dispatch(mock(MCPRequestScope.class), "unsupported://resource").isPresent());
+        assertFalse(ResourceDefinitionRegistry.dispatch(mock(MCPFeatureRuntimeRequestContext.class), "unsupported://resource").isPresent());
     }
     
     @ParameterizedTest(name = "{0}")

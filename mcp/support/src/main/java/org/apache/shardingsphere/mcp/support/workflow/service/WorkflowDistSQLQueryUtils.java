@@ -20,13 +20,12 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 
-import java.sql.SQLSyntaxErrorException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * DistSQL query utilities for workflow planning.
@@ -41,7 +40,7 @@ public final class WorkflowDistSQLQueryUtils {
      * @return whether the backend does not support DistSQL syntax
      */
     public static boolean isUnsupportedDistSQLQueryFailure(final MCPQueryFailedException ex) {
-        return hasSyntaxErrorCause(ex) || hasUnsupportedDistSQLMessage(ex);
+        return MCPJDBCErrorCategory.SYNTAX == MCPJDBCExceptionClassifier.classify(ex);
     }
     
     /**
@@ -63,19 +62,4 @@ public final class WorkflowDistSQLQueryUtils {
         }
     }
     
-    private static boolean hasSyntaxErrorCause(final Throwable throwable) {
-        Throwable current = throwable;
-        while (null != current) {
-            if (current instanceof SQLSyntaxErrorException) {
-                return true;
-            }
-            current = current.getCause();
-        }
-        return false;
-    }
-    
-    private static boolean hasUnsupportedDistSQLMessage(final MCPQueryFailedException ex) {
-        String message = Objects.toString(ex.getMessage(), "").toLowerCase(Locale.ENGLISH);
-        return message.contains("syntax") && (message.contains("distsql") || message.contains(" rule") || message.contains("algorithm plugins"));
-    }
 }
