@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import com.google.common.collect.LinkedHashMultimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -378,7 +379,8 @@ class ProxySQLExecutorTest {
     void assertCheckExecutePrerequisitesWithMetaDataRefreshInXATransaction() {
         DatabaseType databaseType = mock(DatabaseType.class);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(new DialectTransactionOption(false, false, false, true, true, false, false, Collections.emptyList()));
+        when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(
+                new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, true, false, false, Collections.emptyList()));
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         try (MockedStatic<DatabaseTypedSPILoader> mockedDatabaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
