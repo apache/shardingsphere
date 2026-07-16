@@ -51,7 +51,7 @@ public final class BroadcastDataNodeRuleAttribute implements DataNodeRuleAttribu
     
     @Override
     public Collection<DataNode> getDataNodesByTableName(final String tableName) {
-        return tableDataNodes.getOrDefault(tableName, Collections.emptyList());
+        return tableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
     }
     
     @Override
