@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -30,37 +29,26 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowApplyOutcomeTest {
     
     @Test
-    void assertCreateResponseWithExecutedAndSkippedArtifacts() {
+    void assertCreateResponseWithExecutedArtifact() {
         WorkflowApplyOutcome outcome = new WorkflowApplyOutcome();
-        outcome.addExecutedArtifact(new WorkflowArtifactBundle.ExecutableWorkflowArtifact(
-                WorkflowArtifactPayloadUtils.STEP_DDL, "add-column", "ALTER TABLE orders ADD COLUMN phone VARCHAR(32)", false));
-        outcome.addExecutedArtifact(new WorkflowArtifactBundle.ExecutableWorkflowArtifact(
-                WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL,
-                "CREATE MASK RULE orders", true));
-        outcome.addSkippedArtifact(new WorkflowArtifactBundle.ExecutableWorkflowArtifact(
-                WorkflowArtifactPayloadUtils.STEP_INDEX_DDL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX,
-                "CREATE INDEX idx_orders_phone ON orders(phone)", false));
+        outcome.addExecutedArtifact(new WorkflowArtifactBundle.ExecutableWorkflowArtifact("CREATE MASK RULE orders", "CREATE MASK RULE orders"));
         Map<String, Object> actual = outcome.createResponse(WorkflowLifecycle.STATUS_COMPLETED, createSnapshot(), "review-then-execute", Map.of());
-        assertThat(((List<?>) actual.get("executed_ddl")).size(), is(1));
         assertThat(((List<?>) actual.get("executed_distsql")).size(), is(1));
-        assertThat(((List<?>) actual.get("skipped_artifacts")).size(), is(1));
-        assertTrue(outcome.hasSkippedArtifacts());
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("step_results")).get(2)).get("status"), is(WorkflowLifecycle.STATUS_SKIPPED));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("step_results")).getFirst()).get("status"), is(WorkflowLifecycle.STATUS_PASSED));
     }
     
     @Test
     void assertCreateResponseWithFailedArtifact() {
         WorkflowApplyOutcome outcome = new WorkflowApplyOutcome();
-        outcome.addFailedArtifact(WorkflowIssueCode.DDL_EXECUTION_FAILED, "add-column", "ALTER TABLE orders ADD COLUMN phone VARCHAR(32)", "ddl failed");
+        outcome.addFailedArtifact("CREATE MASK RULE orders", "DistSQL failed");
         Map<String, Object> actual = outcome.createResponse(WorkflowLifecycle.STATUS_FAILED, createSnapshot(), "review-then-execute", Map.of());
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actual.get("issues")).getFirst();
-        assertThat(actualIssue.get("code"), is(WorkflowIssueCode.DDL_EXECUTION_FAILED));
-        assertThat(actualIssue.get("message"), is("ddl failed"));
+        assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_EXECUTION_FAILED));
+        assertThat(actualIssue.get("message"), is("DistSQL failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("step_results")).getFirst()).get("status"), is(WorkflowLifecycle.STATUS_FAILED));
     }
     

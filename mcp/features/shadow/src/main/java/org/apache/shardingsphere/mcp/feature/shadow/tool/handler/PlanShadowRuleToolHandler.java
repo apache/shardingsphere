@@ -55,7 +55,7 @@ public final class PlanShadowRuleToolHandler implements MCPToolHandler<MCPFeatur
         ShadowRuleWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowRuleWorkflowRequest::new, arguments,
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.planRule(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
-        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
+        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final ShadowRuleWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {

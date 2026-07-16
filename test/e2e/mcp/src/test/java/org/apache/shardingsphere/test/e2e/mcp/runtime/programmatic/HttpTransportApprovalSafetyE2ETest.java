@@ -63,25 +63,9 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractSharedHttpProgrammaticR
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         Map<String, Object> executionPayload = callApplyWorkflow(httpClient, sessionId, createMaskRulePlan(httpClient, sessionId),
-                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
+                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("rule_distsql")));
         assertThat(String.valueOf(executionPayload.get("status")), is("failed"));
         assertThat(String.valueOf(executionPayload.get("execution_mode")), is("review-then-execute"));
-        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) executionPayload.get("issues")).getFirst();
-        assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
-        assertModelFacingPayloadContract(executionPayload);
-    }
-    
-    @Test
-    void assertRejectWorkflowReviewThenExecuteWithInvisibleApprovedStep() throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        String planId = createMaskRulePlan(httpClient, sessionId);
-        Map<String, Object> previewPayload = callApplyWorkflow(httpClient, sessionId, planId, Map.of("execution_mode", "preview"));
-        assertThat(String.valueOf(previewPayload.get("status")), is("preview"));
-        Map<String, Object> executionPayload = callApplyWorkflow(httpClient, sessionId, planId,
-                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
-        assertThat(String.valueOf(executionPayload.get("status")), is("failed"));
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) executionPayload.get("issues")).getFirst();
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         assertModelFacingPayloadContract(executionPayload);
@@ -95,7 +79,7 @@ class HttpTransportApprovalSafetyE2ETest extends AbstractSharedHttpProgrammaticR
         String otherSessionId = initializeSession(httpClient);
         String planId = createMaskRulePlan(httpClient, ownerSessionId);
         Map<String, Object> actual = callApplyWorkflow(httpClient, otherSessionId, planId,
-                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("ddl")));
+                Map.of("execution_mode", "review-then-execute", "approved_steps", List.of("rule_distsql")));
         getRecoveryPayload(actual, "stale_workflow");
         assertModelFacingPayloadContract(actual);
     }

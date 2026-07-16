@@ -44,7 +44,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -65,7 +64,6 @@ class ShadowWorkflowToolHandlersTest {
                     "algorithm_type", "SQL_HINT",
                     "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order")));
             Map<String, Object> actualPayload = actual.toPayload();
-            assertFalse(actualPayload.containsKey("ddl_artifacts"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
             assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/algorithm-plugins"), is("algorithm"));
             assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/rules"), is("rule"));

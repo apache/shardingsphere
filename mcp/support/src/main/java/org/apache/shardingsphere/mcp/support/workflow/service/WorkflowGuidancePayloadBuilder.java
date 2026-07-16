@@ -65,15 +65,10 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static Map<String, Object> createProxyTopologyHint(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        boolean ruleDistSQLOnlyWorkflow = WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot);
-        result.put("expected_runtime_view", ruleDistSQLOnlyWorkflow ? "proxy_rule_distsql" : "proxy_logical_database");
+        result.put("expected_runtime_view", "proxy_rule_distsql");
         result.put("workflow_kind", resolveWorkflowKind(snapshot));
-        result.put(MCPPayloadFieldNames.REASON, ruleDistSQLOnlyWorkflow
-                ? "Rule DistSQL workflow planning must use Proxy DistSQL-visible rule state."
-                : "Workflow planning must use Proxy logical metadata; physical-database metadata can hide or misrepresent rule-visible objects.");
-        result.put("safe_recovery", ruleDistSQLOnlyWorkflow
-                ? "Read the feature algorithm and rule resources from ShardingSphere Proxy before retrying."
-                : "Reconnect the MCP runtime to ShardingSphere Proxy for this logical database if metadata appears to be physical-table-first.");
+        result.put(MCPPayloadFieldNames.REASON, "Rule DistSQL workflow planning must use Proxy DistSQL-visible rule state.");
+        result.put("safe_recovery", "Read the feature algorithm and rule resources from ShardingSphere Proxy before retrying.");
         return result;
     }
     

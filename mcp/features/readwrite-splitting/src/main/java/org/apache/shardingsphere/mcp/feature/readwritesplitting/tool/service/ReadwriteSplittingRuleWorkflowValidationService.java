@@ -74,9 +74,7 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
     public List<Map<String, Object>> validate(final WorkflowContextSnapshot snapshot, final Collection<ExecutableWorkflowArtifact> artifacts) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (ExecutableWorkflowArtifact each : artifacts) {
-            if (each.ruleDistSql()) {
-                addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
-            }
+            addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
         }
         return result;
     }
@@ -165,18 +163,25 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
     }
     
     private boolean matchesRuleShape(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final ReadwriteSplittingRuleWorkflowRequest request) {
-        return rules.stream().filter(each -> queryFacade.isSameIdentifier(
+        List<Map<String, Object>> targetRules = rules.stream().filter(each -> queryFacade.isSameIdentifier(
                 request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "name")))
-                .anyMatch(each -> queryFacade.isSameIdentifier(
-                        request.getDatabase(), IdentifierScope.TABLE, request.getWriteStorageUnit(), WorkflowRuleValueUtils.getRuleValue(each, "write_storage_unit_name"))
-                        && containsAllReadStorageUnits(each, queryFacade, request)
-                        && WorkflowRuleValueUtils.getRuleValue(each, "transactional_read_query_strategy").equalsIgnoreCase(request.getTransactionalReadQueryStrategy()));
+                .toList();
+        return 1 == targetRules.size() && matchesRuleShape(targetRules.getFirst(), queryFacade, request);
     }
     
-    private boolean containsAllReadStorageUnits(final Map<String, Object> rule, final MCPFeatureQueryFacade queryFacade, final ReadwriteSplittingRuleWorkflowRequest request) {
+    private boolean matchesRuleShape(final Map<String, Object> rule, final MCPFeatureQueryFacade queryFacade, final ReadwriteSplittingRuleWorkflowRequest request) {
+        return queryFacade.isSameIdentifier(
+                request.getDatabase(), IdentifierScope.TABLE, request.getWriteStorageUnit(), WorkflowRuleValueUtils.getRuleValue(rule, "write_storage_unit_name"))
+                && matchesReadStorageUnits(rule, queryFacade, request)
+                && WorkflowRuleValueUtils.getRuleValue(rule, "transactional_read_query_strategy").equalsIgnoreCase(request.getTransactionalReadQueryStrategy())
+                && WorkflowRuleValueUtils.getRuleValue(rule, "load_balancer_type").equalsIgnoreCase(request.getLoadBalancerType())
+                && WorkflowAlgorithmUtils.createPropertyMap(rule.get("load_balancer_props")).equals(request.getLoadBalancerProperties());
+    }
+    
+    private boolean matchesReadStorageUnits(final Map<String, Object> rule, final MCPFeatureQueryFacade queryFacade, final ReadwriteSplittingRuleWorkflowRequest request) {
         String readStorageUnits = WorkflowRuleValueUtils.getRuleValue(rule, "read_storage_unit_names");
         List<String> actualReadStorageUnits = Arrays.stream(readStorageUnits.split(",")).map(String::trim).filter(each -> !each.isEmpty()).toList();
-        return request.getReadStorageUnits().stream().allMatch(each -> actualReadStorageUnits.stream()
+        return actualReadStorageUnits.size() == request.getReadStorageUnits().size() && request.getReadStorageUnits().stream().allMatch(each -> actualReadStorageUnits.stream()
                 .anyMatch(actual -> queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, each, actual)));
     }
     
@@ -189,7 +194,7 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
     
     private void addRuleShapeMismatch(final ValidationReport validationReport, final String ruleName) {
         validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "matching fields", ruleName,
-                "Readwrite-splitting rule exists but its write/read storage units or transactional strategy differ from the planned artifact.",
+                "Readwrite-splitting rule exists but its storage units, transactional strategy or load balancer differ from the planned artifact.",
                 "Review the current rule state and re-apply or re-plan the readwrite-splitting rule DistSQL."));
     }
 }

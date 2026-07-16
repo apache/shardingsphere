@@ -38,7 +38,7 @@ abstract class AbstractShardingPlanningToolHandler implements MCPToolHandler<MCP
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         ShardingWorkflowRequest request = bindRequest(arguments);
         WorkflowContextSnapshot snapshot = plan(requestContext, request);
-        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
+        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
     
     protected abstract ShardingWorkflowRequest bindRequest(Map<String, Object> arguments);

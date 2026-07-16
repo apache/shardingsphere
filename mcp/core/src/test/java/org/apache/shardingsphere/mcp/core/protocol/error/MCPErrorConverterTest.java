@@ -164,12 +164,12 @@ class MCPErrorConverterTest {
     
     @Test
     void assertConvertInvalidApprovedStepsWithRecovery() {
-        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidApprovedStepsException(List.of("ddl", "index_ddl", "rule_distsql"), Map.of())).toPayload();
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidApprovedStepsException(List.of("rule_distsql"), Map.of())).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
         assertThat(actualRecovery.get("recovery_category"), is("invalid_enum"));
         assertThat(actualRecovery.get("field"), is("approved_steps"));
-        assertThat(actualRecovery.get("allowed_values"), is(List.of("ddl", "index_ddl", "rule_distsql")));
+        assertThat(actualRecovery.get("allowed_values"), is(List.of("rule_distsql")));
         assertThat(actualRecovery.get("model_action"),
                 is("Retry database_gateway_apply_workflow with execution_mode=preview, review the returned preview_artifacts, "
                         + "then pass explicit approved_steps copied from visible preview_artifacts.approval_step values."));

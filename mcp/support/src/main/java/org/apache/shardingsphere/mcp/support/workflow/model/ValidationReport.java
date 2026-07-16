@@ -32,8 +32,6 @@ import java.util.Map;
 @Setter
 public final class ValidationReport {
     
-    private ValidationSection ddlValidation;
-    
     private ValidationSection ruleValidation;
     
     private ValidationSection logicalMetadataValidation;
@@ -51,7 +49,6 @@ public final class ValidationReport {
      */
     public Map<String, Object> toMap() {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        putValidationSection(result, "ddl_validation", ddlValidation);
         putValidationSection(result, "rule_validation", ruleValidation);
         putValidationSection(result, "logical_metadata_validation", logicalMetadataValidation);
         putValidationSection(result, "sql_executability_validation", sqlExecutabilityValidation);

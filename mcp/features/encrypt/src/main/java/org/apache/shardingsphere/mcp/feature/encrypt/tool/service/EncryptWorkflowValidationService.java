@@ -80,9 +80,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     public List<Map<String, Object>> validate(final WorkflowContextSnapshot snapshot, final Collection<ExecutableWorkflowArtifact> artifacts) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (ExecutableWorkflowArtifact each : artifacts) {
-            if (each.ruleDistSql()) {
-                addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
-            }
+            addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
         }
         return result;
     }

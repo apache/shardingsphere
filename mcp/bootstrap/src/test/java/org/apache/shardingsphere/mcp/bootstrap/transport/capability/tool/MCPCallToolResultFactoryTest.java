@@ -263,7 +263,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
     
     private MCPSuccessPayload createMaskPlanResponse() {
         WorkflowContextSnapshot snapshot = createMaskSnapshot();
-        Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         payload.put("masked_property_preview", Map.of("primary",
                 new MaskAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
         return new MCPMapPayload(payload);
@@ -282,7 +282,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
     
     private MCPSuccessPayload createEncryptPlanResponse() {
         WorkflowContextSnapshot snapshot = createEncryptSnapshot();
-        Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         payload.put("masked_property_preview", Map.of("primary",
                 new EncryptAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
         return new MCPMapPayload(payload);

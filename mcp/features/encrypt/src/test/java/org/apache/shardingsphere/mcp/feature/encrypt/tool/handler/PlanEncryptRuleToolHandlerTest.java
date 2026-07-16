@@ -88,9 +88,6 @@ class PlanEncryptRuleToolHandlerTest {
                     "column", "phone"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("aes-key-value"), is("******"));
-            assertFalse(actualPayload.containsKey("derived_column_plan"));
-            assertFalse(actualPayload.containsKey("ddl_artifacts"));
-            assertFalse(actualPayload.containsKey("index_plan"));
             assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("******"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
             List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);

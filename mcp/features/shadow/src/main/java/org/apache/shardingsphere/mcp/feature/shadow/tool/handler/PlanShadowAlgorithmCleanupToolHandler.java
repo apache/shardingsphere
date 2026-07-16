@@ -53,7 +53,7 @@ public final class PlanShadowAlgorithmCleanupToolHandler implements MCPToolHandl
         ShadowAlgorithmCleanupWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowAlgorithmCleanupWorkflowRequest::new, arguments,
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.planAlgorithmCleanup(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
-        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
+        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final ShadowAlgorithmCleanupWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {

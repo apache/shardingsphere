@@ -95,8 +95,6 @@ class ReadwriteSplittingWorkflowToolHandlersTest {
             MCPSuccessPayload actual = new PlanReadwriteSplittingRuleToolHandler().handle(
                     createWorkflowContextFixture().requestContext, Map.of("database", "logic_db", "rule", "readwrite_ds"));
             Map<String, Object> actualPayload = actual.toPayload();
-            assertFalse(actualPayload.containsKey("ddl_artifacts"));
-            assertFalse(actualPayload.containsKey("index_plan"));
             assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("CREATE READWRITE_SPLITTING RULE"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
             assertTrue(extractResourceUris(actualResourcesToRead).contains("shardingsphere://features/readwrite-splitting/databases/logic_db/rules"));
