@@ -158,6 +158,12 @@ rules:
           cipher:
             name: remark_cipher
             encryptorName: rewrite_normal_fixture
+    Department:
+      columns:
+        GroupName:
+          cipher:
+            name: group_name_cipher
+            encryptorName: rewrite_normal_fixture
     StateRegion:
       columns:
         CountryRegionName:

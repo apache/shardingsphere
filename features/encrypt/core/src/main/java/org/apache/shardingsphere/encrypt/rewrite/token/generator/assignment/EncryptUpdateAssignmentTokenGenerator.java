@@ -44,7 +44,8 @@ public final class EncryptUpdateAssignmentTokenGenerator implements CollectionSQ
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof UpdateStatementContext && containsEncryptTable(sqlStatementContext.getTablesContext().getSimpleTables());
+        return sqlStatementContext instanceof UpdateStatementContext && (containsEncryptTable(sqlStatementContext.getTablesContext().getSimpleTables())
+                || EncryptOpenQueryUtils.isOpenQueryFunctionTable(((UpdateStatementContext) sqlStatementContext).getSqlStatement().getTable()));
     }
     
     private boolean containsEncryptTable(final Collection<SimpleTableSegment> simpleTableSegments) {
@@ -59,6 +60,6 @@ public final class EncryptUpdateAssignmentTokenGenerator implements CollectionSQ
     @Override
     public Collection<SQLToken> generateSQLTokens(final UpdateStatementContext sqlStatementContext) {
         return new EncryptAssignmentTokenGenerator(rule, database, sqlStatementContext.getSqlStatement().getDatabaseType())
-                .generateSQLTokens(sqlStatementContext.getTablesContext(), sqlStatementContext.getSqlStatement().getSetAssignment());
+                .generateSQLTokens(sqlStatementContext.getTablesContext(), sqlStatementContext.getSqlStatement().getSetAssignment(), sqlStatementContext.getSqlStatement().getTable());
     }
 }

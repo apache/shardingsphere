@@ -115,6 +115,11 @@
         <output sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + SubTotal, [bonus_cipher] = 'encrypt_3000.00' FROM dbo.SalesPerson AS sp JOIN dbo.SalesOrderHeader AS so ON sp.BusinessEntityID = so.SalesPersonID AND so.OrderDate = (SELECT MAX(OrderDate) FROM dbo.SalesOrderHeader WHERE SalesPersonID = sp.BusinessEntityID)" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="update_department_with_open_query_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="update_sales_person_with_linked_server_for_literals" db-types="SQLServer">
         <input sql="UPDATE MyLinkedServer.encrypt.dbo.SalesPerson SET Bonus = 3000.00 WHERE BusinessEntityID = 1" />
         <output sql="UPDATE MyLinkedServer.encrypt.dbo.SalesPerson SET [bonus_cipher] = 'encrypt_3000.00' WHERE BusinessEntityID = 1" />
