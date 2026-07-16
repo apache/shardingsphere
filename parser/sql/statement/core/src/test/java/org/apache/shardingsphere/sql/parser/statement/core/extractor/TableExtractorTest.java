@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -154,12 +155,11 @@ class TableExtractorTest {
     @Test
     void assertExtractTablesFromUpdateWithTableVariableTargetExcludesVariableTable() {
         DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
-        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
         SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
         fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
-                .table(targetTable)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
                 .from(fromTable)
                 .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
                 .build();
@@ -168,6 +168,24 @@ class TableExtractorTest {
         assertThat(actual.size(), is(1));
         assertTableSegment(actual.iterator().next(), 0, 0, "Employee");
         assertFalse(actual.stream().anyMatch(each -> "@MyTableVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithBracketDelimitedAtSignTargetIncludesPhysicalTable() {
+        DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
+                && QuoteCharacter.BRACKETS == each.getTableName().getIdentifier().getQuoteCharacter()));
+        assertTrue(actual.stream().anyMatch(each -> "Employee".equals(each.getTableName().getIdentifier().getValue())));
     }
     
     private void assertTableSegment(final SimpleTableSegment actual, final int expectedStartIndex, final int expectedStopIndex, final String expectedTableName) {
