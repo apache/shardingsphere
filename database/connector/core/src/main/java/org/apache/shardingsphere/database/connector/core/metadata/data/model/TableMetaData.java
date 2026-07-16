@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.connector.core.metadata.data.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 
@@ -41,6 +42,9 @@ public final class TableMetaData {
     private final Collection<ConstraintMetaData> constraints;
     
     private final TableType type;
+    
+    @Setter
+    private String storageUnitName;
     
     public TableMetaData(final String name, final Collection<ColumnMetaData> columns, final Collection<IndexMetaData> indexes, final Collection<ConstraintMetaData> constraints) {
         this.name = name;

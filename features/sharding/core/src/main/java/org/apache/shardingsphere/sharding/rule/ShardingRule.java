@@ -322,6 +322,22 @@ public final class ShardingRule implements DatabaseRule {
     }
     
     /**
+     * Find sharding table via data source name and actual table name.
+     *
+     * @param dataSourceName data source name
+     * @param actualTableName actual table name
+     * @return sharding table
+     */
+    public Optional<ShardingTable> findShardingTableByActualTable(final String dataSourceName, final String actualTableName) {
+        for (ShardingTable each : shardingTables.values()) {
+            if (each.isExisted(dataSourceName, actualTableName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    /**
      * Get sharding table.
      *
      * @param logicTableName logic table name

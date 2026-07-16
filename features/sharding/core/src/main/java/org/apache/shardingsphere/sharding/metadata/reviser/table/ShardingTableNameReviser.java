@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.reviser.table.Ta
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
+import java.util.Optional;
+
 /**
  * Sharding table name reviser.
  */
@@ -29,5 +31,16 @@ public final class ShardingTableNameReviser implements TableNameReviser<Sharding
     @Override
     public String revise(final String originalName, final ShardingRule rule) {
         return rule.findShardingTableByActualTable(originalName).map(ShardingTable::getLogicTable).orElse(originalName);
+    }
+    
+    @Override
+    public String revise(final String originalName, final ShardingRule rule, final String storageUnitName) {
+        if (null != storageUnitName) {
+            Optional<ShardingTable> shardingTable = rule.findShardingTableByActualTable(storageUnitName, originalName);
+            if (shardingTable.isPresent()) {
+                return shardingTable.get().getLogicTable();
+            }
+        }
+        return revise(originalName, rule);
     }
 }

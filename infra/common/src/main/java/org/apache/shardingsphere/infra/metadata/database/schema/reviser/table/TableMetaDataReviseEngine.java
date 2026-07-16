@@ -73,10 +73,13 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
     public TableMetaData revise(final TableMetaData originalMetaData, final Collection<TableMetaData> originalMetaDataList,
                                 final Collection<TableMetaData> indexNameRecoveryCandidateTables) {
         Optional<? extends TableNameReviser<T>> tableNameReviser = reviseEntry.getTableNameReviser();
-        String revisedTableName = tableNameReviser.map(optional -> optional.revise(originalMetaData.getName(), rule)).orElse(originalMetaData.getName());
-        return new TableMetaData(revisedTableName, new ColumnReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getColumns()),
+        String revisedTableName = tableNameReviser.map(optional -> optional.revise(originalMetaData.getName(), rule, originalMetaData.getStorageUnitName()))
+                .orElse(originalMetaData.getName());
+        TableMetaData result = new TableMetaData(revisedTableName, new ColumnReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getColumns()),
                 new IndexReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getIndexes(), originalMetaDataList,
                         indexNameRecoveryCandidateTables),
                 new ConstraintReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getConstraints()), originalMetaData.getType());
+        result.setStorageUnitName(originalMetaData.getStorageUnitName());
+        return result;
     }
 }

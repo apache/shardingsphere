@@ -34,4 +34,16 @@ public interface TableNameReviser<T extends ShardingSphereRule> {
      * @return revised table name
      */
     String revise(String originalName, T rule);
+    
+    /**
+     * Revise table meta data with storage unit context.
+     *
+     * @param originalName original table name
+     * @param rule rule
+     * @param storageUnitName storage unit name
+     * @return revised table name
+     */
+    default String revise(final String originalName, final T rule, final String storageUnitName) {
+        return revise(originalName, rule);
+    }
 }
