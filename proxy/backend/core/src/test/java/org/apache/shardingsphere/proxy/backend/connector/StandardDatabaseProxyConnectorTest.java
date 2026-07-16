@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -586,7 +587,7 @@ class StandardDatabaseProxyConnectorTest {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         DialectTransactionOption dialectTransactionOption = mock(DialectTransactionOption.class);
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(dialectTransactionOption);
-        when(dialectTransactionOption.isDDLNeedImplicitCommit()).thenReturn(true);
+        when(dialectTransactionOption.getDDLCommitPolicy()).thenReturn(DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION);
         try (
                 MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
                         (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));

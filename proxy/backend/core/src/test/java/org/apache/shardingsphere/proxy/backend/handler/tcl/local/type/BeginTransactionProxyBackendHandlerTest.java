@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl.local.type;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -125,7 +126,8 @@ class BeginTransactionProxyBackendHandlerTest {
     
     private DialectDatabaseMetaData mockDialectDatabaseMetaData(final boolean supportAutoCommitInNestedTransaction, final String defaultSchema) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
-        DialectTransactionOption transactionOption = new DialectTransactionOption(false, false, supportAutoCommitInNestedTransaction, false, true, false, false, Collections.emptyList());
+        DialectTransactionOption transactionOption = new DialectTransactionOption(
+                false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, supportAutoCommitInNestedTransaction, false, true, false, false, Collections.emptyList());
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
         when(schemaOption.getDefaultSchema()).thenReturn(Optional.ofNullable(defaultSchema));
         when(result.getTransactionOption()).thenReturn(transactionOption);
