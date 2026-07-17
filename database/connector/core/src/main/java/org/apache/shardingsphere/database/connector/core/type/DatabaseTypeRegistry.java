@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.connector.core.type;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
@@ -65,7 +66,9 @@ public final class DatabaseTypeRegistry {
      *
      * @param identifierPattern identifier pattern
      * @return formatted identifier pattern
+     * @deprecated use {@link org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine#normalize(IdentifierCasePolicy, String)} instead
      */
+    @Deprecated
     public String formatIdentifierPattern(final String identifierPattern) {
         switch (dialectDatabaseMetaData.getIdentifierPatternType()) {
             case UPPER_CASE:
