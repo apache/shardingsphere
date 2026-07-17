@@ -50,7 +50,7 @@ class HiveMCPDialectSQLExceptionClassifierTest {
                 Arguments.of("invalid table", 10001, MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
                 Arguments.of("invalid column", 10002, MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
                 Arguments.of("invalid table or column", 10004, MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
-                Arguments.of("ambiguous column", 10007, MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
+                Arguments.of("ambiguous column", 10007, MCPJDBCErrorCategory.QUERY_FAILED),
                 Arguments.of("invalid function", 10011, MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
                 Arguments.of("database does not exist", 10072, MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
                 Arguments.of("access denied", 20009, MCPJDBCErrorCategory.AUTHORIZATION));

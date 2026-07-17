@@ -45,7 +45,8 @@ public final class HiveMCPDialectSQLExceptionClassifier implements MCPDialectSQL
     @Override
     public Optional<MCPJDBCErrorCategory> classify(final SQLException cause) {
         return switch (cause.getErrorCode()) {
-            case INVALID_TABLE, INVALID_COLUMN, INVALID_TABLE_OR_COLUMN, AMBIGUOUS_COLUMN, INVALID_FUNCTION, DATABASE_NOT_EXISTS -> Optional.of(MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE);
+            case INVALID_TABLE, INVALID_COLUMN, INVALID_TABLE_OR_COLUMN, INVALID_FUNCTION, DATABASE_NOT_EXISTS -> Optional.of(MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE);
+            case AMBIGUOUS_COLUMN -> Optional.of(MCPJDBCErrorCategory.QUERY_FAILED);
             case ACCESS_DENIED -> Optional.of(MCPJDBCErrorCategory.AUTHORIZATION);
             default -> Optional.empty();
         };

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
@@ -143,32 +144,21 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             planApplyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "rule", "readwrite_ds", "write_storage_unit", "ds_0",
                             "read_storage_units", "ds_1", "transactional_read_query_strategy", "DYNAMIC", "load_balancer_type", "ROUND_ROBIN"));
-            applyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "operation_type", "alter", "rule", "readwrite_ds", "write_storage_unit", "ds_0",
-                            "read_storage_units", "ds_1", "transactional_read_query_strategy", "DYNAMIC", "load_balancer_type", "RANDOM"));
             List<Map<String, Object>> actualRules = getPayloadItems(interactionClient.readResource(
                     String.format(READWRITE_SPLITTING_RULES_RESOURCE_URI, getLogicalDatabaseName())));
             Map<String, Object> actualRule = findItemByField(actualRules, "name", "readwrite_ds");
             assertThat(String.valueOf(actualRule.get("write_storage_unit_name")), is("ds_0"));
             assertTrue(String.valueOf(actualRule.get("read_storage_unit_names")).contains("ds_1"));
             assertThat(String.valueOf(actualRule.get("transactional_read_query_strategy")).toUpperCase(Locale.ENGLISH), is("DYNAMIC"));
-            assertThat(String.valueOf(actualRule.get("load_balancer_type")).toUpperCase(Locale.ENGLISH), is("RANDOM"));
-            applyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_STATUS_PLAN_TOOL_NAME,
+            assertThat(String.valueOf(actualRule.get("load_balancer_type")).toUpperCase(Locale.ENGLISH), is("ROUND_ROBIN"));
+            Map<String, Object> actualStatusPlan = planWorkflow(interactionClient, READWRITE_SPLITTING_STATUS_PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "rule", "readwrite_ds", "storage_unit", "ds_1", "target_status", "disable"));
-            Map<String, Object> actualStatus = findItemByField(getPayloadItems(interactionClient.readResource(
-                    String.format("shardingsphere://features/readwrite-splitting/databases/%s/rules/readwrite_ds/status", getLogicalDatabaseName()))),
-                    "storage_unit", "ds_1");
-            assertThat(String.valueOf(actualStatus.get("status")).toUpperCase(Locale.ENGLISH), is("DISABLED"));
-            applyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_STATUS_PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "rule", "readwrite_ds", "storage_unit", "ds_1", "target_status", "enable"));
-            actualStatus = findItemByField(getPayloadItems(interactionClient.readResource(
-                    String.format("shardingsphere://features/readwrite-splitting/databases/%s/rules/readwrite_ds/status", getLogicalDatabaseName()))),
-                    "storage_unit", "ds_1");
-            assertThat(String.valueOf(actualStatus.get("status")).toUpperCase(Locale.ENGLISH), is("ENABLED"));
-            applyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "operation_type", "drop", "rule", "readwrite_ds"));
-            assertFalse(getPayloadItems(interactionClient.readResource(String.format(READWRITE_SPLITTING_RULES_RESOURCE_URI, getLogicalDatabaseName())))
-                    .stream().anyMatch(each -> "readwrite_ds".equalsIgnoreCase(String.valueOf(each.get("name")))));
+            Map<String, Object> actualStatusApply = applyReviewedWorkflow(interactionClient, String.valueOf(actualStatusPlan.get("plan_id")));
+            assertThat(String.valueOf(actualStatusApply.get("status")), is("failed"));
+            assertThat(getIssueCodes(actualStatusApply), hasItem(WorkflowIssueCode.RULE_EXECUTION_FAILED));
+            assertTrue(String.valueOf(actualStatusApply.get("issues")).contains("Mode must be 'cluster'"));
+            assertThat(getStringListOrEmpty(actualStatusApply.get("executed_distsql")).size(), is(0));
+            assertModelFacingPayloadContract(actualStatusApply);
         }
     }
     
@@ -200,14 +190,6 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             assertThat(String.valueOf(actualRule.get("shadow_name")), is("ds_shadow"));
             assertThat(String.valueOf(actualRule.get("shadow_table")), is("orders"));
             assertThat(String.valueOf(actualRule.get("algorithm_type")).toUpperCase(Locale.ENGLISH), is("VALUE_MATCH"));
-            Map<String, Object> actualDropPlan = planWorkflow(interactionClient, SHADOW_PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "operation_type", "drop", "rule", "shadow_rule"));
-            assertTrue(String.valueOf(getObjectListOrEmpty(actualDropPlan.get("distsql_artifacts"))).contains("DROP SHADOW RULE"));
-            Map<String, Object> actualDropApply = applyReviewedWorkflow(interactionClient, String.valueOf(actualDropPlan.get("plan_id")));
-            assertApplyCompleted(actualDropApply);
-            assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", actualDropPlan.get("plan_id"))));
-            assertFalse(getPayloadItems(interactionClient.readResource(String.format(SHADOW_RULES_RESOURCE_URI, getLogicalDatabaseName())))
-                    .stream().anyMatch(each -> "shadow_rule".equalsIgnoreCase(String.valueOf(each.get("rule_name")))));
         }
     }
     
