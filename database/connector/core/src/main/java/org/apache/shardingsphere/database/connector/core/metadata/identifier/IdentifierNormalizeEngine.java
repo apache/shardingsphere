@@ -24,6 +24,8 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Identifier normalize engine.
@@ -54,14 +56,25 @@ public final class IdentifierNormalizeEngine {
      * @return normalized identifier
      */
     public static String normalize(final IdentifierCasePolicy policy, final String identifier) {
-        if (null == identifier) {
-            return null;
-        }
         QuoteCharacter quoteCharacter = QuoteCharacter.getQuoteCharacter(identifier);
         String unwrappedIdentifier = quoteCharacter.unwrap(identifier);
         if (QuoteCharacter.NONE != quoteCharacter) {
             return unwrappedIdentifier;
         }
         return LookupMode.NORMALIZED == policy.getLookupMode(QuoteCharacter.NONE) ? policy.normalize(unwrappedIdentifier) : unwrappedIdentifier;
+    }
+    
+    /**
+     * Find matched stored identifier.
+     *
+     * @param storedNames stored identifier names
+     * @param policy identifier case policy
+     * @param identifier identifier
+     * @return matched stored identifier
+     */
+    public static Optional<String> findMatchedIdentifier(final Collection<String> storedNames, final IdentifierCasePolicy policy, final String identifier) {
+        QuoteCharacter quoteCharacter = QuoteCharacter.getQuoteCharacter(identifier);
+        String unwrappedIdentifier = quoteCharacter.unwrap(identifier);
+        return storedNames.stream().filter(each -> policy.matches(each, unwrappedIdentifier, quoteCharacter)).findFirst();
     }
 }

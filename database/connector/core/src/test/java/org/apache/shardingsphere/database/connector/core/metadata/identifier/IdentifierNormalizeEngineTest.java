@@ -21,9 +21,11 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+import java.util.Optional;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class IdentifierNormalizeEngineTest {
     
@@ -48,8 +50,20 @@ class IdentifierNormalizeEngineTest {
     }
     
     @Test
-    void assertNormalizeNullIdentifier() {
-        IdentifierCasePolicy policy = IdentifierNormalizeEngine.resolvePolicy(databaseType, null, IdentifierScope.TABLE);
-        assertNull(IdentifierNormalizeEngine.normalize(policy, null));
+    void assertFindMatchedIdentifierWithUnquotedIdentifier() {
+        IdentifierCasePolicy policy = IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
+        assertThat(IdentifierNormalizeEngine.findMatchedIdentifier(Collections.singletonList("Foo_Tbl"), policy, "foo_tbl"), is(Optional.of("Foo_Tbl")));
+    }
+    
+    @Test
+    void assertFindMatchedIdentifierWithQuotedIdentifier() {
+        IdentifierCasePolicy policy = IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
+        assertThat(IdentifierNormalizeEngine.findMatchedIdentifier(Collections.singletonList("Foo_Tbl"), policy, "\"Foo_Tbl\""), is(Optional.of("Foo_Tbl")));
+    }
+    
+    @Test
+    void assertFindMatchedIdentifierWhenNotMatched() {
+        IdentifierCasePolicy policy = IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE);
+        assertThat(IdentifierNormalizeEngine.findMatchedIdentifier(Collections.singletonList("Foo_Tbl"), policy, "foo_tbl"), is(Optional.empty()));
     }
 }
