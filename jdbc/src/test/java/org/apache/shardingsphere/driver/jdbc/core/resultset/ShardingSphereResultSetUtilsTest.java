@@ -65,4 +65,21 @@ class ShardingSphereResultSetUtilsTest {
         Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, null);
         assertThat(actual, is(expected));
     }
+    
+    @Test
+    void assertCreateColumnLabelAndIndexMapWhenExpandMapSizeMismatchMetaData() throws SQLException {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
+        List<Projection> projections = new ArrayList<>(1);
+        projections.add(new ColumnProjection(null, "status_new", null, mock(DatabaseType.class)));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
+        when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(2);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
+        when(resultSetMetaData.getColumnLabel(2)).thenReturn("status_new");
+        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, resultSetMetaData);
+        assertThat(actual.get("order_id"), is(1));
+        assertThat(actual.get("status_new"), is(2));
+    }
 }
