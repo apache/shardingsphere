@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;

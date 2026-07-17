@@ -25,7 +25,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;

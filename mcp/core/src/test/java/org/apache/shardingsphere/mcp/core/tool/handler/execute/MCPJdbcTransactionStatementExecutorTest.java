@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPTransactionStateException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;

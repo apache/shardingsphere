@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.core.protocol.error;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPTimeoutException;
+import org.apache.shardingsphere.mcp.api.exception.MCPTransactionStateException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnavailableException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;

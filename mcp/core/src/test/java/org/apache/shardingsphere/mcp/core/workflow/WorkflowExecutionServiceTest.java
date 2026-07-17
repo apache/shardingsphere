@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;

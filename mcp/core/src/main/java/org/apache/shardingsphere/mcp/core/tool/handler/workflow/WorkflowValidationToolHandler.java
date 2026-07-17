@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;

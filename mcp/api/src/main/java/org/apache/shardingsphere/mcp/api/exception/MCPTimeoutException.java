@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.exception;
+package org.apache.shardingsphere.mcp.api.exception;
 
 /**
- * Exception for failed MCP queries.
+ * Exception for MCP timeouts.
  */
-public class MCPQueryFailedException extends ShardingSphereMCPException {
+public class MCPTimeoutException extends ShardingSphereMCPException {
     
-    private static final long serialVersionUID = -3225015901985083126L;
+    private static final long serialVersionUID = -2906226731211074383L;
     
-    public MCPQueryFailedException(final String message) {
-        super(message);
-    }
-    
-    public MCPQueryFailedException(final String message, final Exception cause) {
+    public MCPTimeoutException(final String message, final Exception cause) {
         super(message, cause);
     }
 }

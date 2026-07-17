@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;

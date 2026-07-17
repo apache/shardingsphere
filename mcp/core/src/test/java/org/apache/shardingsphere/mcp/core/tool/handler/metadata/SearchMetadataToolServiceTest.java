@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.DatabaseMetadataFixture;

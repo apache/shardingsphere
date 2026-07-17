@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.payload;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPRuntimeDatabaseRecoveryPayloadFactory;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationResult;

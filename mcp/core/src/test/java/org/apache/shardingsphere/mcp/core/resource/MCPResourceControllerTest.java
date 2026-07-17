@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.resource;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;

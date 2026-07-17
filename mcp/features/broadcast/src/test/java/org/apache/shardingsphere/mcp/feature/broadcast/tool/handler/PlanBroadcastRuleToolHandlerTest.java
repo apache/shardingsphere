@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;

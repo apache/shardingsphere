@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;

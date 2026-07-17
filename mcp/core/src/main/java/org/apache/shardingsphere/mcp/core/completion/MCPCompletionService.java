@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.completion;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;

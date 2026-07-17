@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;

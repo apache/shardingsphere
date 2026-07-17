@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;

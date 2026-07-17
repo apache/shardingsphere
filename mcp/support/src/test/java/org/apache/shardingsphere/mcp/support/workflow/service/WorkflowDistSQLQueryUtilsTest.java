@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;

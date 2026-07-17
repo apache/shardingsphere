@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;

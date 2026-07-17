@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.payload;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionColumnDefinition;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResultKind;

@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapabi
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.core.completion.provider.MetadataCompletionProvider;
 import org.apache.shardingsphere.mcp.core.completion.provider.WorkflowPlanIdCompletionProvider;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;

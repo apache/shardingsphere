@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPLockingReadStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLStatementsException;

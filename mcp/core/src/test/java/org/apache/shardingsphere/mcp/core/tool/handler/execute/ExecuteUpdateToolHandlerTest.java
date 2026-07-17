@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;

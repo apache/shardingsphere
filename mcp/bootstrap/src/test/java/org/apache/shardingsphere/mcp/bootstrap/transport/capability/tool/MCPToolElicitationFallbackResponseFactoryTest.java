@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.junit.jupiter.api.Test;

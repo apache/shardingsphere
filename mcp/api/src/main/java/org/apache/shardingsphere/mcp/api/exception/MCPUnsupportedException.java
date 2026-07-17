@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.exception;
+package org.apache.shardingsphere.mcp.api.exception;
 
 /**
- * Exception for unavailable MCP services.
+ * Exception for unsupported MCP operations.
  */
-public class MCPUnavailableException extends ShardingSphereMCPException {
+public class MCPUnsupportedException extends ShardingSphereMCPException {
     
-    private static final long serialVersionUID = 5302834723598338378L;
+    private static final long serialVersionUID = 7488172893235310016L;
     
-    public MCPUnavailableException(final String message) {
+    public MCPUnsupportedException(final String message) {
         super(message);
+    }
+    
+    public MCPUnsupportedException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
