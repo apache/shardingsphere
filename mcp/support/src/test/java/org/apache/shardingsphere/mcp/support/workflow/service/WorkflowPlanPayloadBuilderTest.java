@@ -112,16 +112,36 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "primary key", ""));
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("assisted_query", "salt", true, true, "assist key", ""));
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("like_query", "token", true, true, "like key", ""));
+        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "mode", true, false, "mode", ""));
         snapshot.getIssues().add(new WorkflowIssue("code", "warning", "clarifying", "message", "action", true,
-                Map.of("missing_properties", List.of("aes-key-value", "salt", "token"))));
+                Map.of("missing_properties", List.of("aes-key-value", "salt", "token", "mode"))));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         assertThat(actual.get("missing_required_inputs"), is(List.of("primary_algorithm_properties.aes-key-value", "assisted_query_algorithm_properties.salt",
-                "like_query_algorithm_properties.token")));
+                "like_query_algorithm_properties.token", "primary_algorithm_properties.mode")));
         List<?> actualClarificationQuestions = (List<?>) actual.get("clarification_questions");
         assertThat(((Map<?, ?>) actualClarificationQuestions.getFirst()).get("field"), is("primary_algorithm_properties.aes-key-value"));
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(1)).get("field"), is("assisted_query_algorithm_properties.salt"));
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(2)).get("field"), is("like_query_algorithm_properties.token"));
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.getFirst()).get("secret"));
+        assertThat(((Map<?, ?>) actualClarificationQuestions.get(3)).get("input_type"), is("string"));
+        assertFalse((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(3)).get("secret"));
+    }
+    
+    @Test
+    void assertBuildTreatsUnknownAlgorithmPropertyAsSecret() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
+        WorkflowRequest request = new WorkflowRequest();
+        snapshot.setRequest(request);
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("review"), List.of("rules")));
+        snapshot.getIssues().add(new WorkflowIssue("code", "warning", "clarifying", "message", "action", true, Map.of("missing_properties", List.of("unknown-property"))));
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<?, ?> actualQuestion = (Map<?, ?>) ((List<?>) actual.get("clarification_questions")).getFirst();
+        assertThat(actualQuestion.get("input_type"), is("secret"));
+        assertTrue((Boolean) actualQuestion.get("secret"));
     }
     
     @Test

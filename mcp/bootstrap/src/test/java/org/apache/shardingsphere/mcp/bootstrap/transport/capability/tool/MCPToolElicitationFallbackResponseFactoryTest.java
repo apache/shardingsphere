@@ -53,7 +53,7 @@ class MCPToolElicitationFallbackResponseFactoryTest extends AbstractMCPToolSpeci
     
     @Test
     void assertCreateSensitiveFallback() {
-        MCPSuccessPayload actual = factory.create(createClarifyingPayload(createClarifyingQuestion("primary_algorithm_properties.access-token", "string", false, "Provide access token.")),
+        MCPSuccessPayload actual = factory.create(createClarifyingPayload(createClarifyingQuestion("primary_algorithm_properties.access-token", "string", true, "Provide access token.")),
                 MCPToolElicitationFallbackReason.SENSITIVE_FORM_BLOCKED, createClientCapabilities(McpSchema.ClientCapabilities.builder().elicitation().build()));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("fallback_reason"), is("sensitive_form_blocked"));

@@ -83,6 +83,23 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
         }
     }
     
+    @Test
+    void assertCreateToolSpecificationsElicitKeyGeneratorField() {
+        try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
+            String toolName = "database_gateway_plan_encrypt_rule";
+            MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName,
+                    Map.of("key_generator", Map.of("type", "string", "description", "Key generator name."))));
+            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition), any()))
+                    .thenReturn(new MCPMapPayload(createClarifyingPayload(createClarifyingQuestion("key_generator", "string", false, "Provide key generator name."))),
+                            new MCPMapPayload(Map.of("status", "planned")));
+            McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("field_1", "snowflake_generator")));
+            CallToolResult actual = callTool(createToolSpecification("stdio"), exchange, toolName, Map.of());
+            assertThat(actual.structuredContent(), is(Map.of("status", "planned")));
+            mockedToolDefinitionRegistry.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition),
+                    eq(Map.of("plan_id", "plan-1", "key_generator", "snowflake_generator"))));
+        }
+    }
+    
     private void assertInteractiveElicitation(final McpSchema.ClientCapabilities clientCapabilities) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
@@ -116,16 +133,11 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     }
     
     @Test
-    void assertCreateToolSpecificationsSkipElicitationWithSensitiveFieldName() {
-        assertCreateToolSpecificationsSkipUnsafeElicitation(createClarifyingQuestion("primary_algorithm_properties.access-token", "string", false, "Provide access token."));
-    }
-    
-    @Test
     void assertCreateToolSpecificationsFallbackWithUrlModeForSensitiveQuestion() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
             MCPSuccessPayload response = new MCPMapPayload(createClarifyingPayload(
-                    createClarifyingQuestion("primary_algorithm_properties.access-token", "string", false, "Provide access token.")));
+                    createClarifyingQuestion("primary_algorithm_properties.access-token", "string", true, "Provide access token.")));
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of()), createFormAndUrlClientCapabilities());
@@ -142,7 +154,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
     }
     
     @Test
-    void assertCreateToolSpecificationsSkipElicitationWithUnknownAlgorithmSecretFlag() {
+    void assertCreateToolSpecificationsSkipElicitationWithoutSecretMetadata() {
         assertCreateToolSpecificationsSkipUnsafeElicitationWithPayload(Map.of(
                 "plan_id", "plan-1",
                 "status", "clarifying",
