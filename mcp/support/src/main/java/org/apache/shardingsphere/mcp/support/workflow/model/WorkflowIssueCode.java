@@ -64,6 +64,8 @@ public final class WorkflowIssueCode {
     
     public static final String MANUAL_EXECUTION_PENDING = "WF-MODE-001";
     
+    public static final String CLUSTER_MODE_REQUIRED = "WF-MODE-002";
+    
     public static final String UNSUPPORTED_IDENTIFIER = "WF-SQL-001";
     
     public static final String RULE_STATE_MISMATCH = "WF-VAL-002";

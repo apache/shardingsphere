@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
@@ -31,6 +32,12 @@ import java.util.Map;
  * Readwrite-splitting rule inspection service.
  */
 public final class ReadwriteSplittingInspectionService {
+    
+    String queryProxyMode(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
+        String result = queryFacade.query(databaseName, "SHOW COMPUTE NODE INFO").stream().findFirst()
+                .map(each -> WorkflowRuleValueUtils.getRuleValue(each, "mode_type")).orElse("");
+        return result.isEmpty() ? "unknown" : result;
+    }
     
     /**
      * Query readwrite-splitting rules.

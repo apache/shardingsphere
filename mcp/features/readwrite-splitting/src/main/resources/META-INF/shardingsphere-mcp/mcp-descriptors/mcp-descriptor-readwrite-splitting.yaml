@@ -183,7 +183,7 @@ prompts:
         - "Ask before applying generated readwrite-splitting rule DistSQL that changes runtime state."
   - name: plan_readwrite_splitting_status
     title: Plan Readwrite-Splitting Status
-    description: "Guide the model to plan a readwrite-splitting storage-unit enable or disable workflow by reading current status first."
+    description: "Guide the model to plan a Cluster-mode readwrite-splitting storage-unit enable or disable workflow by reading current status first."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-readwrite-splitting-status.md
     arguments:
@@ -218,6 +218,7 @@ prompts:
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_readwrite_splitting_status returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing inputs instead of guessing storage unit status."
+        - "Stop and report the Cluster-mode requirement after a failed plan returns WF-MODE-002; do not call apply or repeat the planning tool."
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask when database, rule name, read storage unit, or target status is unclear."
         - "Ask before applying generated readwrite-splitting status DistSQL that changes runtime state."
@@ -563,8 +564,9 @@ tools:
   - name: database_gateway_plan_readwrite_splitting_status
     title: Plan Readwrite-Splitting Status
     description: >-
-      Plan a ShardingSphere readwrite-splitting read storage-unit enable or disable workflow. This tool creates reviewable status DistSQL artifacts
-      but does not execute them; use database_gateway_apply_workflow only after user review.
+      Plan a ShardingSphere readwrite-splitting read storage-unit enable or disable workflow. The current Proxy must run in Cluster mode;
+      otherwise this tool returns a failed plan without DistSQL artifacts. It does not execute generated artifacts;
+      use database_gateway_apply_workflow only after user review.
     inputSchema:
       type: object
       properties:

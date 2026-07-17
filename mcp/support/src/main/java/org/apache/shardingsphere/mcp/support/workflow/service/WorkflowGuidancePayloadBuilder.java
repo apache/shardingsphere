@@ -281,6 +281,9 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static List<Map<String, Object>> createRecoveryPlanningActions(final WorkflowContextSnapshot snapshot) {
+        if (hasIssue(snapshot, WorkflowIssueCode.CLUSTER_MODE_REQUIRED)) {
+            return List.of(MCPNextActionUtils.stop("Connect to a Cluster-mode ShardingSphere Proxy, then start a new workflow plan."));
+        }
         String planningTool = resolvePlanningTool(snapshot);
         if (hasIssue(snapshot, WorkflowIssueCode.RULE_INPUT_CONFLICT)) {
             return planningTool.isEmpty()

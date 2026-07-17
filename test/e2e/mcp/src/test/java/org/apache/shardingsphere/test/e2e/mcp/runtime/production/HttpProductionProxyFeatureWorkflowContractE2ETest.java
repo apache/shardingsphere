@@ -151,14 +151,16 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             assertTrue(String.valueOf(actualRule.get("read_storage_unit_names")).contains("ds_1"));
             assertThat(String.valueOf(actualRule.get("transactional_read_query_strategy")).toUpperCase(Locale.ENGLISH), is("DYNAMIC"));
             assertThat(String.valueOf(actualRule.get("load_balancer_type")).toUpperCase(Locale.ENGLISH), is("ROUND_ROBIN"));
-            Map<String, Object> actualStatusPlan = planWorkflow(interactionClient, READWRITE_SPLITTING_STATUS_PLAN_TOOL_NAME,
+            Map<String, Object> actualStatusPlan = interactionClient.call(READWRITE_SPLITTING_STATUS_PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "rule", "readwrite_ds", "storage_unit", "ds_1", "target_status", "disable"));
-            Map<String, Object> actualStatusApply = applyReviewedWorkflow(interactionClient, String.valueOf(actualStatusPlan.get("plan_id")));
-            assertThat(String.valueOf(actualStatusApply.get("status")), is("failed"));
-            assertThat(getIssueCodes(actualStatusApply), hasItem(WorkflowIssueCode.RULE_EXECUTION_FAILED));
-            assertTrue(String.valueOf(actualStatusApply.get("issues")).contains("Mode must be 'cluster'"));
-            assertThat(getStringListOrEmpty(actualStatusApply.get("executed_distsql")).size(), is(0));
-            assertModelFacingPayloadContract(actualStatusApply);
+            assertThat(String.valueOf(actualStatusPlan.get("status")), is("failed"));
+            assertThat(getIssueCodes(actualStatusPlan), hasItem(WorkflowIssueCode.CLUSTER_MODE_REQUIRED));
+            Map<String, Object> actualIssueDetails = getObjectOrEmpty(getObjectListOrEmpty(actualStatusPlan.get("issues")).getFirst().get("details"));
+            assertThat(actualIssueDetails.get("required_mode"), is("Cluster"));
+            assertThat(actualIssueDetails.get("actual_mode"), is("Standalone"));
+            assertTrue(getObjectListOrEmpty(actualStatusPlan.get("distsql_artifacts")).isEmpty());
+            assertThat(getObjectListOrEmpty(actualStatusPlan.get("next_actions")).getFirst().get("type"), is("terminal"));
+            assertModelFacingPayloadContract(actualStatusPlan);
         }
     }
     

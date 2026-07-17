@@ -125,6 +125,10 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       Record the reason in the plan, review note, final response, or nearby code rationale.
 - **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.
 
+### Dead Code Verification
+- Before declaring code unused, use semantic Find Usages; otherwise search the entire repository, covering direct calls, method references, generated accessors, overrides, reflection, SPI/framework registrations, tests, E2E, and external consumers.
+- Inspect every match; one regex or production-only search is insufficient evidence.
+
 ### Constructor Design Rules
 - Before adding or changing a constructor, inspect nearby production code and follow the module's existing conventions for visibility, Lombok, validation, and tests.
 - Keep only constructors with distinct production semantics or real framework, SPI, reflection, or serialization requirements.
