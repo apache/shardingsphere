@@ -213,7 +213,7 @@ class MCPStatementAnalyzerTest {
                 Arguments.of("commit", "MySQL", "COMMIT", SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "COMMIT", "", ""),
                 Arguments.of("rollback", "MySQL", "ROLLBACK", SupportedMCPStatement.TRANSACTION_CONTROL, "ROLLBACK", "ROLLBACK", "", ""),
                 Arguments.of("savepoint", "MySQL", "SAVEPOINT order_sp", SupportedMCPStatement.SAVEPOINT, "SAVEPOINT", "SAVEPOINT order_sp", "", "order_sp"),
-                Arguments.of("rollback to without optional keyword", "MySQL", "ROLLBACK TO order_sp", SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO",
+                Arguments.of("rollback to without optional keyword", "MySQL", "ROLLBACK TO order_sp", SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO SAVEPOINT",
                         "ROLLBACK TO order_sp", "", "order_sp"),
                 Arguments.of("rollback to", "MySQL", "ROLLBACK TO SAVEPOINT order_sp", SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO SAVEPOINT",
                         "ROLLBACK TO SAVEPOINT order_sp", "", "order_sp"),
