@@ -69,7 +69,8 @@ public final class MCPToolController {
     public MCPSuccessPayload handle(final String sessionId, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments) {
         return sessionExecutionCoordinator.executeWithSessionLock(sessionId, () -> {
             toolCallLimiter.acquire(sessionId, toolDefinition.getDescriptor().getName());
-            return ToolDefinitionRegistry.dispatch(new MCPFeatureRuntimeRequestContext(runtimeContext, sessionId), toolDefinition, arguments);
+            return ToolDefinitionRegistry.dispatch(new MCPFeatureRuntimeRequestContext(runtimeContext,
+                    runtimeContext.getSessionManager().getRequiredSessionIdentity(sessionId)), toolDefinition, arguments);
         });
     }
 }

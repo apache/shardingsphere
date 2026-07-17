@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
@@ -120,7 +121,7 @@ class CoreResourceHandlerSurfaceTest {
     
     @Test
     void assertHandleWithUnsupportedSequenceResource() {
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/sequences",
                 (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().querySequences(
@@ -133,7 +134,7 @@ class CoreResourceHandlerSurfaceTest {
     
     @Test
     void assertHandleWithUnsupportedStorageUnitResource() {
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
                 "shardingsphere://databases/{database}/storage-units",
                 (featureContext, uriVariables) -> {

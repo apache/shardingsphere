@@ -31,6 +31,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
@@ -49,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.StampedLock;
 
 final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamableServerTransportProvider {
     
@@ -76,6 +79,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final AtomicBoolean closed;
     
+    private final StampedLock lifecycleLock;
+    
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final HttpTransportConfiguration config) {
         sessionAttributionResolver = new SessionAttributionResolver(config.getSessionAttributionSource());
         securityValidator = ServerTransportSecurityValidatorFactory.create(sessionManager, config.getBindHost(), sessionAttributionResolver);
@@ -84,6 +89,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         this.sessionManager = sessionManager;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         closed = new AtomicBoolean();
+        lifecycleLock = new StampedLock();
     }
     
     private static HttpServletStreamableServerTransportProvider createDelegate(final McpJsonMapper jsonMapper, final String endpointPath,
@@ -101,10 +107,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     public void setSessionFactory(final McpStreamableServerSession.Factory sessionFactory) {
         delegate.setSessionFactory(initializeRequest -> {
             McpSchema.InitializeRequest actualInitializeRequest = negotiateInitializeRequest(initializeRequest);
-            McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(actualInitializeRequest);
-            String sessionId = result.session().getId();
-            sessionManager.createSession(sessionId);
-            return result;
+            return sessionFactory.startSession(actualInitializeRequest);
         });
     }
     
@@ -128,6 +131,19 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     @Override
     public Mono<Void> notifyClient(final String sessionId, final String method, final Object params) {
         return delegate.notifyClient(sessionId, method, params);
+    }
+    
+    @Override
+    protected void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        long lifecycleStamp = enterRequest(response);
+        if (0L == lifecycleStamp) {
+            return;
+        }
+        try {
+            super.service(request, response);
+        } finally {
+            lifecycleLock.unlockRead(lifecycleStamp);
+        }
     }
     
     @Override
@@ -173,9 +189,16 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             response.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Content-Type must be application/json.");
             return;
         }
-        SessionAwareHttpServletResponse actualResponse = withInitializeProtocolHeader(response);
-        serviceWithApplicationClassLoader(request, actualResponse);
-        bindSessionIdentity(request, actualResponse);
+        SessionAwareHttpServletResponse actualResponse = withInitializeSessionHeaders(request, response);
+        boolean completed = false;
+        try {
+            serviceWithApplicationClassLoader(request, actualResponse);
+            completed = true;
+        } finally {
+            if (!actualResponse.getSessionId().isEmpty() && (!completed || HttpServletResponse.SC_OK != response.getStatus())) {
+                sessionExecutionCoordinator.closeSession(actualResponse.getSessionId());
+            }
+        }
     }
     
     private boolean isJsonContentType(final HttpServletRequest request) {
@@ -222,7 +245,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         if (!validateTransportSecurity(request, response)) {
             return;
         }
-        String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
+        String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "");
         serviceWithApplicationClassLoader(request, response);
         if (200 == response.getStatus()) {
             sessionExecutionCoordinator.closeSession(sessionId);
@@ -236,7 +259,15 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     public Mono<Void> closeGracefully() {
-        return closed.compareAndSet(false, true) ? delegate.closeGracefully().doFinally(ignored -> sessionExecutionCoordinator.closeAllSessions()) : Mono.empty();
+        return closed.compareAndSet(false, true)
+                ? Mono.using(lifecycleLock::writeLock, ignored -> delegate.closeGracefully(), lifecycleStamp -> {
+                    try {
+                        sessionExecutionCoordinator.closeAllSessions();
+                    } finally {
+                        lifecycleLock.unlockWrite(lifecycleStamp);
+                    }
+                })
+                : Mono.empty();
     }
     
     @Override
@@ -248,34 +279,52 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
     }
     
-    private void bindSessionIdentity(final HttpServletRequest request, final SessionAwareHttpServletResponse response) {
-        String sessionId = response.getSessionId();
-        if (sessionId.isEmpty()) {
-            return;
+    private long enterRequest(final HttpServletResponse response) throws IOException {
+        long result = lifecycleLock.readLock();
+        if (!closed.get()) {
+            return result;
         }
-        sessionAttributionResolver.resolve(request).ifPresent(sessionIdentity -> sessionManager.bindSessionIdentity(sessionId, sessionIdentity));
+        lifecycleLock.unlockRead(result);
+        response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Server is shutting down");
+        return 0L;
     }
     
-    private SessionAwareHttpServletResponse withInitializeProtocolHeader(final HttpServletResponse response) {
+    private SessionAwareHttpServletResponse withInitializeSessionHeaders(final HttpServletRequest request, final HttpServletResponse response) {
         return new SessionAwareHttpServletResponse(response) {
             
             @Override
             public void setHeader(final String name, final String value) {
+                registerSession(request, this, name, value);
                 super.setHeader(name, value);
-                addNegotiatedProtocolHeader(this, name, value);
+                addNegotiatedProtocolHeader(this, name);
             }
             
             @Override
             public void addHeader(final String name, final String value) {
+                registerSession(request, this, name, value);
                 super.addHeader(name, value);
-                addNegotiatedProtocolHeader(this, name, value);
+                addNegotiatedProtocolHeader(this, name);
             }
         };
     }
     
-    private void addNegotiatedProtocolHeader(final SessionAwareHttpServletResponse response, final String name, final String sessionId) {
+    private void registerSession(final HttpServletRequest request, final SessionAwareHttpServletResponse response, final String name, final String sessionId) {
+        if (!SESSION_HEADER.equalsIgnoreCase(name)) {
+            return;
+        }
+        ShardingSpherePreconditions.checkState(!response.isCommitted(), () -> new IllegalStateException("Cannot register an MCP session after the response is committed."));
+        String existingSessionId = response.getSessionId();
+        if (!existingSessionId.isEmpty()) {
+            ShardingSpherePreconditions.checkState(existingSessionId.equals(sessionId), () -> new IllegalStateException("MCP session response header changed during initialization."));
+            return;
+        }
+        MCPSessionIdentity sessionIdentity = sessionAttributionResolver.resolve(request, sessionId);
+        sessionManager.createSession(sessionIdentity);
+        response.setSessionId(sessionId);
+    }
+    
+    private void addNegotiatedProtocolHeader(final SessionAwareHttpServletResponse response, final String name) {
         if (SESSION_HEADER.equalsIgnoreCase(name)) {
-            response.setSessionId(sessionId);
             response.setHeader(PROTOCOL_HEADER, MCPTransportConstants.PROTOCOL_VERSION);
         }
     }
@@ -293,7 +342,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
         
         protected final void setSessionId(final String sessionId) {
-            this.sessionId = Objects.toString(sessionId, "").trim();
+            this.sessionId = Objects.toString(sessionId, "");
         }
     }
 }

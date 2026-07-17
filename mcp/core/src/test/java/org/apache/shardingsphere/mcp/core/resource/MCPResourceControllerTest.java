@@ -19,7 +19,9 @@ package org.apache.shardingsphere.mcp.core.resource;
 
 import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
 import org.junit.jupiter.api.Test;
@@ -71,6 +73,8 @@ class MCPResourceControllerTest {
     }
     
     private MCPResourceController createController() {
-        return new MCPResourceController(ResourceTestDataFactory.createRuntimeContext());
+        MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
+        runtimeContext.getSessionManager().createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
+        return new MCPResourceController(runtimeContext);
     }
 }

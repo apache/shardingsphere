@@ -59,6 +59,7 @@ transport:
 | `transport.http.sessionAttributionSource.attributeHeaderPrefix` | Header prefix for custom attribution attributes.                                 |
 
 Enable this only when clients cannot forge these headers directly.
+Subsequent HTTP requests for the same MCP session must provide consistent subject, source, and attributes.
 
 ## Database configuration
 

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
@@ -75,12 +76,12 @@ class ServerCapabilitiesHandlerTest {
     }
     
     private Map<String, Object> createCapabilitiesPayload() {
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(), "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(), new MCPSessionIdentity("session-1", "", "", Map.of()));
         return new ServerCapabilitiesHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
     }
     
     private Map<String, Object> createGuidancePayload() {
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(), "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(), new MCPSessionIdentity("session-1", "", "", Map.of()));
         return new ServerGuidanceHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
     }
     

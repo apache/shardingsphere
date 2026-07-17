@@ -82,7 +82,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPFeature
             return createPreviewResponse(toolArguments, classificationResult);
         }
         return SQLExecutionPayload.executed(requestContext.getExecutionFacade().execute(
-                SQLExecutionToolHandlerSupport.createExecutionRequest(requestContext.getSessionId(), toolArguments, sql, TOOL_NAME)));
+                SQLExecutionToolHandlerSupport.createExecutionRequest(requestContext.getSessionIdentity().getSessionId(), toolArguments, sql, TOOL_NAME)));
     }
     
     private ClassificationResult checkUpdateStatement(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments, final String sql) {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.completion;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
@@ -202,7 +203,7 @@ class MCPCompletionSpecificationFactoryTest {
                 new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()),
                 new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
-        sessionManager.createSession("session-1");
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPRuntimeContext result = mock(MCPRuntimeContext.class);
         when(result.getDatabaseCapabilityProvider()).thenReturn(databaseCapabilityProvider);
         when(result.getSessionManager()).thenReturn(sessionManager);

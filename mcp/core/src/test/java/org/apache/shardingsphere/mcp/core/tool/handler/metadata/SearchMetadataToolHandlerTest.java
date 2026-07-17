@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -261,7 +262,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithoutRuntimeDatabase() {
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(List.of()), "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(List.of()),
+                new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of());
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
@@ -331,7 +333,7 @@ class SearchMetadataToolHandlerTest {
     
     private MCPRuntimeContext createSearchRuntimeContext(final List<DatabaseMetadataFixture> databaseMetadata) {
         MCPRuntimeContext result = ResourceTestDataFactory.createRuntimeContext(databaseMetadata);
-        result.getSessionManager().createSession("session-1");
+        result.getSessionManager().createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         return result;
     }
     

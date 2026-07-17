@@ -50,7 +50,8 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPFeatureR
         String sql = toolArguments.getStringArgument("sql");
         checkReadOnlyQuery(requestContext, toolArguments, sql);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
-        return SQLExecutionPayload.query(requestContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(requestContext.getSessionId(), toolArguments,
+        return SQLExecutionPayload.query(requestContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(
+                requestContext.getSessionIdentity().getSessionId(), toolArguments,
                 SQLExecutionToolHandlerSupport.resolveSchema(requestContext, toolArguments), sql, TOOL_NAME)));
     }
     

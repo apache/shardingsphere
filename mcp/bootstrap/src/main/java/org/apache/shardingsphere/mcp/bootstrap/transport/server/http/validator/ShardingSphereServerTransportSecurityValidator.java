@@ -57,8 +57,8 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
                 continue;
             }
             if (sessionRequired) {
-                String sessionId = getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
-                if (sessionId.isEmpty() || !sessionManager.hasSession(sessionId)) {
+                String sessionId = getSessionId(headers);
+                if (sessionId.isBlank() || !sessionManager.hasSession(sessionId)) {
                     continue;
                 }
             }
@@ -67,23 +67,28 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
     }
     
     private void validateSessionIdentity(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
-        String sessionId = getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
-        if (sessionId.isEmpty() || !sessionManager.hasSession(sessionId) || !sessionAttributionResolver.isEnabled()) {
-            return;
-        }
-        Optional<MCPSessionIdentity> sessionIdentity = sessionAttributionResolver.resolve(headers);
-        if (sessionIdentity.isEmpty()) {
+        String sessionId = getSessionId(headers);
+        if (sessionId.isBlank() || !sessionAttributionResolver.isEnabled()) {
             return;
         }
         Optional<MCPSessionIdentity> boundSessionIdentity = sessionManager.findSessionIdentity(sessionId);
         if (boundSessionIdentity.isEmpty()) {
-            throw new MCPTransportSecurityException(400, "Session attribution is not bound for this MCP session.",
-                    MCPTransportSecurityException.CATEGORY_SESSION_ATTRIBUTION_MISMATCH);
+            return;
         }
-        if (!boundSessionIdentity.get().equals(sessionIdentity.get())) {
+        if (!isSameAttribution(boundSessionIdentity.get(), sessionAttributionResolver.resolve(headers, sessionId))) {
             throw new MCPTransportSecurityException(400, "Session attribution does not match this MCP session.",
                     MCPTransportSecurityException.CATEGORY_SESSION_ATTRIBUTION_MISMATCH);
         }
+    }
+    
+    private boolean isSameAttribution(final MCPSessionIdentity expected, final MCPSessionIdentity actual) {
+        return expected.getSubject().equals(actual.getSubject()) && expected.getSource().equals(actual.getSource()) && expected.getAttributes().equals(actual.getAttributes());
+    }
+    
+    private String getSessionId(final Map<String, List<String>> headers) {
+        return headers.entrySet().stream()
+                .filter(entry -> HttpHeaders.MCP_SESSION_ID.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst()
+                .map(optional -> Objects.toString(optional.getValue().getFirst(), "")).orElse("");
     }
     
     private String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {

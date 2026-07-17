@@ -82,13 +82,13 @@ public final class MCPCompletionService {
      */
     public MCPCompletionResult complete(final String sessionId, final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
                                         final Map<String, String> contextArguments) {
-        sessionExecutionCoordinator.executeWithSessionLock(sessionId, () -> {
+        MCPFeatureRuntimeRequestContext requestContext = sessionExecutionCoordinator.executeWithSessionLock(sessionId, () -> {
             completionRateLimiter.acquire(sessionId);
-            return null;
+            return new MCPFeatureRuntimeRequestContext(runtimeContext, runtimeContext.getSessionManager().getRequiredSessionIdentity(sessionId));
         });
         validateDeclaredArgument(descriptor, argumentName);
         Map<String, String> actualContextArguments = new LinkedHashMap<>(contextArguments);
-        MCPCompletionProviderResult providerResult = completeCandidates(sessionId, descriptor, argumentName, actualContextArguments);
+        MCPCompletionProviderResult providerResult = completeCandidates(requestContext, descriptor, argumentName, actualContextArguments);
         Map<String, Object> inferredContextArguments = providerResult.getInferredContextArguments();
         mergeInferredContextArguments(actualContextArguments, inferredContextArguments);
         Collection<MCPCompletionCandidate> candidates = providerResult.getCandidates();
@@ -145,12 +145,12 @@ public final class MCPCompletionService {
         return value.toLowerCase(Locale.ENGLISH).contains(prefix.toLowerCase(Locale.ENGLISH));
     }
     
-    private MCPCompletionProviderResult completeCandidates(final String sessionId, final MCPCompletionTargetDescriptor descriptor, final String argumentName,
+    private MCPCompletionProviderResult completeCandidates(final MCPFeatureRuntimeRequestContext requestContext, final MCPCompletionTargetDescriptor descriptor, final String argumentName,
                                                            final Map<String, String> contextArguments) {
         MCPCompletionRequest request = new MCPCompletionRequest(descriptor, argumentName, contextArguments);
         for (MCPCompletionProvider<?> each : completionProviders) {
             if (each.supports(request)) {
-                return completeCandidates(new MCPFeatureRuntimeRequestContext(runtimeContext, sessionId), each, request);
+                return completeCandidates(requestContext, each, request);
             }
         }
         return MCPCompletionProviderResult.empty();

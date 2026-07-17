@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
@@ -26,6 +27,7 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -119,13 +121,13 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
                 .thenReturn(response);
     }
     
-    protected MCPRuntimeContext createRuntimeContext(final String activeTransport) {
+    protected MCPRuntimeContext createRuntimeContext(final MCPTransportType activeTransport) {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
-        sessionManager.createSession("session-id");
+        sessionManager.createSession(new MCPSessionIdentity("session-id", "", "", Map.of()));
         return new MCPRuntimeContext(sessionManager, mock(MCPDatabaseCapabilityProvider.class), activeTransport);
     }
     
-    protected SyncToolSpecification createToolSpecification(final String activeTransport) {
+    protected SyncToolSpecification createToolSpecification(final MCPTransportType activeTransport) {
         return createToolSpecification(createRuntimeContext(activeTransport));
     }
     
@@ -185,7 +187,7 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
-            return callTool(createToolSpecification(createRuntimeContext("")), createExchange(), toolName, Map.of());
+            return callTool(createToolSpecification(createRuntimeContext(MCPTransportType.STREAMABLE_HTTP)), createExchange(), toolName, Map.of());
         }
     }
     

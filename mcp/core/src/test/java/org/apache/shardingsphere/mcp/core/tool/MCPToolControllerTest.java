@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
@@ -188,7 +189,7 @@ class MCPToolControllerTest {
     
     private MCPRuntimeContext createRuntimeContext() {
         MCPRuntimeContext result = ResourceTestDataFactory.createRuntimeContext();
-        result.getSessionManager().createSession("session-1");
+        result.getSessionManager().createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         return result;
     }
 }

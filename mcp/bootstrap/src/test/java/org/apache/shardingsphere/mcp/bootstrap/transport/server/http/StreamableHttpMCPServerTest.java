@@ -21,6 +21,7 @@ import io.modelcontextprotocol.server.McpSyncServer;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -152,6 +153,6 @@ class StreamableHttpMCPServerTest {
     }
     
     private MCPRuntimeContext createRuntimeContext() {
-        return new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), "http");
+        return new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), MCPTransportType.STREAMABLE_HTTP);
     }
 }

@@ -19,42 +19,16 @@ package org.apache.shardingsphere.mcp.api.session;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 
 class MCPSessionIdentityTest {
     
     @Test
-    void assertEquals() {
-        MCPSessionIdentity actual = new MCPSessionIdentity("subject", "gateway", Map.of("region", "ap-south"));
-        MCPSessionIdentity expected = new MCPSessionIdentity("subject", "gateway", Map.of("region", "ap-south"));
-        assertThat(actual, is(expected));
-    }
-    
-    @Test
-    void assertHashCode() {
-        MCPSessionIdentity actual = new MCPSessionIdentity("subject", "gateway", Map.of("region", "ap-south"));
-        MCPSessionIdentity expected = new MCPSessionIdentity("subject", "gateway", Map.of("region", "ap-south"));
-        assertThat(actual.hashCode(), is(expected.hashCode()));
-    }
-    
-    @Test
-    void assertNotEquals() {
-        MCPSessionIdentity actual = new MCPSessionIdentity("subject", "gateway", Map.of("region", "ap-south"));
-        MCPSessionIdentity expected = new MCPSessionIdentity("other", "gateway", Map.of("region", "ap-south"));
-        assertThat(actual, is(not(expected)));
-    }
-    
-    @Test
-    void assertAttributesAreSnapshot() {
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put("region", "ap-south");
-        MCPSessionIdentity actual = new MCPSessionIdentity("subject", "gateway", attributes);
-        attributes.put("region", "eu-west");
-        assertThat(actual.getAttributes(), is(Map.of("region", "ap-south")));
+    void assertAttributes() {
+        Map<String, String> attributes = Map.of("region", "ap-south");
+        assertThat(new MCPSessionIdentity("session-1", "subject", "gateway", attributes).getAttributes(), sameInstance(attributes));
     }
 }

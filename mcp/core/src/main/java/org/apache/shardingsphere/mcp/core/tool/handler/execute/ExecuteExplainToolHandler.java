@@ -50,7 +50,7 @@ public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPFeatur
         String explainSql = toolArguments.getStringArgument("explain_sql");
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
         String schema = SQLExecutionToolHandlerSupport.resolveSchema(requestContext, toolArguments);
-        SQLExecutionRequest executionRequest = SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(requestContext.getSessionId(), toolArguments,
+        SQLExecutionRequest executionRequest = SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(requestContext.getSessionIdentity().getSessionId(), toolArguments,
                 schema, explainSql, TOOL_NAME);
         return SQLExecutionPayload.query(requestContext.getExecutionFacade().executeExplain(executionRequest, sql));
     }

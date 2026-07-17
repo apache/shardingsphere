@@ -82,8 +82,10 @@ Do not duplicate descriptor fields inside handlers.
 
 ## Context selection
 
-- Use `MCPRequestContext` when a handler only needs the session ID, active transport, or session identity.
+- Use `MCPRequestContext` when a handler only needs the session identity or active transport. It exposes exactly `getSessionIdentity()` and `getActiveTransport()`.
 - Use `MCPFeatureRequestContext` when a handler or completion provider needs database metadata, execution, or workflow capabilities.
+
+`MCPSessionIdentity` contains the opaque session ID together with optional trusted `subject`, `source`, and `attributes`; read the ID through `getSessionIdentity().getSessionId()`. Attribution describes where a session came from and is not an authentication or authorization result.
 
 `MCPFeatureRuntimeRequestContext` is the runtime-owned, per-request implementation. Handlers and completion providers depend only on context interfaces, not on the core implementation class.
 
