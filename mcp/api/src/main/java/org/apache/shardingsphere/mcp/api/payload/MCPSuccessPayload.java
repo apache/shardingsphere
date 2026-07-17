@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.exception;
+package org.apache.shardingsphere.mcp.api.payload;
+
+import org.apache.shardingsphere.mcp.api.exception.ShardingSphereMCPException;
+
+import java.util.Map;
 
 /**
- * Exception for unsupported MCP operations.
+ * Successful MCP application payload.
+ *
+ * <p>Tool and resource handlers return this type when the MCP operation completed normally. A payload may still describe a negative domain result,
+ * such as a failed database validation. Controlled execution failures should be reported by throwing {@link ShardingSphereMCPException};
+ * the runtime converts those failures to the protocol-specific MCP error surface.</p>
  */
-public class MCPUnsupportedException extends ShardingSphereMCPException {
+@FunctionalInterface
+public interface MCPSuccessPayload {
     
-    private static final long serialVersionUID = 7488172893235310016L;
-    
-    public MCPUnsupportedException(final String message) {
-        super(message);
-    }
-    
-    public MCPUnsupportedException(final String message, final Exception cause) {
-        super(message, cause);
-    }
+    /**
+     * Convert to a protocol-neutral payload.
+     *
+     * @return payload
+     */
+    Map<String, Object> toPayload();
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.support.protocol.payload;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 
 import java.util.Map;
 

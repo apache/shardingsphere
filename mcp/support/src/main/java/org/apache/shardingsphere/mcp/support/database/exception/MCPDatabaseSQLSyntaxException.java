@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 
 import java.sql.SQLException;
 
