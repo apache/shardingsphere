@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -203,6 +204,25 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actual.get("summary"), is("Workflow plan `plan-1` for encrypt.rule failed with 0 issue(s)."));
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_plan_encrypt_rule"));
+    }
+    
+    @Test
+    void assertBuildStartsNewPlanAfterInputConflict() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
+        WorkflowRequest request = new WorkflowRequest();
+        snapshot.setRequest(request);
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("Review"), List.of("rules")));
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_CONFLICT, "error", WorkflowLifecycle.STEP_INTAKING,
+                "Conflicting inputs.", "Choose one input mode.", false, Map.of("conflicting_inputs", List.of("table", "tables"))));
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("tool_name"), is("database_gateway_plan_encrypt_rule"));
+        assertThat(actualNextAction.get("arguments"), is(Map.of()));
+        assertThat(actualNextAction.get("reason"), is("Choose one input mode, remove conflicting inputs, and start a new plan without plan_id."));
     }
     
     @Test

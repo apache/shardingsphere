@@ -370,6 +370,36 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
+    void assertValidateSequenceKeyGenerateStrategy() {
+        ShardingWorkflowRequest request = createSequenceKeyGenerateStrategyRequest();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND, request);
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerateStrategy(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "order_sequence_strategy", "type", "SEQUENCE", "sequence", "order_seq", "generator_name", "snowflake_generator")));
+        Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
+                createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateSequenceKeyGenerateStrategyRejectsDifferentSequence() {
+        ShardingWorkflowRequest request = createSequenceKeyGenerateStrategyRequest();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND, request);
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerateStrategy(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "order_sequence_strategy", "type", "SEQUENCE", "sequence", "other_seq", "generator_name", "snowflake_generator")));
+        Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
+                createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+    }
+    
+    @Test
     void assertSynchronize() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
                 ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND, createReferenceRuleRequest());
@@ -397,6 +427,7 @@ class ShardingWorkflowValidationServiceTest {
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "ref_rule", "ref_rule")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "snowflake_generator", "snowflake_generator")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "order_id_strategy", "order_id_strategy")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "order_sequence_strategy", "order_sequence_strategy")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "unused_algorithm", "unused_algorithm")).thenReturn(true);
         return result;
     }
@@ -435,6 +466,15 @@ class ShardingWorkflowValidationServiceTest {
         result.setDatabase("logic_db");
         result.setRuleName("ref_rule");
         result.getReferenceTables().addAll(List.of("t_order", "t_order_item"));
+        return result;
+    }
+    
+    private ShardingWorkflowRequest createSequenceKeyGenerateStrategyRequest() {
+        ShardingWorkflowRequest result = new ShardingWorkflowRequest();
+        result.setDatabase("logic_db");
+        result.setKeyGenerateStrategyName("order_sequence_strategy");
+        result.setSequenceName("order_seq");
+        result.setKeyGeneratorName("snowflake_generator");
         return result;
     }
     

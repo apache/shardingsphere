@@ -66,6 +66,16 @@ class BroadcastWorkflowPlanningServiceTest {
     }
     
     @Test
+    void assertPlanRejectsTableAndTablesTogether() {
+        BroadcastWorkflowRequest request = createRequest("create", "t_order,t_order_item");
+        request.setTable("t_customer");
+        WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_CONFLICT));
+        assertThat(actual.getIssues().getFirst().getDetails(), is(Map.of("conflicting_inputs", List.of("table", "tables"))));
+    }
+    
+    @Test
     void assertPlanCreateFailsWhenRuleExists() {
         MCPFeatureQueryFacade queryFacade = mockQueryFacade(List.of(Map.of("broadcast_table", "t_order")));
         WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), queryFacade, createRequest("create", "t_order"));

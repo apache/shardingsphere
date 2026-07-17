@@ -315,7 +315,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Existing workflow plan identifier used only to continue or revise a previous readwrite-splitting plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+          description: "Existing workflow plan identifier used only to continue the same readwrite.rule workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the readwrite-splitting rule."
@@ -570,7 +570,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Existing workflow plan identifier used only to continue or revise a previous readwrite-splitting status plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+          description: "Existing workflow plan identifier used only to continue the same readwrite.status workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the readwrite-splitting rule."

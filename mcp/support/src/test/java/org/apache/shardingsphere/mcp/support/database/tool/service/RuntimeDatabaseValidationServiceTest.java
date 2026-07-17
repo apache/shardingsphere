@@ -169,6 +169,21 @@ class RuntimeDatabaseValidationServiceTest {
     }
     
     @Test
+    void assertValidateVisibilityWithDialectFailure() throws SQLException {
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        Connection connection = mock(Connection.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        when(connection.getCatalog()).thenThrow(new SQLException("permission denied", "28000", 335544352));
+        when(getProfileLoader().load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(
+                new RuntimeDatabaseProfile("logic_db", "Firebird", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newSensitivePolicySet()));
+        when(getMetadataLoader().load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("public"));
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"), ignored -> Optional.of(runtimeDatabaseConfig));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED));
+        assertThat(actual.getChecks().get(4).getStatus(), is("failed"));
+    }
+    
+    @Test
     void assertValidateWithMetadataReadFailure() {
         RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
         MCPJdbcDatabaseProfileLoader profileLoader = getProfileLoader();
