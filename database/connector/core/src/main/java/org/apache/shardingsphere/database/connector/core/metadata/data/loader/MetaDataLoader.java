@@ -95,7 +95,7 @@ public final class MetaDataLoader {
     private static Collection<SchemaMetaData> loadByDefault(final MetaDataLoaderMaterial material) throws SQLException {
         Collection<TableMetaData> tableMetaData = new LinkedList<>();
         for (String each : material.getActualTableNames()) {
-            TableMetaDataLoader.load(material.getDataSource(), each, material.getStorageType()).ifPresent(tableMetaData::add);
+            TableMetaDataLoader.load(material.getDataSource(), each, material.getStorageType(), material.getTableIdentifierPolicy()).ifPresent(tableMetaData::add);
         }
         return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
     }
