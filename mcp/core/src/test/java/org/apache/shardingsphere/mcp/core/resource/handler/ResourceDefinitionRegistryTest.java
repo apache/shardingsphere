@@ -154,8 +154,8 @@ class ResourceDefinitionRegistryTest {
     }
     
     private static MCPResourceHandler<?> createUnsupportedResourceHandler() {
-        MCPResourceHandler<UnsupportedRequestContext> result = mock(MCPResourceHandler.class);
-        when(result.getContextType()).thenReturn(UnsupportedRequestContext.class);
+        MCPResourceHandler<MCPFeatureRuntimeRequestContext> result = mock(MCPResourceHandler.class);
+        when(result.getContextType()).thenReturn(MCPFeatureRuntimeRequestContext.class);
         when(result.getResourceUriTemplate()).thenReturn("shardingsphere://unsupported");
         return result;
     }
@@ -222,9 +222,6 @@ class ResourceDefinitionRegistryTest {
     
     private static String getUnsupportedResourceHandlerMessage() {
         MCPResourceHandler<?> handler = createUnsupportedResourceHandler();
-        return String.format("Unsupported request context type `%s` for `%s`.", UnsupportedRequestContext.class.getName(), handler.getClass().getName());
-    }
-    
-    private interface UnsupportedRequestContext extends MCPRequestContext {
+        return String.format("Unsupported request context type `%s` for `%s`.", MCPFeatureRuntimeRequestContext.class.getName(), handler.getClass().getName());
     }
 }
