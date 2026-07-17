@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 
 /**
  * JSON type value decoder for MySQL.
@@ -142,7 +143,7 @@ public final class MySQLJsonValueDecoder {
         int length = byteBuf.readUnsignedShortLE();
         byte[] data = new byte[length];
         byteBuf.getBytes(offset, data, 0, length);
-        return new String(data);
+        return new String(data, StandardCharsets.UTF_8);
     }
     
     private static void decodeValueEntry(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder stringBuilder) {
@@ -213,7 +214,7 @@ public final class MySQLJsonValueDecoder {
         int length = decodeDataLength(byteBuf);
         byte[] buffer = new byte[length];
         byteBuf.readBytes(buffer, 0, length);
-        return new String(buffer);
+        return new String(buffer, StandardCharsets.UTF_8);
     }
     
     private static int decodeDataLength(final ByteBuf byteBuf) {
