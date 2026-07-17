@@ -86,11 +86,11 @@ prompts:
         required: false
       - name: table
         title: Logical Table
-        description: "Single logical table that should be broadcast when tables is not provided."
+        description: "Single logical table that should be broadcast. Do not provide tables in the same request."
         required: false
       - name: tables
         title: Logical Tables
-        description: "Comma-separated logical table names that should be added to or removed from broadcast rules."
+        description: "Comma-separated logical table names that should be added to or removed from broadcast rules. Do not provide table in the same request."
         required: false
       - name: operation_type
         title: Operation Type
@@ -174,16 +174,16 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Existing workflow plan identifier used only to continue or revise a previous broadcast plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+          description: "Existing workflow plan identifier used only to continue the same broadcast.rule workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the broadcast rule."
         table:
           type: string
-          description: "Single target logical table name when tables is not provided."
+          description: "Single target logical table name. Mutually exclusive with tables."
         tables:
           type: string
-          description: "Comma-separated target logical table names."
+          description: "Comma-separated target logical table names. Mutually exclusive with table."
         operation_type:
           type: string
           description: "Broadcast rule lifecycle operation requested by the user."
@@ -321,7 +321,14 @@ tools:
         distsql_artifacts:
           type: array
           description: "Generated broadcast rule DistSQL artifacts for review."
-      required: []
+      required:
+        - response_mode
+        - plan_id
+        - workflow_kind
+        - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       additionalProperties: true
       examples:
         - response_mode: planning

@@ -238,7 +238,7 @@ prompts:
         required: false
       - name: algorithm_type
         title: Algorithm Type
-        description: "Default shadow algorithm type."
+        description: "Default shadow algorithm type. ShardingSphere requires SQL_HINT for the default algorithm."
         required: false
       - name: plan_id
         title: Workflow Plan ID
@@ -409,7 +409,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Existing workflow plan identifier used only to continue or revise a previous shadow plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+          description: "Existing workflow plan identifier used only to continue the same shadow.rule workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the shadow rule."
@@ -589,6 +589,9 @@ tools:
         - plan_id
         - workflow_kind
         - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       additionalProperties: true
       examples:
         - response_mode: planning
@@ -644,6 +647,7 @@ tools:
       properties:
         plan_id:
           type: string
+          description: "Existing workflow plan identifier used only to continue the same shadow.default workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
         operation_type:
@@ -654,6 +658,9 @@ tools:
             - drop
         algorithm_type:
           type: string
+          enum:
+            - SQL_HINT
+          description: "Default shadow algorithm type. ShardingSphere requires SQL_HINT."
         algorithm_properties:
           type: object
           additionalProperties:
@@ -665,6 +672,8 @@ tools:
           properties:
             algorithm_type:
               type: string
+              enum:
+                - SQL_HINT
           required: []
           additionalProperties: false
         delivery_mode:
@@ -733,6 +742,7 @@ tools:
       properties:
         plan_id:
           type: string
+          description: "Existing workflow plan identifier used only to continue the same shadow.cleanup workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
         algorithm_name:

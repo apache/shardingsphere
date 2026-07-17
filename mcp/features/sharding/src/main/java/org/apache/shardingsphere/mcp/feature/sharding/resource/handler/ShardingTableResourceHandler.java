@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.List;
 import java.util.Map;
@@ -91,15 +91,15 @@ public final class ShardingTableResourceHandler extends AbstractShardingResource
     }
     
     @Override
-    protected List<Map<String, Object>> query(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
+    protected List<Map<String, Object>> query(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getValue("database");
         return switch (resourceKind) {
-            case TABLE_RULES -> getInspectionService().queryTableRules(databaseContext.getQueryFacade(), databaseName);
-            case TABLE_RULE -> getInspectionService().queryTableRule(databaseContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.TABLE_FIELD));
-            case TABLE_NODES -> getInspectionService().queryTableNodes(databaseContext.getQueryFacade(), databaseName);
-            case TABLE_NODE -> getInspectionService().queryTableNode(databaseContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.TABLE_FIELD));
-            case TABLE_REFERENCE_RULES -> getInspectionService().queryTableReferenceRules(databaseContext.getQueryFacade(), databaseName);
-            case TABLE_REFERENCE_RULE -> getInspectionService().queryTableReferenceRule(databaseContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.RULE_FIELD));
+            case TABLE_RULES -> getInspectionService().queryTableRules(requestContext.getQueryFacade(), databaseName);
+            case TABLE_RULE -> getInspectionService().queryTableRule(requestContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.TABLE_FIELD));
+            case TABLE_NODES -> getInspectionService().queryTableNodes(requestContext.getQueryFacade(), databaseName);
+            case TABLE_NODE -> getInspectionService().queryTableNode(requestContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.TABLE_FIELD));
+            case TABLE_REFERENCE_RULES -> getInspectionService().queryTableReferenceRules(requestContext.getQueryFacade(), databaseName);
+            case TABLE_REFERENCE_RULE -> getInspectionService().queryTableReferenceRule(requestContext.getQueryFacade(), databaseName, uriVariables.getValue(ShardingFeatureDefinition.RULE_FIELD));
         };
     }
     

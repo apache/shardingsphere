@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool;
 
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
@@ -69,7 +69,7 @@ public final class MCPToolController {
     public MCPSuccessPayload handle(final String sessionId, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments) {
         return sessionExecutionCoordinator.executeWithSessionLock(sessionId, () -> {
             toolCallLimiter.acquire(sessionId, toolDefinition.getDescriptor().getName());
-            return ToolDefinitionRegistry.dispatch(new MCPRequestScope(runtimeContext, sessionId), toolDefinition, arguments);
+            return ToolDefinitionRegistry.dispatch(new MCPFeatureRuntimeRequestContext(runtimeContext, sessionId), toolDefinition, arguments);
         });
     }
 }

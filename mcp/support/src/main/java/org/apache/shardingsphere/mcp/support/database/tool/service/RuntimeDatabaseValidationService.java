@@ -94,7 +94,7 @@ public final class RuntimeDatabaseValidationService {
             return RuntimeDatabaseValidationResult.failed(database, checks, ex.getCategory());
         }
         try {
-            validateDatabaseVisibility(database, runtimeDatabaseConfig.get(), schemas, databaseProfile.getIdentifierCasePolicySet());
+            validateDatabaseVisibility(database, runtimeDatabaseConfig.get(), schemas, databaseProfile.getDatabaseType(), databaseProfile.getIdentifierCasePolicySet());
             checks.add(RuntimeDatabaseValidationCheckResult.passed("database_visibility", "Validated the requested database name against visible JDBC metadata and connection context."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(RuntimeDatabaseValidationCheckResult.failed("database_visibility", ex.getCategory(), "The requested database name is not visible to the configured JDBC connection."));
@@ -123,7 +123,7 @@ public final class RuntimeDatabaseValidationService {
     }
     
     private void validateDatabaseVisibility(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final Collection<ShardingSphereSchema> schemas,
-                                            final IdentifierCasePolicySet identifierCasePolicySet) {
+                                            final String databaseType, final IdentifierCasePolicySet identifierCasePolicySet) {
         if (containsVisibleSchema(schemas, database, identifierCasePolicySet.getPolicy(IdentifierScope.SCHEMA))) {
             return;
         }
@@ -132,7 +132,7 @@ public final class RuntimeDatabaseValidationService {
                 return;
             }
         } catch (final SQLException ex) {
-            throw RuntimeDatabaseConnectionException.connectionFailed(database, ex);
+            throw RuntimeDatabaseConnectionException.connectionFailed(database, databaseType, ex);
         }
         throw RuntimeDatabaseConnectionException.databaseNotVisible(database,
                 new IllegalStateException(String.format("Requested database `%s` is not visible to the configured JDBC connection.", database)));

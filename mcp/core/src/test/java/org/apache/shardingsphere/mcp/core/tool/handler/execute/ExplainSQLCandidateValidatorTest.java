@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,14 +31,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ExplainSQLCandidateValidatorTest {
     
-    private final ExplainSQLCandidateValidator validator = new ExplainSQLCandidateValidator();
+    private final MCPDatabaseCapability databaseCapability = createCapability();
+    
+    private final ExplainSQLCandidateValidator validator = new ExplainSQLCandidateValidator(new MCPStatementAnalyzer());
     
     @Test
     void assertValidate() {
-        ClassificationResult actual = validator.validate("SELECT * FROM logic_db.foo_orders", "EXPLAIN FORMAT=JSON SELECT * FROM logic_db.foo_orders");
+        ClassificationResult actual = validator.validate("SELECT * FROM logic_db.foo_orders", "EXPLAIN FORMAT=JSON SELECT * FROM logic_db.foo_orders", databaseCapability);
         assertThat(actual.getStatementClass(), is(SupportedMCPStatement.EXPLAIN));
         assertThat(actual.getStatementType(), is("EXPLAIN"));
         assertThat(actual.getNormalizedSql(), is("EXPLAIN FORMAT=JSON SELECT * FROM logic_db.foo_orders"));
@@ -47,27 +52,27 @@ class ExplainSQLCandidateValidatorTest {
     @Test
     void assertValidateWithSignificantWhitespace() {
         ClassificationResult actual = validator.validate("SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'",
-                "EXPLAIN QUERY TREE SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'");
+                "EXPLAIN QUERY TREE SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'", databaseCapability);
         assertThat(actual.getNormalizedSql(), is("EXPLAIN QUERY TREE SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'"));
     }
     
     @Test
     void assertValidateHiveCBO() {
-        ClassificationResult actual = validator.validate("SELECT * FROM foo_orders", "EXPLAIN CBO SELECT * FROM foo_orders");
+        ClassificationResult actual = validator.validate("SELECT * FROM foo_orders", "EXPLAIN CBO SELECT * FROM foo_orders", databaseCapability);
         assertThat(actual.getNormalizedSql(), is("EXPLAIN CBO SELECT * FROM foo_orders"));
     }
     
     @Test
     void assertValidateWithNonExecutableComments() {
         ClassificationResult actual = validator.validate("SELECT '/*!80018 ANALYZE */' FROM foo_orders",
-                "EXPLAIN /* plan only */ SELECT '/*!80018 ANALYZE */' FROM foo_orders");
+                "EXPLAIN /* plan only */ SELECT '/*!80018 ANALYZE */' FROM foo_orders", databaseCapability);
         assertThat(actual.getNormalizedSql(), is("EXPLAIN /* plan only */ SELECT '/*!80018 ANALYZE */' FROM foo_orders"));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertValidateWithInvalidCandidateCases")
     void assertValidateWithInvalidCandidate(final String name, final String sql, final String explainSql, final String expectedMessage) {
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> validator.validate(sql, explainSql));
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> validator.validate(sql, explainSql, databaseCapability));
         assertThat(actual.getMessage(), is(expectedMessage));
     }
     
@@ -103,5 +108,11 @@ class ExplainSQLCandidateValidatorTest {
                         "explain_sql must not wrap the original sql argument in another statement."),
                 Arguments.of("output redirection", "SELECT * FROM foo_orders", "EXPLAIN INTO OUTFILE SELECT * FROM foo_orders",
                         "EXPLAIN output redirection is not supported by the MCP explain query tool."));
+    }
+    
+    private MCPDatabaseCapability createCapability() {
+        MCPDatabaseCapability result = mock(MCPDatabaseCapability.class);
+        when(result.getDatabaseType()).thenReturn("MySQL");
+        return result;
     }
 }

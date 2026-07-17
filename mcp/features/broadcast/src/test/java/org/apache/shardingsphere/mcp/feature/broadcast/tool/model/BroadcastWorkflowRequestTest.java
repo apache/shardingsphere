@@ -64,6 +64,30 @@ class BroadcastWorkflowRequestTest {
     }
     
     @Test
+    void assertMergeSwitchesFromTablesToTable() {
+        BroadcastWorkflowRequest previous = new BroadcastWorkflowRequest();
+        previous.setTables("t_order,t_order_item");
+        BroadcastWorkflowRequest current = new BroadcastWorkflowRequest();
+        current.setTable("t_customer");
+        BroadcastWorkflowRequest actual = BroadcastWorkflowRequest.merge(previous, current);
+        assertThat(actual.getTable(), is("t_customer"));
+        assertThat(actual.getTables(), is(List.of()));
+        assertThat(actual.getTargetTables(), is(List.of("t_customer")));
+    }
+    
+    @Test
+    void assertMergeSwitchesFromTableToTables() {
+        BroadcastWorkflowRequest previous = new BroadcastWorkflowRequest();
+        previous.setTable("t_order");
+        BroadcastWorkflowRequest current = new BroadcastWorkflowRequest();
+        current.setTables("t_customer,t_address");
+        BroadcastWorkflowRequest actual = BroadcastWorkflowRequest.merge(previous, current);
+        assertThat(actual.getTable(), is("t_customer"));
+        assertThat(actual.getTables(), is(List.of("t_customer", "t_address")));
+        assertThat(actual.getTargetTables(), is(List.of("t_customer", "t_address")));
+    }
+    
+    @Test
     void assertMergeCopiesPlainPreviousRequest() {
         WorkflowRequest previous = new WorkflowRequest();
         previous.setDatabase("logic_db");

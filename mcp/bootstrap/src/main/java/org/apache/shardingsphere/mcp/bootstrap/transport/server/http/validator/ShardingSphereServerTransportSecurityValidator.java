@@ -46,9 +46,17 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
     
     @Override
     public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
+        validateConstraints(headers, false);
         validateSessionIdentity(headers);
+        validateConstraints(headers, true);
+    }
+    
+    private void validateConstraints(final Map<String, List<String>> headers, final boolean sessionRequired) throws ServerTransportSecurityException {
         for (TransportHeaderConstraint each : constraints) {
-            if (each instanceof SessionRequiredTransportHeaderConstraint) {
+            if ((each instanceof SessionRequiredTransportHeaderConstraint) != sessionRequired) {
+                continue;
+            }
+            if (sessionRequired) {
                 String sessionId = getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
                 if (sessionId.isEmpty() || !sessionManager.hasSession(sessionId)) {
                     continue;

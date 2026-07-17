@@ -27,8 +27,8 @@ import org.apache.shardingsphere.authentication.result.AuthenticationResultBuild
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.postgresql.exception.authority.EmptyUsernameException;
 import org.apache.shardingsphere.database.exception.postgresql.exception.authority.InvalidPasswordException;
 import org.apache.shardingsphere.database.exception.postgresql.exception.authority.PrivilegeNotGrantedException;
@@ -63,7 +63,6 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authen
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -143,7 +142,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         ShardingSpherePreconditions.checkNotEmpty(username, EmptyUsernameException::new);
         startupMessageReceived = true;
         context.writeAndFlush(getIdentifierPacket(username, rule));
-        currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase(), Collections.emptyMap());
+        currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase(), startupPacket.getConnectionAttributes());
         return currentAuthResult;
     }
     

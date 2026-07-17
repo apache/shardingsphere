@@ -21,7 +21,7 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
@@ -71,7 +71,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             String toolName = "database_gateway_plan_encrypt_rule";
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
-            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), any()))
+            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition), any()))
                     .thenReturn(new MCPMapPayload(createClarifyingPayload()))
                     .thenThrow(new DatabaseCapabilityNotFoundException());
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT,
@@ -89,7 +89,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             MCPSuccessPayload clarifyingResponse = new MCPMapPayload(createClarifyingPayload());
             MCPSuccessPayload plannedResponse = new MCPMapPayload(Map.of("status", "planned"));
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
-            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), any()))
+            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition), any()))
                     .thenReturn(clarifyingResponse, plannedResponse);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT,
                     Map.of("field_1", "foo_display", "field_2", true)), clientCapabilities);
@@ -101,7 +101,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             assertThat(requestCaptor.getValue().meta().get(MCPShardingSphereMetadataKeys.PLAN_ID), is("plan-1"));
             assertThat(requestCaptor.getValue().meta().get(MCPShardingSphereMetadataKeys.FORM_REQUEST_ID), isA(String.class));
             assertThat(requestCaptor.getValue().requestedSchema(), is(createExpectedElicitRequestedSchema()));
-            mockedToolDefinitionRegistry.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(createElicitedArguments())));
+            mockedToolDefinitionRegistry.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition), eq(createElicitedArguments())));
         }
     }
     
@@ -356,7 +356,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             });
             CallToolResult actual = callTool(createToolSpecification("stdio"), exchange, "database_gateway_plan_encrypt_rule", Map.of());
             assertStructuredFallback(actual, "stale_elicitation", true, false, "structured_fallback");
-            mockedToolDefinitionRegistry.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(createElicitedArguments())), never());
+            mockedToolDefinitionRegistry.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition), eq(createElicitedArguments())), never());
         }
     }
     
@@ -373,7 +373,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             CallToolResult actual = callTool(createToolSpecification("stdio"), exchange, "database_gateway_plan_encrypt_rule", Map.of());
             assertStructuredFallback(actual, "invalid_elicited_content", true, false, "structured_fallback");
             verify(exchange).createElicitation(any());
-            mockedToolDefinitionRegistry.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(createElicitedArguments())), never());
+            mockedToolDefinitionRegistry.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition), eq(createElicitedArguments())), never());
         }
     }
     
@@ -386,7 +386,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             CallToolResult actual = callTool(createToolSpecification("stdio"), exchange, "database_gateway_plan_encrypt_rule", Map.of());
             assertStructuredFallback(actual, expectedReason, true, false, "structured_fallback");
             verify(exchange).createElicitation(any());
-            mockedToolDefinitionRegistry.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq(createElicitedArguments())), never());
+            mockedToolDefinitionRegistry.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition), eq(createElicitedArguments())), never());
         }
     }
     

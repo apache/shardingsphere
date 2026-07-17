@@ -385,7 +385,11 @@ class MCPDescriptorCatalogValidatorTest {
             properties.put(each, Map.of("type", "object", "description", "Workflow plan field."));
         }
         properties.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActionsSchema());
-        return createOutputSchema(properties, List.of(Map.of("response_mode", "planning")));
+        Map<String, Object> result = new LinkedHashMap<>(createOutputSchema(properties, List.of(Map.of("response_mode", "planning"))));
+        result.put("required", List.of(
+                "response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
+                MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS));
+        return result;
     }
     
     private Map<String, Object> createPlanningToolMeta(final String workflowKind) {

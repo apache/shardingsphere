@@ -17,13 +17,17 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
 import java.util.List;
 import java.util.Set;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class ExplainSQLCandidateValidator {
     
     private static final Set<String> STATEMENT_START_KEYWORDS = Set.of(
@@ -33,12 +37,12 @@ final class ExplainSQLCandidateValidator {
             "DO", "COPY", "LOAD", "UNLOAD", "IMPORT", "EXPORT", "BEGIN", "START", "COMMIT", "ROLLBACK", "SAVEPOINT", "RELEASE",
             "SET", "RESET", "USE", "PARALLEL");
     
-    private final StatementClassifier statementClassifier = new StatementClassifier();
+    private final MCPStatementAnalyzer statementAnalyzer;
     
     private final SQLStatementScanner scanner = new SQLStatementScanner();
     
-    ClassificationResult validate(final String sql, final String explainSql) {
-        ClassificationResult explainedStatement = statementClassifier.classify(sql);
+    ClassificationResult validate(final String sql, final String explainSql, final MCPDatabaseCapability databaseCapability) {
+        ClassificationResult explainedStatement = statementAnalyzer.analyze(sql, databaseCapability);
         ShardingSpherePreconditions.checkState(SupportedMCPStatement.QUERY == explainedStatement.getStatementClass(),
                 () -> new MCPInvalidRequestException("database_gateway_execute_explain_query only supports QUERY statements as the explained SQL."));
         String actualExplainSql = scanner.normalizeSingleStatement(explainSql);
@@ -46,7 +50,7 @@ final class ExplainSQLCandidateValidator {
                 () -> new MCPInvalidRequestException("Executable comments are not supported by the MCP explain query tool."));
         List<SQLStatementToken> tokens = scanner.tokenize(actualExplainSql);
         checkExplainCandidate(tokens, explainedStatement.getNormalizedSql(), actualExplainSql);
-        return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, "", explainedStatement.getReferencedObjects());
+        return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, "", explainedStatement.getReferencedObjects(), false);
     }
     
     private void checkExplainCandidate(final List<SQLStatementToken> tokens, final String sql, final String explainSql) {

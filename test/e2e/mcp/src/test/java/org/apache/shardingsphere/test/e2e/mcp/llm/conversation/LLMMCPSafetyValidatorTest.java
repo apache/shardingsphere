@@ -32,13 +32,6 @@ class LLMMCPSafetyValidatorTest {
     private final LLMMCPSafetyValidator validator = new LLMMCPSafetyValidator();
     
     @Test
-    void assertAllowReadOnlyCommonTableExpressionQuery() {
-        Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_query",
-                Map.of("sql", "WITH foo_orders AS (SELECT * FROM orders) SELECT * FROM foo_orders"));
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
     void assertRejectExplainFromQueryTool() {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_query",
                 Map.of("sql", "EXPLAIN SELECT * FROM orders"));
@@ -51,22 +44,6 @@ class LLMMCPSafetyValidatorTest {
         Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_explain_query",
                 Map.of("sql", "SELECT * FROM orders", "explain_sql", "EXPLAIN SELECT * FROM orders"));
         assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertRejectMutatingExplainQuery() {
-        Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_explain_query",
-                Map.of("sql", "UPDATE orders SET status = 'PAID'", "explain_sql", "EXPLAIN UPDATE orders SET status = 'PAID'"));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().failureType(), is("unsafe_sql_attempted"));
-    }
-    
-    @Test
-    void assertRejectDataModifyingCommonTableExpressionQuery() {
-        Optional<LLMMCPToolCallValidationFailure> actual = validator.validate("database_gateway_execute_query",
-                Map.of("sql", "WITH updated_orders AS (UPDATE orders SET status = 'PAID' RETURNING *) SELECT * FROM updated_orders"));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().failureType(), is("unsafe_sql_attempted"));
     }
     
     @Test

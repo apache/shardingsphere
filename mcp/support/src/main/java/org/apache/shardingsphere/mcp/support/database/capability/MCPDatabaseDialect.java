@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
@@ -53,15 +52,6 @@ public final class MCPDatabaseDialect {
         DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)
                 .orElseThrow(() -> new ServiceProviderNotFoundException(DialectDatabaseMetaData.class, actualDatabaseType));
         return new MCPDatabaseDialect(dialectDatabaseMetaData, new SystemDatabase(databaseTypeFromSPI));
-    }
-    
-    /**
-     * Get identifier quote character.
-     *
-     * @return identifier quote character
-     */
-    public QuoteCharacter getIdentifierQuoteCharacter() {
-        return dialectDatabaseMetaData.getQuoteCharacter();
     }
     
     /**

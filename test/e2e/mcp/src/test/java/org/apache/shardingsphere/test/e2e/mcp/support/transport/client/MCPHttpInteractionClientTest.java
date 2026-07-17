@@ -90,6 +90,15 @@ class MCPHttpInteractionClientTest {
     }
     
     @Test
+    void assertOpenWithInvalidNotificationResponse() {
+        FakeHttpClient httpClient = new FakeHttpClient();
+        httpClient.addResponse(200, Map.of("MCP-Session-Id", List.of("session")), "{\"result\":{}}");
+        httpClient.addResponse(202, Map.of(), "{}");
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new MCPHttpInteractionClient(ENDPOINT_URI, httpClient).open());
+        assertThat(actual.getMessage(), is("MCP notification response body must be empty."));
+    }
+    
+    @Test
     void assertGetInitializePayloadBeforeOpen() {
         assertThat(new MCPHttpInteractionClient(ENDPOINT_URI, new FakeHttpClient()).getInitializePayload(), is(Map.of()));
     }

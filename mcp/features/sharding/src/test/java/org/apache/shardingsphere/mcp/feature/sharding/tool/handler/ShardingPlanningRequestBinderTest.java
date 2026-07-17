@@ -32,7 +32,7 @@ class ShardingPlanningRequestBinderTest {
     void assertBindTableRule() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindTableRule(Map.of(
                 "database", "logic_db",
-                "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id", "algorithm_type", "INLINE"),
+                "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id", "algorithm_type", "INLINE", "auditors", "evidence_auditor"),
                 "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"),
                 "auditors", "dml_auditor"));
         assertThat(actual.getDatabase(), is("logic_db"));
@@ -45,7 +45,8 @@ class ShardingPlanningRequestBinderTest {
     @Test
     void assertBindTableReferenceRule() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindTableReferenceRule(Map.of(
-                "database", "logic_db", "rule", "ref_rule", "reference_tables", "t_order,t_order_item"));
+                "database", "logic_db", "rule", "ref_rule", "reference_tables", "t_order,t_order_item",
+                "structured_intent_evidence", Map.of("reference_tables", "evidence_table")));
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getRuleName(), is("ref_rule"));
         assertThat(actual.getReferenceTables(), is(List.of("t_order", "t_order_item")));
@@ -79,6 +80,16 @@ class ShardingPlanningRequestBinderTest {
                 Map.of("table", "t_order", "column", "id", "key_generator", "snowflake_generator")));
         assertThat(actual.getKeyGenerateStrategyName(), is("order_key_strategy"));
         assertThat(actual.getTable(), is("t_order"));
+        assertThat(actual.getKeyGeneratorName(), is("snowflake_generator"));
+    }
+    
+    @Test
+    void assertBindSequenceKeyGenerateStrategy() {
+        ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindKeyGenerateStrategy(Map.of(
+                "database", "logic_db", "key_generate_strategy", "order_sequence_strategy", "sequence", "order_seq",
+                "key_generator", "snowflake_generator"));
+        assertThat(actual.getKeyGenerateStrategyName(), is("order_sequence_strategy"));
+        assertThat(actual.getSequenceName(), is("order_seq"));
         assertThat(actual.getKeyGeneratorName(), is("snowflake_generator"));
     }
     

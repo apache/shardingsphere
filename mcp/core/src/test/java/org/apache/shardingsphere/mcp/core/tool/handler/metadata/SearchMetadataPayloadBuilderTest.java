@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
@@ -51,7 +51,7 @@ class SearchMetadataPayloadBuilderTest {
     void assertBuildsLargeResultGuidance() {
         MetadataSearchResult searchResult = new MetadataSearchResult(List.of(createHit("logic_db", "public", "orders", List.of("name"))),
                 Map.of("object_types", List.of("table")), 101, 100, true, 100);
-        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPDatabaseRequestContext.class), createRequest("", "", ""), searchResult, TOOL_NAME);
+        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPFeatureRequestContext.class), createRequest("", "", ""), searchResult, TOOL_NAME);
         assertThat(actual.get("summary"), is("Metadata search returned 100 of 101 matches."));
         assertTrue((Boolean) actual.get("truncated"));
         Map<?, ?> actualLargeResultGuidance = (Map<?, ?>) actual.get("large_result_guidance");
@@ -61,9 +61,9 @@ class SearchMetadataPayloadBuilderTest {
     
     @Test
     void assertBuildsEmptyStateWithBroadenedSearchAction() {
-        MCPDatabaseRequestContext databaseContext = createDatabaseContext();
+        MCPFeatureRequestContext requestContext = createDatabaseContext();
         MetadataSearchResult searchResult = new MetadataSearchResult(List.of(), Map.of(), 0, 0, false, 100);
-        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(databaseContext, createRequest("logic_db", "public", "missing"), searchResult, TOOL_NAME);
+        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(requestContext, createRequest("logic_db", "public", "missing"), searchResult, TOOL_NAME);
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.get("empty_state");
         assertThat(actualEmptyState.get("category"), is("object_not_visible"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
@@ -80,7 +80,7 @@ class SearchMetadataPayloadBuilderTest {
                 createHit("baz_db", "public", "orders", List.of("name")),
                 createHit("foo_db", "public", "orders_archive", List.of("name"))),
                 Map.of(), 3, 3, false, 100);
-        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPDatabaseRequestContext.class), createRequest("", "", "orders"), searchResult, TOOL_NAME);
+        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPFeatureRequestContext.class), createRequest("", "", "orders"), searchResult, TOOL_NAME);
         Map<?, ?> actualAmbiguityState = (Map<?, ?>) actual.get("ambiguity_state");
         assertTrue((Boolean) actualAmbiguityState.get("ambiguous"));
         assertThat(actualAmbiguityState.get("ambiguous_by"), is(List.of("name", "database")));
@@ -101,8 +101,8 @@ class SearchMetadataPayloadBuilderTest {
                 .matchKind("exact").matchedFields(matchedFields).matchedValue(name).build();
     }
     
-    private MCPDatabaseRequestContext createDatabaseContext() {
-        MCPDatabaseRequestContext result = mock(MCPDatabaseRequestContext.class);
+    private MCPFeatureRequestContext createDatabaseContext() {
+        MCPFeatureRequestContext result = mock(MCPFeatureRequestContext.class);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureCapabilityFacade capabilityFacade = mock(MCPFeatureCapabilityFacade.class);
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);

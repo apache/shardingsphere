@@ -38,14 +38,15 @@ final class ShardingWorkflowLifecycleSpec {
     
     private final Function<ShardingWorkflowRequest, Boolean> existsSupplier;
     
-    private final Function<ShardingWorkflowRequest, Boolean> requiredInputSupplier;
+    private final BiFunction<ShardingWorkflowRequest, WorkflowContextSnapshot, Boolean> requiredInputSupplier;
     
     private final BiFunction<ShardingWorkflowRequest, WorkflowContextSnapshot, Boolean> algorithmPlanSupplier;
     
     private final Function<ShardingWorkflowRequest, RuleArtifact> artifactSupplier;
     
     ShardingWorkflowLifecycleSpec(final WorkflowKind workflowKind, final String defaultOperationType, final String summary,
-                                  final Function<ShardingWorkflowRequest, Boolean> existsSupplier, final Function<ShardingWorkflowRequest, Boolean> requiredInputSupplier,
+                                  final Function<ShardingWorkflowRequest, Boolean> existsSupplier,
+                                  final BiFunction<ShardingWorkflowRequest, WorkflowContextSnapshot, Boolean> requiredInputSupplier,
                                   final BiFunction<ShardingWorkflowRequest, WorkflowContextSnapshot, Boolean> algorithmPlanSupplier,
                                   final Function<ShardingWorkflowRequest, RuleArtifact> artifactSupplier) {
         this.workflowKind = workflowKind;

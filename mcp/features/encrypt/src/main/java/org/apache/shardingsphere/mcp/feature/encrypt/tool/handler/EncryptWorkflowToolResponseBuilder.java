@@ -38,7 +38,7 @@ final class EncryptWorkflowToolResponseBuilder {
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
         WorkflowPropertySource propertySource = snapshot.getRequest();
-        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, propertySource);
+        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, propertySource);
         result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
         return result;
     }

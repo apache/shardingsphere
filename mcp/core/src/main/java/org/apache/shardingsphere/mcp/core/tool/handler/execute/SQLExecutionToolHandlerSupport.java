@@ -23,8 +23,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 
@@ -34,8 +36,16 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class SQLExecutionToolHandlerSupport {
     
+    private static final MCPStatementAnalyzer STATEMENT_ANALYZER = new MCPStatementAnalyzer();
+    
     static boolean isQueryStatement(final ClassificationResult classificationResult) {
         return SupportedMCPStatement.QUERY == classificationResult.getStatementClass();
+    }
+    
+    static ClassificationResult analyze(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments, final String sql) {
+        String database = toolArguments.getStringArgument("database");
+        MCPDatabaseCapability databaseCapability = requestContext.getCapabilityFacade().provide(database).orElseThrow(DatabaseCapabilityNotFoundException::new);
+        return STATEMENT_ANALYZER.analyze(sql, databaseCapability);
     }
     
     static void checkExecutionArguments(final MCPToolArguments toolArguments, final String sourceTool) {
@@ -65,7 +75,7 @@ final class SQLExecutionToolHandlerSupport {
         return createExecutionRequest(sessionId, toolArguments, schema, sql, sourceTool, true);
     }
     
-    static String resolveSchema(final MCPDatabaseRequestContext databaseContext, final MCPToolArguments toolArguments) {
+    static String resolveSchema(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments) {
         String result = toolArguments.getStringArgument("schema");
         if (!result.isEmpty()) {
             return result;
@@ -74,7 +84,7 @@ final class SQLExecutionToolHandlerSupport {
         if (database.isEmpty()) {
             return "";
         }
-        List<ShardingSphereSchema> schemas = databaseContext.getMetadataQueryFacade().querySchemas(database);
+        List<ShardingSphereSchema> schemas = requestContext.getMetadataQueryFacade().querySchemas(database);
         return 1 == schemas.size() ? schemas.iterator().next().getName() : "";
     }
     

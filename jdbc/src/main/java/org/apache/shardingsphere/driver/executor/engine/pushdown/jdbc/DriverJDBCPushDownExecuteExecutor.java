@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteCallbackFactory;
@@ -105,7 +106,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
             processEngine.executeSQL(executionGroupContext, executionContext.getQueryContext());
             List<Boolean> results = jdbcExecutor.execute(executionGroupContext,
                     new ExecuteCallbackFactory(prepareEngine.getType()).newInstance(database, executeCallback, executionContext.getSqlStatementContext().getSqlStatement()));
-            if (isNeedImplicitCommit(executionContext.getSqlStatementContext().getSqlStatement())) {
+            if (isCurrentTransactionCommitRequired(executionContext.getSqlStatementContext().getSqlStatement())) {
                 connection.commit();
             }
             PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(executionContext.getSqlStatementContext());
@@ -135,9 +136,9 @@ public final class DriverJDBCPushDownExecuteExecutor {
         return result;
     }
     
-    private boolean isNeedImplicitCommit(final SQLStatement sqlStatement) {
+    private boolean isCurrentTransactionCommitRequired(final SQLStatement sqlStatement) {
         return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement
-                && new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption().isDDLNeedImplicitCommit();
+                && DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION == new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption().getDDLCommitPolicy();
     }
     
     /**

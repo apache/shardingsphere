@@ -137,7 +137,7 @@
     <expected_answer>
       The model should call database_gateway_validate_workflow with the relevant plan_id or workflow context after the controlled execution has
       occurred, then compare the validation layers against live metadata resources and any independent read-only query evidence. If required
-      physical columns, DistSQL rule metadata, or table metadata are missing, it should report the specific failed validation layer and next
+      planned DistSQL rule configuration or logical metadata are missing or mismatched, it should report the specific failed validation layer and next
       actions rather than declaring success from the earlier planning response.
     </expected_answer>
     <verification>

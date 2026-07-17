@@ -140,8 +140,6 @@ final class LLMMCPModelFacingToolResponseFormatter {
         List<Map<String, Object>> summaries = new LinkedList<>();
         for (Map<String, Object> each : artifacts.subList(0, Math.min(artifacts.size(), 3))) {
             Map<String, Object> summary = new LinkedHashMap<>(4, 1F);
-            putArtifactCount(each, summary, "ddl_artifacts", "ddl_artifact_count");
-            putArtifactCount(each, summary, "index_plan", "index_plan_count");
             putArtifactCount(each, summary, "distsql_artifacts", "distsql_artifact_count");
             if (!summary.isEmpty()) {
                 summaries.add(summary);

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
@@ -34,13 +34,13 @@ import java.util.Map;
 /**
  * Tool handler for shadow algorithm cleanup workflow planning.
  */
-public final class PlanShadowAlgorithmCleanupToolHandler implements MCPToolHandler<MCPWorkflowRequestContext> {
+public final class PlanShadowAlgorithmCleanupToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private final ShadowWorkflowPlanningService planningService = new ShadowWorkflowPlanningService();
     
     @Override
-    public Class<MCPWorkflowRequestContext> getContextType() {
-        return MCPWorkflowRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -49,11 +49,11 @@ public final class PlanShadowAlgorithmCleanupToolHandler implements MCPToolHandl
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         ShadowAlgorithmCleanupWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowAlgorithmCleanupWorkflowRequest::new, arguments,
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence);
-        WorkflowContextSnapshot snapshot = planningService.planAlgorithmCleanup(workflowContext.getWorkflowSessionContext(), workflowContext.getQueryFacade(), request);
-        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
+        WorkflowContextSnapshot snapshot = planningService.planAlgorithmCleanup(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
+        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final ShadowAlgorithmCleanupWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {

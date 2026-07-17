@@ -41,21 +41,21 @@ class ShadowInspectionServiceTest {
     void assertQueryRules() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         new ShadowInspectionService().queryRules(queryFacade, "logic_db");
-        verify(queryFacade).query("logic_db", "", "SHOW SHADOW RULES FROM logic_db");
+        verify(queryFacade).query("logic_db", "SHOW SHADOW RULES FROM logic_db");
     }
     
     @Test
     void assertQueryRule() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         new ShadowInspectionService().queryRule(queryFacade, "logic_db", "shadow_rule");
-        verify(queryFacade).query("logic_db", "", "SHOW SHADOW RULE shadow_rule FROM logic_db");
+        verify(queryFacade).query("logic_db", "SHOW SHADOW RULE shadow_rule FROM logic_db");
     }
     
     @Test
     void assertQueryTableRule() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         new ShadowInspectionService().queryTableRule(queryFacade, "logic_db", "t_order");
-        verify(queryFacade).query("logic_db", "", "SHOW SHADOW TABLE RULE t_order FROM logic_db");
+        verify(queryFacade).query("logic_db", "SHOW SHADOW TABLE RULE t_order FROM logic_db");
     }
     
     @Test

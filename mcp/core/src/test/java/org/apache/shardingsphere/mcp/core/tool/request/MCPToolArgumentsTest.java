@@ -130,7 +130,7 @@ class MCPToolArgumentsTest {
     private static Stream<Arguments> getStringCollectionArgumentCases() {
         return Stream.of(
                 Arguments.of("missing collection", Map.of(), List.of()),
-                Arguments.of("normalized collection", Map.of("steps", List.of(" ddl ", "", "rule_distsql")), List.of("ddl", "rule_distsql")));
+                Arguments.of("normalized collection", Map.of("steps", List.of(" rule_distsql ", "", "logical_metadata")), List.of("rule_distsql", "logical_metadata")));
     }
     
 }

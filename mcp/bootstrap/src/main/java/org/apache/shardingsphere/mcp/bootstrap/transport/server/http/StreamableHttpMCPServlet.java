@@ -133,13 +133,14 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         setUtf8Encoding(request, response);
+        if (!validateTransportSecurity(request, response)) {
+            return;
+        }
         if (!isEventStreamAccepted(request)) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Accept must include text/event-stream.");
             return;
         }
-        if (validateTransportSecurity(request, response)) {
-            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "HTTP GET event streams are not supported.");
-        }
+        response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "HTTP GET event streams are not supported.");
     }
     
     private boolean isEventStreamAccepted(final HttpServletRequest request) {
@@ -164,26 +165,22 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        setUtf8Encoding(request, response);
+        if (!validateTransportSecurity(request, response)) {
+            return;
+        }
         if (!isJsonContentType(request)) {
             response.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Content-Type must be application/json.");
             return;
         }
         SessionAwareHttpServletResponse actualResponse = withInitializeProtocolHeader(response);
-        serviceRequest(request, actualResponse);
+        serviceWithApplicationClassLoader(request, actualResponse);
         bindSessionIdentity(request, actualResponse);
     }
     
     private boolean isJsonContentType(final HttpServletRequest request) {
         String contentType = Objects.toString(request.getContentType(), "").trim();
         return contentType.isEmpty() || JSON_CONTENT_TYPE.equalsIgnoreCase(contentType.split(";", 2)[0].trim());
-    }
-    
-    private void serviceRequest(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        setUtf8Encoding(request, response);
-        if (!validateTransportSecurity(request, response)) {
-            return;
-        }
-        serviceWithApplicationClassLoader(request, response);
     }
     
     private boolean validateTransportSecurity(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
@@ -221,8 +218,12 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        setUtf8Encoding(request, response);
+        if (!validateTransportSecurity(request, response)) {
+            return;
+        }
         String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
-        serviceRequest(request, response);
+        serviceWithApplicationClassLoader(request, response);
         if (200 == response.getStatus()) {
             sessionExecutionCoordinator.closeSession(sessionId);
         }

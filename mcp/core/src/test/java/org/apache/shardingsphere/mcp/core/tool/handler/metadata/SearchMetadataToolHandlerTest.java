@@ -20,14 +20,14 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.DatabaseMetadataFixture;
-import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestScopeFixture;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestContextFixture;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.TableMetadataFixture;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -83,8 +83,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadata() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual =
                     new SearchMetadataToolHandler().handle(requestContext, Map.of("query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.INDEX.name())));
             Map<String, Object> actualPayload = actual.toPayload();
@@ -104,8 +104,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithSequence() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext,
                     Map.of("database", "runtime_db", "query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.SEQUENCE.name())));
             Map<String, Object> actualPayload = actual.toPayload();
@@ -118,11 +118,11 @@ class SearchMetadataToolHandlerTest {
     @Test
     void assertHandleSearchMetadataWithStorageUnit() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
-        MCPDatabaseRequestContext databaseContext = mock(MCPDatabaseRequestContext.class);
-        when(databaseContext.getMetadataQueryFacade()).thenReturn(mock(MCPMetadataQueryFacade.class));
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(databaseContext, Map.of("database", "logic_db", "query", "write", "object_types", List.of("storage_unit")));
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+        when(requestContext.getMetadataQueryFacade()).thenReturn(mock(MCPMetadataQueryFacade.class));
+        when(requestContext.getQueryFacade()).thenReturn(queryFacade);
+        MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db", "query", "write", "object_types", List.of("storage_unit")));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actual, isA(MCPItemsPayload.class));
         MetadataSearchHit actualHit = (MetadataSearchHit) ((List<?>) actualPayload.get("items")).getFirst();
@@ -134,8 +134,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataRejectsQueryInObjectTypes() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                     () -> new SearchMetadataToolHandler().handle(requestContext,
                             Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("table", "orders"))));
@@ -145,8 +145,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithEmptyQuery() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db"));
             Map<String, Object> actualPayload = actual.toPayload();
             List<String> actualNames = new LinkedList<>();
@@ -165,8 +165,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithLargeResultGuidance() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope(createLargeDatabaseMetadata())) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext(createLargeDatabaseMetadata())) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "large_db", "object_types", List.of(SupportedMCPMetadataObjectType.TABLE.name())));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((List<?>) actualPayload.get("items")).size(), is(100));
@@ -190,8 +190,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithBlankAllDatabaseGuard() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of());
             Map<String, Object> actualPayload = actual.toPayload();
             List<String> actualNames = new LinkedList<>();
@@ -211,8 +211,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithEmptyResultGuidance() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db", "query", "missing"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actualPayload.get("summary"), is("Metadata search returned 0 of 0 matches."));
@@ -228,8 +228,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithObjectNotVisibleInKnownSchema() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db", "schema", "public", "query", "missing", "object_types", List.of("table")));
             Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
             assertThat(actualEmptyState.get("category"), is("object_not_visible"));
@@ -239,8 +239,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithUnknownDatabase() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "missing_db", "query", "orders"));
             Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
             assertThat(actualEmptyState.get("category"), is("unknown_database"));
@@ -250,8 +250,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithSchemaNotVisible() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db", "schema", "missing_schema", "object_types", List.of("table")));
             Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
             assertThat(actualEmptyState.get("category"), is("schema_not_visible"));
@@ -261,7 +261,7 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithoutRuntimeDatabase() {
-        MCPRequestScope requestContext = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of()), "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(List.of()), "session-1");
         MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of());
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
@@ -270,8 +270,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithAmbiguityGuidance() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope(createDuplicatedTableMetadata())) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext(createDuplicatedTableMetadata())) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("query", "orders"));
             Map<String, Object> actualPayload = actual.toPayload();
             Map<?, ?> actualAmbiguityState = (Map<?, ?>) actualPayload.get("ambiguity_state");
@@ -289,8 +289,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithPrefixNameAmbiguity() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope(createDuplicatedTableMetadata())) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext(createDuplicatedTableMetadata())) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("query", "order"));
             Map<?, ?> actualAmbiguityState = (Map<?, ?>) actual.toPayload().get("ambiguity_state");
             assertTrue((Boolean) actualAmbiguityState.get("ambiguous"));
@@ -301,8 +301,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithoutUnrelatedChildAmbiguity() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope()) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("database", "logic_db", "schema", "public", "query", "orders"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((List<?>) actualPayload.get("items")).size(), is(5));
@@ -313,8 +313,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithAmbiguityAcrossCompleteResult() {
-        try (RequestScopeFixture requestScopeFixture = createSearchRequestScope(createDuplicatedTableMetadata())) {
-            MCPRequestScope requestContext = requestScopeFixture.getRequestScope();
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext(createDuplicatedTableMetadata())) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of("query", "orders"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((List<?>) actualPayload.get("items")).size(), is(3));
@@ -335,12 +335,12 @@ class SearchMetadataToolHandlerTest {
         return result;
     }
     
-    private RequestScopeFixture createSearchRequestScope() {
-        return createSearchRequestScope(ResourceTestDataFactory.createDatabaseMetadata());
+    private RequestContextFixture createSearchRequestContext() {
+        return createSearchRequestContext(ResourceTestDataFactory.createDatabaseMetadata());
     }
     
-    private RequestScopeFixture createSearchRequestScope(final List<DatabaseMetadataFixture> databaseMetadata) {
-        return ResourceTestDataFactory.createRequestScopeFixture(createSearchRuntimeContext(databaseMetadata), databaseMetadata);
+    private RequestContextFixture createSearchRequestContext(final List<DatabaseMetadataFixture> databaseMetadata) {
+        return ResourceTestDataFactory.createRequestContextFixture(createSearchRuntimeContext(databaseMetadata), databaseMetadata);
     }
     
     private List<DatabaseMetadataFixture> createDuplicatedTableMetadata() {

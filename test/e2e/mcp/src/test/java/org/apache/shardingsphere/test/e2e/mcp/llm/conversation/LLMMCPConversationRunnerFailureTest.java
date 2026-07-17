@@ -272,22 +272,6 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     }
     
     @Test
-    void assertRunWithUnsafeSqlAttempted() throws IOException, InterruptedException {
-        LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
-        LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "database_gateway_execute_query",
-                        Map.of("database", DATABASE_NAME, "schema", SCHEMA_NAME, "sql", "UPDATE orders SET status = 'DONE'"),
-                        "tool-call-response"));
-        
-        LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
-        
-        assertThat(actual.getAssertionReport().getFailureType(), is("unsafe_sql_attempted"));
-        assertThat(actual.getInteractionTrace().getFirst().getTargetName(), is("database_gateway_execute_query"));
-        verify(getMCPInteractionClient(), never()).call(anyString(), anyMap());
-    }
-    
-    @Test
     void assertRunWithUnsafeExecuteUpdateAttempted() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_update"));
         LLMMCPConversationRunner actualRunner = createRunner(1);

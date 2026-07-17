@@ -15,37 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.workflow.model;
+package org.apache.shardingsphere.mcp.support.database.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.sql.SQLException;
 
 /**
- * DDL artifact.
+ * Classified MCP database query failure.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DDLArtifact {
+public final class MCPDatabaseQueryFailedException extends MCPQueryFailedException {
     
-    private final String artifactType;
+    private static final long serialVersionUID = 6131347880409413845L;
     
-    private final String sql;
+    private final MCPJDBCErrorCategory category;
     
-    private final int executionOrder;
-    
-    /**
-     * Convert to map.
-     *
-     * @return map representation
-     */
-    public Map<String, Object> toMap() {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("artifact_type", artifactType);
-        result.put("sql", sql);
-        result.put("execution_order", executionOrder);
-        return result;
+    public MCPDatabaseQueryFailedException(final MCPJDBCErrorCategory category, final SQLException cause) {
+        super(cause.getMessage(), cause);
+        this.category = category;
     }
 }

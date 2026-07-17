@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.core.completion.provider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
@@ -28,9 +27,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -55,7 +56,7 @@ class MetadataCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new MetadataCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
+        assertThat(new MetadataCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @Test
@@ -160,7 +161,7 @@ class MetadataCompletionProviderTest {
     void assertCompleteColumn() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumns("logic_db", "public", "t_order"))
-                .thenReturn(List.of(new ShardingSphereColumn("order_id", java.sql.Types.OTHER, false, false, false, true, false, true)));
+                .thenReturn(List.of(new MCPColumnMetadata("t_order", "order_id", 1, java.sql.Types.BIGINT, "BIGINT", Nullability.NOT_NULLABLE)));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("column", Map.of("database", "logic_db", "schema", "public", "table", "t_order")));
         assertCandidate(actual, "order_id");
@@ -190,7 +191,7 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteStorageUnit() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade),
                 createRequestContext("storageUnit", Map.of("database", "logic_db")));
         assertCandidate(actual, "write_ds");
@@ -201,7 +202,7 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteStorageUnitAlias() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade),
                 createRequestContext("write_storage_unit", Map.of("database", "logic_db")));
         assertCandidate(actual, "write_ds");
@@ -212,7 +213,7 @@ class MetadataCompletionProviderTest {
     @Test
     void assertCompleteStorageUnitWithSingleDatabaseDefaulted() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
         MCPCompletionProviderResult actual = new MetadataCompletionProvider().complete(
                 createHandlerContext(mock(MCPMetadataQueryFacade.class), queryFacade, List.of(createDatabaseProfile("logic_db"))), createRequestContext("storageUnit", Map.of()));
         assertCandidate(actual, "write_ds");
@@ -235,12 +236,12 @@ class MetadataCompletionProviderTest {
                 contextArguments);
     }
     
-    private MCPDatabaseRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade) {
+    private MCPFeatureRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade) {
         return createHandlerContext(metadataQueryFacade, List.of());
     }
     
-    private MCPDatabaseRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final List<RuntimeDatabaseProfile> databaseProfiles) {
-        MCPDatabaseRequestContext result = mock(MCPDatabaseRequestContext.class);
+    private MCPFeatureRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final List<RuntimeDatabaseProfile> databaseProfiles) {
+        MCPFeatureRequestContext result = mock(MCPFeatureRequestContext.class);
         MCPFeatureCapabilityFacade capabilityFacade = mock(MCPFeatureCapabilityFacade.class);
         when(capabilityFacade.getDatabaseProfiles()).thenReturn(databaseProfiles);
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
@@ -248,15 +249,15 @@ class MetadataCompletionProviderTest {
         return result;
     }
     
-    private MCPDatabaseRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade) {
-        MCPDatabaseRequestContext result = createHandlerContext(metadataQueryFacade, List.of());
+    private MCPFeatureRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade) {
+        MCPFeatureRequestContext result = createHandlerContext(metadataQueryFacade, List.of());
         when(result.getQueryFacade()).thenReturn(queryFacade);
         return result;
     }
     
-    private MCPDatabaseRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
-                                                           final List<RuntimeDatabaseProfile> databaseProfiles) {
-        MCPDatabaseRequestContext result = createHandlerContext(metadataQueryFacade, databaseProfiles);
+    private MCPFeatureRequestContext createHandlerContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
+                                                          final List<RuntimeDatabaseProfile> databaseProfiles) {
+        MCPFeatureRequestContext result = createHandlerContext(metadataQueryFacade, databaseProfiles);
         when(result.getQueryFacade()).thenReturn(queryFacade);
         return result;
     }

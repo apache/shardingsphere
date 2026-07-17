@@ -135,6 +135,16 @@ public interface MCPInteractionClient extends AutoCloseable {
      */
     Map<String, Object> sendRawRequest(String requestId, String method, Map<String, Object> params) throws IOException, InterruptedException;
     
+    /**
+     * Send raw JSON-RPC notification.
+     *
+     * @param method method name
+     * @param params notification params
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     */
+    void sendRawNotification(String method, Map<String, Object> params) throws IOException, InterruptedException;
+    
     @Override
     void close() throws IOException, InterruptedException;
 }

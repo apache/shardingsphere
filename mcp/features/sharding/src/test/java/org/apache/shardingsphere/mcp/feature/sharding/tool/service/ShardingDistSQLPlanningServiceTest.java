@@ -179,6 +179,16 @@ class ShardingDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanSequenceKeyGenerateStrategy() {
+        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
+        request.setKeyGenerateStrategyName("order_sequence_strategy");
+        request.setSequenceName("order_seq");
+        request.setKeyGeneratorName("snowflake_generator");
+        assertThat(new ShardingDistSQLPlanningService().planKeyGenerateStrategy(request, "create").getSql(),
+                is("CREATE SHARDING KEY GENERATE STRATEGY `order_sequence_strategy`(SEQUENCE='order_seq', GENERATOR=`snowflake_generator`)"));
+    }
+    
+    @Test
     void assertPlanComponentCleanup() {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setComponentType("key_generator");

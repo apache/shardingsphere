@@ -37,7 +37,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapa
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
@@ -238,11 +238,11 @@ class MCPCompletionServiceTest {
         }
     }
     
-    private static final class SizedCompletionProvider implements MCPCompletionProvider<MCPWorkflowRequestContext> {
+    private static final class SizedCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
         
         @Override
-        public Class<MCPWorkflowRequestContext> getContextType() {
-            return MCPWorkflowRequestContext.class;
+        public Class<MCPFeatureRequestContext> getContextType() {
+            return MCPFeatureRequestContext.class;
         }
         
         @Override
@@ -251,7 +251,7 @@ class MCPCompletionServiceTest {
         }
         
         @Override
-        public MCPCompletionProviderResult complete(final MCPWorkflowRequestContext handlerContext, final MCPCompletionRequest request) {
+        public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
             return new MCPCompletionProviderResult(createCandidates());
         }
         
@@ -261,11 +261,11 @@ class MCPCompletionServiceTest {
         }
     }
     
-    private static final class InferredContextCompletionProvider implements MCPCompletionProvider<MCPWorkflowRequestContext> {
+    private static final class InferredContextCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
         
         @Override
-        public Class<MCPWorkflowRequestContext> getContextType() {
-            return MCPWorkflowRequestContext.class;
+        public Class<MCPFeatureRequestContext> getContextType() {
+            return MCPFeatureRequestContext.class;
         }
         
         @Override
@@ -274,16 +274,16 @@ class MCPCompletionServiceTest {
         }
         
         @Override
-        public MCPCompletionProviderResult complete(final MCPWorkflowRequestContext handlerContext, final MCPCompletionRequest request) {
+        public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
             return new MCPCompletionProviderResult(List.of(new MCPCompletionCandidate("t_order", "logical table", "test-provider")), Map.of("schema", "public"), List.of(), "");
         }
     }
     
-    private static final class MissingContextCompletionProvider implements MCPCompletionProvider<MCPWorkflowRequestContext> {
+    private static final class MissingContextCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
         
         @Override
-        public Class<MCPWorkflowRequestContext> getContextType() {
-            return MCPWorkflowRequestContext.class;
+        public Class<MCPFeatureRequestContext> getContextType() {
+            return MCPFeatureRequestContext.class;
         }
         
         @Override
@@ -292,16 +292,16 @@ class MCPCompletionServiceTest {
         }
         
         @Override
-        public MCPCompletionProviderResult complete(final MCPWorkflowRequestContext handlerContext, final MCPCompletionRequest request) {
+        public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
             return new MCPCompletionProviderResult(List.of(), Map.of(), List.of("database"), "");
         }
     }
     
-    private static final class UnexpectedCompletionProvider implements MCPCompletionProvider<MCPWorkflowRequestContext> {
+    private static final class UnexpectedCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
         
         @Override
-        public Class<MCPWorkflowRequestContext> getContextType() {
-            return MCPWorkflowRequestContext.class;
+        public Class<MCPFeatureRequestContext> getContextType() {
+            return MCPFeatureRequestContext.class;
         }
         
         @Override
@@ -310,20 +310,20 @@ class MCPCompletionServiceTest {
         }
         
         @Override
-        public MCPCompletionProviderResult complete(final MCPWorkflowRequestContext handlerContext, final MCPCompletionRequest request) {
+        public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
             throw new AssertionError("Provider should not be invoked for undeclared completion arguments.");
         }
     }
     
-    private static final class BlockingCompletionProvider implements MCPCompletionProvider<MCPWorkflowRequestContext> {
+    private static final class BlockingCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
         
         private final CountDownLatch started = new CountDownLatch(1);
         
         private final CountDownLatch released = new CountDownLatch(1);
         
         @Override
-        public Class<MCPWorkflowRequestContext> getContextType() {
-            return MCPWorkflowRequestContext.class;
+        public Class<MCPFeatureRequestContext> getContextType() {
+            return MCPFeatureRequestContext.class;
         }
         
         @Override
@@ -332,7 +332,7 @@ class MCPCompletionServiceTest {
         }
         
         @Override
-        public MCPCompletionProviderResult complete(final MCPWorkflowRequestContext handlerContext, final MCPCompletionRequest request) {
+        public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
             started.countDown();
             try {
                 if (!released.await(1L, TimeUnit.SECONDS)) {

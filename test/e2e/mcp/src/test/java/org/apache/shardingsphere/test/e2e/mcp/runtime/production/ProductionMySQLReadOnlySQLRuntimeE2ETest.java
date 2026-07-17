@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPa
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -39,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETest {
+    
+    private static final long SLOW_ELICITATION_MILLIS = 11_000L;
     
     @Override
     protected boolean useSharedRuntimeFixture() {
@@ -166,6 +169,32 @@ class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRu
             Map<String, Object> primaryProperties = MCPInteractionPayloads.getRequiredObject(maskedPropertyPreview, "primary");
             assertThat(String.valueOf(primaryProperties.get("from-x")), is("1"));
             assertThat(String.valueOf(primaryProperties.get("to-y")), is("3"));
+            assertElicitationRequest(actualElicitationRequests);
+        }
+    }
+    
+    @Test
+    void assertElicitationCanExceedSdkDefaultRequestTimeout() throws IOException {
+        useTransport(RuntimeTransport.STDIO);
+        List<McpSchema.ElicitRequest> actualElicitationRequests = new CopyOnWriteArrayList<>();
+        try (McpSyncClient client = createElicitationClient(RuntimeTransport.STDIO, actualElicitationRequests, (requests, request) -> {
+            try {
+                Thread.sleep(SLOW_ELICITATION_MILLIS);
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(ex);
+            }
+            return createElicitationResult(requests, request);
+        })) {
+            client.initialize();
+            McpSchema.CallToolResult actual = client.callTool(new McpSchema.CallToolRequest(MASK_PLAN_TOOL_NAME, Map.of(
+                    "database", LOGICAL_DATABASE_NAME,
+                    "schema", LOGICAL_DATABASE_NAME,
+                    "table", "orders",
+                    "column", "status",
+                    "operation_type", "create",
+                    "algorithm_type", "MASK_FROM_X_TO_Y")));
+            assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObjectValue(actual.structuredContent(), "structuredContent").get("status")), is("planned"));
             assertElicitationRequest(actualElicitationRequests);
         }
     }

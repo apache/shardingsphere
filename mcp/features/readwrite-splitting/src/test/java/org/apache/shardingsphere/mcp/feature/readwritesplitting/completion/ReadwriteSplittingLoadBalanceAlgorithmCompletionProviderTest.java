@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class ReadwriteSplittingLoadBalanceAlgorithmCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
+        assertThat(new ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @Test
@@ -68,7 +68,7 @@ class ReadwriteSplittingLoadBalanceAlgorithmCompletionProviderTest {
         when(queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS")).thenReturn(List.of(
                 Map.of("type", "ROUND_ROBIN", "description", "Round robin load balance", "secret", "hidden"),
                 Map.of("type", "")));
-        MCPDatabaseRequestContext handlerContext = mock(MCPDatabaseRequestContext.class);
+        MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext(ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME));

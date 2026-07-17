@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflo
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
@@ -44,7 +44,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -60,12 +59,11 @@ class ShadowWorkflowToolHandlersTest {
                 MockedConstruction<ShadowWorkflowPlanningService> mocked = mockConstruction(ShadowWorkflowPlanningService.class,
                         (mock, context) -> when(mock.planRule(any(), any(), any())).thenReturn(createSnapshot(createRuleRequest(), ShadowFeatureDefinition.RULE_WORKFLOW_KIND.getValue())))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPSuccessPayload actual = new PlanShadowRuleToolHandler().handle(fixture.workflowContext, Map.of(
+            MCPSuccessPayload actual = new PlanShadowRuleToolHandler().handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
                     "algorithm_type", "SQL_HINT",
                     "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order")));
             Map<String, Object> actualPayload = actual.toPayload();
-            assertFalse(actualPayload.containsKey("ddl_artifacts"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
             assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/algorithm-plugins"), is("algorithm"));
             assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/rules"), is("rule"));
@@ -86,7 +84,7 @@ class ShadowWorkflowToolHandlersTest {
                                 new ShadowDefaultAlgorithmWorkflowRequest(), ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND.getValue())))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
             MCPSuccessPayload actual = new PlanDefaultShadowAlgorithmToolHandler()
-                    .handle(fixture.workflowContext, Map.of("database", "logic_db", "algorithm_type", "SQL_HINT"));
+                    .handle(fixture.requestContext, Map.of("database", "logic_db", "algorithm_type", "SQL_HINT"));
             ArgumentCaptor<ShadowDefaultAlgorithmWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowDefaultAlgorithmWorkflowRequest.class);
             verify(mocked.constructed().getFirst()).planDefaultAlgorithm(
                     eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());
@@ -103,7 +101,7 @@ class ShadowWorkflowToolHandlersTest {
                                 new ShadowAlgorithmCleanupWorkflowRequest(), ShadowFeatureDefinition.ALGORITHM_CLEANUP_WORKFLOW_KIND.getValue())))) {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
             MCPSuccessPayload actual = new PlanShadowAlgorithmCleanupToolHandler()
-                    .handle(fixture.workflowContext, Map.of("database", "logic_db", "algorithm_name", "unused_algorithm"));
+                    .handle(fixture.requestContext, Map.of("database", "logic_db", "algorithm_name", "unused_algorithm"));
             ArgumentCaptor<ShadowAlgorithmCleanupWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ShadowAlgorithmCleanupWorkflowRequest.class);
             verify(mocked.constructed().getFirst()).planAlgorithmCleanup(
                     eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());
@@ -145,7 +143,7 @@ class ShadowWorkflowToolHandlersTest {
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {
-        MCPWorkflowRequestContext result = mock(MCPWorkflowRequestContext.class);
+        MCPFeatureRequestContext result = mock(MCPFeatureRequestContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -156,7 +154,7 @@ class ShadowWorkflowToolHandlersTest {
         return new WorkflowContextFixture(result, workflowSessionContext, queryFacade, executionFacade);
     }
     
-    private record WorkflowContextFixture(MCPWorkflowRequestContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    private record WorkflowContextFixture(MCPFeatureRequestContext requestContext, WorkflowSessionContext workflowSessionContext,
                                           MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

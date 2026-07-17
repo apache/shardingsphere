@@ -35,13 +35,43 @@ class MCPJdbcMetadataLoaderFailureTest {
     @Test
     void assertLoadWithFailedConnection() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = mock(RuntimeDatabaseConfiguration.class);
-        SQLException expected = new SQLException("connection failed");
+        SQLException expected = new SQLException("permission denied", "28000", 335544352);
         when(runtimeDatabaseConfiguration.openConnection("logic_db")).thenThrow(expected);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                () -> metadataLoader.load("logic_db", runtimeDatabaseConfiguration,
-                        new RuntimeDatabaseProfile("logic_db", "FixtureDB", "", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
-        assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: connection_failed."));
+                () -> metadataLoader.load("logic_db", runtimeDatabaseConfiguration, createDatabaseProfile()));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED));
         assertThat(actual.getCause(), is(expected));
+    }
+    
+    @Test
+    void assertLoadColumnsWithFailedConnection() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfiguration.openConnection("logic_db")).thenThrow(new SQLException("permission denied", "28000", 335544352));
+        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
+                () -> new MCPJdbcMetadataLoader().loadColumns("logic_db", runtimeDatabaseConfiguration, createDatabaseProfile(), "public", "t_order"));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED));
+    }
+    
+    @Test
+    void assertLoadSchemaColumnsWithFailedConnection() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfiguration.openConnection("logic_db")).thenThrow(new SQLException("permission denied", "28000", 335544352));
+        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
+                () -> new MCPJdbcMetadataLoader().loadSchemaColumns("logic_db", runtimeDatabaseConfiguration, createDatabaseProfile(), "public"));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED));
+    }
+    
+    @Test
+    void assertLoadIndexesWithFailedConnection() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfiguration.openConnection("logic_db")).thenThrow(new SQLException("permission denied", "28000", 335544352));
+        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
+                () -> new MCPJdbcMetadataLoader().loadIndexes("logic_db", runtimeDatabaseConfiguration, createDatabaseProfile(), "public", "t_order"));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED));
+    }
+    
+    private static RuntimeDatabaseProfile createDatabaseProfile() {
+        return new RuntimeDatabaseProfile("logic_db", "Firebird", "", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet());
     }
 }

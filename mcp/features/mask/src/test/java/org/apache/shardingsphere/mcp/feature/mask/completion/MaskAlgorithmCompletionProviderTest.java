@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class MaskAlgorithmCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new MaskAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
+        assertThat(new MaskAlgorithmCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @Test
@@ -65,7 +65,7 @@ class MaskAlgorithmCompletionProviderTest {
         when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenReturn(List.of(
                 Map.of("type", "MASK_FROM_X_TO_Y", "description", "Range mask"),
                 Map.of("type", "")));
-        MCPDatabaseRequestContext handlerContext = mock(MCPDatabaseRequestContext.class);
+        MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         MCPCompletionProviderResult actual = new MaskAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext(MaskFeatureDefinition.PLAN_PROMPT_NAME));

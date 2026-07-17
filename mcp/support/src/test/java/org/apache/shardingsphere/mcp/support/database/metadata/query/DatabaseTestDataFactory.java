@@ -28,6 +28,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +49,7 @@ final class DatabaseTestDataFactory {
         return List.of(
                 new DatabaseFixture("logic_db", "MySQL", "", List.of(
                         new SchemaFixture("public", List.of(
-                                new TableFixture("orders", List.of("order_id"), List.of("order_idx")),
+                                new TableFixture("orders", List.of("order_id", "amount"), List.of("order_idx")),
                                 new TableFixture("order_items", List.of("item_id"), List.of())),
                                 List.of(new TableFixture("orders_view", List.of("order_id"), List.of())), List.of()))),
                 new DatabaseFixture("runtime_db", "PostgreSQL", "", List.of(
@@ -83,6 +84,7 @@ final class DatabaseTestDataFactory {
         when(result.createStatement()).thenReturn(statement);
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseMetadata.databaseVersion);
         when(databaseMetaData.getURL()).thenReturn(SupportDatabaseTypeFactoryMocker.createJdbcUrl(databaseMetadata.databaseType));
+        when(databaseMetaData.getSearchStringEscape()).thenReturn("\\");
         when(databaseMetaData.getTables(nullable(String.class), nullable(String.class), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3, String[].class);
             return createResultSet("TABLE".equals(tableTypes[0]) ? createTableRows(databaseMetadata) : createViewRows(databaseMetadata));
@@ -96,8 +98,8 @@ final class DatabaseTestDataFactory {
         return result;
     }
     
-    private static List<Map<String, String>> createTableRows(final DatabaseFixture databaseMetadata) {
-        List<Map<String, String>> result = new LinkedList<>();
+    private static List<Map<String, Object>> createTableRows(final DatabaseFixture databaseMetadata) {
+        List<Map<String, Object>> result = new LinkedList<>();
         for (SchemaFixture each : databaseMetadata.schemas) {
             for (TableFixture table : each.tables) {
                 result.add(Map.of("TABLE_SCHEM", each.schema, "TABLE_CAT", "", "TABLE_NAME", table.name));
@@ -106,8 +108,8 @@ final class DatabaseTestDataFactory {
         return result;
     }
     
-    private static List<Map<String, String>> createViewRows(final DatabaseFixture databaseMetadata) {
-        List<Map<String, String>> result = new LinkedList<>();
+    private static List<Map<String, Object>> createViewRows(final DatabaseFixture databaseMetadata) {
+        List<Map<String, Object>> result = new LinkedList<>();
         for (SchemaFixture each : databaseMetadata.schemas) {
             for (TableFixture view : each.views) {
                 result.add(Map.of("TABLE_SCHEM", each.schema, "TABLE_CAT", "", "TABLE_NAME", view.name));
@@ -116,20 +118,21 @@ final class DatabaseTestDataFactory {
         return result;
     }
     
-    private static List<Map<String, String>> createColumnRows(final DatabaseFixture databaseMetadata, final String objectName) {
-        List<Map<String, String>> result = new LinkedList<>();
+    private static List<Map<String, Object>> createColumnRows(final DatabaseFixture databaseMetadata, final String objectName) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        String relationName = "%".equals(objectName) ? "" : unescapePattern(objectName);
         for (SchemaFixture each : databaseMetadata.schemas) {
             for (TableFixture table : each.tables) {
-                if (table.name.equals(objectName)) {
-                    for (String column : table.columns) {
-                        result.add(Map.of("COLUMN_NAME", column));
+                if (relationName.isEmpty() || table.name.equals(relationName)) {
+                    for (int i = 0; i < table.columns.size(); i++) {
+                        result.add(createColumnRow(table.name, table.columns.get(i), i + 1));
                     }
                 }
             }
             for (TableFixture view : each.views) {
-                if (view.name.equals(objectName)) {
-                    for (String column : view.columns) {
-                        result.add(Map.of("COLUMN_NAME", column));
+                if (relationName.isEmpty() || view.name.equals(relationName)) {
+                    for (int i = 0; i < view.columns.size(); i++) {
+                        result.add(createColumnRow(view.name, view.columns.get(i), i + 1));
                     }
                 }
             }
@@ -137,13 +140,35 @@ final class DatabaseTestDataFactory {
         return result;
     }
     
-    private static List<Map<String, String>> createIndexRows(final DatabaseFixture databaseMetadata, final String tableName) {
-        List<Map<String, String>> result = new LinkedList<>();
+    private static String unescapePattern(final String value) {
+        StringBuilder result = new StringBuilder(value.length());
+        boolean escaped = false;
+        for (char each : value.toCharArray()) {
+            if (escaped) {
+                result.append(each);
+                escaped = false;
+            } else if ('\\' == each) {
+                escaped = true;
+            } else {
+                result.append(each);
+            }
+        }
+        return escaped ? result.append('\\').toString() : result.toString();
+    }
+    
+    private static Map<String, Object> createColumnRow(final String relationName, final String columnName, final int ordinalPosition) {
+        return Map.of("TABLE_NAME", relationName, "COLUMN_NAME", columnName, "ORDINAL_POSITION", ordinalPosition,
+                "DATA_TYPE", Types.INTEGER, "TYPE_NAME", "INT", "NULLABLE", DatabaseMetaData.columnNullable);
+    }
+    
+    private static List<Map<String, Object>> createIndexRows(final DatabaseFixture databaseMetadata, final String tableName) {
+        List<Map<String, Object>> result = new LinkedList<>();
         for (SchemaFixture each : databaseMetadata.schemas) {
             for (TableFixture table : each.tables) {
                 if (table.name.equals(tableName)) {
                     for (String index : table.indexes) {
-                        result.add(Map.of("INDEX_NAME", index));
+                        result.add(Map.of("INDEX_NAME", index, "TYPE", DatabaseMetaData.tableIndexOther, "NON_UNIQUE", false,
+                                "ORDINAL_POSITION", 1, "COLUMN_NAME", table.columns.isEmpty() ? "" : table.columns.getFirst()));
                     }
                 }
             }
@@ -151,8 +176,8 @@ final class DatabaseTestDataFactory {
         return result;
     }
     
-    private static List<Map<String, String>> createSequenceRows(final DatabaseFixture databaseMetadata) {
-        List<Map<String, String>> result = new LinkedList<>();
+    private static List<Map<String, Object>> createSequenceRows(final DatabaseFixture databaseMetadata) {
+        List<Map<String, Object>> result = new LinkedList<>();
         for (SchemaFixture each : databaseMetadata.schemas) {
             for (String sequence : each.sequences) {
                 result.add(Map.of("SEQUENCE_SCHEMA", each.schema, "SEQUENCE_NAME", sequence));
@@ -161,12 +186,23 @@ final class DatabaseTestDataFactory {
         return result;
     }
     
-    private static ResultSet createResultSet(final List<Map<String, String>> rows) throws SQLException {
+    private static ResultSet createResultSet(final List<Map<String, Object>> rows) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         AtomicInteger rowIndex = new AtomicInteger(-1);
         when(result.next()).thenAnswer(invocation -> rowIndex.incrementAndGet() < rows.size());
-        when(result.getString(anyString())).thenAnswer(invocation -> rows.get(rowIndex.get()).get(invocation.getArgument(0, String.class)));
+        when(result.getString(anyString())).thenAnswer(invocation -> {
+            Object value = rows.get(rowIndex.get()).get(invocation.getArgument(0, String.class));
+            return null == value ? null : value.toString();
+        });
+        when(result.getInt(anyString())).thenAnswer(invocation -> getNumber(rows, rowIndex.get(), invocation.getArgument(0, String.class)).intValue());
+        when(result.getShort(anyString())).thenAnswer(invocation -> getNumber(rows, rowIndex.get(), invocation.getArgument(0, String.class)).shortValue());
+        when(result.getBoolean(anyString())).thenAnswer(invocation -> Boolean.TRUE.equals(rows.get(rowIndex.get()).get(invocation.getArgument(0, String.class))));
         return result;
+    }
+    
+    private static Number getNumber(final List<Map<String, Object>> rows, final int rowIndex, final String columnLabel) {
+        Object value = rows.get(rowIndex).get(columnLabel);
+        return value instanceof Number ? (Number) value : 0;
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

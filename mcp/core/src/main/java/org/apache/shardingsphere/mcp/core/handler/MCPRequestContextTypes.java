@@ -21,8 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 /**
  * MCP request context type utilities.
@@ -42,6 +41,6 @@ public final class MCPRequestContextTypes {
     }
     
     private static boolean isSupportedContextType(final Class<?> contextType) {
-        return MCPRequestContext.class == contextType || MCPDatabaseRequestContext.class == contextType || MCPWorkflowRequestContext.class == contextType;
+        return MCPRequestContext.class == contextType || MCPFeatureRequestContext.class == contextType;
     }
 }

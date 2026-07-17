@@ -121,7 +121,7 @@ final class MCPGuidancePayloadBuilder {
         result.put("metadata_first_resource", "shardingsphere://databases");
         result.put("preflight_rule", "Use database_gateway_validate_runtime_database with a configured database name before onboarding or troubleshooting runtime connectivity.");
         Map<String, Object> sqlToolSelection = new LinkedHashMap<>(3, 1F);
-        sqlToolSelection.put("read_only", "Use database_gateway_execute_query for one classifier-approved SELECT statement.");
+        sqlToolSelection.put("read_only", "Use database_gateway_execute_query for one parser-approved SELECT statement.");
         sqlToolSelection.put("explain", "Use database_gateway_execute_explain_query with the original SELECT and a model-generated database-native EXPLAIN SQL; do not use EXPLAIN ANALYZE.");
         sqlToolSelection.put("side_effecting", "Use database_gateway_execute_update with execution_mode=preview before execution.");
         result.put("sql_tool_selection", sqlToolSelection);

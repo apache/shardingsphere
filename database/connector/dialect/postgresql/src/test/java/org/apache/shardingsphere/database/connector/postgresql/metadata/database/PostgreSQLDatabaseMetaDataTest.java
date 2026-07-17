@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -94,7 +95,7 @@ class PostgreSQLDatabaseMetaDataTest {
     void assertGetTransactionOption() {
         DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
         assertFalse(actual.isSupportGlobalCSN());
-        assertFalse(actual.isDDLNeedImplicitCommit());
+        assertThat(actual.getDDLCommitPolicy(), is(DDLCommitPolicy.NO_ADDITIONAL_COMMIT));
         assertFalse(actual.isSupportAutoCommitInNestedTransaction());
         assertTrue(actual.isSupportDDLInXATransaction());
         assertFalse(actual.isSupportMetaDataRefreshInTransaction());
