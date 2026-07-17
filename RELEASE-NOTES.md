@@ -41,6 +41,7 @@
 1. Proxy: Fix MySQL BLOB data corruption when string-like prepared statement parameters target BLOB columns - [#39072](https://github.com/apache/shardingsphere/pull/39072)
 1. Agent: Fix wrong target class name in StaticMethodAdviceExecutor error logs - [#39077](https://github.com/apache/shardingsphere/pull/39077)
 1. Metadata: Fix Oracle metadata version comparison skipping identity and collation columns on 18c and later - [#39104](https://github.com/apache/shardingsphere/pull/39104)
+1. Sharding: Skip sharding conditions irrelevant to the routed table to avoid full-route broadcast for subqueries over non-binding sharding tables - [#39112](https://github.com/apache/shardingsphere/pull/39112)
 
 ### Enhancements
 

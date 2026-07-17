@@ -24,7 +24,9 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.exception.algorithm.ShardingRouteAlgorithmException;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.fixture.ShardingRouteEngineFixtureBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.AfterEach;
@@ -32,6 +34,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -203,6 +206,34 @@ class ShardingStandardRouteEngineTest {
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_interval_test_202101"));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_interval_test"));
+    }
+    
+    @Test
+    void assertRouteByShardingConditionsWithIrrelevantTableCondition() {
+        ShardingCondition relevantCondition = new ShardingCondition();
+        relevantCondition.getValues().add(new ListShardingConditionValue<>("order_id", "t_order", Collections.singletonList(1)));
+        relevantCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_order", Collections.singletonList(1)));
+        ShardingCondition irrelevantCondition = new ShardingCondition();
+        irrelevantCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_user", Collections.singletonList(1)));
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_order",
+                new ShardingConditions(Arrays.asList(relevantCondition, irrelevantCondition), mock(SQLStatementContext.class), mock(ShardingRule.class)),
+                mock(SQLStatementContext.class), new HintValueContext());
+        RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createBasedShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+    }
+    
+    @Test
+    void assertRouteByShardingConditionWithoutShardingValues() {
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_order",
+                new ShardingConditions(Collections.singletonList(new ShardingCondition()), mock(SQLStatementContext.class), mock(ShardingRule.class)),
+                mock(SQLStatementContext.class), new HintValueContext());
+        RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createBasedShardingRule());
+        assertThat(routeContext.getRouteUnits().size(), is(4));
+        assertThat(routeContext.getOriginalDataNodes().size(), is(1));
+        assertThat(routeContext.getOriginalDataNodes().iterator().next().size(), is(4));
     }
     
     private ShardingStandardRouteEngine createShardingStandardRouteEngine(final String logicTableName, final ShardingConditions shardingConditions,
