@@ -47,13 +47,18 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class PreparedStatementAdapterTest {
@@ -226,12 +231,15 @@ class PreparedStatementAdapterTest {
     
     @Test
     void assertSetCharacterStream() {
-        shardingSpherePreparedStatement.setCharacterStream(1, new StringReader("value"));
-        shardingSpherePreparedStatement.setCharacterStream(2, new StringReader("value"), 100);
-        shardingSpherePreparedStatement.setCharacterStream(3, new StringReader("value"), 100L);
-        assertParameter(shardingSpherePreparedStatement, 1, "value");
-        assertParameter(shardingSpherePreparedStatement, 2, "value");
-        assertParameter(shardingSpherePreparedStatement, 3, "value");
+        Reader reader1 = new StringReader("value1");
+        Reader reader2 = new StringReader("value2");
+        Reader reader3 = new StringReader("value3");
+        shardingSpherePreparedStatement.setCharacterStream(1, reader1);
+        shardingSpherePreparedStatement.setCharacterStream(2, reader2, 100);
+        shardingSpherePreparedStatement.setCharacterStream(3, reader3, 100L);
+        assertParameter(shardingSpherePreparedStatement, 1, reader1);
+        assertParameter(shardingSpherePreparedStatement, 2, reader2);
+        assertParameter(shardingSpherePreparedStatement, 3, reader3);
     }
     
     @Test
@@ -259,6 +267,62 @@ class PreparedStatementAdapterTest {
         assertParameter(shardingSpherePreparedStatement, 3, null);
         assertParameter(shardingSpherePreparedStatement, 4, null);
         assertParameter(shardingSpherePreparedStatement, 5, obj);
+    }
+    
+    @Test
+    void assertReplaySetParameter() throws SQLException {
+        PreparedStatement mockPreparedStatement = mock(PreparedStatement.class);
+        
+        InputStream stream = new ByteArrayInputStream(new byte[]{});
+        Reader reader = new StringReader("value");
+        Blob blob = mock(Blob.class);
+        
+        shardingSpherePreparedStatement.setBlob(1, blob);
+        shardingSpherePreparedStatement.setBinaryStream(2, stream, 10);
+        shardingSpherePreparedStatement.setClob(3, reader);
+        shardingSpherePreparedStatement.setObject(4, "test", Types.VARCHAR);
+        shardingSpherePreparedStatement.setNull(5, Types.INTEGER);
+        shardingSpherePreparedStatement.setInt(6, 100);
+        
+        shardingSpherePreparedStatement.replaySetParameter(mockPreparedStatement, shardingSpherePreparedStatement.getParameters());
+        
+        verify(mockPreparedStatement).setBlob(1, blob);
+        verify(mockPreparedStatement).setBinaryStream(2, stream, 10);
+        verify(mockPreparedStatement).setClob(3, reader);
+        verify(mockPreparedStatement).setObject(4, "test", Types.VARCHAR);
+        verify(mockPreparedStatement).setNull(5, Types.INTEGER);
+        verify(mockPreparedStatement).setObject(6, 100);
+    }
+    
+    @Test
+    void assertReplaySetParameterWithShiftedParams() throws SQLException {
+        PreparedStatement mockPreparedStatement = mock(PreparedStatement.class);
+        
+        InputStream stream = new ByteArrayInputStream(new byte[]{});
+        shardingSpherePreparedStatement.setBinaryStream(1, stream);
+        
+        List<Object> rewrittenParams = Arrays.asList("inserted_param", stream);
+        
+        shardingSpherePreparedStatement.replaySetParameter(mockPreparedStatement, rewrittenParams);
+        
+        verify(mockPreparedStatement).setObject(1, "inserted_param");
+        verify(mockPreparedStatement).setBinaryStream(2, stream);
+    }
+    
+    @Test
+    void assertReplaySetParameterForBlobInputStreamRegression() throws SQLException {
+        PreparedStatement mockPreparedStatement = mock(PreparedStatement.class);
+        InputStream inputStream1 = new ByteArrayInputStream(new byte[]{});
+        InputStream inputStream2 = new ByteArrayInputStream(new byte[]{});
+        
+        shardingSpherePreparedStatement.setBlob(1, inputStream1);
+        shardingSpherePreparedStatement.setBlob(2, inputStream2, 100L);
+        shardingSpherePreparedStatement.replaySetParameter(mockPreparedStatement, shardingSpherePreparedStatement.getParameters());
+        
+        verify(mockPreparedStatement).setBlob(1, inputStream1);
+        verify(mockPreparedStatement).setBlob(2, inputStream2, 100L);
+        verify(mockPreparedStatement, never()).setObject(eq(1), any());
+        verify(mockPreparedStatement, never()).setObject(eq(2), any());
     }
     
     private void assertParameter(final PreparedStatement actual, final int index, final Object param) {
