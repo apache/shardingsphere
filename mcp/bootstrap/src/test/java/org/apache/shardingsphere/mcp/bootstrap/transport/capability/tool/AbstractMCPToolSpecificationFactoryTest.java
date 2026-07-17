@@ -270,10 +270,15 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
     }
     
     protected MCPToolDescriptor createPlanningToolDescriptor(final String toolName) {
+        return createPlanningToolDescriptor(toolName, Collections.emptyMap());
+    }
+    
+    protected MCPToolDescriptor createPlanningToolDescriptor(final String toolName, final Map<String, Object> additionalProperties) {
         Map<String, Object> properties = new LinkedHashMap<>(2, 1F);
         properties.put("custom_properties", Map.of("type", "object", "description", "Custom properties.", "additionalProperties", true));
         properties.put("intent", Map.of("type", "object", "description", "Intent.", "properties",
                 Map.of("requires_review", Map.of("type", "boolean", "description", "Requires review.")), "required", List.of(), "additionalProperties", false));
+        properties.putAll(additionalProperties);
         return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", createInputSchema(properties, List.of()),
                 Map.of("type", "object"), MCPToolAnnotations.builder()
                         .title("Plan Custom Rule").readOnlyHint(false).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),

@@ -166,20 +166,21 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static Map<String, Object> createClarificationQuestion(final WorkflowContextSnapshot snapshot, final String fieldName, final String clarificationMessage) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
-        String inputType = resolveClarificationInputType(snapshot, fieldName);
+        boolean secret = isSecretClarificationField(snapshot, fieldName);
+        String inputType = resolveClarificationInputType(fieldName, secret);
         result.put(MCPPayloadFieldNames.FIELD, fieldName);
         result.put("question_key", fieldName.replace('.', '_'));
         result.put(MCPPayloadFieldNames.INPUT_TYPE, inputType);
         if ("boolean".equals(inputType)) {
             result.put(MCPPayloadFieldNames.ALLOWED_VALUES, List.of(true, false));
         }
-        result.put(MCPPayloadFieldNames.SECRET, isSecretClarificationField(snapshot, fieldName));
+        result.put(MCPPayloadFieldNames.SECRET, secret);
         result.put(MCPPayloadFieldNames.DISPLAY_MESSAGE, clarificationMessage.isBlank() ? String.format("Please provide `%s`.", fieldName) : clarificationMessage);
         return result;
     }
     
-    private static String resolveClarificationInputType(final WorkflowContextSnapshot snapshot, final String fieldName) {
-        if (isSecretClarificationField(snapshot, fieldName)) {
+    private static String resolveClarificationInputType(final String fieldName, final boolean secret) {
+        if (secret) {
             return "secret";
         }
         return fieldName.startsWith("requires_") ? "boolean" : "string";
@@ -195,7 +196,7 @@ public final class WorkflowGuidancePayloadBuilder {
                 return each.isSecret();
             }
         }
-        return false;
+        return true;
     }
     
     private static void addMissingInputsFromIssue(final Collection<String> missingInputs, final WorkflowContextSnapshot snapshot, final WorkflowIssue issue) {

@@ -81,7 +81,7 @@ class MCPToolClarificationPolicyTest extends AbstractMCPToolSpecificationFactory
     
     @Test
     void assertCreateClarificationFormWithSensitiveQuestion() {
-        Map<String, Object> payload = createClarifyingPayload(createClarifyingQuestion("custom_properties.access-token", "string", false, "Provide access token."));
+        Map<String, Object> payload = createClarifyingPayload(createClarifyingQuestion("custom_properties.access-token", "string", true, "Provide access token."));
         Optional<MCPToolClarificationPolicy.ClarificationForm> actual = policy.createClarificationForm(payload,
                 createPlanningToolDescriptor("database_gateway_plan_encrypt_rule"));
         assertTrue(actual.isEmpty());
