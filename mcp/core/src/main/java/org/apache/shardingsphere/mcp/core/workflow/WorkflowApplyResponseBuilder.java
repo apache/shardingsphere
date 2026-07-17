@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowGuidancePa
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,36 +48,28 @@ public final class WorkflowApplyResponseBuilder {
      * @param executionMode execution mode
      * @param issues workflow issues
      * @param stepResults step results
-     * @param executedDdl executed DDL
      * @param executedDistSql executed DistSQL
-     * @param skippedArtifacts skipped artifacts
      * @param manualArtifactPackage manual artifact package
      * @return workflow apply response payload
      */
     public Map<String, Object> build(final WorkflowContextSnapshot snapshot, final String status, final String executionMode,
                                      final Collection<Map<String, Object>> issues, final Collection<Map<String, Object>> stepResults,
-                                     final Collection<String> executedDdl, final Collection<String> executedDistSql, final Collection<String> skippedArtifacts,
-                                     final Map<String, Object> manualArtifactPackage) {
+                                     final Collection<String> executedDistSql, final Map<String, Object> manualArtifactPackage) {
         String planId = snapshot.getPlanId();
         Map<String, Object> result = new LinkedHashMap<>(24, 1F);
         result.put("response_mode", resolveResponseMode(status, executionMode));
-        result.put(MCPPayloadFieldNames.SUMMARY, createSummary(planId, status, executionMode, issues, executedDdl, executedDistSql));
+        result.put(MCPPayloadFieldNames.SUMMARY, createSummary(planId, status, executionMode, issues, executedDistSql));
         result.put(WorkflowFieldNames.PLAN_ID, planId);
         result.put("status", status);
         result.put(WorkflowFieldNames.EXECUTION_MODE, executionMode);
         result.put("issues", issues);
         result.put("step_results", stepResults);
-        boolean ruleDistSQLOnlyWorkflow = WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot);
-        if (!ruleDistSQLOnlyWorkflow) {
-            result.put("executed_ddl", executedDdl);
-        }
         result.put("executed_distsql", executedDistSql);
-        result.put("applied_artifacts", createAppliedArtifacts(executedDdl, executedDistSql));
-        result.put("skipped_artifacts", skippedArtifacts);
+        result.put("applied_artifacts", executedDistSql);
         result.put("manual_artifacts", manualArtifactPackage.isEmpty() ? List.of() : List.of(manualArtifactPackage));
         result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE, manualArtifactPackage);
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status) && !manualArtifactPackage.isEmpty()) {
-            result.put("manual_artifact_summary", createManualArtifactSummary(planId, manualArtifactPackage, ruleDistSQLOnlyWorkflow));
+            result.put("manual_artifact_summary", createManualArtifactSummary(planId, manualArtifactPackage));
             result.put("manual_follow_up", createManualFollowUp());
         }
         WorkflowGuidancePayloadBuilder.appendApplyGuidance(result, status);
@@ -95,7 +86,7 @@ public final class WorkflowApplyResponseBuilder {
      */
     Map<String, Object> buildFailureResponse(final WorkflowContextSnapshot snapshot, final String executionMode,
                                              final Collection<Map<String, Object>> issues) {
-        return build(snapshot, WorkflowLifecycle.STATUS_FAILED, executionMode, issues, List.of(), List.of(), List.of(), List.of(), Map.of());
+        return build(snapshot, WorkflowLifecycle.STATUS_FAILED, executionMode, issues, List.of(), List.of(), Map.of());
     }
     
     /**
@@ -111,7 +102,7 @@ public final class WorkflowApplyResponseBuilder {
                                                     final String applyExecutionMode, final Map<String, Object> manualArtifactPackage) {
         List<Map<String, Object>> previewArtifacts = createPreviewArtifacts(executableArtifacts);
         Map<String, Object> result = build(snapshot, STATUS_PREVIEW, WorkflowLifecycle.EXECUTION_MODE_PREVIEW,
-                List.of(), List.of(), List.of(), List.of(), List.of(), manualArtifactPackage);
+                List.of(), List.of(), List.of(), manualArtifactPackage);
         result.put("would_apply", false);
         result.put("preview_artifacts", previewArtifacts);
         result.put("review_focus", createPreviewReviewFocus(applyExecutionMode, previewArtifacts));
@@ -134,12 +125,12 @@ public final class WorkflowApplyResponseBuilder {
     }
     
     private String createSummary(final String planId, final String status, final String executionMode, final Collection<Map<String, Object>> issues,
-                                 final Collection<String> executedDdl, final Collection<String> executedDistSql) {
+                                 final Collection<String> executedDistSql) {
         if (WorkflowLifecycle.EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return String.format("Workflow apply preview is ready for plan `%s`.", planId);
         }
         if (WorkflowLifecycle.STATUS_COMPLETED.equals(status)) {
-            return String.format("Workflow apply completed for plan `%s` with %d applied artifact(s).", planId, executedDdl.size() + executedDistSql.size());
+            return String.format("Workflow apply completed for plan `%s` with %d applied artifact(s).", planId, executedDistSql.size());
         }
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
             return String.format("Workflow apply exported manual artifacts for plan `%s`; external execution is required before validation.", planId);
@@ -156,10 +147,10 @@ public final class WorkflowApplyResponseBuilder {
     
     private Map<String, Object> createPreviewArtifact(final WorkflowArtifactBundle.ExecutableWorkflowArtifact artifact) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("approval_step", artifact.approvalStep());
-        result.put("artifact_type", artifact.artifactType());
+        result.put("approval_step", WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL);
+        result.put("artifact_type", WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL);
         result.put("sql", artifact.displaySql());
-        result.put("side_effect_scope", artifact.ruleDistSql() ? "rule-metadata" : "physical-structure");
+        result.put("side_effect_scope", "rule-metadata");
         return result;
     }
     
@@ -227,18 +218,10 @@ public final class WorkflowApplyResponseBuilder {
                 "safe_independent_read_only_checks", "database_gateway_execute_query may run before manual execution confirmation when the user asked for read-only verification.");
     }
     
-    private Map<String, Object> createManualArtifactSummary(final String planId, final Map<String, Object> manualArtifactPackage, final boolean ruleDistSQLOnlyWorkflow) {
+    private Map<String, Object> createManualArtifactSummary(final String planId, final Map<String, Object> manualArtifactPackage) {
         int distSqlArtifactCount = getCollectionSize(manualArtifactPackage, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS);
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        if (!ruleDistSQLOnlyWorkflow) {
-            int ddlArtifactCount = getCollectionSize(manualArtifactPackage, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS);
-            int indexPlanCount = getCollectionSize(manualArtifactPackage, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN);
-            result.put("ddl_artifact_count", ddlArtifactCount);
-            result.put("index_plan_count", indexPlanCount);
-            result.put("total_artifact_count", ddlArtifactCount + indexPlanCount + distSqlArtifactCount);
-        } else {
-            result.put("total_artifact_count", distSqlArtifactCount);
-        }
+        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+        result.put("total_artifact_count", distSqlArtifactCount);
         result.put("distsql_artifact_count", distSqlArtifactCount);
         result.put("external_execution_required", true);
         result.put("requires_user_confirmation", true);
@@ -253,10 +236,4 @@ public final class WorkflowApplyResponseBuilder {
         return value instanceof Collection ? ((Collection<?>) value).size() : 0;
     }
     
-    private List<String> createAppliedArtifacts(final Collection<String> executedDdl, final Collection<String> executedDistSql) {
-        List<String> result = new LinkedList<>();
-        result.addAll(executedDdl);
-        result.addAll(executedDistSql);
-        return result;
-    }
 }

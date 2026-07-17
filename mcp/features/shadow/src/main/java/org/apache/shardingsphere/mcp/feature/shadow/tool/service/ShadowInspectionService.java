@@ -40,7 +40,7 @@ public final class ShadowInspectionService {
      * @return shadow rule rows
      */
     public List<Map<String, Object>> queryRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHADOW RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHADOW RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -52,7 +52,7 @@ public final class ShadowInspectionService {
      * @return shadow rule rows
      */
     public List<Map<String, Object>> queryRule(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHADOW RULE %s FROM %s",
+        return queryFacade.query(databaseName, String.format("SHOW SHADOW RULE %s FROM %s",
                 WorkflowSQLUtils.formatDistSQLIdentifier(ruleName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
@@ -64,7 +64,7 @@ public final class ShadowInspectionService {
      * @return shadow table rule rows
      */
     public List<Map<String, Object>> queryTableRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHADOW TABLE RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHADOW TABLE RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -76,7 +76,7 @@ public final class ShadowInspectionService {
      * @return shadow table rule rows
      */
     public List<Map<String, Object>> queryTableRule(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHADOW TABLE RULE %s FROM %s",
+        return queryFacade.query(databaseName, String.format("SHOW SHADOW TABLE RULE %s FROM %s",
                 WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
@@ -88,7 +88,7 @@ public final class ShadowInspectionService {
      * @return configured shadow algorithm rows
      */
     public List<Map<String, Object>> queryAlgorithms(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHADOW ALGORITHMS FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHADOW ALGORITHMS FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -99,7 +99,7 @@ public final class ShadowInspectionService {
      * @return default shadow algorithm rows
      */
     public List<Map<String, Object>> queryDefaultAlgorithm(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW DEFAULT SHADOW ALGORITHM FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW DEFAULT SHADOW ALGORITHM FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -110,7 +110,7 @@ public final class ShadowInspectionService {
      * @return count rows
      */
     public List<Map<String, Object>> queryRuleCount(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("COUNT SHADOW RULE FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("COUNT SHADOW RULE FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**

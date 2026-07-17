@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflo
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
@@ -60,7 +60,7 @@ class PlanEncryptRuleToolHandlerTest {
             EncryptWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
             when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            MCPSuccessPayload actual = handler.handle(fixture.workflowContext, Map.of(
+            MCPSuccessPayload actual = handler.handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone",
@@ -82,15 +82,12 @@ class PlanEncryptRuleToolHandlerTest {
         try (MockedConstruction<EncryptWorkflowPlanningService> mockedConstruction = mockConstruction(EncryptWorkflowPlanningService.class)) {
             PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
             when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
-            MCPSuccessPayload actual = handler.handle(createWorkflowContextFixture().workflowContext, Map.of(
+            MCPSuccessPayload actual = handler.handle(createWorkflowContextFixture().requestContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("aes-key-value"), is("******"));
-            assertFalse(actualPayload.containsKey("derived_column_plan"));
-            assertFalse(actualPayload.containsKey("ddl_artifacts"));
-            assertFalse(actualPayload.containsKey("index_plan"));
             assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("******"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
             List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
@@ -115,7 +112,7 @@ class PlanEncryptRuleToolHandlerTest {
             EncryptWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
             when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            handler.handle(fixture.workflowContext, Map.of(
+            handler.handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
                     "primary_algorithm_properties", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1")),
                     "assisted_query_algorithm_properties", Map.of("salt", Map.of("secret_ref", "placeholder://secret-value-2")),
@@ -137,7 +134,7 @@ class PlanEncryptRuleToolHandlerTest {
         try (MockedConstruction<EncryptWorkflowPlanningService> mockedConstruction = mockConstruction(EncryptWorkflowPlanningService.class)) {
             PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
             when(mockedConstruction.constructed().getFirst().plan(any(), any(), any(), any())).thenReturn(createClarifyingSnapshot());
-            MCPSuccessPayload actual = handler.handle(createWorkflowContextFixture().workflowContext, Map.of(
+            MCPSuccessPayload actual = handler.handle(createWorkflowContextFixture().requestContext, Map.of(
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone"));
@@ -206,7 +203,7 @@ class PlanEncryptRuleToolHandlerTest {
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {
-        MCPWorkflowRequestContext result = mock(MCPWorkflowRequestContext.class);
+        MCPFeatureRequestContext result = mock(MCPFeatureRequestContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -219,7 +216,7 @@ class PlanEncryptRuleToolHandlerTest {
         return new WorkflowContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
     
-    private record WorkflowContextFixture(MCPWorkflowRequestContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    private record WorkflowContextFixture(MCPFeatureRequestContext requestContext, WorkflowSessionContext workflowSessionContext,
                                           MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

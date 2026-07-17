@@ -36,7 +36,7 @@ public final class BroadcastRuleInspectionService {
      * @return broadcast rule rows
      */
     public List<Map<String, Object>> queryBroadcastRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW BROADCAST TABLE RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW BROADCAST TABLE RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -47,6 +47,6 @@ public final class BroadcastRuleInspectionService {
      * @return broadcast rule count rows
      */
     public List<Map<String, Object>> queryBroadcastRuleCount(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("COUNT BROADCAST RULE FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("COUNT BROADCAST RULE FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
 }

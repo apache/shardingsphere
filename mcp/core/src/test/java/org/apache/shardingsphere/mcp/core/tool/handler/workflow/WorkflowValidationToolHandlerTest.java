@@ -54,7 +54,7 @@ class WorkflowValidationToolHandlerTest {
         WorkflowHandlerTestFixture.Context fixture = WorkflowHandlerTestFixture.createContext(snapshot);
         WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(
                 WorkflowHandlerTestFixture.createDefinition("encrypt.rule", workflowValidationHandler, mock(MCPWorkflowApplySynchronizationHandler.class)))));
-        MCPSuccessPayload actual = handler.handle(fixture.workflowContext(), Map.of("plan_id", "plan-1"));
+        MCPSuccessPayload actual = handler.handle(fixture.requestContext(), Map.of("plan_id", "plan-1"));
         verify(workflowValidationHandler).validate(eq(fixture.workflowSessionContext()), eq(fixture.metadataQueryFacade()),
                 eq(fixture.queryFacade()), eq(fixture.executionFacade()), eq("session-1"), eq(snapshot));
         assertThat(actual.toPayload().get("status"), is("validated"));

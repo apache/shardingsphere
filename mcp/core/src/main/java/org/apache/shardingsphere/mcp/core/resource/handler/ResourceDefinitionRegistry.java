@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.handler.MCPRequestContextTypes;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
@@ -118,26 +118,27 @@ public final class ResourceDefinitionRegistry {
     /**
      * Dispatch resource URI to registered resource.
      *
-     * @param requestScope request scope
+     * @param requestContext request context
      * @param resourceUri resource URI
      * @return handled payload
      */
-    public static Optional<MCPSuccessPayload> dispatch(final MCPRequestScope requestScope, final String resourceUri) {
+    public static Optional<MCPSuccessPayload> dispatch(final MCPFeatureRuntimeRequestContext requestContext, final String resourceUri) {
         for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
             Optional<MCPUriVariables> matchedUriVariables = each.getUriPattern().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
-                return Optional.of(dispatch(requestScope, each, matchedUriVariables.get()));
+                return Optional.of(dispatch(requestContext, each, matchedUriVariables.get()));
             }
         }
         return Optional.empty();
     }
     
-    private static MCPSuccessPayload dispatch(final MCPRequestScope requestScope, final MCPResourceDefinition resourceDefinition, final MCPUriVariables uriVariables) {
-        return dispatch(requestScope, resourceDefinition.getHandler(), uriVariables);
+    private static MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceDefinition resourceDefinition, final MCPUriVariables uriVariables) {
+        return dispatch(requestContext, resourceDefinition.getHandler(), uriVariables);
     }
     
-    private static <T extends MCPRequestContext> MCPSuccessPayload dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
-        return resourceHandler.handle(resourceHandler.getContextType().cast(requestScope), uriVariables);
+    private static <T extends MCPRequestContext> MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceHandler<T> resourceHandler,
+                                                                            final MCPUriVariables uriVariables) {
+        return resourceHandler.handle(resourceHandler.getContextType().cast(requestContext), uriVariables);
     }
     
     /**

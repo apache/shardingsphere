@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.handler.MCPRequestContextTypes;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
@@ -111,18 +111,19 @@ public final class ToolDefinitionRegistry {
     /**
      * Dispatch tool call to tool definition.
      *
-     * @param requestScope request scope
+     * @param requestContext request context
      * @param definition tool definition
      * @param arguments tool arguments
      * @return successful tool payload
      */
-    public static MCPSuccessPayload dispatch(final MCPRequestScope requestScope, final MCPToolDefinition definition, final Map<String, Object> arguments) {
+    public static MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPToolDefinition definition, final Map<String, Object> arguments) {
         MCPToolDescriptor descriptor = definition.getDescriptor();
         new MCPToolArgumentContract(descriptor.getName(), descriptor.getInputSchema()).validate(arguments);
-        return dispatch(requestScope, definition.getHandler(), arguments);
+        return dispatch(requestContext, definition.getHandler(), arguments);
     }
     
-    private static <T extends MCPRequestContext> MCPSuccessPayload dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> handler, final Map<String, Object> arguments) {
-        return handler.handle(handler.getContextType().cast(requestScope), arguments);
+    private static <T extends MCPRequestContext> MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPToolHandler<T> handler,
+                                                                            final Map<String, Object> arguments) {
+        return handler.handle(handler.getContextType().cast(requestContext), arguments);
     }
 }

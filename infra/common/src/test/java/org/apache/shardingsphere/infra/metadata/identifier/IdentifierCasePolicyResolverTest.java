@@ -38,12 +38,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IdentifierCasePolicyResolverTest {
     
-    private final IdentifierCasePolicyResolver resolver = new IdentifierCasePolicyResolver();
-    
     @Test
     void assertResolveWithInsensitiveConfiguration() {
         IdentifierCasePolicy actual =
-                resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "Oracle"), new ConfigurationProperties(createProperties("insensitive")), null)
+                IdentifierCasePolicyResolver.resolveProtocol(TypedSPILoader.getService(DatabaseType.class, "Oracle"), new ConfigurationProperties(createProperties("insensitive")))
                         .getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actual.matches("Foo", "foo", QuoteCharacter.NONE));
@@ -51,7 +49,7 @@ class IdentifierCasePolicyResolverTest {
     
     @Test
     void assertResolveWithAutoPostgreSQLRule() {
-        IdentifierCasePolicy actual = resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new ConfigurationProperties(new Properties()), null)
+        IdentifierCasePolicy actual = IdentifierCasePolicyResolver.resolveProtocol(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new ConfigurationProperties(new Properties()))
                 .getPolicy(IdentifierScope.TABLE);
         assertTrue(actual.matches("foo", "FOO", QuoteCharacter.NONE));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
@@ -59,15 +57,18 @@ class IdentifierCasePolicyResolverTest {
     
     @Test
     void assertResolveWithAutoOracleRule() {
-        IdentifierCasePolicy actual = resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "Oracle"), new ConfigurationProperties(new Properties()), null).getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actual = IdentifierCasePolicyResolver.resolveProtocol(TypedSPILoader.getService(DatabaseType.class, "Oracle"), new ConfigurationProperties(new Properties()))
+                .getPolicy(IdentifierScope.TABLE);
         assertTrue(actual.matches("FOO", "foo", QuoteCharacter.NONE));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     
     @Test
     void assertResolveWithAutoMySQLRule() {
-        IdentifierCasePolicy actual = resolver.resolve(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new ConfigurationProperties(new Properties()), null).getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actual = IdentifierCasePolicyResolver.resolveProtocol(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new ConfigurationProperties(new Properties()))
+                .getPolicy(IdentifierScope.TABLE);
         assertTrue(actual.matches("Foo", "foo", QuoteCharacter.NONE));
+        assertTrue(actual.matches("Foo", "foo", QuoteCharacter.BACK_QUOTE));
     }
     
     private Properties createProperties(final String value) {

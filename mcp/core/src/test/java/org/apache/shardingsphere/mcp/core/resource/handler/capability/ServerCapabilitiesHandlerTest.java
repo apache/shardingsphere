@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
@@ -75,13 +75,13 @@ class ServerCapabilitiesHandlerTest {
     }
     
     private Map<String, Object> createCapabilitiesPayload() {
-        MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(), "session-1");
-        return new ServerCapabilitiesHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(), "session-1");
+        return new ServerCapabilitiesHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
     }
     
     private Map<String, Object> createGuidancePayload() {
-        MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(), "session-1");
-        return new ServerGuidanceHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(), "session-1");
+        return new ServerGuidanceHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
     }
     
     private void assertBaselineTopLevelKeys(final Map<String, Object> capabilities) {
@@ -304,26 +304,23 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(executeUpdateOutputProperties.containsKey("rows"));
         assertFalse(executeUpdateOutputProperties.containsKey("approval_summary"));
         assertThat(((Map<?, ?>) executeUpdateOutputProperties.get("normalized_sql")).get("description"),
-                is("Classifier-normalized SQL returned by preview or executed responses."));
-        Map<?, ?> executedResultSetExample = findByKey((List<?>) ((Map<?, ?>) executeUpdateTool.get("outputSchema")).get("examples"), "response_mode", "executed");
-        assertThat(executedResultSetExample.get("result_kind"), is("result_set"));
-        assertThat(executedResultSetExample.get("statement_class"), is("dml"));
-        assertThat(executedResultSetExample.get("statement_type"), is("SELECT"));
-        assertThat(executedResultSetExample.get("summary"),
-                is("Executed side-effecting SQL (statement type SELECT) and returned 1 row(s). Returned rows were truncated; do not replay the statement automatically."));
-        assertTrue(executedResultSetExample.containsKey("columns"));
-        assertTrue(executedResultSetExample.containsKey("rows"));
-        assertTrue((Boolean) executedResultSetExample.get("truncated"));
-        Map<?, ?> executedResultSetNextAction = (Map<?, ?>) ((List<?>) executedResultSetExample.get("next_actions")).get(0);
-        assertThat(executedResultSetNextAction.get("type"), is("terminal"));
-        assertThat(executedResultSetNextAction.get("reason"), is(
-                "The side-effecting statement already executed and returned truncated rows; do not replay it automatically. Use a separate read-only query if more data is needed."));
+                is("Normalized single SQL statement accepted by MCP for the target database."));
+        Map<?, ?> executedExample = findByKey((List<?>) ((Map<?, ?>) executeUpdateTool.get("outputSchema")).get("examples"), "response_mode", "executed");
+        assertThat(executedExample.get("result_kind"), is("update_count"));
+        assertThat(executedExample.get("statement_class"), is("dml"));
+        assertThat(executedExample.get("statement_type"), is("UPDATE"));
+        assertThat(executedExample.get("summary"), is("Executed UPDATE statement and affected 1 row(s)."));
+        assertThat(executedExample.get("affected_rows"), is(1));
+        assertFalse((Boolean) executedExample.get("truncated"));
+        Map<?, ?> executedNextAction = (Map<?, ?>) ((List<?>) executedExample.get("next_actions")).get(0);
+        assertThat(executedNextAction.get("type"), is("terminal"));
+        assertThat(executedNextAction.get("reason"), is("The side-effecting statement already executed; do not replay it automatically."));
         assertThat(executeUpdateTool.get("title"), is("Preview or Execute Side-Effecting SQL"));
-        assertTrue(((String) executeUpdateTool.get("description")).contains("Preview is classification-only, not a database dry run."));
+        assertTrue(((String) executeUpdateTool.get("description")).contains("Preview performs database-aware validation and classification, not a database dry run."));
         assertThat(findInputSchema(executeUpdateTool, "execution_mode").get("description"),
                 is("Required safety gate. Use preview to classify side effects without execution; preview is not a database dry run. Use execute only after reviewing the preview."));
         assertThat(((Map<?, ?>) executeUpdateOutputProperties.get("preview_semantics")).get("description"), is(
-                "Preview meaning. classification_only means the server classified SQL and side-effect scope without parsing, rule validation, "
+                "Preview meaning. classification_only means the server parsed and classified SQL and side-effect scope without rule validation, "
                         + "algorithm initialization, affected-row estimation, runtime execution, or database dry-run guarantees."));
         assertThat(getInputFieldNames(executeUpdateTool), is(List.of("database", "schema", "sql", "execution_mode", "max_rows", "timeout_ms")));
         Map<?, ?> applyWorkflowTool = findTool(capabilities, "database_gateway_apply_workflow");

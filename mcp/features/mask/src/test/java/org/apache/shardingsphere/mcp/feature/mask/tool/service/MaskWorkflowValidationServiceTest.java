@@ -306,6 +306,6 @@ class MaskWorkflowValidationServiceTest {
     }
     
     private ExecutableWorkflowArtifact createRuleDistSQLArtifact(final String sql) {
-        return new ExecutableWorkflowArtifact("review-rule-sql", "rule_dist_sql", sql, sql, true);
+        return new ExecutableWorkflowArtifact(sql, sql);
     }
 }

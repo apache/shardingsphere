@@ -19,13 +19,13 @@ package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 
@@ -68,8 +68,8 @@ public final class MetadataResourcePayloadMapper {
             ShardingSphereTable table = (ShardingSphereTable) item;
             return "view".equals(metadata.getObjectScope()) ? createViewPayload(getDatabase(), getSchema(), table, detail) : createTablePayload(getDatabase(), getSchema(), table, detail);
         }
-        if (item instanceof ShardingSphereColumn) {
-            return createColumnPayload((ShardingSphereColumn) item);
+        if (item instanceof MCPColumnMetadata) {
+            return createColumnPayload((MCPColumnMetadata) item);
         }
         if (item instanceof ShardingSphereIndex) {
             return createIndexPayload((ShardingSphereIndex) item);
@@ -115,10 +115,11 @@ public final class MetadataResourcePayloadMapper {
         result.put("schema", schema);
         result.put("table", table.getName());
         result.put("columns", detail
-                ? table.getAllColumns().stream().sorted(Comparator.comparing(ShardingSphereColumn::getName)).map(each -> createColumnPayload(database, schema, table.getName(), "", each)).toList()
+                ? metadataQueryFacade.queryTableColumns(database, schema, table.getName()).stream()
+                        .map(each -> createColumnPayload(database, schema, table.getName(), "", each)).toList()
                 : List.of());
         result.put("indexes", detail
-                ? table.getAllIndexes().stream().sorted(Comparator.comparing(ShardingSphereIndex::getName)).map(each -> createIndexPayload(database, schema, table.getName(), each)).toList()
+                ? metadataQueryFacade.queryIndexes(database, schema, table.getName()).stream().map(each -> createIndexPayload(database, schema, table.getName(), each)).toList()
                 : List.of());
         return result;
     }
@@ -129,22 +130,27 @@ public final class MetadataResourcePayloadMapper {
         result.put("schema", schema);
         result.put("view", view.getName());
         result.put("columns", detail
-                ? view.getAllColumns().stream().sorted(Comparator.comparing(ShardingSphereColumn::getName)).map(each -> createColumnPayload(database, schema, "", view.getName(), each)).toList()
+                ? metadataQueryFacade.queryViewColumns(database, schema, view.getName()).stream()
+                        .map(each -> createColumnPayload(database, schema, "", view.getName(), each)).toList()
                 : List.of());
         return result;
     }
     
-    private Map<String, Object> createColumnPayload(final ShardingSphereColumn column) {
+    private Map<String, Object> createColumnPayload(final MCPColumnMetadata column) {
         return createColumnPayload(getDatabase(), getSchema(), getVariable("table"), getVariable("view"), column);
     }
     
-    private Map<String, Object> createColumnPayload(final String database, final String schema, final String table, final String view, final ShardingSphereColumn column) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+    private Map<String, Object> createColumnPayload(final String database, final String schema, final String table, final String view, final MCPColumnMetadata column) {
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
         result.put("database", database);
         result.put("schema", schema);
         result.put("table", table);
         result.put("view", view);
         result.put("column", column.getName());
+        result.put("ordinalPosition", column.getOrdinalPosition());
+        result.put("jdbcType", column.getJdbcType());
+        result.put("nativeTypeName", column.getNativeTypeName());
+        result.put("nullability", column.getNullability().getValue());
         return result;
     }
     
@@ -153,11 +159,13 @@ public final class MetadataResourcePayloadMapper {
     }
     
     private Map<String, Object> createIndexPayload(final String database, final String schema, final String table, final ShardingSphereIndex index) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("database", database);
         result.put("schema", schema);
         result.put("table", table);
         result.put("index", index.getName());
+        result.put("columns", index.getColumns());
+        result.put("unique", index.isUnique());
         return result;
     }
     

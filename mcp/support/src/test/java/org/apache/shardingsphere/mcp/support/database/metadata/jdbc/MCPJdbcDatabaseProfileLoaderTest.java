@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyR
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
@@ -45,7 +44,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -59,8 +57,8 @@ class MCPJdbcDatabaseProfileLoaderTest {
         IdentifierCasePolicySet expectedIdentifierCasePolicySet = IdentifierCasePolicyFactory.newSensitivePolicySet();
         try (
                 MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
-                MockedConstruction<IdentifierCasePolicyResolver> ignoredResolver = mockConstruction(IdentifierCasePolicyResolver.class,
-                        (mock, context) -> when(mock.resolve(any(), any(), any())).thenReturn(expectedIdentifierCasePolicySet))) {
+                MockedStatic<IdentifierCasePolicyResolver> ignoredResolver = mockStatic(IdentifierCasePolicyResolver.class)) {
+            ignoredResolver.when(() -> IdentifierCasePolicyResolver.resolveStorage(any(), any(), any())).thenReturn(expectedIdentifierCasePolicySet);
             RuntimeDatabaseProfile actual =
                     new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true));
             assertThat(actual.getDatabase(), is("logic_db"));
@@ -108,12 +106,12 @@ class MCPJdbcDatabaseProfileLoaderTest {
                 firstConnection, IdentifierCasePolicyFactory.newSensitivePolicySet(), secondConnection, IdentifierCasePolicyFactory.newInsensitivePolicySet());
         try (
                 MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
-                MockedConstruction<IdentifierCasePolicyResolver> ignoredResolver = mockConstruction(IdentifierCasePolicyResolver.class,
-                        (mock, context) -> when(mock.resolve(any(), any(), any())).thenAnswer(invocation -> {
-                            try (Connection connection = invocation.getArgument(2, DataSource.class).getConnection()) {
-                                return policies.get(connection);
-                            }
-                        }))) {
+                MockedStatic<IdentifierCasePolicyResolver> ignoredResolver = mockStatic(IdentifierCasePolicyResolver.class)) {
+            ignoredResolver.when(() -> IdentifierCasePolicyResolver.resolveStorage(any(), any(), any())).thenAnswer(invocation -> {
+                try (Connection connection = invocation.getArgument(2, DataSource.class).getConnection()) {
+                    return policies.get(connection);
+                }
+            });
             Map<String, RuntimeDatabaseProfile> actual = new MCPJdbcDatabaseProfileLoader().load(runtimeDatabases);
             assertFalse(actual.get("first_db").getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
             assertTrue(actual.get("second_db").getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
@@ -134,15 +132,15 @@ class MCPJdbcDatabaseProfileLoaderTest {
                 .thenThrow(RuntimeDatabaseConnectionException.connectionFailed("logic_db", connectionFailure));
         try (
                 MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
-                MockedConstruction<IdentifierCasePolicyResolver> ignoredResolver = mockConstruction(IdentifierCasePolicyResolver.class,
-                        (mock, context) -> when(mock.resolve(any(), any(), any())).thenAnswer(invocation -> {
-                            try (Connection ignoredConnection = invocation.getArgument(2, DataSource.class).getConnection()) {
-                                return IdentifierCasePolicyFactory.newSensitivePolicySet();
-                            } catch (final SQLException ex) {
-                                assertThat(ex, is(connectionFailure));
-                                return IdentifierCasePolicyFactory.newInsensitivePolicySet();
-                            }
-                        }))) {
+                MockedStatic<IdentifierCasePolicyResolver> ignoredResolver = mockStatic(IdentifierCasePolicyResolver.class)) {
+            ignoredResolver.when(() -> IdentifierCasePolicyResolver.resolveStorage(any(), any(), any())).thenAnswer(invocation -> {
+                try (Connection ignoredConnection = invocation.getArgument(2, DataSource.class).getConnection()) {
+                    return IdentifierCasePolicyFactory.newSensitivePolicySet();
+                } catch (final SQLException ex) {
+                    assertThat(ex, is(connectionFailure));
+                    return IdentifierCasePolicyFactory.newInsensitivePolicySet();
+                }
+            });
             RuntimeDatabaseProfile actual = new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
             assertTrue(actual.getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
             verify(runtimeDatabaseConfig, times(2)).openConnection("logic_db");

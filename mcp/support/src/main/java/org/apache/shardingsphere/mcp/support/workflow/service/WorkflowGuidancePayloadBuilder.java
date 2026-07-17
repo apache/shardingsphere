@@ -65,15 +65,10 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static Map<String, Object> createProxyTopologyHint(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        boolean ruleDistSQLOnlyWorkflow = WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot);
-        result.put("expected_runtime_view", ruleDistSQLOnlyWorkflow ? "proxy_rule_distsql" : "proxy_logical_database");
+        result.put("expected_runtime_view", "proxy_rule_distsql");
         result.put("workflow_kind", resolveWorkflowKind(snapshot));
-        result.put(MCPPayloadFieldNames.REASON, ruleDistSQLOnlyWorkflow
-                ? "Rule DistSQL workflow planning must use Proxy DistSQL-visible rule state."
-                : "Workflow planning must use Proxy logical metadata; physical-database metadata can hide or misrepresent rule-visible objects.");
-        result.put("safe_recovery", ruleDistSQLOnlyWorkflow
-                ? "Read the feature algorithm and rule resources from ShardingSphere Proxy before retrying."
-                : "Reconnect the MCP runtime to ShardingSphere Proxy for this logical database if metadata appears to be physical-table-first.");
+        result.put(MCPPayloadFieldNames.REASON, "Rule DistSQL workflow planning must use Proxy DistSQL-visible rule state.");
+        result.put("safe_recovery", "Read the feature algorithm and rule resources from ShardingSphere Proxy before retrying.");
         return result;
     }
     
@@ -286,10 +281,22 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static List<Map<String, Object>> createRecoveryPlanningActions(final WorkflowContextSnapshot snapshot) {
+        if (hasIssue(snapshot, WorkflowIssueCode.CLUSTER_MODE_REQUIRED)) {
+            return List.of(MCPNextActionUtils.stop("Connect to a Cluster-mode ShardingSphere Proxy, then start a new workflow plan."));
+        }
         String planningTool = resolvePlanningTool(snapshot);
+        if (hasIssue(snapshot, WorkflowIssueCode.RULE_INPUT_CONFLICT)) {
+            return planningTool.isEmpty()
+                    ? List.of(createUserAction("Choose one input mode, remove conflicting inputs, and start a new plan without plan_id.", List.of("workflow_kind", "conflicting_inputs")))
+                    : List.of(createToolAction(planningTool, "Choose one input mode, remove conflicting inputs, and start a new plan without plan_id.", Map.of()));
+        }
         return planningTool.isEmpty()
                 ? List.of(createUserAction("Confirm the workflow kind, then call the matching planning tool with the existing plan_id.", List.of("workflow_kind", "issues")))
                 : List.of(createToolAction(planningTool, "Re-plan after resolving the reported issues.", Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId())));
+    }
+    
+    private static boolean hasIssue(final WorkflowContextSnapshot snapshot, final String issueCode) {
+        return snapshot.getIssues().stream().anyMatch(each -> issueCode.equals(each.getCode()));
     }
     
     private static Map<String, Object> createToolAction(final String targetTool, final String reason, final Map<String, Object> requiredArguments) {

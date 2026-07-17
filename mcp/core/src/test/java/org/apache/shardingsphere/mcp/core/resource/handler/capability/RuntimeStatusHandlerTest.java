@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 import org.junit.jupiter.api.Test;
@@ -35,8 +35,9 @@ class RuntimeStatusHandlerTest {
     
     @Test
     void assertHandle() {
-        MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), "http"), "session-1");
-        Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+        MCPFeatureRuntimeRequestContext requestContext =
+                new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), "http"), "session-1");
+        Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
         assertThat(actual.get("response_mode"), is("runtime"));
         assertThat(actual.get("summary"), is("Runtime is ready with 3 configured logical database(s)."));
         assertThat(actual.get("server_status"), is("ready"));
@@ -57,8 +58,9 @@ class RuntimeStatusHandlerTest {
     
     @Test
     void assertHandleWithStdioTransport() {
-        MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), "stdio"), "session-1");
-        Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+        MCPFeatureRuntimeRequestContext requestContext =
+                new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), "stdio"), "session-1");
+        Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
         assertThat(actual.get("transport"), is("stdio"));
         assertThat(actual.get("active_transport"), is("stdio"));
         assertThat(((Map<?, ?>) actual.get("transport_security_summary")).get("recommended_exposure"), is("local_stdio_session"));
@@ -66,8 +68,8 @@ class RuntimeStatusHandlerTest {
     
     @Test
     void assertHandleWithEmptyRuntimeDatabase() {
-        MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of(), "http"), "session-1");
-        Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(List.of(), "http"), "session-1");
+        Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
         assertThat(actual.get("server_status"), is("configuration_required"));
         assertThat(actual.get("summary"), is("Runtime requires at least one configured logical database before metadata discovery or SQL execution."));
         assertThat(actual.get("status"), is("configuration_required"));

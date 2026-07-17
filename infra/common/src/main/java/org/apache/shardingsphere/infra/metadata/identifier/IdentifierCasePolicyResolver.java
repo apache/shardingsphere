@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
@@ -33,20 +35,33 @@ import javax.sql.DataSource;
 /**
  * Resolver of identifier case policy.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IdentifierCasePolicyResolver {
     
     /**
-     * Resolve identifier case policy.
+     * Resolve protocol identifier case policy.
      *
-     * @param databaseType database type
+     * @param protocolType protocol type
      * @param props configuration properties
-     * @param dataSource data source
      * @return identifier case policy set
      */
-    public IdentifierCasePolicySet resolve(final DatabaseType databaseType, final ConfigurationProperties props, final DataSource dataSource) {
-        if (null == databaseType || null == databaseType.getType()) {
-            return IdentifierCasePolicyFactory.newInsensitivePolicySet();
-        }
+    public static IdentifierCasePolicySet resolveProtocol(final DatabaseType protocolType, final ConfigurationProperties props) {
+        return resolve(protocolType, props, null);
+    }
+    
+    /**
+     * Resolve storage identifier case policy.
+     *
+     * @param storageType storage type
+     * @param props configuration properties
+     * @param dataSource storage data source
+     * @return identifier case policy set
+     */
+    public static IdentifierCasePolicySet resolveStorage(final DatabaseType storageType, final ConfigurationProperties props, final DataSource dataSource) {
+        return resolve(storageType, props, dataSource);
+    }
+    
+    private static IdentifierCasePolicySet resolve(final DatabaseType databaseType, final ConfigurationProperties props, final DataSource dataSource) {
         MetadataIdentifierCaseSensitivity configuredCaseSensitivity = new TemporaryConfigurationProperties(props.getProps())
                 .getValue(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
         if (MetadataIdentifierCaseSensitivity.INSENSITIVE == configuredCaseSensitivity) {

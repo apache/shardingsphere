@@ -66,7 +66,7 @@ prompts:
         - "Ask the user to choose an object when search results remain ambiguous after metadata lookup."
   - name: safe_sql_execution
     title: Safe SQL Execution
-    description: "Guide the model to choose database_gateway_execute_query for classifier-approved query SQL and database_gateway_execute_update preview before side effects."
+    description: "Guide the model to choose database_gateway_execute_query for parser-approved query SQL and database_gateway_execute_update preview before side effects."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/safe-sql-execution.md
     arguments:
@@ -93,7 +93,7 @@ prompts:
         - "Stop after database_gateway_execute_update preview unless execution is still intended."
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask before database_gateway_execute_update execution when the previewed side effects are ambiguous."
-        - "Ask when the SQL intent cannot be classified as classifier-approved query SQL or side-effecting SQL."
+        - "Ask when the SQL intent cannot be classified as parser-approved query SQL or side-effecting SQL."
   - name: recover_workflow
     title: Recover Workflow
     description: "Guide the model to recover a failed or stale ShardingSphere workflow by checking the current-session plan_id and re-planning when the plan is unavailable."
@@ -204,10 +204,8 @@ tools:
           description: "Required when execution_mode=review-then-execute. Pass only user-reviewed preview_artifacts.approval_step values; an empty or omitted list does not approve artifacts."
           items:
             type: string
-            description: "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql."
+            description: "Allowed workflow artifact step: rule_distsql."
             enum:
-              - ddl
-              - index_ddl
               - rule_distsql
       required:
         - plan_id
@@ -276,28 +274,25 @@ tools:
                 description: "Issue-specific details."
         step_results:
           type: array
-          description: "Per-artifact execution, skipped, or failed results."
+          description: "Per-artifact execution or failure results."
           items:
             type: object
             properties:
               artifact_type:
                 type: string
-                description: "Artifact type such as add-column, create-index, or rule-dist-sql."
+                description: "Rule DistSQL artifact type."
               status:
                 type: string
                 description: "Artifact execution status."
               sql:
                 type: string
                 description: "Artifact SQL or DistSQL."
-        executed_ddl:
-          type: array
-          description: "DDL statements executed by the server."
         executed_distsql:
           type: array
           description: "DistSQL statements executed by the server."
         applied_artifacts:
           type: array
-          description: "Artifacts or steps executed by the server."
+          description: "Rule DistSQL artifacts executed by the server."
         preview_artifacts:
           type: array
           description: "Artifacts that would be applied when execution_mode=preview."
@@ -315,7 +310,7 @@ tools:
                 description: "Artifact SQL or DistSQL that would be applied."
               side_effect_scope:
                 type: string
-                description: "Side-effect scope such as physical-structure or rule-metadata."
+                description: "Rule-metadata side-effect scope."
         review_focus:
           type: object
           description: "Compact preview review focus: artifact categories, side-effect scope, and manual-only mode."
@@ -325,15 +320,12 @@ tools:
         review_summary:
           type: string
           description: "Preview-only natural-language summary that confirms workflow artifacts were not applied."
-        skipped_artifacts:
-          type: array
-          description: "Artifacts intentionally skipped by policy or approved_steps."
         manual_artifacts:
           type: array
           description: "Artifacts returned for manual execution."
         manual_artifact_package:
           type: object
-          description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated DDL, DistSQL, index plan, and algorithm properties needed for operator execution."
+          description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated rule DistSQL needed for operator execution."
         manual_artifact_summary:
           type: object
           description: "Manual-only compact artifact summary with counts, external execution requirement, confirmation gate, and validation arguments to use after manual execution."
@@ -387,7 +379,6 @@ tools:
           applied_artifacts: []
           preview_artifacts: []
           would_apply: false
-          skipped_artifacts: []
           manual_artifacts: []
           review_summary: Previewed 0 workflow artifacts. Nothing has been applied.
           next_actions:
@@ -405,8 +396,6 @@ tools:
       workflowRole: apply
       sideEffectScope:
         - rule-metadata
-        - physical-structure
-        - physical-data
     meta:
       org.apache.shardingsphere/follow-up-tools:
         - database_gateway_validate_workflow
@@ -480,7 +469,7 @@ tools:
             properties:
               layer:
                 type: string
-                description: "Validation layer such as ddl, rule, logical_metadata, or sql_executability."
+                description: "Validation layer such as rule, logical_metadata, or sql_executability."
               status:
                 type: string
                 description: "Validation section status."

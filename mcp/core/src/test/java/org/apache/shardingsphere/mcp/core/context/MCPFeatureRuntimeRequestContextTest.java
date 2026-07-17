@@ -29,7 +29,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class MCPRequestScopeTest {
+class MCPFeatureRuntimeRequestContextTest {
     
     @Test
     void assertFindSessionIdentity() {
@@ -38,15 +38,15 @@ class MCPRequestScopeTest {
         sessionManager.createSession("session-1");
         sessionManager.bindSessionIdentity("session-1", sessionIdentity);
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1");
-        assertThat(requestScope.findSessionIdentity(), is(Optional.of(sessionIdentity)));
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        assertThat(requestContext.findSessionIdentity(), is(Optional.of(sessionIdentity)));
     }
     
     @Test
     void assertFindSessionIdentityWithoutSession() {
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1");
-        assertThat(requestScope.findSessionIdentity(), is(Optional.empty()));
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        assertThat(requestContext.findSessionIdentity(), is(Optional.empty()));
     }
     
     @Test
@@ -54,8 +54,14 @@ class MCPRequestScopeTest {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig)),
                 new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, "session-1");
-        assertThat(requestScope.findRuntimeDatabaseConfiguration("logic_db"), is(Optional.of(runtimeDatabaseConfig)));
-        assertThat(requestScope.findRuntimeDatabaseConfiguration("missing_db"), is(Optional.empty()));
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        assertThat(requestContext.findRuntimeDatabaseConfiguration("logic_db"), is(Optional.of(runtimeDatabaseConfig)));
+    }
+    
+    @Test
+    void assertFindMissingRuntimeDatabaseConfiguration() {
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "http");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        assertThat(requestContext.findRuntimeDatabaseConfiguration("missing_db"), is(Optional.empty()));
     }
 }

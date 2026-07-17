@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ class EncryptAlgorithmCompletionProviderTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new EncryptAlgorithmCompletionProvider().getContextType(), is(MCPDatabaseRequestContext.class));
+        assertThat(new EncryptAlgorithmCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @Test
@@ -72,7 +72,7 @@ class EncryptAlgorithmCompletionProviderTest {
         when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenReturn(List.of(
                 Map.of("type", "AES", "description", "AES encryptor", "aes-key-value", "secret-value"),
                 Map.of("type", "")));
-        MCPDatabaseRequestContext handlerContext = mock(MCPDatabaseRequestContext.class);
+        MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
         Collection<MCPCompletionCandidate> actualCandidates = new EncryptAlgorithmCompletionProvider().complete(handlerContext,
                 createRequestContext("prompt", EncryptFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type")).getCandidates();

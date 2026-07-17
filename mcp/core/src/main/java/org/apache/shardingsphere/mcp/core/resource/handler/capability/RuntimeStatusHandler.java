@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
@@ -40,13 +40,13 @@ import java.util.Optional;
 /**
  * Handler for runtime status resource URI.
  */
-public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
+public final class RuntimeStatusHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private static final String URI_PATTERN = "shardingsphere://runtime";
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -55,7 +55,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext handlerContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext handlerContext, final MCPUriVariables uriVariables) {
         List<RuntimeDatabaseProfile> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
         boolean hasConfiguredDatabase = !databases.isEmpty();
         Map<String, Object> result = new LinkedHashMap<>(15, 1F);
@@ -164,7 +164,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
                 "Ask the operator to configure at least one runtimeDatabases entry before metadata discovery or SQL execution.", List.of("runtimeDatabases")), 1));
     }
     
-    private Map<String, Object> createDatabaseStatus(final MCPDatabaseRequestContext handlerContext, final RuntimeDatabaseProfile database) {
+    private Map<String, Object> createDatabaseStatus(final MCPFeatureRequestContext handlerContext, final RuntimeDatabaseProfile database) {
         Optional<MCPDatabaseCapability> capability = handlerContext.getCapabilityFacade().provide(database.getDatabase());
         Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("database", database.getDatabase());

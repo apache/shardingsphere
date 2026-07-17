@@ -23,8 +23,6 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPSta
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -32,16 +30,6 @@ import java.util.Optional;
  */
 @Getter
 public final class ClassificationResult {
-    
-    private static final Collection<String> RULE_DIST_SQL_PREFIXES = List.of(
-            "CREATE SHARDING ", "ALTER SHARDING ", "DROP SHARDING ",
-            "CREATE DEFAULT SHARDING ", "ALTER DEFAULT SHARDING ", "DROP DEFAULT SHARDING ",
-            "CREATE BROADCAST ", "DROP BROADCAST ",
-            "CREATE ENCRYPT ", "ALTER ENCRYPT ", "DROP ENCRYPT ",
-            "CREATE MASK ", "ALTER MASK ", "DROP MASK ",
-            "CREATE SHADOW ", "ALTER SHADOW ", "DROP SHADOW ",
-            "CREATE DEFAULT SHADOW ", "ALTER DEFAULT SHADOW ", "DROP DEFAULT SHADOW ",
-            "CREATE READWRITE_SPLITTING ", "ALTER READWRITE_SPLITTING ", "DROP READWRITE_SPLITTING ");
     
     private final SupportedMCPStatement statementClass;
     
@@ -58,21 +46,24 @@ public final class ClassificationResult {
     
     private final String savepointName;
     
+    private final boolean ruleDistSQL;
+    
     ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String savepointName,
-                         final Collection<SQLStatementObjectName> referencedObjects) {
+                         final Collection<SQLStatementObjectName> referencedObjects, final boolean ruleDistSQL) {
         this.statementClass = statementClass;
         this.statementType = statementType;
         this.normalizedSql = normalizedSql;
-        targetObjectName = referencedObjects.isEmpty() ? "" : referencedObjects.iterator().next().objectName();
+        targetObjectName = referencedObjects.isEmpty() ? "" : referencedObjects.iterator().next().getObjectName();
         referencedObjectNames = createReferencedObjectNames(referencedObjects);
         this.referencedObjects = referencedObjects;
         this.savepointName = savepointName;
+        this.ruleDistSQL = ruleDistSQL;
     }
     
     private Collection<String> createReferencedObjectNames(final Collection<SQLStatementObjectName> referencedObjects) {
         Collection<String> result = new LinkedHashSet<>(referencedObjects.size(), 1F);
         for (SQLStatementObjectName each : referencedObjects) {
-            result.add(each.objectName());
+            result.add(each.getObjectName());
         }
         return result;
     }
@@ -105,16 +96,7 @@ public final class ClassificationResult {
      * @return true when the statement is a recognized rule DistSQL statement
      */
     public boolean isRuleDistSQL() {
-        if (SupportedMCPStatement.DDL != statementClass) {
-            return false;
-        }
-        String upperSql = normalizedSql.toUpperCase(Locale.ENGLISH);
-        for (String each : RULE_DIST_SQL_PREFIXES) {
-            if (upperSql.startsWith(each)) {
-                return true;
-            }
-        }
-        return false;
+        return ruleDistSQL;
     }
     
     /**

@@ -21,27 +21,27 @@ import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 
 import java.util.Map;
 
-abstract class AbstractShardingPlanningToolHandler implements MCPToolHandler<MCPWorkflowRequestContext> {
+abstract class AbstractShardingPlanningToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     @Override
-    public Class<MCPWorkflowRequestContext> getContextType() {
-        return MCPWorkflowRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPWorkflowRequestContext workflowContext, final Map<String, Object> arguments) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         ShardingWorkflowRequest request = bindRequest(arguments);
-        WorkflowContextSnapshot snapshot = plan(workflowContext, request);
-        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
+        WorkflowContextSnapshot snapshot = plan(requestContext, request);
+        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
     
     protected abstract ShardingWorkflowRequest bindRequest(Map<String, Object> arguments);
     
-    protected abstract WorkflowContextSnapshot plan(MCPWorkflowRequestContext workflowContext, ShardingWorkflowRequest request);
+    protected abstract WorkflowContextSnapshot plan(MCPFeatureRequestContext requestContext, ShardingWorkflowRequest request);
 }

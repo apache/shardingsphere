@@ -22,13 +22,14 @@ import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapabi
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -64,7 +66,10 @@ class MetadataResourcePayloadMapperTest {
     @Test
     void assertMapTableDetail() {
         MCPUriVariables uriVariables = new MCPUriVariables(Map.of("database", "logic_db", "schema", "public"));
-        List<?> actual = new MetadataResourcePayloadMapper(mock(MCPMetadataQueryFacade.class), uriVariables, true)
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryTableColumns("logic_db", "public", "orders")).thenReturn(createColumns("orders"));
+        when(metadataQueryFacade.queryIndexes("logic_db", "public", "orders")).thenReturn(createIndexes());
+        List<?> actual = new MetadataResourcePayloadMapper(metadataQueryFacade, uriVariables, true)
                 .map(createMetadata("table"), List.of(createTable("orders", TableType.TABLE)));
         Map<?, ?> actualTable = (Map<?, ?>) actual.getFirst();
         assertThat(actualTable.get("database"), is("logic_db"));
@@ -72,12 +77,22 @@ class MetadataResourcePayloadMapperTest {
         assertThat(actualTable.get("table"), is("orders"));
         assertThat(getNames(actualTable, "columns", "column"), is(List.of("amount", "order_id")));
         assertThat(getNames(actualTable, "indexes", "index"), is(List.of("idx_amount", "idx_order_id")));
+        Map<?, ?> firstColumn = getFirstMap(actualTable, "columns");
+        assertThat(firstColumn.get("ordinalPosition"), is(2));
+        assertThat(firstColumn.get("jdbcType"), is(Types.DECIMAL));
+        assertThat(firstColumn.get("nativeTypeName"), is("DECIMAL"));
+        assertThat(firstColumn.get("nullability"), is("nullable"));
+        Map<?, ?> firstIndex = getFirstMap(actualTable, "indexes");
+        assertThat(firstIndex.get("columns"), is(List.of("amount")));
+        assertFalse((Boolean) firstIndex.get("unique"));
     }
     
     @Test
     void assertMapViewDetail() {
         MCPUriVariables uriVariables = new MCPUriVariables(Map.of("database", "logic_db", "schema", "public"));
-        List<?> actual = new MetadataResourcePayloadMapper(mock(MCPMetadataQueryFacade.class), uriVariables, true)
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryViewColumns("logic_db", "public", "active_orders")).thenReturn(createColumns("active_orders"));
+        List<?> actual = new MetadataResourcePayloadMapper(metadataQueryFacade, uriVariables, true)
                 .map(createMetadata("view"), List.of(createTable("active_orders", TableType.VIEW)));
         Map<?, ?> actualView = (Map<?, ?>) actual.getFirst();
         assertThat(actualView.get("database"), is("logic_db"));
@@ -98,11 +113,17 @@ class MetadataResourcePayloadMapperTest {
     }
     
     private ShardingSphereTable createTable(final String name, final TableType tableType) {
-        return new ShardingSphereTable(name,
-                List.of(new ShardingSphereColumn("order_id", Types.OTHER, false, false, false, true, false, true),
-                        new ShardingSphereColumn("amount", Types.OTHER, false, false, false, true, false, true)),
-                List.of(new ShardingSphereIndex("idx_order_id", List.of(), false), new ShardingSphereIndex("idx_amount", List.of(), false)),
-                List.of(), tableType);
+        return new ShardingSphereTable(name, List.of(), List.of(), List.of(), tableType);
+    }
+    
+    private List<MCPColumnMetadata> createColumns(final String relationName) {
+        return List.of(
+                new MCPColumnMetadata(relationName, "amount", 2, Types.DECIMAL, "DECIMAL", Nullability.NULLABLE),
+                new MCPColumnMetadata(relationName, "order_id", 1, Types.BIGINT, "BIGINT", Nullability.NOT_NULLABLE));
+    }
+    
+    private List<ShardingSphereIndex> createIndexes() {
+        return List.of(new ShardingSphereIndex("idx_amount", List.of("amount"), false), new ShardingSphereIndex("idx_order_id", List.of("order_id"), true));
     }
     
     private Map<?, ?> getFirstMap(final Map<?, ?> payload, final String key) {

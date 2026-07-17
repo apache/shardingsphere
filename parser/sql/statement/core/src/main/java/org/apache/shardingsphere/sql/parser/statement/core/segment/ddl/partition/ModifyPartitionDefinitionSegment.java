@@ -42,15 +42,4 @@ public final class ModifyPartitionDefinitionSegment implements AlterDefinitionSe
     private final PropertiesSegment properties;
     
     private final boolean allPartitions;
-    
-    /**
-     * Constructor for single partition.
-     *
-     * @param startIndex start index
-     * @param stopIndex stop index
-     * @param properties properties
-     */
-    public ModifyPartitionDefinitionSegment(final int startIndex, final int stopIndex, final PropertiesSegment properties) {
-        this(startIndex, stopIndex, properties, false);
-    }
 }

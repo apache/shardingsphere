@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-abstract class AbstractShardingResourceHandler implements MCPResourceHandler<MCPDatabaseRequestContext> {
+abstract class AbstractShardingResourceHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private final String resourceUriTemplate;
     
@@ -41,8 +41,8 @@ abstract class AbstractShardingResourceHandler implements MCPResourceHandler<MCP
     private final ShardingInspectionService inspectionService = new ShardingInspectionService();
     
     @Override
-    public Class<MCPDatabaseRequestContext> getContextType() {
-        return MCPDatabaseRequestContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -51,10 +51,10 @@ abstract class AbstractShardingResourceHandler implements MCPResourceHandler<MCP
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPDatabaseRequestContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsPayload(query(databaseContext, uriVariables),
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+        return new MCPItemsPayload(query(requestContext, uriVariables),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
     
-    protected abstract List<Map<String, Object>> query(MCPDatabaseRequestContext databaseContext, MCPUriVariables uriVariables);
+    protected abstract List<Map<String, Object>> query(MCPFeatureRequestContext requestContext, MCPUriVariables uriVariables);
 }

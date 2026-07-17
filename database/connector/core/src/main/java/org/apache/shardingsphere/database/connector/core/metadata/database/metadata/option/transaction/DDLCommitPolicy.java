@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.workflow.descriptor;
+package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class WorkflowKindDescriptorsTest {
+/**
+ * DDL commit policy applied by ShardingSphere after DDL execution.
+ */
+public enum DDLCommitPolicy {
     
-    @Test
-    void assertIsRuleDistSQLOnly() {
-        assertTrue(WorkflowKindDescriptors.isRuleDistSQLOnly(WorkflowKindDescriptors.ENCRYPT_RULE));
-        assertTrue(WorkflowKindDescriptors.isRuleDistSQLOnly(WorkflowKindDescriptors.SHARDING_COMPONENT_CLEANUP));
-        assertFalse(WorkflowKindDescriptors.isRuleDistSQLOnly("encrypt.table"));
-    }
+    COMMIT_CURRENT_TRANSACTION,
+    
+    NO_ADDITIONAL_COMMIT
 }

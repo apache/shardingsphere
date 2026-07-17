@@ -43,6 +43,10 @@ class ProductionRuntimeTransportSmokeE2ETest extends AbstractProductionMySQLRunt
     void assertTransportLifecycleWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            interactionClient.sendRawNotification("notifications/cancelled", Map.of("requestId", "unknown-request", "reason", "race tolerance"));
+            assertThat(getObjectOrEmpty(interactionClient.sendRawRequest("ping-1", "ping", Map.of()).get("result")), is(Map.of()));
+            interactionClient.sendRawNotification("notifications/cancelled", Map.of("requestId", "ping-1", "reason", "request already completed"));
+            assertThat(getObjectOrEmpty(interactionClient.sendRawRequest("ping-2", "ping", Map.of()).get("result")), is(Map.of()));
             assertOfficialToolNames(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList());
             MCPPayloadAssertions.assertSingleItemValue(interactionClient.readResource("shardingsphere://databases"), "database", LOGICAL_DATABASE_NAME);
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",

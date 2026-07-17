@@ -18,12 +18,22 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
-@EqualsAndHashCode(exclude = "nextIndex")
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@EqualsAndHashCode
+@Getter
 final class SQLStatementObjectName {
     
     private final String objectName;
@@ -34,31 +44,45 @@ final class SQLStatementObjectName {
     
     private final boolean qualified;
     
-    private final int nextIndex;
+    private final boolean namespaceTarget;
     
     static SQLStatementObjectName fromNormalizedName(final String objectName) {
         int qualifierSeparatorIndex = objectName.indexOf('.');
         return new SQLStatementObjectName(objectName, -1 == qualifierSeparatorIndex ? objectName : objectName.substring(0, qualifierSeparatorIndex),
-                QuoteCharacter.NONE, -1 != qualifierSeparatorIndex, 0);
+                QuoteCharacter.NONE, -1 != qualifierSeparatorIndex, false);
     }
     
-    String objectName() {
-        return objectName;
+    static SQLStatementObjectName fromNormalizedNamespaceName(final String objectName) {
+        return new SQLStatementObjectName(objectName, objectName, QuoteCharacter.NONE, false, true);
     }
     
-    String firstIdentifier() {
-        return firstIdentifier;
+    static SQLStatementObjectName from(final Optional<OwnerSegment> owner, final IdentifierValue identifier) {
+        List<IdentifierValue> identifiers = new LinkedList<>();
+        owner.ifPresent(optional -> addOwnerIdentifiers(optional, identifiers));
+        identifiers.add(identifier);
+        return from(identifiers);
     }
     
-    QuoteCharacter firstIdentifierQuoteCharacter() {
-        return firstIdentifierQuoteCharacter;
+    static SQLStatementObjectName from(final List<IdentifierValue> identifiers) {
+        return from(identifiers, false);
     }
     
-    boolean qualified() {
-        return qualified;
+    private static SQLStatementObjectName from(final List<IdentifierValue> identifiers, final boolean namespaceTarget) {
+        IdentifierValue firstIdentifier = identifiers.get(0);
+        return new SQLStatementObjectName(identifiers.stream().map(IdentifierValue::getValue).collect(Collectors.joining(".")),
+                firstIdentifier.getValue(), firstIdentifier.getQuoteCharacter(), 1 < identifiers.size(), namespaceTarget);
     }
     
-    int nextIndex() {
-        return nextIndex;
+    static SQLStatementObjectName fromNamespace(final List<IdentifierValue> identifiers) {
+        return from(identifiers, true);
+    }
+    
+    static SQLStatementObjectName fromNamespace(final IdentifierValue identifier) {
+        return new SQLStatementObjectName(identifier.getValue(), identifier.getValue(), identifier.getQuoteCharacter(), false, true);
+    }
+    
+    private static void addOwnerIdentifiers(final OwnerSegment owner, final Collection<IdentifierValue> result) {
+        owner.getOwner().ifPresent(optional -> addOwnerIdentifiers(optional, result));
+        result.add(owner.getIdentifier());
     }
 }

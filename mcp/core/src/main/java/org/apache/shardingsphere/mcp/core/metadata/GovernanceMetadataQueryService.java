@@ -52,7 +52,7 @@ public final class GovernanceMetadataQueryService {
      * @return storage unit rows
      */
     public List<Map<String, Object>> queryStorageUnits(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW STORAGE UNITS FROM %s", format(databaseName))).stream()
+        return queryFacade.query(databaseName, String.format("SHOW STORAGE UNITS FROM %s", format(databaseName))).stream()
                 .map(this::redactStorageUnitRow).toList();
     }
     
@@ -79,7 +79,7 @@ public final class GovernanceMetadataQueryService {
      * @return rule usage rows
      */
     public List<Map<String, Object>> queryRulesUsedStorageUnit(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String storageUnitName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW RULES USED STORAGE UNIT %s FROM %s", format(storageUnitName), format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW RULES USED STORAGE UNIT %s FROM %s", format(storageUnitName), format(databaseName)));
     }
     
     /**
@@ -90,7 +90,7 @@ public final class GovernanceMetadataQueryService {
      * @return single table rows
      */
     public List<Map<String, Object>> querySingleTables(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SINGLE TABLES FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SINGLE TABLES FROM %s", format(databaseName)));
     }
     
     /**
@@ -103,7 +103,7 @@ public final class GovernanceMetadataQueryService {
      */
     public List<Map<String, Object>> querySingleTable(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
         String actualTableName = WorkflowSQLUtils.normalizeIdentifier(tableName);
-        return queryFacade.query(databaseName, "", String.format("SHOW SINGLE TABLE %s FROM %s", format(tableName), format(databaseName))).stream()
+        return queryFacade.query(databaseName, String.format("SHOW SINGLE TABLE %s FROM %s", format(tableName), format(databaseName))).stream()
                 .filter(each -> actualTableName.equals(WorkflowSQLUtils.normalizeIdentifier(getValue(each, "table_name")))).toList();
     }
     
@@ -115,7 +115,7 @@ public final class GovernanceMetadataQueryService {
      * @return default single table storage unit rows
      */
     public List<Map<String, Object>> queryDefaultSingleTableStorageUnit(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM %s", format(databaseName)));
     }
     
     private Map<String, Object> redactStorageUnitRow(final Map<String, Object> row) {

@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.workflow;
+package org.apache.shardingsphere.mcp.support.database.exception;
 
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseRequestContext;
+import org.junit.jupiter.api.Test;
 
-/**
- * Workflow-aware MCP request context.
- */
-public interface MCPWorkflowRequestContext extends MCPDatabaseRequestContext {
+import java.sql.SQLException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+
+class MCPDatabaseQueryFailedExceptionTest {
     
-    /**
-     * Get workflow session context bound to the current MCP session.
-     *
-     * @return workflow session context
-     */
-    WorkflowSessionContext getWorkflowSessionContext();
+    @Test
+    void assertErrorContract() {
+        SQLException cause = new SQLException("missing table", "42P01");
+        MCPDatabaseQueryFailedException actual = new MCPDatabaseQueryFailedException(MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE, cause);
+        assertThat(actual.getMessage(), is("missing table"));
+        assertThat(actual.getCategory(), is(MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE));
+        assertThat(actual.getCause(), sameInstance(cause));
+    }
 }

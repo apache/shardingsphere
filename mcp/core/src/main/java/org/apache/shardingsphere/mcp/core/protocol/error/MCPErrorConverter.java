@@ -30,12 +30,11 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExc
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.SQLSyntaxErrorException;
-import java.sql.SQLTimeoutException;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,11 +57,7 @@ public final class MCPErrorConverter {
             new ErrorMapping(MCPToolCallLimitExceededException.class, "MCP tool call limit exceeded."),
             new ErrorMapping(MCPUnavailableException.class, "Service is temporarily unavailable."),
             new ErrorMapping(RuntimeDatabaseConnectionException.class, "Runtime database connection failed."),
-            new ErrorMapping(SQLSyntaxErrorException.class, "Invalid request."),
-            new ErrorMapping(SQLTimeoutException.class, "MCP operation timeout."),
-            new ErrorMapping(SQLFeatureNotSupportedException.class, "Unsupported MCP operation."),
             new ErrorMapping(UnsupportedOperationException.class, "Unsupported MCP operation."),
-            new ErrorMapping(SQLException.class, "MCP query failed."),
             new ErrorMapping(IllegalArgumentException.class, "Invalid request."),
             new ErrorMapping(IllegalStateException.class, "MCP operation failed."));
     
@@ -73,12 +68,24 @@ public final class MCPErrorConverter {
      * @return MCP error
      */
     public static MCPErrorPayload convert(final Throwable cause) {
+        if (cause instanceof SQLException) {
+            return createError(cause, getJDBCErrorMessage(MCPJDBCExceptionClassifier.classify(cause)));
+        }
         for (ErrorMapping each : ERROR_MAPPINGS) {
             if (each.matches(cause)) {
                 return createError(cause, each.defaultMessage());
             }
         }
         return createError(cause, "Service is temporarily unavailable.");
+    }
+    
+    private static String getJDBCErrorMessage(final MCPJDBCErrorCategory category) {
+        return switch (category) {
+            case SYNTAX -> "Invalid request.";
+            case TIMEOUT -> "MCP operation timeout.";
+            case FEATURE_NOT_SUPPORTED -> "Unsupported MCP operation.";
+            default -> "MCP query failed.";
+        };
     }
     
     private static MCPErrorPayload createError(final Throwable cause, final String defaultMessage) {

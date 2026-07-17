@@ -16,7 +16,7 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 - `mcp/support`：database metadata、execution、capability、workflow context、模型、facade、SPI 和复用 helper。
 - `mcp/features/encrypt`：Encrypt MCP feature。
 - `mcp/features/mask`：Mask MCP feature。
-- `mcp/core`：handler 发现、registry、request scope、session、SQL execution trace、metadata discovery 和 runtime context。
+- `mcp/core`：handler 发现、registry、request context、session、SQL execution trace、metadata discovery 和 runtime context。
 - `mcp/bootstrap`：基于 MCP Java SDK 的 bootstrap、HTTP/STDIO transport、配置加载和生命周期管理。
 - `distribution/mcp`：独立打包、启动脚本、配置和 Dockerfile。
 - `test/e2e/mcp`：端到端契约验证。
@@ -83,10 +83,9 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 ## Context 选择
 
 - 只需要 session ID、当前 transport 或 session identity 的 handler 使用 `MCPRequestContext`。
-- database metadata 或 execution handler 使用 `MCPDatabaseRequestContext`。
-- workflow handler 使用 `MCPWorkflowRequestContext`。
+- 需要 database metadata、execution 或 workflow 能力的 handler 和 completion provider 使用 `MCPFeatureRequestContext`。
 
-`MCPRequestScope` 是 runtime 管理的单次请求实现，名称表达的是生命周期；handler 只依赖自身所需的最小 context 接口。
+`MCPFeatureRuntimeRequestContext` 是 runtime 管理的单次请求实现。Handler 和 completion provider 只依赖 context 接口，不依赖 core 实现类。
 
 Completion 请求按 session 使用 60 秒固定窗口限流，默认每分钟 600 次，可通过 Java 系统属性
 `shardingsphere.mcp.maxCompletionRequestsPerMinute` 调整。

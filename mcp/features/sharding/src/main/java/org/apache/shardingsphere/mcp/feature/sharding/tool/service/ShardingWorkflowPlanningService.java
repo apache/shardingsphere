@@ -36,7 +36,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueU
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -169,8 +168,15 @@ public final class ShardingWorkflowPlanningService {
         WorkflowContextSnapshot result = prepareSnapshot(workflowSessionContext, request, ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND,
                 WorkflowLifecycle.OPERATION_DROP, "Sharding rule component cleanup workflow plan.");
         ShardingWorkflowRequest mergedRequest = (ShardingWorkflowRequest) result.getRequest();
-        if (!inputValidator.hasDatabase(mergedRequest, result) || !inputValidator.hasRequiredCleanupInputs(mergedRequest, result)) {
+        if (!inputValidator.hasDatabase(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
+        }
+        if (!inputValidator.hasRequiredCleanupInputs(mergedRequest, result)) {
+            addRequiredInputClarification(mergedRequest, result);
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
+        }
+        if (!inputValidator.ensureCleanupIdentifiers(mergedRequest, result)) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, result.getStatus());
         }
         if (!ensureCleanupDropOnly(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
@@ -209,10 +215,11 @@ public final class ShardingWorkflowPlanningService {
         if (!inputValidator.ensureIdentifiers(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, result.getStatus());
         }
-        if (!spec.getRequiredInputSupplier().apply(mergedRequest)) {
-            result.getClarifiedIntent().getClarificationMessages().add(
-                    mergedRequest.getFieldSemantics().isEmpty() ? "Please provide the missing sharding planning inputs." : mergedRequest.getFieldSemantics());
-            result.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
+        if (!inputValidator.hasCompatibleInputs(spec.getWorkflowKind(), mergedRequest, result)) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, result.getStatus());
+        }
+        if (!spec.getRequiredInputSupplier().apply(mergedRequest, result)) {
+            addRequiredInputClarification(mergedRequest, result);
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
         if (!planningSupport.ensureLifecycleState(spec.getSummary(), result.getClarifiedIntent(), spec.getExistsSupplier().apply(mergedRequest), result)) {
@@ -225,12 +232,22 @@ public final class ShardingWorkflowPlanningService {
         return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
     }
     
+    private void addRequiredInputClarification(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        inputValidator.addRequiredInputIssue(request, snapshot);
+        snapshot.getClarifiedIntent().getClarificationMessages().add(
+                request.getFieldSemantics().isEmpty() ? "Please provide the missing sharding planning inputs." : request.getFieldSemantics());
+    }
+    
     private WorkflowContextSnapshot prepareSnapshot(final WorkflowSessionContext workflowSessionContext, final ShardingWorkflowRequest request,
                                                     final WorkflowKind workflowKind, final String defaultOperationType, final String summary) {
         WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ShardingWorkflowRequest mergedRequest = ShardingWorkflowRequest.merge(result.getRequest(), request);
         ClarifiedIntent clarifiedIntent = resolveIntent(mergedRequest, defaultOperationType);
         planningSupport.prepareSnapshot(result, workflowKind, mergedRequest, null, clarifiedIntent, summary, INTERACTION_STEPS, VALIDATION_LAYERS);
+        if (ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND.equals(workflowKind)) {
+            result.getResourceUriTemplates().addAll(List.of(ShardingFeatureDefinition.STORAGE_UNITS_RESOURCE_URI,
+                    ShardingFeatureDefinition.SINGLE_TABLES_RESOURCE_URI, ShardingFeatureDefinition.SINGLE_TABLE_RESOURCE_URI));
+        }
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
         return result;
     }
@@ -299,7 +316,7 @@ public final class ShardingWorkflowPlanningService {
     }
     
     private boolean isUnusedComponent(final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
-        return switch (normalizeComponentType(request.getComponentType())) {
+        return switch (inputValidator.normalizeComponentType(request.getComponentType())) {
             case "algorithm" -> containsNamedRow(inspectionService.queryUnusedAlgorithms(queryFacade, request.getDatabase()),
                     queryFacade, request.getDatabase(), "name", request.getComponentName());
             case "key-generator" -> containsNamedRow(inspectionService.queryUnusedKeyGenerators(queryFacade, request.getDatabase()),
@@ -311,7 +328,7 @@ public final class ShardingWorkflowPlanningService {
     }
     
     private List<Map<String, Object>> queryUsedBy(final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
-        switch (normalizeComponentType(request.getComponentType())) {
+        switch (inputValidator.normalizeComponentType(request.getComponentType())) {
             case "algorithm":
                 return inspectionService.queryTableRulesUsedAlgorithm(queryFacade, request.getDatabase(), request.getComponentName());
             case "key-generator":
@@ -329,7 +346,4 @@ public final class ShardingWorkflowPlanningService {
         return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
     }
     
-    private String normalizeComponentType(final String componentType) {
-        return componentType.trim().toLowerCase(Locale.ENGLISH).replace('_', '-');
-    }
 }

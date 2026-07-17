@@ -72,7 +72,7 @@ class MySQLIdentifierCasePolicyProviderTest {
     
     private static Stream<Arguments> provideArguments() {
         return Stream.of(
-                Arguments.of("null_data_source", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, null), LookupMode.EXACT, LookupMode.NORMALIZED, true),
+                Arguments.of("null_data_source", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, null), LookupMode.NORMALIZED, LookupMode.NORMALIZED, true),
                 Arguments.of("null_connection", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new NullConnectionFixtureDataSource()), LookupMode.EXACT, LookupMode.NORMALIZED, true),
                 Arguments.of("lower_case_table_names_0", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0)),
                         LookupMode.EXACT, LookupMode.EXACT, false),

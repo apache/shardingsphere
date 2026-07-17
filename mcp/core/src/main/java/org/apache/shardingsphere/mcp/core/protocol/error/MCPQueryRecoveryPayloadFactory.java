@@ -24,19 +24,15 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedExcept
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.SQLNonTransientConnectionException;
-import java.sql.SQLSyntaxErrorException;
-import java.sql.SQLTimeoutException;
-import java.sql.SQLTransientConnectionException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * MCP query recovery payload factory.
@@ -51,10 +47,10 @@ final class MCPQueryRecoveryPayloadFactory {
         if (cause instanceof MCPQueryFailedException || cause instanceof SQLException) {
             return true;
         }
-        Optional<SQLException> sqlException = findSQLException(cause);
-        return cause instanceof MCPTimeoutException && sqlException.filter(SQLTimeoutException.class::isInstance).isPresent()
-                || cause instanceof MCPUnsupportedException && sqlException.filter(SQLFeatureNotSupportedException.class::isInstance).isPresent()
-                || cause instanceof MCPInvalidRequestException && sqlException.filter(SQLSyntaxErrorException.class::isInstance).isPresent();
+        MCPJDBCErrorCategory category = MCPJDBCExceptionClassifier.classify(cause);
+        return cause instanceof MCPTimeoutException && MCPJDBCErrorCategory.TIMEOUT == category
+                || cause instanceof MCPUnsupportedException && MCPJDBCErrorCategory.FEATURE_NOT_SUPPORTED == category
+                || cause instanceof MCPInvalidRequestException && MCPJDBCErrorCategory.SYNTAX == category;
     }
     
     static Map<String, Object> create(final Throwable cause) {
@@ -69,57 +65,15 @@ final class MCPQueryRecoveryPayloadFactory {
     }
     
     private static String classify(final Throwable cause) {
-        Optional<SQLException> sqlException = findSQLException(cause);
-        if (sqlException.filter(SQLTimeoutException.class::isInstance).isPresent()) {
-            return MCPDiagnosticCategory.EXECUTION_TIMEOUT;
-        }
-        if (sqlException.filter(SQLFeatureNotSupportedException.class::isInstance).isPresent()) {
-            return MCPDiagnosticCategory.UNSUPPORTED_DATABASE_CAPABILITY;
-        }
-        if (sqlException.filter(each -> each instanceof SQLTransientConnectionException || each instanceof SQLNonTransientConnectionException).isPresent()) {
-            return MCPDiagnosticCategory.CONNECTION_INTERRUPTED;
-        }
-        if (sqlException.map(SQLException::getSQLState).filter(MCPQueryRecoveryPayloadFactory::isConnectionInterruptedSQLState).isPresent()) {
-            return MCPDiagnosticCategory.CONNECTION_INTERRUPTED;
-        }
-        if (sqlException.map(SQLException::getSQLState).filter(MCPQueryRecoveryPayloadFactory::isInsufficientPrivilegesSQLState).isPresent()) {
-            return MCPDiagnosticCategory.INSUFFICIENT_PRIVILEGES;
-        }
-        if (sqlException.map(SQLException::getSQLState).filter(MCPQueryRecoveryPayloadFactory::isObjectNotVisibleSQLState).isPresent()) {
-            return MCPDiagnosticCategory.OBJECT_NOT_VISIBLE;
-        }
-        if (cause instanceof SQLSyntaxErrorException || sqlException.filter(SQLSyntaxErrorException.class::isInstance).isPresent()
-                || sqlException.map(SQLException::getSQLState).filter(MCPQueryRecoveryPayloadFactory::isSyntaxErrorSQLState).isPresent()) {
-            return MCPDiagnosticCategory.SQL_SYNTAX_ERROR;
-        }
-        return MCPDiagnosticCategory.QUERY_FAILED;
-    }
-    
-    private static Optional<SQLException> findSQLException(final Throwable cause) {
-        Throwable current = cause;
-        while (null != current) {
-            if (current instanceof SQLException) {
-                return Optional.of((SQLException) current);
-            }
-            current = current.getCause();
-        }
-        return Optional.empty();
-    }
-    
-    private static boolean isConnectionInterruptedSQLState(final String sqlState) {
-        return null != sqlState && sqlState.startsWith("08");
-    }
-    
-    private static boolean isInsufficientPrivilegesSQLState(final String sqlState) {
-        return null != sqlState && ("42501".equals(sqlState) || sqlState.startsWith("28"));
-    }
-    
-    private static boolean isObjectNotVisibleSQLState(final String sqlState) {
-        return null != sqlState && List.of("3F000", "42P01", "42703", "42704", "42S02", "42S22").contains(sqlState);
-    }
-    
-    private static boolean isSyntaxErrorSQLState(final String sqlState) {
-        return null != sqlState && sqlState.startsWith("42");
+        return switch (MCPJDBCExceptionClassifier.classify(cause)) {
+            case TIMEOUT -> MCPDiagnosticCategory.EXECUTION_TIMEOUT;
+            case FEATURE_NOT_SUPPORTED -> MCPDiagnosticCategory.UNSUPPORTED_DATABASE_CAPABILITY;
+            case CONNECTION -> MCPDiagnosticCategory.CONNECTION_INTERRUPTED;
+            case AUTHENTICATION, AUTHORIZATION -> MCPDiagnosticCategory.INSUFFICIENT_PRIVILEGES;
+            case OBJECT_NOT_VISIBLE -> MCPDiagnosticCategory.OBJECT_NOT_VISIBLE;
+            case SYNTAX -> MCPDiagnosticCategory.SQL_SYNTAX_ERROR;
+            default -> MCPDiagnosticCategory.QUERY_FAILED;
+        };
     }
     
     private static String createModelAction(final String category) {

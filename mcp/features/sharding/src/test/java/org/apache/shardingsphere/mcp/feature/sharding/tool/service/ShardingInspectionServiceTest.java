@@ -47,7 +47,7 @@ class ShardingInspectionServiceTest {
     void assertDatabaseScopedQuery(final String name, final QueryInvocation invocation, final String expectedSQL) {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         invocation.invoke(new ShardingInspectionService(), queryFacade);
-        verify(queryFacade).query(eq("logic_db"), eq(""), eq(expectedSQL));
+        verify(queryFacade).query(eq("logic_db"), eq(expectedSQL));
     }
     
     @Test
