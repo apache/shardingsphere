@@ -179,6 +179,9 @@ location /mcp {
 - `subjectHeader` 表示外部主体，例如试用账号、正式客户标识或内部调用身份。
 - `sourceHeader` 表示请求来源，例如 `gateway-nginx`、`internal-alb` 或其他受信入口名称。
 - `attributeHeaderPrefix` 可用于注入少量非敏感上下文，例如环境、区域或接入渠道；不要通过这些请求头传递密码、密钥或令牌。
+- 初始化会话时，`subject`、`source` 和 attributes 会与 session ID 一起固化。该会话的后续请求必须携带完全一致的归属快照；缺少、新增或修改任何值都会被拒绝。
+- 归属字段只能使用在整个会话期间保持稳定的值。不要把 request ID、trace ID、时间戳或其他单次请求值映射为归属属性。
+- 会话归属只用于描述和诊断上下文，不代表已经完成认证或授权；两者仍须由受信网关执行。
 - 如果当前部署不需要把请求归属绑定到会话上下文，可以省略 `sessionAttributionSource` 配置。
 
 完成接线后，继续按照下文的健康检查步骤确认：

@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config;
+package org.apache.shardingsphere.mcp.api.transport;
 
-/**
- * MCP transport type.
- */
-public enum MCPTransportType {
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class MCPTransportTypeTest {
     
-    STREAMABLE_HTTP, STDIO
+    @Test
+    void assertValues() {
+        assertThat(MCPTransportType.STREAMABLE_HTTP.getValue(), is("http"));
+        assertThat(MCPTransportType.STDIO.getValue(), is("stdio"));
+    }
 }

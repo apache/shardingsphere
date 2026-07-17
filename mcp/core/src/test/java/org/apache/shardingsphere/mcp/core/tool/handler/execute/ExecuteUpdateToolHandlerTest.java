@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
@@ -52,7 +53,7 @@ class ExecuteUpdateToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(createUpdateResult());
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
-        when(requestContext.getSessionId()).thenReturn("session-1");
+        when(requestContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(requestContext.getExecutionFacade()).thenReturn(executionFacade);
         mockDatabaseCapability(requestContext, "logic_db");
         MCPSuccessPayload actual = new ExecuteUpdateToolHandler().handle(requestContext,
@@ -74,7 +75,7 @@ class ExecuteUpdateToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(createUpdateResult());
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
-        when(requestContext.getSessionId()).thenReturn("session-1");
+        when(requestContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(requestContext.getExecutionFacade()).thenReturn(executionFacade);
         mockDatabaseCapability(requestContext, "logic_db");
         MCPSuccessPayload actual = new ExecuteUpdateToolHandler().handle(requestContext,

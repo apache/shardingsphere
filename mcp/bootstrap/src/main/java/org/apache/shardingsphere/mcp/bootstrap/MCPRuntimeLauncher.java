@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
@@ -53,7 +53,7 @@ public final class MCPRuntimeLauncher {
     public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
         ShardingSpherePreconditions.checkNotNull(config, () -> new IllegalArgumentException("MCP launch configuration cannot be null."));
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(config.getDatabases()), new MCPDatabaseCapabilityProvider(config.getDatabases()),
-                isHttpTransport(config) ? "http" : "stdio");
+                config.getTransportType());
         MCPRuntimeServer result = isHttpTransport(config) ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
         try {
             result.start();
@@ -72,13 +72,13 @@ public final class MCPRuntimeLauncher {
     private String createHttpStartupLogMessage(final MCPLaunchConfiguration config, final StreamableHttpMCPServer server) {
         String endpoint = String.format("http://%s:%d%s", config.getHttpTransport().getBindHost(), server.getLocalPort(), config.getHttpTransport().getEndpointPath());
         SessionAttributionResolver sessionAttributionResolver = new SessionAttributionResolver(config.getHttpTransport().getSessionAttributionSource());
-        return String.format("ShardingSphere MCP Server started, transport=http, config=%s, databases=%d, endpoint=%s, session_attribution=%s, logs=%s.",
-                configPath, config.getDatabases().size(), endpoint, sessionAttributionResolver.getSummary(), LOG_PATH);
+        return String.format("ShardingSphere MCP Server started, transport=%s, config=%s, databases=%d, endpoint=%s, session_attribution=%s, logs=%s.",
+                MCPTransportType.STREAMABLE_HTTP.getValue(), configPath, config.getDatabases().size(), endpoint, sessionAttributionResolver.getSummary(), LOG_PATH);
     }
     
     private String createStdioStartupLogMessage(final MCPLaunchConfiguration config) {
-        return String.format("ShardingSphere MCP Server started, transport=stdio, config=%s, databases=%d, logs=%s. Stdout is reserved for MCP protocol frames.",
-                configPath, config.getDatabases().size(), LOG_PATH);
+        return String.format("ShardingSphere MCP Server started, transport=%s, config=%s, databases=%d, logs=%s. Stdout is reserved for MCP protocol frames.",
+                MCPTransportType.STDIO.getValue(), configPath, config.getDatabases().size(), LOG_PATH);
     }
     
     private boolean isHttpTransport(final MCPLaunchConfiguration config) {

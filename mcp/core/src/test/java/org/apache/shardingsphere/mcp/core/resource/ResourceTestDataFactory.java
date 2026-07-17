@@ -29,6 +29,8 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -130,7 +132,7 @@ public final class ResourceTestDataFactory {
      * @return runtime context
      */
     public static MCPRuntimeContext createRuntimeContext(final List<DatabaseMetadataFixture> databaseMetadataList) {
-        return createRuntimeContext(databaseMetadataList, "http");
+        return createRuntimeContext(databaseMetadataList, MCPTransportType.STREAMABLE_HTTP);
     }
     
     /**
@@ -140,7 +142,7 @@ public final class ResourceTestDataFactory {
      * @param activeTransport active MCP transport
      * @return runtime context
      */
-    public static MCPRuntimeContext createRuntimeContext(final List<DatabaseMetadataFixture> databaseMetadataList, final String activeTransport) {
+    public static MCPRuntimeContext createRuntimeContext(final List<DatabaseMetadataFixture> databaseMetadataList, final MCPTransportType activeTransport) {
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(databaseMetadataList.size(), 1F);
         for (DatabaseMetadataFixture each : databaseMetadataList) {
             runtimeDatabases.put(each.database, createRuntimeDatabaseConfiguration(each));
@@ -176,7 +178,7 @@ public final class ResourceTestDataFactory {
      */
     public static RequestContextFixture createRequestContextFixture(final MCPRuntimeContext runtimeContext, final List<DatabaseMetadataFixture> databaseMetadataList) {
         MetadataSPIMocks metadataSPIMocks = mockMetadataSPI(databaseMetadataList);
-        return new RequestContextFixture(new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1"), metadataSPIMocks);
+        return new RequestContextFixture(new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of())), metadataSPIMocks);
     }
     
     private static MCPDatabaseCapabilityProvider createDatabaseCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,

@@ -59,6 +59,7 @@ transport:
 | `transport.http.sessionAttributionSource.attributeHeaderPrefix` | 自定义归属属性的请求头前缀。           |
 
 只有确认客户端不能直接伪造这些请求头时，才应启用该配置。
+同一个 MCP 会话的后续 HTTP 请求必须提供一致的 subject、source 和 attributes。
 
 ## 数据库配置
 

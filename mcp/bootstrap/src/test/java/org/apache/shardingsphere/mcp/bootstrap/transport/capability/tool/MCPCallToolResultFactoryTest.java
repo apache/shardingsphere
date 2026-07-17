@@ -26,6 +26,7 @@ import io.modelcontextprotocol.spec.McpSchema.ResourceLink;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
@@ -79,7 +80,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
             MCPSuccessPayload response = new MCPMapPayload(Map.of("status", "ok"));
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptor("database_gateway_search_metadata"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
-            CallToolResult actual = createToolSpecification("stdio").callHandler().apply(createExchange(), new CallToolRequest(
+            CallToolResult actual = createToolSpecification(MCPTransportType.STDIO).callHandler().apply(createExchange(), new CallToolRequest(
                     "database_gateway_search_metadata", null));
             assertThat(actual.structuredContent(), is(Map.of("status", "ok")));
             assertThat(((TextContent) actual.content().getFirst()).text(), is("{\"status\":\"ok\"}"));

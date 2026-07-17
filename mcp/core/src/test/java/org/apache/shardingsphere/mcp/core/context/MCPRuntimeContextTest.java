@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.core.context;
 
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
@@ -43,8 +45,8 @@ class MCPRuntimeContextTest {
     @Test
     void assertSessionCloseRemovesWorkflowState() {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
-        sessionManager.createSession("session-1");
-        sessionManager.createSession("session-2");
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
+        sessionManager.createSession(new MCPSessionIdentity("session-2", "", "", Map.of()));
         MCPRuntimeContext runtimeContext = createRuntimeContext(sessionManager);
         WorkflowSessionContext firstContext = runtimeContext.getWorkflowSessionContext("session-1");
         firstContext.save(createSnapshot("plan-1"));
@@ -55,7 +57,7 @@ class MCPRuntimeContextTest {
     }
     
     private MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager) {
-        return new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), "http");
+        return new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.STREAMABLE_HTTP);
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId) {

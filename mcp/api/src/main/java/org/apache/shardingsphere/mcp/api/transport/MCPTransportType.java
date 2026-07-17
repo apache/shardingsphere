@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
+package org.apache.shardingsphere.mcp.api.transport;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 
 /**
- * YAML MCP transport configuration.
+ * MCP transport type supported by ShardingSphere MCP runtime.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlMCPTransportConfiguration implements YamlConfiguration {
+public enum MCPTransportType {
     
-    @NotNull(message = "is required")
-    private MCPTransportType type;
+    STREAMABLE_HTTP("http"),
     
-    @Valid
-    private YamlHttpTransportConfiguration http;
+    STDIO("stdio");
+    
+    private final String value;
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.performance;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.core.completion.provider.WorkflowPlanIdCompletionProvider;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
@@ -74,7 +75,7 @@ class MCPPerformanceBudgetSmokeTest {
     @Test
     void assertDescriptorGenerationBudget() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         ServerCapabilitiesHandler handler = new ServerCapabilitiesHandler();
         Map<String, Object> actual = handler.handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
         assertFalse(actual.containsKey("fingerprints"));
@@ -91,7 +92,7 @@ class MCPPerformanceBudgetSmokeTest {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
         long elapsedMillis = measureElapsedMillis(() -> {
             for (int i = 0; i < REQUEST_CONTEXT_ITERATIONS; i++) {
-                new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1").getMetadataQueryFacade();
+                new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of())).getMetadataQueryFacade();
             }
         });
         assertWithinBudget("request context creation", elapsedMillis, REQUEST_CONTEXT_BUDGET_MILLIS);
@@ -131,7 +132,7 @@ class MCPPerformanceBudgetSmokeTest {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionStore().getSessionContext("session-1");
         workflowSessionContext.save(createWorkflowSnapshot("plan-1"));
         MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
-        when(handlerContext.getSessionId()).thenReturn("session-1");
+        when(handlerContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(handlerContext.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         WorkflowPlanIdCompletionProvider provider = new WorkflowPlanIdCompletionProvider();
         MCPCompletionRequest request = new MCPCompletionRequest(
