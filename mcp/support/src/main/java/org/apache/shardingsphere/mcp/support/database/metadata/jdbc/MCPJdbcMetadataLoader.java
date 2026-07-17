@@ -65,7 +65,7 @@ public final class MCPJdbcMetadataLoader {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
             return loadSchemas(databaseName, databaseProfile, connection, connection.getMetaData());
         } catch (final SQLException ex) {
-            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, databaseProfile.getDatabaseType(), ex);
         }
     }
     
@@ -86,7 +86,7 @@ public final class MCPJdbcMetadataLoader {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             return loadColumnMetadata(connection, databaseMetaData, databaseProfile, schemaName, escapePattern(databaseMetaData, relationName));
         } catch (final SQLException ex) {
-            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, databaseProfile.getDatabaseType(), ex);
         }
     }
     
@@ -105,7 +105,7 @@ public final class MCPJdbcMetadataLoader {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
             return loadColumnMetadata(connection, connection.getMetaData(), databaseProfile, schemaName, "%");
         } catch (final SQLException ex) {
-            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, databaseProfile.getDatabaseType(), ex);
         }
     }
     
@@ -125,7 +125,7 @@ public final class MCPJdbcMetadataLoader {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
             return loadIndexMetadata(connection, connection.getMetaData(), databaseProfile, schemaName, tableName);
         } catch (final SQLException ex) {
-            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, databaseProfile.getDatabaseType(), ex);
         }
     }
     

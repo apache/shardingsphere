@@ -60,6 +60,8 @@ public final class WorkflowIssueCode {
     
     public static final String RULE_INPUT_REQUIRED = "WF-RULE-002";
     
+    public static final String RULE_INPUT_CONFLICT = "WF-RULE-003";
+    
     public static final String MANUAL_EXECUTION_PENDING = "WF-MODE-001";
     
     public static final String UNSUPPORTED_IDENTIFIER = "WF-SQL-001";

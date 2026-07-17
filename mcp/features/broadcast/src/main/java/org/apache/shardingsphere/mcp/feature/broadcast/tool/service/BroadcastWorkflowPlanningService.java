@@ -69,6 +69,12 @@ public final class BroadcastWorkflowPlanningService {
         BroadcastWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
+        if (!request.getTable().isEmpty() && !request.getTables().isEmpty()) {
+            result.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_CONFLICT, "error", WorkflowLifecycle.STEP_INTAKING,
+                    "Broadcast workflow accepts table or tables, but not both in the same request.",
+                    "Choose one target input mode and start a new plan without plan_id.", false, Map.of("conflicting_inputs", List.of("table", "tables"))));
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+        }
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }

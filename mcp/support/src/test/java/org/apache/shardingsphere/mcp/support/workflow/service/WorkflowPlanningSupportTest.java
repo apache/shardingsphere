@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
@@ -52,6 +53,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -235,6 +237,7 @@ class WorkflowPlanningSupportTest {
     void assertPrepareSnapshot() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking", "message", "action", true, Map.of()));
         WorkflowRequest request = new WorkflowRequest();
         request.setDatabase("logic_db");
@@ -247,6 +250,21 @@ class WorkflowPlanningSupportTest {
         assertThat(snapshot.getClarifiedIntent(), is(clarifiedIntent));
         assertThat(snapshot.getInteractionPlan().getSummary(), is("summary"));
         assertTrue(snapshot.getIssues().isEmpty());
+    }
+    
+    @Test
+    void assertPrepareSnapshotRejectsDifferentWorkflowKind() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        WorkflowRequest previousRequest = new WorkflowRequest();
+        previousRequest.setDatabase("logic_db");
+        snapshot.setRequest(previousRequest);
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> planningSupport.prepareSnapshot(snapshot,
+                WorkflowKind.valueOf("mask.rule"), new WorkflowRequest(), null, new ClarifiedIntent(), "summary", List.of("step-1"), List.of("rules")));
+        assertThat(actual.getMessage(), is("plan_id `plan-1` belongs to workflow kind `encrypt.rule`; call the matching planning tool or omit plan_id to start `mask.rule`."));
+        assertThat(snapshot.getWorkflowKind(), is(WorkflowKind.valueOf("encrypt.rule")));
+        assertThat(snapshot.getRequest(), is(previousRequest));
     }
     
     @Test
