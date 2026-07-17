@@ -184,11 +184,8 @@ final class MCPStatementAnalyzer {
         if (upperSql.startsWith("START TRANSACTION")) {
             return "START TRANSACTION";
         }
-        if (upperSql.startsWith("ROLLBACK TO SAVEPOINT")) {
-            return "ROLLBACK TO SAVEPOINT";
-        }
         if (upperSql.startsWith("ROLLBACK TO")) {
-            return "ROLLBACK TO";
+            return "ROLLBACK TO SAVEPOINT";
         }
         if (upperSql.startsWith("RELEASE SAVEPOINT")) {
             return "RELEASE SAVEPOINT";
