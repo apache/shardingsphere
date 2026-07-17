@@ -207,6 +207,25 @@ class WorkflowPlanPayloadBuilderTest {
     }
     
     @Test
+    void assertBuildStopsAfterClusterModeFailure() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("readwrite.status"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
+        WorkflowRequest request = new WorkflowRequest();
+        snapshot.setRequest(request);
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Readwrite-splitting status workflow plan.", List.of("Review"), List.of("status")));
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.CLUSTER_MODE_REQUIRED, "error", WorkflowLifecycle.STEP_DISCOVERING,
+                "Cluster mode is required.", "Connect to a Cluster-mode ShardingSphere Proxy.", false,
+                Map.of("required_mode", "Cluster", "actual_mode", "Standalone")));
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("type"), is("terminal"));
+        assertThat(actualNextAction.get("reason"), is("Connect to a Cluster-mode ShardingSphere Proxy, then start a new workflow plan."));
+    }
+    
+    @Test
     void assertBuildStartsNewPlanAfterInputConflict() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");

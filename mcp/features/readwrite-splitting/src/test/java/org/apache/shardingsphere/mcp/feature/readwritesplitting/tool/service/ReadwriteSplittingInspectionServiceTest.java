@@ -39,6 +39,20 @@ import static org.mockito.Mockito.when;
 class ReadwriteSplittingInspectionServiceTest {
     
     @Test
+    void assertQueryProxyMode() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "SHOW COMPUTE NODE INFO")).thenReturn(List.of(Map.of("mode_type", "Cluster")));
+        assertThat(new ReadwriteSplittingInspectionService().queryProxyMode(queryFacade, "logic_db"), is("Cluster"));
+    }
+    
+    @Test
+    void assertQueryProxyModeWhenComputeNodeInfoIsEmpty() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "SHOW COMPUTE NODE INFO")).thenReturn(List.of());
+        assertThat(new ReadwriteSplittingInspectionService().queryProxyMode(queryFacade, "logic_db"), is("unknown"));
+    }
+    
+    @Test
     void assertQueryRules() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         new ReadwriteSplittingInspectionService().queryRules(queryFacade, "logic_db");
