@@ -93,7 +93,7 @@ public final class WorkflowGuidancePayloadBuilder {
         } else if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
             nextActions.add(createUserAction("Inspect issues and retry database_gateway_apply_workflow only after the failed artifact is corrected.", List.of("issues")));
         }
-        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, addSequencing(nextActions));
+        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, nextActions);
     }
     
     private static boolean isSecretReferenceRecovery(final Map<String, Object> payload) {
@@ -310,16 +310,6 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static Map<String, Object> createStopAction() {
         return MCPNextActionUtils.stop("Validation passed. Report the confirmed workflow result to the user.");
-    }
-    
-    private static List<Map<String, Object>> addSequencing(final List<Map<String, Object>> nextActions) {
-        for (int index = 0; index < nextActions.size(); index++) {
-            nextActions.get(index).put("order", index + 1);
-            if (0 < index && "ask_user".equals(nextActions.get(index - 1).get("type"))) {
-                nextActions.get(index).put("depends_on", List.of(index));
-            }
-        }
-        return nextActions;
     }
     
     private static String resolvePlanningTool(final WorkflowContextSnapshot snapshot) {

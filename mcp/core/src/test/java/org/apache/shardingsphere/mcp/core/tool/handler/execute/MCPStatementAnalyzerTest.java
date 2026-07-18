@@ -30,6 +30,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -88,6 +90,12 @@ class MCPStatementAnalyzerTest {
         assertThat(actual.getReferencedObjectNames(), contains("logic_db.orders", "other_db.order_items"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("referencedObjectCases")
+    void assertAnalyzeExactReferencedObjects(final String name, final String databaseType, final String sql, final List<String> expected) {
+        assertThat(new ArrayList<>(analyzer.analyze(sql, createCapability(databaseType)).getReferencedObjectNames()), is(expected));
+    }
+    
     @Test
     void assertAnalyzeCommonTableExpressionReferences() {
         ClassificationResult actual = analyzer.analyze(
@@ -115,6 +123,13 @@ class MCPStatementAnalyzerTest {
                 "UPDATE orders SET status = source.status FROM other_db.orders source", createCapability("PostgreSQL"));
         assertThat(actual.getReferencedObjectNames(), contains("orders", "other_db.orders"));
         assertThat(actual.getTargetObjectName().orElse(""), is("orders"));
+    }
+    
+    @Test
+    void assertAnalyzeQuotedTableQueryIdentifier() {
+        ClassificationResult actual = analyzer.analyze("CREATE TABLE order_archive AS TABLE `other.db.orders`", createCapability("MySQL"));
+        assertThat(actual.getReferencedObjectNames(), contains("order_archive", "other.db.orders"));
+        assertFalse(actual.getReferencedObjects().stream().filter(each -> "other.db.orders".equals(each.getObjectName())).findFirst().orElseThrow().isQualified());
     }
     
     @Test
@@ -184,10 +199,49 @@ class MCPStatementAnalyzerTest {
                 Arguments.of("schema", "GRANT USAGE ON SCHEMA other_db TO PUBLIC"));
     }
     
+    private static Stream<Arguments> referencedObjectCases() {
+        return Stream.of(
+                Arguments.of("merge target and source", "Oracle", "MERGE INTO order_archive USING orders ON (order_archive.order_id = orders.order_id)",
+                        List.of("order_archive", "orders")),
+                Arguments.of("create table like target and source", "MySQL", "CREATE TABLE order_archive LIKE orders", List.of("order_archive", "orders")),
+                Arguments.of("create table select target and source", "MySQL", "CREATE TABLE order_archive (order_id BIGINT) AS SELECT * FROM other_db.orders",
+                        List.of("order_archive", "other_db.orders")),
+                Arguments.of("create table select without as", "MySQL", "CREATE TABLE order_archive SELECT * FROM other_db.orders",
+                        List.of("order_archive", "other_db.orders")),
+                Arguments.of("create table with query without as", "MySQL",
+                        "CREATE TABLE order_archive WITH order_source AS (SELECT * FROM other_db.orders) SELECT * FROM order_source",
+                        List.of("order_archive", "other_db.orders")),
+                Arguments.of("create table parenthesized select", "MySQL", "CREATE TABLE order_archive AS (SELECT * FROM other_db.orders)",
+                        List.of("order_archive", "other_db.orders")),
+                Arguments.of("create table table query", "MySQL", "CREATE TABLE order_archive AS TABLE other_db.orders",
+                        List.of("order_archive", "other_db.orders")),
+                Arguments.of("create table partition values", "MySQL",
+                        "CREATE TABLE order_archive (order_id INT) PARTITION BY RANGE (order_id) (PARTITION p0 VALUES LESS THAN (10))", List.of("order_archive")),
+                Arguments.of("create index and table", "PostgreSQL", "CREATE INDEX order_idx ON orders (status)", List.of("order_idx", "orders")),
+                Arguments.of("create database", "MySQL", "CREATE DATABASE order_archive", List.of("order_archive")),
+                Arguments.of("drop database", "MySQL", "DROP DATABASE order_archive", List.of("order_archive")),
+                Arguments.of("create schema", "PostgreSQL", "CREATE SCHEMA order_archive", List.of("order_archive")),
+                Arguments.of("alter schema rename", "PostgreSQL", "ALTER SCHEMA order_archive RENAME TO order_history", List.of("order_archive", "order_history")),
+                Arguments.of("drop schema", "PostgreSQL", "DROP SCHEMA order_archive", List.of("order_archive")),
+                Arguments.of("create sequence", "PostgreSQL", "CREATE SEQUENCE order_seq", List.of("order_seq")),
+                Arguments.of("alter sequence", "PostgreSQL", "ALTER SEQUENCE order_seq INCREMENT BY 2", List.of("order_seq")),
+                Arguments.of("drop sequence", "PostgreSQL", "DROP SEQUENCE order_seq", List.of("order_seq")));
+    }
+    
     private static Stream<Arguments> statementCases() {
         return Stream.of(
                 Arguments.of("trim trailing semicolon", "MySQL", "  SELECT * FROM orders ;  ", SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM orders", "orders", ""),
                 Arguments.of("semicolon literal", "MySQL", "SELECT ';' AS literal_value", SupportedMCPStatement.QUERY, "SELECT", "SELECT ';' AS literal_value", "", ""),
+                Arguments.of("mysql hash comment", "MySQL", "SELECT 1 # @order_status := 1", SupportedMCPStatement.QUERY, "SELECT",
+                        "SELECT 1 # @order_status := 1", "", ""),
+                Arguments.of("postgresql adjacent dash comment", "PostgreSQL", "SELECT 1--@order_status:=1", SupportedMCPStatement.QUERY, "SELECT",
+                        "SELECT 1--@order_status:=1", "", ""),
+                Arguments.of("postgresql dollar quoted literal", "PostgreSQL", "SELECT $$@order_status:=1; /*!80018 ANALYZE */$$", SupportedMCPStatement.QUERY, "SELECT",
+                        "SELECT $$@order_status:=1; /*!80018 ANALYZE */$$", "", ""),
+                Arguments.of("opengauss tagged dollar quoted literal", "openGauss", "SELECT $tag$a;b$tag$", SupportedMCPStatement.QUERY, "SELECT",
+                        "SELECT $tag$a;b$tag$", "", ""),
+                Arguments.of("user variable assignment string", "MySQL", "SELECT '@order_status := 1'", SupportedMCPStatement.QUERY, "SELECT",
+                        "SELECT '@order_status := 1'", "", ""),
                 Arguments.of("with query", "PostgreSQL", "WITH order_result AS (SELECT * FROM orders) SELECT * FROM order_result",
                         SupportedMCPStatement.QUERY, "SELECT", "WITH order_result AS (SELECT * FROM orders) SELECT * FROM order_result", "orders", ""),
                 Arguments.of("with update", "PostgreSQL", "WITH order_result AS (SELECT * FROM orders) UPDATE order_archive SET status = 'DONE' FROM order_result",
@@ -226,6 +280,12 @@ class MCPStatementAnalyzerTest {
                 Arguments.of("blank", "MySQL", "   ", MCPInvalidRequestException.class, "sql cannot be empty."),
                 Arguments.of("delimiter only", "MySQL", ";", MCPInvalidRequestException.class, "sql cannot be empty."),
                 Arguments.of("multiple statements", "MySQL", "SELECT 1; SELECT 2", MCPMultipleSQLStatementsException.class, "Only one SQL statement is allowed."),
+                Arguments.of("multiple statements after dollar quoted literal", "PostgreSQL", "SELECT $$a;b$$; SELECT 2", MCPMultipleSQLStatementsException.class,
+                        "Only one SQL statement is allowed."),
+                Arguments.of("unterminated quote", "MySQL", "SELECT 'value", MCPUnsupportedSQLStatementException.class,
+                        "Statement is not supported by the MCP contract."),
+                Arguments.of("unterminated dollar quote", "PostgreSQL", "SELECT $tag$value", MCPUnsupportedSQLStatementException.class,
+                        "Statement is not supported by the MCP contract."),
                 Arguments.of("parser unavailable", "H2", "SELECT 1", MCPUnsupportedException.class, "SQL parser is not available for database type `H2`."),
                 Arguments.of("savepoint without name", "MySQL", "SAVEPOINT", MCPInvalidRequestException.class, "Savepoint name is required."),
                 Arguments.of("savepoint with extra token", "MySQL", "SAVEPOINT order_sp extra", MCPInvalidRequestException.class, "Savepoint name is required."),
@@ -271,6 +331,12 @@ class MCPStatementAnalyzerTest {
                 Arguments.of("banned backend cancellation", "PostgreSQL", "SELECT pg_cancel_backend(1)", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned user variable assignment", "MySQL", "SELECT @order_status := status FROM orders", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned quoted user variable assignment", "MySQL", "SELECT @'order-status' := status FROM orders", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned mysql adjacent dash assignment", "MySQL", "SELECT 1--@order_status:=1", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned mariadb adjacent dash assignment", "MariaDB", "SELECT 1--@order_status:=1", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned last insert id mutation", "MySQL", "SELECT LAST_INSERT_ID(1)", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),

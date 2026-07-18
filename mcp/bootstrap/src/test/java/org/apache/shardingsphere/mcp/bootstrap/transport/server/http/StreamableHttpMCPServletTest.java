@@ -142,10 +142,28 @@ class StreamableHttpMCPServletTest {
     
     private static Stream<Arguments> unsupportedProtocolVersions() {
         return Stream.of(
-                Arguments.of("null protocol version", null),
-                Arguments.of("blank protocol version", "  "),
                 Arguments.of("legacy protocol version", ProtocolVersions.MCP_2025_06_18),
                 Arguments.of("unsupported protocol version", "2024-11-05"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("missingProtocolVersions")
+    void assertSetSessionFactoryRejectMissingProtocolVersion(final String name, final String requestedProtocolVersion) {
+        McpStreamableServerSession.Factory sessionFactory = mock(McpStreamableServerSession.Factory.class);
+        StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
+        actual.setSessionFactory(sessionFactory);
+        ArgumentCaptor<McpStreamableServerSession.Factory> actualFactory = ArgumentCaptor.forClass(McpStreamableServerSession.Factory.class);
+        verify(getDelegate()).setSessionFactory(actualFactory.capture());
+        McpSchema.InitializeRequest initializeRequest = new McpSchema.InitializeRequest(requestedProtocolVersion,
+                new McpSchema.ClientCapabilities(Map.of(), null, null, null), new McpSchema.Implementation("foo_client", "1.0.0"));
+        assertThrows(IllegalArgumentException.class, () -> actualFactory.getValue().startSession(initializeRequest));
+        verify(sessionFactory, never()).startSession(any());
+    }
+    
+    private static Stream<Arguments> missingProtocolVersions() {
+        return Stream.of(
+                Arguments.of("null protocol version", null),
+                Arguments.of("blank protocol version", "  "));
     }
     
     @Test
@@ -217,15 +235,30 @@ class StreamableHttpMCPServletTest {
     
     @Test
     void assertRejectUnsupportedEventStreamGet() throws ServletException, IOException {
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
+        sessionManager.createSession(new MCPSessionIdentity("session-id", "", "", Map.of()));
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
         when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn("text/event-stream");
+        when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn("session-id");
         HttpServletResponse response = mock(HttpServletResponse.class);
-        StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
+        StreamableHttpMCPServlet actual = createServlet(sessionManager);
         actual.service(request, response);
         verify(request).setCharacterEncoding("UTF-8");
         verify(response).setCharacterEncoding("UTF-8");
         verify(response).sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "HTTP GET event streams are not supported.");
+        verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+    
+    @Test
+    void assertRejectEventStreamGetWithUnknownSession() throws ServletException, IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn("text/event-stream");
+        when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn("unknown-session");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        createServlet(new MCPSessionManager(Map.of())).service(request, response);
+        verify(response).sendError(HttpServletResponse.SC_NOT_FOUND);
         verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
     

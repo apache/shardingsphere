@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.api.session;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
@@ -28,7 +27,6 @@ import java.util.Map;
  * <p>The session identifier is always present. Subject, source and attributes are optional trusted attribution captured when the session is initialized.
  * Attribution does not represent authentication or authorization.</p>
  */
-@RequiredArgsConstructor
 @Getter
 public final class MCPSessionIdentity {
     
@@ -39,5 +37,12 @@ public final class MCPSessionIdentity {
     private final String source;
     
     private final Map<String, String> attributes;
+    
+    public MCPSessionIdentity(final String sessionId, final String subject, final String source, final Map<String, String> attributes) {
+        this.sessionId = sessionId;
+        this.subject = subject;
+        this.source = source;
+        this.attributes = Map.copyOf(attributes);
+    }
     
 }

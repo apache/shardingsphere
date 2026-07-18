@@ -158,6 +158,44 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
+    void assertValidateRejectsDestructiveToolWithoutExecutionMode() {
+        assertDestructiveToolValidationError(false, List.of(), false, List.of("database"),
+                "Destructive tool `database_gateway_test_tool` must declare execution_mode.");
+    }
+    
+    @Test
+    void assertValidateRejectsDestructiveToolWithOptionalExecutionMode() {
+        assertDestructiveToolValidationError(true, List.of("preview"), false, List.of("database"),
+                "Destructive tool `database_gateway_test_tool` execution_mode must be required.");
+    }
+    
+    @Test
+    void assertValidateRejectsDestructiveToolWithoutPreview() {
+        assertDestructiveToolValidationError(true, List.of("review-then-execute"), true, List.of("database"),
+                "Destructive tool `database_gateway_test_tool` execution_mode must allow preview.");
+    }
+    
+    @Test
+    void assertValidateRejectsDestructiveToolWithAutoExecute() {
+        assertDestructiveToolValidationError(true, List.of("preview", "auto-execute"), true, List.of("database"),
+                "Destructive tool `database_gateway_test_tool` execution_mode must not expose auto-execute.");
+    }
+    
+    @Test
+    void assertValidateRejectsDestructiveToolWithoutSideEffectScope() {
+        assertDestructiveToolValidationError(true, List.of("preview"), true, List.of(),
+                "Destructive tool `database_gateway_test_tool` must declare sideEffectScope in internal runtime.");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"preview", "auto-execute"})
+    void assertValidateRejectsNonDestructiveExecutionMode(final String executionMode) {
+        MCPToolDescriptor descriptor = createExecutionModeTool(false, true, List.of(executionMode), true);
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(descriptor), List.of()),
+                String.format("Non-destructive tool `database_gateway_test_tool` execution_mode must not expose %s.", executionMode));
+    }
+    
+    @Test
     void assertValidateRejectsUnsupportedNextActionSchemaField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
                 "database_gateway_test_tool", createReadOnlyToolAnnotations(),
@@ -266,6 +304,25 @@ class MCPDescriptorCatalogValidatorTest {
     private void assertValidationError(final MCPDescriptorCatalog catalog, final String expectedMessage) {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogValidator.validate(catalog));
         assertThat(actual.getMessage(), is(expectedMessage));
+    }
+    
+    private void assertDestructiveToolValidationError(final boolean executionModePresent, final List<String> executionModes, final boolean executionModeRequired,
+                                                      final List<String> sideEffectScope, final String expectedMessage) {
+        MCPToolDescriptor descriptor = createExecutionModeTool(true, executionModePresent, executionModes, executionModeRequired);
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(descriptor),
+                List.of(new MCPToolRuntimeDescriptor(descriptor.getName(), "execute", sideEffectScope))), expectedMessage);
+    }
+    
+    private MCPToolDescriptor createExecutionModeTool(final boolean destructive, final boolean executionModePresent, final List<String> executionModes,
+                                                      final boolean executionModeRequired) {
+        Map<String, Object> properties = executionModePresent
+                ? Map.of(MCPPayloadFieldNames.EXECUTION_MODE, Map.of("type", "string", "description", "Execution mode.", "enum", executionModes))
+                : Map.of();
+        List<String> required = executionModeRequired ? List.of(MCPPayloadFieldNames.EXECUTION_MODE) : List.of();
+        MCPToolAnnotations annotations = MCPToolAnnotations.builder().title("Test Tool").readOnlyHint(false).destructiveHint(destructive)
+                .idempotentHint(false).openWorldHint(true).build();
+        return new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.", createInputSchema(properties, required),
+                createOutputSchema(), annotations, Map.of());
     }
     
     private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPToolDescriptor> toolDescriptors) {

@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.spec.HttpHeaders;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.SessionAttributionResolver;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.OriginHeaderConstraint;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.SessionRequiredTransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +34,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ShardingSphereServerTransportSecurityValidatorTest {
     
@@ -107,6 +112,16 @@ class ShardingSphereServerTransportSecurityValidatorTest {
                 new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
         assertDoesNotThrow(() -> actual.validateHeaders(
                 Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"))));
+    }
+    
+    @Test
+    void assertValidateSessionRequiredConstraintWithMissingSession() throws ServerTransportSecurityException {
+        SessionRequiredTransportHeaderConstraint constraint = mock(SessionRequiredTransportHeaderConstraint.class);
+        when(constraint.getConstraintKey()).thenReturn(HttpHeaders.PROTOCOL_VERSION);
+        ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(new MCPSessionManager(Map.of()),
+                List.of(constraint), new SessionAttributionResolver(null));
+        assertDoesNotThrow(() -> actual.validateHeaders(Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), HttpHeaders.PROTOCOL_VERSION, List.of("version"))));
+        verify(constraint).validate("version");
     }
     
     @Test
