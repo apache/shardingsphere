@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.mcp.feature.shadow;
 
 import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.shadow.completion.ShadowAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.shadow.resource.handler.ShadowResourceHandler;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.handler.PlanDefaultShadowAlgorithmToolHandler;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.handler.PlanShadowAlgorithmCleanupToolHandler;
@@ -52,6 +54,11 @@ public final class ShadowMCPHandlerProvider implements MCPHandlerProvider, MCPWo
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
         return List.of(new PlanShadowRuleToolHandler(), new PlanDefaultShadowAlgorithmToolHandler(), new PlanShadowAlgorithmCleanupToolHandler());
+    }
+    
+    @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of(new ShadowAlgorithmCompletionHandler());
     }
     
     @Override

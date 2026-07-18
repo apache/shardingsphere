@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.handler.core;
 
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.core.completion.handler.MetadataCompletionHandler;
+import org.apache.shardingsphere.mcp.core.completion.handler.WorkflowPlanIdCompletionHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -50,5 +53,11 @@ class CoreHandlerProviderTest {
         assertTrue(actualUris.contains("shardingsphere://databases/{database}/storage-units/{storageUnit}"));
         assertTrue(actualUris.contains("shardingsphere://databases/{database}/single-table/default-storage-unit"));
         assertTrue(actualUris.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
+    }
+    
+    @Test
+    void assertGetCompletionHandlers() {
+        Collection<MCPCompletionHandler<?>> actual = new CoreHandlerProvider().getCompletionHandlers();
+        assertThat(actual.stream().map(Object::getClass).toList(), is(List.of(MetadataCompletionHandler.class, WorkflowPlanIdCompletionHandler.class)));
     }
 }

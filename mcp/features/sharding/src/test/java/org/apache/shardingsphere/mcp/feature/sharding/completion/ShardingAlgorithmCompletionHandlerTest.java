@@ -19,8 +19,7 @@ package org.apache.shardingsphere.mcp.feature.sharding.completion;
 
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -39,26 +37,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShardingAlgorithmCompletionProviderTest {
+class ShardingAlgorithmCompletionHandlerTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new ShardingAlgorithmCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
+        assertThat(new ShardingAlgorithmCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @Test
     void assertSupportsShardingAlgorithm() {
-        assertTrue(new ShardingAlgorithmCompletionProvider().supports(createRequestContext(ShardingFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI, "algorithm_type")));
+        assertTrue(new ShardingAlgorithmCompletionHandler().supports(createRequestContext(ShardingFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI, "algorithm_type")));
     }
     
     @Test
     void assertSupportsKeyGeneratorAlgorithm() {
-        assertTrue(new ShardingAlgorithmCompletionProvider().supports(createRequestContext(ShardingFeatureDefinition.KEY_GENERATE_ALGORITHM_PLUGINS_RESOURCE_URI, "key_generator_type")));
+        assertTrue(new ShardingAlgorithmCompletionHandler().supports(createRequestContext(ShardingFeatureDefinition.KEY_GENERATE_ALGORITHM_PLUGINS_RESOURCE_URI, "key_generator_type")));
     }
     
     @Test
     void assertSupportsWithForeignReference() {
-        assertFalse(new ShardingAlgorithmCompletionProvider().supports(createRequestContext("plan_mask_rule", "algorithm_type")));
+        assertFalse(new ShardingAlgorithmCompletionHandler().supports(createRequestContext("plan_mask_rule", "algorithm_type")));
     }
     
     @Test
@@ -67,7 +65,7 @@ class ShardingAlgorithmCompletionProviderTest {
         when(queryFacade.queryWithAnyDatabase("SHOW SHARDING ALGORITHM PLUGINS")).thenReturn(List.of(
                 Map.of("type", "INLINE", "description", "Inline sharding algorithm", "secret", "hidden"),
                 Map.of("type", "")));
-        MCPCompletionProviderResult actual = new ShardingAlgorithmCompletionProvider().complete(createHandlerContext(queryFacade),
+        MCPCompletionHandlerResult actual = new ShardingAlgorithmCompletionHandler().complete(createHandlerContext(queryFacade),
                 createRequestContext(ShardingFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI, "algorithm_type"));
         Collection<MCPCompletionCandidate> actualCandidates = actual.getCandidates();
         assertThat(actualCandidates.size(), is(1));
@@ -82,18 +80,13 @@ class ShardingAlgorithmCompletionProviderTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW KEY GENERATE ALGORITHM PLUGINS")).thenReturn(List.of(
                 Map.of("type", "SNOWFLAKE", "description", "Snowflake key generator")));
-        MCPCompletionProviderResult actual = new ShardingAlgorithmCompletionProvider().complete(createHandlerContext(queryFacade),
+        MCPCompletionHandlerResult actual = new ShardingAlgorithmCompletionHandler().complete(createHandlerContext(queryFacade),
                 createRequestContext(ShardingFeatureDefinition.KEY_GENERATE_ALGORITHM_PLUGINS_RESOURCE_URI, "key_generator_type"));
         Collection<MCPCompletionCandidate> actualCandidates = actual.getCandidates();
         assertThat(actualCandidates.size(), is(1));
         MCPCompletionCandidate actualCandidate = actualCandidates.iterator().next();
         assertThat(actualCandidate.getValue(), is("SNOWFLAKE"));
         assertThat(actualCandidate.getSource(), is("sharding-key-generate-algorithm"));
-    }
-    
-    @Test
-    void assertSPIRegistration() {
-        assertTrue(ServiceLoader.load(MCPCompletionProvider.class).stream().anyMatch(each -> ShardingAlgorithmCompletionProvider.class.equals(each.type())));
     }
     
     private MCPFeatureRequestContext createHandlerContext(final MCPFeatureQueryFacade queryFacade) {

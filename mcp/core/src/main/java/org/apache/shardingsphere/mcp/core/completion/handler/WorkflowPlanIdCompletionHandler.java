@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.completion.provider;
+package org.apache.shardingsphere.mcp.core.completion.handler;
 
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -33,9 +33,9 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Workflow plan id completion provider.
+ * Workflow plan id completion handler.
  */
-public final class WorkflowPlanIdCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+public final class WorkflowPlanIdCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
     
     private static final Set<String> COMPLETION_ELIGIBLE_WORKFLOW_STATUSES = Set.of(WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION,
             WorkflowLifecycle.STATUS_EXECUTED, WorkflowLifecycle.STATUS_FAILED, WorkflowLifecycle.STATUS_PLANNED, WorkflowLifecycle.STATUS_PREVIEWED, WorkflowLifecycle.STATUS_VALIDATED);
@@ -51,8 +51,8 @@ public final class WorkflowPlanIdCompletionProvider implements MCPCompletionProv
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-        return new MCPCompletionProviderResult(completePlanIds(handlerContext, request));
+    public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+        return new MCPCompletionHandlerResult(completePlanIds(handlerContext, request));
     }
     
     private List<MCPCompletionCandidate> completePlanIds(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {

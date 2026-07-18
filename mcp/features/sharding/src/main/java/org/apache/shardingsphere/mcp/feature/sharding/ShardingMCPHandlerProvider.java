@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.mcp.feature.sharding;
 
 import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.completion.ShardingAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingAlgorithmResourceHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingGovernanceResourceHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingStrategyResourceHandler;
@@ -78,6 +80,11 @@ public final class ShardingMCPHandlerProvider implements MCPHandlerProvider, MCP
                 new PlanShardingKeyGeneratorToolHandler(),
                 new PlanShardingKeyGenerateStrategyToolHandler(),
                 new PlanShardingRuleComponentCleanupToolHandler());
+    }
+    
+    @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of(new ShardingAlgorithmCompletionHandler());
     }
     
     @Override

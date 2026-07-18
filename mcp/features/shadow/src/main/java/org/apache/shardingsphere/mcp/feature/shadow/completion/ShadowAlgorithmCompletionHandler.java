@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.feature.shadow.completion;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowInspectionService;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
@@ -30,9 +30,9 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * Shadow algorithm completion provider.
+ * Shadow algorithm completion handler.
  */
-public final class ShadowAlgorithmCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+public final class ShadowAlgorithmCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
     
     private final ShadowInspectionService inspectionService = new ShadowInspectionService();
     
@@ -54,13 +54,13 @@ public final class ShadowAlgorithmCompletionProvider implements MCPCompletionPro
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+    public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
         Stream<MCPCompletionCandidate> candidates = inspectionService.queryAlgorithmPlugins(handlerContext.getQueryFacade()).stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty());
         if (ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME.equals(request.getDescriptor().getReference())) {
             candidates = candidates.filter(each -> ShadowFeatureDefinition.DEFAULT_ALGORITHM_TYPE.equalsIgnoreCase(each.getValue()));
         }
-        return new MCPCompletionProviderResult(candidates.toList());
+        return new MCPCompletionHandlerResult(candidates.toList());
     }
     
     private MCPCompletionCandidate createAlgorithmCandidate(final Map<String, Object> row) {

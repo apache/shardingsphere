@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.feature.encrypt.completion;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -32,7 +31,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -42,28 +40,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class EncryptAlgorithmCompletionProviderTest {
+class EncryptAlgorithmCompletionHandlerTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new EncryptAlgorithmCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
-    }
-    
-    @Test
-    void assertLoadByServiceLoader() {
-        assertTrue(ServiceLoader.load(MCPCompletionProvider.class).stream().map(ServiceLoader.Provider::type).anyMatch(EncryptAlgorithmCompletionProvider.class::equals));
+        assertThat(new EncryptAlgorithmCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("supportedReferences")
     void assertSupports(final String name, final String referenceType, final String reference, final String argumentName) {
-        assertTrue(new EncryptAlgorithmCompletionProvider().supports(createRequestContext(referenceType, reference, argumentName)));
+        assertTrue(new EncryptAlgorithmCompletionHandler().supports(createRequestContext(referenceType, reference, argumentName)));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("unsupportedReferences")
     void assertSupportsWithForeignReference(final String name, final String referenceType, final String reference, final String argumentName) {
-        assertFalse(new EncryptAlgorithmCompletionProvider().supports(createRequestContext(referenceType, reference, argumentName)));
+        assertFalse(new EncryptAlgorithmCompletionHandler().supports(createRequestContext(referenceType, reference, argumentName)));
     }
     
     @Test
@@ -74,7 +67,7 @@ class EncryptAlgorithmCompletionProviderTest {
                 Map.of("type", "")));
         MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
-        Collection<MCPCompletionCandidate> actualCandidates = new EncryptAlgorithmCompletionProvider().complete(handlerContext,
+        Collection<MCPCompletionCandidate> actualCandidates = new EncryptAlgorithmCompletionHandler().complete(handlerContext,
                 createRequestContext("prompt", EncryptFeatureDefinition.PLAN_PROMPT_NAME, "algorithm_type")).getCandidates();
         assertThat(actualCandidates.size(), is(1));
         MCPCompletionCandidate actualCandidate = actualCandidates.iterator().next();

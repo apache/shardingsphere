@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.readwritesplitting.completion;
+package org.apache.shardingsphere.mcp.feature.shadow.completion;
 
-import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
+import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -39,56 +37,66 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ReadwriteSplittingLoadBalanceAlgorithmCompletionProviderTest {
+class ShadowAlgorithmCompletionHandlerTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
+        assertThat(new ShadowAlgorithmCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @Test
     void assertSupports() {
-        assertTrue(new ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider().supports(createRequestContext(ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME)));
+        assertTrue(new ShadowAlgorithmCompletionHandler().supports(createRequestContext(ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME)));
+    }
+    
+    @Test
+    void assertSupportsWithDefaultAlgorithmPrompt() {
+        assertTrue(new ShadowAlgorithmCompletionHandler().supports(createRequestContext(ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME)));
     }
     
     @Test
     void assertSupportsWithAlgorithmResource() {
-        assertTrue(new ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider().supports(createRequestContext(
-                ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI)));
+        assertTrue(new ShadowAlgorithmCompletionHandler().supports(createRequestContext(ShadowFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI)));
     }
     
     @Test
     void assertSupportsWithForeignReference() {
-        assertFalse(new ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider().supports(createRequestContext("plan_shadow_rule")));
+        assertFalse(new ShadowAlgorithmCompletionHandler().supports(createRequestContext("plan_mask_rule")));
     }
     
     @Test
     void assertComplete() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS")).thenReturn(List.of(
-                Map.of("type", "ROUND_ROBIN", "description", "Round robin load balance", "secret", "hidden"),
+        when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS")).thenReturn(List.of(
+                Map.of("type", "VALUE_MATCH", "description", "Value match shadow algorithm", "password", "hidden"),
                 Map.of("type", "")));
         MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
         when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
-        MCPCompletionProviderResult actual = new ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider().complete(handlerContext,
-                createRequestContext(ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME));
+        MCPCompletionHandlerResult actual = new ShadowAlgorithmCompletionHandler().complete(handlerContext,
+                createRequestContext(ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME));
         Collection<MCPCompletionCandidate> actualCandidates = actual.getCandidates();
         assertThat(actualCandidates.size(), is(1));
         MCPCompletionCandidate actualCandidate = actualCandidates.iterator().next();
-        assertThat(actualCandidate.getValue(), is("ROUND_ROBIN"));
-        assertThat(actualCandidate.getLabel(), is("Round robin load balance"));
-        assertThat(actualCandidate.getSource(), is("readwrite-splitting-load-balance-algorithm"));
+        assertThat(actualCandidate.getValue(), is("VALUE_MATCH"));
+        assertThat(actualCandidate.getLabel(), is("Value match shadow algorithm"));
+        assertThat(actualCandidate.getSource(), is("shadow-algorithm"));
     }
     
     @Test
-    void assertSPIRegistration() {
-        assertTrue(ServiceLoader.load(MCPCompletionProvider.class).stream().anyMatch(each -> ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider.class.equals(each.type())));
+    void assertCompleteDefaultAlgorithm() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "VALUE_MATCH"), Map.of("type", "SQL_HINT")));
+        MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
+        when(handlerContext.getQueryFacade()).thenReturn(queryFacade);
+        MCPCompletionHandlerResult actual = new ShadowAlgorithmCompletionHandler().complete(handlerContext,
+                createRequestContext(ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME));
+        assertThat(actual.getCandidates().stream().map(MCPCompletionCandidate::getValue).toList(), is(List.of("SQL_HINT")));
     }
     
     private MCPCompletionRequest createRequestContext(final String reference) {
         String referenceType = reference.startsWith("shardingsphere://") ? "resource" : "prompt";
         return new MCPCompletionRequest(
-                new MCPCompletionTargetDescriptor(referenceType, reference, List.of(ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD), 50, Map.of()),
-                ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD, Map.of("database", "logic_db"));
+                new MCPCompletionTargetDescriptor(referenceType, reference, List.of(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD), 50, Map.of()),
+                ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, Map.of("database", "logic_db"));
     }
 }

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.feature.encrypt.completion;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
@@ -30,9 +30,9 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Encrypt algorithm completion provider.
+ * Encrypt algorithm completion handler.
  */
-public final class EncryptAlgorithmCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+public final class EncryptAlgorithmCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
     
     private static final Set<String> SUPPORTED_ARGUMENTS = Set.of("algorithm_type", "assisted_query_algorithm_type", "like_query_algorithm_type");
     
@@ -54,8 +54,8 @@ public final class EncryptAlgorithmCompletionProvider implements MCPCompletionPr
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-        return new MCPCompletionProviderResult(ruleInspectionService.queryEncryptAlgorithms(handlerContext.getQueryFacade()).stream()
+    public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+        return new MCPCompletionHandlerResult(ruleInspectionService.queryEncryptAlgorithms(handlerContext.getQueryFacade()).stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty()).toList());
     }
     

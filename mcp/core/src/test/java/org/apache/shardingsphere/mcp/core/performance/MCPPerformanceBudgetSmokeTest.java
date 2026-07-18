@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.performance;
 
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.core.completion.provider.WorkflowPlanIdCompletionProvider;
+import org.apache.shardingsphere.mcp.core.completion.handler.WorkflowPlanIdCompletionHandler;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
@@ -134,13 +134,13 @@ class MCPPerformanceBudgetSmokeTest {
         MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
         when(handlerContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(handlerContext.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        WorkflowPlanIdCompletionProvider provider = new WorkflowPlanIdCompletionProvider();
+        WorkflowPlanIdCompletionHandler handler = new WorkflowPlanIdCompletionHandler();
         MCPCompletionRequest request = new MCPCompletionRequest(
                 new MCPCompletionTargetDescriptor("prompt", "recover_workflow", List.of("plan_id"), 50, Map.of()), "plan_id", Map.of());
-        assertFalse(provider.complete(handlerContext, request).getCandidates().isEmpty());
+        assertFalse(handler.complete(handlerContext, request).getCandidates().isEmpty());
         long elapsedMillis = measureElapsedMillis(() -> {
             for (int i = 0; i < COMPLETION_ITERATIONS; i++) {
-                provider.complete(handlerContext, request);
+                handler.complete(handlerContext, request);
             }
         });
         assertWithinBudget("workflow plan id completion", elapsedMillis, COMPLETION_BUDGET_MILLIS);
