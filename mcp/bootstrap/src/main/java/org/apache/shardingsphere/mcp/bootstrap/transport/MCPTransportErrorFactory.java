@@ -22,10 +22,10 @@ import io.modelcontextprotocol.spec.McpSchema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPNotFoundException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPNotFoundException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
@@ -76,7 +76,7 @@ public final class MCPTransportErrorFactory {
     private static McpError createInternalError(final Throwable cause) {
         MCPErrorPayload errorPayload = new MCPErrorPayload("Service is temporarily unavailable.");
         Map<String, Object> payload = errorPayload.toPayload();
-        log.error("Unexpected MCP request failure, request ID: {}.", payload.get("request_id"), cause);
+        log.error("Unexpected MCP request failure, error ID: {}.", payload.get("error_id"), cause);
         return createProtocolError(errorPayload, payload, McpSchema.ErrorCodes.INTERNAL_ERROR);
     }
     

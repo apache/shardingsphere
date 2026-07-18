@@ -34,7 +34,7 @@ Recommended path for a new feature:
 5. Implement `MCPHandlerProvider`.
 6. Return the feature's handlers from `getToolHandlers()` and `getResourceHandlers()`.
 7. If the feature owns workflow definitions, implement `MCPWorkflowDefinitionProvider` on the same provider.
-8. Register `org.apache.shardingsphere.mcp.api.MCPHandlerProvider` under `src/main/resources/META-INF/services/`.
+8. Register `org.apache.shardingsphere.mcp.spi.MCPHandlerProvider` under `src/main/resources/META-INF/services/`.
 9. Add descriptors under `META-INF/shardingsphere-mcp/mcp-descriptors`.
 
 If the feature should be shipped as an official default capability:
@@ -82,8 +82,10 @@ Do not duplicate descriptor fields inside handlers.
 
 ## Context selection
 
-- Use `MCPRequestContext` when a handler only needs the session ID, active transport, or session identity.
+- Use `MCPRequestContext` when a handler only needs the session identity or active transport. It exposes exactly `getSessionIdentity()` and `getActiveTransport()`.
 - Use `MCPFeatureRequestContext` when a handler or completion provider needs database metadata, execution, or workflow capabilities.
+
+`MCPSessionIdentity` contains the opaque session ID together with optional trusted `subject`, `source`, and `attributes`; read the ID through `getSessionIdentity().getSessionId()`. Attribution describes where a session came from and is not an authentication or authorization result.
 
 `MCPFeatureRuntimeRequestContext` is the runtime-owned, per-request implementation. Handlers and completion providers depend only on context interfaces, not on the core implementation class.
 

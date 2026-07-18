@@ -65,10 +65,60 @@ class ShadowWorkflowValidationServiceTest {
                 "source_name", "demo_ds",
                 "shadow_name", "demo_ds_shadow",
                 "shadow_table", "t_order",
-                "algorithm_type", "VALUE_MATCH")));
+                "algorithm_type", "VALUE_MATCH",
+                "algorithm_props", Map.of("operation", "INSERT", "column", "shadow", "value", "true"))));
         Map<String, Object> actual = createService(inspectionService)
                 .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
         assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_PASSED));
+    }
+    
+    @Test
+    void assertValidateRuleRejectsDifferentAlgorithmProperties() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
+        when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(createRuleRow(Map.of("operation", "INSERT", "column", "shadow", "value", "false"))));
+        Map<String, Object> actual = createService(inspectionService)
+                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+    }
+    
+    @Test
+    void assertValidateRuleRejectsExtraRow() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
+        Map<String, Object> ruleRow = createRuleRow(Map.of("operation", "INSERT", "column", "shadow", "value", "true"));
+        when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(ruleRow, ruleRow));
+        Map<String, Object> actual = createService(inspectionService)
+                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+    }
+    
+    @Test
+    void assertValidateDefaultAlgorithmRejectsDifferentProperties() {
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setAlgorithmType("SQL_HINT");
+        request.putAlgorithmProperties(Map.of("foo", "bar"));
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("type", "SQL_HINT", "props", Map.of("foo", "baz"))));
+        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
+                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, "create"));
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+    }
+    
+    @Test
+    void assertValidateDefaultAlgorithm() {
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setAlgorithmType("SQL_HINT");
+        request.putAlgorithmProperties(Map.of("foo", "bar"));
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("type", "SQL_HINT", "props", Map.of("foo", "bar"))));
+        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
+                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, "create"));
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_VALIDATED));
     }
     
     @Test
@@ -128,7 +178,27 @@ class ShadowWorkflowValidationServiceTest {
         request.setShadowStorageUnit("demo_ds_shadow");
         request.setTableName("t_order");
         request.setAlgorithmType("VALUE_MATCH");
+        request.putAlgorithmProperties(Map.of("operation", "INSERT", "column", "shadow", "value", "true"));
         return createSnapshot(request, "create");
+    }
+    
+    private MCPFeatureQueryFacade createRuleQueryFacade() {
+        MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "shadow_rule", "shadow_rule")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "demo_ds", "demo_ds")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "demo_ds_shadow", "demo_ds_shadow")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
+        return result;
+    }
+    
+    private Map<String, Object> createRuleRow(final Map<String, String> algorithmProperties) {
+        return Map.of(
+                "rule_name", "shadow_rule",
+                "source_name", "demo_ds",
+                "shadow_name", "demo_ds_shadow",
+                "shadow_table", "t_order",
+                "algorithm_type", "VALUE_MATCH",
+                "algorithm_props", algorithmProperties);
     }
     
     private WorkflowContextSnapshot createCleanupSnapshot() {
@@ -151,6 +221,6 @@ class ShadowWorkflowValidationServiceTest {
     }
     
     private ExecutableWorkflowArtifact createRuleDistSQLArtifact(final String sql) {
-        return new ExecutableWorkflowArtifact("review-rule-sql", "rule_dist_sql", sql, true);
+        return new ExecutableWorkflowArtifact(sql, sql);
     }
 }

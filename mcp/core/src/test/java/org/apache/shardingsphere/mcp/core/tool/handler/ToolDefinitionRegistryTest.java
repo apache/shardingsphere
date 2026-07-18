@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
@@ -93,7 +94,7 @@ class ToolDefinitionRegistryTest {
     @Test
     void assertDispatch() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-        runtimeContext.getSessionManager().createSession("session-1");
+        runtimeContext.getSessionManager().createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
             MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata");
@@ -182,8 +183,8 @@ class ToolDefinitionRegistryTest {
     void assertDispatchWithInvalidApprovedSteps() {
         MCPInvalidApprovedStepsException actual = assertThrows(MCPInvalidApprovedStepsException.class,
                 () -> dispatch("database_gateway_apply_workflow", Map.of("plan_id", "plan-1", "execution_mode", "preview", "approved_steps", List.of("all"))));
-        assertThat(actual.getMessage(), is("approved_steps must contain only [ddl, index_ddl, rule_distsql]."));
-        assertThat(actual.getAllowedValues(), is(List.of("ddl", "index_ddl", "rule_distsql")));
+        assertThat(actual.getMessage(), is("approved_steps must contain only [rule_distsql]."));
+        assertThat(actual.getAllowedValues(), is(List.of("rule_distsql")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("plan_id", "plan-1", "execution_mode", "preview")));
     }
     

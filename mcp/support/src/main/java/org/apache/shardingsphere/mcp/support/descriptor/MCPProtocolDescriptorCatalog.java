@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 
 import java.util.Collection;
 import java.util.LinkedList;

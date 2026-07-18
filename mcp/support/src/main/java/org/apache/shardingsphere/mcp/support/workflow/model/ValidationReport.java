@@ -32,8 +32,6 @@ import java.util.Map;
 @Setter
 public final class ValidationReport {
     
-    private ValidationSection ddlValidation;
-    
     private ValidationSection ruleValidation;
     
     private ValidationSection logicalMetadataValidation;
@@ -50,19 +48,27 @@ public final class ValidationReport {
      * @return map representation
      */
     public Map<String, Object> toMap() {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        putValidationSection(result, "ddl_validation", ddlValidation);
-        putValidationSection(result, "rule_validation", ruleValidation);
-        putValidationSection(result, "logical_metadata_validation", logicalMetadataValidation);
-        putValidationSection(result, "sql_executability_validation", sqlExecutabilityValidation);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("overall_status", overallStatus);
         result.put("mismatches", mismatches);
+        result.put("sections", createSections());
         return result;
     }
     
-    private void putValidationSection(final Map<String, Object> target, final String key, final ValidationSection section) {
+    private List<Map<String, Object>> createSections() {
+        List<Map<String, Object>> result = new LinkedList<>();
+        addSection(result, "rule", ruleValidation);
+        addSection(result, "logical_metadata", logicalMetadataValidation);
+        addSection(result, "sql_executability", sqlExecutabilityValidation);
+        return result;
+    }
+    
+    private void addSection(final List<Map<String, Object>> sections, final String layer, final ValidationSection section) {
         if (null != section) {
-            target.put(key, section.toMap());
+            Map<String, Object> sectionPayload = new LinkedHashMap<>(4, 1F);
+            sectionPayload.put("layer", layer);
+            sectionPayload.putAll(section.toMap());
+            sections.add(sectionPayload);
         }
     }
 }

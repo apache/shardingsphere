@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.connector.core.metadata.data.loader;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -41,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -94,6 +96,13 @@ class MetaDataLoaderTest {
         Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
         assertThat(actual.size(), is(1));
         assertTrue(actual.get("foo_db").getTables().isEmpty());
+    }
+    
+    @Test
+    void assertGetTableIdentifierPolicyCachesResolvedPolicy() {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", mock(DataSource.class), databaseType, "foo_db");
+        IdentifierCasePolicy actual = material.getTableIdentifierPolicy();
+        assertThat(material.getTableIdentifierPolicy(), sameInstance(actual));
     }
     
     @Test

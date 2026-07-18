@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         String yamlContent = "transport:\n"
-                + "  type: STREAMABLE_HTTP\n"
+                + "  type: HTTP\n"
                 + "  http:\n"
                 + "    bindHost: 127.0.0.1\n"
                 + "    port: 9090\n"
@@ -55,7 +55,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    password: secret\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n";
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
-        assertThat(actual.getTransportType(), is(MCPTransportType.STREAMABLE_HTTP));
+        assertThat(actual.getTransportType(), is(MCPTransportType.HTTP));
         assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
         assertThat(actual.getHttpTransport().getPort(), is(9090));
         assertThat(actual.getHttpTransport().getEndpointPath(), is("/gateway"));
@@ -159,15 +159,15 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    endpointPath: /mcp\n"
                 + createRuntimeDatabasesYaml(), YamlMCPLaunchConfiguration.class);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        assertThat(actual.getMessage(), is("transport.http is only valid when `transport.type` is STREAMABLE_HTTP."));
+        assertThat(actual.getMessage(), is("transport.http is only valid when `transport.type` is HTTP."));
     }
     
     @Test
     void assertSwapToObjectWithHttpDefaults() {
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal("transport:\n"
-                + "  type: STREAMABLE_HTTP\n"
+                + "  type: HTTP\n"
                 + createRuntimeDatabasesYaml(), YamlMCPLaunchConfiguration.class));
-        assertThat(actual.getTransportType(), is(MCPTransportType.STREAMABLE_HTTP));
+        assertThat(actual.getTransportType(), is(MCPTransportType.HTTP));
         assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
         assertThat(actual.getHttpTransport().getPort(), is(18088));
         assertThat(actual.getHttpTransport().getEndpointPath(), is("/mcp"));
@@ -302,10 +302,10 @@ class YamlMCPLaunchConfigurationSwapperTest {
     void assertSwapToYamlConfigurationWithRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
         databases.put("logic_db", new RuntimeDatabaseConfiguration("jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver"));
-        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(MCPTransportType.STREAMABLE_HTTP, new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"), databases);
+        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(MCPTransportType.HTTP, new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"), databases);
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("username")), is("demo"));
-        assertThat(actual.getTransport().getType(), is(MCPTransportType.STREAMABLE_HTTP));
+        assertThat(actual.getTransport().getType(), is(MCPTransportType.HTTP));
         assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
     }
     

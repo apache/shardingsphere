@@ -82,7 +82,6 @@ class HttpTransportContractE2ETest extends AbstractSharedHttpProgrammaticRuntime
         assertTrue(((List<?>) actualDiagnostics.get("safe_categories")).contains("invalid_configuration"));
         assertTrue(MCPInteractionPayloads.getRequiredObjectList(actualDiagnostics, "operator_next_actions").stream()
                 .anyMatch(each -> "invalid_configuration".equals(each.get("category"))));
-        assertThat(MCPInteractionPayloads.getRequiredObject(actualRuntimeStatus, "redaction_summary").get("marker"), is("******"));
         assertRuntimeStatusSecretSafe(actualRuntimeStatus);
     }
     

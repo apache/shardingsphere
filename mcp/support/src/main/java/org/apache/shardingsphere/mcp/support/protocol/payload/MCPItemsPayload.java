@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.protocol.payload;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
@@ -68,16 +68,14 @@ public final class MCPItemsPayload implements MCPSuccessPayload {
     
     @Override
     public Map<String, Object> toPayload() {
-        String continuationMode = resolveContinuationMode();
-        Map<String, Object> result = new LinkedHashMap<>(items.size() + navigation.size() + 5, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(items.size() + navigation.size() + 4, 1F);
         result.put("response_mode", responseMode);
         result.put(MCPPayloadFieldNames.ITEMS, items);
         result.put("count", items.size());
-        result.put("has_more", !CONTINUATION_MODE_NONE.equals(continuationMode));
         if (null != nextPageToken && !nextPageToken.isEmpty()) {
             result.put("next_page_token", nextPageToken);
         }
-        result.put(CONTINUATION_MODE, continuationMode);
+        result.put(CONTINUATION_MODE, resolveContinuationMode());
         result.putAll(navigation);
         return result;
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
@@ -82,7 +82,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPFeature
             return createPreviewResponse(toolArguments, classificationResult);
         }
         return SQLExecutionPayload.executed(requestContext.getExecutionFacade().execute(
-                SQLExecutionToolHandlerSupport.createExecutionRequest(requestContext.getSessionId(), toolArguments, sql, TOOL_NAME)));
+                SQLExecutionToolHandlerSupport.createExecutionRequest(requestContext.getSessionIdentity().getSessionId(), toolArguments, sql, TOOL_NAME)));
     }
     
     private ClassificationResult checkUpdateStatement(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments, final String sql) {
@@ -124,7 +124,6 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPFeature
         result.put("review_guidance", createReviewGuidance(classificationResult));
         String reviewSummary = createReviewSummary(classificationResult);
         result.put(MCPPayloadFieldNames.SUMMARY, reviewSummary);
-        result.put("review_summary", reviewSummary);
         Map<String, Object> suggestedArguments = createSuggestedArguments(toolArguments, classificationResult);
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(toolArguments));

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -55,7 +55,7 @@ public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPFe
         WorkflowSessionContext workflowSessionContext = requestContext.getWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
         return new MCPMapPayload(workflowRuntimeDefinitionRegistry.getRequired(snapshot).getValidationHandler().validate(workflowSessionContext,
-                requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade(), requestContext.getExecutionFacade(), requestContext.getSessionId(), snapshot));
+                requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade(), requestContext.getExecutionFacade(), requestContext.getSessionIdentity().getSessionId(), snapshot));
     }
     
 }

@@ -59,7 +59,6 @@ public final class MCPRuntimeDatabaseRecoveryPayloadFactory {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(category, createModelAction(category));
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(category));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActions(category));
-        result.put("ask_user_when_uncertain", true);
         return result;
     }
     

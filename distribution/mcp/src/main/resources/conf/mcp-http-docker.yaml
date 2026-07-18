@@ -16,7 +16,7 @@
 #
 
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     bindHost: 0.0.0.0
     port: 18088

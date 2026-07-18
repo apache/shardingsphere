@@ -47,14 +47,14 @@ public final class MCPModelFacingPayloadContract {
             "resource_read", Set.of("order", "type", "title", "resource_uri", "reason", "depends_on"),
             "tool_call", Set.of("order", "type", "title", "tool_name", "arguments", "reason", "depends_on"),
             "completion", Set.of("order", "type", "title", "ref", "argument", "context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on"),
-            "ask_user", Set.of("order", "type", "title", "question", "required_inputs", "reason", "depends_on"),
+            "ask_user", Set.of("order", "type", "title", "question", "required_inputs", "depends_on"),
             "terminal", Set.of("order", "type", "title", "reason", "depends_on"));
     
     private static final Collection<String> NEXT_ACTION_SCHEMA_ALLOWED_FIELDS = createNextActionSchemaAllowedFields();
     
     private static final Collection<String> MODEL_CRITICAL_FIELD_NAMES = List.of(
             MCPPayloadFieldNames.SUMMARY, MCPPayloadFieldNames.NEXT_ACTIONS, MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.RESOURCE,
-            MCPPayloadFieldNames.SELF_RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE, MCPPayloadFieldNames.NEXT_RESOURCES, "manual_artifact_summary", "manual_follow_up",
+            MCPPayloadFieldNames.SELF_RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE, MCPPayloadFieldNames.NEXT_RESOURCES, "manual_artifact_summary",
             "empty_state", "ambiguity_state", MCPPayloadFieldNames.RECOVERY, "recovery_guidance", "remediation");
     
     private static Collection<String> createNextActionSchemaAllowedFields() {

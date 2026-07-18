@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
@@ -35,12 +36,12 @@ class MCPLaunchConfigurationTest {
     
     @Test
     void assertValidateWhenHttpTransportSelected() {
-        assertDoesNotThrow(() -> validate(createYamlConfig(MCPTransportType.STREAMABLE_HTTP, createYamlHttpTransportConfiguration())));
+        assertDoesNotThrow(() -> validate(createYamlConfig(MCPTransportType.HTTP, createYamlHttpTransportConfiguration())));
     }
     
     @Test
     void assertValidateWhenHttpTransportUsesDefaults() {
-        assertDoesNotThrow(() -> validate(createYamlConfig(MCPTransportType.STREAMABLE_HTTP, null)));
+        assertDoesNotThrow(() -> validate(createYamlConfig(MCPTransportType.HTTP, null)));
     }
     
     @Test
@@ -59,12 +60,12 @@ class MCPLaunchConfigurationTest {
     void assertValidateWhenStdioTransportHasHttpConfiguration() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(MCPTransportType.STDIO, createYamlHttpTransportConfiguration());
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
-        assertThat(actual.getMessage(), is("transport.http is only valid when `transport.type` is STREAMABLE_HTTP."));
+        assertThat(actual.getMessage(), is("transport.http is only valid when `transport.type` is HTTP."));
     }
     
     @Test
     void assertValidateWhenDatabasesMissing() {
-        YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(MCPTransportType.STREAMABLE_HTTP, null);
+        YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(MCPTransportType.HTTP, null);
         yamlConfig.setRuntimeDatabases(null);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(yamlConfig));
         assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` is required."));
@@ -72,7 +73,7 @@ class MCPLaunchConfigurationTest {
     
     @Test
     void assertValidateWhenDatabasesEmpty() {
-        YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(MCPTransportType.STREAMABLE_HTTP, null);
+        YamlMCPLaunchConfiguration yamlConfig = createYamlConfig(MCPTransportType.HTTP, null);
         yamlConfig.setRuntimeDatabases(Collections.emptyMap());
         assertDoesNotThrow(() -> validate(yamlConfig));
     }
@@ -81,7 +82,7 @@ class MCPLaunchConfigurationTest {
     void assertValidateWhenHttpBindHostIsUrl() {
         YamlHttpTransportConfiguration http = createYamlHttpTransportConfiguration();
         http.setBindHost("http://127.0.0.1:18088");
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(createYamlConfig(MCPTransportType.STREAMABLE_HTTP, http)));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(createYamlConfig(MCPTransportType.HTTP, http)));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.bindHost` must be a local bind host or IP address."));
     }
     
@@ -89,7 +90,7 @@ class MCPLaunchConfigurationTest {
     void assertValidateWhenHttpPortIsOutOfRange() {
         YamlHttpTransportConfiguration http = createYamlHttpTransportConfiguration();
         http.setPort(65536);
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(createYamlConfig(MCPTransportType.STREAMABLE_HTTP, http)));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(createYamlConfig(MCPTransportType.HTTP, http)));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.port` must be between 0 and 65535."));
     }
     
@@ -97,7 +98,7 @@ class MCPLaunchConfigurationTest {
     void assertValidateWhenHttpEndpointPathMissingLeadingSlash() {
         YamlHttpTransportConfiguration http = createYamlHttpTransportConfiguration();
         http.setEndpointPath("mcp");
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(createYamlConfig(MCPTransportType.STREAMABLE_HTTP, http)));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(createYamlConfig(MCPTransportType.HTTP, http)));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.endpointPath` must be a single absolute path without query or fragment."));
     }
     
@@ -105,7 +106,7 @@ class MCPLaunchConfigurationTest {
     void assertValidateWhenHttpEndpointPathHasQuery() {
         YamlHttpTransportConfiguration http = createYamlHttpTransportConfiguration();
         http.setEndpointPath("/mcp?debug=true");
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(createYamlConfig(MCPTransportType.STREAMABLE_HTTP, http)));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> validate(createYamlConfig(MCPTransportType.HTTP, http)));
         assertThat(actual.getMessage(), is("MCP launch configuration property `transport.http.endpointPath` must be a single absolute path without query or fragment."));
     }
     

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -275,13 +275,11 @@ public final class MCPDescriptorCatalogIndex {
     /**
      * Create capability catalog payload.
      *
-     * @param supportedResources supported resource URI templates
-     * @param supportedTools supported tool names
      * @param supportedStatements supported statement classes
      * @return capability catalog payload
      */
-    public static Map<String, Object> createCapabilityPayload(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
-        return MCPDescriptorCatalogPayloadBuilder.build(CATALOG, supportedResources, supportedTools, supportedStatements);
+    public static Map<String, Object> createCapabilityPayload(final Collection<?> supportedStatements) {
+        return MCPDescriptorCatalogPayloadBuilder.build(CATALOG, supportedStatements);
     }
     
     /**
@@ -290,6 +288,6 @@ public final class MCPDescriptorCatalogIndex {
      * @return guidance payload
      */
     public static Map<String, Object> createGuidancePayload() {
-        return MCPGuidancePayloadBuilder.build(CATALOG);
+        return MCPGuidancePayloadBuilder.build();
     }
 }

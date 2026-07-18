@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
@@ -32,6 +33,12 @@ import java.util.Map;
  */
 public final class ReadwriteSplittingInspectionService {
     
+    String queryProxyMode(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
+        String result = queryFacade.query(databaseName, "SHOW COMPUTE NODE INFO").stream().findFirst()
+                .map(each -> WorkflowRuleValueUtils.getRuleValue(each, "mode_type")).orElse("");
+        return result.isEmpty() ? "unknown" : result;
+    }
+    
     /**
      * Query readwrite-splitting rules.
      *
@@ -40,7 +47,7 @@ public final class ReadwriteSplittingInspectionService {
      * @return readwrite-splitting rules
      */
     public List<Map<String, Object>> queryRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW READWRITE_SPLITTING RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW READWRITE_SPLITTING RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -52,7 +59,7 @@ public final class ReadwriteSplittingInspectionService {
      * @return readwrite-splitting rule rows
      */
     public List<Map<String, Object>> queryRule(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW READWRITE_SPLITTING RULE %s FROM %s",
+        return queryFacade.query(databaseName, String.format("SHOW READWRITE_SPLITTING RULE %s FROM %s",
                 WorkflowSQLUtils.formatDistSQLIdentifier(ruleName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
@@ -64,7 +71,7 @@ public final class ReadwriteSplittingInspectionService {
      * @return count rows
      */
     public List<Map<String, Object>> queryRuleCount(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("COUNT READWRITE_SPLITTING RULE FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("COUNT READWRITE_SPLITTING RULE FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -75,7 +82,7 @@ public final class ReadwriteSplittingInspectionService {
      * @return status rows
      */
     public List<Map<String, Object>> queryStatuses(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW STATUS FROM READWRITE_SPLITTING RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW STATUS FROM READWRITE_SPLITTING RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -87,7 +94,7 @@ public final class ReadwriteSplittingInspectionService {
      * @return status rows
      */
     public List<Map<String, Object>> queryRuleStatus(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW STATUS FROM READWRITE_SPLITTING RULE %s FROM %s",
+        return queryFacade.query(databaseName, String.format("SHOW STATUS FROM READWRITE_SPLITTING RULE %s FROM %s",
                 WorkflowSQLUtils.formatDistSQLIdentifier(ruleName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     

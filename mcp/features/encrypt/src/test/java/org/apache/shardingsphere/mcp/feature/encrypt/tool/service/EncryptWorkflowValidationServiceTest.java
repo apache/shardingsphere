@@ -35,7 +35,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -99,10 +98,10 @@ class EncryptWorkflowValidationServiceTest {
                 .validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         assertThat(actual.get("overall_status"), is("passed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
         assertFalse(actual.containsKey("ddl_validation"));
-        assertFalse(actual.containsKey("logical_metadata_validation"));
-        assertFalse(actual.containsKey("sql_executability_validation"));
+        assertTrue(getValidationSection(actual, "logical_metadata").isEmpty());
+        assertTrue(getValidationSection(actual, "sql_executability").isEmpty());
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
     }
@@ -177,7 +176,7 @@ class EncryptWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(ruleInspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
     }
     
     @Test
@@ -207,7 +206,7 @@ class EncryptWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(ruleInspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("cipher_column=phone_cipher"));
     }
     
@@ -376,6 +375,10 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     private ExecutableWorkflowArtifact createRuleDistSQLArtifact(final String sql, final String displaySql) {
-        return new ExecutableWorkflowArtifact(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, sql, displaySql, true);
+        return new ExecutableWorkflowArtifact(sql, displaySql);
+    }
+    
+    private Map<?, ?> getValidationSection(final Map<String, Object> payload, final String layer) {
+        return ((List<?>) payload.get("sections")).stream().map(each -> (Map<?, ?>) each).filter(each -> layer.equals(each.get("layer"))).findFirst().orElse(Map.of());
     }
 }

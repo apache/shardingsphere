@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.session;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -52,30 +53,11 @@ public final class MCPSessionManager {
     /**
      * Create a new session.
      *
-     * @param sessionId session id
-     */
-    public void createSession(final String sessionId) {
-        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, new SessionState()), () -> new IllegalStateException("Session already exists."));
-    }
-    
-    /**
-     * Bind session identity to one existing session.
-     *
-     * @param sessionId session id
      * @param sessionIdentity session identity
      */
-    public void bindSessionIdentity(final String sessionId, final MCPSessionIdentity sessionIdentity) {
-        SessionState sessionState = getRequiredSessionState(sessionId);
-        sessionState.executionLock.lock();
-        try {
-            ShardingSpherePreconditions.checkState(sessionState == sessions.get(sessionId), MCPSessionNotExistedException::new);
-            MCPSessionIdentity existing = sessionState.identity;
-            ShardingSpherePreconditions.checkState(null == existing || existing.equals(sessionIdentity),
-                    () -> new IllegalStateException(String.format("Session identity does not match existing binding for session `%s`.", sessionId)));
-            sessionState.identity = sessionIdentity;
-        } finally {
-            sessionState.executionLock.unlock();
-        }
+    public void createSession(final MCPSessionIdentity sessionIdentity) {
+        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionIdentity.getSessionId(), new SessionState(sessionIdentity)),
+                () -> new IllegalStateException("Session already exists."));
     }
     
     /**
@@ -86,6 +68,16 @@ public final class MCPSessionManager {
      */
     public Optional<MCPSessionIdentity> findSessionIdentity(final String sessionId) {
         return Optional.ofNullable(sessions.get(sessionId)).map(each -> each.identity);
+    }
+    
+    /**
+     * Get required session identity.
+     *
+     * @param sessionId session id
+     * @return session identity
+     */
+    public MCPSessionIdentity getRequiredSessionIdentity(final String sessionId) {
+        return getRequiredSessionState(sessionId).identity;
     }
     
     /**
@@ -161,10 +153,11 @@ public final class MCPSessionManager {
         }
     }
     
+    @RequiredArgsConstructor
     private static final class SessionState {
         
         private final ReentrantLock executionLock = new ReentrantLock(true);
         
-        private volatile MCPSessionIdentity identity;
+        private final MCPSessionIdentity identity;
     }
 }

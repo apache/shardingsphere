@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
@@ -65,6 +66,8 @@ class ShadowWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("VALUE_MATCH"));
         assertThat(actual.getPropertyRequirements().getFirst().getPropertyKey(), is("operation"));
+        assertThat(actual.getResourceUriTemplates(), is(List.of(ShadowFeatureDefinition.STORAGE_UNITS_RESOURCE_URI,
+                ShadowFeatureDefinition.SINGLE_TABLES_RESOURCE_URI, ShadowFeatureDefinition.SINGLE_TABLE_RESOURCE_URI)));
         assertTrue(actual.getRuleArtifacts().getFirst().getSql().startsWith("CREATE SHADOW RULE `shadow_rule`"));
     }
     
@@ -106,6 +109,20 @@ class ShadowWorkflowPlanningServiceTest {
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "default_shadow_algorithm")));
         WorkflowContextSnapshot actual = service.planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("DROP DEFAULT SHADOW ALGORITHM"));
+    }
+    
+    @Test
+    void assertRejectNonHintDefaultAlgorithm() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setAlgorithmType("VALUE_MATCH");
+        ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
+        when(getInspectionService().queryAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "VALUE_MATCH")));
+        WorkflowContextSnapshot actual = service.planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
     @Test

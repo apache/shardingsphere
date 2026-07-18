@@ -39,7 +39,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PackagedDistributionPluginFixtureSupport {
     
-    private static final String HANDLER_PROVIDER_SERVICE_ENTRY = "META-INF/services/org.apache.shardingsphere.mcp.api.MCPHandlerProvider";
+    private static final String HANDLER_PROVIDER_SERVICE_ENTRY = "META-INF/services/org.apache.shardingsphere.mcp.spi.MCPHandlerProvider";
     
     private static final String DESCRIPTOR_ENTRY = "META-INF/shardingsphere-mcp/mcp-descriptors/mcp-descriptor-test-fixture.yaml";
     

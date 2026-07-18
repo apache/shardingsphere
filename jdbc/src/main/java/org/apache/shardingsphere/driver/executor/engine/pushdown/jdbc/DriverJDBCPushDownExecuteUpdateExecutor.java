@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
@@ -110,7 +111,7 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
             List<Integer> updateCounts = jdbcExecutor.execute(executionGroupContext, callback);
             PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(executionContext.getSqlStatementContext());
             if (pushDownMetaDataRefreshEngine.isNeedRefresh()) {
-                if (isNeedImplicitCommit(executionContext.getSqlStatementContext().getSqlStatement())) {
+                if (isCurrentTransactionCommitRequired(executionContext.getSqlStatementContext().getSqlStatement())) {
                     connection.commit();
                 }
                 pushDownMetaDataRefreshEngine.refresh(
@@ -138,9 +139,9 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
         return result;
     }
     
-    private boolean isNeedImplicitCommit(final SQLStatement sqlStatement) {
+    private boolean isCurrentTransactionCommitRequired(final SQLStatement sqlStatement) {
         DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
-        return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
+        return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement && DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION == transactionOption.getDDLCommitPolicy();
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {

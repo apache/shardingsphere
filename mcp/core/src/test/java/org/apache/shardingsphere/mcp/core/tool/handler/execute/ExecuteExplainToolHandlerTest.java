@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -48,7 +49,7 @@ class ExecuteExplainToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.executeExplain(any(), any())).thenReturn(createExplainResult());
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
-        when(requestContext.getSessionId()).thenReturn("session-1");
+        when(requestContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(requestContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPSuccessPayload actual = new ExecuteExplainToolHandler().handle(requestContext,
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "explain_sql", "EXPLAIN SELECT * FROM orders"));
@@ -68,7 +69,7 @@ class ExecuteExplainToolHandlerTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new ShardingSphereSchema("public", mock(DatabaseType.class))));
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
-        when(requestContext.getSessionId()).thenReturn("session-1");
+        when(requestContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(requestContext.getExecutionFacade()).thenReturn(executionFacade);
         when(requestContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         new ExecuteExplainToolHandler().handle(requestContext, Map.of("database", "logic_db", "sql", "SELECT * FROM orders", "explain_sql", "EXPLAIN SELECT * FROM orders"));

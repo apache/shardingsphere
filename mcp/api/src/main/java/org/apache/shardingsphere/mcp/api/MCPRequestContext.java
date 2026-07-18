@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.mcp.api;
 
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
-
-import java.util.Optional;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 
 /**
  * MCP request context.
@@ -29,23 +28,18 @@ import java.util.Optional;
 public interface MCPRequestContext {
     
     /**
-     * Get session identifier.
+     * Get the identity of the current MCP session.
      *
-     * @return session identifier
+     * <p>The identity always contains the MCP session identifier. Trusted HTTP attribution is optional and does not represent authentication or authorization.</p>
+     *
+     * @return MCP session identity
      */
-    String getSessionId();
+    MCPSessionIdentity getSessionIdentity();
     
     /**
      * Get active MCP transport.
      *
      * @return active MCP transport
      */
-    String getActiveTransport();
-    
-    /**
-     * Find session identity.
-     *
-     * @return session identity
-     */
-    Optional<MCPSessionIdentity> findSessionIdentity();
+    MCPTransportType getActiveTransport();
 }

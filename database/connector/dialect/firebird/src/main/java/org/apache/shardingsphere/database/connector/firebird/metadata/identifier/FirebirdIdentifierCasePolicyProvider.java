@@ -1,0 +1,46 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.database.connector.firebird.metadata.identifier;
+
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCasePolicy;
+
+import java.util.Locale;
+
+/**
+ * Firebird provider of identifier case rules.
+ */
+public final class FirebirdIdentifierCasePolicyProvider implements IdentifierCasePolicyProvider {
+    
+    @Override
+    public IdentifierCasePolicySet provide(final IdentifierCasePolicyProviderContext context) {
+        return new IdentifierCasePolicySet(new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED, FirebirdIdentifierCasePolicyProvider::toUpperCase, each -> true));
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "Firebird";
+    }
+    
+    private static String toUpperCase(final String value) {
+        return value.toUpperCase(Locale.ENGLISH);
+    }
+}

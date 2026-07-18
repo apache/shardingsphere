@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.mcp.api.resource;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
-import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.exception.ShardingSphereMCPException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 
 /**
  * MCP resource handler.
+ *
+ * <p>Implementations must support concurrent invocations and must not retain request context or URI variables after {@link #handle} returns.</p>
  *
  * @param <T> required request context type
  */

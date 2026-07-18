@@ -56,3 +56,7 @@ rules:
 - !SINGLE
   tables:
     - "*.*"
+- !SHADOW
+  shadowAlgorithms:
+    fixture_unused_algorithm:
+      type: SQL_HINT

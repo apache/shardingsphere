@@ -194,7 +194,7 @@ class LLMMCPConversationRunnerTest extends AbstractLLMMCPConversationRunnerTest 
         when(getMCPInteractionClient().listTools()).thenReturn(List.of(Map.of("name", "database_gateway_execute_query")));
         when(getMCPInteractionClient().listResources()).thenReturn(Map.of("resources", List.of(Map.of("uri", RESOURCE_URI))));
         when(getMCPInteractionClient().listResourceTemplates()).thenReturn(Map.of("resourceTemplates", List.of(Map.of("uriTemplate", "shardingsphere://databases/{database}"))));
-        when(getMCPInteractionClient().readResource(RESOURCE_URI)).thenReturn(Map.of("supportedTools", List.of("database_gateway_search_metadata", "database_gateway_execute_query")));
+        when(getMCPInteractionClient().readResource(RESOURCE_URI)).thenReturn(Map.of("supportedStatementClasses", List.of("QUERY")));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload("2"));
         when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(actualToolNames, "2", "final-answer-response"));

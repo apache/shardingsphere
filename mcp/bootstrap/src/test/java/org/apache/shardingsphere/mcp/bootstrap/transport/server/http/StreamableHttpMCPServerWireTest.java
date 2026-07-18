@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -74,7 +75,8 @@ class StreamableHttpMCPServerWireTest {
     }
     
     private StreamableHttpMCPServer createServer() {
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), "http");
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()),
+                MCPTransportType.HTTP);
         return new StreamableHttpMCPServer(new HttpTransportConfiguration("127.0.0.1", 0, "/mcp"), runtimeContext);
     }
     

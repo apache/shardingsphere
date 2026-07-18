@@ -15,4 +15,10 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.mcp.support.database.exception.dialect.ClickHouseMCPDialectSQLExceptionClassifier
+org.apache.shardingsphere.mcp.support.database.exception.dialect.FirebirdMCPDialectSQLExceptionClassifier
+org.apache.shardingsphere.mcp.support.database.exception.dialect.HiveMCPDialectSQLExceptionClassifier
 org.apache.shardingsphere.mcp.support.database.exception.dialect.MySQLMCPDialectSQLExceptionClassifier
+org.apache.shardingsphere.mcp.support.database.exception.dialect.OracleMCPDialectSQLExceptionClassifier
+org.apache.shardingsphere.mcp.support.database.exception.dialect.PrestoMCPDialectSQLExceptionClassifier
+org.apache.shardingsphere.mcp.support.database.exception.dialect.SQLServerMCPDialectSQLExceptionClassifier

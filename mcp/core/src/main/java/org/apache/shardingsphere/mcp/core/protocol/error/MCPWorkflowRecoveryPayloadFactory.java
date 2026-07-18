@@ -58,7 +58,6 @@ final class MCPWorkflowRecoveryPayloadFactory {
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(
                 WorkflowToolDescriptors.APPLY_TOOL_NAME, "Preview again, then copy only visible approval_step values into approved_steps.", suggestedArguments)));
-        result.put("ask_user_when_uncertain", true);
         return result;
     }
     
@@ -80,7 +79,6 @@ final class MCPWorkflowRecoveryPayloadFactory {
                         .build()),
                 MCPNextActionUtils.dependsOn(MCPNextActionUtils.readResource(
                         "shardingsphere://capabilities", "Read current workflow tools, then re-run the matching planning tool if completion has no usable plan."), 1)));
-        result.put("ask_user_when_uncertain", false);
         return result;
     }
     
@@ -115,7 +113,6 @@ final class MCPWorkflowRecoveryPayloadFactory {
             result.put("missing_fields", List.of(WorkflowFieldNames.EXECUTION_MODE));
         }
         result.put(MCPPayloadFieldNames.FIELD, WorkflowFieldNames.EXECUTION_MODE);
-        result.put("source_tool", toolName);
         result.put("tool_name", toolName);
         result.put(MCPPayloadFieldNames.ALLOWED_VALUES, allowedValues);
         Map<String, Object> suggestedArguments = MCPRecoveryPayloadSupport.getSuggestedArguments(sourceSuggestedArguments,
@@ -124,7 +121,6 @@ final class MCPWorkflowRecoveryPayloadFactory {
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(retryTool
                 ? MCPNextActionUtils.retryTool(toolName, retryReason, suggestedArguments)
                 : MCPNextActionUtils.callTool(toolName, retryReason, suggestedArguments)));
-        result.put("ask_user_when_uncertain", true);
         return result;
     }
     

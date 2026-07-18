@@ -34,7 +34,7 @@ class BroadcastRuleInspectionServiceTest {
     void assertQueryBroadcastRules() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         List<Map<String, Object>> rows = List.of(Map.of("broadcast_table", "t_order"));
-        when(queryFacade.query("logic_db", "", "SHOW BROADCAST TABLE RULES FROM logic_db")).thenReturn(rows);
+        when(queryFacade.query("logic_db", "SHOW BROADCAST TABLE RULES FROM logic_db")).thenReturn(rows);
         assertThat(new BroadcastRuleInspectionService().queryBroadcastRules(queryFacade, "logic_db"), is(rows));
     }
     
@@ -42,7 +42,7 @@ class BroadcastRuleInspectionServiceTest {
     void assertQueryBroadcastRuleCount() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         List<Map<String, Object>> rows = List.of(Map.of("rule_name", "broadcast_table", "count", 1));
-        when(queryFacade.query("logic_db", "", "COUNT BROADCAST RULE FROM logic_db")).thenReturn(rows);
+        when(queryFacade.query("logic_db", "COUNT BROADCAST RULE FROM logic_db")).thenReturn(rows);
         assertThat(new BroadcastRuleInspectionService().queryBroadcastRuleCount(queryFacade, "logic_db"), is(rows));
     }
 }

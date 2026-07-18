@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
-import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -41,11 +40,6 @@ import java.util.Optional;
  */
 public final class WorkflowGuidanceResourceHintProvider {
     
-    private static final Collection<String> STORAGE_UNIT_WORKFLOW_KINDS = List.of(
-            WorkflowKindDescriptors.READWRITE_RULE, WorkflowKindDescriptors.READWRITE_STATUS, WorkflowKindDescriptors.SHADOW_RULE, WorkflowKindDescriptors.SHARDING_TABLE_RULE);
-    
-    private static final Collection<String> SINGLE_TABLE_WORKFLOW_KINDS = List.of(WorkflowKindDescriptors.SHADOW_RULE, WorkflowKindDescriptors.SHARDING_TABLE_RULE);
-    
     /**
      * Create resource hints for a workflow planning response.
      *
@@ -55,27 +49,9 @@ public final class WorkflowGuidanceResourceHintProvider {
     public List<Map<String, Object>> createResourcesToRead(final WorkflowContextSnapshot snapshot) {
         List<Map<String, Object>> result = new LinkedList<>();
         WorkflowRequest request = snapshot.getRequest();
+        addResources(result, snapshot.getResourceUriTemplates(), request);
         addDescriptorRelatedResources(result, snapshot, request);
-        if (!request.getDatabase().isEmpty()) {
-            addGovernanceMetadataResources(result, snapshot, request);
-            if (!WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot) && !request.getSchema().isEmpty() && !request.getTable().isEmpty()) {
-                addTableResources(result, request);
-            }
-        }
         return result;
-    }
-    
-    private void addGovernanceMetadataResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
-        String workflowKind = resolveWorkflowKind(snapshot);
-        if (STORAGE_UNIT_WORKFLOW_KINDS.contains(workflowKind)) {
-            addStorageUnitsResourceHint(resourcesToRead, request);
-        }
-        if (SINGLE_TABLE_WORKFLOW_KINDS.contains(workflowKind)) {
-            addSingleTablesResourceHint(resourcesToRead, request);
-            if (!request.getTable().isEmpty()) {
-                addSingleTableResourceHint(resourcesToRead, request);
-            }
-        }
     }
     
     private void addDescriptorRelatedResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
@@ -88,13 +64,20 @@ public final class WorkflowGuidanceResourceHintProvider {
         if (!(relatedResourceUris instanceof Collection)) {
             return;
         }
-        for (Object each : (Collection<?>) relatedResourceUris) {
+        addResources(resourcesToRead, (Collection<?>) relatedResourceUris, request);
+    }
+    
+    private void addResources(final Collection<Map<String, Object>> resourcesToRead, final Collection<?> uriTemplates, final WorkflowRequest request) {
+        for (Object each : uriTemplates) {
             String uriTemplate = String.valueOf(each);
-            MCPResourceDescriptor resourceDescriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
-            createConcreteResourceUri(uriTemplate, request)
+            findResourceDescriptor(uriTemplate).ifPresent(resourceDescriptor -> createConcreteResourceUri(uriTemplate, request)
                     .ifPresent(uri -> addResourceHint(resourcesToRead, uri, resolveResourceKind(uriTemplate), resolveDescriptorResourceAction(resourceDescriptor),
-                            resourceDescriptor.getDescription()));
+                            resourceDescriptor.getDescription())));
         }
+    }
+    
+    private Optional<MCPResourceDescriptor> findResourceDescriptor(final String uriTemplate) {
+        return MCPDescriptorCatalogIndex.getResourceDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst();
     }
     
     private Optional<String> createConcreteResourceUri(final String uriTemplate, final WorkflowRequest request) {
@@ -128,33 +111,11 @@ public final class WorkflowGuidanceResourceHintProvider {
         return descriptor.isTemplated() ? "inspect_detail" : "read_first";
     }
     
-    private void addStorageUnitsResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
-        addResourceHint(resourcesToRead, String.format("shardingsphere://databases/%s/storage-units", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())),
-                "storage-unit", "validate_scope", "Read storage units before planning DistSQL that references storage units.");
-    }
-    
-    private void addSingleTablesResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
-        addResourceHint(resourcesToRead, String.format("shardingsphere://databases/%s/single-tables", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase())),
-                "single-table", "validate_scope", "Read single table mappings before planning table-level DistSQL.");
-    }
-    
-    private void addSingleTableResourceHint(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
-        addResourceHint(resourcesToRead, String.format("shardingsphere://databases/%s/single-tables/%s", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
-                MCPUriPathSegmentUtils.encodePathSegment(request.getTable())), "single-table", "validate_scope",
-                "Read the target single table mapping before planning table-level DistSQL.");
-    }
-    
     private void addResourceHint(final Collection<Map<String, Object>> resourcesToRead, final String uri, final String resourceKind, final String action, final String reason) {
         if (resourcesToRead.stream().anyMatch(each -> uri.equals(each.get("uri")))) {
             return;
         }
         resourcesToRead.add(MCPResourceHintUtils.create(uri, resourceKind, action, reason, MCPPayloadFieldNames.RESOURCES_TO_READ));
-    }
-    
-    private void addTableResources(final Collection<Map<String, Object>> resourcesToRead, final WorkflowRequest request) {
-        resourcesToRead.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", MCPUriPathSegmentUtils.encodePathSegment(request.getDatabase()),
-                MCPUriPathSegmentUtils.encodePathSegment(request.getSchema()), MCPUriPathSegmentUtils.encodePathSegment(request.getTable())),
-                "column", "validate_scope", "Read table columns before planning column-level workflow changes.", MCPPayloadFieldNames.RESOURCES_TO_READ));
     }
     
     private String resolveWorkflowKind(final WorkflowContextSnapshot snapshot) {

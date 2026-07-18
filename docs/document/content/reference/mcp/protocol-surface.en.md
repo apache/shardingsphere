@@ -218,19 +218,18 @@ List-shaped business payloads usually contain:
 
 - `items`
 - `count`
-- `has_more`
 - `continuation_mode`
+- `next_page_token` when continuation is available
 
 Large-result payloads use:
 
 - `truncated`
 - `total_count`
-- `returned_count`
 - `large_result_guidance`
 
-Recoverable error payloads keep `message` and add `recovery` hints.
+Recoverable error payloads use `summary`, `error_id`, and structured `recovery` hints.
 Common recovery cases include missing arguments, unsupported tools or resources, invalid enum values, workflow state errors, and unsafe SQL tool selection.
-Model-facing business payloads that require continuation include a top-level `summary` and structured `next_actions`.
+Model-facing business payloads that require continuation include a top-level `summary` and canonical top-level `next_actions`.
 Workflow planning, apply, manual-only export, and validation responses use these fields to guide the next tool call, user question, resource read, completion call, or terminal stop.
 
 JSON-RPC numeric error codes are the MCP protocol error contract.

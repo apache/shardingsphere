@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
@@ -62,7 +62,7 @@ public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHan
     }
     
     private Map<String, Object> createPlanResponse(final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         if (snapshot.getRequest() instanceof final ReadwriteSplittingStatusWorkflowRequest request) {
             replaceIntentInference(result, request);
             replaceArgumentProvenance(result, request);

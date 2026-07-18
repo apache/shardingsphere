@@ -47,6 +47,9 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
             "create table", "alter table", "drop table", "create index", "drop index", "migrate", "migration", "backfill", "data probe", "physical metadata",
             "register storage unit", "alter storage unit", "unregister storage unit");
     
+    private static final List<String> REQUIRED_WORKFLOW_OUTPUT_FIELDS = List.of(
+            "response_mode", "plan_id", "workflow_kind", "status", "missing_required_inputs", "resources_to_read", "next_actions");
+    
     private static boolean isEnabled() {
         return MCPE2ECondition.isDockerEnabled();
     }
@@ -72,25 +75,55 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
                         "shardingsphere://features/readwrite-splitting/databases/{database}/rules",
                         Map.of("database", "logic_db", "operation_type", "create", "rule", "readwrite_ds", "write_storage_unit", "write_ds",
                                 "read_storage_units", "read_ds_0", "transactional_read_query_strategy", "DYNAMIC"))),
+                Arguments.of("readwrite-splitting status", new FeatureWorkflowScenario("database_gateway_plan_readwrite_splitting_status",
+                        "shardingsphere://features/readwrite-splitting/databases/{database}/rules",
+                        Map.of("database", "logic_db", "rule", "readwrite_ds", "storage_unit", "read_ds_0", "target_status", "disable"))),
                 Arguments.of("shadow", new FeatureWorkflowScenario("database_gateway_plan_shadow_rule", "shardingsphere://features/shadow/databases/{database}/rules",
                         Map.of("database", "logic_db", "operation_type", "create", "rule", "shadow_rule", "source_storage_unit", "demo_ds",
                                 "shadow_storage_unit", "demo_ds_shadow", "table", "orders", "algorithm_type", "VALUE_MATCH",
                                 "algorithm_properties", Map.of("operation", "insert", "column", "user_id", "value", "1")))),
+                Arguments.of("shadow default algorithm", new FeatureWorkflowScenario("database_gateway_plan_default_shadow_algorithm",
+                        "shardingsphere://features/shadow/databases/{database}/rules",
+                        Map.of("database", "logic_db", "operation_type", "create", "algorithm_type", "SQL_HINT"))),
+                Arguments.of("shadow algorithm cleanup", new FeatureWorkflowScenario("database_gateway_plan_shadow_algorithm_cleanup",
+                        "shardingsphere://features/shadow/databases/{database}/rules",
+                        Map.of("database", "logic_db", "algorithm_name", "unused_algorithm"))),
                 Arguments.of("sharding", new FeatureWorkflowScenario("database_gateway_plan_sharding_table_rule",
                         "shardingsphere://features/sharding/databases/{database}/table-rules",
                         Map.of("database", "logic_db", "operation_type", "create", "table", "t_order", "column", "order_id",
                                 "data_nodes", "ds_${0..1}.t_order_${0..1}", "strategy_type", "standard", "algorithm_type", "INLINE",
                                 "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"), "key_generate_column", "id",
-                                "key_generator_type", "SNOWFLAKE"))));
+                                "key_generator_type", "SNOWFLAKE"))),
+                Arguments.of("sharding table reference", new FeatureWorkflowScenario("database_gateway_plan_sharding_table_reference_rule",
+                        "shardingsphere://features/sharding/databases/{database}/table-reference-rules",
+                        Map.of("database", "logic_db", "operation_type", "create", "rule", "order_reference", "reference_tables", "t_order,t_order_item"))),
+                Arguments.of("sharding default strategy", new FeatureWorkflowScenario("database_gateway_plan_sharding_default_strategy",
+                        "shardingsphere://features/sharding/databases/{database}/default-strategy",
+                        Map.of("database", "logic_db", "operation_type", "create", "default_strategy_type", "DATABASE", "strategy_type", "none"))),
+                Arguments.of("sharding key generator", new FeatureWorkflowScenario("database_gateway_plan_sharding_key_generator",
+                        "shardingsphere://features/sharding/databases/{database}/key-generators",
+                        Map.of("database", "logic_db", "operation_type", "create", "key_generator", "snowflake_generator",
+                                "key_generator_type", "SNOWFLAKE", "key_generator_properties", Map.of("worker-id", "1")))),
+                Arguments.of("sharding key generate strategy", new FeatureWorkflowScenario("database_gateway_plan_sharding_key_generate_strategy",
+                        "shardingsphere://features/sharding/databases/{database}/key-generate-strategies",
+                        Map.of("database", "logic_db", "operation_type", "create", "key_generate_strategy", "order_key_strategy",
+                                "table", "t_order", "column", "id", "key_generator", "snowflake_generator"))),
+                Arguments.of("sharding component cleanup", new FeatureWorkflowScenario("database_gateway_plan_sharding_rule_component_cleanup",
+                        "shardingsphere://features/sharding/databases/{database}/unused-algorithms",
+                        Map.of("database", "logic_db", "component_type", "algorithm", "component_name", "unused_algorithm"))));
     }
     
     private void assertFeatureDiscovery(final HttpClient httpClient, final String sessionId, final FeatureWorkflowScenario scenario) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://capabilities");
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getFirstResourcePayload(actual.body());
-        assertTrue(((List<?>) payload.get("supportedTools")).stream().map(String::valueOf).toList().contains(scenario.toolName()));
-        assertTrue(String.valueOf(payload).contains(scenario.discoveryToken()));
-        assertModelFacingPayloadContract(payload);
+        HttpResponse<String> actualTools = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
+                scenario.toolName() + "-discovery-tools-1", "tools/list", Map.of()));
+        assertThat(actualTools.statusCode(), is(200));
+        Map<String, Object> toolsPayload = MCPInteractionPayloads.getRequiredJsonRpcResult(parseJsonBody(actualTools.body()));
+        assertTrue(MCPInteractionPayloads.getRequiredObjectList(toolsPayload, "tools").stream().anyMatch(each -> scenario.toolName().equals(each.get("name"))));
+        assertModelFacingPayloadContract(toolsPayload);
+        HttpResponse<String> actualResources = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
+                scenario.toolName() + "-discovery-resources-1", "resources/templates/list", Map.of()));
+        assertThat(actualResources.statusCode(), is(200));
+        assertTrue(actualResources.body().contains(scenario.discoveryToken()));
     }
     
     private void assertFeatureToolSchemaMatchesPlanArguments(final HttpClient httpClient, final String sessionId,
@@ -107,6 +140,8 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         for (String each : scenario.planArguments().keySet()) {
             assertTrue(actualProperties.containsKey(each), each);
         }
+        Map<String, Object> actualOutputSchema = MCPInteractionPayloads.getRequiredObject(actualTool, "outputSchema");
+        assertThat(((List<?>) actualOutputSchema.get("required")).stream().map(String::valueOf).toList(), is(REQUIRED_WORKFLOW_OUTPUT_FIELDS));
     }
     
     private Map<String, Object> findByKey(final List<Map<String, Object>> values, final String key, final String expectedValue) {
@@ -125,7 +160,7 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         Map<String, Object> payload = MCPInteractionPayloads.getToolCallPayload(responsePayload);
         Map<String, Object> recovery = getRecoveryPayload(payload, "validation");
         assertThat(recovery.get("category"), is("unknown_argument"));
-        assertThat(recovery.get("argument_path"), is("client_hint"));
+        assertThat(recovery.get("field"), is("client_hint"));
         assertModelFacingPayloadContract(payload);
     }
     
@@ -144,7 +179,7 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> result = getToolCallPayload(actual.body());
         assertThat(String.valueOf(result.get("response_mode")), is("recovery"));
-        assertFalse(String.valueOf(result.get("message")).isBlank());
+        assertFalse(String.valueOf(result.get("summary")).isBlank());
         assertNoForbiddenArtifacts(result);
         assertModelFacingPayloadContract(result);
     }

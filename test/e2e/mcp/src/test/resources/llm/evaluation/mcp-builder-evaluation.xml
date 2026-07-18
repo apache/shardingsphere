@@ -137,7 +137,7 @@
     <expected_answer>
       The model should call database_gateway_validate_workflow with the relevant plan_id or workflow context after the controlled execution has
       occurred, then compare the validation layers against live metadata resources and any independent read-only query evidence. If required
-      physical columns, DistSQL rule metadata, or table metadata are missing, it should report the specific failed validation layer and next
+      planned DistSQL rule configuration or logical metadata are missing or mismatched, it should report the specific failed validation layer and next
       actions rather than declaring success from the earlier planning response.
     </expected_answer>
     <verification>
@@ -187,12 +187,12 @@
     <verification>
       <step>Confirm the answer uses completion/complete or resources/read plugin resources before selecting uncertain algorithm names.</step>
       <step>Confirm the answer covers mask, readwrite-splitting, shadow, and sharding plugin completion sources.</step>
-      <step>Confirm the answer keeps completion bounded, secret-safe, and uses recovery next_actions instead of mutation.</step>
+      <step>Confirm the answer keeps completion bounded, secret-safe, and uses top-level next_actions instead of mutation.</step>
     </verification>
   </qa_pair>
   <qa_pair id="q10" category="transport_security" read_only="true">
     <question>
-      During Streamable HTTP deployment, an operator sets transport.type to STREAMABLE_HTTP and bindHost to 0.0.0.0 for a trusted gateway.
+      During Streamable HTTP deployment, an operator sets transport.type to HTTP and bindHost to 0.0.0.0 for a trusted gateway.
       Explain what built-in authorization exists, how present Origin headers are treated, and where authentication must happen.
     </question>
     <answer>no_builtin_auth|origin_403|gateway_auth_boundary</answer>

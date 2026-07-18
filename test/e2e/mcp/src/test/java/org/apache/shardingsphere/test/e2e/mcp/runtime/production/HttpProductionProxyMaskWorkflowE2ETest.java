@@ -77,7 +77,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             Map<String, Object> actualCreateValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", createPlanId));
             assertValidationPassed(actualCreateValidationResponse);
             assertThat(
-                    String.valueOf(getObjectListOrEmpty(getObjectOrEmpty(actualCreateValidationResponse.get("rule_validation")).get("evidence")).getFirst().get("algorithm_type"))
+                    String.valueOf(getObjectListOrEmpty(getValidationSection(actualCreateValidationResponse, "rule").get("evidence")).getFirst().get("algorithm_type"))
                             .toUpperCase(Locale.ENGLISH),
                     is("KEEP_FIRST_N_LAST_M"));
             Map<String, Object> actualUnsupportedPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
@@ -103,7 +103,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertApplyCompleted(applyReviewedWorkflow(interactionClient, planId));
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertValidationPassed(actualValidationResponse);
-            assertThat(String.valueOf(getObjectOrEmpty(actualValidationResponse.get("rule_validation")).get("details")), is("Mask table rule state matches the planned state."));
+            assertThat(String.valueOf(getValidationSection(actualValidationResponse, "rule").get("details")), is("Mask table rule state matches the planned state."));
         }
     }
     
@@ -141,7 +141,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertValidationPassed(actualValidationResponse);
             assertThat(
-                    String.valueOf(getObjectListOrEmpty(getObjectOrEmpty(actualValidationResponse.get("rule_validation")).get("evidence")).getFirst().get("algorithm_type"))
+                    String.valueOf(getObjectListOrEmpty(getValidationSection(actualValidationResponse, "rule").get("evidence")).getFirst().get("algorithm_type"))
                             .toUpperCase(Locale.ENGLISH),
                     is("MASK_FROM_X_TO_Y"));
         }

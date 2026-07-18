@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.DatabaseMetadataFixture;
@@ -246,7 +246,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithStorageUnitObjectType() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db"))
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db"))
                 .thenReturn(List.of(Map.of("name", "write_ds"), Map.of("name", "read_ds")));
         MetadataSearchResult actual = execute(createDatabaseMetadata(), queryFacade,
                 new MetadataSearchRequest("logic_db", "", "write", Set.of(SupportedMCPMetadataObjectType.STORAGE_UNIT)));

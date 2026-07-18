@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.junit.jupiter.api.Test;
@@ -43,6 +43,10 @@ class MCPToolDescriptorValidationUtilsTest {
             "validation_strategy", "delivery_mode", "execution_mode", "intent_inference", "argument_provenance", "review_focus", "proxy_topology_hint",
             "distsql_artifacts", MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS);
     
+    private static final Collection<String> REQUIRED_WORKFLOW_PLAN_SCHEMA_FIELDS = List.of(
+            "response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
+            MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS);
+    
     private static final Collection<String> WORKFLOW_PLAN_META_FIELDS = List.of(
             "org.apache.shardingsphere/workflow-kind", "org.apache.shardingsphere/artifact-categories", "org.apache.shardingsphere/side-effect-scope",
             "org.apache.shardingsphere/related-resource-uris", "org.apache.shardingsphere/follow-up-tools");
@@ -59,6 +63,15 @@ class MCPToolDescriptorValidationUtilsTest {
         IllegalStateException actual = assertThrows(IllegalStateException.class,
                 () -> MCPToolDescriptorValidationUtils.validateRequiredWorkflowPlanOutputFields(descriptor, List.of("secret_reference_summary")));
         assertThat(actual.getMessage(), is("Tool `fixture_tool` outputSchema must declare `secret_reference_summary`."));
+    }
+    
+    @Test
+    void assertValidateRequiredWorkflowPlanOutputFieldsRejectsOptionalContractField() {
+        MCPToolDescriptor descriptor = createDescriptor(WORKFLOW_PLAN_OUTPUT_FIELDS, REQUIRED_WORKFLOW_PLAN_SCHEMA_FIELDS.stream()
+                .filter(each -> !MCPPayloadFieldNames.NEXT_ACTIONS.equals(each)).toList(), createWorkflowPlanMeta());
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> MCPToolDescriptorValidationUtils.validateRequiredWorkflowPlanOutputFields(descriptor));
+        assertThat(actual.getMessage(), is("Tool `fixture_tool` outputSchema must require `next_actions`."));
     }
     
     @Test
@@ -117,8 +130,12 @@ class MCPToolDescriptorValidationUtilsTest {
     }
     
     private MCPToolDescriptor createDescriptor(final Collection<String> outputFields, final Map<String, Object> meta) {
+        return createDescriptor(outputFields, REQUIRED_WORKFLOW_PLAN_SCHEMA_FIELDS, meta);
+    }
+    
+    private MCPToolDescriptor createDescriptor(final Collection<String> outputFields, final Collection<String> requiredFields, final Map<String, Object> meta) {
         return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of(),
-                Map.of("type", "object", "properties", createOutputProperties(outputFields)), createAnnotations(), meta);
+                Map.of("type", "object", "properties", createOutputProperties(outputFields), "required", requiredFields), createAnnotations(), meta);
     }
     
     private MCPToolDescriptor createDescriptor(final Map<String, Object> inputSchema, final Map<String, Object> outputSchema) {

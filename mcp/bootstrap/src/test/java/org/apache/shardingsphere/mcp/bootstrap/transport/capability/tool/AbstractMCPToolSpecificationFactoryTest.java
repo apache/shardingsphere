@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
@@ -25,10 +26,11 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -119,13 +121,13 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
                 .thenReturn(response);
     }
     
-    protected MCPRuntimeContext createRuntimeContext(final String activeTransport) {
+    protected MCPRuntimeContext createRuntimeContext(final MCPTransportType activeTransport) {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
-        sessionManager.createSession("session-id");
+        sessionManager.createSession(new MCPSessionIdentity("session-id", "", "", Map.of()));
         return new MCPRuntimeContext(sessionManager, mock(MCPDatabaseCapabilityProvider.class), activeTransport);
     }
     
-    protected SyncToolSpecification createToolSpecification(final String activeTransport) {
+    protected SyncToolSpecification createToolSpecification(final MCPTransportType activeTransport) {
         return createToolSpecification(createRuntimeContext(activeTransport));
     }
     
@@ -185,7 +187,7 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
-            return callTool(createToolSpecification(createRuntimeContext("")), createExchange(), toolName, Map.of());
+            return callTool(createToolSpecification(createRuntimeContext(MCPTransportType.HTTP)), createExchange(), toolName, Map.of());
         }
     }
     
@@ -270,10 +272,15 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
     }
     
     protected MCPToolDescriptor createPlanningToolDescriptor(final String toolName) {
+        return createPlanningToolDescriptor(toolName, Collections.emptyMap());
+    }
+    
+    protected MCPToolDescriptor createPlanningToolDescriptor(final String toolName, final Map<String, Object> additionalProperties) {
         Map<String, Object> properties = new LinkedHashMap<>(2, 1F);
         properties.put("custom_properties", Map.of("type", "object", "description", "Custom properties.", "additionalProperties", true));
         properties.put("intent", Map.of("type", "object", "description", "Intent.", "properties",
                 Map.of("requires_review", Map.of("type", "boolean", "description", "Requires review.")), "required", List.of(), "additionalProperties", false));
+        properties.putAll(additionalProperties);
         return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", createInputSchema(properties, List.of()),
                 Map.of("type", "object"), MCPToolAnnotations.builder()
                         .title("Plan Custom Rule").readOnlyHint(false).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),

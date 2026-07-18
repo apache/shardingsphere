@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
@@ -44,13 +44,6 @@ final class MCPToolClarificationPolicy {
     private static final String DOT = ".";
     
     private static final String FORM_PROPERTY_PREFIX = "field_";
-    
-    private static final String CAMEL_CASE_SEPARATOR_PATTERN = "([a-z])([A-Z])";
-    
-    private static final String NON_ALPHANUMERIC_PATTERN = "[^a-z0-9]+";
-    
-    private static final List<String> SENSITIVE_FIELD_NAME_MARKERS = List.of(
-            "password", "passwd", "passphrase", "secret", "token", "accesstoken", "apikey", "privatekey", "credential", "card", "cvv", "payment", "key");
     
     boolean requiresPlanningClarification(final MCPToolDescriptor descriptor, final Map<String, Object> payload) {
         Object clarificationQuestions = payload.get(MCPPayloadFieldNames.CLARIFICATION_QUESTIONS);
@@ -112,29 +105,12 @@ final class MCPToolClarificationPolicy {
     }
     
     private boolean isSensitiveClarificationQuestion(final Map<?, ?> question) {
-        return Boolean.TRUE.equals(question.get(MCPPayloadFieldNames.SECRET)) || isSecretInputType(question) || isSensitiveFieldName(question) || isUnknownAlgorithmPropertySensitivity(question);
+        Object secret = question.get(MCPPayloadFieldNames.SECRET);
+        return !(secret instanceof Boolean) || Boolean.TRUE.equals(secret) || isSecretInputType(question);
     }
     
     private boolean isSecretInputType(final Map<?, ?> question) {
         return "secret".equals(normalizeInputType(question));
-    }
-    
-    private boolean isSensitiveFieldName(final Map<?, ?> question) {
-        String fieldName = normalizeSensitiveName(getField(question));
-        for (String each : SENSITIVE_FIELD_NAME_MARKERS) {
-            if (fieldName.contains(each)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isUnknownAlgorithmPropertySensitivity(final Map<?, ?> question) {
-        return normalizeSensitiveName(getField(question)).contains("algorithmproperties") && !question.containsKey(MCPPayloadFieldNames.SECRET);
-    }
-    
-    private String normalizeSensitiveName(final String value) {
-        return value.replaceAll(CAMEL_CASE_SEPARATOR_PATTERN, "$1 $2").toLowerCase(Locale.ENGLISH).replaceAll(NON_ALPHANUMERIC_PATTERN, "");
     }
     
     private String getPlanId(final Map<String, Object> payload) {

@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.mcp.api.tool;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
-import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.exception.ShardingSphereMCPException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 
 import java.util.Map;
 
 /**
  * MCP tool handler.
+ *
+ * <p>Implementations must support concurrent invocations and must not retain request context or arguments after {@link #handle} returns.</p>
  *
  * @param <T> required request context type
  */

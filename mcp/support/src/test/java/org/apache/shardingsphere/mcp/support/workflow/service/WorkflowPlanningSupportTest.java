@@ -23,10 +23,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -51,6 +53,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -109,7 +112,8 @@ class WorkflowPlanningSupportTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
-        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders-detail", "Phone Number")));
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders-detail")));
+        when(metadataQueryFacade.queryTableColumns("logic_db", "public", "orders-detail")).thenReturn(List.of(createColumnMetadata("orders-detail", "Phone Number")));
         boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, mock(MCPFeatureQueryFacade.class), request, clarifiedIntent, snapshot);
         assertTrue(actual);
         assertThat(request.getDatabase(), is("`logic_db`"));
@@ -128,7 +132,8 @@ class WorkflowPlanningSupportTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
-        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders", "phone")));
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders")));
+        when(metadataQueryFacade.queryTableColumns("logic_db", "public", "orders")).thenReturn(List.of(createColumnMetadata("orders", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "orders", "orders")).thenReturn(true);
         when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.SCHEMA, "public", "public")).thenReturn(true);
@@ -152,7 +157,8 @@ class WorkflowPlanningSupportTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
-        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders", "phone")));
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders")));
+        when(metadataQueryFacade.queryTableColumns("logic_db", "public", "orders")).thenReturn(List.of(createColumnMetadata("orders", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.SCHEMA, "Public", "public")).thenReturn(true);
         when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "Orders", "orders")).thenReturn(true);
@@ -173,7 +179,7 @@ class WorkflowPlanningSupportTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
-        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders", "phone")));
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders")));
         boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, mock(MCPFeatureQueryFacade.class), request, clarifiedIntent, snapshot);
         assertFalse(actual);
         assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.TABLE_NOT_FOUND));
@@ -189,7 +195,7 @@ class WorkflowPlanningSupportTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
-        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders-detail", "phone")));
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata("public", "orders-detail")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.SCHEMA, "public", "public")).thenReturn(true);
         boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, queryFacade, request, new ClarifiedIntent(), snapshot);
@@ -208,8 +214,8 @@ class WorkflowPlanningSupportTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(
-                createSchemaMetadata("quoted_schema", "Orders", "Phone"),
-                createSchemaMetadata("other_schema", "customers", "id")));
+                createSchemaMetadata("quoted_schema", "Orders"),
+                createSchemaMetadata("other_schema", "customers")));
         boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, mock(MCPFeatureQueryFacade.class), request, clarifiedIntent, snapshot);
         assertFalse(actual);
         assertThat(snapshot.getStatus(), is("clarifying"));
@@ -231,6 +237,7 @@ class WorkflowPlanningSupportTest {
     void assertPrepareSnapshot() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking", "message", "action", true, Map.of()));
         WorkflowRequest request = new WorkflowRequest();
         request.setDatabase("logic_db");
@@ -243,6 +250,21 @@ class WorkflowPlanningSupportTest {
         assertThat(snapshot.getClarifiedIntent(), is(clarifiedIntent));
         assertThat(snapshot.getInteractionPlan().getSummary(), is("summary"));
         assertTrue(snapshot.getIssues().isEmpty());
+    }
+    
+    @Test
+    void assertPrepareSnapshotRejectsDifferentWorkflowKind() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        WorkflowRequest previousRequest = new WorkflowRequest();
+        previousRequest.setDatabase("logic_db");
+        snapshot.setRequest(previousRequest);
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> planningSupport.prepareSnapshot(snapshot,
+                WorkflowKind.valueOf("mask.rule"), new WorkflowRequest(), null, new ClarifiedIntent(), "summary", List.of("step-1"), List.of("rules")));
+        assertThat(actual.getMessage(), is("plan_id `plan-1` belongs to workflow kind `encrypt.rule`; call the matching planning tool or omit plan_id to start `mask.rule`."));
+        assertThat(snapshot.getWorkflowKind(), is(WorkflowKind.valueOf("encrypt.rule")));
+        assertThat(snapshot.getRequest(), is(previousRequest));
     }
     
     @Test
@@ -360,15 +382,15 @@ class WorkflowPlanningSupportTest {
         return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet());
     }
     
-    private ShardingSphereSchema createSchemaMetadata(final String schemaName, final String tableName, final String columnName) {
-        return new ShardingSphereSchema(schemaName, mock(DatabaseType.class), List.of(createTableMetadata(tableName, columnName)), List.of());
+    private ShardingSphereSchema createSchemaMetadata(final String schemaName, final String tableName) {
+        return new ShardingSphereSchema(schemaName, mock(DatabaseType.class), List.of(createTableMetadata(tableName)), List.of());
     }
     
-    private ShardingSphereTable createTableMetadata(final String tableName, final String columnName) {
-        return new ShardingSphereTable(tableName, List.of(createColumnMetadata(columnName)), List.of(), List.of(), TableType.TABLE);
+    private ShardingSphereTable createTableMetadata(final String tableName) {
+        return new ShardingSphereTable(tableName, List.of(), List.of(), List.of(), TableType.TABLE);
     }
     
-    private ShardingSphereColumn createColumnMetadata(final String columnName) {
-        return new ShardingSphereColumn(columnName, java.sql.Types.OTHER, false, false, false, true, false, true);
+    private MCPColumnMetadata createColumnMetadata(final String tableName, final String columnName) {
+        return new MCPColumnMetadata(tableName, columnName, 1, java.sql.Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
     }
 }

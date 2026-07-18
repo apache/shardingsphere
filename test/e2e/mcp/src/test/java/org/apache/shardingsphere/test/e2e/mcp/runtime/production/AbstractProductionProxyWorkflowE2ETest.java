@@ -169,4 +169,8 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     protected final Map<String, Object> getObjectOrEmpty(final Object value) {
         return null == value ? Map.of() : MCPInteractionPayloads.getRequiredObjectValue(value, "payload");
     }
+    
+    protected final Map<String, Object> getValidationSection(final Map<String, Object> payload, final String layer) {
+        return getObjectListOrEmpty(payload.get("sections")).stream().filter(each -> layer.equals(each.get("layer"))).findFirst().orElse(Map.of());
+    }
 }

@@ -52,7 +52,7 @@ class MCPJdbcMetadataLoaderSchemaFilteringTest extends AbstractMCPJdbcMetadataLo
             assertThat(schemas.size(), is(1));
             assertThat(schemas.iterator().next().getName(), is("logic_db"));
             assertTrue(containsMetadata(schemas, SupportedMCPMetadataObjectType.TABLE, "orders"));
-            assertTrue(containsMetadata(schemas, SupportedMCPMetadataObjectType.COLUMN, "order_id"));
+            assertFalse(containsMetadata(schemas, SupportedMCPMetadataObjectType.COLUMN, "order_id"));
         }
     }
     
@@ -108,7 +108,7 @@ class MCPJdbcMetadataLoaderSchemaFilteringTest extends AbstractMCPJdbcMetadataLo
         Collection<ShardingSphereSchema> actual = loadWithDatabaseAsSchema(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertThat(actual.iterator().next().getName(), is("logic_db"));
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
-        assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"));
+        assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"));
     }
     
     @Test
@@ -134,24 +134,23 @@ class MCPJdbcMetadataLoaderSchemaFilteringTest extends AbstractMCPJdbcMetadataLo
     }
     
     @Test
-    void assertLoadWithoutEmptyColumnName() throws SQLException {
+    void assertLoadCatalogWithoutEagerColumns() throws SQLException {
         Connection connection = createConnectionWithMetadata(
                 List.of(Map.of("TABLE_SCHEM", "PUBLIC", "TABLE_NAME", "orders")), List.of(), Map.of("orders", List.of("", "order_id")), Map.of(), List.of());
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         Collection<ShardingSphereSchema> actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
-        assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.COLUMN, "order_id"));
+        assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.COLUMN, "order_id"));
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.COLUMN, ""));
     }
     
     @Test
-    void assertLoadWithoutEmptyOrDuplicateIndexName() throws SQLException {
+    void assertLoadCatalogWithoutEagerIndexes() throws SQLException {
         Connection connection = createConnectionWithMetadata(
                 List.of(Map.of("TABLE_SCHEM", "PUBLIC", "TABLE_NAME", "orders")), List.of(), Map.of("orders", List.of("order_id")),
                 Map.of("orders", List.of("", "idx_orders_status", "idx_orders_status")), List.of());
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         Collection<ShardingSphereSchema> actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
-        assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"));
-        assertThat(countMetadata(actual, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"), is(1));
+        assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"));
     }
     
     @Test

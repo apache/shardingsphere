@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.shadow.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -60,7 +60,7 @@ class ShadowResourceHandlerTest {
             when(requestContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
             MCPSuccessPayload actual = handlerSupplier.get().handle(requestContext, uriVariables);
             assertThat(actual.toPayload().get("items"), is(createRows(expectedKind)));
-            assertThat(actual.toPayload().get("self_uri"), is(expectedSelfUri));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is(expectedSelfUri));
         }
     }
     

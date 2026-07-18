@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -90,7 +91,7 @@ class MySQLDatabaseMetaDataTest {
     void assertGetTransactionOption() {
         DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
         assertFalse(actual.isSupportGlobalCSN());
-        assertFalse(actual.isDDLNeedImplicitCommit());
+        assertThat(actual.getDDLCommitPolicy(), is(DDLCommitPolicy.NO_ADDITIONAL_COMMIT));
         assertTrue(actual.isSupportAutoCommitInNestedTransaction());
         assertFalse(actual.isSupportDDLInXATransaction());
         assertTrue(actual.isSupportMetaDataRefreshInTransaction());

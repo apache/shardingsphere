@@ -21,8 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -47,8 +49,23 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
+        return load(dataSource, tableNamePattern, databaseType, IdentifierNormalizeEngine.resolvePolicy(databaseType, dataSource, IdentifierScope.TABLE));
+    }
+    
+    /**
+     * Load table meta data.
+     *
+     * @param dataSource data source
+     * @param tableNamePattern table name pattern
+     * @param databaseType database type
+     * @param tableIdentifierPolicy table identifier case policy
+     * @return table meta data
+     * @throws SQLException SQL exception
+     */
+    public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType,
+                                               final IdentifierCasePolicy tableIdentifierPolicy) throws SQLException {
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
-            String formattedTableNamePattern = new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(tableNamePattern);
+            String formattedTableNamePattern = IdentifierNormalizeEngine.normalize(tableIdentifierPolicy, tableNamePattern);
             return isTableExist(connection, formattedTableNamePattern)
                     ? Optional.of(new TableMetaData(tableNamePattern, ColumnMetaDataLoader.load(
                             connection, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connection, formattedTableNamePattern), Collections.emptyList()))

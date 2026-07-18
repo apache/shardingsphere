@@ -24,12 +24,14 @@ import io.modelcontextprotocol.spec.McpSchema.JSONRPCMessage;
 import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -59,7 +61,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         SessionClosingTransport managedTransport = new SessionClosingTransport(transport);
         McpServerSession session = sessionFactory.create(managedTransport);
         String sessionId = session.getId();
-        sessionManager.createSession(sessionId);
+        sessionManager.createSession(new MCPSessionIdentity(sessionId, "", "", Map.of()));
         managedTransport.bindSessionId(sessionId);
         return session;
     }
