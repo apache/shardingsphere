@@ -126,6 +126,13 @@ class MCPStatementAnalyzerTest {
     }
     
     @Test
+    void assertAnalyzeQuotedTableQueryIdentifier() {
+        ClassificationResult actual = analyzer.analyze("CREATE TABLE order_archive AS TABLE `other.db.orders`", createCapability("MySQL"));
+        assertThat(actual.getReferencedObjectNames(), contains("order_archive", "other.db.orders"));
+        assertFalse(actual.getReferencedObjects().stream().filter(each -> "other.db.orders".equals(each.getObjectName())).findFirst().orElseThrow().isQualified());
+    }
+    
+    @Test
     void assertAnalyzeDCLReference() {
         ClassificationResult actual = analyzer.analyze("GRANT SELECT ON other_db.orders TO PUBLIC", createCapability("MySQL"));
         assertThat(actual.getReferencedObjectNames(), contains("other_db.orders"));
@@ -197,8 +204,19 @@ class MCPStatementAnalyzerTest {
                 Arguments.of("merge target and source", "Oracle", "MERGE INTO order_archive USING orders ON (order_archive.order_id = orders.order_id)",
                         List.of("order_archive", "orders")),
                 Arguments.of("create table like target and source", "MySQL", "CREATE TABLE order_archive LIKE orders", List.of("order_archive", "orders")),
-                Arguments.of("create table select target and source", "MySQL", "CREATE TABLE order_archive AS SELECT * FROM other_db.orders",
+                Arguments.of("create table select target and source", "MySQL", "CREATE TABLE order_archive (order_id BIGINT) AS SELECT * FROM other_db.orders",
                         List.of("order_archive", "other_db.orders")),
+                Arguments.of("create table select without as", "MySQL", "CREATE TABLE order_archive SELECT * FROM other_db.orders",
+                        List.of("order_archive", "other_db.orders")),
+                Arguments.of("create table with query without as", "MySQL",
+                        "CREATE TABLE order_archive WITH order_source AS (SELECT * FROM other_db.orders) SELECT * FROM order_source",
+                        List.of("order_archive", "other_db.orders")),
+                Arguments.of("create table parenthesized select", "MySQL", "CREATE TABLE order_archive AS (SELECT * FROM other_db.orders)",
+                        List.of("order_archive", "other_db.orders")),
+                Arguments.of("create table table query", "MySQL", "CREATE TABLE order_archive AS TABLE other_db.orders",
+                        List.of("order_archive", "other_db.orders")),
+                Arguments.of("create table partition values", "MySQL",
+                        "CREATE TABLE order_archive (order_id INT) PARTITION BY RANGE (order_id) (PARTITION p0 VALUES LESS THAN (10))", List.of("order_archive")),
                 Arguments.of("create index and table", "PostgreSQL", "CREATE INDEX order_idx ON orders (status)", List.of("order_idx", "orders")),
                 Arguments.of("create database", "MySQL", "CREATE DATABASE order_archive", List.of("order_archive")),
                 Arguments.of("drop database", "MySQL", "DROP DATABASE order_archive", List.of("order_archive")),

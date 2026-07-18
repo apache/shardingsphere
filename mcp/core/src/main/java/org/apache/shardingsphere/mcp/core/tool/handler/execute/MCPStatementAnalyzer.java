@@ -96,16 +96,42 @@ final class MCPStatementAnalyzer {
     }
     
     private Optional<String> findCreateTableQuery(final SQLStatement sqlStatement, final String sql, final SQLStatementScanner scanner) {
-        if (!(sqlStatement instanceof CreateTableStatement) || ((CreateTableStatement) sqlStatement).getSelectStatement().isPresent()) {
+        if (!(sqlStatement instanceof CreateTableStatement)) {
+            return Optional.empty();
+        }
+        CreateTableStatement createTableStatement = (CreateTableStatement) sqlStatement;
+        if (createTableStatement.getSelectStatement().isPresent()) {
             return Optional.empty();
         }
         List<SQLStatementToken> tokens = scanner.tokenize(sql);
-        for (int index = 0; index + 1 < tokens.size(); index++) {
-            if (scanner.isKeyword(tokens.get(index), "AS") && scanner.isKeyword(tokens.get(index + 1), "SELECT", "WITH")) {
-                return Optional.of(sql.substring(tokens.get(index + 1).startIndex()));
+        int tableStopIndex = createTableStatement.getTable().getStopIndex();
+        int parenthesisDepth = 0;
+        for (int index = 0; index < tokens.size(); index++) {
+            SQLStatementToken token = tokens.get(index);
+            if (token.startIndex() <= tableStopIndex) {
+                continue;
+            }
+            if (0 == parenthesisDepth) {
+                int queryStartIndex = scanner.isKeyword(token, "AS") ? index + 1 : index;
+                if (isCreateTableQueryStart(tokens, queryStartIndex, scanner)) {
+                    return Optional.of(sql.substring(tokens.get(queryStartIndex).startIndex()));
+                }
+            }
+            if ("(".equals(token.text())) {
+                parenthesisDepth++;
+            } else if (")".equals(token.text())) {
+                parenthesisDepth--;
             }
         }
         return Optional.empty();
+    }
+    
+    private boolean isCreateTableQueryStart(final List<SQLStatementToken> tokens, final int startIndex, final SQLStatementScanner scanner) {
+        int queryKeywordIndex = startIndex;
+        while (queryKeywordIndex < tokens.size() && "(".equals(tokens.get(queryKeywordIndex).text())) {
+            queryKeywordIndex++;
+        }
+        return queryKeywordIndex < tokens.size() && scanner.isKeyword(tokens.get(queryKeywordIndex), "SELECT", "WITH", "TABLE", "VALUES");
     }
     
     private ClassificationResult analyzeSavepointStatement(final String actualSql, final String leadingSql, final String upperLeadingSql) {
