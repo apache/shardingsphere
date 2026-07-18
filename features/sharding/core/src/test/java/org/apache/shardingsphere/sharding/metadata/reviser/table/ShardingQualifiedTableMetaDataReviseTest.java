@@ -76,6 +76,17 @@ class ShardingQualifiedTableMetaDataReviseTest {
         assertColumnGenerated(revisedFromDs1, "order_id_1", true);
     }
     
+    @Test
+    void assertRevisePreservesOriginalNameWhenQualifiedLookupMisses() {
+        ShardingRule rule = createPartialShardingRule();
+        assertThat(new ShardingTableNameReviser().revise("t_order", rule), is("t_order0"));
+        assertThat(new ShardingTableNameReviser().revise("t_order", rule, "ds_0"), is("t_order0"));
+        assertThat(new ShardingTableNameReviser().revise("t_order", rule, "ds_1"), is("t_order"));
+        assertFalse(reviseEntry.createTableMetaDataRevisionContext(rule, "t_order", "ds_1").isPresent());
+        TableMetaData revisedFromDs1 = new TableMetaDataReviseEngine<>(rule, reviseEntry).revise(createPhysicalTableMetaData("ds_1"));
+        assertThat(revisedFromDs1.getName(), is("t_order"));
+    }
+    
     private void assertColumnGenerated(final TableMetaData tableMetaData, final String columnName, final boolean generated) {
         ColumnMetaData actual = tableMetaData.getColumns().stream().filter(each -> columnName.equals(each.getName())).findFirst().orElseThrow(IllegalStateException::new);
         if (generated) {
@@ -101,6 +112,16 @@ class ShardingQualifiedTableMetaDataReviseTest {
         ruleConfig.getKeyGenerateStrategies().put("t_order0_order_id_0", new ColumnKeyGenerateStrategiesRuleConfiguration("uuid", "t_order0", "order_id_0"));
         ruleConfig.getKeyGenerateStrategies().put("t_order1_order_id_1", new ColumnKeyGenerateStrategiesRuleConfiguration("uuid", "t_order1", "order_id_1"));
         ruleConfig.getKeyGenerators().put("uuid", new AlgorithmConfiguration("UUID", new Properties()));
+        return createShardingRule(ruleConfig);
+    }
+    
+    private ShardingRule createPartialShardingRule() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order0", "ds_0.t_order"));
+        return createShardingRule(ruleConfig);
+    }
+    
+    private ShardingRule createShardingRule(final ShardingRuleConfiguration ruleConfig) {
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getWorkerId()).thenReturn(0);
         Map<String, DataSource> dataSources = new LinkedHashMap<>(2, 1F);
