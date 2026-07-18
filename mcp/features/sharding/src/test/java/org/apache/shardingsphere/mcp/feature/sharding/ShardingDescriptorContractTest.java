@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding;
 
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.junit.jupiter.api.Test;

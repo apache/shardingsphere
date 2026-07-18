@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool.descriptor;
+package org.apache.shardingsphere.mcp.api.prompt;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * MCP tool annotations.
+ * SDK-independent MCP prompt descriptor.
  */
+@RequiredArgsConstructor
 @Getter
-public final class MCPToolAnnotations {
+public final class MCPPromptDescriptor {
+    
+    private final String name;
     
     private final String title;
     
-    private final boolean readOnlyHint;
+    private final String description;
     
-    private final boolean destructiveHint;
+    private final List<MCPPromptArgumentDescriptor> arguments;
     
-    private final boolean idempotentHint;
-    
-    private final boolean openWorldHint;
-    
-    @Builder
-    private MCPToolAnnotations(final String title, final boolean readOnlyHint, final boolean destructiveHint, final boolean idempotentHint, final boolean openWorldHint) {
-        this.title = title;
-        this.readOnlyHint = readOnlyHint;
-        this.destructiveHint = destructiveHint;
-        this.idempotentHint = idempotentHint;
-        this.openWorldHint = openWorldHint;
-    }
+    private final Map<String, Object> meta;
 }

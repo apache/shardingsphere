@@ -26,6 +26,8 @@ import java.util.Map;
 /**
  * MCP tool handler.
  *
+ * <p>Implementations must support concurrent invocations and must not retain request context or arguments after {@link #handle} returns.</p>
+ *
  * @param <T> required request context type
  */
 public interface MCPToolHandler<T extends MCPRequestContext> {

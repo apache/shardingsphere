@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;

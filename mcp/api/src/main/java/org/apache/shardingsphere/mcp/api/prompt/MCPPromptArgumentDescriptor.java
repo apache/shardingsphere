@@ -15,36 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource.descriptor;
+package org.apache.shardingsphere.mcp.api.prompt;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
- * MCP resource annotations.
+ * MCP prompt argument descriptor.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MCPResourceAnnotations {
+public final class MCPPromptArgumentDescriptor {
     
-    public static final MCPResourceAnnotations EMPTY = new MCPResourceAnnotations(Collections.emptyList(), null, null);
+    private final String name;
     
-    private final List<String> audience;
+    private final String title;
     
-    private final Double priority;
+    private final String description;
     
-    private final String lastModified;
-    
-    /**
-     * Judge whether annotations are empty.
-     *
-     * @return true if annotations are empty
-     */
-    public boolean isEmpty() {
-        return audience.isEmpty() && null == priority && Strings.isNullOrEmpty(lastModified);
-    }
+    private final boolean required;
 }

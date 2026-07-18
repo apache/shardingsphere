@@ -15,42 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource.descriptor;
+package org.apache.shardingsphere.mcp.api.resource;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * MCP resource descriptor.
- *
- * <p>The URI template is the canonical resource identifier. A fixed resource URI is a URI template without variables.</p>
+ * SDK-independent MCP resource annotations.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MCPResourceDescriptor {
+public final class MCPResourceAnnotations {
     
-    private final String uriTemplate;
+    public static final MCPResourceAnnotations EMPTY = new MCPResourceAnnotations(Collections.emptyList(), null, null);
     
-    private final String name;
+    private final List<String> audience;
     
-    private final String title;
+    private final Double priority;
     
-    private final String description;
-    
-    private final String mimeType;
-    
-    private final MCPResourceAnnotations annotations;
-    
-    private final Map<String, Object> meta;
+    private final String lastModified;
     
     /**
-     * Judge whether the resource URI template contains variables.
+     * Judge whether annotations are empty.
      *
-     * @return true if the resource URI template contains variables
+     * @return true if annotations are empty
      */
-    public boolean isTemplated() {
-        return null != uriTemplate && uriTemplate.contains("{");
+    public boolean isEmpty() {
+        return audience.isEmpty() && null == priority && Strings.isNullOrEmpty(lastModified);
     }
 }

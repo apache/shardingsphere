@@ -34,7 +34,7 @@ Recommended path for a new feature:
 5. Implement `MCPHandlerProvider`.
 6. Return the feature's handlers from `getToolHandlers()` and `getResourceHandlers()`.
 7. If the feature owns workflow definitions, implement `MCPWorkflowDefinitionProvider` on the same provider.
-8. Register `org.apache.shardingsphere.mcp.api.MCPHandlerProvider` under `src/main/resources/META-INF/services/`.
+8. Register `org.apache.shardingsphere.mcp.spi.MCPHandlerProvider` under `src/main/resources/META-INF/services/`.
 9. Add descriptors under `META-INF/shardingsphere-mcp/mcp-descriptors`.
 
 If the feature should be shipped as an official default capability:

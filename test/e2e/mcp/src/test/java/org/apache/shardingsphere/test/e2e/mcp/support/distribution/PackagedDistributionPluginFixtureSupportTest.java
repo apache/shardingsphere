@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
 import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -61,7 +61,7 @@ class PackagedDistributionPluginFixtureSupportTest {
             JarEntry actualDescriptorDirectory = jarFile.getJarEntry(DESCRIPTOR_DIRECTORY + "/");
             assertNotNull(actualDescriptorDirectory);
             assertTrue(actualDescriptorDirectory.isDirectory());
-            assertNotNull(jarFile.getJarEntry("META-INF/services/org.apache.shardingsphere.mcp.api.MCPHandlerProvider"));
+            assertNotNull(jarFile.getJarEntry("META-INF/services/org.apache.shardingsphere.mcp.spi.MCPHandlerProvider"));
             assertNotNull(jarFile.getJarEntry("org/apache/shardingsphere/test/e2e/mcp/support/fixture/plugin/PluginFixtureHandlerProvider.class"));
             assertThat(descriptorResources.toList(), hasItem(DESCRIPTOR_ENTRY));
             try {
