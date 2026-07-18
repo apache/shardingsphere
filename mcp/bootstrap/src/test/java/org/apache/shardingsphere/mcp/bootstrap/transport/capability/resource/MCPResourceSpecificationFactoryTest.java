@@ -191,7 +191,7 @@ class MCPResourceSpecificationFactoryTest {
         sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.provide(anyString())).thenReturn(Optional.empty());
-        return new MCPRuntimeContext(sessionManager, databaseCapabilityProvider, MCPTransportType.STREAMABLE_HTTP);
+        return new MCPRuntimeContext(sessionManager, databaseCapabilityProvider, MCPTransportType.HTTP);
     }
     
     private McpSyncServerExchange createExchange() {

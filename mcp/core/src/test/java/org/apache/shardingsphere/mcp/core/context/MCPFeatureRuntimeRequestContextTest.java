@@ -36,7 +36,7 @@ class MCPFeatureRuntimeRequestContextTest {
     void assertSessionIdentity() {
         MCPSessionIdentity sessionIdentity = new MCPSessionIdentity("session-1", "subject", "gateway", Map.of("cluster", "demo"));
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()),
-                new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.STREAMABLE_HTTP);
+                new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.HTTP);
         assertThat(new MCPFeatureRuntimeRequestContext(runtimeContext, sessionIdentity).getSessionIdentity(), is(sessionIdentity));
     }
     
@@ -44,7 +44,7 @@ class MCPFeatureRuntimeRequestContextTest {
     void assertFindRuntimeDatabaseConfiguration() {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig)),
-                new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.STREAMABLE_HTTP);
+                new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.HTTP);
         MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         assertThat(requestContext.findRuntimeDatabaseConfiguration("logic_db"), is(Optional.of(runtimeDatabaseConfig)));
     }
@@ -52,7 +52,7 @@ class MCPFeatureRuntimeRequestContextTest {
     @Test
     void assertFindMissingRuntimeDatabaseConfiguration() {
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()),
-                new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.STREAMABLE_HTTP);
+                new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.HTTP);
         MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         assertThat(requestContext.findRuntimeDatabaseConfiguration("missing_db"), is(Optional.empty()));
     }

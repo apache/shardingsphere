@@ -183,7 +183,7 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     
     private String createConfigurationContent(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         RuntimeTransport transport = getTransport();
-        MCPTransportType transportType = RuntimeTransport.HTTP == transport ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO;
+        MCPTransportType transportType = RuntimeTransport.HTTP == transport ? MCPTransportType.HTTP : MCPTransportType.STDIO;
         return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(
                 new MCPLaunchConfiguration(transportType, createHttpTransportConfiguration(), runtimeDatabases)));
     }

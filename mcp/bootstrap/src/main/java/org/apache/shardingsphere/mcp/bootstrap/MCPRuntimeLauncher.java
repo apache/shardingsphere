@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * MCP Server launcher.
@@ -73,15 +74,15 @@ public final class MCPRuntimeLauncher {
         String endpoint = String.format("http://%s:%d%s", config.getHttpTransport().getBindHost(), server.getLocalPort(), config.getHttpTransport().getEndpointPath());
         SessionAttributionResolver sessionAttributionResolver = new SessionAttributionResolver(config.getHttpTransport().getSessionAttributionSource());
         return String.format("ShardingSphere MCP Server started, transport=%s, config=%s, databases=%d, endpoint=%s, session_attribution=%s, logs=%s.",
-                MCPTransportType.STREAMABLE_HTTP.getValue(), configPath, config.getDatabases().size(), endpoint, sessionAttributionResolver.getSummary(), LOG_PATH);
+                config.getTransportType().name().toLowerCase(Locale.ENGLISH), configPath, config.getDatabases().size(), endpoint, sessionAttributionResolver.getSummary(), LOG_PATH);
     }
     
     private String createStdioStartupLogMessage(final MCPLaunchConfiguration config) {
         return String.format("ShardingSphere MCP Server started, transport=%s, config=%s, databases=%d, logs=%s. Stdout is reserved for MCP protocol frames.",
-                MCPTransportType.STDIO.getValue(), configPath, config.getDatabases().size(), LOG_PATH);
+                config.getTransportType().name().toLowerCase(Locale.ENGLISH), configPath, config.getDatabases().size(), LOG_PATH);
     }
     
     private boolean isHttpTransport(final MCPLaunchConfiguration config) {
-        return MCPTransportType.STREAMABLE_HTTP == config.getTransportType();
+        return MCPTransportType.HTTP == config.getTransportType();
     }
 }

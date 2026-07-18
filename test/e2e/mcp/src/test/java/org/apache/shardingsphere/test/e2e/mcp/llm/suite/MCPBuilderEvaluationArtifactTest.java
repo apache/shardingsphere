@@ -85,7 +85,7 @@ final class MCPBuilderEvaluationArtifactTest {
             "plan_id",
             "next_actions",
             "transport.type",
-            "STREAMABLE_HTTP",
+            "HTTP",
             "STDIO",
             "Origin",
             "metadata",

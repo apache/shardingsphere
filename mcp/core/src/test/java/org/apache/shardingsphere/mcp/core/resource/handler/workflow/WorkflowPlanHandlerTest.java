@@ -44,7 +44,7 @@ class WorkflowPlanHandlerTest {
     void assertHandle() {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
         sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.STREAMABLE_HTTP);
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.HTTP);
         runtimeContext.getWorkflowSessionContext("session-1").save(createSnapshot());
         MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, sessionManager.getRequiredSessionIdentity("session-1"));
         Map<String, Object> actual = new WorkflowPlanHandler().handle(requestContext, new MCPUriVariables(Map.of("plan_id", "plan-1"))).toPayload();

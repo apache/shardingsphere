@@ -17,19 +17,10 @@
 
 package org.apache.shardingsphere.mcp.api.transport;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * MCP transport type supported by ShardingSphere MCP runtime.
  */
-@RequiredArgsConstructor
-@Getter
 public enum MCPTransportType {
     
-    STREAMABLE_HTTP("http"),
-    
-    STDIO("stdio");
-    
-    private final String value;
+    HTTP, STDIO
 }

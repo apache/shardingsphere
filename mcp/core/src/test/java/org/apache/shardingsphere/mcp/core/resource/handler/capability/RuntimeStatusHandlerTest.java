@@ -38,7 +38,7 @@ class RuntimeStatusHandlerTest {
     @Test
     void assertHandle() {
         MCPFeatureRuntimeRequestContext requestContext =
-                new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), MCPTransportType.STREAMABLE_HTTP),
+                new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), MCPTransportType.HTTP),
                         new MCPSessionIdentity("session-1", "", "", Map.of()));
         Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
         assertThat(actual.get("response_mode"), is("runtime"));
@@ -72,7 +72,7 @@ class RuntimeStatusHandlerTest {
     
     @Test
     void assertHandleWithEmptyRuntimeDatabase() {
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(List.of(), MCPTransportType.STREAMABLE_HTTP),
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(List.of(), MCPTransportType.HTTP),
                 new MCPSessionIdentity("session-1", "", "", Map.of()));
         Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
         assertThat(actual.get("server_status"), is("configuration_required"));

@@ -146,6 +146,6 @@ abstract class AbstractHttpProtocolOnlyE2ETest {
     }
     
     private MCPRuntimeContext createRuntimeContext() {
-        return new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), MCPTransportType.STREAMABLE_HTTP);
+        return new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()), MCPTransportType.HTTP);
     }
 }

@@ -168,7 +168,7 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
     @Test
     void assertCreateToolSpecificationsRejectInvalidInputSchema() {
         SyncToolSpecification actualSpecification = findToolSpecification(
-                new MCPToolSpecificationFactory(createRuntimeContext(MCPTransportType.STREAMABLE_HTTP)).createToolSpecifications(), "database_gateway_search_metadata");
+                new MCPToolSpecificationFactory(createRuntimeContext(MCPTransportType.HTTP)).createToolSpecifications(), "database_gateway_search_metadata");
         CallToolResult actual = callTool(actualSpecification, createExchange(), "database_gateway_search_metadata", Map.of("query", "order", "object_types", List.of("TABLE")));
         Map<String, Object> actualPayload = getTextContentPayload(actual);
         Map<?, ?> actualRecovery = (Map<?, ?>) actualPayload.get("recovery");
@@ -186,7 +186,7 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createStrictToolDescriptor("database_gateway_search_metadata"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), new MCPMapPayload(Map.of("count", 1)));
-            CallToolResult actual = callTool(createToolSpecification(createRuntimeContext(MCPTransportType.STREAMABLE_HTTP)), createExchange(), "database_gateway_search_metadata", Map.of());
+            CallToolResult actual = callTool(createToolSpecification(createRuntimeContext(MCPTransportType.HTTP)), createExchange(), "database_gateway_search_metadata", Map.of());
             Map<String, Object> actualPayload = getTextContentPayload(actual);
             assertTrue(String.valueOf(actualPayload.get("message")).contains("database_gateway_search_metadata"));
             assertNull(actual.structuredContent());

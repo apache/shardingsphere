@@ -192,7 +192,7 @@
   </qa_pair>
   <qa_pair id="q10" category="transport_security" read_only="true">
     <question>
-      During Streamable HTTP deployment, an operator sets transport.type to STREAMABLE_HTTP and bindHost to 0.0.0.0 for a trusted gateway.
+      During Streamable HTTP deployment, an operator sets transport.type to HTTP and bindHost to 0.0.0.0 for a trusted gateway.
       Explain what built-in authorization exists, how present Origin headers are treated, and where authentication must happen.
     </question>
     <answer>no_builtin_auth|origin_403|gateway_auth_boundary</answer>

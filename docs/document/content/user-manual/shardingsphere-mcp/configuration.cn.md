@@ -14,7 +14,7 @@ HTTP 示例：
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     bindHost: 127.0.0.1
     port: 18088
@@ -30,8 +30,8 @@ transport:
 
 | 配置项                           | 说明                                                                                              |
 |-------------------------------|-------------------------------------------------------------------------------------------------|
-| `transport.type`              | 传输方式，支持 `STREAMABLE_HTTP` 和 `STDIO`。                                                            |
-| `transport.http`              | HTTP 传输配置，只在 `transport.type` 为 `STREAMABLE_HTTP` 时生效。                                          |
+| `transport.type`              | 传输方式，支持 `HTTP` 和 `STDIO`。                                                                       |
+| `transport.http`              | HTTP 传输配置，只在 `transport.type` 为 `HTTP` 时生效。                                                     |
 | `transport.http.bindHost`     | HTTP 监听地址，默认值为 `127.0.0.1`。`127.0.0.1`、`localhost`、`::1` 只允许本机访问；`0.0.0.0` 或指定内网 IP 允许对应网络接口访问。 |
 | `transport.http.port`         | HTTP 监听端口，默认值为 `18088`。                                                                         |
 | `transport.http.endpointPath` | HTTP 端点路径，默认值为 `/mcp`。                                                                          |
@@ -43,7 +43,7 @@ transport:
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     sessionAttributionSource:
       subjectHeader: X-ShardingSphere-MCP-Subject

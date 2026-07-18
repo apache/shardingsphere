@@ -52,7 +52,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     private YamlMCPTransportConfiguration createYamlTransportConfiguration(final MCPLaunchConfiguration data) {
         YamlMCPTransportConfiguration result = new YamlMCPTransportConfiguration();
         result.setType(data.getTransportType());
-        if (MCPTransportType.STREAMABLE_HTTP == data.getTransportType()) {
+        if (MCPTransportType.HTTP == data.getTransportType()) {
             result.setHttp(httpTransportConfigSwapper.swapToYamlConfiguration(data.getHttpTransport()));
         }
         return result;

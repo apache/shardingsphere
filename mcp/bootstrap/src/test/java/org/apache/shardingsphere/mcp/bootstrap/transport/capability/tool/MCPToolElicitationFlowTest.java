@@ -204,7 +204,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createPlanningToolDescriptor(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("field_1", "foo_display")));
-            CallToolResult actual = callTool(createToolSpecification(MCPTransportType.STREAMABLE_HTTP), exchange, toolName, Map.of());
+            CallToolResult actual = callTool(createToolSpecification(MCPTransportType.HTTP), exchange, toolName, Map.of());
             assertStructuredFallback(actual, "remote_identity_required", true, false, "structured_fallback");
             verify(exchange, never()).createElicitation(any());
         }
@@ -250,7 +250,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptor("database_gateway_search_metadata"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of()));
-            CallToolResult actual = callTool(createToolSpecification(createRuntimeContext(MCPTransportType.STREAMABLE_HTTP)), exchange, "database_gateway_search_metadata", Map.of());
+            CallToolResult actual = callTool(createToolSpecification(createRuntimeContext(MCPTransportType.HTTP)), exchange, "database_gateway_search_metadata", Map.of());
             assertThat(actual.structuredContent(), is(expectedPayload));
             verify(exchange, never()).createElicitation(any());
         }
@@ -264,7 +264,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptor("fixture_ping"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of()));
-            CallToolResult actual = callTool(createToolSpecification(createRuntimeContext(MCPTransportType.STREAMABLE_HTTP)), exchange, "fixture_ping", Map.of());
+            CallToolResult actual = callTool(createToolSpecification(createRuntimeContext(MCPTransportType.HTTP)), exchange, "fixture_ping", Map.of());
             assertThat(actual.structuredContent(), is(expectedPayload));
             verify(exchange, never()).createElicitation(any());
         }
