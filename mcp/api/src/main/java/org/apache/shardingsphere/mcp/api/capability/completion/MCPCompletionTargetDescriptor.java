@@ -15,31 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool;
+package org.apache.shardingsphere.mcp.api.capability.completion;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
- * SDK-independent MCP tool descriptor.
+ * MCP completion target descriptor.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MCPToolDescriptor {
+public final class MCPCompletionTargetDescriptor {
     
-    private final String name;
+    private final String referenceType;
     
-    private final String title;
+    private final String reference;
     
-    private final String description;
+    private final Collection<String> arguments;
     
-    private final Map<String, Object> inputSchema;
-    
-    private final Map<String, Object> outputSchema;
-    
-    private final MCPToolAnnotations annotations;
+    private final int maxValues;
     
     private final Map<String, Object> meta;
 }

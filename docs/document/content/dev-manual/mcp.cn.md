@@ -12,8 +12,8 @@ chapter = true
 
 MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 
-- `mcp/api`：public tool/resource handler 契约、descriptor 类型、协议 response 和 MCP 协议异常。
-- `mcp/support`：database metadata、execution、capability、workflow context、模型、facade、SPI 和复用 helper。
+- `mcp/api`：public MCP capability 契约、descriptor 类型、协议 response、MCP 协议异常和 SPI 入口。
+- `mcp/support`：database metadata、execution、capability、workflow context、模型、facade、database/workflow SPI 和复用 helper。
 - `mcp/features/encrypt`：Encrypt MCP feature。
 - `mcp/features/mask`：Mask MCP feature。
 - `mcp/core`：handler 发现、registry、request context、session、SQL execution trace、metadata discovery 和 runtime context。
@@ -22,6 +22,9 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 - `test/e2e/mcp`：端到端契约验证。
 
 `mcp/bootstrap` 只负责发布聚合后的协议表面，不应硬编码具体 feature 业务。
+
+公开的 server capability 契约按 `org.apache.shardingsphere.mcp.api.capability.<capability>` 组织，ServiceLoader 入口接口位于
+`org.apache.shardingsphere.mcp.spi`。Request context、session、transport、payload 和 exception 是跨 capability 或基础协议契约，不归入 capability 包。
 
 ## 新增 Feature Plugin
 

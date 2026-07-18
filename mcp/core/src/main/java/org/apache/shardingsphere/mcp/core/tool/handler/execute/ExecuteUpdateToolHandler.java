@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecution
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;

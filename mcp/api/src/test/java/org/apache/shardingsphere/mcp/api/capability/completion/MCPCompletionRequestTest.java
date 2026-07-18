@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.completion;
+package org.apache.shardingsphere.mcp.api.capability.completion;
 
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.payload.MCPDatabaseCapabilityPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 
 /**
  * Handler for database capabilities resource URI.

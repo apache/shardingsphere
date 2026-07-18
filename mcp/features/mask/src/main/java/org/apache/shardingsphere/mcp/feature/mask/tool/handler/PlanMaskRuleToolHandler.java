@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;

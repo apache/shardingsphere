@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow;
 
-import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
 import org.junit.jupiter.api.Test;

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.core.tool.handler;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 
 /**
  * MCP tool definition.

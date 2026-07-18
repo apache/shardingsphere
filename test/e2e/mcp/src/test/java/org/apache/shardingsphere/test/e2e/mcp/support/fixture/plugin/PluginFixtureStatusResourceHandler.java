@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 

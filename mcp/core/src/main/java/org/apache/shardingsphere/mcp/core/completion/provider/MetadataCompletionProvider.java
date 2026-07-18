@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
+import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;

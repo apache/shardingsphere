@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.prompt.MCPPromptArgumentDescriptor;
-import org.apache.shardingsphere.mcp.api.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.resource.uri;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.ArrayList;

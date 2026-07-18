@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.resource;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
 
 import java.util.LinkedList;
 import java.util.List;

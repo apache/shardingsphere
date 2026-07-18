@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.completion;
+package org.apache.shardingsphere.mcp.api.capability.completion;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.core.resource.handler.workflow;
 
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;

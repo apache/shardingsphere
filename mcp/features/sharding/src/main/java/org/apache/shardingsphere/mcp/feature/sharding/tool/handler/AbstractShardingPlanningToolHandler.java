@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.sharding.tool.handler;
 
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;

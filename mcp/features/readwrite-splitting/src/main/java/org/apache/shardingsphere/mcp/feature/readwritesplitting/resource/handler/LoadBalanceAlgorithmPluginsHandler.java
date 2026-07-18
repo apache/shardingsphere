@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;

@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMe
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource;
+package org.apache.shardingsphere.mcp.api.capability.tool;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 
+import java.util.Map;
+
 /**
- * MCP resource handler.
+ * MCP tool handler.
  *
- * <p>Implementations must support concurrent invocations and must not retain request context or URI variables after {@link #handle} returns.</p>
+ * <p>Implementations must support concurrent invocations and must not retain request context or arguments after {@link #handle} returns.</p>
  *
  * @param <T> required request context type
  */
-public interface MCPResourceHandler<T extends MCPRequestContext> {
+public interface MCPToolHandler<T extends MCPRequestContext> {
     
     /**
      * Get required request context type.
@@ -38,21 +40,19 @@ public interface MCPResourceHandler<T extends MCPRequestContext> {
     Class<T> getContextType();
     
     /**
-     * Get canonical resource URI template.
+     * Get canonical tool name.
      *
-     * <p>A fixed resource URI is represented as a URI template without variables.</p>
-     *
-     * @return canonical resource URI template
+     * @return canonical tool name
      */
-    String getResourceUriTemplate();
+    String getToolName();
     
     /**
-     * Handle one resource request.
+     * Handle one tool call.
      *
      * @param context request context
-     * @param uriVariables URI variables
-     * @return successful resource payload
+     * @param arguments tool arguments
+     * @return successful tool payload
      * @throws ShardingSphereMCPException controlled failure to be converted by runtime
      */
-    MCPSuccessPayload handle(T context, MCPUriVariables uriVariables);
+    MCPSuccessPayload handle(T context, Map<String, Object> arguments);
 }

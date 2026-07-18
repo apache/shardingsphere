@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;

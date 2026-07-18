@@ -12,8 +12,8 @@ For installation and usage, see the [User Manual](../../user-manual/shardingsphe
 
 The MCP path is organized as `api + support + features + core + bootstrap`:
 
-- `mcp/api`: public tool/resource handler contracts, descriptor types, protocol responses, and MCP protocol exceptions.
-- `mcp/support`: database metadata, execution, capability, workflow contexts, models, facades, SPI, and reusable helpers.
+- `mcp/api`: public MCP capability contracts, descriptor types, protocol responses, MCP protocol exceptions, and SPI entry points.
+- `mcp/support`: database metadata, execution, capability, workflow contexts, models, facades, database/workflow SPIs, and reusable helpers.
 - `mcp/features/encrypt`: Encrypt MCP feature.
 - `mcp/features/mask`: Mask MCP feature.
 - `mcp/core`: handler discovery, registry, request context, session, SQL execution trace, metadata discovery, and runtime context.
@@ -22,6 +22,9 @@ The MCP path is organized as `api + support + features + core + bootstrap`:
 - `test/e2e/mcp`: end-to-end contract validation.
 
 `mcp/bootstrap` only publishes the aggregated protocol surface. It should not hard-code concrete feature business logic.
+
+Public server capability contracts are organized under `org.apache.shardingsphere.mcp.api.capability.<capability>`, while ServiceLoader entry interfaces live in
+`org.apache.shardingsphere.mcp.spi`. Request contexts, sessions, transports, payloads, and exceptions are cross-capability or base-protocol contracts and stay outside capability packages.
 
 ## Add a Feature Plugin
 
