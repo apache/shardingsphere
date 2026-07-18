@@ -48,7 +48,7 @@ class PackagedDistributionTestSupportTest {
     
     private static final String HTTP_CONFIGURATION = """
             transport:
-              type: STREAMABLE_HTTP
+              type: HTTP
             runtimeDatabases:
               orders:
                 jdbcUrl: "jdbc:mysql://127.0.0.1:3306/orders"
@@ -186,7 +186,7 @@ class PackagedDistributionTestSupportTest {
     
     private static Stream<Arguments> transportCases() {
         return Stream.of(
-                Arguments.of("http transport", RuntimeTransport.HTTP, MCPTransportType.STREAMABLE_HTTP),
+                Arguments.of("http transport", RuntimeTransport.HTTP, MCPTransportType.HTTP),
                 Arguments.of("stdio transport", RuntimeTransport.STDIO, MCPTransportType.STDIO));
     }
     

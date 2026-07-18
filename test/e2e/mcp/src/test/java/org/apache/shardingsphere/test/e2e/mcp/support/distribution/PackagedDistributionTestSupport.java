@@ -290,7 +290,7 @@ public final class PackagedDistributionTestSupport {
     }
     
     private static MCPTransportType resolveTransportType(final RuntimeTransport transport) {
-        return RuntimeTransport.HTTP == transport ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO;
+        return RuntimeTransport.HTTP == transport ? MCPTransportType.HTTP : MCPTransportType.STDIO;
     }
     
     public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport, int httpPort) {

@@ -57,7 +57,7 @@ class MCPRuntimeContextTest {
     }
     
     private MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager) {
-        return new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.STREAMABLE_HTTP);
+        return new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.HTTP);
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId) {

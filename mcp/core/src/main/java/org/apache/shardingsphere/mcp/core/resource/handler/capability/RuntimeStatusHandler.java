@@ -35,6 +35,7 @@ import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -60,13 +61,14 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPFeature
         List<RuntimeDatabaseProfile> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
         boolean hasConfiguredDatabase = !databases.isEmpty();
         MCPTransportType activeTransport = handlerContext.getActiveTransport();
+        String activeTransportName = activeTransport.name().toLowerCase(Locale.ENGLISH);
         Map<String, Object> result = new LinkedHashMap<>(15, 1F);
         result.put("response_mode", MCPResponseMode.RUNTIME);
         result.put(MCPPayloadFieldNames.SUMMARY, createSummary(hasConfiguredDatabase, databases.size()));
         result.put("server_status", hasConfiguredDatabase ? "ready" : "configuration_required");
         result.put("status", hasConfiguredDatabase ? "available" : "configuration_required");
-        result.put("transport", activeTransport.getValue());
-        result.put("active_transport", activeTransport.getValue());
+        result.put("transport", activeTransportName);
+        result.put("active_transport", activeTransportName);
         result.put("transport_security_summary", createTransportSecuritySummary(activeTransport));
         result.put("configured_database_count", databases.size());
         result.put("databases", databases.stream().map(each -> createDatabaseStatus(handlerContext, each)).toList());
@@ -87,9 +89,9 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPFeature
     
     private Map<String, Object> createTransportSecuritySummary(final MCPTransportType activeTransport) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("transport", activeTransport.getValue());
-        result.put("authentication", MCPTransportType.STREAMABLE_HTTP == activeTransport ? "not_enabled_by_mcp_transport" : "local_client_process");
-        result.put("recommended_exposure", MCPTransportType.STREAMABLE_HTTP == activeTransport ? "loopback_or_trusted_gateway" : "local_stdio_session");
+        result.put("transport", activeTransport.name().toLowerCase(Locale.ENGLISH));
+        result.put("authentication", MCPTransportType.HTTP == activeTransport ? "not_enabled_by_mcp_transport" : "local_client_process");
+        result.put("recommended_exposure", MCPTransportType.HTTP == activeTransport ? "loopback_or_trusted_gateway" : "local_stdio_session");
         result.put("model_action", "Do not request or echo JDBC URLs, credentials, raw environment variables, or stack traces.");
         return result;
     }

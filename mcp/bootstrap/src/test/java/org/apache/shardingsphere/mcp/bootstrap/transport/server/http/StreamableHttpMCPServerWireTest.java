@@ -76,7 +76,7 @@ class StreamableHttpMCPServerWireTest {
     
     private StreamableHttpMCPServer createServer() {
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), new MCPDatabaseCapabilityProvider(Collections.emptyMap()),
-                MCPTransportType.STREAMABLE_HTTP);
+                MCPTransportType.HTTP);
         return new StreamableHttpMCPServer(new HttpTransportConfiguration("127.0.0.1", 0, "/mcp"), runtimeContext);
     }
     

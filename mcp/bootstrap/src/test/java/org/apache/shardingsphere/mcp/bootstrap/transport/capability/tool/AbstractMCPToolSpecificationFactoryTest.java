@@ -187,7 +187,7 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
-            return callTool(createToolSpecification(createRuntimeContext(MCPTransportType.STREAMABLE_HTTP)), createExchange(), toolName, Map.of());
+            return callTool(createToolSpecification(createRuntimeContext(MCPTransportType.HTTP)), createExchange(), toolName, Map.of());
         }
     }
     

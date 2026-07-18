@@ -37,7 +37,7 @@ When HTTP mode runs in a container, `bindHost` should bind to a network interfac
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     bindHost: 0.0.0.0
     port: 18088
@@ -104,7 +104,7 @@ ShardingSphere-MCP configuration example:
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     bindHost: 127.0.0.1
     port: 18088

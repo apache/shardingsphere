@@ -42,7 +42,7 @@ public final class MCPLaunchConfigurationValidator implements ConstraintValidato
             return true;
         }
         if (MCPTransportType.STDIO == value.getType() && null != value.getHttp()) {
-            addViolation(context, "transport.http is only valid when `transport.type` is STREAMABLE_HTTP.");
+            addViolation(context, "transport.http is only valid when `transport.type` is HTTP.");
             return false;
         }
         return true;

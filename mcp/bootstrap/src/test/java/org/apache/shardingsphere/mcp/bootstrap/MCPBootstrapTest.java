@@ -90,6 +90,6 @@ class MCPBootstrapTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration() {
-        return new MCPLaunchConfiguration(MCPTransportType.STREAMABLE_HTTP, new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), Collections.emptyMap());
+        return new MCPLaunchConfiguration(MCPTransportType.HTTP, new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), Collections.emptyMap());
     }
 }

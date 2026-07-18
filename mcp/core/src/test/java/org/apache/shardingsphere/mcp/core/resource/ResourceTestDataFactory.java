@@ -132,7 +132,7 @@ public final class ResourceTestDataFactory {
      * @return runtime context
      */
     public static MCPRuntimeContext createRuntimeContext(final List<DatabaseMetadataFixture> databaseMetadataList) {
-        return createRuntimeContext(databaseMetadataList, MCPTransportType.STREAMABLE_HTTP);
+        return createRuntimeContext(databaseMetadataList, MCPTransportType.HTTP);
     }
     
     /**
