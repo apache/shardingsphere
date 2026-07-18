@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

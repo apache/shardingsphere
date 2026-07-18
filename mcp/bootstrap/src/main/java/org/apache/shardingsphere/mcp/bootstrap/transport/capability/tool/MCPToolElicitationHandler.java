@@ -22,7 +22,7 @@ import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;

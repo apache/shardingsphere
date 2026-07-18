@@ -15,40 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource;
+package org.apache.shardingsphere.mcp.api.capability.resource;
 
+import com.google.common.base.Strings;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * MCP URI variables.
+ * SDK-independent MCP resource annotations.
  */
 @RequiredArgsConstructor
-public final class MCPUriVariables {
+@Getter
+public final class MCPResourceAnnotations {
     
-    private final Map<String, String> variables;
+    public static final MCPResourceAnnotations EMPTY = new MCPResourceAnnotations(Collections.emptyList(), null, null);
     
-    /**
-     * Whether to contains variable.
-     *
-     * @param variableName variable name
-     * @return contains variable or not
-     */
-    public boolean containsVariable(final String variableName) {
-        return variables.containsKey(variableName);
-    }
+    private final List<String> audience;
+    
+    private final Double priority;
+    
+    private final String lastModified;
     
     /**
-     * Get variable value.
+     * Judge whether annotations are empty.
      *
-     * @param variableName variable name
-     * @return variable value
+     * @return true if annotations are empty
      */
-    public String getValue(final String variableName) {
-        String result = variables.get(variableName);
-        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(String.format("Missing URI variable `%s`.", variableName)));
-        return result;
+    public boolean isEmpty() {
+        return audience.isEmpty() && null == priority && Strings.isNullOrEmpty(lastModified);
     }
 }

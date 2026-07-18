@@ -15,42 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource;
+package org.apache.shardingsphere.mcp.api.capability.resource;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Map;
 
 /**
- * SDK-independent MCP resource descriptor.
- *
- * <p>The URI template is the canonical resource identifier. A fixed resource URI is a URI template without variables.</p>
+ * MCP URI variables.
  */
 @RequiredArgsConstructor
-@Getter
-public final class MCPResourceDescriptor {
+public final class MCPUriVariables {
     
-    private final String uriTemplate;
-    
-    private final String name;
-    
-    private final String title;
-    
-    private final String description;
-    
-    private final String mimeType;
-    
-    private final MCPResourceAnnotations annotations;
-    
-    private final Map<String, Object> meta;
+    private final Map<String, String> variables;
     
     /**
-     * Judge whether the resource URI template contains variables.
+     * Whether to contains variable.
      *
-     * @return true if the resource URI template contains variables
+     * @param variableName variable name
+     * @return contains variable or not
      */
-    public boolean isTemplated() {
-        return null != uriTemplate && uriTemplate.contains("{");
+    public boolean containsVariable(final String variableName) {
+        return variables.containsKey(variableName);
+    }
+    
+    /**
+     * Get variable value.
+     *
+     * @param variableName variable name
+     * @return variable value
+     */
+    public String getValue(final String variableName) {
+        String result = variables.get(variableName);
+        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(String.format("Missing URI variable `%s`.", variableName)));
+        return result;
     }
 }

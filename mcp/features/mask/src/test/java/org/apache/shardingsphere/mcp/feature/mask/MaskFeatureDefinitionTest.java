@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.mask;
 
-import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;

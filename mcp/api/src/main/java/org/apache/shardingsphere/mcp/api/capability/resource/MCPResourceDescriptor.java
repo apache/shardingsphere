@@ -15,33 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool;
+package org.apache.shardingsphere.mcp.api.capability.resource;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
 
 /**
- * SDK-independent MCP tool annotations.
+ * SDK-independent MCP resource descriptor.
+ *
+ * <p>The URI template is the canonical resource identifier. A fixed resource URI is a URI template without variables.</p>
  */
+@RequiredArgsConstructor
 @Getter
-public final class MCPToolAnnotations {
+public final class MCPResourceDescriptor {
+    
+    private final String uriTemplate;
+    
+    private final String name;
     
     private final String title;
     
-    private final boolean readOnlyHint;
+    private final String description;
     
-    private final boolean destructiveHint;
+    private final String mimeType;
     
-    private final boolean idempotentHint;
+    private final MCPResourceAnnotations annotations;
     
-    private final boolean openWorldHint;
+    private final Map<String, Object> meta;
     
-    @Builder
-    private MCPToolAnnotations(final String title, final boolean readOnlyHint, final boolean destructiveHint, final boolean idempotentHint, final boolean openWorldHint) {
-        this.title = title;
-        this.readOnlyHint = readOnlyHint;
-        this.destructiveHint = destructiveHint;
-        this.idempotentHint = idempotentHint;
-        this.openWorldHint = openWorldHint;
+    /**
+     * Judge whether the resource URI template contains variables.
+     *
+     * @return true if the resource URI template contains variables
+     */
+    public boolean isTemplated() {
+        return null != uriTemplate && uriTemplate.contains("{");
     }
 }

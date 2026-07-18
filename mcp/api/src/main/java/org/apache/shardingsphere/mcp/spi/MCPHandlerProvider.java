@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.spi;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 
 import java.util.Collection;
 

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.core.resource.handler;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 
 /**

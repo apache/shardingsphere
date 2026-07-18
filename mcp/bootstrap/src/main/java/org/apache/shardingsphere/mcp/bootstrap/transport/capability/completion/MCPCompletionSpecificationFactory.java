@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactor
 import org.apache.shardingsphere.mcp.core.completion.MCPCompletionResult;
 import org.apache.shardingsphere.mcp.core.completion.MCPCompletionService;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
 import java.util.Collection;

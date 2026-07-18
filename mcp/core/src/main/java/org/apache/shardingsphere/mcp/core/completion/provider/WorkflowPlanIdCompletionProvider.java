@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.core.completion.provider;
 
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
+import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;

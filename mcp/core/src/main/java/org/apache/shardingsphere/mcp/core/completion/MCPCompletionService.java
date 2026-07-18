@@ -23,11 +23,11 @@ import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContex
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
+import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPCompletionAction;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;

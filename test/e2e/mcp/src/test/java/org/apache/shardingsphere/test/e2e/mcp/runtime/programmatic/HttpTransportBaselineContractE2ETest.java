@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;

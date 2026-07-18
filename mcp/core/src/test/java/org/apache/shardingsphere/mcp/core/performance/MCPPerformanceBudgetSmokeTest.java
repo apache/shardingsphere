@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.performance;
 
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.core.completion.provider.WorkflowPlanIdCompletionProvider;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -27,8 +27,8 @@ import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.Reque
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionStore;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;

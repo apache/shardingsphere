@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;

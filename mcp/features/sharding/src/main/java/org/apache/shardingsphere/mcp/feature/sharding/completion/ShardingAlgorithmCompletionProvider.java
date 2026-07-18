@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mcp.feature.sharding.completion;
 
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
+import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.List;

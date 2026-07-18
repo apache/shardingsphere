@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.handler.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteExplainToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteQueryToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteUpdateToolHandler;

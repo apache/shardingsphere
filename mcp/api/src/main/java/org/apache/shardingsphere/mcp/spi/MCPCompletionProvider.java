@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.completion;
+package org.apache.shardingsphere.mcp.spi;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 
 /**
  * MCP completion provider.

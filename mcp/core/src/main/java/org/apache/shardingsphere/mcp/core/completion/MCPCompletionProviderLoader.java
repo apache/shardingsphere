@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.completion;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProvider;
+import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
 import org.apache.shardingsphere.mcp.core.handler.MCPRequestContextTypes;
 
 import java.util.Collection;

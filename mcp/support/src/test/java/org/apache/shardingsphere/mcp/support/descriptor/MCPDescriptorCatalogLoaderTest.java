@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceAnnotations;
-import org.apache.shardingsphere.mcp.api.prompt.MCPPromptArgumentDescriptor;
-import org.apache.shardingsphere.mcp.api.prompt.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

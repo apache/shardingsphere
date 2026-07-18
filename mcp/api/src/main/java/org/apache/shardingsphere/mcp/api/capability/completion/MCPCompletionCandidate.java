@@ -15,36 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource;
+package org.apache.shardingsphere.mcp.api.capability.completion;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
-import java.util.List;
+import java.time.Instant;
+import java.util.Objects;
 
 /**
- * SDK-independent MCP resource annotations.
+ * MCP completion candidate.
  */
-@RequiredArgsConstructor
 @Getter
-public final class MCPResourceAnnotations {
+public final class MCPCompletionCandidate {
     
-    public static final MCPResourceAnnotations EMPTY = new MCPResourceAnnotations(Collections.emptyList(), null, null);
+    private final String value;
     
-    private final List<String> audience;
+    private final String label;
     
-    private final Double priority;
+    private final String source;
     
-    private final String lastModified;
+    private final Instant updateTime;
     
-    /**
-     * Judge whether annotations are empty.
-     *
-     * @return true if annotations are empty
-     */
-    public boolean isEmpty() {
-        return audience.isEmpty() && null == priority && Strings.isNullOrEmpty(lastModified);
+    private final String rankingReason;
+    
+    public MCPCompletionCandidate(final String value, final String label, final String source) {
+        this(value, label, source, null, "");
+    }
+    
+    public MCPCompletionCandidate(final String value, final String label, final String source, final Instant updateTime, final String rankingReason) {
+        this.value = value;
+        this.label = label;
+        this.source = source;
+        this.updateTime = updateTime;
+        this.rankingReason = Objects.toString(rankingReason, "");
     }
 }

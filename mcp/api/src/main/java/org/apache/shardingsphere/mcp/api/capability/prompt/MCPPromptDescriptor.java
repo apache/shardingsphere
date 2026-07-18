@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.descriptor;
+package org.apache.shardingsphere.mcp.api.capability.prompt;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
- * MCP completion target descriptor.
+ * SDK-independent MCP prompt descriptor.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MCPCompletionTargetDescriptor {
+public final class MCPPromptDescriptor {
     
-    private final String referenceType;
+    private final String name;
     
-    private final String reference;
+    private final String title;
     
-    private final Collection<String> arguments;
+    private final String description;
     
-    private final int maxValues;
+    private final List<MCPPromptArgumentDescriptor> arguments;
     
     private final Map<String, Object> meta;
 }

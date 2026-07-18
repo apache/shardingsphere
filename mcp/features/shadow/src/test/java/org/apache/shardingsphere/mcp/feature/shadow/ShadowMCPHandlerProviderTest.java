@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow;
 
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 

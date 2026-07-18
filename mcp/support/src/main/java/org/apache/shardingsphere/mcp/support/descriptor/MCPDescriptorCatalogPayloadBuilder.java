@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.util.Collection;

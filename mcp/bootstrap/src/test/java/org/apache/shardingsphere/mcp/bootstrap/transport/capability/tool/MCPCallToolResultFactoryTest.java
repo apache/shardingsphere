@@ -27,7 +27,7 @@ import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
 import org.apache.shardingsphere.mcp.core.tool.handler.metadata.ValidateRuntimeDatabaseToolHandler;

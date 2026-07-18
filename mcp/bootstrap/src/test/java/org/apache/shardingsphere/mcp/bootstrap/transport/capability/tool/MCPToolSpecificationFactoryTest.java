@@ -24,7 +24,7 @@ import io.modelcontextprotocol.spec.McpSchema.ErrorCodes;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-import org.apache.shardingsphere.mcp.api.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 

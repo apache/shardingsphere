@@ -15,40 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.completion;
+package org.apache.shardingsphere.mcp.api.capability.prompt;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 /**
- * MCP completion provider result.
+ * MCP prompt argument descriptor.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MCPCompletionProviderResult {
+public final class MCPPromptArgumentDescriptor {
     
-    private final Collection<MCPCompletionCandidate> candidates;
+    private final String name;
     
-    private final Map<String, Object> inferredContextArguments;
+    private final String title;
     
-    private final Collection<String> missingContextArguments;
+    private final String description;
     
-    private final String nearestResourceUri;
-    
-    public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates) {
-        this(candidates, Map.of(), List.of(), "");
-    }
-    
-    /**
-     * Create empty completion provider result.
-     *
-     * @return empty completion provider result
-     */
-    public static MCPCompletionProviderResult empty() {
-        return new MCPCompletionProviderResult(List.of());
-    }
+    private final boolean required;
 }

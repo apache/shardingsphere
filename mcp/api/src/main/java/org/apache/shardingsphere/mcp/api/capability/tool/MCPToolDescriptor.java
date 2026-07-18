@@ -15,38 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.completion;
+package org.apache.shardingsphere.mcp.api.capability.tool;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.time.Instant;
-import java.util.Objects;
+import java.util.Map;
 
 /**
- * MCP completion candidate.
+ * SDK-independent MCP tool descriptor.
  */
+@RequiredArgsConstructor
 @Getter
-public final class MCPCompletionCandidate {
+public final class MCPToolDescriptor {
     
-    private final String value;
+    private final String name;
     
-    private final String label;
+    private final String title;
     
-    private final String source;
+    private final String description;
     
-    private final Instant updateTime;
+    private final Map<String, Object> inputSchema;
     
-    private final String rankingReason;
+    private final Map<String, Object> outputSchema;
     
-    public MCPCompletionCandidate(final String value, final String label, final String source) {
-        this(value, label, source, null, "");
-    }
+    private final MCPToolAnnotations annotations;
     
-    public MCPCompletionCandidate(final String value, final String label, final String source, final Instant updateTime, final String rankingReason) {
-        this.value = value;
-        this.label = label;
-        this.source = source;
-        this.updateTime = updateTime;
-        this.rankingReason = Objects.toString(rankingReason, "");
-    }
+    private final Map<String, Object> meta;
 }
