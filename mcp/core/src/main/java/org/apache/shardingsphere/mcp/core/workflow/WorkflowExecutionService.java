@@ -188,7 +188,7 @@ public final class WorkflowExecutionService {
                 result.put("would_apply", false);
                 result.put("preview_artifacts", List.of());
             }
-            result.put("review_summary", "Workflow apply blocked invalid generated artifacts before approval.");
+            result.put(MCPPayloadFieldNames.SUMMARY, "Workflow apply blocked invalid generated artifacts before approval.");
             result.put(MCPPayloadFieldNames.NEXT_ACTIONS,
                     MCPNextActionUtils.ordered(MCPNextActionUtils.stop("Fix generated workflow artifacts, then preview the workflow again.")));
             return result;
@@ -199,7 +199,7 @@ public final class WorkflowExecutionService {
     private Map<String, Object> previewApply(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot) {
         persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PREVIEWED);
         return new WorkflowApplyResponseBuilder().buildPreviewResponse(snapshot,
-                createExecutableArtifacts(snapshot), resolveApplyExecutionMode(snapshot), createArtifactPayload(snapshot));
+                createExecutableArtifacts(snapshot), resolveApplyExecutionMode(snapshot));
     }
     
     private Map<String, Object> createPreviewSuggestedArguments(final WorkflowContextSnapshot snapshot) {
@@ -266,16 +266,15 @@ public final class WorkflowExecutionService {
                                                                            final String executionMode, final WorkflowApplyOutcome applyOutcome) {
         persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         WorkflowPropertySource propertySource = getPropertySource(snapshot);
-        Map<String, Object> secretReferenceSummary = WorkflowArtifactMaskUtils.createSecretReferenceSummary(propertySource);
         String category = WorkflowSecretReferenceUtils.hasMalformedSecretReferences(propertySource)
                 ? MCPDiagnosticCategory.SECRET_REFERENCE_MALFORMED
                 : MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED;
-        applyOutcome.addSecretReferenceManualExecutionRequired(category, secretReferenceSummary);
+        applyOutcome.addSecretReferenceManualExecutionRequired();
         Map<String, Object> result = applyOutcome.createResponse(WorkflowLifecycle.STATUS_FAILED, snapshot, executionMode, createArtifactPayload(snapshot));
         result.put("response_mode", MCPResponseMode.RECOVERY);
         result.put("category", category);
-        result.put("message", "This workflow contains sensitive placeholders that must be filled outside MCP before execution.");
-        result.put("secret_reference_summary", secretReferenceSummary);
+        result.put(MCPPayloadFieldNames.SUMMARY, "This workflow contains sensitive placeholders that must be filled outside MCP before execution.");
+        result.put("secret_reference_summary", WorkflowArtifactMaskUtils.createSecretReferenceSummary(propertySource));
         WorkflowGuidancePayloadBuilder.appendApplyGuidance(result, WorkflowLifecycle.STATUS_FAILED);
         return result;
     }

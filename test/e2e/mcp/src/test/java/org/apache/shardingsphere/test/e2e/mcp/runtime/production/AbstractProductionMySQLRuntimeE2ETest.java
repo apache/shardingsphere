@@ -210,12 +210,12 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     
     protected void assertRecoveryResponse(final Map<String, Object> actual) {
         assertThat(String.valueOf(actual.get("response_mode")), is("recovery"));
-        assertFalse(String.valueOf(actual.get("message")).isBlank());
+        assertFalse(String.valueOf(actual.get("summary")).isBlank());
     }
     
     protected void assertRecoveryResponse(final Map<String, Object> actual, final String expectedMessage) {
         assertRecoveryResponse(actual);
-        assertThat(String.valueOf(actual.get("message")), is(expectedMessage));
+        assertThat(String.valueOf(actual.get("summary")), is(expectedMessage));
     }
     
     protected void assertRecoveryResponse(final Map<String, Object> actual, final String expectedMessage, final String expectedCategory) {
@@ -224,26 +224,22 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected void assertAiNativeGuidance(final Map<String, Object> guidance) {
-        assertTrue(guidance.containsKey("model_first_summary"));
+        assertTrue(guidance.containsKey("discovery"));
         assertTrue(guidance.containsKey("model_contract"));
-        assertTrue(guidance.containsKey("surface_summary"));
-        assertTrue(guidance.containsKey("field_naming_contract"));
         assertTrue(guidance.containsKey("next_action_contract"));
         assertTrue(guidance.containsKey("common_flows"));
         assertTrue(guidance.containsKey("security_hints"));
+        assertFalse(guidance.containsKey("model_first_summary"));
+        assertFalse(guidance.containsKey("surface_summary"));
         assertFalse(guidance.containsKey("fingerprints"));
         assertFalse(((List<?>) guidance.get("common_flows")).isEmpty());
-        Map<String, Object> modelFirstSummary = getObjectOrEmpty(guidance.get("model_first_summary"));
-        assertThat(getObjectOrEmpty(modelFirstSummary.get("official_discovery_methods")).get("tools"), is("tools/list"));
-        assertThat(modelFirstSummary.get("guidance_resource"), is("shardingsphere://guidance"));
-        assertThat(getObjectOrEmpty(modelFirstSummary.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
-        assertThat(getObjectOrEmpty(getObjectOrEmpty(modelFirstSummary.get("sql_tool_selection")).get("read_only")).get("tool"), is("database_gateway_execute_query"));
-        assertThat(getObjectOrEmpty(getObjectOrEmpty(modelFirstSummary.get("workflow_rule")).get("preview_tool")).get("tool"), is("database_gateway_apply_workflow"));
-        Map<String, Object> surfaceSummary = getObjectOrEmpty(guidance.get("surface_summary"));
-        assertThat(getObjectOrEmpty(surfaceSummary.get("official_discovery_methods")).get("resources"), is("resources/list"));
-        assertThat(surfaceSummary.get("preflight_validation_tool"), is("database_gateway_validate_runtime_database"));
-        assertThat(surfaceSummary.get("read_only_sql_tool"), is("database_gateway_execute_query"));
-        assertThat(surfaceSummary.get("side_effect_sql_tool"), is("database_gateway_execute_update"));
+        Map<String, Object> discovery = getObjectOrEmpty(guidance.get("discovery"));
+        assertThat(getObjectOrEmpty(discovery.get("official_discovery_methods")).get("tools"), is("tools/list"));
+        assertThat(discovery.get("argument_completion_method"), is("completion/complete"));
+        Map<String, Object> modelContract = getObjectOrEmpty(guidance.get("model_contract"));
+        assertTrue(String.valueOf(modelContract.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
+        assertTrue(String.valueOf(getObjectOrEmpty(modelContract.get("sql_tool_selection")).get("read_only")).contains("database_gateway_execute_query"));
+        assertThat(modelContract.get("recovery_rule"), is("When a call fails, follow top-level next_actions before inventing a new call."));
     }
     
     protected void assertAiNativeDiscovery(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {

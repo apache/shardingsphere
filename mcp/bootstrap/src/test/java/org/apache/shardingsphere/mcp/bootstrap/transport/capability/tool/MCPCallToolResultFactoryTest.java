@@ -93,7 +93,8 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         CallToolResult actual = new MCPCallToolResultFactory().create(new MCPErrorPayload(""));
         Map<String, Object> actualPayload = getTextContentPayload(actual);
         assertThat(actualPayload.get("response_mode"), is("recovery"));
-        assertThat(actualPayload.get("message"), is(""));
+        assertThat(actualPayload.get("summary"), is("Recovery guidance is available."));
+        assertFalse(actualPayload.containsKey("message"));
         assertNull(actual.structuredContent());
         assertTrue(actual.isError());
     }
@@ -115,7 +116,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         assertFalse(actual.isError());
         assertThat(actualPayload.get("status"), is("failed"));
         assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("database"));
-        assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("request_id"));
+        assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("next_actions"));
         assertThat(((TextContent) actual.content().getFirst()).text(), is(JsonUtils.toJsonString(actualPayload)));
     }
     
@@ -205,10 +206,10 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
                 MCPResourceHintUtils.create("shardingsphere://capabilities", "capability", "read_first", "Read capabilities.", "resources_to_read")));
         CallToolResult actual = new MCPCallToolResultFactory().create(new MCPErrorPayload("", recovery));
         Map<String, Object> actualPayload = getTextContentPayload(actual);
-        Map<?, ?> actualRecovery = (Map<?, ?>) actualPayload.get("recovery");
         assertTrue(actual.isError());
         assertNull(actual.structuredContent());
-        assertThat(actualRecovery.get("request_id"), is(actualPayload.get("request_id")));
+        assertThat(actualPayload.get("error_id"), isA(String.class));
+        assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("error_id"));
         assertThat(actual.content().get(1), isA(ResourceLink.class));
         assertThat(((ResourceLink) actual.content().get(1)).uri(), is("shardingsphere://capabilities"));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.RESOURCE_LINKS_EMITTED), is(1));

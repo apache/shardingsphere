@@ -36,12 +36,9 @@ public final class WorkflowApplyOutcome {
     
     private final List<Map<String, Object>> stepResults = new LinkedList<>();
     
-    private final List<String> executedDistSql = new LinkedList<>();
-    
     private final List<Map<String, Object>> issues = new LinkedList<>();
     
     void addExecutedArtifact(final WorkflowArtifactBundle.ExecutableWorkflowArtifact artifact) {
-        executedDistSql.add(artifact.displaySql());
         stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, WorkflowLifecycle.STATUS_PASSED, artifact.displaySql()));
     }
     
@@ -61,16 +58,15 @@ public final class WorkflowApplyOutcome {
                 "Inspect mismatches and re-run validation after the Proxy state converges.", true, Map.of("mismatches", mismatches)).toMap());
     }
     
-    void addSecretReferenceManualExecutionRequired(final String category, final Map<String, Object> secretReferenceSummary) {
+    void addSecretReferenceManualExecutionRequired() {
         issues.add(new WorkflowIssue(WorkflowIssueCode.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED, "error", WorkflowLifecycle.STEP_REVIEW,
                 "Sensitive placeholders require manual execution outside MCP.",
-                "Review manual artifacts, replace neutral placeholders outside MCP, and execute them through the normal operational channel.", true,
-                Map.of("category", category, "secret_reference_summary", secretReferenceSummary)).toMap());
+                "Review manual artifacts, replace neutral placeholders outside MCP, and execute them through the normal operational channel.", true, Map.of()).toMap());
     }
     
     Map<String, Object> createResponse(final String status, final WorkflowContextSnapshot snapshot, final String executionMode, final Map<String, Object> manualArtifactPackage) {
         return new WorkflowApplyResponseBuilder().build(snapshot, status, executionMode,
-                issues, stepResults, executedDistSql, manualArtifactPackage);
+                issues, stepResults, manualArtifactPackage);
     }
     
     private static Map<String, Object> createStepResult(final String artifactType, final String status, final String sql) {

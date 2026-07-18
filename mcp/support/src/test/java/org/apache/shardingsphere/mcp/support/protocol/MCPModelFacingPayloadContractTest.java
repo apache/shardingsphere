@@ -63,6 +63,6 @@ class MCPModelFacingPayloadContractTest {
         assertTrue(actual.contains(MCPPayloadFieldNames.SUMMARY));
         assertTrue(actual.contains(MCPPayloadFieldNames.NEXT_ACTIONS));
         assertTrue(actual.contains(MCPPayloadFieldNames.SELF_RESOURCE));
-        assertTrue(actual.contains("manual_follow_up"));
+        assertTrue(actual.contains("manual_artifact_summary"));
     }
 }

@@ -53,11 +53,10 @@ class MCPClientSafetyPolicyTest {
         assertThat(actual.get("identity_scope"), is("mcp_session"));
         assertTrue(String.valueOf(actual.get("transport_scope")).contains("trusted session attribution"));
         assertTrue(String.valueOf(actual.get("external_model_boundary")).contains("never calls external model providers"));
-        Map<?, ?> actualToolCallLimit = (Map<?, ?>) actual.get("tool_call_limit");
+        Map<?, ?> actualRuntimeProtection = (Map<?, ?>) actual.get("runtime_protection");
+        Map<?, ?> actualToolCallLimit = (Map<?, ?>) actualRuntimeProtection.get("tool_call_limit");
         assertThat(actualToolCallLimit.get("scope"), is("session"));
         assertThat(actualToolCallLimit.get("property"), is(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY));
-        Map<?, ?> actualRuntimeProtection = (Map<?, ?>) actual.get("runtime_protection");
-        assertThat(((Map<?, ?>) actualRuntimeProtection.get("tool_call_limit")).get("scope"), is("session"));
         Map<?, ?> actualSQLExecutionLimits = (Map<?, ?>) actualRuntimeProtection.get("sql_execution_limits");
         assertThat(((Map<?, ?>) actualSQLExecutionLimits.get("max_rows")).get("applied_field"), is("applied_max_rows"));
         assertThat(((Map<?, ?>) actualSQLExecutionLimits.get("timeout_ms")).get("applied_field"), is("applied_timeout_ms"));

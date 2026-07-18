@@ -45,8 +45,7 @@ class RuntimeDatabaseValidationPayloadTest {
                         "status", "passed",
                         "category", "ready",
                         "message", "Resolved the configured runtime database.")),
-                "category", "ready",
-                "recovery", Map.of())));
+                "category", "ready")));
     }
     
     @Test
@@ -57,10 +56,12 @@ class RuntimeDatabaseValidationPayloadTest {
         assertThat(actual.get("summary"), is("Runtime database `logic_db` failed validation with category `invalid_configuration`."));
         assertThat(actual.get("status"), is("failed"));
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
-        assertThat(actualRecovery.get("database"), is("logic_db"));
-        assertThat(actualRecovery.get("category"), is("invalid_configuration"));
-        assertFalse(actualRecovery.containsKey("request_id"));
-        assertThat(actual.get("next_actions"), is(actualRecovery.get("next_actions")));
+        assertFalse(actualRecovery.containsKey("response_mode"));
+        assertFalse(actualRecovery.containsKey("database"));
+        assertFalse(actualRecovery.containsKey("category"));
+        assertThat(actualRecovery.get("recovery_category"), is("unavailable_runtime"));
+        assertFalse(actualRecovery.containsKey("next_actions"));
+        assertFalse(((List<?>) actual.get("next_actions")).isEmpty());
     }
     
     @Test

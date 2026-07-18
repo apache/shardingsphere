@@ -114,12 +114,16 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
     }
     
     private void assertFeatureDiscovery(final HttpClient httpClient, final String sessionId, final FeatureWorkflowScenario scenario) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://capabilities");
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getFirstResourcePayload(actual.body());
-        assertTrue(((List<?>) payload.get("supportedTools")).stream().map(String::valueOf).toList().contains(scenario.toolName()));
-        assertTrue(String.valueOf(payload).contains(scenario.discoveryToken()));
-        assertModelFacingPayloadContract(payload);
+        HttpResponse<String> actualTools = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
+                scenario.toolName() + "-discovery-tools-1", "tools/list", Map.of()));
+        assertThat(actualTools.statusCode(), is(200));
+        Map<String, Object> toolsPayload = MCPInteractionPayloads.getRequiredJsonRpcResult(parseJsonBody(actualTools.body()));
+        assertTrue(MCPInteractionPayloads.getRequiredObjectList(toolsPayload, "tools").stream().anyMatch(each -> scenario.toolName().equals(each.get("name"))));
+        assertModelFacingPayloadContract(toolsPayload);
+        HttpResponse<String> actualResources = sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
+                scenario.toolName() + "-discovery-resources-1", "resources/templates/list", Map.of()));
+        assertThat(actualResources.statusCode(), is(200));
+        assertTrue(actualResources.body().contains(scenario.discoveryToken()));
     }
     
     private void assertFeatureToolSchemaMatchesPlanArguments(final HttpClient httpClient, final String sessionId,
@@ -156,7 +160,7 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         Map<String, Object> payload = MCPInteractionPayloads.getToolCallPayload(responsePayload);
         Map<String, Object> recovery = getRecoveryPayload(payload, "validation");
         assertThat(recovery.get("category"), is("unknown_argument"));
-        assertThat(recovery.get("argument_path"), is("client_hint"));
+        assertThat(recovery.get("field"), is("client_hint"));
         assertModelFacingPayloadContract(payload);
     }
     
@@ -175,7 +179,7 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> result = getToolCallPayload(actual.body());
         assertThat(String.valueOf(result.get("response_mode")), is("recovery"));
-        assertFalse(String.valueOf(result.get("message")).isBlank());
+        assertFalse(String.valueOf(result.get("summary")).isBlank());
         assertNoForbiddenArtifacts(result);
         assertModelFacingPayloadContract(result);
     }

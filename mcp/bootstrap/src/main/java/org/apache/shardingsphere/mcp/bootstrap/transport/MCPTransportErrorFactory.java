@@ -76,7 +76,7 @@ public final class MCPTransportErrorFactory {
     private static McpError createInternalError(final Throwable cause) {
         MCPErrorPayload errorPayload = new MCPErrorPayload("Service is temporarily unavailable.");
         Map<String, Object> payload = errorPayload.toPayload();
-        log.error("Unexpected MCP request failure, request ID: {}.", payload.get("request_id"), cause);
+        log.error("Unexpected MCP request failure, error ID: {}.", payload.get("error_id"), cause);
         return createProtocolError(errorPayload, payload, McpSchema.ErrorCodes.INTERNAL_ERROR);
     }
     

@@ -74,7 +74,7 @@ class SearchMetadataToolHandlerTest {
         assertTrue(actualProperties.containsKey("search_context"));
         assertTrue(actualProperties.containsKey("summary"));
         assertTrue(actualProperties.containsKey("total_match_count"));
-        assertTrue(actualProperties.containsKey("returned_count"));
+        assertTrue(actualProperties.containsKey("count"));
         assertTrue(actualProperties.containsKey("truncated"));
         assertTrue(actualProperties.containsKey("large_result_guidance"));
         assertTrue(actualProperties.containsKey("empty_state"));
@@ -93,10 +93,9 @@ class SearchMetadataToolHandlerTest {
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
             assertThat(actualPayload.get("summary"), is("Metadata search returned 1 of 1 matches."));
             assertThat(actualPayload.get("total_match_count"), is(1));
-            assertThat(actualPayload.get("returned_count"), is(1));
+            assertThat(actualPayload.get("count"), is(1));
             assertFalse((Boolean) actualPayload.get("truncated"));
             assertFalse(actualPayload.containsKey("next_page_token"));
-            assertFalse((Boolean) actualPayload.get("has_more"));
             assertThat(actualPayload.get("continuation_mode"), is("none"));
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).getFirst()).getName(), is("order_idx"));
             assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("index")));
@@ -157,7 +156,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(actual, isA(MCPItemsPayload.class));
             assertThat(actualNames.size(), is(9));
             assertThat(actualPayload.get("total_match_count"), is(9));
-            assertThat(actualPayload.get("returned_count"), is(9));
+            assertThat(actualPayload.get("count"), is(9));
             assertFalse((Boolean) actualPayload.get("truncated"));
             assertTrue(actualNames.contains("logic_db"));
             assertTrue(actualNames.contains("order_idx"));
@@ -173,9 +172,8 @@ class SearchMetadataToolHandlerTest {
             assertThat(((List<?>) actualPayload.get("items")).size(), is(100));
             assertThat(actualPayload.get("summary"), is("Metadata search returned 100 of 101 matches."));
             assertThat(actualPayload.get("total_match_count"), is(101));
-            assertThat(actualPayload.get("returned_count"), is(100));
+            assertThat(actualPayload.get("count"), is(100));
             assertTrue((Boolean) actualPayload.get("truncated"));
-            assertFalse((Boolean) actualPayload.get("has_more"));
             assertThat(actualPayload.get("continuation_mode"), is("none"));
             Map<?, ?> actualLargeResultGuidance = (Map<?, ?>) actualPayload.get("large_result_guidance");
             assertThat(actualLargeResultGuidance.get("state"), is("metadata_search_result_truncated"));

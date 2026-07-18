@@ -45,8 +45,8 @@ class MCPDescriptorCatalogLoaderTest {
         Set<String> actualToolNames = actual.getProtocolDescriptors().getToolDescriptors().stream().map(MCPToolDescriptor::getName).collect(Collectors.toSet());
         assertToolNames(actualToolNames);
         assertOutputProperties(actual, "database_gateway_apply_workflow", Set.of(
-                "response_mode", "summary", "plan_id", "execution_mode", "next_actions", "manual_artifact_package", "manual_artifact_summary", "manual_follow_up", "argument_provenance",
-                "review_summary", "review_focus", "category", "message", "secret_reference_summary"));
+                "response_mode", "summary", "plan_id", "execution_mode", "next_actions", "manual_artifact_package", "manual_artifact_summary", "argument_provenance",
+                "review_focus", "category", "secret_reference_summary"));
         assertOutputProperties(actual, "database_gateway_validate_workflow", Set.of("response_mode", "summary", "plan_id", "status", "recovery_guidance", "next_actions", "sections", "mismatches"));
         assertPublicToolAnnotations(actual);
         assertPlanningToolAnnotations(actual);
@@ -158,9 +158,8 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     private void assertNoToolExecutionPayload(final MCPDescriptorCatalog catalog) {
-        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(catalog, List.of(), List.of(), List.of());
-        for (Object each : (List<?>) payload.get("tools")) {
-            assertFalse(((Map<?, ?>) each).containsKey("execution"));
+        for (MCPToolDescriptor each : catalog.getProtocolDescriptors().getToolDescriptors()) {
+            assertFalse(each.getMeta().containsKey("execution"));
         }
     }
     

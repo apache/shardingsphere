@@ -187,7 +187,7 @@
     <verification>
       <step>Confirm the answer uses completion/complete or resources/read plugin resources before selecting uncertain algorithm names.</step>
       <step>Confirm the answer covers mask, readwrite-splitting, shadow, and sharding plugin completion sources.</step>
-      <step>Confirm the answer keeps completion bounded, secret-safe, and uses recovery next_actions instead of mutation.</step>
+      <step>Confirm the answer keeps completion bounded, secret-safe, and uses top-level next_actions instead of mutation.</step>
     </verification>
   </qa_pair>
   <qa_pair id="q10" category="transport_security" read_only="true">

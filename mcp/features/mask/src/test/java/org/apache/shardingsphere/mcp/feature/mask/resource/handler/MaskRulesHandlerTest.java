@@ -49,7 +49,7 @@ class MaskRulesHandlerTest {
             MCPSuccessPayload actual = new MaskRulesHandler().handle(requestContext, new MCPUriVariables(Map.of("database", "logic_db")));
             verify(mockedConstruction.constructed().getFirst()).queryMaskRules(queryFacade, "logic_db");
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/mask/databases/logic_db/rules"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/mask/databases/logic_db/rules"));
         }
     }
 }

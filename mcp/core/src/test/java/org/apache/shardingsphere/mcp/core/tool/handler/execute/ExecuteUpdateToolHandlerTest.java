@@ -126,7 +126,6 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
         assertThat(actual.toPayload().get("side_effect_scope"), is(List.of("physical-data")));
         assertThat(actual.toPayload().get("summary"), is("Previewed UPDATE statement with side-effect scope physical-data. It has not been executed."));
-        assertThat(actual.toPayload().get("review_summary"), is("Previewed UPDATE statement with side-effect scope physical-data. It has not been executed."));
         assertThat(actual.toPayload().get("review_guidance"),
                 is("Review normalized_sql and side_effect_scope before execution. "
                         + "This preview performs database-aware validation and classification; it does not guarantee rule validation, algorithm initialization, affected rows, or runtime success."));

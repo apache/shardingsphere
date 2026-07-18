@@ -62,7 +62,7 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.RESPONSE_MODE), is("list"));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MATCH_STRATEGY), is("prefix"));
-        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MATCHED_CANDIDATE_COUNT), is(1));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.CANDIDATE_COUNT), is(2));
         assertThat(((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).size(), is(1));
     }
     

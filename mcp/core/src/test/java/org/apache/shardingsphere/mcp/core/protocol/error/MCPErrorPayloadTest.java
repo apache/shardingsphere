@@ -33,22 +33,23 @@ class MCPErrorPayloadTest {
     @Test
     void assertToPayload() {
         Map<String, Object> actual = new MCPErrorPayload("foo_message").toPayload();
-        assertNotNull(actual.get("request_id"));
+        assertNotNull(actual.get("error_id"));
         assertFalse(actual.containsKey("recovery"));
         assertThat(actual.get("response_mode"), is("recovery"));
         assertThat(actual.get("summary"), is("foo_message"));
-        assertThat(actual.get("message"), is("foo_message"));
+        assertFalse(actual.containsKey("message"));
     }
     
     @Test
     void assertToPayloadWithRecovery() {
         Map<String, Object> actual = new MCPErrorPayload("foo_message", Map.of("recoverable", true)).toPayload();
-        assertNotNull(actual.get("request_id"));
+        assertNotNull(actual.get("error_id"));
         assertThat(actual.get("response_mode"), is("recovery"));
-        assertThat(actual.get("message"), is("foo_message"));
+        assertThat(actual.get("summary"), is("foo_message"));
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertTrue((Boolean) actualRecovery.get("recoverable"));
-        assertThat(actualRecovery.get("request_id"), is(actual.get("request_id")));
+        assertFalse(actualRecovery.containsKey("response_mode"));
+        assertFalse(actualRecovery.containsKey("error_id"));
     }
     
     @Test
@@ -56,5 +57,6 @@ class MCPErrorPayloadTest {
         Map<String, Object> actual = new MCPErrorPayload("", Map.of("next_actions", List.of(Map.of("order", 1, "type", "terminal", "title", "Stop")))).toPayload();
         assertThat(actual.get("summary"), is("Recovery guidance is available."));
         assertThat(actual.get("next_actions"), is(List.of(Map.of("order", 1, "type", "terminal", "title", "Stop"))));
+        assertFalse(actual.containsKey("recovery"));
     }
 }

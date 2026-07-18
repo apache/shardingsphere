@@ -242,9 +242,6 @@ tools:
             - secret_reference_malformed
             - secret_reference_missing
             - secret_reference_manual_execution_required
-        message:
-          type: string
-          description: "Recovery or execution message. Secret-placeholder failures never include raw secret_ref identifiers or real sensitive values."
         issues:
           type: array
           description: "Workflow issues reported while checking or applying artifacts."
@@ -287,12 +284,6 @@ tools:
               sql:
                 type: string
                 description: "Artifact SQL or DistSQL."
-        executed_distsql:
-          type: array
-          description: "DistSQL statements executed by the server."
-        applied_artifacts:
-          type: array
-          description: "Rule DistSQL artifacts executed by the server."
         preview_artifacts:
           type: array
           description: "Artifacts that would be applied when execution_mode=preview."
@@ -317,21 +308,12 @@ tools:
         would_apply:
           type: boolean
           description: "False when execution_mode=preview, proving workflow artifacts were not applied."
-        review_summary:
-          type: string
-          description: "Preview-only natural-language summary that confirms workflow artifacts were not applied."
-        manual_artifacts:
-          type: array
-          description: "Artifacts returned for manual execution."
         manual_artifact_package:
           type: object
           description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated rule DistSQL needed for operator execution."
         manual_artifact_summary:
           type: object
           description: "Manual-only compact artifact summary with counts, external execution requirement, confirmation gate, and validation arguments to use after manual execution."
-        manual_follow_up:
-          type: object
-          description: "Manual-only confirmation contract; database_gateway_validate_workflow is blocked until manual_artifacts_executed is confirmed, while independent query checks remain allowed."
         secret_reference_summary:
           type: object
           description: "Safe summary returned for sensitive placeholders. It contains role/property labels, manual placeholders, and counts only, never raw secret_ref identifiers or real sensitive values."
@@ -376,11 +358,8 @@ tools:
           summary: Previewed 0 workflow artifacts. Nothing has been applied.
           plan_id: encrypt-rule-20260505-001
           execution_mode: preview
-          applied_artifacts: []
           preview_artifacts: []
           would_apply: false
-          manual_artifacts: []
-          review_summary: Previewed 0 workflow artifacts. Nothing has been applied.
           next_actions:
             - order: 1
               type: terminal

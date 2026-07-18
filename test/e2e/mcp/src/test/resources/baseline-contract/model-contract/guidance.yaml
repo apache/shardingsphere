@@ -16,91 +16,13 @@
 #
 
 response_mode: guidance
-guidance_resource: shardingsphere://guidance
-model_first_summary:
+discovery:
   official_discovery_methods: {tools: tools/list, resources: resources/list, resource_templates: resources/templates/list,
     prompts: prompts/list}
   argument_completion_method: completion/complete
   guidance_resource_role: shardingsphere://guidance complements MCP list methods with
     ShardingSphere domain guidance, workflow guidance, and side-effect notes.
-  guidance_resource: shardingsphere://guidance
-  first_call_routes:
-  - {intent: inspect_metadata, first_action: read_resource shardingsphere://databases,
-    next_step: call_tool database_gateway_search_metadata or read returned resource.uri,
-    stop_rule: Stop after the requested detail resource is read.}
-  - {intent: validate_runtime, first_action: read_resource shardingsphere://runtime,
-    next_step: call_tool database_gateway_validate_runtime_database with a configured
-      database, stop_rule: Follow top-level next_actions when validation fails.}
-  - {intent: read_only_sql, first_action: 'read_resource shardingsphere://databases/{database}/capabilities',
-    next_step: call_tool database_gateway_execute_query, stop_rule: Stop after reporting
-      the result rows.}
-  - {intent: explain_query, first_action: 'read_resource shardingsphere://databases/{database}/capabilities',
-    next_step: 'generate database-native EXPLAIN SQL, then call_tool database_gateway_execute_explain_query',
-    stop_rule: Stop after reporting the execution plan rows.}
-  - {intent: rule_workflow, first_action: call_tool matching database_gateway_plan_*
-      workflow tool without plan_id for a new plan, next_step: call_tool database_gateway_apply_workflow
-      execution_mode=preview with the returned plan_id, stop_rule: Use workflow apply
-      and validation for natural-language rule changes before considering raw side-effect
-      SQL.}
-  - {intent: side_effect_sql, first_action: call_tool database_gateway_execute_update
-      execution_mode=preview, next_step: call_tool database_gateway_execute_update
-      execution_mode=execute, stop_rule: Execute only after preview review confirms
-      the intended side effect.}
-  - {intent: complete_uncertain_argument, first_action: call completion/complete for
-      one uncertain argument, next_step: follow completion meta.next_actions when
-      context is missing or no candidates match, stop_rule: Stop after the argument
-      is selected or the nearest resource proves it is unavailable.}
-  - {intent: recover_error, first_action: follow top-level next_actions, next_step: fallback
-      to recovery.next_actions when top-level actions are absent, stop_rule: 'Ask the
-      user only when no deterministic resource, completion, or tool action is available.'}
-  metadata_rule: {first_resource: 'shardingsphere://databases', search_tool: database_gateway_search_metadata,
-    detail_rule: Read the returned resource.uri when the list or search response points
-      to a detail resource.}
-  preflight_rule: {tool: database_gateway_validate_runtime_database, input_rule: Pass
-      only a configured runtime database name., secret_rule: Connection details stay
-      in administrator runtime configuration and are not tool arguments.}
-  sql_tool_selection:
-    read_only: {tool: database_gateway_execute_query, statement_rule: Use for one SELECT
-        statement.}
-    explain: {tool: database_gateway_execute_explain_query, statement_rule: Use for
-        an execution plan of one SELECT statement., candidate_rule: Generate database-native
-        EXPLAIN SQL in explain_sql and never use EXPLAIN ANALYZE.}
-    side_effecting:
-      tool: database_gateway_execute_update
-      first_mode: preview
-      execute_requires: execution_mode=execute
-      rule_change_preference: For natural-language rule changes, use the matching
-        database_gateway_plan_* workflow tool before raw SQL execution; omit plan_id
-        for a new plan.
-  side_effect_rule: Preview side effects first; execute only when the requested side
-    effect is still intended.
-  workflow_rule:
-    selection_rule: For natural-language rule changes, use the matching database_gateway_plan_*
-      workflow tool before raw side-effect SQL; omit plan_id for a new plan and reuse
-      only returned plan_id values.
-    planning_tools: [database_gateway_plan_broadcast_rule, database_gateway_plan_encrypt_rule,
-      database_gateway_plan_mask_rule, database_gateway_plan_readwrite_splitting_rule,
-      database_gateway_plan_readwrite_splitting_status, database_gateway_plan_shadow_rule,
-      database_gateway_plan_default_shadow_algorithm, database_gateway_plan_shadow_algorithm_cleanup,
-      database_gateway_plan_sharding_table_rule, database_gateway_plan_sharding_table_reference_rule,
-      database_gateway_plan_sharding_default_strategy, database_gateway_plan_sharding_key_generator,
-      database_gateway_plan_sharding_key_generate_strategy, database_gateway_plan_sharding_rule_component_cleanup]
-    preview_tool: {tool: database_gateway_apply_workflow, execution_mode: preview}
-    execute_tool: {tool: database_gateway_apply_workflow, execution_mode: review-then-execute,
-      execute_requires: execution_mode=review-then-execute and explicit approved_steps
-        copied from preview_artifacts.approval_step}
-    validate_tool: database_gateway_validate_workflow
-  completion_rule: Use MCP completion for missing database, schema, table, column,
-    index, sequence, or storage unit values before guessing identifiers.
-  recovery_rule: Follow structured recovery.next_actions before inventing a replacement
-    call.
 model_contract:
-  public_surface_source: 'MCP list methods expose the protocol surface: tools/list,
-    resources/list, resources/templates/list, prompts/list.'
-  official_discovery_methods: {tools: tools/list, resources: resources/list, resource_templates: resources/templates/list,
-    prompts: prompts/list}
-  argument_completion_method: completion/complete
-  guidance_resource: shardingsphere://guidance
   metadata_first_resource: shardingsphere://databases
   preflight_rule: Use database_gateway_validate_runtime_database with a configured
     database name before onboarding or troubleshooting runtime connectivity.
@@ -121,33 +43,11 @@ model_contract:
     and arguments.'
   detail_resource_rule: Use resource descriptors, outputSchema, and returned payload
     keys before assuming detail fields.
-  recovery_rule: When a call fails with recovery.next_actions, follow those structured
-    actions before inventing a new call.
-surface_summary:
-  official_discovery_methods: {tools: tools/list, resources: resources/list, resource_templates: resources/templates/list,
-    prompts: prompts/list}
-  argument_completion_method: completion/complete
-  guidance_resource: shardingsphere://guidance
-  metadata_resource: shardingsphere://databases
-  metadata_search_tool: database_gateway_search_metadata
-  preflight_validation_tool: database_gateway_validate_runtime_database
-  read_only_sql_tool: database_gateway_execute_query
-  explain_sql_tool: database_gateway_execute_explain_query
-  side_effect_sql_tool: database_gateway_execute_update
-  workflow_tools: [database_gateway_apply_workflow, database_gateway_validate_workflow]
-  side_effect_rule: Preview first and continue only when the requested side effect
-    is still intended.
-  completion_rule: Use local completion hints on fields, prompts, and resources before
-    guessing identifiers.
-field_naming_contract:
-  official_discovery_methods: [tools/list, resources/list, resources/templates/list,
-    prompts/list]
-  argument_completion_method: completion/complete
-  catalog_fields: [supportedResources, supportedTools, supportedStatementClasses,
-    guidanceResource, resourceTemplates, completionTargets, resourceNavigation, protocolAvailability]
-  payload_fields: ShardingSphere-owned structured payload fields use snake_case.
-  descriptor_fields: Descriptor-derived MCP schema fields keep the protocol or JSON
-    Schema field names required by MCP clients.
+  recovery_rule: When a call fails, follow top-level next_actions before inventing
+    a new call.
+  payload_field_rule: ShardingSphere-owned structured payload fields use snake_case.
+  descriptor_field_rule: Descriptor-derived MCP schema fields keep the protocol or
+    JSON Schema field names required by MCP clients.
 next_action_contract:
 - type: resource_read
   required_fields: [order, type, title, resource_uri]
@@ -164,7 +64,7 @@ next_action_contract:
   description: Use MCP completion for one argument before retrying.
 - type: ask_user
   required_fields: [order, type, title, question]
-  optional_fields: [required_inputs, reason, depends_on]
+  optional_fields: [required_inputs, depends_on]
   description: Ask the user for missing input.
 - type: terminal
   required_fields: [order, type, title]
@@ -175,57 +75,41 @@ common_flows:
   steps: [resources/list, resources/templates/list, 'read_resource shardingsphere://databases',
     call_tool database_gateway_search_metadata, read_resource returned resource.uri]
   stop_condition: Stop when the requested metadata detail resource is read.
-  referenced_tools: [database_gateway_search_metadata]
-  referenced_resources: ['shardingsphere://databases']
 - flow_id: validate_runtime_database
   steps: ['read_resource shardingsphere://databases', call_tool database_gateway_validate_runtime_database]
   stop_condition: Stop after the configured runtime database reports ready or returns
     structured recovery guidance.
-  referenced_tools: [database_gateway_validate_runtime_database]
-  referenced_resources: ['shardingsphere://databases']
 - flow_id: read_only_sql
   steps: ['read_resource shardingsphere://databases/{database}/capabilities', call_tool
       database_gateway_execute_query]
   stop_condition: Use one SELECT statement and stop after the result is reported.
-  referenced_tools: [database_gateway_execute_query]
-  referenced_resources: ['shardingsphere://databases/{database}/capabilities']
 - flow_id: explain_query
   steps: ['read_resource shardingsphere://databases/{database}/capabilities', generate
       database-native EXPLAIN SQL without ANALYZE, call_tool database_gateway_execute_explain_query]
   stop_condition: Use the original SELECT as sql, the generated EXPLAIN as explain_sql,
     and stop after the plan rows are reported.
-  referenced_tools: [database_gateway_execute_explain_query]
-  referenced_resources: ['shardingsphere://databases/{database}/capabilities']
 - flow_id: side_effecting_sql
   steps: [call_tool database_gateway_execute_update execution_mode=preview, call_tool
       database_gateway_execute_update execution_mode=execute]
   stop_condition: Execute only after reviewing the previewed SQL and side-effect scope.
-  referenced_tools: [database_gateway_execute_update]
-  referenced_resources: &id001 []
 - flow_id: complete_uncertain_argument
   steps: [resources/templates/list, call completion/complete for one argument, 'follow
       completion meta.next_actions when diagnostic is missing_context, prefix_filtered_all_candidates,
       or no_candidates']
   stop_condition: Stop when a completion value is selected or the nearest resource
     proves the argument is unavailable.
-  referenced_tools: *id001
-  referenced_resources: *id001
 - flow_id: workflow_plan_apply_validate
   steps: [call_tool descriptor-backed feature planning tool, call_tool database_gateway_apply_workflow
       execution_mode=preview, call_tool database_gateway_apply_workflow execution_mode=review-then-execute
       approved_steps=<preview_artifacts.approval_step>, call_tool database_gateway_validate_workflow]
   stop_condition: Reuse the same current-session plan_id and stop after validation
     succeeds.
-  referenced_tools: [database_gateway_apply_workflow, database_gateway_validate_workflow]
-  referenced_resources: *id001
 - flow_id: recover_from_error
-  steps: [follow recovery.next_actions, prefer official list discovery methods when
+  steps: [follow top-level next_actions, prefer official list discovery methods when
       surface information is needed, 'read_resource shardingsphere://guidance only
       when the server suggests the guidance resource', ask_user only when uncertain]
   stop_condition: Do not invent replacement calls while structured recovery actions
     are present.
-  referenced_tools: *id001
-  referenced_resources: ['shardingsphere://guidance']
 security_hints:
   http_transport: Streamable HTTP is unauthenticated by default; prefer loopback binding
     or put remote exposure behind a trusted gateway.
@@ -236,16 +120,14 @@ security_hints:
   client_safety_policy:
     identity_scope: mcp_session
     transport_scope: HTTP transport can bind trusted session attribution when configured;
-      the MCP runtime does not provide built-in authentication or authorization.
-      STDIO inherits the local process boundary.
-    tool_call_limit: {scope: session, max_calls: 10000, property: shardingsphere.mcp.maxToolCallsPerSession,
-      recovery: Close and recreate the MCP session after the quota is exhausted.}
+      the MCP runtime does not provide built-in authentication or authorization. STDIO
+      inherits the local process boundary.
     runtime_protection:
       tool_call_limit: {scope: session, max_calls: 10000, property: shardingsphere.mcp.maxToolCallsPerSession,
         recovery: Close and recreate the MCP session after the quota is exhausted.}
       completion_rate_limit: {scope: session, window_seconds: 60, max_requests: 600,
-        property: shardingsphere.mcp.maxCompletionRequestsPerMinute, recovery: Retry after
-          the current completion rate-limit window ends.}
+        property: shardingsphere.mcp.maxCompletionRequestsPerMinute, recovery: Retry
+          after the current completion rate-limit window ends.}
       sql_execution_limits:
         max_rows: {default_value: 100, maximum_value: 5000, applied_field: applied_max_rows,
           truncation_field: truncated, recovery: 'For read-only queries, retry with

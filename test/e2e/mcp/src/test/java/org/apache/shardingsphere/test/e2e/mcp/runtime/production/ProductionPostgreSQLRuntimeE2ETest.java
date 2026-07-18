@@ -96,10 +96,10 @@ class ProductionPostgreSQLRuntimeE2ETest extends AbstractProductionPostgreSQLRun
     }
     
     private void assertTransactionRollback(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
-        assertThat(interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("public", "BEGIN")).get("message"), is("Transaction started."));
+        assertThat(interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("public", "BEGIN")).get("summary"), is("Transaction started."));
         interactionClient.call("database_gateway_execute_update",
                 createExecuteUpdateArguments("public", "UPDATE public.orders SET status = 'PENDING' WHERE order_id = 1"));
-        assertThat(interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("public", "ROLLBACK")).get("message"), is("Transaction rolled back."));
+        assertThat(interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("public", "ROLLBACK")).get("summary"), is("Transaction rolled back."));
         Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
                 Map.of("database", LOGICAL_DATABASE_NAME, "schema", "public", "sql", "SELECT status FROM public.orders WHERE order_id = 1", "max_rows", 1));
         assertTrue(String.valueOf(actual.get("row_objects")).contains("NEW"));

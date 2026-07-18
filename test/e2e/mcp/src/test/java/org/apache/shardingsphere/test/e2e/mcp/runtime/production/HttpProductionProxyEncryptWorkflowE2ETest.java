@@ -97,13 +97,12 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             Map<String, Object> applyResponse = applyReviewedWorkflow(interactionClient, planId, TEMPLATE_SECRET_VALUE);
             assertApplyCompleted(applyResponse);
             assertThat(getObjectListOrEmpty(applyResponse.get("step_results")).size(), is(1));
-            assertThat(getStringListOrEmpty(applyResponse.get("executed_distsql")).size(), is(1));
             Map<String, Object> validationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertValidationPassed(validationResponse);
             assertSecretRedacted(validationResponse, TEMPLATE_SECRET_VALUE);
-            assertFalse(validationResponse.containsKey("logical_metadata_validation"));
-            assertFalse(validationResponse.containsKey("sql_executability_validation"));
-            Map<String, Object> ruleValidation = getObjectOrEmpty(validationResponse.get("rule_validation"));
+            assertTrue(getValidationSection(validationResponse, "logical_metadata").isEmpty());
+            assertTrue(getValidationSection(validationResponse, "sql_executability").isEmpty());
+            Map<String, Object> ruleValidation = getValidationSection(validationResponse, "rule");
             assertThat(String.valueOf(ruleValidation.get("status")), is("passed"));
             Map<String, Object> ruleEvidence = getObjectListOrEmpty(ruleValidation.get("evidence")).getFirst();
             assertThat(String.valueOf(ruleEvidence.get("logic_column")), is("status"));
@@ -144,10 +143,9 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             Map<String, Object> actualApplyResponse = applyReviewedWorkflow(interactionClient, planId);
             assertApplyCompleted(actualApplyResponse);
             assertThat(getObjectListOrEmpty(actualApplyResponse.get("step_results")).size(), is(1));
-            assertThat(getStringListOrEmpty(actualApplyResponse.get("executed_distsql")).size(), is(1));
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertValidationPassed(actualValidationResponse);
-            assertFalse(actualValidationResponse.containsKey("sql_executability_validation"));
+            assertTrue(getValidationSection(actualValidationResponse, "sql_executability").isEmpty());
         }
     }
     
@@ -219,7 +217,6 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(String.valueOf(actualApplyResponse.get("status")), is("awaiting-manual-execution"));
             assertThat(getIssueCodes(actualApplyResponse), is(List.of(WorkflowIssueCode.MANUAL_EXECUTION_PENDING)));
             assertThat(getObjectListOrEmpty(actualApplyResponse.get("step_results")).size(), is(0));
-            assertThat(getStringListOrEmpty(actualApplyResponse.get("executed_distsql")).size(), is(0));
             Map<String, Object> actualManualArtifactPackage = getObjectOrEmpty(actualApplyResponse.get("manual_artifact_package"));
             assertThat(getObjectListOrEmpty(actualManualArtifactPackage.get("distsql_artifacts")).size(), is(1));
             assertThat(String.valueOf(getObjectListOrEmpty(actualManualArtifactPackage.get("distsql_artifacts")).getFirst().get("sql")),
@@ -242,7 +239,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(String.valueOf(actualPreviewArtifacts.getFirst().get("approval_step")), is("rule_distsql"));
             Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, List.of("rule_distsql")));
             assertThat(String.valueOf(actualRuleApplyResponse.get("status")), is("completed"));
-            assertThat(getStringListOrEmpty(actualRuleApplyResponse.get("executed_distsql")).size(), is(1));
+            assertThat(getObjectListOrEmpty(actualRuleApplyResponse.get("step_results")).size(), is(1));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
         }
     }
@@ -275,10 +272,10 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             String planId = String.valueOf(actualDropPlanResponse.get("plan_id"));
             Map<String, Object> actualApplyResponse = applyReviewedWorkflow(interactionClient, planId);
             assertApplyCompleted(actualApplyResponse);
-            assertThat(getStringListOrEmpty(actualApplyResponse.get("executed_distsql")).size(), is(1));
+            assertThat(getObjectListOrEmpty(actualApplyResponse.get("step_results")).size(), is(1));
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertValidationPassed(actualValidationResponse);
-            assertThat(String.valueOf(getObjectOrEmpty(actualValidationResponse.get("rule_validation")).get("status")), is("passed"));
+            assertThat(String.valueOf(getValidationSection(actualValidationResponse, "rule").get("status")), is("passed"));
         }
     }
     

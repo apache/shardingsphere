@@ -50,7 +50,7 @@ class LoadBalanceAlgorithmPluginsHandlerTest {
             MCPSuccessPayload actual = handler.handle(requestContext, new MCPUriVariables(Map.of()));
             verify(inspectionService).queryLoadBalanceAlgorithmPlugins(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"));
         }
     }
 }

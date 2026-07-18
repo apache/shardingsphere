@@ -165,7 +165,7 @@ public final class MCPCompletionService {
                                            final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments, final Collection<String> missingContextArguments,
                                            final String nearestResourceUri, final Collection<MCPCompletionCandidate> candidates, final Collection<MCPCompletionCandidate> filteredCandidates,
                                            final Collection<MCPCompletionCandidate> returnedCandidates) {
-        Map<String, Object> result = new LinkedHashMap<>(14, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put(MCPShardingSphereMetadataKeys.RESPONSE_MODE, MCPResponseMode.LIST);
         result.put(MCPShardingSphereMetadataKeys.REFERENCE_TYPE, descriptor.getReferenceType());
         result.put(MCPShardingSphereMetadataKeys.REFERENCE, descriptor.getReference());
@@ -174,8 +174,6 @@ public final class MCPCompletionService {
         result.put(MCPShardingSphereMetadataKeys.MATCH_STRATEGY, matchStrategy);
         result.put(MCPShardingSphereMetadataKeys.CONTEXT_ARGUMENTS, contextArguments);
         result.put(MCPShardingSphereMetadataKeys.CANDIDATE_COUNT, candidates.size());
-        result.put(MCPShardingSphereMetadataKeys.MATCHED_CANDIDATE_COUNT, filteredCandidates.size());
-        result.put(MCPShardingSphereMetadataKeys.RETURNED_CANDIDATE_COUNT, returnedCandidates.size());
         putInferredContext(result, inferredContextArguments);
         result.put(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS, missingContextArguments);
         String diagnostic = createDiagnostic(candidates, filteredCandidates, missingContextArguments);
@@ -227,12 +225,10 @@ public final class MCPCompletionService {
     }
     
     private Map<String, Object> createRecovery(final String prefix, final String diagnostic, final Collection<String> missingContextArguments, final String nearestResourceUri) {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         String recoveryCategory = "missing_context".equals(diagnostic) ? "missing_context" : "empty_scope";
         result.put("response_mode", MCPResponseMode.RECOVERY);
         result.put("recovery_category", recoveryCategory);
-        result.put("category", recoveryCategory);
-        result.put("diagnostic", diagnostic);
         if (!prefix.isEmpty()) {
             result.put("requested_token", prefix);
         }

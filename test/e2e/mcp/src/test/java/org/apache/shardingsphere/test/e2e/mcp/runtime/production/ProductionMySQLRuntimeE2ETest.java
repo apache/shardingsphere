@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +71,11 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     void assertServiceCapabilitiesResourceWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            assertOfficialToolNames(((List<?>) interactionClient.readResource("shardingsphere://capabilities").get("supportedTools")).stream().map(String::valueOf).toList());
+            Map<String, Object> actual = interactionClient.readResource("shardingsphere://capabilities");
+            assertFalse(((Collection<?>) actual.get("supportedStatementClasses")).isEmpty());
+            assertFalse(((List<?>) actual.get("completionTargets")).isEmpty());
+            assertFalse(((List<?>) actual.get("resourceNavigation")).isEmpty());
+            assertFalse(actual.containsKey("supportedTools"));
         }
     }
     

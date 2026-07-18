@@ -34,16 +34,16 @@ import java.util.Objects;
 final class LLMMCPModelFacingToolResponseFormatter {
     
     private static final List<String> GENERAL_FIELD_NAMES = List.of(
-            "response_mode", "error_code", "message", "recovery_category", "result_kind", "status", "statement_type", "normalized_sql", "rows", "row_objects",
+            "response_mode", "error_code", "error_id", "summary", "message", "recovery_category", "result_kind", "status", "statement_type", "normalized_sql", "rows", "row_objects",
             "returned_row_count", "plan_id", "workflow_resource");
     
     private static final List<String> POST_ACTION_FIELD_NAMES = List.of(
-            "completion", "count", "has_more", "total_match_count", "returned_count", "truncated", "large_result_guidance", "search_context");
+            "completion", "count", "total_match_count", "truncated", "large_result_guidance", "search_context");
     
     static String format(final Map<String, Object> response) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         copyFields(response, result, GENERAL_FIELD_NAMES);
-        copyCompactArtifactList(response, result, "manual_artifacts");
+        copyCompactArtifactPackage(response, result, "manual_artifact_package");
         copyCompactArtifactList(response, result, "exported_artifacts");
         copyModelCriticalFields(response, result);
         copyModelFacingNextActions(response, result);
@@ -150,6 +150,19 @@ final class LLMMCPModelFacingToolResponseFormatter {
         }
     }
     
+    private static void copyCompactArtifactPackage(final Map<String, Object> source, final Map<String, Object> target, final String fieldName) {
+        Object value = source.get(fieldName);
+        if (!(value instanceof Map)) {
+            return;
+        }
+        Map<String, Object> artifactPackage = LLMMCPJsonValues.castToMap(value);
+        Map<String, Object> summary = new LinkedHashMap<>(1, 1F);
+        putArtifactCount(artifactPackage, summary, "distsql_artifacts", "distsql_artifact_count");
+        if (!summary.isEmpty()) {
+            target.put(fieldName, summary);
+        }
+    }
+    
     private static void putArtifactCount(final Map<String, Object> source, final Map<String, Object> target, final String sourceFieldName, final String targetFieldName) {
         List<Object> artifacts = LLMMCPJsonValues.castToList(source.get(sourceFieldName));
         if (!artifacts.isEmpty()) {
@@ -173,7 +186,6 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyIfPresent(recovery, compactRecovery, "completion_first");
         copyIfPresent(recovery, compactRecovery, "suggested_arguments");
         copyModelCriticalFields(recovery, compactRecovery);
-        copyModelFacingNextActions(recovery, compactRecovery);
         target.put("recovery", compactRecovery);
     }
     

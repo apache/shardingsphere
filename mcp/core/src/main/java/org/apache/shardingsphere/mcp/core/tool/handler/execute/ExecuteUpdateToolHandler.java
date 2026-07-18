@@ -124,7 +124,6 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPFeature
         result.put("review_guidance", createReviewGuidance(classificationResult));
         String reviewSummary = createReviewSummary(classificationResult);
         result.put(MCPPayloadFieldNames.SUMMARY, reviewSummary);
-        result.put("review_summary", reviewSummary);
         Map<String, Object> suggestedArguments = createSuggestedArguments(toolArguments, classificationResult);
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(toolArguments));

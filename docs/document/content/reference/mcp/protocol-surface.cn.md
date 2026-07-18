@@ -218,19 +218,18 @@ Client 应在选择不确定的 database、schema、table、column、storage uni
 
 - `items`
 - `count`
-- `has_more`
 - `continuation_mode`
+- 存在后续结果时的 `next_page_token`
 
 大结果 payload 会使用：
 
 - `truncated`
 - `total_count`
-- `returned_count`
 - `large_result_guidance`
 
-可恢复错误 payload 保留 `message`，并增加 `recovery` 提示。
+可恢复错误 payload 使用 `summary`、`error_id` 和结构化 `recovery` 提示。
 常见恢复场景包括缺失参数、不支持的 tool/resource、非法枚举、workflow 状态错误和 SQL tool 选错。
-需要继续操作的模型可见业务 payload 会包含顶层 `summary` 和结构化 `next_actions`。
+需要继续操作的模型可见业务 payload 会包含顶层 `summary` 和唯一的顶层 `next_actions`。
 Workflow 规划、执行、人工执行包导出和校验响应使用这些字段，引导下一次 tool call、用户补问、resource read、completion call 或终止。
 
 JSON-RPC 数字错误码属于 MCP 协议错误契约。

@@ -42,10 +42,6 @@ public final class LLMMCPNextActions {
     public static List<Map<?, ?>> getNextActions(final Map<String, Object> structuredContent) {
         List<Map<?, ?>> result = new LinkedList<>();
         appendActions(result, structuredContent.get("next_actions"));
-        Object recovery = structuredContent.get("recovery");
-        if (recovery instanceof Map) {
-            appendActions(result, ((Map<?, ?>) recovery).get("next_actions"));
-        }
         return result;
     }
     

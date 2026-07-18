@@ -37,7 +37,6 @@ class MCPRuntimeDatabaseRecoveryPayloadFactoryTest {
         assertThat(actual.get("category"), is("invalid_configuration"));
         assertThat(actual.get("recovery_category"), is("unavailable_runtime"));
         assertFalse(actual.containsKey("database"));
-        assertFalse(actual.containsKey("request_id"));
     }
     
     @Test

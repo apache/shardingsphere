@@ -92,7 +92,8 @@ class MCPResourceSpecificationFactoryTest {
         assertThat(actualContents.uri(), is("shardingsphere://capabilities"));
         assertThat(actualContents.mimeType(), is("application/json"));
         assertTrue(actualContents.text().contains("\"response_mode\":\"catalog\""));
-        assertTrue(actualContents.text().contains("\"guidanceResource\":\"shardingsphere://guidance\""));
+        assertTrue(actualContents.text().contains("\"resourceNavigation\""));
+        assertTrue(actualContents.text().contains("\"to\":\"shardingsphere://guidance\""));
     }
     
     @Test
@@ -123,7 +124,7 @@ class MCPResourceSpecificationFactoryTest {
         assertThat(actual.getJsonRpcError().message(), is("Unsupported resource URI `shardingsphere://unknown`."));
         @SuppressWarnings("unchecked")
         Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
-        assertThat(actualData.get("message"), is("Unsupported resource URI `shardingsphere://unknown`."));
+        assertThat(actualData.get("summary"), is("Unsupported resource URI `shardingsphere://unknown`."));
     }
     
     @Test

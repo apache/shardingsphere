@@ -48,7 +48,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(payload.get("response_mode")), is("recovery"));
-        assertThat(String.valueOf(payload.get("message")), is("Cross-database transaction switching is not supported."));
+        assertThat(String.valueOf(payload.get("summary")), is("Cross-database transaction switching is not supported."));
     }
     
     @Test
@@ -57,10 +57,10 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         HttpClient httpClient = HttpClient.newHttpClient();
         String firstSessionId = initializeSession(httpClient);
         String secondSessionId = initializeSession(httpClient);
-        assertTransactionMessage(httpClient, firstSessionId, "logic_db", "BEGIN", "Transaction started.");
-        assertTransactionMessage(httpClient, secondSessionId, "analytics_db", "BEGIN", "Transaction started.");
-        assertTransactionMessage(httpClient, firstSessionId, "logic_db", "ROLLBACK", "Transaction rolled back.");
-        assertTransactionMessage(httpClient, secondSessionId, "analytics_db", "ROLLBACK", "Transaction rolled back.");
+        assertTransactionSummary(httpClient, firstSessionId, "logic_db", "BEGIN", "Transaction started.");
+        assertTransactionSummary(httpClient, secondSessionId, "analytics_db", "BEGIN", "Transaction started.");
+        assertTransactionSummary(httpClient, firstSessionId, "logic_db", "ROLLBACK", "Transaction rolled back.");
+        assertTransactionSummary(httpClient, secondSessionId, "analytics_db", "ROLLBACK", "Transaction rolled back.");
     }
     
     @Test
@@ -68,7 +68,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        assertTransactionMessage(httpClient, sessionId, "logic_db", "BEGIN", "Transaction started.");
+        assertTransactionSummary(httpClient, sessionId, "logic_db", "BEGIN", "Transaction started.");
         HttpResponse<String> update = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update",
                 createExecuteSQLArguments("logic_db", "logic_db", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         assertThat(update.statusCode(), is(200));
@@ -86,11 +86,11 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         return Map.of("database", databaseName, "schema", schemaName, "sql", sql, "execution_mode", "execute");
     }
     
-    private void assertTransactionMessage(final HttpClient httpClient, final String sessionId, final String databaseName, final String sql,
-                                          final String expectedMessage) throws IOException, InterruptedException {
+    private void assertTransactionSummary(final HttpClient httpClient, final String sessionId, final String databaseName, final String sql,
+                                          final String expectedSummary) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", createExecuteSQLArguments(databaseName, databaseName, sql));
         assertThat(actual.statusCode(), is(200));
-        assertThat(String.valueOf(getToolCallPayload(actual.body()).get("message")), is(expectedMessage));
+        assertThat(String.valueOf(getToolCallPayload(actual.body()).get("summary")), is(expectedSummary));
     }
     
 }
