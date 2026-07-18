@@ -73,8 +73,8 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
             interactionClient.call("database_gateway_execute_update",
                     createExecuteUpdateArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
             Map<String, Object> rollbackResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("ROLLBACK"));
-            assertThat(String.valueOf(beginResponse.get("message")), is("Transaction started."));
-            assertThat(String.valueOf(rollbackResponse.get("message")), is("Transaction rolled back."));
+            assertThat(String.valueOf(beginResponse.get("summary")), is("Transaction started."));
+            assertThat(String.valueOf(rollbackResponse.get("summary")), is("Transaction rolled back."));
             assertThat(MySQLRuntimeTestSupport.querySingleString(getContainer(), String.format("SELECT status FROM %s.orders WHERE order_id = 1", getPhysicalSchemaName())), is("NEW"));
         }
     }
@@ -102,9 +102,9 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
                     createExecuteUpdateArguments("UPDATE orders SET status = 'DONE' WHERE order_id = 1"));
             Map<String, Object> rollbackResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("ROLLBACK TO SAVEPOINT sp_1"));
             Map<String, Object> commitResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("COMMIT"));
-            assertThat(String.valueOf(savepointResponse.get("message")), is("Savepoint created."));
-            assertThat(String.valueOf(rollbackResponse.get("message")), is("Savepoint rolled back."));
-            assertThat(String.valueOf(commitResponse.get("message")), is("Transaction committed."));
+            assertThat(String.valueOf(savepointResponse.get("summary")), is("Savepoint created."));
+            assertThat(String.valueOf(rollbackResponse.get("summary")), is("Savepoint rolled back."));
+            assertThat(String.valueOf(commitResponse.get("summary")), is("Transaction committed."));
             assertThat(MySQLRuntimeTestSupport.querySingleString(getContainer(), String.format("SELECT status FROM %s.orders WHERE order_id = 1", getPhysicalSchemaName())), is("PENDING"));
         }
     }
@@ -118,9 +118,9 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
             Map<String, Object> savepointResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("SAVEPOINT sp_release"));
             Map<String, Object> releaseResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("RELEASE SAVEPOINT sp_release"));
             Map<String, Object> commitResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("COMMIT"));
-            assertThat(String.valueOf(savepointResponse.get("message")), is("Savepoint created."));
-            assertThat(String.valueOf(releaseResponse.get("message")), is("Savepoint released."));
-            assertThat(String.valueOf(commitResponse.get("message")), is("Transaction committed."));
+            assertThat(String.valueOf(savepointResponse.get("summary")), is("Savepoint created."));
+            assertThat(String.valueOf(releaseResponse.get("summary")), is("Savepoint released."));
+            assertThat(String.valueOf(commitResponse.get("summary")), is("Transaction committed."));
         }
     }
     
@@ -133,7 +133,7 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
                     createExecuteUpdateArguments("CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
             Map<String, Object> actualItem = MCPPayloadAssertions.getSingleItem(interactionClient.readResource(
                     "shardingsphere://databases/logic_db/schemas/logic_db/tables/orders_archive"));
-            assertThat(String.valueOf(executeResponse.get("message")), is("Statement executed."));
+            assertThat(String.valueOf(executeResponse.get("summary")), is("Statement executed."));
             assertThat(String.valueOf(actualItem.get("table")), is("orders_archive"));
         }
     }
