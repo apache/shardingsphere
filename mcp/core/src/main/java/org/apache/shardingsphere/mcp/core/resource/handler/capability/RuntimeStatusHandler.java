@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,19 +60,18 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPFeature
     public MCPSuccessPayload handle(final MCPFeatureRequestContext handlerContext, final MCPUriVariables uriVariables) {
         List<RuntimeDatabaseProfile> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
         boolean hasConfiguredDatabase = !databases.isEmpty();
-        Map<String, Object> result = new LinkedHashMap<>(15, 1F);
+        MCPTransportType activeTransport = handlerContext.getActiveTransport();
+        String activeTransportName = activeTransport.name().toLowerCase(Locale.ENGLISH);
+        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("response_mode", MCPResponseMode.RUNTIME);
         result.put(MCPPayloadFieldNames.SUMMARY, createSummary(hasConfiguredDatabase, databases.size()));
-        result.put("server_status", hasConfiguredDatabase ? "ready" : "configuration_required");
         result.put("status", hasConfiguredDatabase ? "available" : "configuration_required");
-        result.put("transport", handlerContext.getActiveTransport());
-        result.put("active_transport", handlerContext.getActiveTransport());
-        result.put("transport_security_summary", createTransportSecuritySummary(handlerContext.getActiveTransport()));
+        result.put("active_transport", activeTransportName);
+        result.put("transport_security_summary", createTransportSecuritySummary(activeTransport));
         result.put("configured_database_count", databases.size());
         result.put("databases", databases.stream().map(each -> createDatabaseStatus(handlerContext, each)).toList());
         result.put("readiness", createReadiness(hasConfiguredDatabase));
         result.put("runtime_protection", MCPRuntimeProtectionPolicy.createRuntimeProtectionPayload());
-        result.put("redaction_summary", Map.of("categories", List.of(), "redacted_count", 0, "marker", "******"));
         result.put("diagnostics", createDiagnostics(hasConfiguredDatabase));
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(hasConfiguredDatabase));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActions(hasConfiguredDatabase));
@@ -83,11 +84,10 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPFeature
                 : "Runtime requires at least one configured logical database before metadata discovery or SQL execution.";
     }
     
-    private Map<String, Object> createTransportSecuritySummary(final String activeTransport) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("transport", activeTransport);
-        result.put("authentication", "http".equalsIgnoreCase(activeTransport) ? "not_enabled_by_mcp_transport" : "local_client_process");
-        result.put("recommended_exposure", "http".equalsIgnoreCase(activeTransport) ? "loopback_or_trusted_gateway" : "local_stdio_session");
+    private Map<String, Object> createTransportSecuritySummary(final MCPTransportType activeTransport) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("authentication", MCPTransportType.HTTP == activeTransport ? "not_enabled_by_mcp_transport" : "local_client_process");
+        result.put("recommended_exposure", MCPTransportType.HTTP == activeTransport ? "loopback_or_trusted_gateway" : "local_stdio_session");
         result.put("model_action", "Do not request or echo JDBC URLs, credentials, raw environment variables, or stack traces.");
         return result;
     }
@@ -166,15 +166,10 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPFeature
     
     private Map<String, Object> createDatabaseStatus(final MCPFeatureRequestContext handlerContext, final RuntimeDatabaseProfile database) {
         Optional<MCPDatabaseCapability> capability = handlerContext.getCapabilityFacade().provide(database.getDatabase());
-        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("database", database.getDatabase());
         result.put("database_type", database.getDatabaseType());
-        result.put("driver_category", database.getDatabaseType().toLowerCase());
-        result.put("schema_count", 0);
-        result.put("metadata_visibility", "ready");
         result.put("capabilities", capability.map(this::createCapabilityStatus).orElseGet(this::createUnavailableCapabilityStatus));
-        result.put("capability_visibility", capability.isPresent() ? "ready" : "unavailable");
-        result.put("feature_visibility", "ready");
         result.put(MCPPayloadFieldNames.RESOURCE, MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s", MCPUriPathSegmentUtils.encodePathSegment(database.getDatabase())),
                 "logical-database", "inspect_detail", "Read this logical database resource for metadata details.", "databases"));
         return result;

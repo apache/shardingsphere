@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.payload;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPRuntimeDatabaseRecoveryPayloadFactory;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationResult;
@@ -66,9 +66,13 @@ public final class RuntimeDatabaseValidationPayload implements MCPSuccessPayload
         result.put("database", validationResult.getDatabase());
         result.put("checks", createChecksPayload());
         result.put("category", validationResult.getCategory());
-        result.put(MCPPayloadFieldNames.RECOVERY, recovery);
-        if (recovery.containsKey(MCPPayloadFieldNames.NEXT_ACTIONS)) {
-            result.put(MCPPayloadFieldNames.NEXT_ACTIONS, recovery.get(MCPPayloadFieldNames.NEXT_ACTIONS));
+        if (!recovery.isEmpty()) {
+            Map<String, Object> recoveryPayload = new LinkedHashMap<>(recovery);
+            result.put(MCPPayloadFieldNames.NEXT_ACTIONS, recoveryPayload.remove(MCPPayloadFieldNames.NEXT_ACTIONS));
+            recoveryPayload.remove("response_mode");
+            recoveryPayload.remove("category");
+            recoveryPayload.remove("database");
+            result.put(MCPPayloadFieldNames.RECOVERY, recoveryPayload);
         }
         return result;
     }

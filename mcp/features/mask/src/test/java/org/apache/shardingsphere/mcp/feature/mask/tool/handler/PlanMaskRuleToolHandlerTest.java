@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
@@ -85,8 +86,6 @@ class PlanMaskRuleToolHandlerTest {
                     "column", "phone"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("first-n"), is("3"));
-            assertFalse(actualPayload.containsKey("ddl_artifacts"));
-            assertFalse(actualPayload.containsKey("index_plan"));
             assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("keep_first_n_last_m"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
             List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
@@ -178,7 +177,7 @@ class PlanMaskRuleToolHandlerTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(result.getSessionId()).thenReturn("session-1");
+        when(result.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(result.getQueryFacade()).thenReturn(queryFacade);

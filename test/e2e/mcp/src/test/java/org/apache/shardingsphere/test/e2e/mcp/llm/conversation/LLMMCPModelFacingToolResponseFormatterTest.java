@@ -78,14 +78,11 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     @Test
     void assertFormatWithArtifactSummaries() {
         Map<String, Object> actual = format(Map.of(
-                "manual_artifacts", List.of(Map.of(
-                        "ddl_artifacts", List.of("a", "b"),
-                        "index_plan", List.of("c"),
-                        "distsql_artifacts", List.of("d", "e", "f"))),
-                "exported_artifacts", List.of(Map.of("ddl_artifacts", List.of("g")))));
+                "manual_artifact_package", Map.of("distsql_artifacts", List.of("d", "e", "f")),
+                "exported_artifacts", List.of(Map.of("distsql_artifacts", List.of("g")))));
         assertThat(actual, is(Map.of(
-                "manual_artifacts", List.of(Map.of("ddl_artifact_count", 2, "index_plan_count", 1, "distsql_artifact_count", 3)),
-                "exported_artifacts", List.of(Map.of("ddl_artifact_count", 1)))));
+                "manual_artifact_package", Map.of("distsql_artifact_count", 3),
+                "exported_artifacts", List.of(Map.of("distsql_artifact_count", 1)))));
     }
     
     @Test
@@ -98,7 +95,6 @@ class LLMMCPModelFacingToolResponseFormatterTest {
                 Map.entry("parent_resource", Map.of("uri", "shardingsphere://databases")),
                 Map.entry("next_resources", List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas"))),
                 Map.entry("manual_artifact_summary", "Review DistSQL."),
-                Map.entry("manual_follow_up", "Validate runtime state."),
                 Map.entry("empty_state", Map.of("state", "no_match")),
                 Map.entry("recovery_guidance", "Read metadata before retrying."),
                 Map.entry("remediation", "Fix the mismatch."),
@@ -111,7 +107,6 @@ class LLMMCPModelFacingToolResponseFormatterTest {
                 Map.entry("parent_resource", Map.of("uri", "shardingsphere://databases")),
                 Map.entry("next_resources", List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas"))),
                 Map.entry("manual_artifact_summary", "Review DistSQL."),
-                Map.entry("manual_follow_up", "Validate runtime state."),
                 Map.entry("empty_state", Map.of("state", "no_match")),
                 Map.entry("recovery_guidance", "Read metadata before retrying."),
                 Map.entry("remediation", "Fix the mismatch."))));
@@ -128,9 +123,6 @@ class LLMMCPModelFacingToolResponseFormatterTest {
                         "recovery_category", "missing_context",
                         "model_action", "retry",
                         "suggested_arguments", Map.of("database", "logic_db"),
-                        "next_actions", List.of(
-                                Map.of("type", "tool_call", "tool_name", "database_gateway_execute_update", "arguments", Map.of("execution_mode", "execute")),
-                                Map.of("type", "resource_read", "resource_uri", "shardingsphere://databases")),
                         "resources_to_read", List.of(Map.of("uri", "shardingsphere://databases")),
                         "recovery_guidance", "Read metadata.",
                         "remediation", "Fix the request.",
@@ -144,8 +136,7 @@ class LLMMCPModelFacingToolResponseFormatterTest {
                         "suggested_arguments", Map.of("database", "logic_db"),
                         "resources_to_read", List.of(Map.of("uri", "shardingsphere://databases")),
                         "recovery_guidance", "Read metadata.",
-                        "remediation", "Fix the request.",
-                        "next_actions", List.of(Map.of("type", "resource_read", "resource_uri", "shardingsphere://databases"))))));
+                        "remediation", "Fix the request."))));
     }
     
     @Test

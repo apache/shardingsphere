@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -73,7 +74,7 @@ class SearchMetadataToolHandlerTest {
         assertTrue(actualProperties.containsKey("search_context"));
         assertTrue(actualProperties.containsKey("summary"));
         assertTrue(actualProperties.containsKey("total_match_count"));
-        assertTrue(actualProperties.containsKey("returned_count"));
+        assertTrue(actualProperties.containsKey("count"));
         assertTrue(actualProperties.containsKey("truncated"));
         assertTrue(actualProperties.containsKey("large_result_guidance"));
         assertTrue(actualProperties.containsKey("empty_state"));
@@ -92,10 +93,9 @@ class SearchMetadataToolHandlerTest {
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
             assertThat(actualPayload.get("summary"), is("Metadata search returned 1 of 1 matches."));
             assertThat(actualPayload.get("total_match_count"), is(1));
-            assertThat(actualPayload.get("returned_count"), is(1));
+            assertThat(actualPayload.get("count"), is(1));
             assertFalse((Boolean) actualPayload.get("truncated"));
             assertFalse(actualPayload.containsKey("next_page_token"));
-            assertFalse((Boolean) actualPayload.get("has_more"));
             assertThat(actualPayload.get("continuation_mode"), is("none"));
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).getFirst()).getName(), is("order_idx"));
             assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("index")));
@@ -118,7 +118,7 @@ class SearchMetadataToolHandlerTest {
     @Test
     void assertHandleSearchMetadataWithStorageUnit() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds")));
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
         when(requestContext.getMetadataQueryFacade()).thenReturn(mock(MCPMetadataQueryFacade.class));
         when(requestContext.getQueryFacade()).thenReturn(queryFacade);
@@ -156,7 +156,7 @@ class SearchMetadataToolHandlerTest {
             assertThat(actual, isA(MCPItemsPayload.class));
             assertThat(actualNames.size(), is(9));
             assertThat(actualPayload.get("total_match_count"), is(9));
-            assertThat(actualPayload.get("returned_count"), is(9));
+            assertThat(actualPayload.get("count"), is(9));
             assertFalse((Boolean) actualPayload.get("truncated"));
             assertTrue(actualNames.contains("logic_db"));
             assertTrue(actualNames.contains("order_idx"));
@@ -172,9 +172,8 @@ class SearchMetadataToolHandlerTest {
             assertThat(((List<?>) actualPayload.get("items")).size(), is(100));
             assertThat(actualPayload.get("summary"), is("Metadata search returned 100 of 101 matches."));
             assertThat(actualPayload.get("total_match_count"), is(101));
-            assertThat(actualPayload.get("returned_count"), is(100));
+            assertThat(actualPayload.get("count"), is(100));
             assertTrue((Boolean) actualPayload.get("truncated"));
-            assertFalse((Boolean) actualPayload.get("has_more"));
             assertThat(actualPayload.get("continuation_mode"), is("none"));
             Map<?, ?> actualLargeResultGuidance = (Map<?, ?>) actualPayload.get("large_result_guidance");
             assertThat(actualLargeResultGuidance.get("state"), is("metadata_search_result_truncated"));
@@ -261,7 +260,8 @@ class SearchMetadataToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithoutRuntimeDatabase() {
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(List.of()), "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(List.of()),
+                new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPSuccessPayload actual = new SearchMetadataToolHandler().handle(requestContext, Map.of());
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
@@ -331,7 +331,7 @@ class SearchMetadataToolHandlerTest {
     
     private MCPRuntimeContext createSearchRuntimeContext(final List<DatabaseMetadataFixture> databaseMetadata) {
         MCPRuntimeContext result = ResourceTestDataFactory.createRuntimeContext(databaseMetadata);
-        result.getSessionManager().createSession("session-1");
+        result.getSessionManager().createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         return result;
     }
     

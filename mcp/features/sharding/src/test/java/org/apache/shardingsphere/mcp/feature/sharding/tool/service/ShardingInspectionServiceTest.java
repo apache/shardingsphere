@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,7 +47,7 @@ class ShardingInspectionServiceTest {
     void assertDatabaseScopedQuery(final String name, final QueryInvocation invocation, final String expectedSQL) {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         invocation.invoke(new ShardingInspectionService(), queryFacade);
-        verify(queryFacade).query(eq("logic_db"), eq(""), eq(expectedSQL));
+        verify(queryFacade).query(eq("logic_db"), eq(expectedSQL));
     }
     
     @Test

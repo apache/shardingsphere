@@ -109,6 +109,7 @@ class MCPNextActionUtilsTest {
         assertThat(actual.get("title"), is("Ask user"));
         assertThat(actual.get("question"), is("Choose execution mode."));
         assertThat(actual.get("required_inputs"), is(List.of("execution_mode")));
+        assertFalse(actual.containsKey("reason"));
     }
     
     @Test

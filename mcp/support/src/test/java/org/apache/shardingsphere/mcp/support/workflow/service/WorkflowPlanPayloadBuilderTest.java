@@ -20,13 +20,12 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
-import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -113,16 +112,36 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "primary key", ""));
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("assisted_query", "salt", true, true, "assist key", ""));
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("like_query", "token", true, true, "like key", ""));
+        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "mode", true, false, "mode", ""));
         snapshot.getIssues().add(new WorkflowIssue("code", "warning", "clarifying", "message", "action", true,
-                Map.of("missing_properties", List.of("aes-key-value", "salt", "token"))));
+                Map.of("missing_properties", List.of("aes-key-value", "salt", "token", "mode"))));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         assertThat(actual.get("missing_required_inputs"), is(List.of("primary_algorithm_properties.aes-key-value", "assisted_query_algorithm_properties.salt",
-                "like_query_algorithm_properties.token")));
+                "like_query_algorithm_properties.token", "primary_algorithm_properties.mode")));
         List<?> actualClarificationQuestions = (List<?>) actual.get("clarification_questions");
         assertThat(((Map<?, ?>) actualClarificationQuestions.getFirst()).get("field"), is("primary_algorithm_properties.aes-key-value"));
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(1)).get("field"), is("assisted_query_algorithm_properties.salt"));
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(2)).get("field"), is("like_query_algorithm_properties.token"));
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.getFirst()).get("secret"));
+        assertThat(((Map<?, ?>) actualClarificationQuestions.get(3)).get("input_type"), is("string"));
+        assertFalse((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(3)).get("secret"));
+    }
+    
+    @Test
+    void assertBuildTreatsUnknownAlgorithmPropertyAsSecret() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
+        WorkflowRequest request = new WorkflowRequest();
+        snapshot.setRequest(request);
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("review"), List.of("rules")));
+        snapshot.getIssues().add(new WorkflowIssue("code", "warning", "clarifying", "message", "action", true, Map.of("missing_properties", List.of("unknown-property"))));
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<?, ?> actualQuestion = (Map<?, ?>) ((List<?>) actual.get("clarification_questions")).getFirst();
+        assertThat(actualQuestion.get("input_type"), is("secret"));
+        assertTrue((Boolean) actualQuestion.get("secret"));
     }
     
     @Test
@@ -148,125 +167,7 @@ class WorkflowPlanPayloadBuilderTest {
     }
     
     @Test
-    void assertBuildKeepsMaskRulePayloadRuleOnly() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setSchema("public");
-        request.setTable("orders");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Mask workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        assertThat(actual.get("summary"), is("Workflow plan `plan-1` for mask.rule is ready for preview."));
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of()));
-        Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
-        assertThat(actualReviewFocus.get("next_review_action"), is("call_database_gateway_apply_workflow_preview"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
-        assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
-        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
-    }
-    
-    @Test
-    void assertBuildKeepsBroadcastRulePayloadRuleOnly() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("broadcast.rule"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setSchema("public");
-        request.setTable("orders");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Broadcast workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of()));
-        assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
-    }
-    
-    @Test
-    void assertBuildIncludesReadwriteResources() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("readwrite.rule"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Readwrite workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of("shardingsphere://databases/logic_db/storage-units")));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("tool_name"), is("database_gateway_apply_workflow"));
-    }
-    
-    @Test
-    void assertBuildIncludesReadwriteStatusResources() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("readwrite.status"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Readwrite status workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of("shardingsphere://databases/logic_db/storage-units")));
-    }
-    
-    @Test
-    void assertBuildIncludesShadowResources() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("shadow.rule"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setTable("t_order");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Shadow workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of(
-                "shardingsphere://databases/logic_db/storage-units",
-                "shardingsphere://databases/logic_db/single-tables",
-                "shardingsphere://databases/logic_db/single-tables/t_order")));
-    }
-    
-    @Test
-    void assertBuildIncludesShardingTableRuleResources() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(WorkflowKind.valueOf("sharding.table.rule"));
-        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
-        snapshot.setClarifiedIntent(new ClarifiedIntent());
-        WorkflowRequest request = new WorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setSchema("public");
-        request.setTable("orders");
-        snapshot.setRequest(request);
-        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Sharding workflow plan.", List.of("Review"), List.of("rules")));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        List<String> actualResourceUris = extractResourceUris((List<?>) actual.get("resources_to_read"));
-        assertThat(actualResourceUris, is(List.of(
-                "shardingsphere://databases/logic_db/storage-units",
-                "shardingsphere://databases/logic_db/single-tables",
-                "shardingsphere://databases/logic_db/single-tables/orders")));
-        assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_rule_distsql"));
-    }
-    
-    @Test
-    void assertBuildRuleDistSQLOnly() {
+    void assertBuildWithArtifacts() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         snapshot.setWorkflowKind(WorkflowKind.valueOf("sharding.table.rule"));
@@ -277,13 +178,9 @@ class WorkflowPlanPayloadBuilderTest {
         request.setTable("orders");
         snapshot.setRequest(request);
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Sharding workflow plan.", List.of("Review"), List.of("rules")));
-        snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id BIGINT", 1));
-        snapshot.getIndexPlans().add(new IndexPlan("idx_order_id", "order_id", "lookup", "CREATE INDEX idx_order_id ON orders(order_id)"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE SHARDING TABLE RULE orders(DATANODES('ds.orders'))"));
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, request);
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, request);
         assertThat(actual.get("workflow_kind"), is("sharding.table.rule"));
-        assertFalse(actual.containsKey(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS));
-        assertFalse(actual.containsKey(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN));
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).size(), is(1));
         assertThat(((Map<?, ?>) ((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).getFirst()).get("sql"),
                 is("CREATE SHARDING TABLE RULE orders(DATANODES('ds.orders'))"));
@@ -330,6 +227,44 @@ class WorkflowPlanPayloadBuilderTest {
     }
     
     @Test
+    void assertBuildStopsAfterClusterModeFailure() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("readwrite.status"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
+        WorkflowRequest request = new WorkflowRequest();
+        snapshot.setRequest(request);
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Readwrite-splitting status workflow plan.", List.of("Review"), List.of("status")));
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.CLUSTER_MODE_REQUIRED, "error", WorkflowLifecycle.STEP_DISCOVERING,
+                "Cluster mode is required.", "Connect to a Cluster-mode ShardingSphere Proxy.", false,
+                Map.of("required_mode", "Cluster", "actual_mode", "Standalone")));
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("type"), is("terminal"));
+        assertThat(actualNextAction.get("reason"), is("Connect to a Cluster-mode ShardingSphere Proxy, then start a new workflow plan."));
+    }
+    
+    @Test
+    void assertBuildStartsNewPlanAfterInputConflict() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
+        WorkflowRequest request = new WorkflowRequest();
+        snapshot.setRequest(request);
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("Review"), List.of("rules")));
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_CONFLICT, "error", WorkflowLifecycle.STEP_INTAKING,
+                "Conflicting inputs.", "Choose one input mode.", false, Map.of("conflicting_inputs", List.of("table", "tables"))));
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("tool_name"), is("database_gateway_plan_encrypt_rule"));
+        assertThat(actualNextAction.get("arguments"), is(Map.of()));
+        assertThat(actualNextAction.get("reason"), is("Choose one input mode, remove conflicting inputs, and start a new plan without plan_id."));
+    }
+    
+    @Test
     void assertBuildAsksUserWhenPlanningToolIsNotInCatalogAfterFailure() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
@@ -345,7 +280,4 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actualNextAction.get("required_inputs"), is(List.of("workflow_kind", "issues")));
     }
     
-    private List<String> extractResourceUris(final List<?> resources) {
-        return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
-    }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -49,7 +49,7 @@ class MaskAlgorithmsHandlerTest {
             MCPSuccessPayload actual = new MaskAlgorithmsHandler().handle(requestContext, new MCPUriVariables(Map.of()));
             verify(mockedConstruction.constructed().getFirst()).queryMaskAlgorithms(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/mask/algorithms"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/mask/algorithms"));
         }
     }
 }

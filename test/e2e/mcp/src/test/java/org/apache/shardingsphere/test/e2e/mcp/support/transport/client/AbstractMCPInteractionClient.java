@@ -58,6 +58,12 @@ abstract class AbstractMCPInteractionClient implements MCPInteractionClient {
     }
     
     @Override
+    public final void sendRawNotification(final String method, final Map<String, Object> params) throws IOException, InterruptedException {
+        ensureOpened();
+        sendNotification(method, params);
+    }
+    
+    @Override
     public final Map<String, Object> listPrompts() throws IOException, InterruptedException {
         return getObjectListResultOrError(sendInitializedRequest("prompts-list-1", "prompts/list", Map.of()), "prompts");
     }
@@ -88,6 +94,8 @@ abstract class AbstractMCPInteractionClient implements MCPInteractionClient {
     protected abstract void ensureOpened();
     
     protected abstract Map<String, Object> sendRequest(String requestId, String method, Map<String, Object> params) throws IOException, InterruptedException;
+    
+    protected abstract void sendNotification(String method, Map<String, Object> params) throws IOException, InterruptedException;
     
     private Map<String, Object> sendInitializedRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException, InterruptedException {
         ensureOpened();

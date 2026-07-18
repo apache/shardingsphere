@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.exception;
+package org.apache.shardingsphere.mcp.api.exception;
 
 /**
- * Exception for MCP resources that do not exist.
+ * Exception for invalid MCP requests.
  */
-public class MCPNotFoundException extends ShardingSphereMCPException {
+public class MCPInvalidRequestException extends ShardingSphereMCPException {
     
-    private static final long serialVersionUID = 3956075105502101218L;
+    private static final long serialVersionUID = -8436073259040535745L;
     
-    public MCPNotFoundException(final String message) {
+    public MCPInvalidRequestException(final String message) {
         super(message);
+    }
+    
+    public MCPInvalidRequestException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

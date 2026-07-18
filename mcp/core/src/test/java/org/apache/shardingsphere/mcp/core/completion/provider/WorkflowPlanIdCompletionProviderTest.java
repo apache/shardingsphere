@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.completion.provider;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
@@ -58,7 +59,7 @@ class WorkflowPlanIdCompletionProviderTest {
                 createSnapshot("plan-previewed", WorkflowLifecycle.STATUS_PREVIEWED),
                 createSnapshot("plan-draft", WorkflowLifecycle.STATUS_CLARIFYING)));
         MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
-        when(handlerContext.getSessionId()).thenReturn("session-1");
+        when(handlerContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(handlerContext.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         MCPCompletionProviderResult actual = new WorkflowPlanIdCompletionProvider().complete(handlerContext, createRequestContext());
         List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());

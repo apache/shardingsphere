@@ -25,7 +25,8 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ResourceLink;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
@@ -79,7 +80,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
             MCPSuccessPayload response = new MCPMapPayload(Map.of("status", "ok"));
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptor("database_gateway_search_metadata"));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
-            CallToolResult actual = createToolSpecification("stdio").callHandler().apply(createExchange(), new CallToolRequest(
+            CallToolResult actual = createToolSpecification(MCPTransportType.STDIO).callHandler().apply(createExchange(), new CallToolRequest(
                     "database_gateway_search_metadata", null));
             assertThat(actual.structuredContent(), is(Map.of("status", "ok")));
             assertThat(((TextContent) actual.content().getFirst()).text(), is("{\"status\":\"ok\"}"));
@@ -92,7 +93,8 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         CallToolResult actual = new MCPCallToolResultFactory().create(new MCPErrorPayload(""));
         Map<String, Object> actualPayload = getTextContentPayload(actual);
         assertThat(actualPayload.get("response_mode"), is("recovery"));
-        assertThat(actualPayload.get("message"), is(""));
+        assertThat(actualPayload.get("summary"), is("Recovery guidance is available."));
+        assertFalse(actualPayload.containsKey("message"));
         assertNull(actual.structuredContent());
         assertTrue(actual.isError());
     }
@@ -114,7 +116,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         assertFalse(actual.isError());
         assertThat(actualPayload.get("status"), is("failed"));
         assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("database"));
-        assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("request_id"));
+        assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("next_actions"));
         assertThat(((TextContent) actual.content().getFirst()).text(), is(JsonUtils.toJsonString(actualPayload)));
     }
     
@@ -204,10 +206,10 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
                 MCPResourceHintUtils.create("shardingsphere://capabilities", "capability", "read_first", "Read capabilities.", "resources_to_read")));
         CallToolResult actual = new MCPCallToolResultFactory().create(new MCPErrorPayload("", recovery));
         Map<String, Object> actualPayload = getTextContentPayload(actual);
-        Map<?, ?> actualRecovery = (Map<?, ?>) actualPayload.get("recovery");
         assertTrue(actual.isError());
         assertNull(actual.structuredContent());
-        assertThat(actualRecovery.get("request_id"), is(actualPayload.get("request_id")));
+        assertThat(actualPayload.get("error_id"), isA(String.class));
+        assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("error_id"));
         assertThat(actual.content().get(1), isA(ResourceLink.class));
         assertThat(((ResourceLink) actual.content().get(1)).uri(), is("shardingsphere://capabilities"));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.RESOURCE_LINKS_EMITTED), is(1));
@@ -263,7 +265,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
     
     private MCPSuccessPayload createMaskPlanResponse() {
         WorkflowContextSnapshot snapshot = createMaskSnapshot();
-        Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         payload.put("masked_property_preview", Map.of("primary",
                 new MaskAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
         return new MCPMapPayload(payload);
@@ -282,7 +284,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
     
     private MCPSuccessPayload createEncryptPlanResponse() {
         WorkflowContextSnapshot snapshot = createEncryptSnapshot();
-        Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         payload.put("masked_property_preview", Map.of("primary",
                 new EncryptAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
         return new MCPMapPayload(payload);

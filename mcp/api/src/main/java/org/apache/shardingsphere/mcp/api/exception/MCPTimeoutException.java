@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.exception;
+package org.apache.shardingsphere.mcp.api.exception;
 
 /**
  * Exception for MCP timeouts.

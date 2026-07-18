@@ -30,7 +30,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
 class MetadataDiscoveryE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
@@ -83,7 +82,7 @@ class MetadataDiscoveryE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ET
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualPayload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(actualPayload.get("response_mode")), is("recovery"));
-        assertThat(String.valueOf(actualPayload.get("message")), is("Schema cannot be provided without database."));
+        assertThat(String.valueOf(actualPayload.get("summary")), is("Schema cannot be provided without database."));
     }
     
     @Test
@@ -107,13 +106,13 @@ class MetadataDiscoveryE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ET
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> databaseResource = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic%5Fdb");
         assertThat(databaseResource.statusCode(), is(200));
-        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(getFirstResourcePayload(databaseResource.body()), "item").get("database")), is("logic_db"));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObjectList(getFirstResourcePayload(databaseResource.body()), "items").getFirst().get("database")), is("logic_db"));
         HttpResponse<String> tableResource = sendResourceReadRequest(httpClient, sessionId,
                 "shardingsphere://databases/logic_db/schemas/logic_db/tables/orders%20archive%2F2026");
         assertThat(tableResource.statusCode(), is(200));
         Map<String, Object> tablePayload = getFirstResourcePayload(tableResource.body());
-        assertFalse((Boolean) tablePayload.get("found"));
-        assertThat(String.valueOf(tablePayload.get("self_uri")),
+        assertThat(MCPInteractionPayloads.getRequiredObjectList(tablePayload, "items"), is(List.of()));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(tablePayload, "self_resource").get("uri")),
                 is("shardingsphere://databases/logic_db/schemas/logic_db/tables/orders%20archive%2F2026"));
         assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(tablePayload, "recovery").get("requested_token")), is("orders archive/2026"));
     }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
@@ -37,6 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ReadwriteSplittingWorkflowPlanningServicesTest {
@@ -46,10 +49,9 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mockRuleQueryFacade(List.of()), createRuleRequest("create"));
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("readwrite.rule"));
+        assertThat(actual.getResourceUriTemplates(), is(List.of(ReadwriteSplittingFeatureDefinition.STORAGE_UNITS_RESOURCE_URI)));
         assertThat(actual.getRuleArtifacts().getFirst().getSql(),
                 is("CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')"));
-        assertFalse(actual.getDdlArtifacts().iterator().hasNext());
-        assertFalse(actual.getIndexPlans().iterator().hasNext());
     }
     
     @Test
@@ -178,6 +180,20 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND));
     }
     
+    @Test
+    void assertPlanStatusFailsInStandaloneMode() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "SHOW COMPUTE NODE INFO")).thenReturn(List.of(Map.of("mode_type", "Standalone")));
+        WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), queryFacade, createStatusRequest("disable"));
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.CLUSTER_MODE_REQUIRED));
+        assertThat(actual.getIssues().getFirst().getStage(), is(WorkflowLifecycle.STEP_DISCOVERING));
+        assertFalse(actual.getIssues().getFirst().isRetryable());
+        assertThat(actual.getIssues().getFirst().getDetails(), is(Map.of("required_mode", "Cluster", "actual_mode", "Standalone")));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
+        verify(queryFacade, never()).query("logic_db", "SHOW STATUS FROM READWRITE_SPLITTING RULE readwrite_ds FROM logic_db");
+    }
+    
     private ReadwriteSplittingRuleWorkflowPlanningService createRuleService() {
         return new ReadwriteSplittingRuleWorkflowPlanningService();
     }
@@ -189,7 +205,7 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
     private MCPFeatureQueryFacade mockRuleQueryFacade(final List<Map<String, Object>> rules) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
-        when(result.query(eq("logic_db"), eq(""), any())).thenReturn(rules);
+        when(result.query(eq("logic_db"), any())).thenReturn(rules);
         return result;
     }
     
@@ -197,7 +213,8 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "read_ds_0", "read_ds_0")).thenReturn(true);
-        when(result.query(eq("logic_db"), eq(""), any())).thenReturn(statuses);
+        when(result.query("logic_db", "SHOW COMPUTE NODE INFO")).thenReturn(List.of(Map.of("mode_type", "Cluster")));
+        when(result.query("logic_db", "SHOW STATUS FROM READWRITE_SPLITTING RULE readwrite_ds FROM logic_db")).thenReturn(statuses);
         return result;
     }
     

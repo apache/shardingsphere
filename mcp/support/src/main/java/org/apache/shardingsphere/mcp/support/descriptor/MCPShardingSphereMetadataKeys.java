@@ -85,10 +85,6 @@ public final class MCPShardingSphereMetadataKeys {
     
     public static final String CANDIDATE_COUNT = PREFIX + "candidate-count";
     
-    public static final String MATCHED_CANDIDATE_COUNT = PREFIX + "matched-candidate-count";
-    
-    public static final String RETURNED_CANDIDATE_COUNT = PREFIX + "returned-candidate-count";
-    
     public static final String MISSING_CONTEXT_ARGUMENTS = PREFIX + "missing-context-arguments";
     
     public static final String DIAGNOSTIC = PREFIX + "diagnostic";

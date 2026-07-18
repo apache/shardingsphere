@@ -98,10 +98,10 @@ class MaskWorkflowValidationServiceTest {
                 .validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         assertThat(actual.get("overall_status"), is("passed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
         assertFalse(actual.containsKey("ddl_validation"));
-        assertFalse(actual.containsKey("logical_metadata_validation"));
-        assertFalse(actual.containsKey("sql_executability_validation"));
+        assertTrue(getValidationSection(actual, "logical_metadata").isEmpty());
+        assertTrue(getValidationSection(actual, "sql_executability").isEmpty());
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
     }
@@ -154,7 +154,7 @@ class MaskWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(ruleInspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
     }
     
     @Test
@@ -168,7 +168,7 @@ class MaskWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(ruleInspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
     }
     
     @Test
@@ -306,6 +306,10 @@ class MaskWorkflowValidationServiceTest {
     }
     
     private ExecutableWorkflowArtifact createRuleDistSQLArtifact(final String sql) {
-        return new ExecutableWorkflowArtifact("review-rule-sql", "rule_dist_sql", sql, sql, true);
+        return new ExecutableWorkflowArtifact(sql, sql);
+    }
+    
+    private Map<?, ?> getValidationSection(final Map<String, Object> payload, final String layer) {
+        return ((List<?>) payload.get("sections")).stream().map(each -> (Map<?, ?>) each).filter(each -> layer.equals(each.get("layer"))).findFirst().orElse(Map.of());
     }
 }

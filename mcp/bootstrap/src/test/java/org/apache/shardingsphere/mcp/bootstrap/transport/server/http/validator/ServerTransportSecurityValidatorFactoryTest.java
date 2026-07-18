@@ -31,7 +31,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -58,12 +57,11 @@ class ServerTransportSecurityValidatorFactoryTest {
     @Test
     void assertCreateWithLoopbackOriginRejectsRemoteOrigin() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        when(sessionManager.hasSession("session-id")).thenReturn(true);
         ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", DISABLED_SESSION_ATTRIBUTION_RESOLVER);
         ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
                 () -> validator.validateHeaders(Map.of("Origin", List.of("http://example.com:8080"), "Mcp-Session-Id", List.of("session-id"))));
         assertThat(ex.getStatusCode(), is(403));
-        verify(sessionManager).hasSession("session-id");
+        verifyNoInteractions(sessionManager);
     }
     
     @Test

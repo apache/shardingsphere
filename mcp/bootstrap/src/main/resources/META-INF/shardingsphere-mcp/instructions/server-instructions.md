@@ -26,4 +26,4 @@ Use `database_gateway_execute_explain_query` for execution-plan diagnostics.
 Use `database_gateway_execute_update` with `execution_mode=preview` before side effects.
 Treat `database_gateway_execute_update` preview as database-aware validation and classification, not as a database dry run.
 
-Continue from `next_actions` or `recovery.next_actions` instead of guessing hidden tools or arguments.
+Continue from top-level `next_actions` instead of guessing hidden tools or arguments.

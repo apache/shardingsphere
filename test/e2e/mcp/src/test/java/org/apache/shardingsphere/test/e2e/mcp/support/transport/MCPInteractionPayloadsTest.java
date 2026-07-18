@@ -124,8 +124,8 @@ class MCPInteractionPayloadsTest {
     
     @Test
     void assertGetFirstResourcePayload() {
-        Map<String, Object> payload = Map.of("result", Map.of("contents", List.of(Map.of("text", "{\"item\":{\"database\":\"logic_db\"}}"))));
-        assertThat(MCPInteractionPayloads.getRequiredObject(MCPInteractionPayloads.getFirstResourcePayload(payload), "item").get("database"), is("logic_db"));
+        Map<String, Object> payload = Map.of("result", Map.of("contents", List.of(Map.of("text", "{\"items\":[{\"database\":\"logic_db\"}]}"))));
+        assertThat(MCPInteractionPayloads.getRequiredObjectList(MCPInteractionPayloads.getFirstResourcePayload(payload), "items").getFirst().get("database"), is("logic_db"));
     }
     
     @Test
@@ -151,13 +151,15 @@ class MCPInteractionPayloadsTest {
         Map<String, Object> actual = MCPInteractionPayloads.getJsonRpcErrorPayload(Map.of("error", Map.of(
                 "message", "Tool not found",
                 "data", Map.of(
-                        "message", "Nested recovery message",
+                        "summary", "Nested recovery message",
                         "response_mode", "recovery",
-                        "recovery", Map.of("next_actions", List.of(Map.of("type", "tool_call", "tool_name", "database_gateway_search_metadata")))))));
+                        "next_actions", List.of(Map.of("type", "tool_call", "tool_name", "database_gateway_search_metadata")),
+                        "recovery", Map.of("recovery_category", "unsupported_target")))));
         assertThat(actual.get("error_code"), is("json_rpc_error"));
         assertThat(actual.get("message"), is("Tool not found"));
         assertThat(actual.get("response_mode"), is("recovery"));
-        assertThat(actual.get("recovery"), is(Map.of("next_actions", List.of(Map.of("type", "tool_call", "tool_name", "database_gateway_search_metadata")))));
+        assertThat(actual.get("next_actions"), is(List.of(Map.of("type", "tool_call", "tool_name", "database_gateway_search_metadata"))));
+        assertThat(actual.get("recovery"), is(Map.of("recovery_category", "unsupported_target")));
     }
     
     @Test

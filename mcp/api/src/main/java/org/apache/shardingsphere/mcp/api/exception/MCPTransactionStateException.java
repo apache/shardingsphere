@@ -15,37 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.workflow.model;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+package org.apache.shardingsphere.mcp.api.exception;
 
 /**
- * DDL artifact.
+ * Exception for MCP transaction state errors.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DDLArtifact {
+public class MCPTransactionStateException extends ShardingSphereMCPException {
     
-    private final String artifactType;
+    private static final long serialVersionUID = 4334035448011961475L;
     
-    private final String sql;
-    
-    private final int executionOrder;
-    
-    /**
-     * Convert to map.
-     *
-     * @return map representation
-     */
-    public Map<String, Object> toMap() {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("artifact_type", artifactType);
-        result.put("sql", sql);
-        result.put("execution_order", executionOrder);
-        return result;
+    public MCPTransactionStateException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

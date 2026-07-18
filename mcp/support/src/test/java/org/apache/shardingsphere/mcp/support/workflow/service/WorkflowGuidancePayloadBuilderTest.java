@@ -37,7 +37,7 @@ class WorkflowGuidancePayloadBuilderTest {
         WorkflowGuidancePayloadBuilder.appendApplyGuidance(payload, WorkflowLifecycle.STATUS_FAILED);
         Map<?, ?> actual = (Map<?, ?>) ((List<?>) payload.get("next_actions")).getFirst();
         assertThat(actual.get("type"), is("ask_user"));
-        assertThat(actual.get("required_inputs"), is(List.of("manual_artifacts")));
+        assertThat(actual.get("required_inputs"), is(List.of("manual_artifacts_executed")));
     }
     
     @Test

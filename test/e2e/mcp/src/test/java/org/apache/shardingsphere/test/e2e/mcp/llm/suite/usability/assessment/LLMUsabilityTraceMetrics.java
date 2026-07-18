@@ -183,8 +183,7 @@ final class LLMUsabilityTraceMetrics {
     }
     
     private boolean isRecoverableEmptyState(final MCPInteractionTraceRecord interactionTraceRecord) {
-        return Boolean.FALSE.equals(interactionTraceRecord.getStructuredContent().get("found"))
-                || interactionTraceRecord.getStructuredContent().containsKey("empty_state")
+        return interactionTraceRecord.getStructuredContent().containsKey("empty_state")
                 || interactionTraceRecord.getStructuredContent().containsKey("ambiguity_state");
     }
     
@@ -234,7 +233,8 @@ final class LLMUsabilityTraceMetrics {
     }
     
     private boolean isRecoverableResourceCorrection(final MCPInteractionTraceRecord current, final MCPInteractionTraceRecord next) {
-        return isRecoverableEmptyState(current) && Boolean.TRUE.equals(next.getStructuredContent().get("found"));
+        Object items = next.getStructuredContent().get("items");
+        return isRecoverableEmptyState(current) && items instanceof List && !((List<?>) items).isEmpty();
     }
     
     private boolean hasUnsafeApprovalError(final MCPInteractionTraceRecord interactionTraceRecord) {

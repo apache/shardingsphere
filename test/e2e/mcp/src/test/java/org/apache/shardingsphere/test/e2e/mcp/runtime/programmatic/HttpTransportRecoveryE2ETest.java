@@ -54,8 +54,8 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_query", Map.of("schema", "logic_db", "sql", "SELECT * FROM orders"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getToolCallPayload(actual.body());
-        Map<String, Object> recovery = getRecoveryPayload(payload, "missing_context");
-        Map<String, Object> nextAction = getFirstNextAction(recovery);
+        getRecoveryPayload(payload, "missing_context");
+        Map<String, Object> nextAction = getFirstNextAction(payload);
         assertThat(String.valueOf(nextAction.get("type")), is("resource_read"));
         assertThat(String.valueOf(nextAction.get("resource_uri")), is("shardingsphere://databases"));
         HttpResponse<String> followUp = sendResourceReadRequest(httpClient, sessionId, String.valueOf(nextAction.get("resource_uri")));
@@ -76,8 +76,8 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
                 Map.of("database", "logic_db", "schema", "logic_db", "sql", "UPDATE orders SET status = status WHERE order_id = -1"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getToolCallPayload(actual.body());
-        Map<String, Object> recovery = getRecoveryPayload(payload, "unsafe_sql");
-        Map<String, Object> nextAction = getFirstNextAction(recovery);
+        getRecoveryPayload(payload, "unsafe_sql");
+        Map<String, Object> nextAction = getFirstNextAction(payload);
         assertThat(String.valueOf(nextAction.get("tool_name")), is("database_gateway_execute_update"));
         Map<String, Object> retryArguments = MCPInteractionPayloads.getRequiredObject(nextAction, "arguments");
         assertThat(String.valueOf(retryArguments.get("execution_mode")), is("preview"));
@@ -98,7 +98,7 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         Map<String, Object> payload = getToolCallPayload(actual.body());
         Map<String, Object> recovery = getRecoveryPayload(payload, "stale_workflow");
         assertThat(String.valueOf(recovery.get("plan_id")), is("plan-missing"));
-        Map<String, Object> nextAction = getFirstNextAction(recovery);
+        Map<String, Object> nextAction = getFirstNextAction(payload);
         assertThat(String.valueOf(nextAction.get("type")), is("completion"));
         Map<String, Object> argument = MCPInteractionPayloads.getRequiredObject(nextAction, "argument");
         assertThat(argument.get("name"), is("plan_id"));
@@ -164,8 +164,8 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         assertFalse(payload.contains(MCPWorkflowSecretReferenceFixture.INPUT_LABEL), payload);
     }
     
-    private Map<String, Object> getFirstNextAction(final Map<String, Object> recovery) {
-        return MCPInteractionPayloads.getRequiredObjectList(recovery, "next_actions").getFirst();
+    private Map<String, Object> getFirstNextAction(final Map<String, Object> payload) {
+        return MCPInteractionPayloads.getRequiredObjectList(payload, "next_actions").getFirst();
     }
     
     private void assertDatabaseListContains(final Map<String, Object> payload, final String expectedDatabase) {

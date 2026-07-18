@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.exception;
+package org.apache.shardingsphere.mcp.api.exception;
+
+import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 
 /**
- * Exception for invalid MCP requests.
+ * ShardingSphere MCP exception.
  */
-public class MCPInvalidRequestException extends ShardingSphereMCPException {
+public abstract class ShardingSphereMCPException extends ShardingSphereExternalException {
     
-    private static final long serialVersionUID = -8436073259040535745L;
+    private static final long serialVersionUID = -4717990456012914364L;
     
-    public MCPInvalidRequestException(final String message) {
+    protected ShardingSphereMCPException(final String message) {
         super(message);
     }
     
-    public MCPInvalidRequestException(final String message, final Exception cause) {
+    protected ShardingSphereMCPException(final String message, final Exception cause) {
         super(message, cause);
     }
 }

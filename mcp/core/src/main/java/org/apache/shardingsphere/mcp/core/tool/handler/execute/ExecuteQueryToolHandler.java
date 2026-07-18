@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
@@ -50,7 +50,8 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPFeatureR
         String sql = toolArguments.getStringArgument("sql");
         checkReadOnlyQuery(requestContext, toolArguments, sql);
         SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
-        return SQLExecutionPayload.query(requestContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(requestContext.getSessionId(), toolArguments,
+        return SQLExecutionPayload.query(requestContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(
+                requestContext.getSessionIdentity().getSessionId(), toolArguments,
                 SQLExecutionToolHandlerSupport.resolveSchema(requestContext, toolArguments), sql, TOOL_NAME)));
     }
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -58,14 +58,11 @@ class MetadataResourceHandlerTest {
         assertThat(actualPayload.get("summary"), is("Returned 1 of 1 logical-database metadata entries."));
         assertThat(actualPayload.get("items"), is(List.of(Map.of("database", "logic_db"))));
         assertThat(actualPayload.get("count"), is(1));
-        assertFalse((Boolean) actualPayload.get("has_more"));
         assertThat(actualPayload.get("continuation_mode"), is("none"));
-        assertThat(actualPayload.get("self_uri"), is("shardingsphere://databases"));
         assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("uri"), is("shardingsphere://databases"));
         assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("resource_kind"), is("logical-database"));
         assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("source_field"), is("self_resource"));
         assertThat(actualPayload.get("total_count"), is(1));
-        assertThat(actualPayload.get("returned_count"), is(1));
         assertFalse((Boolean) actualPayload.get("truncated"));
     }
     
@@ -76,7 +73,9 @@ class MetadataResourceHandlerTest {
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
         assertThat(actualEmptyState.get("reason"), is("No ShardingSphere-Proxy logical database is available to MCP. Configure runtimeDatabases before reading metadata."));
-        assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("recovery_category"), is("no_runtime_database"));
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.toPayload().get("recovery");
+        assertThat(actualRecovery.get("recovery_category"), is("unavailable_runtime"));
+        assertThat(actualRecovery.get("category"), is("no_runtime_database"));
     }
     
     @Test
@@ -86,7 +85,9 @@ class MetadataResourceHandlerTest {
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("unknown_database"));
         assertThat(actualEmptyState.get("reason"), is("The requested logical database is not visible to MCP. Check runtimeDatabases and ShardingSphere-Proxy connectivity."));
-        assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("recovery_category"), is("unknown_database"));
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.toPayload().get("recovery");
+        assertThat(actualRecovery.get("recovery_category"), is("not_found"));
+        assertThat(actualRecovery.get("category"), is("unknown_database"));
     }
     
     @Test
@@ -98,7 +99,9 @@ class MetadataResourceHandlerTest {
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("empty_scope"));
         assertThat(actualEmptyState.get("reason"), is("No metadata items are visible in this scope. Check metadata permissions if objects are expected."));
-        assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("recovery_category"), is("empty_scope"));
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.toPayload().get("recovery");
+        assertThat(actualRecovery.get("recovery_category"), is("empty_scope"));
+        assertThat(actualRecovery.get("category"), is("empty_scope"));
     }
     
     @Test

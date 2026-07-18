@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config;
+package org.apache.shardingsphere.mcp.api.transport;
 
 /**
- * MCP transport type.
+ * MCP transport type supported by ShardingSphere MCP runtime.
  */
 public enum MCPTransportType {
     
-    STREAMABLE_HTTP, STDIO
+    HTTP, STDIO
 }

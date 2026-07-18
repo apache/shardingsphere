@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.data.loader;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import javax.sql.DataSource;
@@ -40,4 +44,19 @@ public final class MetaDataLoaderMaterial {
     private final DatabaseType storageType;
     
     private final String defaultSchemaName;
+    
+    @Getter(AccessLevel.NONE)
+    private volatile IdentifierCasePolicy tableIdentifierPolicy;
+    
+    /**
+     * Get table identifier case policy.
+     *
+     * @return table identifier case policy
+     */
+    public synchronized IdentifierCasePolicy getTableIdentifierPolicy() {
+        if (null == tableIdentifierPolicy) {
+            tableIdentifierPolicy = IdentifierNormalizeEngine.resolvePolicy(storageType, dataSource, IdentifierScope.TABLE);
+        }
+        return tableIdentifierPolicy;
+    }
 }

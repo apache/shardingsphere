@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.support.workflow.descriptor;
+package org.apache.shardingsphere.mcp.api.exception;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class WorkflowKindDescriptorsTest {
+/**
+ * Exception for unsupported MCP operations.
+ */
+public class MCPUnsupportedException extends ShardingSphereMCPException {
     
-    @Test
-    void assertIsRuleDistSQLOnly() {
-        assertTrue(WorkflowKindDescriptors.isRuleDistSQLOnly(WorkflowKindDescriptors.ENCRYPT_RULE));
-        assertTrue(WorkflowKindDescriptors.isRuleDistSQLOnly(WorkflowKindDescriptors.SHARDING_COMPONENT_CLEANUP));
-        assertFalse(WorkflowKindDescriptors.isRuleDistSQLOnly("encrypt.table"));
+    private static final long serialVersionUID = 7488172893235310016L;
+    
+    public MCPUnsupportedException(final String message) {
+        super(message);
+    }
+    
+    public MCPUnsupportedException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

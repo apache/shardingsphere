@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

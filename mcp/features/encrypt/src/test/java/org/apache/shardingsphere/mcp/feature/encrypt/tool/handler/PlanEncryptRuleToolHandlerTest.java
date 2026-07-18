@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
@@ -88,9 +89,6 @@ class PlanEncryptRuleToolHandlerTest {
                     "column", "phone"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("aes-key-value"), is("******"));
-            assertFalse(actualPayload.containsKey("derived_column_plan"));
-            assertFalse(actualPayload.containsKey("ddl_artifacts"));
-            assertFalse(actualPayload.containsKey("index_plan"));
             assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).getFirst()).get("sql")).contains("******"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
             List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
@@ -211,7 +209,7 @@ class PlanEncryptRuleToolHandlerTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(result.getSessionId()).thenReturn("session-1");
+        when(result.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(result.getQueryFacade()).thenReturn(queryFacade);

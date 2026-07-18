@@ -32,11 +32,10 @@ public interface MCPFeatureQueryFacade {
      * Query rows from a target database.
      *
      * @param databaseName database name
-     * @param schemaName schema name
      * @param sql SQL text
      * @return query rows
      */
-    List<Map<String, Object>> query(String databaseName, String schemaName, String sql);
+    List<Map<String, Object>> query(String databaseName, String sql);
     
     /**
      * Query rows using any configured database.
@@ -65,16 +64,5 @@ public interface MCPFeatureQueryFacade {
      * @throws DatabaseCapabilityNotFoundException when database capability does not exist
      */
     boolean isSameIdentifier(String databaseName, IdentifierScope identifierScope, String identifier, String existingIdentifier);
-    
-    /**
-     * Query column definition.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnName column name
-     * @return formatted column definition
-     */
-    String queryColumnDefinition(String databaseName, String schemaName, String tableName, String columnName);
     
 }

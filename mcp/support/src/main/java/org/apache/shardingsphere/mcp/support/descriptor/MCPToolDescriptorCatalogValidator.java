@@ -80,7 +80,7 @@ public final class MCPToolDescriptorCatalogValidator {
             MCPToolOutputSchemaValidator.validate(each);
             validateToolDescriptorContract(each, runtimes.get(each.getName()));
             validateDestructiveToolDescriptor(each, runtimes.get(each.getName()));
-            validatePlanningExecutionMode(each);
+            validateNonDestructiveExecutionMode(each);
             validateRelatedResourceUris(each, resourceIdentifiers, shardingSphereResourceIdentifiers);
         }
         validatePlanningToolRuntimeDescriptors(registered, runtimeDescriptors);
@@ -265,7 +265,7 @@ public final class MCPToolDescriptorCatalogValidator {
     private static void validateApplyWorkflowDescriptor(final MCPToolDescriptor descriptor) {
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor,
                 List.of("response_mode", MCPPayloadFieldNames.SUMMARY, WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, MCPPayloadFieldNames.NEXT_ACTIONS,
-                        "manual_artifact_summary", "category", "message", "secret_reference_summary"));
+                        "manual_artifact_summary", "category", "secret_reference_summary"));
     }
     
     private static void validateValidateWorkflowDescriptor(final MCPToolDescriptor descriptor) {
@@ -346,7 +346,7 @@ public final class MCPToolDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Destructive tool `%s` must declare sideEffectScope in internal runtime.", descriptor.getName())));
     }
     
-    private static void validatePlanningExecutionMode(final MCPToolDescriptor descriptor) {
+    private static void validateNonDestructiveExecutionMode(final MCPToolDescriptor descriptor) {
         if (descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
@@ -356,9 +356,9 @@ public final class MCPToolDescriptorCatalogValidator {
         }
         Collection<?> executionModes = executionMode.get().get("enum") instanceof Collection ? (Collection<?>) executionMode.get().get("enum") : List.of();
         ShardingSpherePreconditions.checkState(!executionModes.contains("preview"),
-                () -> new IllegalStateException(String.format("Planning tool `%s` execution_mode must not expose preview.", descriptor.getName())));
+                () -> new IllegalStateException(String.format("Non-destructive tool `%s` execution_mode must not expose preview.", descriptor.getName())));
         ShardingSpherePreconditions.checkState(!executionModes.contains("auto-execute"),
-                () -> new IllegalStateException(String.format("Planning tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
+                () -> new IllegalStateException(String.format("Non-destructive tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
     }
     
 }

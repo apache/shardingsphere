@@ -14,7 +14,7 @@ HTTP example:
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     bindHost: 127.0.0.1
     port: 18088
@@ -30,8 +30,8 @@ transport:
 
 | Configuration item            | Description                                                                                                                                         |
 |-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `transport.type`              | Transport type. Supported values are `STREAMABLE_HTTP` and `STDIO`.                                                                                 |
-| `transport.http`              | HTTP transport configuration, used only when `transport.type` is `STREAMABLE_HTTP`.                                                                 |
+| `transport.type`              | Transport type. Supported values are `HTTP` and `STDIO`.                                                                                            |
+| `transport.http`              | HTTP transport configuration, used only when `transport.type` is `HTTP`.                                                                            |
 | `transport.http.bindHost`     | HTTP bind host. Defaults to `127.0.0.1`. Loopback values allow local access only. `0.0.0.0` or an intranet IP allows access through that interface. |
 | `transport.http.port`         | HTTP bind port. The default value is `18088`.                                                                                                       |
 | `transport.http.endpointPath` | HTTP endpoint path. The default value is `/mcp`.                                                                                                    |
@@ -43,7 +43,7 @@ This configuration does not provide authentication or authorization. Authenticat
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     sessionAttributionSource:
       subjectHeader: X-ShardingSphere-MCP-Subject
@@ -59,6 +59,7 @@ transport:
 | `transport.http.sessionAttributionSource.attributeHeaderPrefix` | Header prefix for custom attribution attributes.                                 |
 
 Enable this only when clients cannot forge these headers directly.
+Subsequent HTTP requests for the same MCP session must provide consistent subject, source, and attributes.
 
 ## Database configuration
 

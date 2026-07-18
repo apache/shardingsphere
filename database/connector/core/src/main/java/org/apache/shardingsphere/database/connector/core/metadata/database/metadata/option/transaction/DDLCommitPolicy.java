@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.exception;
+package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction;
 
 /**
- * Exception for unavailable MCP services.
+ * DDL commit policy applied by ShardingSphere after DDL execution.
  */
-public class MCPUnavailableException extends ShardingSphereMCPException {
+public enum DDLCommitPolicy {
     
-    private static final long serialVersionUID = 5302834723598338378L;
+    COMMIT_CURRENT_TRANSACTION,
     
-    public MCPUnavailableException(final String message) {
-        super(message);
-    }
+    NO_ADDITIONAL_COMMIT
 }

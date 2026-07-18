@@ -379,7 +379,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Existing current-session workflow plan identifier used only to continue this sharding plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+        description: "Existing current-session workflow plan identifier used only to continue a sharding.table.reference plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -523,7 +523,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Existing current-session workflow plan identifier used only to continue this cleanup plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+        description: "Existing current-session workflow plan identifier used only to continue a sharding.component.cleanup plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -804,23 +804,23 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing the same sharding.table.rule workflow kind. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         table: {type: string, description: "Logical table."}
-        column: {type: string, description: "Standard or auto-table sharding column."}
+        column: {type: string, description: "Sharding column for standard or storage_units auto-table rules. Omit for complex, hint, or none strategies."}
         operation_type: {type: string, description: "create or drop.", enum: [create, drop]}
-        data_nodes: {type: string, description: "Explicit data nodes expression for a sharding table rule."}
-        storage_units: {type: string, description: "Comma-separated storage units for an auto table rule."}
-        strategy_type: {type: string, description: "Sharding strategy type.", enum: [standard, complex, hint, none]}
-        sharding_columns: {type: string, description: "Comma-separated sharding columns for a complex strategy."}
-        algorithm_type: {type: string, description: "Sharding algorithm type."}
-        algorithm_properties: {type: object, description: "Sharding algorithm properties.", additionalProperties: {type: string}}
-        key_generate_column: {type: string, description: "Optional key generate column for this table rule."}
-        key_generator: {type: string, description: "Existing or target key generator name."}
-        key_generator_type: {type: string, description: "Key generator algorithm type."}
-        key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
-        auditors: {type: string, description: "Comma-separated auditor algorithm types for AUDIT_STRATEGY TYPE(NAME='...') entries."}
-        allow_hint_disable: {type: string, description: "Whether audit strategy allows hint disable."}
+        data_nodes: {type: string, description: "Explicit data nodes expression. Mutually exclusive with storage_units."}
+        storage_units: {type: string, description: "Comma-separated storage units for a standard auto-table rule. Mutually exclusive with data_nodes."}
+        strategy_type: {type: string, description: "Strategy shape: standard uses column, complex uses sharding_columns, hint uses neither, and none omits algorithm inputs.", enum: [standard, complex, hint, none]}
+        sharding_columns: {type: string, description: "Comma-separated sharding columns used only by a complex strategy."}
+        algorithm_type: {type: string, description: "Sharding algorithm type for standard, complex, hint, or storage_units auto-table rules. Omit for none."}
+        algorithm_properties: {type: object, description: "Properties for algorithm_type. Omit for strategy_type none.", additionalProperties: {type: string}}
+        key_generate_column: {type: string, description: "Key generate column. Required whenever key_generator, key_generator_type, or key_generator_properties is provided."}
+        key_generator: {type: string, description: "Existing named key generator. Mutually exclusive with key_generator_type and key_generator_properties."}
+        key_generator_type: {type: string, description: "Inline key generator type used only when key_generator is omitted."}
+        key_generator_properties: {type: object, description: "Inline key generator properties used only with key_generator_type and without key_generator.", additionalProperties: {type: string}}
+        auditors: {type: string, description: "Comma-separated auditor algorithm types. Required when allow_hint_disable is provided."}
+        allow_hint_disable: {type: string, description: "Whether the configured audit strategy allows hint disable. Requires auditors.", enum: ["true", "false"]}
         natural_language_intent: {type: string, description: "Original user request."}
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
         delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
@@ -867,7 +867,14 @@ tools:
               arguments: {type: object, description: "Canonical arguments to provide to the target tool."}
               reason: {type: string, description: "Why the model should take this action."}
               required_inputs: {type: array, description: "User inputs needed before continuing."}
-      required: []
+      required:
+        - response_mode
+        - plan_id
+        - workflow_kind
+        - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       additionalProperties: true
       examples:
         - response_mode: planning
@@ -916,7 +923,7 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing the same sharding.table.reference workflow kind. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         rule: {type: string, description: "Table reference rule name."}
         operation_type: {type: string, description: "create or drop.", enum: [create, drop]}
@@ -953,15 +960,15 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing the same sharding.default.strategy workflow kind. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         operation_type: {type: string, description: "create or drop.", enum: [create, drop]}
         default_strategy_type: {type: string, description: "DATABASE or TABLE default strategy type.", enum: [DATABASE, TABLE]}
-        strategy_type: {type: string, description: "Sharding strategy type.", enum: [standard, complex, hint, none]}
-        column: {type: string, description: "Default sharding column for standard strategies."}
-        sharding_columns: {type: string, description: "Comma-separated columns for complex strategies."}
-        algorithm_type: {type: string, description: "Default sharding algorithm type."}
-        algorithm_properties: {type: object, description: "Default sharding algorithm properties.", additionalProperties: {type: string}}
+        strategy_type: {type: string, description: "Strategy shape: standard uses column, complex uses sharding_columns, hint uses neither, and none omits algorithm inputs.", enum: [standard, complex, hint, none]}
+        column: {type: string, description: "Default sharding column used only by a standard strategy."}
+        sharding_columns: {type: string, description: "Comma-separated columns used only by a complex strategy."}
+        algorithm_type: {type: string, description: "Default sharding algorithm type for standard, complex, or hint. Omit for none."}
+        algorithm_properties: {type: object, description: "Properties for algorithm_type. Omit for strategy_type none.", additionalProperties: {type: string}}
         natural_language_intent: {type: string, description: "Original user request."}
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
         delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
@@ -995,12 +1002,12 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing the same sharding.key.generator workflow kind. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         key_generator: {type: string, description: "Key generator name."}
         operation_type: {type: string, description: "create or drop.", enum: [create, drop]}
         key_generator_type: {type: string, description: "Key generator algorithm type."}
-        key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
+        key_generator_properties: {type: object, description: "Properties for key_generator_type.", additionalProperties: {type: string}}
         natural_language_intent: {type: string, description: "Original user request."}
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
         delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
@@ -1034,16 +1041,16 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing the same sharding.key.generate.strategy workflow kind. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         key_generate_strategy: {type: string, description: "Key generate strategy name."}
         operation_type: {type: string, description: "create or drop.", enum: [create, drop]}
-        table: {type: string, description: "Logical table for a table-based key generate strategy."}
-        column: {type: string, description: "Key generate column for a table-based strategy."}
-        sequence: {type: string, description: "Sequence name for a sequence-based strategy."}
-        key_generator: {type: string, description: "Existing key generator name."}
-        key_generator_type: {type: string, description: "Key generator algorithm type when creating an inline generator."}
-        key_generator_properties: {type: object, description: "Key generator properties.", additionalProperties: {type: string}}
+        table: {type: string, description: "Logical table for a table-based strategy. Requires column and is mutually exclusive with sequence."}
+        column: {type: string, description: "Key generate column for a table-based strategy. Requires table and is mutually exclusive with sequence."}
+        sequence: {type: string, description: "Sequence name for a sequence-based strategy. Mutually exclusive with table and column."}
+        key_generator: {type: string, description: "Existing named key generator. Mutually exclusive with key_generator_type and key_generator_properties."}
+        key_generator_type: {type: string, description: "Inline key generator type used only when key_generator is omitted."}
+        key_generator_properties: {type: object, description: "Inline key generator properties used only with key_generator_type and without key_generator.", additionalProperties: {type: string}}
         natural_language_intent: {type: string, description: "Original user request."}
         structured_intent_evidence: {type: object, description: "Structured intent extracted by the model.", additionalProperties: true}
         delivery_mode: {type: string, description: "Planner delivery mode.", enum: [all-at-once, step-by-step]}
@@ -1078,7 +1085,7 @@ tools:
     inputSchema:
       type: object
       properties:
-        plan_id: {type: string, description: "Existing workflow plan id for continuing a previous plan. Omit for a new plan; never use placeholder values such as `plan_id`."}
+        plan_id: {type: string, description: "Existing workflow plan id for continuing the same sharding.component.cleanup workflow kind. Omit for a new plan; never use placeholder values such as `plan_id`."}
         database: {type: string, description: "Logical database."}
         operation_type: {type: string, description: "Cleanup is drop-only.", enum: [drop]}
         component_type: {type: string, description: "algorithm, key-generator, or auditor.", enum: [algorithm, key-generator, auditor]}

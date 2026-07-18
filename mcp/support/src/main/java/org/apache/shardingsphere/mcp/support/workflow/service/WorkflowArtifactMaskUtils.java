@@ -127,16 +127,7 @@ public final class WorkflowArtifactMaskUtils {
         result.put("marker", "******");
         result.put("redacted_properties", redactedProperties);
         result.put("redacted_count", redactedProperties.size());
-        result.put("redaction_summary", createRedactionSummary(redactedProperties));
-        result.put("secret_reference_summary", createSecretReferenceSummary(propertySource));
-        return result;
-    }
-    
-    private static Map<String, Object> createRedactionSummary(final List<String> redactedProperties) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("categories", redactedProperties.stream().map(WorkflowArtifactMaskUtils::createRedactedCategory).distinct().toList());
-        result.put("marker", "******");
-        result.put("redacted_count", redactedProperties.size());
         return result;
     }
     

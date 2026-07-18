@@ -46,8 +46,6 @@ class BroadcastWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("broadcast.rule"));
         assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("CREATE BROADCAST TABLE RULE `t_order`, `t_order_item`"));
-        assertFalse(actual.getDdlArtifacts().iterator().hasNext());
-        assertFalse(actual.getIndexPlans().iterator().hasNext());
     }
     
     @Test
@@ -65,6 +63,16 @@ class BroadcastWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
         assertThat(actual.getClarifiedIntent().getClarificationMessages().getFirst(), is("Please provide one or more logical table names for broadcast rule planning."));
+    }
+    
+    @Test
+    void assertPlanRejectsTableAndTablesTogether() {
+        BroadcastWorkflowRequest request = createRequest("create", "t_order,t_order_item");
+        request.setTable("t_customer");
+        WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_CONFLICT));
+        assertThat(actual.getIssues().getFirst().getDetails(), is(Map.of("conflicting_inputs", List.of("table", "tables"))));
     }
     
     @Test
@@ -116,7 +124,7 @@ class BroadcastWorkflowPlanningServiceTest {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order_item", "t_order_item")).thenReturn(true);
-        when(result.query(eq("logic_db"), eq(""), any())).thenReturn(broadcastRules);
+        when(result.query(eq("logic_db"), any())).thenReturn(broadcastRules);
         return result;
     }
     

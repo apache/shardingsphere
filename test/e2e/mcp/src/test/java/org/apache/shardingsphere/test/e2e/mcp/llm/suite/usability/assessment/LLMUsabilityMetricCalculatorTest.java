@@ -61,11 +61,11 @@ class LLMUsabilityMetricCalculatorTest {
     }
     
     @Test
-    void assertEvaluateScenarioWithNestedRecoveryNextAction() {
+    void assertEvaluateScenarioWithRecoveryNextAction() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "database_gateway_execute_query", Map.of("recovery", Map.of("next_actions", List.of(Map.of(
+                createToolCall(1, "database_gateway_execute_query", Map.of("next_actions", List.of(Map.of(
                         "type", "resource_read",
-                        "resource_uri", "shardingsphere://databases"))))),
+                        "resource_uri", "shardingsphere://databases")))),
                 MCPInteractionTraceRecord.createResourceRead(2, "shardingsphere://databases", Map.of(), 0L));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertTrue(actual.isNextActionFollowed());
@@ -90,11 +90,11 @@ class LLMUsabilityMetricCalculatorTest {
     }
     
     @Test
-    void assertEvaluateScenarioWithNestedToolCallNextActionFollowed() {
+    void assertEvaluateScenarioWithRecoveryToolCallNextActionFollowed() {
         List<MCPInteractionTraceRecord> trace = List.of(
-                createToolCall(1, "database_gateway_apply_workflow", Map.of("recovery", Map.of("next_actions", List.of(Map.of(
+                createToolCall(1, "database_gateway_apply_workflow", Map.of("next_actions", List.of(Map.of(
                         "type", "tool_call",
-                        "tool_name", "database_gateway_apply_workflow"))))),
+                        "tool_name", "database_gateway_apply_workflow")))),
                 createToolCall(2, "database_gateway_apply_workflow", Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertTrue(actual.isNextActionFollowed());
@@ -124,12 +124,12 @@ class LLMUsabilityMetricCalculatorTest {
     void assertEvaluateRecoveryScenarioWithCorrectedResource() {
         List<MCPInteractionTraceRecord> trace = List.of(
                 MCPInteractionTraceRecord.createResourceRead(1, "shardingsphere://databases/unknown/schemas/unknown/tables/orders",
-                        Map.of("found", false, "empty_state", Map.of("state", "not_found"), "next_actions", List.of(Map.of(
+                        Map.of("items", List.of(), "empty_state", Map.of("state", "not_found"), "next_actions", List.of(Map.of(
                                 "type", "resource_read",
                                 "resource_uri", "shardingsphere://databases/unknown/schemas/unknown/tables"))),
                         0L),
                 MCPInteractionTraceRecord.createResourceRead(2, "shardingsphere://databases/logic_db/schemas/public/tables/orders",
-                        Map.of("found", true), 0L));
+                        Map.of("items", List.of(Map.of("table", "orders"))), 0L));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createRecoveryScenario(), createArtifactBundle(trace));
         assertTrue(actual.isSuccess());
         assertTrue(actual.isRecoveredAfterError());

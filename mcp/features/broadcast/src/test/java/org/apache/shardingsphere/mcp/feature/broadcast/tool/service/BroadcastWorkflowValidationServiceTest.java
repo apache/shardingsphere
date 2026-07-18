@@ -86,7 +86,7 @@ class BroadcastWorkflowValidationServiceTest {
         Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         assertThat(actual.get("overall_status"), is("passed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
     }
@@ -101,7 +101,7 @@ class BroadcastWorkflowValidationServiceTest {
         Map<String, Object> actual = service.validate(
                 workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
     }
     
     @Test
@@ -114,7 +114,7 @@ class BroadcastWorkflowValidationServiceTest {
         Map<String, Object> actual = service.validate(
                 workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
     }
     
     private BroadcastRuleInspectionService getRuleInspectionService() {
@@ -144,5 +144,9 @@ class BroadcastWorkflowValidationServiceTest {
         clarifiedIntent.setOperationType(operationType);
         result.setClarifiedIntent(clarifiedIntent);
         return result;
+    }
+    
+    private Map<?, ?> getValidationSection(final Map<String, Object> payload, final String layer) {
+        return ((List<?>) payload.get("sections")).stream().map(each -> (Map<?, ?>) each).filter(each -> layer.equals(each.get("layer"))).findFirst().orElse(Map.of());
     }
 }

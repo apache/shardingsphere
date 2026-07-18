@@ -82,8 +82,10 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 
 ## Context 选择
 
-- 只需要 session ID、当前 transport 或 session identity 的 handler 使用 `MCPRequestContext`。
+- 只需要 session identity 或当前 transport 的 handler 使用 `MCPRequestContext`。该接口只暴露 `getSessionIdentity()` 和 `getActiveTransport()`。
 - 需要 database metadata、execution 或 workflow 能力的 handler 和 completion provider 使用 `MCPFeatureRequestContext`。
+
+`MCPSessionIdentity` 将不透明的 session ID 与可选的可信 `subject`、`source` 和 `attributes` 拉平到一个对象中；通过 `getSessionIdentity().getSessionId()` 读取 session ID。归属信息只描述会话来源，不代表认证或授权结果。
 
 `MCPFeatureRuntimeRequestContext` 是 runtime 管理的单次请求实现。Handler 和 completion provider 只依赖 context 接口，不依赖 core 实现类。
 

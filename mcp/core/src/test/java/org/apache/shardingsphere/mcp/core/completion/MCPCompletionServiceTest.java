@@ -21,8 +21,9 @@ import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapabi
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnavailableException;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.core.completion.provider.MetadataCompletionProvider;
 import org.apache.shardingsphere.mcp.core.completion.provider.WorkflowPlanIdCompletionProvider;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -79,7 +80,7 @@ class MCPCompletionServiceTest {
         assertThat(actual.getTotal(), is(2));
         assertTrue(actual.hasMore());
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
-        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.RETURNED_CANDIDATE_COUNT), is(1));
+        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.CANDIDATE_COUNT), is(2));
     }
     
     @Test
@@ -158,7 +159,7 @@ class MCPCompletionServiceTest {
             completionService.complete("session-1", descriptor, "value", "", new LinkedHashMap<>());
             assertThrows(MCPUnavailableException.class, () -> completionService.complete("session-1", descriptor, "value", "", new LinkedHashMap<>()));
             new MCPSessionExecutionCoordinator(runtimeContext.getSessionManager()).closeSession("session-1");
-            runtimeContext.getSessionManager().createSession("session-1");
+            runtimeContext.getSessionManager().createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
             assertDoesNotThrow(() -> completionService.complete("session-1", descriptor, "value", "", new LinkedHashMap<>()));
         } finally {
             restoreProperty(MCPRuntimeProtectionPolicy.MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY, previous);
@@ -214,7 +215,7 @@ class MCPCompletionServiceTest {
                 new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()),
                 new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
-        sessionManager.createSession("session-1");
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPRuntimeContext result = mock(MCPRuntimeContext.class);
         when(result.getDatabaseCapabilityProvider()).thenReturn(databaseCapabilityProvider);
         when(result.getWorkflowSessionContext("session-1")).thenReturn(workflowSessionContext);

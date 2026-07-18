@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -49,7 +49,7 @@ class EncryptAlgorithmsHandlerTest {
             MCPSuccessPayload actual = new EncryptAlgorithmsHandler().handle(requestContext, new MCPUriVariables(Map.of()));
             verify(mockedConstruction.constructed().getFirst()).queryEncryptAlgorithms(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/algorithms"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/encrypt/algorithms"));
         }
     }
 }

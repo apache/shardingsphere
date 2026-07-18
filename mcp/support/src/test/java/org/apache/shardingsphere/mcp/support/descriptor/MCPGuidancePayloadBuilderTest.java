@@ -30,59 +30,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPGuidancePayloadBuilderTest {
     
-    private final MCPGuidancePayloadBuilder builder = new MCPGuidancePayloadBuilder(MCPDescriptorCatalogLoader.load());
-    
     @Test
     void assertBuild() {
-        Map<String, Object> actual = MCPGuidancePayloadBuilder.build(MCPDescriptorCatalogLoader.load());
+        Map<String, Object> actual = MCPGuidancePayloadBuilder.build();
         assertThat(actual.get("response_mode"), is("guidance"));
-        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
-        assertTrue(actual.containsKey("model_first_summary"));
+        assertTrue(actual.containsKey("discovery"));
         assertTrue(actual.containsKey("model_contract"));
         assertTrue(actual.containsKey("security_hints"));
+        assertFalse(actual.containsKey("model_first_summary"));
+        assertFalse(actual.containsKey("surface_summary"));
+        assertFalse(actual.containsKey("field_naming_contract"));
     }
     
     @Test
-    void assertCreateModelFirstSummary() {
-        Map<String, Object> actual = builder.createModelFirstSummary();
+    void assertCreateDiscovery() {
+        Map<String, Object> actual = MCPGuidancePayloadBuilder.createDiscovery();
         assertThat(castToMap(actual.get("official_discovery_methods")), is(createOfficialDiscoveryMethods()));
         assertThat(actual.get("argument_completion_method"), is("completion/complete"));
         assertThat(actual.get("guidance_resource_role"),
                 is("shardingsphere://guidance complements MCP list methods with ShardingSphere domain guidance, workflow guidance, and side-effect notes."));
-        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
-        assertFalse(actual.containsKey("safe_first_resource"));
-        Map<?, ?> actualMetadataRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "inspect_metadata");
-        assertThat(actualMetadataRoute.get("first_action"), is("read_resource shardingsphere://databases"));
-        Map<?, ?> actualCompletionRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "complete_uncertain_argument");
-        assertThat(actualCompletionRoute.get("first_action"), is("call completion/complete for one uncertain argument"));
-        Map<?, ?> actualRuleWorkflowRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "rule_workflow");
-        assertThat(actualRuleWorkflowRoute.get("first_action"), is("call_tool matching database_gateway_plan_* workflow tool without plan_id for a new plan"));
-        Map<?, ?> actualRecoveryRoute = findByKey(castToRouteList(actual.get("first_call_routes")), "intent", "recover_error");
-        assertThat(actualRecoveryRoute.get("first_action"), is("follow top-level next_actions"));
-        assertThat(((Map<?, ?>) actual.get("preflight_rule")).get("tool"), is("database_gateway_validate_runtime_database"));
-        Map<?, ?> actualSideEffectingSelection = castToMap(castToMap(actual.get("sql_tool_selection")).get("side_effecting"));
-        assertThat(actualSideEffectingSelection.get("execute_requires"), is("execution_mode=execute"));
-        assertThat(actualSideEffectingSelection.get("rule_change_preference"),
-                is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw SQL execution; "
-                        + "omit plan_id for a new plan."));
-        Map<?, ?> actualWorkflowRule = castToMap(actual.get("workflow_rule"));
-        assertThat(actualWorkflowRule.get("selection_rule"),
-                is("For natural-language rule changes, use the matching database_gateway_plan_* workflow tool before raw side-effect SQL; "
-                        + "omit plan_id for a new plan and reuse only returned plan_id values."));
-        assertThat(actualWorkflowRule.get("planning_tools"), is(List.of("database_gateway_plan_encrypt_rule")));
-        assertThat(castToMap(actualWorkflowRule.get("preview_tool")).get("execution_mode"), is("preview"));
-        assertThat(castToMap(actualWorkflowRule.get("execute_tool")).get("execute_requires"),
-                is("execution_mode=review-then-execute and explicit approved_steps copied from preview_artifacts.approval_step"));
-        assertThat(actualWorkflowRule.get("validate_tool"), is("database_gateway_validate_workflow"));
     }
     
     @Test
     void assertCreateModelContract() {
-        Map<String, Object> actual = builder.createModelContract();
-        assertThat(actual.get("public_surface_source"), is("MCP list methods expose the protocol surface: tools/list, resources/list, resources/templates/list, prompts/list."));
-        assertThat(castToMap(actual.get("official_discovery_methods")), is(createOfficialDiscoveryMethods()));
-        assertThat(actual.get("argument_completion_method"), is("completion/complete"));
-        assertThat(actual.get("guidance_resource"), is("shardingsphere://guidance"));
+        Map<String, Object> actual = MCPGuidancePayloadBuilder.createModelContract();
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(String.valueOf(actual.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
         Map<?, ?> actualSqlToolSelection = castToMap(actual.get("sql_tool_selection"));
@@ -93,11 +64,14 @@ class MCPGuidancePayloadBuilderTest {
         assertThat(actual.get("resource_template_rule"),
                 is("Use resources/templates/list to discover URI variables, then read the nearest concrete resource before filling dependent completion context."));
         assertThat(actual.get("detail_resource_rule"), is("Use resource descriptors, outputSchema, and returned payload keys before assuming detail fields."));
+        assertThat(actual.get("recovery_rule"), is("When a call fails, follow top-level next_actions before inventing a new call."));
+        assertThat(actual.get("payload_field_rule"), is("ShardingSphere-owned structured payload fields use snake_case."));
+        assertFalse(actual.containsKey("official_discovery_methods"));
     }
     
     @Test
     void assertCreateNextActionContract() {
-        List<Map<String, Object>> actual = builder.createNextActionContract();
+        List<Map<String, Object>> actual = MCPGuidancePayloadBuilder.createNextActionContract();
         assertThat(actual.size(), is(5));
         Map<?, ?> actualToolCall = findByType(actual, "tool_call");
         assertTrue(((Collection<?>) actualToolCall.get("required_fields")).contains("tool_name"));
@@ -110,34 +84,32 @@ class MCPGuidancePayloadBuilderTest {
     
     @Test
     void assertCreateCommonFlows() {
-        List<Map<String, Object>> actual = builder.createCommonFlows();
+        List<Map<String, Object>> actual = MCPGuidancePayloadBuilder.createCommonFlows();
         Map<?, ?> actualInspectMetadata = findByKey(actual, "flow_id", "inspect_metadata");
         assertTrue(((Collection<?>) actualInspectMetadata.get("steps")).contains("resources/list"));
         Map<?, ?> actualValidateRuntimeDatabase = findByKey(actual, "flow_id", "validate_runtime_database");
         assertTrue(((Collection<?>) actualValidateRuntimeDatabase.get("steps")).contains("call_tool database_gateway_validate_runtime_database"));
-        assertThat(actualValidateRuntimeDatabase.get("referenced_tools"), is(List.of("database_gateway_validate_runtime_database")));
         Map<?, ?> actualExplainQuery = findByKey(actual, "flow_id", "explain_query");
-        assertThat(actualExplainQuery.get("referenced_tools"), is(List.of("database_gateway_execute_explain_query")));
         assertTrue(((Collection<?>) actualExplainQuery.get("steps")).contains("call_tool database_gateway_execute_explain_query"));
         Map<?, ?> actualCompleteArgument = findByKey(actual, "flow_id", "complete_uncertain_argument");
         assertTrue(((Collection<?>) actualCompleteArgument.get("steps")).contains("call completion/complete for one argument"));
         Map<?, ?> actualSideEffectingSql = findByKey(actual, "flow_id", "side_effecting_sql");
-        assertThat(actualSideEffectingSql.get("referenced_tools"), is(List.of("database_gateway_execute_update")));
         assertTrue(((Collection<?>) actualSideEffectingSql.get("steps")).contains("call_tool database_gateway_execute_update execution_mode=preview"));
         Map<?, ?> actualWorkflow = findByKey(actual, "flow_id", "workflow_plan_apply_validate");
         assertTrue(((Collection<?>) actualWorkflow.get("steps")).contains(
                 "call_tool database_gateway_apply_workflow execution_mode=review-then-execute approved_steps=<preview_artifacts.approval_step>"));
+        Map<?, ?> actualRecovery = findByKey(actual, "flow_id", "recover_from_error");
+        assertThat(((Collection<?>) actualRecovery.get("steps")).iterator().next(), is("follow top-level next_actions"));
     }
     
     @Test
     void assertCreateSecurityHints() {
-        Map<String, Object> actual = builder.createSecurityHints();
+        Map<String, Object> actual = MCPGuidancePayloadBuilder.createSecurityHints();
         assertTrue(String.valueOf(actual.get("http_transport")).contains("unauthenticated by default"));
         assertTrue(String.valueOf(actual.get("origin_header")).contains("loopback origins"));
         Map<?, ?> actualClientSafetyPolicy = castToMap(actual.get("client_safety_policy"));
         assertThat(actualClientSafetyPolicy.get("identity_scope"), is("mcp_session"));
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("transport_scope")).contains("trusted session attribution"));
-        assertThat(castToMap(actualClientSafetyPolicy.get("tool_call_limit")).get("scope"), is("session"));
         assertThat(castToMap(castToMap(actualClientSafetyPolicy.get("runtime_protection")).get("tool_call_limit")).get("scope"), is("session"));
         assertTrue(String.valueOf(actualClientSafetyPolicy.get("external_model_boundary")).contains("never calls external model providers"));
     }
@@ -152,11 +124,6 @@ class MCPGuidancePayloadBuilderTest {
     
     private Map<?, ?> castToMap(final Object value) {
         return (Map<?, ?>) value;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private List<Map<String, Object>> castToRouteList(final Object value) {
-        return (List<Map<String, Object>>) value;
     }
     
     private Map<String, Object> createOfficialDiscoveryMethods() {

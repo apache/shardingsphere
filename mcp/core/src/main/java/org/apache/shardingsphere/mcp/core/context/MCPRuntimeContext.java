@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.context;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionStore;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
@@ -34,12 +35,12 @@ public final class MCPRuntimeContext {
     
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
     
-    private final String activeTransport;
+    private final MCPTransportType activeTransport;
     
     @Getter(AccessLevel.NONE)
     private final InMemoryWorkflowSessionStore workflowSessionStore;
     
-    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final String activeTransport) {
+    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final MCPTransportType activeTransport) {
         this.sessionManager = sessionManager;
         this.databaseCapabilityProvider = databaseCapabilityProvider;
         this.activeTransport = activeTransport;

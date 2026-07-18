@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -50,7 +50,7 @@ class LoadBalanceAlgorithmPluginsHandlerTest {
             MCPSuccessPayload actual = handler.handle(requestContext, new MCPUriVariables(Map.of()));
             verify(inspectionService).queryLoadBalanceAlgorithmPlugins(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"));
         }
     }
 }

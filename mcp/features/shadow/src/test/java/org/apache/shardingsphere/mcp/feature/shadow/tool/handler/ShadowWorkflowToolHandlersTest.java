@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
@@ -44,7 +45,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -65,7 +65,6 @@ class ShadowWorkflowToolHandlersTest {
                     "algorithm_type", "SQL_HINT",
                     "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order")));
             Map<String, Object> actualPayload = actual.toPayload();
-            assertFalse(actualPayload.containsKey("ddl_artifacts"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
             assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/algorithm-plugins"), is("algorithm"));
             assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/databases/logic_db/rules"), is("rule"));
@@ -149,7 +148,7 @@ class ShadowWorkflowToolHandlersTest {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(result.getSessionId()).thenReturn("session-1");
+        when(result.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         when(result.getQueryFacade()).thenReturn(queryFacade);
         when(result.getExecutionFacade()).thenReturn(executionFacade);

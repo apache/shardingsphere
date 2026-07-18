@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
 import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -53,7 +53,7 @@ public final class WorkflowDistSQLQueryUtils {
      */
     public static List<Map<String, Object>> queryRuleRows(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String sql) {
         try {
-            return queryFacade.query(databaseName, "", sql);
+            return queryFacade.query(databaseName, sql);
         } catch (final MCPQueryFailedException ex) {
             if (isUnsupportedDistSQLQueryFailure(ex)) {
                 return List.of();

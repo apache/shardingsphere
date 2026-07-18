@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.api.resource;
 
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
-import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.exception.ShardingSphereMCPException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 
 /**
  * MCP resource handler.

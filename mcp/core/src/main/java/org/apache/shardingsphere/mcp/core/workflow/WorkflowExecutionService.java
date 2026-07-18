@@ -57,8 +57,7 @@ public final class WorkflowExecutionService {
     private static final List<String> EXECUTION_MODES = List.of(WorkflowLifecycle.EXECUTION_MODE_PREVIEW,
             WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE, WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY);
     
-    private static final List<String> ALLOWED_APPROVAL_STEPS = List.of(
-            WorkflowArtifactPayloadUtils.STEP_DDL, WorkflowArtifactPayloadUtils.STEP_INDEX_DDL, WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL);
+    private static final List<String> ALLOWED_APPROVAL_STEPS = List.of(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL);
     
     /**
      * Apply workflow artifacts.
@@ -97,7 +96,7 @@ public final class WorkflowExecutionService {
             return applyManualOnly(workflowSessionContext, snapshot, applyOutcome);
         }
         return applyAutomatically(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, workflowApplySynchronizationHandler, sessionId, snapshot,
-                createActualApprovedSteps(approvedSteps), actualExecutionMode, applyOutcome);
+                actualExecutionMode, applyOutcome);
     }
     
     private String requireExecutionMode(final WorkflowContextSnapshot snapshot, final String executionMode) {
@@ -122,10 +121,6 @@ public final class WorkflowExecutionService {
         }
     }
     
-    private List<String> createActualApprovedSteps(final List<String> approvedSteps) {
-        return null == approvedSteps || approvedSteps.isEmpty() ? List.of() : approvedSteps;
-    }
-    
     private Map<String, Object> checkApplyPreconditions(final String sessionId, final WorkflowContextSnapshot snapshot, final String executionMode,
                                                         final List<String> approvedSteps) {
         if (!WorkflowLifecycleUtils.isOwnedBySession(sessionId, snapshot)) {
@@ -147,7 +142,7 @@ public final class WorkflowExecutionService {
                     "Automatic workflow execution requires explicit approved_steps.",
                     "Pass the reviewed preview_artifacts.approval_step values in approved_steps.");
         }
-        if (WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(executionMode) && !areApprovedStepsVisible(snapshot, approvedSteps)) {
+        if (WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(executionMode) && createExecutableArtifacts(snapshot).isEmpty()) {
             return createRejectedResponse(snapshot, executionMode, WorkflowIssueCode.WORKFLOW_STATUS_INVALID,
                     "Automatic workflow execution received approved_steps that are not present in the previewed artifacts.",
                     "Pass only the preview_artifacts.approval_step values from the latest preview response.");
@@ -183,11 +178,6 @@ public final class WorkflowExecutionService {
         return WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY.equalsIgnoreCase(executionMode);
     }
     
-    private boolean areApprovedStepsVisible(final WorkflowContextSnapshot snapshot, final List<String> approvedSteps) {
-        List<String> visibleSteps = createExecutableArtifacts(snapshot).stream().map(WorkflowArtifactBundle.ExecutableWorkflowArtifact::approvalStep).distinct().toList();
-        return visibleSteps.containsAll(approvedSteps);
-    }
-    
     private Map<String, Object> validateApplyArtifacts(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot,
                                                        final String executionMode, final MCPWorkflowApplyArtifactValidator workflowApplyArtifactValidator) {
         List<Map<String, Object>> validationIssues = workflowApplyArtifactValidator.validate(snapshot, createExecutableArtifacts(snapshot));
@@ -198,7 +188,7 @@ public final class WorkflowExecutionService {
                 result.put("would_apply", false);
                 result.put("preview_artifacts", List.of());
             }
-            result.put("review_summary", "Workflow apply blocked invalid generated artifacts before approval.");
+            result.put(MCPPayloadFieldNames.SUMMARY, "Workflow apply blocked invalid generated artifacts before approval.");
             result.put(MCPPayloadFieldNames.NEXT_ACTIONS,
                     MCPNextActionUtils.ordered(MCPNextActionUtils.stop("Fix generated workflow artifacts, then preview the workflow again.")));
             return result;
@@ -209,7 +199,7 @@ public final class WorkflowExecutionService {
     private Map<String, Object> previewApply(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot) {
         persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PREVIEWED);
         return new WorkflowApplyResponseBuilder().buildPreviewResponse(snapshot,
-                createExecutableArtifacts(snapshot), resolveApplyExecutionMode(snapshot), createArtifactPayload(snapshot));
+                createExecutableArtifacts(snapshot), resolveApplyExecutionMode(snapshot));
     }
     
     private Map<String, Object> createPreviewSuggestedArguments(final WorkflowContextSnapshot snapshot) {
@@ -235,34 +225,26 @@ public final class WorkflowExecutionService {
     private Map<String, Object> applyAutomatically(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
                                                    final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade,
                                                    final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler,
-                                                   final String sessionId, final WorkflowContextSnapshot snapshot, final List<String> approvedSteps, final String executionMode,
+                                                   final String sessionId, final WorkflowContextSnapshot snapshot, final String executionMode,
                                                    final WorkflowApplyOutcome applyOutcome) {
         if (WorkflowSecretReferenceUtils.hasSecretReferences(getPropertySource(snapshot))) {
             return failSecretReferenceManualExecutionRequired(workflowSessionContext, snapshot, executionMode, applyOutcome);
         }
-        String currentArtifactType = "";
         String currentArtifactDisplaySql = "";
         try {
             for (WorkflowArtifactBundle.ExecutableWorkflowArtifact each : createExecutableArtifacts(snapshot)) {
-                currentArtifactType = each.artifactType();
                 currentArtifactDisplaySql = each.displaySql();
-                if (!isApproved(approvedSteps, each.approvalStep())) {
-                    applyOutcome.addSkippedArtifact(each);
-                    continue;
-                }
                 executeArtifact(executionFacade, sessionId, snapshot, each);
                 applyOutcome.addExecutedArtifact(each);
             }
-            if (!applyOutcome.hasSkippedArtifacts()) {
-                workflowApplySynchronizationHandler.synchronize(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId);
-            }
+            workflowApplySynchronizationHandler.synchronize(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId);
             return completeApply(workflowSessionContext, snapshot, executionMode, applyOutcome);
         } catch (final WorkflowSynchronizationException ex) {
             return failApplySynchronization(workflowSessionContext, snapshot, executionMode, applyOutcome, ex);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            return failApply(workflowSessionContext, snapshot, executionMode, applyOutcome, currentArtifactType, currentArtifactDisplaySql, ex);
+            return failApply(workflowSessionContext, snapshot, executionMode, applyOutcome, currentArtifactDisplaySql, ex);
         }
     }
     
@@ -273,9 +255,9 @@ public final class WorkflowExecutionService {
     }
     
     private Map<String, Object> failApply(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot, final String executionMode,
-                                          final WorkflowApplyOutcome applyOutcome, final String artifactType, final String artifactSql, final RuntimeException ex) {
+                                          final WorkflowApplyOutcome applyOutcome, final String artifactSql, final RuntimeException ex) {
         persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
-        applyOutcome.addFailedArtifact(resolveIssueCode(artifactType), artifactType, artifactSql, WorkflowArtifactMaskUtils.maskSensitiveSql(
+        applyOutcome.addFailedArtifact(artifactSql, WorkflowArtifactMaskUtils.maskSensitiveSql(
                 null == ex.getMessage() ? "" : ex.getMessage(), getPropertySource(snapshot), snapshot.getPropertyRequirements()));
         return applyOutcome.createResponse(WorkflowLifecycle.STATUS_FAILED, snapshot, executionMode, Map.of());
     }
@@ -284,16 +266,15 @@ public final class WorkflowExecutionService {
                                                                            final String executionMode, final WorkflowApplyOutcome applyOutcome) {
         persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         WorkflowPropertySource propertySource = getPropertySource(snapshot);
-        Map<String, Object> secretReferenceSummary = WorkflowArtifactMaskUtils.createSecretReferenceSummary(propertySource);
         String category = WorkflowSecretReferenceUtils.hasMalformedSecretReferences(propertySource)
                 ? MCPDiagnosticCategory.SECRET_REFERENCE_MALFORMED
                 : MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED;
-        applyOutcome.addSecretReferenceManualExecutionRequired(category, secretReferenceSummary);
+        applyOutcome.addSecretReferenceManualExecutionRequired();
         Map<String, Object> result = applyOutcome.createResponse(WorkflowLifecycle.STATUS_FAILED, snapshot, executionMode, createArtifactPayload(snapshot));
         result.put("response_mode", MCPResponseMode.RECOVERY);
         result.put("category", category);
-        result.put("message", "This workflow contains sensitive placeholders that must be filled outside MCP before execution.");
-        result.put("secret_reference_summary", secretReferenceSummary);
+        result.put(MCPPayloadFieldNames.SUMMARY, "This workflow contains sensitive placeholders that must be filled outside MCP before execution.");
+        result.put("secret_reference_summary", WorkflowArtifactMaskUtils.createSecretReferenceSummary(propertySource));
         WorkflowGuidancePayloadBuilder.appendApplyGuidance(result, WorkflowLifecycle.STATUS_FAILED);
         return result;
     }
@@ -318,27 +299,13 @@ public final class WorkflowExecutionService {
     }
     
     private Map<String, Object> createArtifactPayload(final WorkflowContextSnapshot snapshot) {
-        return WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot)
-                ? WorkflowArtifactPayloadUtils.createRuleArtifactPayload(snapshot, getPropertySource(snapshot))
-                : WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, getPropertySource(snapshot));
-    }
-    
-    private String resolveIssueCode(final String artifactType) {
-        return WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL.equalsIgnoreCase(artifactType)
-                ? WorkflowIssueCode.RULE_EXECUTION_FAILED
-                : WorkflowIssueCode.DDL_EXECUTION_FAILED;
-    }
-    
-    private boolean isApproved(final List<String> approvedSteps, final String step) {
-        return approvedSteps.contains(step);
+        return WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, getPropertySource(snapshot));
     }
     
     private List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> createExecutableArtifacts(final WorkflowContextSnapshot snapshot) {
         WorkflowArtifactBundle result = WorkflowArtifactBundle.from(snapshot);
         WorkflowPropertySource propertySource = getPropertySource(snapshot);
-        return WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot)
-                ? result.toRuleExecutableArtifacts(propertySource, snapshot.getPropertyRequirements())
-                : result.toExecutableArtifacts(propertySource, snapshot.getPropertyRequirements());
+        return result.toExecutableArtifacts(propertySource, snapshot.getPropertyRequirements());
     }
     
     private void executeArtifact(final MCPFeatureExecutionFacade executionFacade, final String sessionId, final WorkflowContextSnapshot snapshot,

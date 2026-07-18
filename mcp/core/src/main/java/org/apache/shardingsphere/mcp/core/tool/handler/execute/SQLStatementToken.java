@@ -27,10 +27,13 @@ final class SQLStatementToken {
     
     private final boolean quotedIdentifier;
     
-    SQLStatementToken(final String text, final boolean quotedIdentifier) {
+    private final int startIndex;
+    
+    SQLStatementToken(final String text, final boolean quotedIdentifier, final int startIndex) {
         this.text = text;
         upperText = text.toUpperCase(Locale.ENGLISH);
         this.quotedIdentifier = quotedIdentifier;
+        this.startIndex = startIndex;
     }
     
     String text() {
@@ -43,6 +46,10 @@ final class SQLStatementToken {
     
     boolean quotedIdentifier() {
         return quotedIdentifier;
+    }
+    
+    int startIndex() {
+        return startIndex;
     }
     
     boolean identifier() {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -43,10 +43,8 @@ class MetadataResourceResponseFactoryTest {
         assertThat(((List<?>) actual.get("items")).size(), is(100));
         assertThat(actual.get("count"), is(100));
         assertThat(actual.get("total_count"), is(101));
-        assertThat(actual.get("returned_count"), is(100));
         assertThat(actual.get("summary"), is("Returned 100 of 101 logical-database metadata entries."));
         assertTrue((Boolean) actual.get("truncated"));
-        assertTrue((Boolean) actual.get("has_more"));
         assertThat(actual.get("continuation_mode"), is("metadata_search"));
         assertThat(((Map<?, ?>) actual.get("large_result_guidance")).get("state"), is("broad_metadata_list"));
         assertThat(((Map<?, ?>) actual.get("large_result_guidance")).get("threshold"), is(100));
@@ -65,10 +63,9 @@ class MetadataResourceResponseFactoryTest {
         assertThat(actual.get("summary"), is("Returned logical-database detail for this resource URI."));
         assertThat(actual.get("resource_kind"), is("detail"));
         assertThat(actual.get("object_scope"), is("logical-database"));
-        assertTrue((Boolean) actual.get("found"));
-        assertThat(actual.get("item"), is(Map.of("database", "逻辑 库/2026?")));
+        assertThat(actual.get("items"), is(List.of(Map.of("database", "逻辑 库/2026?"))));
         String expectedSelfUri = "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F";
-        assertThat(actual.get("self_uri"), is(expectedSelfUri));
+        assertThat(((Map<?, ?>) actual.get("self_resource")).get("uri"), is(expectedSelfUri));
         assertThat(((Map<?, ?>) actual.get("parent_resource")).get("uri"), is("shardingsphere://databases"));
         List<String> nextResourceUris = ((List<?>) actual.get("next_resources")).stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
         assertThat(nextResourceUris, is(List.of(
@@ -82,7 +79,7 @@ class MetadataResourceResponseFactoryTest {
     void assertCreateMissingDetailResponse() {
         Map<String, Object> actual = createResponse("shardingsphere://databases/{database}", mock(MCPUriVariables.class), List.of()).toPayload();
         assertThat(actual.get("summary"), is("No logical-database detail item matched this resource URI."));
-        assertFalse((Boolean) actual.get("found"));
+        assertThat(actual.get("items"), is(List.of()));
         assertThat(((Map<?, ?>) actual.get("empty_state")).get("reason"), is("logical-database detail resource was not found for this URI."));
         assertThat(((Map<?, ?>) actual.get("recovery")).get("recovery_category"), is("not_found"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("type"), is("terminal"));

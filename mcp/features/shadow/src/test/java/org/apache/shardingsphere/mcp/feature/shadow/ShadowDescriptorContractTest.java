@@ -51,6 +51,16 @@ class ShadowDescriptorContractTest {
         assertCompletionTargetArguments(catalog, ShadowFeatureDefinition.PLAN_ALGORITHM_CLEANUP_PROMPT_NAME, "database", "plan_id");
     }
     
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertDefaultAlgorithmTypeContract() {
+        Map<String, Object> properties = (Map<String, Object>) findTool(MCPDescriptorCatalogLoader.load(),
+                ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_TOOL_NAME).getInputSchema().get("properties");
+        assertThat(((Map<String, Object>) properties.get("algorithm_type")).get("enum"), is(List.of("SQL_HINT")));
+        Map<String, Object> structuredIntentProperties = (Map<String, Object>) ((Map<String, Object>) properties.get("structured_intent_evidence")).get("properties");
+        assertThat(((Map<String, Object>) structuredIntentProperties.get("algorithm_type")).get("enum"), is(List.of("SQL_HINT")));
+    }
+    
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getProtocolDescriptors().getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
     }

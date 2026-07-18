@@ -51,8 +51,8 @@ class WorkflowSynchronizationSupportTest {
     @Test
     void assertSynchronizeWhenValidationFails() {
         ValidationReport validationReport = createValidationReport(WorkflowLifecycle.STATUS_FAILED);
-        validationReport.getMismatches().add(Map.of("code", WorkflowIssueCode.DDL_STATE_MISMATCH,
-                "impact", "Derived column is not visible from Proxy information_schema."));
+        validationReport.getMismatches().add(Map.of("code", WorkflowIssueCode.RULE_STATE_MISMATCH,
+                "impact", "Rule metadata is not visible from Proxy DistSQL."));
         AtomicInteger attempts = new AtomicInteger();
         WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(Duration.ofNanos(3L), Duration.ofNanos(1L));
         WorkflowSynchronizationException actual = assertThrows(WorkflowSynchronizationException.class,
@@ -60,8 +60,8 @@ class WorkflowSynchronizationSupportTest {
                     attempts.incrementAndGet();
                     return validationReport;
                 }));
-        assertThat(actual.getIssueCode(), is(WorkflowIssueCode.DDL_STATE_MISMATCH));
-        assertThat(actual.getMessage(), is("Derived column is not visible from Proxy information_schema."));
+        assertThat(actual.getIssueCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+        assertThat(actual.getMessage(), is("Rule metadata is not visible from Proxy DistSQL."));
         assertThat(attempts.get(), is(3));
     }
     

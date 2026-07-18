@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
@@ -509,6 +509,11 @@ class MCPSQLExecutionFacadeTest {
                 Arguments.of("delete target before from", "DELETE other_db.orders FROM logic_db.orders JOIN other_db.items ON 1 = 1", "other_db.orders", "DML"),
                 Arguments.of("create view object list", "CREATE VIEW logic_db.active_orders AS SELECT * FROM logic_db.orders, other_db.items", "other_db.items", "DDL"),
                 Arguments.of("create table like", "CREATE TABLE logic_db.orders_archive LIKE other_db.orders", "other_db.orders", "DDL"),
+                Arguments.of("create table select without as", "CREATE TABLE logic_db.orders_archive SELECT * FROM other_db.orders", "other_db.orders", "DDL"),
+                Arguments.of("create table parenthesized select", "CREATE TABLE logic_db.orders_archive AS (SELECT * FROM other_db.orders)", "other_db.orders", "DDL"),
+                Arguments.of("create table table query", "CREATE TABLE logic_db.orders_archive AS TABLE other_db.orders", "other_db.orders", "DDL"),
+                Arguments.of("create table quoted table query", "CREATE TABLE logic_db.orders_archive AS TABLE `other_db`.`orders`", "other_db.orders", "DDL"),
+                Arguments.of("create table ANSI quoted table query", "CREATE TABLE logic_db.orders_archive AS TABLE \"other_db\".\"orders\"", "other_db.orders", "DDL"),
                 Arguments.of("create table foreign key reference", "CREATE TABLE logic_db.order_items (order_id INT REFERENCES other_db.orders(id))", "other_db.orders", "DDL"),
                 Arguments.of("alter table", "ALTER TABLE other_db.orders ADD COLUMN status VARCHAR(10)", "other_db.orders", "DDL"),
                 Arguments.of("alter table foreign key reference",

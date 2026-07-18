@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -53,7 +53,7 @@ class ShardingAlgorithmResourceHandlerTest {
             when(requestContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
             MCPSuccessPayload actual = handlerSupplier.get().handle(requestContext, uriVariables);
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(rows.size()));
-            assertThat(actual.toPayload().get("self_uri"), is(expectedSelfUri));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is(expectedSelfUri));
         }
     }
     
