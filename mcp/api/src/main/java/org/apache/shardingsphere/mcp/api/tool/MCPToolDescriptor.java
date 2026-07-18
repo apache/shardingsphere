@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool.descriptor;
+package org.apache.shardingsphere.mcp.api.tool;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 /**
- * MCP tool descriptor.
+ * SDK-independent MCP tool descriptor.
  */
 @RequiredArgsConstructor
 @Getter

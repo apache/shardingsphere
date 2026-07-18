@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.prompt.descriptor;
+package org.apache.shardingsphere.mcp.api.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
 import java.util.Map;
 
 /**
- * MCP prompt descriptor.
+ * SDK-independent MCP resource descriptor.
+ *
+ * <p>The URI template is the canonical resource identifier. A fixed resource URI is a URI template without variables.</p>
  */
 @RequiredArgsConstructor
 @Getter
-public final class MCPPromptDescriptor {
+public final class MCPResourceDescriptor {
+    
+    private final String uriTemplate;
     
     private final String name;
     
@@ -36,7 +39,18 @@ public final class MCPPromptDescriptor {
     
     private final String description;
     
-    private final List<MCPPromptArgumentDescriptor> arguments;
+    private final String mimeType;
+    
+    private final MCPResourceAnnotations annotations;
     
     private final Map<String, Object> meta;
+    
+    /**
+     * Judge whether the resource URI template contains variables.
+     *
+     * @return true if the resource URI template contains variables
+     */
+    public boolean isTemplated() {
+        return null != uriTemplate && uriTemplate.contains("{");
+    }
 }

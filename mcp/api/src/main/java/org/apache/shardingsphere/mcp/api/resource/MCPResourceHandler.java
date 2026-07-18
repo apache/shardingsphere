@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 /**
  * MCP resource handler.
  *
+ * <p>Implementations must support concurrent invocations and must not retain request context or URI variables after {@link #handle} returns.</p>
+ *
  * @param <T> required request context type
  */
 public interface MCPResourceHandler<T extends MCPRequestContext> {

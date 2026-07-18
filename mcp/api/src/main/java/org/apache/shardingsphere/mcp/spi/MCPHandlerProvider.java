@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api;
+package org.apache.shardingsphere.mcp.spi;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
@@ -26,6 +26,9 @@ import java.util.Collection;
 
 /**
  * MCP handler provider.
+ *
+ * <p>The provider is loaded as a singleton SPI. Handler instances returned by this provider are retained by the runtime and may be invoked concurrently.
+ * Implementations must not retain request-scoped state.</p>
  */
 @SingletonSPI
 public interface MCPHandlerProvider extends ShardingSphereSPI {
@@ -33,12 +36,16 @@ public interface MCPHandlerProvider extends ShardingSphereSPI {
     /**
      * Get resource handlers.
      *
+     * <p>The returned collection may be empty, but must not be {@code null} or contain {@code null} elements.</p>
+     *
      * @return resource handlers
      */
     Collection<MCPResourceHandler<?>> getResourceHandlers();
     
     /**
      * Get tool handlers.
+     *
+     * <p>The returned collection may be empty, but must not be {@code null} or contain {@code null} elements.</p>
      *
      * @return tool handlers
      */
