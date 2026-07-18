@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,19 +81,17 @@ class CoreResourceHandlerSurfaceTest {
             }
             if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
                 assertThat(actual, isA(MCPMapPayload.class));
-                assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
-                assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://guidance"));
-                assertTrue(((List<?>) actualPayload.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
+                assertFalse(((Collection<?>) actualPayload.get("supportedStatementClasses")).isEmpty());
                 assertTrue(((List<?>) actualPayload.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
                 assertTrue(((List<?>) actualPayload.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("database_gateway_apply_workflow")));
+                assertFalse(actualPayload.containsKey("resources"));
+                assertFalse(actualPayload.containsKey("tools"));
                 assertFalse(actualPayload.containsKey("fingerprints"));
-                assertTrue((Boolean) ((Map<?, ?>) actualPayload.get("protocolAvailability")).get("resourceNavigation"));
                 return;
             }
             if (HandlerResultType.SERVICE_GUIDANCE == handlerCase.getExpectedType()) {
                 assertThat(actual, isA(MCPMapPayload.class));
                 assertThat(actualPayload.get("response_mode"), is("guidance"));
-                assertThat(actualPayload.get("guidance_resource"), is("shardingsphere://guidance"));
                 assertTrue(actualPayload.containsKey("model_contract"));
                 assertTrue(actualPayload.containsKey("common_flows"));
                 return;
@@ -115,7 +114,8 @@ class CoreResourceHandlerSurfaceTest {
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actual, isA(MCPItemsPayload.class));
             assertThat(actualPayload.get("count"), is(0));
-            assertThat(actualPayload.get("self_uri"), is("shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
+            assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("uri"),
+                    is("shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
         }
     }
     
@@ -156,12 +156,11 @@ class CoreResourceHandlerSurfaceTest {
         if (actualPayload.containsKey("resource_kind")) {
             assertThat(actual, isA(MCPMapPayload.class));
             assertThat(actualPayload.get("resource_kind"), is("detail"));
-            assertThat(actualPayload.get("found"), is(!handlerCase.getExpectedObjectNames().isEmpty()));
         } else {
             assertThat(actual, isA(MCPItemsPayload.class));
         }
         assertThat(actualPayload.get("count"), is(handlerCase.getExpectedObjectNames().size()));
-        assertThat(actualPayload.get("self_uri"), is(handlerCase.getResourceUri()));
+        assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("uri"), is(handlerCase.getResourceUri()));
         assertParentResource(handlerCase.getResourceUri(), actualPayload);
         assertNextResources(handlerCase.getResourceUri(), actualPayload);
         assertThat(extractMetadataNames(actualPayload), is(handlerCase.getExpectedObjectNames()));

@@ -80,7 +80,7 @@ class MCPCompletionServiceTest {
         assertThat(actual.getTotal(), is(2));
         assertTrue(actual.hasMore());
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
-        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.RETURNED_CANDIDATE_COUNT), is(1));
+        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.CANDIDATE_COUNT), is(2));
     }
     
     @Test

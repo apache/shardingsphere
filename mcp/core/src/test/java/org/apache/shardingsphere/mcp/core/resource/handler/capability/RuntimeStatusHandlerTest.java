@@ -43,14 +43,11 @@ class RuntimeStatusHandlerTest {
         Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
         assertThat(actual.get("response_mode"), is("runtime"));
         assertThat(actual.get("summary"), is("Runtime is ready with 3 configured logical database(s)."));
-        assertThat(actual.get("server_status"), is("ready"));
         assertThat(actual.get("status"), is("available"));
-        assertThat(actual.get("transport"), is("http"));
         assertThat(actual.get("active_transport"), is("http"));
         assertThat(((Map<?, ?>) actual.get("transport_security_summary")).get("recommended_exposure"), is("loopback_or_trusted_gateway"));
         assertThat(actual.get("configured_database_count"), is(3));
         assertTrue(((List<?>) actual.get("databases")).stream().map(each -> ((Map<?, ?>) each).get("database")).anyMatch("logic_db"::equals));
-        assertThat(((Map<?, ?>) actual.get("redaction_summary")).get("marker"), is("******"));
         assertRuntimeDiagnostics(actual, "ready");
         assertRuntimeProtection(actual);
         assertFalse(actual.containsKey("capability_fingerprint"));
@@ -65,7 +62,6 @@ class RuntimeStatusHandlerTest {
                 new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), MCPTransportType.STDIO),
                         new MCPSessionIdentity("session-1", "", "", Map.of()));
         Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
-        assertThat(actual.get("transport"), is("stdio"));
         assertThat(actual.get("active_transport"), is("stdio"));
         assertThat(((Map<?, ?>) actual.get("transport_security_summary")).get("recommended_exposure"), is("local_stdio_session"));
     }
@@ -75,7 +71,6 @@ class RuntimeStatusHandlerTest {
         MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(List.of(), MCPTransportType.HTTP),
                 new MCPSessionIdentity("session-1", "", "", Map.of()));
         Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
-        assertThat(actual.get("server_status"), is("configuration_required"));
         assertThat(actual.get("summary"), is("Runtime requires at least one configured logical database before metadata discovery or SQL execution."));
         assertThat(actual.get("status"), is("configuration_required"));
         assertThat(actual.get("configured_database_count"), is(0));
@@ -133,9 +128,6 @@ class RuntimeStatusHandlerTest {
     
     private void assertRuntimeCapability(final List<?> databases, final String databaseName) {
         Map<?, ?> actualDatabase = databases.stream().map(each -> (Map<?, ?>) each).filter(each -> databaseName.equals(each.get("database"))).findFirst().orElseThrow();
-        assertThat(actualDatabase.get("metadata_visibility"), is("ready"));
-        assertThat(actualDatabase.get("capability_visibility"), is("ready"));
-        assertThat(actualDatabase.get("feature_visibility"), is("ready"));
         Map<?, ?> actualCapabilities = (Map<?, ?>) actualDatabase.get("capabilities");
         assertTrue((Boolean) actualCapabilities.get("available"));
         assertTrue(((List<?>) actualCapabilities.get("supported_statement_classes")).contains("QUERY"));

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidMetadataO
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
-import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
-import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -43,12 +41,11 @@ final class MCPBasicRecoveryPayloadFactory {
     static Map<String, Object> createUnsupportedToolRecovery(final String toolName) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery("unsupported_tool", "Call one of the supported tools returned by tools/list.");
         result.put("tool_name", toolName);
-        result.put("supported_tools", ToolDefinitionRegistry.getSupportedTools());
+        result.put("discovery_method", "tools/list");
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read ShardingSphere catalog details after checking tools/list."));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities",
                 "Read the ShardingSphere domain catalog only when tools/list does not provide enough context.")));
-        result.put("ask_user_when_uncertain", false);
         return result;
     }
     
@@ -56,12 +53,11 @@ final class MCPBasicRecoveryPayloadFactory {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "unsupported_resource", "Read one of the supported resources or templates returned by resources/list and resources/templates/list.");
         result.put(MCPPayloadFieldNames.RESOURCE, MCPResourceHintUtils.create(resourceUri, "resource", "inspect_detail", "Unsupported resource URI requested.", MCPPayloadFieldNames.RECOVERY));
-        result.put("matching_resource_templates", ResourceDefinitionRegistry.getSupportedResources());
+        result.put("discovery_methods", List.of("resources/list", "resources/templates/list"));
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read ShardingSphere catalog details after checking resources/list and resources/templates/list."));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities",
                 "Read the ShardingSphere domain catalog only when official resource discovery does not provide enough context.")));
-        result.put("ask_user_when_uncertain", false);
         return result;
     }
     
@@ -75,7 +71,6 @@ final class MCPBasicRecoveryPayloadFactory {
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://guidance", "guidance", "Read the current MCP safety policy before retrying."));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://guidance", "Read current MCP safety policy and tool call limits.")));
-        result.put("ask_user_when_uncertain", true);
         return result;
     }
     
@@ -87,7 +82,6 @@ final class MCPBasicRecoveryPayloadFactory {
     static Map<String, Object> createToolArgumentContractViolationRecovery(final MCPToolArgumentContractViolationException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(cause.getCategory(), createToolArgumentContractModelAction(cause));
         result.put(MCPPayloadFieldNames.FIELD, cause.getArgumentPath());
-        result.put("argument_path", cause.getArgumentPath());
         result.put("tool_name", cause.getToolName());
         if (!cause.getExpectedType().isEmpty()) {
             result.put("expected_type", cause.getExpectedType());
@@ -99,7 +93,6 @@ final class MCPBasicRecoveryPayloadFactory {
             result.put("suggested_arguments", cause.getSuggestedArguments());
         }
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createToolArgumentContractNextActions(cause));
-        result.put("ask_user_when_uncertain", cause.getSuggestedArguments().isEmpty());
         return result;
     }
     
@@ -130,7 +123,6 @@ final class MCPBasicRecoveryPayloadFactory {
         result.put("missing_fields", List.of(argumentName));
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createMissingArgumentResourcesToRead(argumentName));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createMissingArgumentNextActions(argumentName));
-        result.put("ask_user_when_uncertain", true);
         return result;
     }
     
@@ -142,7 +134,6 @@ final class MCPBasicRecoveryPayloadFactory {
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.retryTool("database_gateway_search_metadata",
                 "Retry database_gateway_search_metadata with allowed object_types values, or omit object_types to search every supported metadata type.",
                 Map.of("object_types", cause.getAllowedValues()))));
-        result.put("ask_user_when_uncertain", false);
         return result;
     }
     
@@ -150,7 +141,6 @@ final class MCPBasicRecoveryPayloadFactory {
                                                                             final int minimumValue, final int maximumValue) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery("invalid_integer_argument", "Retry with an integer value inside the documented bounds.");
         result.put(MCPPayloadFieldNames.FIELD, fieldName);
-        result.put("argument_path", fieldName);
         if (!sourceTool.isEmpty()) {
             result.put("source_tool", sourceTool);
         }
@@ -163,7 +153,6 @@ final class MCPBasicRecoveryPayloadFactory {
         Map<String, Object> suggestedArguments = Map.of(fieldName, suggestedValue);
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createInvalidIntegerArgumentNextActions(fieldName, targetTool, suggestedArguments));
-        result.put("ask_user_when_uncertain", false);
         return result;
     }
     

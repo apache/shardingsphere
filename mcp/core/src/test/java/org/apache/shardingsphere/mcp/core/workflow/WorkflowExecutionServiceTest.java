@@ -73,10 +73,8 @@ class WorkflowExecutionServiceTest {
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(actualNextActions.size(), is(1));
         assertThat(((Map<?, ?>) actualNextActions.getFirst()).get("type"), is("ask_user"));
-        assertThat(((Map<?, ?>) actualResponse.get("manual_follow_up")).get("confirmation_field"), is("manual_artifacts_executed"));
         Map<?, ?> actualManualArtifactSummary = (Map<?, ?>) actualResponse.get("manual_artifact_summary");
         assertThat(actualManualArtifactSummary.get("distsql_artifact_count"), is(1));
-        assertThat(actualManualArtifactSummary.get("total_artifact_count"), is(1));
         assertTrue((Boolean) actualManualArtifactSummary.get("external_execution_required"));
         assertTrue((Boolean) actualManualArtifactSummary.get("requires_user_confirmation"));
         assertThat(actualManualArtifactSummary.get("validation_blocked_until"), is("manual_artifacts_executed"));
@@ -199,7 +197,7 @@ class WorkflowExecutionServiceTest {
         assertFalse((Boolean) actualReviewFocus.get("manual_only"));
         assertThat(actualReviewFocus.get("approval_field"), is("approved_steps"));
         assertThat(actualReviewFocus.get("approval_values"), is(List.of("rule_distsql")));
-        assertThat(actualResponse.get("review_summary"), is("Previewed 2 workflow artifacts with side-effect scope rule-metadata. Nothing has been applied."));
+        assertThat(actualResponse.get("summary"), is("Previewed 2 workflow artifacts with side-effect scope rule-metadata. Nothing has been applied."));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(actualNextActions.size(), is(2));
         Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.getFirst();
@@ -221,7 +219,7 @@ class WorkflowExecutionServiceTest {
     void assertApplyPreviewWithoutArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         Map<String, Object> actualResponse = apply(snapshot, List.of(), "preview");
-        assertThat(actualResponse.get("review_summary"), is("Previewed 0 workflow artifacts. Nothing has been applied."));
+        assertThat(actualResponse.get("summary"), is("Previewed 0 workflow artifacts. Nothing has been applied."));
         assertFalse(actualResponse.containsKey("approval_question"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("next_actions")).getFirst()).get("type"), is("terminal"));
     }
@@ -256,8 +254,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("response_mode"), is("preview"));
         assertFalse((Boolean) actualResponse.get("would_apply"));
         assertThat(((List<?>) actualResponse.get("preview_artifacts")).size(), is(0));
-        assertThat(((List<?>) actualResponse.get("manual_artifacts")).size(), is(0));
-        assertThat(actualResponse.get("manual_artifact_package"), is(Map.of()));
+        assertFalse(actualResponse.containsKey("manual_artifact_package"));
         assertThat(((List<?>) actualResponse.get("issues")).size(), is(1));
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
@@ -291,8 +288,7 @@ class WorkflowExecutionServiceTest {
                 List.of("rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(actualResponse.get("response_mode"), is("executed"));
-        assertThat(((List<?>) actualResponse.get("applied_artifacts")).size(), is(2));
-        assertThat(((List<?>) actualResponse.get("executed_distsql")).size(), is(2));
+        assertThat(((List<?>) actualResponse.get("step_results")).size(), is(2));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("executed"));
         verify(executionFacade).execute(argThat(each -> each.getSql().startsWith("CREATE MASK RULE")));
         verify(executionFacade).execute(argThat(each -> each.getSql().startsWith("ALTER MASK RULE")));
@@ -309,7 +305,6 @@ class WorkflowExecutionServiceTest {
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResult.class));
         Map<String, Object> actualResponse = apply(snapshot, executionFacade, NO_OP_APPLY_SYNCHRONIZATION_HANDLER, List.of("rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
-        assertThat(((List<?>) actualResponse.get("executed_distsql")).getFirst(), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("step_results")).getFirst()).get("sql"),
                 is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
         assertFalse(String.valueOf(actualResponse).contains("123456"));
@@ -324,8 +319,10 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualResponse.get("response_mode"), is("recovery"));
         assertThat(actualResponse.get("category"), is(MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
+        assertThat(actualResponse.get("summary"), is("This workflow contains sensitive placeholders that must be filled outside MCP before execution."));
+        assertFalse(actualResponse.containsKey("message"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
-        assertThat(((List<?>) actualResponse.get("step_results")).size(), is(0));
+        assertFalse(actualResponse.containsKey("step_results"));
         assertTrue(String.valueOf(actualResponse).contains("<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>"));
         assertFalse(String.valueOf(actualResponse).contains("placeholder://secret-value-1"));
         assertFalse(String.valueOf(actualResponse).contains("secret_reference:primary.aes-key-value"));

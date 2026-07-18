@@ -56,7 +56,7 @@ class ResourceDefinitionRegistryTest {
     void assertDispatch() {
         Optional<MCPSuccessPayload> actual = ResourceDefinitionRegistry.dispatch(mock(MCPFeatureRuntimeRequestContext.class), "shardingsphere://capabilities");
         assertTrue(actual.isPresent());
-        assertTrue(actual.get().toPayload().containsKey("supportedTools"));
+        assertTrue(actual.get().toPayload().containsKey("supportedStatementClasses"));
     }
     
     @Test

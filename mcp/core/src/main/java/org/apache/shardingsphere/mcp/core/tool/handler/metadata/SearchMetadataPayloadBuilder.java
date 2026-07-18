@@ -52,11 +52,10 @@ public final class SearchMetadataPayloadBuilder {
      */
     public static Map<String, Object> build(final MCPFeatureRequestContext requestContext, final MetadataSearchRequest request,
                                             final MetadataSearchResult searchResult, final String toolName) {
-        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put(MCPPayloadFieldNames.SUMMARY, createSummary(searchResult));
         result.put("search_context", searchResult.getSearchContext());
         result.put("total_match_count", searchResult.getTotalMatchCount());
-        result.put("returned_count", searchResult.getReturnedCount());
         result.put("truncated", searchResult.isTruncated());
         if (searchResult.isTruncated()) {
             result.put("large_result_guidance", createLargeResultGuidance(searchResult));

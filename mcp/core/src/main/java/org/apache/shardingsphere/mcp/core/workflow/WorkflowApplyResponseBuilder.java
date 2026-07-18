@@ -48,29 +48,26 @@ public final class WorkflowApplyResponseBuilder {
      * @param executionMode execution mode
      * @param issues workflow issues
      * @param stepResults step results
-     * @param executedDistSql executed DistSQL
      * @param manualArtifactPackage manual artifact package
      * @return workflow apply response payload
      */
     public Map<String, Object> build(final WorkflowContextSnapshot snapshot, final String status, final String executionMode,
                                      final Collection<Map<String, Object>> issues, final Collection<Map<String, Object>> stepResults,
-                                     final Collection<String> executedDistSql, final Map<String, Object> manualArtifactPackage) {
+                                     final Map<String, Object> manualArtifactPackage) {
         String planId = snapshot.getPlanId();
-        Map<String, Object> result = new LinkedHashMap<>(24, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("response_mode", resolveResponseMode(status, executionMode));
-        result.put(MCPPayloadFieldNames.SUMMARY, createSummary(planId, status, executionMode, issues, executedDistSql));
+        result.put(MCPPayloadFieldNames.SUMMARY, createSummary(planId, status, executionMode, issues, stepResults));
         result.put(WorkflowFieldNames.PLAN_ID, planId);
         result.put("status", status);
         result.put(WorkflowFieldNames.EXECUTION_MODE, executionMode);
         result.put("issues", issues);
-        result.put("step_results", stepResults);
-        result.put("executed_distsql", executedDistSql);
-        result.put("applied_artifacts", executedDistSql);
-        result.put("manual_artifacts", manualArtifactPackage.isEmpty() ? List.of() : List.of(manualArtifactPackage));
-        result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE, manualArtifactPackage);
-        if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status) && !manualArtifactPackage.isEmpty()) {
+        if (!stepResults.isEmpty()) {
+            result.put("step_results", stepResults);
+        }
+        if (!manualArtifactPackage.isEmpty()) {
+            result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE, manualArtifactPackage);
             result.put("manual_artifact_summary", createManualArtifactSummary(planId, manualArtifactPackage));
-            result.put("manual_follow_up", createManualFollowUp());
         }
         WorkflowGuidancePayloadBuilder.appendApplyGuidance(result, status);
         return result;
@@ -86,7 +83,7 @@ public final class WorkflowApplyResponseBuilder {
      */
     Map<String, Object> buildFailureResponse(final WorkflowContextSnapshot snapshot, final String executionMode,
                                              final Collection<Map<String, Object>> issues) {
-        return build(snapshot, WorkflowLifecycle.STATUS_FAILED, executionMode, issues, List.of(), List.of(), Map.of());
+        return build(snapshot, WorkflowLifecycle.STATUS_FAILED, executionMode, issues, List.of(), Map.of());
     }
     
     /**
@@ -95,20 +92,17 @@ public final class WorkflowApplyResponseBuilder {
      * @param snapshot workflow snapshot
      * @param executableArtifacts executable workflow artifacts
      * @param applyExecutionMode execution mode to use after preview
-     * @param manualArtifactPackage manual artifact package
      * @return workflow preview response payload
      */
     public Map<String, Object> buildPreviewResponse(final WorkflowContextSnapshot snapshot, final Collection<WorkflowArtifactBundle.ExecutableWorkflowArtifact> executableArtifacts,
-                                                    final String applyExecutionMode, final Map<String, Object> manualArtifactPackage) {
+                                                    final String applyExecutionMode) {
         List<Map<String, Object>> previewArtifacts = createPreviewArtifacts(executableArtifacts);
         Map<String, Object> result = build(snapshot, STATUS_PREVIEW, WorkflowLifecycle.EXECUTION_MODE_PREVIEW,
-                List.of(), List.of(), List.of(), manualArtifactPackage);
+                List.of(), List.of(), Map.of());
         result.put("would_apply", false);
         result.put("preview_artifacts", previewArtifacts);
         result.put("review_focus", createPreviewReviewFocus(applyExecutionMode, previewArtifacts));
-        String reviewSummary = createReviewSummary(previewArtifacts);
-        result.put(MCPPayloadFieldNames.SUMMARY, reviewSummary);
-        result.put("review_summary", reviewSummary);
+        result.put(MCPPayloadFieldNames.SUMMARY, createReviewSummary(previewArtifacts));
         result.put("argument_provenance", createPreviewArgumentProvenance());
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createPreviewNextActions(snapshot, applyExecutionMode, previewArtifacts));
         return result;
@@ -125,12 +119,13 @@ public final class WorkflowApplyResponseBuilder {
     }
     
     private String createSummary(final String planId, final String status, final String executionMode, final Collection<Map<String, Object>> issues,
-                                 final Collection<String> executedDistSql) {
+                                 final Collection<Map<String, Object>> stepResults) {
         if (WorkflowLifecycle.EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return String.format("Workflow apply preview is ready for plan `%s`.", planId);
         }
         if (WorkflowLifecycle.STATUS_COMPLETED.equals(status)) {
-            return String.format("Workflow apply completed for plan `%s` with %d applied artifact(s).", planId, executedDistSql.size());
+            long appliedArtifactCount = stepResults.stream().filter(each -> WorkflowLifecycle.STATUS_PASSED.equals(each.get("status"))).count();
+            return String.format("Workflow apply completed for plan `%s` with %d applied artifact(s).", planId, appliedArtifactCount);
         }
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
             return String.format("Workflow apply exported manual artifacts for plan `%s`; external execution is required before validation.", planId);
@@ -209,25 +204,17 @@ public final class WorkflowApplyResponseBuilder {
         return Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, executionMode);
     }
     
-    private Map<String, Object> createManualFollowUp() {
-        return Map.of(
-                "confirmation_required", true,
-                "confirmation_field", "manual_artifacts_executed",
-                "validation_blocked_until", "manual_artifacts_executed",
-                "validation_tool_after_manual_execution", WorkflowToolDescriptors.VALIDATE_TOOL_NAME,
-                "safe_independent_read_only_checks", "database_gateway_execute_query may run before manual execution confirmation when the user asked for read-only verification.");
-    }
-    
     private Map<String, Object> createManualArtifactSummary(final String planId, final Map<String, Object> manualArtifactPackage) {
         int distSqlArtifactCount = getCollectionSize(manualArtifactPackage, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS);
         Map<String, Object> result = new LinkedHashMap<>(7, 1F);
-        result.put("total_artifact_count", distSqlArtifactCount);
         result.put("distsql_artifact_count", distSqlArtifactCount);
         result.put("external_execution_required", true);
         result.put("requires_user_confirmation", true);
         result.put("validation_blocked_until", "manual_artifacts_executed");
         result.put("validation_tool_after_manual_execution", WorkflowToolDescriptors.VALIDATE_TOOL_NAME);
         result.put("validation_arguments_after_manual_execution", Map.of(WorkflowFieldNames.PLAN_ID, planId));
+        result.put("safe_independent_read_only_checks",
+                "database_gateway_execute_query may run before manual execution confirmation when the user asked for read-only verification.");
         return result;
     }
     

@@ -125,7 +125,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_execute_update", createInvalidUpdateArguments());
         Map<String, Object> actualRecovery = assertToolErrorRecovery(actual, "invalid_integer_argument");
-        assertThat(actualRecovery.get("argument_path"), is("max_rows"));
+        assertThat(actualRecovery.get("field"), is("max_rows"));
         assertThat(actualRecovery.get("minimum_value"), is(0));
         assertThat(actualRecovery.get("maximum_value"), is(5000));
         assertThat(actualRecovery.get("suggested_value"), is(100));
@@ -139,7 +139,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "database_gateway_plan_readwrite_splitting_rule",
                 Map.of("load_balancer_properties", Map.of("weight", 1)));
         Map<String, Object> actualRecovery = assertToolErrorRecovery(actual, "invalid_argument_type");
-        assertThat(actualRecovery.get("argument_path"), is("load_balancer_properties.weight"));
+        assertThat(actualRecovery.get("field"), is("load_balancer_properties.weight"));
         assertThat(actualRecovery.get("expected_type"), is("string"));
     }
     

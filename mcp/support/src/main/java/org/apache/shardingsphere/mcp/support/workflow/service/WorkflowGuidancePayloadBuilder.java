@@ -89,7 +89,7 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(status) && isSecretReferenceRecovery(payload)) {
             nextActions.add(createUserAction("Review the manual artifacts, replace neutral secret placeholders outside MCP, and execute them through the normal operational channel.",
-                    List.of("manual_artifacts")));
+                    List.of("manual_artifacts_executed")));
         } else if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
             nextActions.add(createUserAction("Inspect issues and retry database_gateway_apply_workflow only after the failed artifact is corrected.", List.of("issues")));
         }

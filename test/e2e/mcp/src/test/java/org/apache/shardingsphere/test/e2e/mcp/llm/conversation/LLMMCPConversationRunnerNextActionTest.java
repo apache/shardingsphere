@@ -201,7 +201,7 @@ class LLMMCPConversationRunnerNextActionTest extends AbstractLLMMCPConversationR
                 createToolCallCompletion("tool-2", MCPInteractionActionNames.READ_RESOURCE, readResourceArguments, "resource-response"),
                 createToolCallCompletion("tool-3", "database_gateway_execute_query", executeQueryArguments, "query-response"));
         when(getMCPInteractionClient().listResources()).thenReturn(Map.of("resources", List.of(Map.of("uri", RESOURCE_URI))));
-        when(getMCPInteractionClient().readResource(tableResourceUri)).thenReturn(Map.of("found", true));
+        when(getMCPInteractionClient().readResource(tableResourceUri)).thenReturn(Map.of("items", List.of(Map.of("table", "orders"))));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(toolNames, 2, "final-answer-response"));
@@ -230,11 +230,12 @@ class LLMMCPConversationRunnerNextActionTest extends AbstractLLMMCPConversationR
                 createToolCallCompletion("tool-2", MCPInteractionActionNames.READ_RESOURCE, liveReadArguments, "live-response"),
                 createToolCallCompletion("tool-3", "database_gateway_execute_query", executeQueryArguments, "query-response"));
         when(getMCPInteractionClient().readResource(staleResourceUri)).thenReturn(Map.of(
-                "found", false,
+                "items", List.of(),
+                "empty_state", Map.of("state", "not_found"),
                 "next_actions", List.of(Map.of(
                         "type", "resource_read",
                         "resource_uri", "shardingsphere://databases/unknown/schemas/unknown/tables"))));
-        when(getMCPInteractionClient().readResource(tableResourceUri)).thenReturn(Map.of("found", true));
+        when(getMCPInteractionClient().readResource(tableResourceUri)).thenReturn(Map.of("items", List.of(Map.of("table", "orders"))));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(toolNames, 2, "final-answer-response"));
@@ -387,8 +388,8 @@ class LLMMCPConversationRunnerNextActionTest extends AbstractLLMMCPConversationR
                 createToolCallCompletion("tool-1", "database_gateway_plan_mask_rule", planArguments, "plan-response"),
                 createToolCallCompletion("tool-2", MCPInteractionActionNames.COMPLETE, completionArguments, "completion-response"),
                 createToolCallCompletion("tool-3", "database_gateway_execute_query", executeQueryArguments, "query-response"));
-        when(getMCPInteractionClient().call("database_gateway_plan_mask_rule", planArguments)).thenReturn(Map.of("response_mode", "recovery", "recovery", Map.of(
-                "next_actions", List.of(Map.of("type", "completion", "ref", reference, "argument", argument)))));
+        when(getMCPInteractionClient().call("database_gateway_plan_mask_rule", planArguments)).thenReturn(Map.of("response_mode", "recovery",
+                "next_actions", List.of(Map.of("type", "completion", "ref", reference, "argument", argument))));
         when(getMCPInteractionClient().complete(reference, "plan_id", "", Map.of())).thenReturn(Map.of("completion", Map.of("values", List.of())));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
@@ -416,10 +417,12 @@ class LLMMCPConversationRunnerNextActionTest extends AbstractLLMMCPConversationR
         when(getMCPInteractionClient().call("database_gateway_apply_workflow", manualArguments)).thenReturn(Map.of(
                 "response_mode", "manual_only",
                 "manual_artifact_summary", Map.of("distsql_artifact_count", 1),
-                "manual_artifacts", List.of(Map.of("distsql_artifacts", List.of(Map.of("sql", "CREATE MASK RULE orders SECRET")))),
+                "manual_artifact_package", Map.of("distsql_artifacts", List.of(Map.of("sql", "CREATE MASK RULE orders SECRET"))),
                 "next_actions", List.of(Map.of(
+                        "order", 1,
                         "type", "ask_user",
-                        "reason", "Confirm manual artifacts were executed."))));
+                        "title", "Ask user",
+                        "question", "Confirm manual artifacts were executed."))));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(toolNames, 2, "final-answer-response"));

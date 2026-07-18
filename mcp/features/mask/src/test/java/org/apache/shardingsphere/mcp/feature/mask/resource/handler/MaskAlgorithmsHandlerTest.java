@@ -49,7 +49,7 @@ class MaskAlgorithmsHandlerTest {
             MCPSuccessPayload actual = new MaskAlgorithmsHandler().handle(requestContext, new MCPUriVariables(Map.of()));
             verify(mockedConstruction.constructed().getFirst()).queryMaskAlgorithms(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/mask/algorithms"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/mask/algorithms"));
         }
     }
 }

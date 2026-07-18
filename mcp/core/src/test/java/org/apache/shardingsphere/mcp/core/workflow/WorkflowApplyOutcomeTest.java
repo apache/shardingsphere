@@ -37,7 +37,6 @@ class WorkflowApplyOutcomeTest {
         WorkflowApplyOutcome outcome = new WorkflowApplyOutcome();
         outcome.addExecutedArtifact(new WorkflowArtifactBundle.ExecutableWorkflowArtifact("CREATE MASK RULE orders", "CREATE MASK RULE orders"));
         Map<String, Object> actual = outcome.createResponse(WorkflowLifecycle.STATUS_COMPLETED, createSnapshot(), "review-then-execute", Map.of());
-        assertThat(((List<?>) actual.get("executed_distsql")).size(), is(1));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("step_results")).getFirst()).get("status"), is(WorkflowLifecycle.STATUS_PASSED));
     }
     
@@ -55,11 +54,11 @@ class WorkflowApplyOutcomeTest {
     @Test
     void assertCreateResponseWithSecretReferenceIssue() {
         WorkflowApplyOutcome outcome = new WorkflowApplyOutcome();
-        outcome.addSecretReferenceManualExecutionRequired("secret_reference_manual_execution_required", Map.of("total", 1));
+        outcome.addSecretReferenceManualExecutionRequired();
         Map<String, Object> actual = outcome.createResponse(WorkflowLifecycle.STATUS_FAILED, createSnapshot(), "review-then-execute", Map.of());
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actual.get("issues")).getFirst();
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
-        assertThat(((Map<?, ?>) actualIssue.get("details")).get("category"), is("secret_reference_manual_execution_required"));
+        assertThat(actualIssue.get("details"), is(Map.of()));
     }
     
     private WorkflowContextSnapshot createSnapshot() {

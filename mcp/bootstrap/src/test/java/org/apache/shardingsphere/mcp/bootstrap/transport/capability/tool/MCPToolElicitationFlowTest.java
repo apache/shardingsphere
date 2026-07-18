@@ -80,7 +80,7 @@ class MCPToolElicitationFlowTest extends AbstractMCPToolSpecificationFactoryTest
             CallToolResult actual = callTool(createToolSpecification(MCPTransportType.STDIO), exchange, toolName, Map.of());
             assertTrue(actual.isError());
             assertNull(actual.structuredContent());
-            assertThat(getTextContentPayload(actual).get("message"), is("Database capability does not exist."));
+            assertThat(getTextContentPayload(actual).get("summary"), is("Database capability does not exist."));
         }
     }
     

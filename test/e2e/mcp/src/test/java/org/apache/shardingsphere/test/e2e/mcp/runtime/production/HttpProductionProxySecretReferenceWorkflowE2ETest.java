@@ -62,8 +62,6 @@ class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProducti
             assertThat(String.valueOf(applyResponse.get("category")), is(MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
             assertModelFacingPayloadContract(applyResponse);
             assertThat(getObjectListOrEmpty(applyResponse.get("step_results")).size(), is(0));
-            assertThat(getStringListOrEmpty(applyResponse.get("executed_distsql")).size(), is(0));
-            assertThat(getStringListOrEmpty(applyResponse.get("applied_artifacts")).size(), is(0));
             MCPWorkflowSecretReferenceFixture.assertSecretReferenceRedacted(applyResponse);
             assertTrue(getPayloadItems(interactionClient.readResource(String.format(RULES_RESOURCE_URI, getLogicalDatabaseName()))).isEmpty());
         }

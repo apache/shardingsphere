@@ -78,7 +78,7 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actual = createRuleService(inspectionService).validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
     }
@@ -121,7 +121,7 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
         Map<String, Object> actual = createRuleService(inspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
     }
     
     @Test
@@ -199,7 +199,7 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
         Map<String, Object> actual = createStatusService(inspectionService).validate(
                 workflowSessionContext, mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
     }
     
     @Test
@@ -212,7 +212,7 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
         Map<String, Object> actual = createStatusService(inspectionService).validate(
                 workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("code"), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
     
@@ -323,5 +323,9 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
     private ExecutableWorkflowArtifact createRuleDistSQLArtifact() {
         String sql = "CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')";
         return new ExecutableWorkflowArtifact(sql, sql);
+    }
+    
+    private Map<?, ?> getValidationSection(final Map<String, Object> payload, final String layer) {
+        return ((List<?>) payload.get("sections")).stream().map(each -> (Map<?, ?>) each).filter(each -> layer.equals(each.get("layer"))).findFirst().orElse(Map.of());
     }
 }

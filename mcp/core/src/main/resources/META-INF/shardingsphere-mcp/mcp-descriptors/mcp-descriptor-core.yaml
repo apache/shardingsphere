@@ -19,8 +19,8 @@ resources:
     name: server-capability-catalog
     title: ShardingSphere MCP Capability Catalog
     description: >
-      Generated ShardingSphere domain catalog for resources, resource templates, tools, prompts, completions, workflow relationships,
-      and navigation hints. Read shardingsphere://guidance for model-facing workflow and safety guidance.
+      Generated ShardingSphere domain catalog for supported SQL statement classes, completion targets, workflow relationships, and navigation hints.
+      Use MCP list methods for resources, resource templates, tools, and prompts. Read shardingsphere://guidance for model-facing workflow and safety guidance.
     mimeType: application/json
     annotations:
       audience:
@@ -945,9 +945,6 @@ tools:
         count:
           type: integer
           description: "Number of matched metadata items returned in this response."
-        has_more:
-          type: boolean
-          description: "Whether an application-level continuation mode is active. Metadata search returns false; not MCP list pagination."
         continuation_mode:
           type: string
           description: "ShardingSphere application continuation mode for this metadata search result; not MCP cursor or nextCursor semantics."
@@ -959,9 +956,6 @@ tools:
         total_match_count:
           type: integer
           description: "Total matched metadata objects for this search scope."
-        returned_count:
-          type: integer
-          description: "Number of matched metadata objects returned after search result capping."
         truncated:
           type: boolean
           description: "Whether search hits were capped by the large-result threshold."
@@ -1072,10 +1066,8 @@ tools:
                 - name
               matched_value: orders
           count: 1
-          has_more: false
           continuation_mode: none
           total_match_count: 1
-          returned_count: 1
           truncated: false
           search_context:
             query: orders
@@ -1157,10 +1149,10 @@ tools:
           description: "Overall result category. ready indicates success; other values reuse runtime database connection failure categories."
         recovery:
           type: object
-          description: "Structured runtime recovery payload. Empty when status is ready."
+          description: "Structured runtime recovery payload present only when status is failed."
         next_actions:
           type: array
-          description: "Top-level structured follow-up actions copied from recovery when validation fails."
+          description: "Canonical top-level structured follow-up actions when validation fails."
           items:
             type: object
             properties:
@@ -1640,9 +1632,6 @@ tools:
         affected_rows:
           type: integer
           description: "Affected row count when the database reports one."
-        message:
-          type: string
-          description: "Execution message for statements without row results."
         columns:
           type: array
           description: "Returned column definitions when result_kind is result_set."
@@ -1682,9 +1671,6 @@ tools:
         review_guidance:
           type: string
           description: "Preview-only guidance before execution."
-        review_summary:
-          type: string
-          description: "Preview-only natural-language summary that confirms the statement was not executed."
         suggested_arguments:
           type: object
           description: "Preview-only arguments to reuse for execution after review."
@@ -1747,7 +1733,6 @@ tools:
           review_guidance: >-
             Review normalized_sql and side_effect_scope before execution. This preview performs database-aware validation and classification; it does not guarantee
             rule validation, algorithm initialization, affected rows, or runtime success.
-          review_summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
           suggested_arguments:
             execution_mode: execute
           next_actions:
@@ -1757,7 +1742,6 @@ tools:
               question: Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.
               required_inputs:
                 - execution_approved
-              reason: Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.
             - order: 2
               type: tool_call
               title: Call database_gateway_execute_update

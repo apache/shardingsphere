@@ -54,7 +54,7 @@ class BroadcastTableRuleHandlerTest {
             List<?> items = (List<?>) actual.toPayload().get("items");
             assertThat(items.size(), is(1));
             assertThat(((Map<?, ?>) items.getFirst()).get("broadcast_table"), is("t_order"));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/broadcast/databases/logic_db/tables/t_order/rule"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/broadcast/databases/logic_db/tables/t_order/rule"));
             assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is("shardingsphere://features/broadcast/databases/logic_db/rules"));
         }
     }

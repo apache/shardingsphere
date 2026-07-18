@@ -104,7 +104,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
             Map<String, Object> actualManualApplyResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "manual-only"));
             assertThat(String.valueOf(actualManualApplyResponse.get("status")), is("awaiting-manual-execution"));
-            assertThat(getStringListOrEmpty(actualManualApplyResponse.get("executed_distsql")).size(), is(0));
+            assertThat(getObjectListOrEmpty(actualManualApplyResponse.get("step_results")).size(), is(0));
             assertNoForbiddenArtifacts(actualManualApplyResponse);
             assertModelFacingPayloadContract(actualManualApplyResponse);
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
@@ -125,7 +125,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             Map<String, Object> actualApplyResponse = interactionClient.call(APPLY_TOOL_NAME,
                     createReviewThenExecuteArguments(planId, getApprovedSteps(previewWorkflow(interactionClient, planId))));
             assertApplyCompleted(actualApplyResponse);
-            assertThat(getStringListOrEmpty(actualApplyResponse.get("executed_distsql")).size(), is(1));
+            assertThat(getObjectListOrEmpty(actualApplyResponse.get("step_results")).size(), is(1));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
             List<Map<String, Object>> actualRules = getPayloadItems(interactionClient.readResource(String.format(BROADCAST_RULES_RESOURCE_URI, getLogicalDatabaseName())));
             assertThat(actualRules.stream().map(each -> String.valueOf(each.get("broadcast_table"))).toList(), hasItem("orders"));
@@ -328,7 +328,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
         String planId = String.valueOf(actualPlanResponse.get("plan_id"));
         Map<String, Object> actualApplyResponse = applyReviewedWorkflow(interactionClient, planId);
         assertApplyCompleted(actualApplyResponse);
-        assertThat(getStringListOrEmpty(actualApplyResponse.get("executed_distsql")).size(), is(1));
+        assertThat(getObjectListOrEmpty(actualApplyResponse.get("step_results")).size(), is(1));
         assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
     }
     

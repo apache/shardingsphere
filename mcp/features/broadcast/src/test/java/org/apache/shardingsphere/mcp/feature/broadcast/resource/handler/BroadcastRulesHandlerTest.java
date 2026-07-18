@@ -51,7 +51,7 @@ class BroadcastRulesHandlerTest {
             MCPSuccessPayload actual = handler.handle(requestContext, new MCPUriVariables(Map.of("database", "logic_db")));
             verify(ruleInspectionService).queryBroadcastRules(queryFacade, "logic_db");
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(2));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/broadcast/databases/logic_db/rules"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/broadcast/databases/logic_db/rules"));
         }
     }
 }

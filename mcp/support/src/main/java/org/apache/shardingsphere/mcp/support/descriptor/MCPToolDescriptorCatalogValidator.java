@@ -265,7 +265,7 @@ public final class MCPToolDescriptorCatalogValidator {
     private static void validateApplyWorkflowDescriptor(final MCPToolDescriptor descriptor) {
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor,
                 List.of("response_mode", MCPPayloadFieldNames.SUMMARY, WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, MCPPayloadFieldNames.NEXT_ACTIONS,
-                        "manual_artifact_summary", "category", "message", "secret_reference_summary"));
+                        "manual_artifact_summary", "category", "secret_reference_summary"));
     }
     
     private static void validateValidateWorkflowDescriptor(final MCPToolDescriptor descriptor) {

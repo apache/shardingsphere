@@ -95,9 +95,6 @@ public final class SQLExecutionPayload implements MCPSuccessPayload {
         if (SQLExecutionResultKind.UPDATE_COUNT == executionResult.getResultKind()) {
             result.put("affected_rows", executionResult.getAffectedRows());
         }
-        if (SQLExecutionResultKind.STATEMENT_ACK == executionResult.getResultKind()) {
-            result.put(MCPPayloadFieldNames.MESSAGE, createStatementAcknowledgement());
-        }
         result.put("applied_max_rows", executionResult.getAppliedMaxRows());
         result.put("applied_timeout_ms", executionResult.getAppliedTimeoutMs());
         result.put("truncated", executionResult.isTruncated());

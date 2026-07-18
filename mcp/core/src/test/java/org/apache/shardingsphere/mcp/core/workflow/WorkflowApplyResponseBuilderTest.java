@@ -29,6 +29,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class WorkflowApplyResponseBuilderTest {
     
@@ -37,14 +38,13 @@ class WorkflowApplyResponseBuilderTest {
         List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> executableArtifacts = List.of(
                 new WorkflowArtifactBundle.ExecutableWorkflowArtifact("CREATE MASK RULE orders", "CREATE MASK RULE orders"),
                 new WorkflowArtifactBundle.ExecutableWorkflowArtifact("ALTER MASK RULE orders", "ALTER MASK RULE orders"));
-        Map<String, Object> actual = new WorkflowApplyResponseBuilder().buildPreviewResponse(createSnapshot("mask.rule"), executableArtifacts, "review-then-execute", Map.of());
+        Map<String, Object> actual = new WorkflowApplyResponseBuilder().buildPreviewResponse(createSnapshot("mask.rule"), executableArtifacts, "review-then-execute");
         assertThat(actual.get("response_mode"), is("preview"));
         assertThat(actual.get("summary"), is("Previewed 2 workflow artifacts with side-effect scope rule-metadata. Nothing has been applied."));
         assertThat(actual.get("plan_id"), is("plan-1"));
         assertThat(actual.get("status"), is("preview"));
         assertThat(actual.get("execution_mode"), is("preview"));
-        assertThat(actual.get("manual_artifacts"), is(List.of()));
-        assertThat(actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE), is(Map.of()));
+        assertFalse(actual.containsKey(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE));
         assertThat(((List<?>) actual.get("preview_artifacts")).size(), is(2));
         Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
         assertThat(actualReviewFocus.get("artifact_categories"), is(List.of("rule_distsql")));
@@ -56,11 +56,10 @@ class WorkflowApplyResponseBuilderTest {
     @Test
     void assertBuildCompletedResponse() {
         Map<String, Object> actual = new WorkflowApplyResponseBuilder().build(createSnapshot("encrypt.rule"), WorkflowLifecycle.STATUS_COMPLETED, "review-then-execute",
-                List.of(), List.of(), List.of("CREATE ENCRYPT RULE orders"), Map.of());
+                List.of(), List.of(Map.of("artifact_type", "rule_distsql", "status", WorkflowLifecycle.STATUS_PASSED, "sql", "CREATE ENCRYPT RULE orders")), Map.of());
         assertThat(actual.get("response_mode"), is("executed"));
         assertThat(actual.get("summary"), is("Workflow apply completed for plan `plan-1` with 1 applied artifact(s)."));
-        assertThat(actual.get("executed_distsql"), is(List.of("CREATE ENCRYPT RULE orders")));
-        assertThat(actual.get("applied_artifacts"), is(List.of("CREATE ENCRYPT RULE orders")));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("step_results")).getFirst()).get("sql"), is("CREATE ENCRYPT RULE orders"));
         assertThat(((List<?>) actual.get("next_actions")).size(), is(1));
     }
     
@@ -69,14 +68,14 @@ class WorkflowApplyResponseBuilderTest {
         Map<String, Object> manualArtifactPackage = Map.of(
                 WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS, List.of(Map.of("sql", "CREATE ENCRYPT RULE orders")));
         Map<String, Object> actual = new WorkflowApplyResponseBuilder().build(createSnapshot("encrypt.rule"), WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION, "manual-only",
-                List.of(), List.of(), List.of(), manualArtifactPackage);
+                List.of(), List.of(), manualArtifactPackage);
         assertThat(actual.get("response_mode"), is("manual_only"));
         assertThat(actual.get("summary"), is("Workflow apply exported manual artifacts for plan `plan-1`; external execution is required before validation."));
-        assertThat(actual.get("manual_artifacts"), is(List.of(manualArtifactPackage)));
+        assertThat(actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE), is(manualArtifactPackage));
         Map<?, ?> actualSummary = (Map<?, ?>) actual.get("manual_artifact_summary");
         assertThat(actualSummary.get("distsql_artifact_count"), is(1));
-        assertThat(actualSummary.get("total_artifact_count"), is(1));
-        assertThat(((Map<?, ?>) actual.get("manual_follow_up")).get("confirmation_field"), is("manual_artifacts_executed"));
+        assertThat(actualSummary.get("safe_independent_read_only_checks"),
+                is("database_gateway_execute_query may run before manual execution confirmation when the user asked for read-only verification."));
     }
     
     private WorkflowContextSnapshot createSnapshot(final String workflowKind) {

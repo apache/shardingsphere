@@ -48,7 +48,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getToolCallPayload(actual.body());
         assertThat(String.valueOf(payload.get("response_mode")), is("recovery"));
-        assertThat(String.valueOf(payload.get("message")), is("Cross-database transaction switching is not supported."));
+        assertThat(String.valueOf(payload.get("summary")), is("Cross-database transaction switching is not supported."));
     }
     
     @Test

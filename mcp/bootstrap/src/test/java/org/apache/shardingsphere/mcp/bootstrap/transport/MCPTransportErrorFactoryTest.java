@@ -41,7 +41,7 @@ class MCPTransportErrorFactoryTest {
         assertThat(actual.getJsonRpcError().message(), is("foo_message"));
         @SuppressWarnings("unchecked")
         Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
-        assertThat(actualData.get("message"), is("foo_message"));
+        assertThat(actualData.get("summary"), is("foo_message"));
     }
     
     @Test
@@ -58,7 +58,7 @@ class MCPTransportErrorFactoryTest {
         assertThat(actual.getJsonRpcError().message(), is("Unsupported tool `foo_tool`."));
         @SuppressWarnings("unchecked")
         Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
-        assertThat(actualData.get("message"), is("Unsupported tool `foo_tool`."));
+        assertThat(actualData.get("summary"), is("Unsupported tool `foo_tool`."));
     }
     
     @Test
