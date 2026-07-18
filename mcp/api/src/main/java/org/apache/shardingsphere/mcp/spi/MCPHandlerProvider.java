@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.spi;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 
@@ -50,4 +51,13 @@ public interface MCPHandlerProvider extends ShardingSphereSPI {
      * @return tool handlers
      */
     Collection<MCPToolHandler<?>> getToolHandlers();
+    
+    /**
+     * Get completion handlers.
+     *
+     * <p>The returned collection may be empty, but must not be {@code null} or contain {@code null} elements.</p>
+     *
+     * @return completion handlers
+     */
+    Collection<MCPCompletionHandler<?>> getCompletionHandlers();
 }

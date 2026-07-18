@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.mcp.feature.readwritesplitting;
 
 import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.readwritesplitting.completion.ReadwriteSplittingLoadBalanceAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler.LoadBalanceAlgorithmPluginsHandler;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler.ReadwriteSplittingRuleCountHandler;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler.ReadwriteSplittingRuleHandler;
@@ -50,6 +52,11 @@ public final class ReadwriteSplittingMCPHandlerProvider implements MCPHandlerPro
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
         return List.of(new PlanReadwriteSplittingRuleToolHandler(), new PlanReadwriteSplittingStatusToolHandler());
+    }
+    
+    @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of(new ReadwriteSplittingLoadBalanceAlgorithmCompletionHandler());
     }
     
     @Override

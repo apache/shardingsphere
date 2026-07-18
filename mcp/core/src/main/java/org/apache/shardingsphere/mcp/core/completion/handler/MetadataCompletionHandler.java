@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.completion.provider;
+package org.apache.shardingsphere.mcp.core.completion.handler;
 
 import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
@@ -42,9 +42,9 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Metadata completion provider.
+ * Metadata completion handler.
  */
-public final class MetadataCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+public final class MetadataCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
     
     private static final Set<String> STORAGE_UNIT_ARGUMENTS = Set.of("storageUnit", "storage_unit", "write_storage_unit", "source_storage_unit", "shadow_storage_unit");
     
@@ -61,14 +61,14 @@ public final class MetadataCompletionProvider implements MCPCompletionProvider<M
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+    public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
         MetadataCompletionTarget target = MetadataCompletionTarget.from(request.getArgumentName());
         Map<String, String> contextArguments = new LinkedHashMap<>(request.getContextArguments());
         Map<String, Object> inferredContextArguments = applyContextDefaults(handlerContext, target, contextArguments);
         Collection<String> missingContextArguments = createMissingContextArguments(target, contextArguments);
         MetadataCompletionTarget nearestTarget = missingContextArguments.isEmpty() ? target : MetadataCompletionTarget.from(missingContextArguments.iterator().next());
         String nearestResourceUri = createNearestResourceUri(nearestTarget, contextArguments);
-        return new MCPCompletionProviderResult(
+        return new MCPCompletionHandlerResult(
                 completeMetadata(handlerContext, target, contextArguments), inferredContextArguments, missingContextArguments, nearestResourceUri);
     }
     

@@ -21,18 +21,18 @@ import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapabi
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
-import org.apache.shardingsphere.mcp.core.completion.provider.MetadataCompletionProvider;
-import org.apache.shardingsphere.mcp.core.completion.provider.WorkflowPlanIdCompletionProvider;
+import org.apache.shardingsphere.mcp.core.completion.handler.MetadataCompletionHandler;
+import org.apache.shardingsphere.mcp.core.completion.handler.WorkflowPlanIdCompletionHandler;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
@@ -43,6 +43,7 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
+import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -97,7 +98,7 @@ class MCPCompletionServiceTest {
     @Test
     void assertCompleteMissingContextUsesProtocolReferenceType() {
         MCPCompletionResult actual = complete(mock(WorkflowSessionContext.class), createDescriptor("inspect_metadata", "table", 50), "table", "order", new LinkedHashMap<>(),
-                List.of(new MissingContextCompletionProvider()));
+                List.of(new MissingContextCompletionHandler()));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.NEXT_ACTIONS)).getFirst();
         assertThat(actualNextAction.get("ref"), is(Map.of("type", "ref/prompt", "name", "inspect_metadata")));
         assertThat(actualNextAction.get("resume_ref"), is(Map.of("type", "ref/prompt", "name", "inspect_metadata")));
@@ -118,7 +119,7 @@ class MCPCompletionServiceTest {
     @Test
     void assertCompleteCapsMaxValues() {
         MCPCompletionResult actual = complete(mock(WorkflowSessionContext.class), createDescriptor("foo_prompt", "value", 101), "value", "value-", new LinkedHashMap<>(),
-                List.of(new SizedCompletionProvider()));
+                List.of(new SizedCompletionHandler()));
         assertThat(actual.getValues().size(), is(100));
         assertThat(actual.getTotal(), is(101));
         assertTrue(actual.hasMore());
@@ -127,23 +128,23 @@ class MCPCompletionServiceTest {
     @Test
     void assertCompleteReplacesEmptyContextWithInferredContext() {
         MCPCompletionResult actual = complete(mock(WorkflowSessionContext.class), createDescriptor("inspect_metadata", "table", 50), "table", "t_",
-                Map.of("database", "logic_db", "schema", ""), List.of(new InferredContextCompletionProvider()));
+                Map.of("database", "logic_db", "schema", ""), List.of(new InferredContextCompletionHandler()));
         assertThat(actual.getValues(), is(List.of("t_order")));
         assertThat(((Map<?, ?>) actual.getMeta().get(MCPShardingSphereMetadataKeys.CONTEXT_ARGUMENTS)).get("schema"), is("public"));
         assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
     }
     
     @Test
-    void assertCompleteRejectsUndeclaredArgumentBeforeProviderInvocation() {
+    void assertCompleteRejectsUndeclaredArgumentBeforeHandlerInvocation() {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> complete(mock(WorkflowSessionContext.class),
-                createDescriptor("inspect_metadata", "database", 50), "table", "t_", new LinkedHashMap<>(), List.of(new UnexpectedCompletionProvider())));
+                createDescriptor("inspect_metadata", "database", 50), "table", "t_", new LinkedHashMap<>(), List.of(new UnexpectedCompletionHandler())));
         assertThat(actual.getMessage(), is("Completion argument `table` is not declared for prompt `inspect_metadata`."));
     }
     
     @Test
     void assertCompleteRequiresActiveSession() {
         MCPRuntimeContext runtimeContext = createRuntimeContext(mock(WorkflowSessionContext.class));
-        MCPCompletionService completionService = createCompletionService(runtimeContext, List.of(new SizedCompletionProvider()));
+        MCPCompletionService completionService = createCompletionService(runtimeContext, List.of(new SizedCompletionHandler()));
         assertThrows(MCPSessionNotExistedException.class,
                 () -> completionService.complete("missing-session", createDescriptor("foo_prompt", "value", 50), "value", "", new LinkedHashMap<>()));
     }
@@ -154,7 +155,7 @@ class MCPCompletionServiceTest {
         try {
             System.setProperty(MCPRuntimeProtectionPolicy.MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY, "1");
             MCPRuntimeContext runtimeContext = createRuntimeContext(mock(WorkflowSessionContext.class));
-            MCPCompletionService completionService = createCompletionService(runtimeContext, List.of(new SizedCompletionProvider()));
+            MCPCompletionService completionService = createCompletionService(runtimeContext, List.of(new SizedCompletionHandler()));
             MCPCompletionTargetDescriptor descriptor = createDescriptor("foo_prompt", "value", 50);
             completionService.complete("session-1", descriptor, "value", "", new LinkedHashMap<>());
             assertThrows(MCPUnavailableException.class, () -> completionService.complete("session-1", descriptor, "value", "", new LinkedHashMap<>()));
@@ -167,40 +168,42 @@ class MCPCompletionServiceTest {
     }
     
     @Test
-    void assertProviderRunsOutsideSessionLock() throws InterruptedException, ExecutionException, TimeoutException {
-        BlockingCompletionProvider provider = new BlockingCompletionProvider();
+    void assertHandlerRunsOutsideSessionLock() throws InterruptedException, ExecutionException, TimeoutException {
+        BlockingCompletionHandler handler = new BlockingCompletionHandler();
         MCPRuntimeContext runtimeContext = createRuntimeContext(mock(WorkflowSessionContext.class));
-        MCPCompletionService completionService = createCompletionService(runtimeContext, List.of(provider));
+        MCPCompletionService completionService = createCompletionService(runtimeContext, List.of(handler));
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         try {
             Future<MCPCompletionResult> completionFuture = executorService.submit(
                     () -> completionService.complete("session-1", createDescriptor("foo_prompt", "value", 50), "value", "", new LinkedHashMap<>()));
-            assertTrue(provider.awaitStarted());
+            assertTrue(handler.awaitStarted());
             assertFalse(completionFuture.isDone());
             Future<String> sessionLockFuture = executorService.submit(
                     () -> new MCPSessionExecutionCoordinator(runtimeContext.getSessionManager()).executeWithSessionLock("session-1", () -> "available"));
             assertThat(sessionLockFuture.get(1L, TimeUnit.SECONDS), is("available"));
-            provider.release();
+            handler.release();
             completionFuture.get(1L, TimeUnit.SECONDS);
         } finally {
-            provider.release();
+            handler.release();
             executorService.shutdownNow();
         }
     }
     
     private MCPCompletionResult complete(final WorkflowSessionContext workflowSessionContext, final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
                                          final Map<String, String> contextArguments) {
-        return complete(workflowSessionContext, descriptor, argumentName, prefix, contextArguments, List.of(new MetadataCompletionProvider(), new WorkflowPlanIdCompletionProvider()));
+        return complete(workflowSessionContext, descriptor, argumentName, prefix, contextArguments, List.of(new MetadataCompletionHandler(), new WorkflowPlanIdCompletionHandler()));
     }
     
     private MCPCompletionResult complete(final WorkflowSessionContext workflowSessionContext, final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
-                                         final Map<String, String> contextArguments, final Collection<? extends MCPCompletionProvider<?>> completionProviders) {
-        return createCompletionService(createRuntimeContext(workflowSessionContext), completionProviders).complete("session-1", descriptor, argumentName, prefix, contextArguments);
+                                         final Map<String, String> contextArguments, final Collection<MCPCompletionHandler<?>> completionHandlers) {
+        return createCompletionService(createRuntimeContext(workflowSessionContext), completionHandlers).complete("session-1", descriptor, argumentName, prefix, contextArguments);
     }
     
-    private MCPCompletionService createCompletionService(final MCPRuntimeContext runtimeContext, final Collection<? extends MCPCompletionProvider<?>> completionProviders) {
+    private MCPCompletionService createCompletionService(final MCPRuntimeContext runtimeContext, final Collection<MCPCompletionHandler<?>> completionHandlers) {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPCompletionProvider.class)).thenReturn(completionProviders);
+            MCPHandlerProvider handlerProvider = mock(MCPHandlerProvider.class);
+            when(handlerProvider.getCompletionHandlers()).thenReturn(completionHandlers);
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(handlerProvider));
             return new MCPCompletionService(runtimeContext);
         }
     }
@@ -239,7 +242,7 @@ class MCPCompletionServiceTest {
         }
     }
     
-    private static final class SizedCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+    private static final class SizedCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
         
         @Override
         public Class<MCPFeatureRequestContext> getContextType() {
@@ -252,8 +255,8 @@ class MCPCompletionServiceTest {
         }
         
         @Override
-        public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-            return new MCPCompletionProviderResult(createCandidates());
+        public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+            return new MCPCompletionHandlerResult(createCandidates());
         }
         
         private List<MCPCompletionCandidate> createCandidates() {
@@ -262,7 +265,7 @@ class MCPCompletionServiceTest {
         }
     }
     
-    private static final class InferredContextCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+    private static final class InferredContextCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
         
         @Override
         public Class<MCPFeatureRequestContext> getContextType() {
@@ -275,12 +278,12 @@ class MCPCompletionServiceTest {
         }
         
         @Override
-        public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-            return new MCPCompletionProviderResult(List.of(new MCPCompletionCandidate("t_order", "logical table", "test-provider")), Map.of("schema", "public"), List.of(), "");
+        public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+            return new MCPCompletionHandlerResult(List.of(new MCPCompletionCandidate("t_order", "logical table", "test-provider")), Map.of("schema", "public"), List.of(), "");
         }
     }
     
-    private static final class MissingContextCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+    private static final class MissingContextCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
         
         @Override
         public Class<MCPFeatureRequestContext> getContextType() {
@@ -293,12 +296,12 @@ class MCPCompletionServiceTest {
         }
         
         @Override
-        public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-            return new MCPCompletionProviderResult(List.of(), Map.of(), List.of("database"), "");
+        public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+            return new MCPCompletionHandlerResult(List.of(), Map.of(), List.of("database"), "");
         }
     }
     
-    private static final class UnexpectedCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+    private static final class UnexpectedCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
         
         @Override
         public Class<MCPFeatureRequestContext> getContextType() {
@@ -307,16 +310,16 @@ class MCPCompletionServiceTest {
         
         @Override
         public boolean supports(final MCPCompletionRequest request) {
-            throw new AssertionError("Provider should not be invoked for undeclared completion arguments.");
+            throw new AssertionError("Handler should not be invoked for undeclared completion arguments.");
         }
         
         @Override
-        public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-            throw new AssertionError("Provider should not be invoked for undeclared completion arguments.");
+        public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+            throw new AssertionError("Handler should not be invoked for undeclared completion arguments.");
         }
     }
     
-    private static final class BlockingCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+    private static final class BlockingCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
         
         private final CountDownLatch started = new CountDownLatch(1);
         
@@ -333,7 +336,7 @@ class MCPCompletionServiceTest {
         }
         
         @Override
-        public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+        public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
             started.countDown();
             try {
                 if (!released.await(1L, TimeUnit.SECONDS)) {
@@ -343,7 +346,7 @@ class MCPCompletionServiceTest {
                 Thread.currentThread().interrupt();
                 throw new IllegalStateException(ex);
             }
-            return new MCPCompletionProviderResult(List.of());
+            return new MCPCompletionHandlerResult(List.of());
         }
         
         private boolean awaitStarted() throws InterruptedException {

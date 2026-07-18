@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.spi;
+package org.apache.shardingsphere.mcp.api.capability.completion;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 
 /**
- * MCP completion provider.
+ * MCP completion handler.
+ *
+ * <p>Implementations must support concurrent invocations and must not retain request context or completion request after {@link #complete} returns.</p>
  *
  * @param <T> required request context type
  */
-@SingletonSPI
-public interface MCPCompletionProvider<T extends MCPRequestContext> extends ShardingSphereSPI {
+public interface MCPCompletionHandler<T extends MCPRequestContext> {
     
     /**
      * Get required request context type.
@@ -39,10 +36,10 @@ public interface MCPCompletionProvider<T extends MCPRequestContext> extends Shar
     Class<T> getContextType();
     
     /**
-     * Judge whether this provider supports the completion request.
+     * Judge whether this handler supports the completion request.
      *
      * @param request completion request
-     * @return whether this provider supports the completion request
+     * @return whether this handler supports the completion request
      */
     boolean supports(MCPCompletionRequest request);
     
@@ -51,7 +48,7 @@ public interface MCPCompletionProvider<T extends MCPRequestContext> extends Shar
      *
      * @param context request context
      * @param request completion request
-     * @return completion provider result
+     * @return completion handler result
      */
-    MCPCompletionProviderResult complete(T context, MCPCompletionRequest request);
+    MCPCompletionHandlerResult complete(T context, MCPCompletionRequest request);
 }

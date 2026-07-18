@@ -53,6 +53,11 @@ class BroadcastMCPHandlerProviderTest {
     }
     
     @Test
+    void assertGetCompletionHandlers() {
+        assertTrue(new BroadcastMCPHandlerProvider().getCompletionHandlers().isEmpty());
+    }
+    
+    @Test
     void assertGetWorkflowDefinitions() {
         WorkflowRuntimeDefinition actual = new BroadcastMCPHandlerProvider().getWorkflowDefinitions().iterator().next();
         assertThat(actual.getWorkflowKind(), is(BroadcastFeatureDefinition.WORKFLOW_KIND));

@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.encrypt.completion.EncryptAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptAlgorithmsHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRuleHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRulesHandler;
@@ -44,6 +46,11 @@ public final class EncryptMCPHandlerProvider implements MCPHandlerProvider, MCPW
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
         return List.of(new PlanEncryptRuleToolHandler());
+    }
+    
+    @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of(new EncryptAlgorithmCompletionHandler());
     }
     
     @Override

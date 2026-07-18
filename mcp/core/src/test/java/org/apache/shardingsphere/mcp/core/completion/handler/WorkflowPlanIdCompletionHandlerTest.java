@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.completion.provider;
+package org.apache.shardingsphere.mcp.core.completion.handler;
 
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -39,16 +39,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class WorkflowPlanIdCompletionProviderTest {
+class WorkflowPlanIdCompletionHandlerTest {
     
     @Test
     void assertGetContextType() {
-        assertThat(new WorkflowPlanIdCompletionProvider().getContextType(), is(MCPFeatureRequestContext.class));
+        assertThat(new WorkflowPlanIdCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
     }
     
     @Test
     void assertSupports() {
-        assertTrue(new WorkflowPlanIdCompletionProvider().supports(createRequestContext()));
+        assertTrue(new WorkflowPlanIdCompletionHandler().supports(createRequestContext()));
     }
     
     @Test
@@ -61,7 +61,7 @@ class WorkflowPlanIdCompletionProviderTest {
         MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
         when(handlerContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(handlerContext.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        MCPCompletionProviderResult actual = new WorkflowPlanIdCompletionProvider().complete(handlerContext, createRequestContext());
+        MCPCompletionHandlerResult actual = new WorkflowPlanIdCompletionHandler().complete(handlerContext, createRequestContext());
         List<MCPCompletionCandidate> actualCandidates = new ArrayList<>(actual.getCandidates());
         assertThat(actualCandidates.size(), is(2));
         assertThat(actualCandidates.get(0).getValue(), is("plan-ready"));

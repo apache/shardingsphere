@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.feature.readwritesplitting.completion;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Readwrite-splitting load-balance algorithm completion provider.
+ * Readwrite-splitting load-balance algorithm completion handler.
  */
-public final class ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+public final class ReadwriteSplittingLoadBalanceAlgorithmCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
     
     private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
@@ -52,8 +52,8 @@ public final class ReadwriteSplittingLoadBalanceAlgorithmCompletionProvider impl
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-        return new MCPCompletionProviderResult(inspectionService.queryLoadBalanceAlgorithmPlugins(handlerContext.getQueryFacade()).stream()
+    public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+        return new MCPCompletionHandlerResult(inspectionService.queryLoadBalanceAlgorithmPlugins(handlerContext.getQueryFacade()).stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty()).toList());
     }
     

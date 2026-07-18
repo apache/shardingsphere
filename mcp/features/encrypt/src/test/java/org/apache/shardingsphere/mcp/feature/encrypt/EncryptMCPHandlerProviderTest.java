@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.completion.EncryptAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
@@ -50,6 +52,12 @@ class EncryptMCPHandlerProviderTest {
     void assertGetToolHandlers() {
         MCPToolHandler<?> actual = new EncryptMCPHandlerProvider().getToolHandlers().iterator().next();
         assertThat(actual.getToolName(), is("database_gateway_plan_encrypt_rule"));
+    }
+    
+    @Test
+    void assertGetCompletionHandlers() {
+        MCPCompletionHandler<?> actual = new EncryptMCPHandlerProvider().getCompletionHandlers().iterator().next();
+        assertThat(actual, isA(EncryptAlgorithmCompletionHandler.class));
     }
     
     @Test

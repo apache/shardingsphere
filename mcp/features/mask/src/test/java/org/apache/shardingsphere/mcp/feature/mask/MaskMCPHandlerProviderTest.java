@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mcp.feature.mask;
 
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.feature.mask.completion.MaskAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
@@ -48,6 +50,12 @@ class MaskMCPHandlerProviderTest {
     void assertGetToolHandlers() {
         MCPToolHandler<?> actual = new MaskMCPHandlerProvider().getToolHandlers().iterator().next();
         assertThat(actual.getToolName(), is("database_gateway_plan_mask_rule"));
+    }
+    
+    @Test
+    void assertGetCompletionHandlers() {
+        MCPCompletionHandler<?> actual = new MaskMCPHandlerProvider().getCompletionHandlers().iterator().next();
+        assertThat(actual, isA(MaskAlgorithmCompletionHandler.class));
     }
     
     @Test

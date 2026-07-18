@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding;
 
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.completion.ShardingAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingAlgorithmResourceHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingGovernanceResourceHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingStrategyResourceHandler;
@@ -33,6 +35,7 @@ import java.util.ServiceLoader;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingMCPHandlerProviderTest {
@@ -56,6 +59,12 @@ class ShardingMCPHandlerProviderTest {
                         ShardingFeatureDefinition.PLAN_TABLE_REFERENCE_TOOL_NAME, ShardingFeatureDefinition.PLAN_DEFAULT_STRATEGY_TOOL_NAME,
                         ShardingFeatureDefinition.PLAN_KEY_GENERATOR_TOOL_NAME, ShardingFeatureDefinition.PLAN_KEY_GENERATE_STRATEGY_TOOL_NAME,
                         ShardingFeatureDefinition.PLAN_COMPONENT_CLEANUP_TOOL_NAME));
+    }
+    
+    @Test
+    void assertGetCompletionHandlers() {
+        MCPCompletionHandler<?> actual = new ShardingMCPHandlerProvider().getCompletionHandlers().iterator().next();
+        assertThat(actual, isA(ShardingAlgorithmCompletionHandler.class));
     }
     
     @Test

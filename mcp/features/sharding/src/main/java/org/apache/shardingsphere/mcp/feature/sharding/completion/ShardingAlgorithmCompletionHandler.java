@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.feature.sharding.completion;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
-import org.apache.shardingsphere.mcp.spi.MCPCompletionProvider;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionProviderResult;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
@@ -31,9 +31,9 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Sharding algorithm completion provider.
+ * Sharding algorithm completion handler.
  */
-public final class ShardingAlgorithmCompletionProvider implements MCPCompletionProvider<MCPFeatureRequestContext> {
+public final class ShardingAlgorithmCompletionHandler implements MCPCompletionHandler<MCPFeatureRequestContext> {
     
     private static final String ALGORITHM_TYPE_FIELD = "algorithm_type";
     
@@ -70,8 +70,8 @@ public final class ShardingAlgorithmCompletionProvider implements MCPCompletionP
     }
     
     @Override
-    public MCPCompletionProviderResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-        return new MCPCompletionProviderResult(queryPlugins(handlerContext, request).stream()
+    public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
+        return new MCPCompletionHandlerResult(queryPlugins(handlerContext, request).stream()
                 .map(each -> createAlgorithmCandidate(each, request.getArgumentName())).filter(each -> !each.getValue().isEmpty()).toList());
     }
     

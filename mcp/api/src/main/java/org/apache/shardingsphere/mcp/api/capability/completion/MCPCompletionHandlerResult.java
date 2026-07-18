@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * MCP completion provider result.
+ * MCP completion handler result.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MCPCompletionProviderResult {
+public final class MCPCompletionHandlerResult {
     
     private final Collection<MCPCompletionCandidate> candidates;
     
@@ -39,16 +39,16 @@ public final class MCPCompletionProviderResult {
     
     private final String nearestResourceUri;
     
-    public MCPCompletionProviderResult(final Collection<MCPCompletionCandidate> candidates) {
+    public MCPCompletionHandlerResult(final Collection<MCPCompletionCandidate> candidates) {
         this(candidates, Map.of(), List.of(), "");
     }
     
     /**
-     * Create empty completion provider result.
+     * Create empty completion handler result.
      *
-     * @return empty completion provider result
+     * @return empty completion handler result
      */
-    public static MCPCompletionProviderResult empty() {
-        return new MCPCompletionProviderResult(List.of());
+    public static MCPCompletionHandlerResult empty() {
+        return new MCPCompletionHandlerResult(List.of());
     }
 }
