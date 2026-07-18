@@ -23,6 +23,9 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.table.TableMetaDataReviseEngine;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.metadata.reviser.ShardingMetaDataReviseEntry;
@@ -87,6 +90,31 @@ class ShardingQualifiedTableMetaDataReviseTest {
         assertThat(revisedFromDs1.getName(), is("t_order"));
     }
     
+    @Test
+    void assertReviseWithReadwriteSplittingStorageUnitAlias() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "readwrite_ds_0.t_order_0"));
+        Map<String, Collection<String>> dataSourceMapper = Collections.singletonMap("readwrite_ds_0", Arrays.asList("write_ds_0", "read_ds_0"));
+        ShardingRule rule = createShardingRule(ruleConfig, dataSourceMapper);
+        assertThat(new ShardingTableNameReviser().revise("t_order_0", rule, "write_ds_0"), is("t_order"));
+        assertTrue(reviseEntry.createTableMetaDataRevisionContext(rule, "t_order_0", "write_ds_0").isPresent());
+        TableMetaData revised = new TableMetaDataReviseEngine<>(rule, reviseEntry).revise(createPhysicalTableMetaData("t_order_0", "write_ds_0"));
+        assertThat(revised.getName(), is("t_order"));
+    }
+    
+    @Test
+    void assertReviseWithShadowStorageUnitAlias() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_shadow", "shadowDataSource_0.t_shadow_0"));
+        Map<String, Collection<String>> dataSourceMapper = Collections.singletonMap("shadowDataSource_0", Arrays.asList("db_0", "shadow_db_0"));
+        ShardingRule rule = createShardingRule(ruleConfig, dataSourceMapper);
+        assertThat(new ShardingTableNameReviser().revise("t_shadow_0", rule, "shadow_db_0"), is("t_shadow"));
+        assertThat(new ShardingTableNameReviser().revise("t_shadow_0", rule, "db_0"), is("t_shadow"));
+        assertTrue(reviseEntry.createTableMetaDataRevisionContext(rule, "t_shadow_0", "shadow_db_0").isPresent());
+        TableMetaData revised = new TableMetaDataReviseEngine<>(rule, reviseEntry).revise(createPhysicalTableMetaData("t_shadow_0", "shadow_db_0"));
+        assertThat(revised.getName(), is("t_shadow"));
+    }
+    
     private void assertColumnGenerated(final TableMetaData tableMetaData, final String columnName, final boolean generated) {
         ColumnMetaData actual = tableMetaData.getColumns().stream().filter(each -> columnName.equals(each.getName())).findFirst().orElseThrow(IllegalStateException::new);
         if (generated) {
@@ -97,10 +125,14 @@ class ShardingQualifiedTableMetaDataReviseTest {
     }
     
     private TableMetaData createPhysicalTableMetaData(final String storageUnitName) {
+        return createPhysicalTableMetaData("t_order", storageUnitName);
+    }
+    
+    private TableMetaData createPhysicalTableMetaData(final String tableName, final String storageUnitName) {
         Collection<ColumnMetaData> columns = Arrays.asList(
                 new ColumnMetaData("order_id_0", Types.BIGINT, true, false, true, true, false, false),
                 new ColumnMetaData("order_id_1", Types.BIGINT, false, false, true, true, false, false));
-        TableMetaData result = new TableMetaData("t_order", columns, Collections.emptyList(), Collections.emptyList());
+        TableMetaData result = new TableMetaData(tableName, columns, Collections.emptyList(), Collections.emptyList());
         result.setStorageUnitName(storageUnitName);
         return result;
     }
@@ -115,18 +147,36 @@ class ShardingQualifiedTableMetaDataReviseTest {
         return createShardingRule(ruleConfig);
     }
     
+    private ShardingRule createShardingRule(final ShardingRuleConfiguration ruleConfig) {
+        return createShardingRule(ruleConfig, Collections.emptyMap());
+    }
+    
+    private ShardingRule createShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, Collection<String>> dataSourceMapper) {
+        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+        when(computeNodeInstanceContext.getWorkerId()).thenReturn(0);
+        Map<String, DataSource> dataSources = new LinkedHashMap<>(4, 1F);
+        dataSources.put("ds_0", new MockedDataSource());
+        dataSources.put("ds_1", new MockedDataSource());
+        dataSources.put("write_ds_0", new MockedDataSource());
+        dataSources.put("read_ds_0", new MockedDataSource());
+        dataSources.put("db_0", new MockedDataSource());
+        dataSources.put("shadow_db_0", new MockedDataSource());
+        Collection<ShardingSphereRule> builtRules = dataSourceMapper.isEmpty() ? Collections.emptyList() : Collections.singleton(mockDataSourceMapperRule(dataSourceMapper));
+        return new ShardingRule(ruleConfig, dataSources, computeNodeInstanceContext, builtRules);
+    }
+    
     private ShardingRule createPartialShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order0", "ds_0.t_order"));
         return createShardingRule(ruleConfig);
     }
     
-    private ShardingRule createShardingRule(final ShardingRuleConfiguration ruleConfig) {
-        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
-        when(computeNodeInstanceContext.getWorkerId()).thenReturn(0);
-        Map<String, DataSource> dataSources = new LinkedHashMap<>(2, 1F);
-        dataSources.put("ds_0", new MockedDataSource());
-        dataSources.put("ds_1", new MockedDataSource());
-        return new ShardingRule(ruleConfig, dataSources, computeNodeInstanceContext, Collections.emptyList());
+    private ShardingSphereRule mockDataSourceMapperRule(final Map<String, Collection<String>> dataSourceMapper) {
+        ShardingSphereRule result = mock(ShardingSphereRule.class);
+        RuleAttributes attributes = mock(RuleAttributes.class);
+        DataSourceMapperRuleAttribute ruleAttribute = () -> dataSourceMapper;
+        when(result.getAttributes()).thenReturn(attributes);
+        when(attributes.findAttribute(DataSourceMapperRuleAttribute.class)).thenReturn(Optional.of(ruleAttribute));
+        return result;
     }
 }

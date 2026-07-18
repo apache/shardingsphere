@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSo
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -114,6 +115,8 @@ public final class ShardingRule implements DatabaseRule {
     
     private final RuleAttributes attributes;
     
+    private final Map<String, Collection<String>> storageUnitNameToDataSourceNames;
+    
     private final ShardingRuleChecker shardingRuleChecker = new ShardingRuleChecker(this);
     
     public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final ComputeNodeInstanceContext computeNodeInstanceContext,
@@ -144,7 +147,26 @@ public final class ShardingRule implements DatabaseRule {
                 .map(AggregatedDataSourceRuleAttribute::getAggregatedDataSources).orElseGet(() -> PhysicalDataSourceAggregator.getAggregatedDataSources(dataSources, builtRules));
         attributes = new RuleAttributes(new ShardingDataNodeRuleAttribute(shardingTables), new ShardingTableNamesRuleAttribute(shardingTables.values()),
                 new AggregatedDataSourceRuleAttribute(aggregatedDataSources));
+        storageUnitNameToDataSourceNames = createStorageUnitNameToDataSourceNames(builtRules);
         shardingRuleChecker.check(ruleConfig);
+    }
+    
+    private static Map<String, Collection<String>> createStorageUnitNameToDataSourceNames(final Collection<ShardingSphereRule> builtRules) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        for (DataSourceMapperRuleAttribute each : new RuleMetaData(builtRules).getAttributes(DataSourceMapperRuleAttribute.class)) {
+            for (Entry<String, Collection<String>> entry : each.getDataSourceMapper().entrySet()) {
+                String dataSourceName = entry.getKey();
+                addDataSourceNameMapping(result, dataSourceName, dataSourceName);
+                for (String storageUnitName : entry.getValue()) {
+                    addDataSourceNameMapping(result, storageUnitName, dataSourceName);
+                }
+            }
+        }
+        return result;
+    }
+    
+    private static void addDataSourceNameMapping(final Map<String, Collection<String>> mappings, final String storageUnitName, final String dataSourceName) {
+        mappings.computeIfAbsent(storageUnitName, ignored -> new LinkedHashSet<>()).add(dataSourceName);
     }
     
     private ShardingStrategyConfiguration createDefaultDatabaseShardingStrategyConfiguration(final ShardingRuleConfiguration ruleConfig) {
@@ -335,6 +357,18 @@ public final class ShardingRule implements DatabaseRule {
             }
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Is storage unit mapped to data source.
+     *
+     * @param storageUnitName storage unit name
+     * @param dataSourceName data source name
+     * @return storage unit mapped to data source or not
+     */
+    public boolean isStorageUnitMappedToDataSource(final String storageUnitName, final String dataSourceName) {
+        Collection<String> mappedDataSourceNames = storageUnitNameToDataSourceNames.get(storageUnitName);
+        return null != mappedDataSourceNames && mappedDataSourceNames.contains(dataSourceName);
     }
     
     /**

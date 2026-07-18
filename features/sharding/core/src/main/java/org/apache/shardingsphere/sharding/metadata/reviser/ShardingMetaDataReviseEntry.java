@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.metadata.reviser.column.ShardingColumn
 import org.apache.shardingsphere.sharding.metadata.reviser.constraint.ShardingConstraintReviser;
 import org.apache.shardingsphere.sharding.metadata.reviser.index.ShardingIndexReviser;
 import org.apache.shardingsphere.sharding.metadata.reviser.schema.ShardingSchemaTableAggregationReviser;
+import org.apache.shardingsphere.sharding.metadata.reviser.table.ShardingQualifiedTableFinder;
 import org.apache.shardingsphere.sharding.metadata.reviser.table.ShardingTableMetaDataRevisionContext;
 import org.apache.shardingsphere.sharding.metadata.reviser.table.ShardingTableNameReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -83,7 +84,7 @@ public final class ShardingMetaDataReviseEntry implements MetaDataReviseEntry<Sh
     }
     
     private Optional<ShardingTable> findShardingTable(final ShardingRule rule, final String tableName, final String storageUnitName) {
-        return null == storageUnitName ? rule.findShardingTableByActualTable(tableName) : rule.findShardingTableByActualTable(storageUnitName, tableName);
+        return ShardingQualifiedTableFinder.find(rule, tableName, storageUnitName);
     }
     
     @Override
