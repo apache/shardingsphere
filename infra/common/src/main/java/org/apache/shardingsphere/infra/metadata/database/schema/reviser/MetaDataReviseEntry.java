@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.C
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaTableAggregationReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.table.TableMetaDataRevisionContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.table.TableNameReviser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
@@ -55,6 +56,18 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Order
      * @return table name reviser
      */
     default Optional<? extends TableNameReviser<T>> getTableNameReviser() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Create table meta data revision context.
+     *
+     * @param rule rule
+     * @param tableName table name
+     * @param storageUnitName storage unit name
+     * @return table meta data revision context
+     */
+    default Optional<? extends TableMetaDataRevisionContext<T>> createTableMetaDataRevisionContext(final T rule, final String tableName, final String storageUnitName) {
         return Optional.empty();
     }
     
@@ -92,6 +105,18 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Order
     }
     
     /**
+     * Get column generated reviser with storage unit context.
+     *
+     * @param rule rule
+     * @param tableName table name
+     * @param storageUnitName storage unit name
+     * @return column generated reviser
+     */
+    default Optional<? extends ColumnGeneratedReviser> getColumnGeneratedReviser(final T rule, final String tableName, final String storageUnitName) {
+        return getColumnGeneratedReviser(rule, tableName);
+    }
+    
+    /**
      * Get index reviser.
      *
      * @param rule rule
@@ -103,6 +128,18 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Order
     }
     
     /**
+     * Get index reviser with storage unit context.
+     *
+     * @param rule rule
+     * @param tableName table name
+     * @param storageUnitName storage unit name
+     * @return index reviser
+     */
+    default Optional<? extends IndexReviser<T>> getIndexReviser(final T rule, final String tableName, final String storageUnitName) {
+        return getIndexReviser(rule, tableName);
+    }
+    
+    /**
      * Get constraint reviser.
      *
      * @param rule rule
@@ -111,5 +148,17 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Order
      */
     default Optional<? extends ConstraintReviser<T>> getConstraintReviser(final T rule, final String tableName) {
         return Optional.empty();
+    }
+    
+    /**
+     * Get constraint reviser with storage unit context.
+     *
+     * @param rule rule
+     * @param tableName table name
+     * @param storageUnitName storage unit name
+     * @return constraint reviser
+     */
+    default Optional<? extends ConstraintReviser<T>> getConstraintReviser(final T rule, final String tableName, final String storageUnitName) {
+        return getConstraintReviser(rule, tableName);
     }
 }

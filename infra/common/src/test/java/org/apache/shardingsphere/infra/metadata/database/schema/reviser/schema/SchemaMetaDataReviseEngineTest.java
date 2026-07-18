@@ -81,7 +81,14 @@ class SchemaMetaDataReviseEngineTest {
         SchemaMetaData schemaMetaData = new SchemaMetaData("foo_schema", Collections.singleton(createTableMetaData()));
         MetaDataReviseEntry<FixtureGlobalRule> reviseEntry = mock(MetaDataReviseEntry.class);
         when(reviseEntry.getTypeClass()).thenReturn(FixtureGlobalRule.class);
-        ShardingSphereRule rule = new FixtureGlobalRule();
+        FixtureGlobalRule rule = new FixtureGlobalRule();
+        when(reviseEntry.createTableMetaDataRevisionContext(rule, "table_name", null)).thenReturn(Optional.empty());
+        when(reviseEntry.getTableNameReviser()).thenReturn(Optional.empty());
+        when(reviseEntry.getColumnExistedReviser(rule, "table_name")).thenReturn(Optional.empty());
+        when(reviseEntry.getColumnNameReviser(rule, "table_name")).thenReturn(Optional.empty());
+        when(reviseEntry.getColumnGeneratedReviser(rule, "table_name", null)).thenReturn(Optional.empty());
+        when(reviseEntry.getIndexReviser(rule, "table_name", null)).thenReturn(Optional.empty());
+        when(reviseEntry.getConstraintReviser(rule, "table_name", null)).thenReturn(Optional.empty());
         Map<ShardingSphereRule, MetaDataReviseEntry<?>> entries = Collections.singletonMap(rule, reviseEntry);
         try (MockedStatic<OrderedSPILoader> mocked = mockStatic(OrderedSPILoader.class)) {
             mocked.when(() -> OrderedSPILoader.getServices(MetaDataReviseEntry.class, Collections.singleton(rule))).thenReturn(entries);
@@ -105,7 +112,13 @@ class SchemaMetaDataReviseEngineTest {
         MetaDataReviseEntry<FixtureGlobalRule> reviseEntry = mock(MetaDataReviseEntry.class);
         IndexReviser<FixtureGlobalRule> indexReviser = mock(IndexReviser.class);
         when(reviseEntry.getTypeClass()).thenReturn(FixtureGlobalRule.class);
-        doReturn(Optional.of(indexReviser)).when(reviseEntry).getIndexReviser(rule, "actual_tbl");
+        when(reviseEntry.createTableMetaDataRevisionContext(rule, "actual_tbl", null)).thenReturn(Optional.empty());
+        when(reviseEntry.getTableNameReviser()).thenReturn(Optional.empty());
+        when(reviseEntry.getColumnExistedReviser(rule, "actual_tbl")).thenReturn(Optional.empty());
+        when(reviseEntry.getColumnNameReviser(rule, "actual_tbl")).thenReturn(Optional.empty());
+        when(reviseEntry.getColumnGeneratedReviser(rule, "actual_tbl", null)).thenReturn(Optional.empty());
+        doReturn(Optional.of(indexReviser)).when(reviseEntry).getIndexReviser(rule, "actual_tbl", null);
+        when(reviseEntry.getConstraintReviser(rule, "actual_tbl", null)).thenReturn(Optional.empty());
         when(indexReviser.revise(eq("actual_tbl"), any(), eq(schemaMetaData.getTables()), argThat(candidates -> {
             TableMetaData candidate = candidates.iterator().next();
             IndexMetaData index = candidate.getIndexes().iterator().next();

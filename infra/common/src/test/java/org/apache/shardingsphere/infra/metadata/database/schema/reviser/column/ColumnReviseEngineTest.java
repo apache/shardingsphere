@@ -49,7 +49,7 @@ class ColumnReviseEngineTest {
         String tableName = "foo_tbl";
         when(reviseEntry.getColumnExistedReviser(rule, tableName)).thenReturn(Optional.empty());
         when(reviseEntry.getColumnNameReviser(rule, tableName)).thenReturn(Optional.empty());
-        when(reviseEntry.getColumnGeneratedReviser(rule, tableName)).thenReturn(Optional.empty());
+        when(reviseEntry.getColumnGeneratedReviser(rule, tableName, null)).thenReturn(Optional.empty());
         ColumnMetaData columnMetaData = new ColumnMetaData("foo_col", 1, true, false, true, false, false, false);
         Collection<ColumnMetaData> actual = new ColumnReviseEngine<>(rule, reviseEntry).revise(tableName, Collections.singleton(columnMetaData));
         assertThat(actual.size(), is(1));

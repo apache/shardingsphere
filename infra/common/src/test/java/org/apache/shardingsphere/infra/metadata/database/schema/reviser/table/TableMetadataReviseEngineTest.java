@@ -56,6 +56,12 @@ class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
     @BeforeEach
     void setUp() {
         engine = new TableMetaDataReviseEngine<T>(rule, metaDataReviseEntry);
+        when(metaDataReviseEntry.createTableMetaDataRevisionContext(any(), anyString(), any())).thenReturn(Optional.empty());
+        when(metaDataReviseEntry.getColumnExistedReviser(any(), anyString())).thenReturn(Optional.empty());
+        when(metaDataReviseEntry.getColumnNameReviser(any(), anyString())).thenReturn(Optional.empty());
+        when(metaDataReviseEntry.getColumnGeneratedReviser(any(), anyString(), any())).thenReturn(Optional.empty());
+        when(metaDataReviseEntry.getIndexReviser(any(), anyString(), any())).thenReturn(Optional.empty());
+        when(metaDataReviseEntry.getConstraintReviser(any(), anyString(), any())).thenReturn(Optional.empty());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

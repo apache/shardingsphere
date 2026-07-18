@@ -30,7 +30,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
+@ToString(exclude = "storageUnitName")
 public final class TableMetaData {
     
     private final String name;
