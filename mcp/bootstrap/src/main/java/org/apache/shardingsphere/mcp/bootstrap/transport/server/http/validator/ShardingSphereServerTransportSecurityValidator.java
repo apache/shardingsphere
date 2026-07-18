@@ -56,11 +56,8 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
             if ((each instanceof SessionRequiredTransportHeaderConstraint) != sessionRequired) {
                 continue;
             }
-            if (sessionRequired) {
-                String sessionId = getSessionId(headers);
-                if (sessionId.isBlank() || !sessionManager.hasSession(sessionId)) {
-                    continue;
-                }
+            if (sessionRequired && getSessionId(headers).isBlank()) {
+                continue;
             }
             each.validate(getFirstHeaderValue(headers, each.getConstraintKey()));
         }

@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
@@ -45,8 +46,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,21 +59,18 @@ final class MCPStatementAnalyzer {
     
     private static final Set<String> DDL_STATEMENT_TYPES = Set.of("CREATE", "ALTER", "DROP", "TRUNCATE");
     
-    private final SQLStatementScanner scanner = new SQLStatementScanner();
-    
-    private final SQLStatementSafetyValidator safetyValidator = new SQLStatementSafetyValidator(scanner);
-    
-    private final SQLStatementObjectExtractor objectExtractor = new SQLStatementObjectExtractor(scanner);
-    
     private final Collection<MCPRuleDistSQLStatementClassifier> ruleDistSQLStatementClassifiers =
             ShardingSphereServiceLoader.getServiceInstances(MCPRuleDistSQLStatementClassifier.class);
     
     private final Map<String, SQLParserEngine> parserEngines = new ConcurrentHashMap<>();
     
     ClassificationResult analyze(final String sql, final MCPDatabaseCapability databaseCapability) {
+        String databaseType = databaseCapability.getDatabaseType();
+        SQLStatementScanner scanner = new SQLStatementScanner(databaseType);
         String actualSql = scanner.normalizeSingleStatement(sql);
         String leadingSql = actualSql.substring(scanner.skipInsignificant(actualSql, 0)).trim();
         String upperLeadingSql = leadingSql.toUpperCase(Locale.ENGLISH);
+        SQLStatementSafetyValidator safetyValidator = new SQLStatementSafetyValidator(scanner);
         safetyValidator.checkLeadingStatement(upperLeadingSql, actualSql);
         if (isSavepointStatement(upperLeadingSql)) {
             return analyzeSavepointStatement(actualSql, leadingSql, upperLeadingSql);
@@ -78,13 +78,34 @@ final class MCPStatementAnalyzer {
         if (isTransactionControlStatement(upperLeadingSql)) {
             return new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, extractTransactionStatementType(upperLeadingSql), actualSql, "", Set.of(), false);
         }
-        SQLStatement sqlStatement = parse(actualSql, databaseCapability.getDatabaseType());
+        SQLStatement sqlStatement = parse(actualSql, databaseType);
         safetyValidator.checkParsedStatement(sqlStatement, actualSql);
         boolean ruleDistSQL = isRuleDistSQL(sqlStatement);
         String leadingKeyword = scanner.extractLeadingKeyword(actualSql);
         SupportedMCPStatement statementClass = resolveStatementClass(sqlStatement, leadingKeyword, ruleDistSQL);
         String statementType = resolveStatementType(sqlStatement, statementClass, leadingKeyword);
-        return new ClassificationResult(statementClass, statementType, actualSql, "", objectExtractor.extract(sqlStatement, actualSql), ruleDistSQL);
+        return new ClassificationResult(statementClass, statementType, actualSql, "", extractReferencedObjects(sqlStatement, actualSql, databaseType, scanner), ruleDistSQL);
+    }
+    
+    private Collection<SQLStatementObjectName> extractReferencedObjects(final SQLStatement sqlStatement, final String sql, final String databaseType,
+                                                                        final SQLStatementScanner scanner) {
+        SQLStatementObjectExtractor extractor = new SQLStatementObjectExtractor(scanner);
+        Collection<SQLStatementObjectName> result = extractor.extract(sqlStatement, sql);
+        findCreateTableQuery(sqlStatement, sql, scanner).ifPresent(query -> result.addAll(extractor.extract(parse(query, databaseType), query)));
+        return result;
+    }
+    
+    private Optional<String> findCreateTableQuery(final SQLStatement sqlStatement, final String sql, final SQLStatementScanner scanner) {
+        if (!(sqlStatement instanceof CreateTableStatement) || ((CreateTableStatement) sqlStatement).getSelectStatement().isPresent()) {
+            return Optional.empty();
+        }
+        List<SQLStatementToken> tokens = scanner.tokenize(sql);
+        for (int index = 0; index + 1 < tokens.size(); index++) {
+            if (scanner.isKeyword(tokens.get(index), "AS") && scanner.isKeyword(tokens.get(index + 1), "SELECT", "WITH")) {
+                return Optional.of(sql.substring(tokens.get(index + 1).startIndex()));
+            }
+        }
+        return Optional.empty();
     }
     
     private ClassificationResult analyzeSavepointStatement(final String actualSql, final String leadingSql, final String upperLeadingSql) {

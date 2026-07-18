@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
@@ -222,8 +223,14 @@ final class SQLStatementObjectExtractor {
         } else if (sqlStatement instanceof AlterSequenceStatement) {
             addName(((AlterSequenceStatement) sqlStatement).getSequenceName(), result);
         } else if (sqlStatement instanceof DropSequenceStatement) {
-            for (String each : ((DropSequenceStatement) sqlStatement).getSequenceNames()) {
-                addName(each, result);
+            for (Object each : ((DropSequenceStatement) sqlStatement).getSequenceNames()) {
+                if (each instanceof String) {
+                    addName((String) each, result);
+                } else if (each instanceof SimpleTableSegment) {
+                    addTable((SimpleTableSegment) each, result);
+                } else {
+                    throw new MCPUnsupportedSQLStatementException();
+                }
             }
         }
     }

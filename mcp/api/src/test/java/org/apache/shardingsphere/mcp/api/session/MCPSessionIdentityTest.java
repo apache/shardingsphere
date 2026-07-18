@@ -19,16 +19,26 @@ package org.apache.shardingsphere.mcp.api.session;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPSessionIdentityTest {
     
     @Test
-    void assertAttributes() {
-        Map<String, String> attributes = Map.of("region", "ap-south");
-        assertThat(new MCPSessionIdentity("session-1", "subject", "gateway", attributes).getAttributes(), sameInstance(attributes));
+    void assertAttributesSnapshot() {
+        Map<String, String> attributes = new HashMap<>(Map.of("region", "ap-south"));
+        MCPSessionIdentity identity = new MCPSessionIdentity("session-1", "subject", "gateway", attributes);
+        attributes.put("region", "eu-west");
+        assertThat(identity.getAttributes(), is(Map.of("region", "ap-south")));
+    }
+    
+    @Test
+    void assertAttributesImmutable() {
+        Map<String, String> actual = new MCPSessionIdentity("session-1", "subject", "gateway", Map.of("region", "ap-south")).getAttributes();
+        assertThrows(UnsupportedOperationException.class, () -> actual.put("region", "eu-west"));
     }
 }

@@ -112,15 +112,12 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     private McpSchema.InitializeRequest negotiateInitializeRequest(final McpSchema.InitializeRequest initializeRequest) {
-        String negotiatedProtocolVersion = negotiateProtocolVersion(initializeRequest.protocolVersion());
+        String requestedProtocolVersion = Objects.toString(initializeRequest.protocolVersion(), "").trim();
+        ShardingSpherePreconditions.checkNotEmpty(requestedProtocolVersion, () -> new IllegalArgumentException("protocolVersion is required."));
+        String negotiatedProtocolVersion = protocolVersions().contains(requestedProtocolVersion) ? requestedProtocolVersion : MCPTransportConstants.PROTOCOL_VERSION;
         return negotiatedProtocolVersion.equals(initializeRequest.protocolVersion())
                 ? initializeRequest
                 : new McpSchema.InitializeRequest(negotiatedProtocolVersion, initializeRequest.capabilities(), initializeRequest.clientInfo(), initializeRequest.meta());
-    }
-    
-    private String negotiateProtocolVersion(final String requestedProtocolVersion) {
-        String actualRequestedProtocolVersion = Objects.toString(requestedProtocolVersion, "").trim();
-        return protocolVersions().contains(actualRequestedProtocolVersion) ? actualRequestedProtocolVersion : MCPTransportConstants.PROTOCOL_VERSION;
     }
     
     @Override
@@ -150,6 +147,11 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         setUtf8Encoding(request, response);
         if (!validateTransportSecurity(request, response)) {
+            return;
+        }
+        String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "");
+        if (!sessionId.isBlank() && !sessionManager.hasSession(sessionId)) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         if (!isEventStreamAccepted(request)) {

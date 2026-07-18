@@ -52,6 +52,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         assertThat(actual.headers().firstValue("MCP-Protocol-Version").orElse(""), is(getProtocolVersion()));
         String actualSessionId = actual.headers().firstValue("MCP-Session-Id").orElse("");
         assertFalse(actualSessionId.isEmpty());
+        assertTrue(actualSessionId.chars().allMatch(each -> 0x21 <= each && each <= 0x7E));
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
         Map<String, Object> actualResult = MCPInteractionPayloads.getRequiredJsonRpcResult(actualPayload);
         assertThat(String.valueOf(actualPayload.get("jsonrpc")), is("2.0"));
@@ -228,6 +229,17 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         assertThat(actual.headers().firstValue("MCP-Protocol-Version").orElse(""), is(getProtocolVersion()));
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
         assertThat(String.valueOf(MCPInteractionPayloads.getRequiredJsonRpcResult(actualPayload).get("protocolVersion")), is(getProtocolVersion()));
+    }
+    
+    @Test
+    void assertRejectInitializeWithoutProtocolVersion() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        Map<String, Object> initializeRequestParams = new LinkedHashMap<>(MCPInteractionProtocolSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
+        initializeRequestParams.remove("protocolVersion");
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, initializeRequestParams);
+        assertThat(actual.statusCode(), is(400));
+        assertFalse(actual.headers().firstValue("MCP-Session-Id").isPresent());
     }
     
     @Test
