@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 public interface MCPRequestContext {
     
     /**
-     * Get the identity snapshot of the current MCP session.
+     * Get the identity of the current MCP session.
      *
      * <p>The identity always contains the MCP session identifier. Trusted HTTP attribution is optional and does not represent authentication or authorization.</p>
      *
