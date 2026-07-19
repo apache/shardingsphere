@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -95,7 +95,8 @@ public final class SQLHintUtils {
     }
     
     private static int getHintKeyValueBeginIndex(final String sql) {
-        int tokenBeginIndex = sql.contains(SQLHintTokenType.SQL_START_HINT_TOKEN.getKey()) ? sql.indexOf(SQLHintTokenType.SQL_START_HINT_TOKEN.getKey())
+        int tokenBeginIndex = sql.contains(SQLHintTokenType.SQL_START_HINT_TOKEN.getKey())
+                ? sql.indexOf(SQLHintTokenType.SQL_START_HINT_TOKEN.getKey())
                 : sql.indexOf(SQLHintTokenType.SQL_START_HINT_TOKEN.getAlias());
         return sql.indexOf(":", tokenBeginIndex) + 1;
     }
@@ -139,7 +140,7 @@ public final class SQLHintUtils {
     }
     
     private static Collection<String> getSplitterSQLHintValue(final String property) {
-        return property.isEmpty() ? Collections.emptySet() : new HashSet<>(Splitter.on(SQL_HINT_VALUE_COLLECTION_SPLIT).omitEmptyStrings().trimResults().splitToList(property));
+        return property.isEmpty() ? Collections.emptySet() : new LinkedHashSet<>(Splitter.on(SQL_HINT_VALUE_COLLECTION_SPLIT).omitEmptyStrings().trimResults().splitToList(property));
     }
     
     /**
