@@ -22,11 +22,15 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,51 +45,45 @@ class PipelineInventoryCalculateSQLBuilderTest {
     
     private final PipelineInventoryCalculateSQLBuilder sqlBuilder = new PipelineInventoryCalculateSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     
-    @Test
-    void assertBuildRangeQueryOrderingSQLPageQuery() {
-        String actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                Range.closed(1, 5), true, SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
-        actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                Range.openClosed(1, 5), true, SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
-        actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                Range.openClosed(1, null), true, SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
-        actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                Range.openClosed(null, 5), true, SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
-        actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                Range.openClosed(null, null), true, SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertBuildRangeQueryOrderingSQLArguments")
+    void assertBuildRangeQueryOrderingSQL(final String name, final Range<Integer> range, final boolean pageQuery, final String expectedSQL) {
+        assertThat(name, sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, range, pageQuery, SHARDING_COLUMNS_NAMES), is(expectedSQL));
+    }
+    
+    private static Stream<Arguments> assertBuildRangeQueryOrderingSQLArguments() {
+        return Stream.of(
+                Arguments.of("closed range with page query", Range.closed(1, 5), true,
+                        "SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"),
+                Arguments.of("open-closed range with page query", Range.openClosed(1, 5), true,
+                        "SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"),
+                Arguments.of("lower bound only with page query", Range.openClosed(1, null), true,
+                        "SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"),
+                Arguments.of("upper bound only with page query", Range.openClosed(null, 5), true,
+                        "SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"),
+                Arguments.of("unbounded range with page query", Range.openClosed(null, null), true,
+                        "SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"),
+                Arguments.of("closed range without page query", Range.closed(1, 5), false,
+                        "SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"),
+                Arguments.of("open-closed range without page query", Range.openClosed(1, 5), false,
+                        "SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"),
+                Arguments.of("lower bound only without page query", Range.openClosed(1, null), false,
+                        "SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC"),
+                Arguments.of("upper bound only without page query", Range.openClosed(null, 5), false,
+                        "SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"),
+                Arguments.of("unbounded range without page query", Range.openClosed(null, null), false,
+                        "SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC"));
     }
     
     @Test
-    void assertBuildRangeQueryOrderingSQLNotPageQuery() {
-        String actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                Range.closed(1, 5), false, SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
-        actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                Range.openClosed(1, 5), false, SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
-        actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                Range.openClosed(1, null), false, SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC"));
-        actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                Range.openClosed(null, 5), false, SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
-        actual = sqlBuilder.buildRangeQueryOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
-                Range.openClosed(null, null), false, SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC"));
+    void assertBuildPointQuerySQLWithoutShardingColumns() {
+        assertThat(sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, Collections.emptyList()),
+                is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
     }
     
     @Test
-    void assertBuildPointQuerySQLWithoutQueryCondition() {
-        String actual = sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, Collections.emptyList());
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
-        actual = sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, Collections.emptyList());
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
-        actual = sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, Collections.singletonList("user_id"));
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=? AND user_id=?"));
+    void assertBuildPointQuerySQLWithShardingColumns() {
+        assertThat(sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, Collections.singletonList("user_id")),
+                is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=? AND user_id=?"));
     }
 }
