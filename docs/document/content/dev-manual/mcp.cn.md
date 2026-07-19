@@ -16,12 +16,18 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 - `mcp/support`：database metadata、execution、capability、workflow context、模型、facade、database/workflow SPI 和复用 helper。
 - `mcp/features/encrypt`：Encrypt MCP feature。
 - `mcp/features/mask`：Mask MCP feature。
+- `mcp/features/broadcast`：Broadcast MCP feature。
+- `mcp/features/readwrite-splitting`：Readwrite-Splitting MCP feature。
+- `mcp/features/shadow`：Shadow MCP feature。
+- `mcp/features/sharding`：Sharding MCP feature。
 - `mcp/core`：handler 发现、registry、request context、session、SQL execution trace、metadata discovery 和 runtime context。
 - `mcp/bootstrap`：基于 MCP Java SDK 的 bootstrap、HTTP/STDIO transport、配置加载和生命周期管理。
+- `mcp/registry`：隔离的发行元数据校验工具，不依赖 MCP runtime 模块。
 - `distribution/mcp`：独立打包、启动脚本、配置和 Dockerfile。
 - `test/e2e/mcp`：端到端契约验证。
 
-`mcp/bootstrap` 只负责发布聚合后的协议表面，不应硬编码具体 feature 业务。
+生产依赖方向固定为 `api <- support <- core <- bootstrap` 和 `api <- support <- feature`。
+Feature 模块不依赖 core、bootstrap、registry 或其他 feature；`mcp/bootstrap` 只负责发布聚合后的协议表面，不硬编码具体 feature 业务。
 
 公开的 server capability 契约按 `org.apache.shardingsphere.mcp.api.capability.<capability>` 组织，ServiceLoader 入口接口位于
 `org.apache.shardingsphere.mcp.spi`。Request context、session、transport、payload 和 exception 是跨 capability 或基础协议契约，不归入 capability 包。
@@ -59,6 +65,8 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 - 有副作用的执行必须先 preview，再根据用户明确批准的 `approved_steps` 执行。
 - 敏感参数在模型可见的计划、预览、执行、校验、恢复和错误输出中必须掩码；执行路径使用受控上下文中的原始值。
 - 校验逻辑应读取 Proxy 可见的规则状态或 feature 状态，避免把不属于当前 feature 的物理操作作为验收条件。
+- Encrypt、Mask 和 Sharding 的 ALTER 扩展、物理 DDL、数据迁移和回填属于商业版本能力，不作为开源 MCP workflow 的验收条件。
+  这项排除不影响 Readwrite-Splitting、Shadow 等其他 feature 已支持的 ALTER 生命周期验收。
 - Descriptor 启动期校验应覆盖 tool/resource/prompt 名称唯一性、schema 字段、side-effect annotations、related resources、follow-up tools、
   completion target 和 workflow recovery path。
 

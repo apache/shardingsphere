@@ -8,7 +8,8 @@ The MCP runtime uses these descriptors to publish tools, resources, resource tem
 
 ## Protocol capabilities
 
-ShardingSphere-MCP targets MCP protocol revision `2025-11-25`.
+ShardingSphere-MCP uses MCP Java SDK `1.1.2` and exposes only MCP protocol revision `2025-11-25`.
+The SDK and protocol revision are fixed compatibility boundaries for this implementation, not dependency-upgrade or multi-version compatibility targets.
 
 Enabled:
 
@@ -29,7 +30,9 @@ Not implemented or future scope:
 - `progress`.
 - `notifications/cancelled`.
 - Task-augmented requests.
-- MCP `icons` and `Tool.execution` fields until the MCP Java SDK boundary exposes them.
+- `Tool.execution`, which is not exposed through the fixed MCP Java SDK `1.1.2` boundary.
+
+MCP `icons` are an intentional non-goal because this server has no product scenario that consumes them.
 
 `roots` and `sampling` are client capabilities.
 ShardingSphere-MCP does not require roots and does not send `sampling/createMessage` requests.
@@ -39,8 +42,9 @@ ShardingSphere-MCP does not require roots and does not send `sampling/createMess
 `database_gateway_search_metadata`
 
 - Searches logical database metadata.
-- Narrows scope by `database`, `schema`, `query`, and `object_types`.
+- Narrows scope by `database`, `schema`, `query`, and `object_types`, then returns a deterministically ordered page selected by `offset` and `limit`.
 - `object_types` supports `database`, `schema`, `storage_unit`, `table`, `view`, `column`, `index`, and `sequence`.
+- `limit` defaults to `100` and supports `1..100`; `offset` defaults to `0`. When `has_more=true`, continue with the returned `next_offset` and the same search scope.
 
 `database_gateway_validate_runtime_database`
 

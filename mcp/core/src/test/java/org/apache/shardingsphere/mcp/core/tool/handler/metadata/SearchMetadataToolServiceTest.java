@@ -49,7 +49,7 @@ class SearchMetadataToolServiceTest {
     
     @Test
     void assertExecuteSearchAcrossDatabases() {
-        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("", "", "order",
+        MetadataSearchResult actual = execute(createDatabaseMetadata(), createRequest("", "", "order",
                 Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.INDEX)));
         Set<String> actualNames = actual.getItems().stream().map(MetadataSearchHit::getName).collect(Collectors.toSet());
         assertTrue(actualNames.contains("orders"));
@@ -64,7 +64,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchAcrossDatabasesWithDatabaseObjectType() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("", "", "", Set.of(SupportedMCPMetadataObjectType.DATABASE)));
+                createRequest("", "", "", Set.of(SupportedMCPMetadataObjectType.DATABASE)));
         assertThat(actual.getItems().size(), is(4));
         assertThat(actual.getItems().getFirst().getName(), is("analytics_db"));
         assertThat(actual.getItems().get(1).getName(), is("logic_db"));
@@ -78,7 +78,7 @@ class SearchMetadataToolServiceTest {
     
     @Test
     void assertExecuteBlankAllDatabaseSearchGuardsObjectExpansion() {
-        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("", "", "", Set.of()));
+        MetadataSearchResult actual = execute(createDatabaseMetadata(), createRequest("", "", "", Set.of()));
         assertThat(actual.getItems().size(), is(4));
         assertThat(actual.getTotalMatchCount(), is(4));
         assertThat(actual.getReturnedCount(), is(4));
@@ -92,7 +92,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchCapsLargeResult() {
         MetadataSearchResult actual = execute(createLargeDatabaseMetadata(),
-                new MetadataSearchRequest("large_db", "", "", Set.of(SupportedMCPMetadataObjectType.TABLE)));
+                createRequest("large_db", "", "", Set.of(SupportedMCPMetadataObjectType.TABLE)));
         assertThat(actual.getItems().size(), is(100));
         assertThat(actual.getTotalMatchCount(), is(101));
         assertThat(actual.getReturnedCount(), is(100));
@@ -101,10 +101,32 @@ class SearchMetadataToolServiceTest {
     }
     
     @Test
+    void assertExecuteSearchPage() {
+        MetadataSearchResult actual = execute(createLargeDatabaseMetadata(),
+                new MetadataSearchRequest("large_db", "", "", Set.of(SupportedMCPMetadataObjectType.TABLE), 2, 1));
+        assertThat(actual.getItems().stream().map(MetadataSearchHit::getName).toList(), is(List.of("table_1", "table_10")));
+        assertThat(actual.getTotalMatchCount(), is(101));
+        assertThat(actual.getReturnedCount(), is(2));
+        assertTrue(actual.isTruncated());
+        assertThat(actual.getSearchContext().get("limit"), is(2));
+        assertThat(actual.getSearchContext().get("offset"), is(1));
+    }
+    
+    @Test
+    void assertExecuteSearchPastLastPage() {
+        MetadataSearchResult actual = execute(createLargeDatabaseMetadata(),
+                new MetadataSearchRequest("large_db", "", "", Set.of(SupportedMCPMetadataObjectType.TABLE), 2, 102));
+        assertThat(actual.getItems(), is(List.of()));
+        assertThat(actual.getTotalMatchCount(), is(101));
+        assertThat(actual.getReturnedCount(), is(0));
+        assertFalse(actual.isTruncated());
+    }
+    
+    @Test
     void assertExecuteSearchWithCompleteResult() {
         Set<SupportedMCPMetadataObjectType> objectTypes = Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW);
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "", "order", objectTypes));
+                createRequest("logic_db", "", "order", objectTypes));
         assertThat(actual.getItems().size(), is(4));
         assertThat(actual.getItems().getFirst().getName(), is("order_items"));
         assertThat(actual.getItems().getFirst().getMatchKind(), is("prefix"));
@@ -119,13 +141,13 @@ class SearchMetadataToolServiceTest {
         assertThat(actualSearchContext.get("database_scope"), is("single_database"));
         assertThat(actualSearchContext.get("schema"), is(""));
         assertThat(actualSearchContext.get("object_types"), is(List.of("table", "view")));
-        assertThat(actualSearchContext.keySet(), is(Set.of("query", "database", "database_scope", "schema", "object_types")));
+        assertThat(actualSearchContext.keySet(), is(Set.of("query", "database", "database_scope", "schema", "object_types", "limit", "offset")));
         assertThat(actual.getTotalMatchCount(), is(4));
     }
     
     @Test
     void assertExecuteSearchWithDefaultObjectTypes() {
-        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("runtime_db", "", "", Set.of()));
+        MetadataSearchResult actual = execute(createDatabaseMetadata(), createRequest("runtime_db", "", "", Set.of()));
         assertThat(actual.getItems().size(), is(3));
         assertThat(actual.getItems().getFirst().getObjectType(), is("database"));
         assertThat(actual.getItems().get(1).getObjectType(), is("schema"));
@@ -134,13 +156,13 @@ class SearchMetadataToolServiceTest {
         assertThat(extractResourceHintUri(actual.getItems().get(2)), is("shardingsphere://databases/runtime_db/schemas/public/sequences/order_seq"));
         assertThat(extractParentResourceHintUri(actual.getItems().get(2)), is("shardingsphere://databases/runtime_db/schemas/public/sequences"));
         assertThat(actual.getItems().get(2).getMatchKind(), is("all"));
-        assertThat(actual.getSearchContext().keySet(), is(Set.of("query", "database", "database_scope", "schema", "object_types")));
+        assertThat(actual.getSearchContext().keySet(), is(Set.of("query", "database", "database_scope", "schema", "object_types", "limit", "offset")));
     }
     
     @Test
     void assertExecuteSearchWithDefaultObjectTypesDoesNotQueryStorageUnits() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        MetadataSearchResult actual = execute(createDatabaseMetadata(), queryFacade, new MetadataSearchRequest("logic_db", "", "", Set.of()));
+        MetadataSearchResult actual = execute(createDatabaseMetadata(), queryFacade, createRequest("logic_db", "", "", Set.of()));
         assertFalse(((List<?>) actual.getSearchContext().get("object_types")).contains("storage_unit"));
         verifyNoInteractions(queryFacade);
     }
@@ -148,14 +170,14 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithSchemaWithoutDatabase() {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> execute(createDatabaseMetadata(), new MetadataSearchRequest("", "public", "order", Set.of())));
+                () -> execute(createDatabaseMetadata(), createRequest("", "public", "order", Set.of())));
         assertThat(actual.getMessage(), is("Schema cannot be provided without database."));
     }
     
     @Test
     void assertExecuteSearchWithSchemaObjectTypeAndSchemaFilter() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "public", "public", Set.of(SupportedMCPMetadataObjectType.SCHEMA)));
+                createRequest("logic_db", "public", "public", Set.of(SupportedMCPMetadataObjectType.SCHEMA)));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().getFirst().getObjectType(), is("schema"));
         assertThat(actual.getItems().getFirst().getName(), is("public"));
@@ -165,7 +187,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithTableObjectTypeAndSchemaFilter() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.TABLE)));
+                createRequest("logic_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.TABLE)));
         assertThat(actual.getItems().size(), is(2));
         assertThat(actual.getItems().getFirst().getName(), is("order_items"));
         assertThat(actual.getItems().get(1).getName(), is("orders"));
@@ -177,7 +199,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithViewObjectTypeAndSchemaFilter() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "public", "orders", Set.of(SupportedMCPMetadataObjectType.VIEW)));
+                createRequest("logic_db", "public", "orders", Set.of(SupportedMCPMetadataObjectType.VIEW)));
         assertThat(actual.getItems().size(), is(2));
         assertThat(actual.getItems().getFirst().getName(), is("active_orders"));
         assertThat(extractResourceHintUri(actual.getItems().getFirst()), is("shardingsphere://databases/logic_db/schemas/public/views/active_orders"));
@@ -188,7 +210,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithColumnObjectTypeMatchedByViewName() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "", "active", Set.of(SupportedMCPMetadataObjectType.COLUMN)));
+                createRequest("logic_db", "", "active", Set.of(SupportedMCPMetadataObjectType.COLUMN)));
         assertThat(actual.getItems().size(), is(2));
         assertThat(actual.getItems().getFirst().getName(), is("order_id"));
         assertThat(actual.getItems().getFirst().getView(), is("active_orders"));
@@ -200,7 +222,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithDatabaseAndTableInEmptySchema() {
         MetadataSearchResult actual = execute(createDatabaseMetadataWithEmptySchema(),
-                new MetadataSearchRequest("schema_less_db", "", "", Set.of()));
+                createRequest("schema_less_db", "", "", Set.of()));
         assertThat(actual.getItems().size(), is(2));
         assertThat(actual.getItems().getFirst().getObjectType(), is("database"));
         assertThat(actual.getItems().get(1).getObjectType(), is("table"));
@@ -213,7 +235,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithEncodedUriCharacter() {
         MetadataSearchResult actual = execute(createDatabaseMetadataWithUnsafeUriName(),
-                new MetadataSearchRequest("逻辑 库", "public/main", "orders", Set.of(SupportedMCPMetadataObjectType.TABLE)));
+                createRequest("逻辑 库", "public/main", "orders", Set.of(SupportedMCPMetadataObjectType.TABLE)));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().getFirst().getName(), is("orders?archive%2026"));
         assertThat(extractResourceHintUri(actual.getItems().getFirst()),
@@ -225,7 +247,7 @@ class SearchMetadataToolServiceTest {
     
     @Test
     void assertExecuteSearchWithEmptyQuery() {
-        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("logic_db", "", "", Set.of()));
+        MetadataSearchResult actual = execute(createDatabaseMetadata(), createRequest("logic_db", "", "", Set.of()));
         assertThat(actual.getItems().size(), is(11));
         assertThat(actual.getTotalMatchCount(), is(11));
         Set<String> actualNames = actual.getItems().stream().map(MetadataSearchHit::getName).collect(Collectors.toSet());
@@ -236,7 +258,7 @@ class SearchMetadataToolServiceTest {
     
     @Test
     void assertExecuteSearchWithSequenceObjectType() {
-        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("runtime_db", "", "order",
+        MetadataSearchResult actual = execute(createDatabaseMetadata(), createRequest("runtime_db", "", "order",
                 Set.of(SupportedMCPMetadataObjectType.SEQUENCE)));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().getFirst().getName(), is("order_seq"));
@@ -249,7 +271,7 @@ class SearchMetadataToolServiceTest {
         when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db"))
                 .thenReturn(List.of(Map.of("name", "write_ds"), Map.of("name", "read_ds")));
         MetadataSearchResult actual = execute(createDatabaseMetadata(), queryFacade,
-                new MetadataSearchRequest("logic_db", "", "write", Set.of(SupportedMCPMetadataObjectType.STORAGE_UNIT)));
+                createRequest("logic_db", "", "write", Set.of(SupportedMCPMetadataObjectType.STORAGE_UNIT)));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().getFirst().getObjectType(), is("storage_unit"));
         assertThat(actual.getItems().getFirst().getName(), is("write_ds"));
@@ -261,7 +283,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithSchemaScopedSequenceObjectType() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("runtime_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.SEQUENCE)));
+                createRequest("runtime_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.SEQUENCE)));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().getFirst().getName(), is("order_seq"));
     }
@@ -269,14 +291,14 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithUnsupportedIndexObjectType() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("warehouse", "", "", Set.of(SupportedMCPMetadataObjectType.INDEX)));
+                createRequest("warehouse", "", "", Set.of(SupportedMCPMetadataObjectType.INDEX)));
         assertThat(actual.getItems().size(), is(0));
     }
     
     @Test
     void assertExecuteSearchWithUnsupportedSequenceObjectType() {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
-                new MetadataSearchRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.SEQUENCE)));
+                createRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.SEQUENCE)));
         assertThat(actual.getItems().size(), is(0));
     }
     
@@ -284,7 +306,7 @@ class SearchMetadataToolServiceTest {
     void assertExecuteSearchWithUnsearchableObjectType() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MetadataSearchResult actual = new SearchMetadataToolService(metadataQueryFacade, mock(MCPFeatureQueryFacade.class)).execute(
-                new MetadataSearchRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.MATERIALIZED_VIEW)));
+                createRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.MATERIALIZED_VIEW)));
         assertThat(actual.getItems(), is(List.of()));
         verifyNoInteractions(metadataQueryFacade);
     }
@@ -301,6 +323,11 @@ class SearchMetadataToolServiceTest {
             MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             return new SearchMetadataToolService(requestContext.getMetadataQueryFacade(), queryFacade).execute(request);
         }
+    }
+    
+    private MetadataSearchRequest createRequest(final String database, final String schema, final String query,
+                                                final Set<SupportedMCPMetadataObjectType> objectTypes) {
+        return new MetadataSearchRequest(database, schema, query, objectTypes, 100, 0);
     }
     
     private MetadataSearchHit findHit(final MetadataSearchResult searchResult, final String name) {

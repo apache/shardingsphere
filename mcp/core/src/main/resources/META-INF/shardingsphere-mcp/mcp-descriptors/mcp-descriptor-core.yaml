@@ -876,6 +876,18 @@ tools:
               - index
               - storage_unit
               - sequence
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 100
+          description: "Maximum metadata hits to return in one page. Defaults to 100."
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          default: 0
+          description: "Zero-based offset into the deterministically sorted current metadata search result. Defaults to 0."
       required: []
       additionalProperties: false
     outputSchema:
@@ -950,6 +962,7 @@ tools:
           description: "ShardingSphere application continuation mode for this metadata search result; not MCP cursor or nextCursor semantics."
           enum:
             - none
+            - pagination
         search_context:
           type: object
           description: "Applied search scope, query, and object types used for this response."
@@ -958,17 +971,23 @@ tools:
           description: "Total matched metadata objects for this search scope."
         truncated:
           type: boolean
-          description: "Whether search hits were capped by the large-result threshold."
+          description: "Whether more search hits remain after this page."
+        has_more:
+          type: boolean
+          description: "Whether another metadata search page is available."
+        next_offset:
+          type: integer
+          description: "Zero-based offset for the next page. Present only when has_more is true."
         large_result_guidance:
           type: object
-          description: "Structured narrowing guidance when matched metadata results are truncated."
+          description: "Structured narrowing guidance when more metadata matches remain after the current page and the total exceeds the large-result threshold."
           properties:
             state:
               type: string
               description: "Large-result guidance state."
             threshold:
               type: integer
-              description: "Maximum number of metadata hits returned before truncation."
+              description: "Match-count threshold above which narrowing guidance is emitted."
             narrowing_arguments:
               type: array
               description: "Public database_gateway_search_metadata arguments the model can set to narrow the result."
@@ -999,7 +1018,7 @@ tools:
               description: "Public database_gateway_search_metadata arguments the model can ask for or set to narrow the search."
         next_actions:
           type: array
-          description: "Structured follow-up actions for empty, broad, or duplicate-name search results."
+          description: "Structured follow-up actions for pagination, empty, broad, or duplicate-name search results."
           items:
             type: object
             properties:
@@ -1069,6 +1088,7 @@ tools:
           continuation_mode: none
           total_match_count: 1
           truncated: false
+          has_more: false
           search_context:
             query: orders
             database: logic_db
@@ -1076,6 +1096,8 @@ tools:
             schema: public
             object_types:
               - table
+            limit: 100
+            offset: 0
     annotations:
       title: Search Metadata
       readOnlyHint: true

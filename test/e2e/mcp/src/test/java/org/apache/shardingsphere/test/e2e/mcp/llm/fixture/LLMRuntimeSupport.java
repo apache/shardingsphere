@@ -45,6 +45,8 @@ public final class LLMRuntimeSupport {
     
     private static final String REQUIRED_PROVIDER = "openai-compatible";
     
+    private static final int CONTEXT_WINDOW_TOKENS = 32768;
+    
     private static final int SERVER_PORT = 8080;
     
     private static ModelRuntime sharedContainerRuntime;
@@ -141,8 +143,9 @@ public final class LLMRuntimeSupport {
                 .withImagePullPolicy(imageName -> false)
                 .withExposedPorts(SERVER_PORT)
                 .withCommand("--host", "0.0.0.0", "--port", String.valueOf(SERVER_PORT), "-m", config.getModelMetadata().getContainerPath(), "--alias", config.getModelName(),
-                        "--jinja", "--reasoning", "off", "--reasoning-budget", "0", "--chat-template-kwargs", "{\"enable_thinking\":false}",
-                        "--api-key", config.getApiKey(), "--no-ui", "-n", "512", "--parallel", "1", "-c", "2048", "-b", "256", "-ub", "128", "--cache-ram", "0", "--no-cache-prompt")
+                        "--jinja", "--reasoning", "auto", "--reasoning-format", "deepseek", "--reasoning-budget", "0", "--chat-template-kwargs", "{\"enable_thinking\":false}",
+                        "--api-key", config.getApiKey(), "--no-ui", "-n", "512", "--parallel", "1", "-c", String.valueOf(CONTEXT_WINDOW_TOKENS),
+                        "-b", "256", "-ub", "128", "--cache-ram", "0", "--no-cache-prompt")
                 .waitingFor(Wait.forListeningPort())
                 .withStartupTimeout(Duration.ofMinutes(5));
     }
@@ -191,7 +194,7 @@ public final class LLMRuntimeSupport {
         }
         
         private static Map<String, Object> createScoreClosingEvidence(final LLME2EConfiguration config, final String serverImageId) {
-            Map<String, Object> result = new LinkedHashMap<>(17, 1F);
+            Map<String, Object> result = new LinkedHashMap<>(18, 1F);
             result.put("runtimeMode", config.getRuntimeMode().getValue());
             result.put("dockerOwned", true);
             result.put("provider", config.getModelProvider());
@@ -207,6 +210,7 @@ public final class LLMRuntimeSupport {
             result.put("modelFileName", config.getModelMetadata().getFileName());
             result.put("modelSha256", config.getModelSha256());
             result.put("modelPackaging", "prepackaged");
+            result.put("contextWindowTokens", CONTEXT_WINDOW_TOKENS);
             result.put("baseUrlOwnedByTest", true);
             result.put("scoreClosing", true);
             return result;

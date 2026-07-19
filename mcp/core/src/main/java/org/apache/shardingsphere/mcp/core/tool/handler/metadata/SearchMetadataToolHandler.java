@@ -37,6 +37,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPFeatur
     
     private static final String TOOL_NAME = "database_gateway_search_metadata";
     
+    private static final int DEFAULT_LIMIT = 100;
+    
     private static final Set<SupportedMCPMetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
             SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX,
@@ -58,7 +60,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPFeatur
         String query = toolArguments.getStringArgument("query");
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), query,
-                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES));
+                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES), toolArguments.getIntegerArgument("limit", DEFAULT_LIMIT, 1, DEFAULT_LIMIT),
+                toolArguments.getIntegerArgument("offset", 0, 0, Integer.MAX_VALUE));
         MetadataSearchResult searchResult = new SearchMetadataToolService(requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade()).execute(request);
         return new MCPItemsPayload(searchResult.getItems(), "", SearchMetadataPayloadBuilder.build(requestContext, request, searchResult, TOOL_NAME), MCPResponseMode.SEARCH);
     }

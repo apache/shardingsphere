@@ -210,6 +210,26 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("semanticPrimaryTransport")
+    void assertSearchMetadataPaginationWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> firstPage = interactionClient.call("database_gateway_search_metadata",
+                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "order",
+                            "object_types", List.of("table", "view"), "limit", 2, "offset", 0));
+            assertThat(getPayloadItems(firstPage).stream().map(each -> String.valueOf(each.get("name"))).toList(), is(List.of("order_items", "orders")));
+            assertTrue((Boolean) firstPage.get("has_more"));
+            assertThat(firstPage.get("next_offset"), is(2));
+            Map<String, Object> secondPage = interactionClient.call("database_gateway_search_metadata",
+                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "order",
+                            "object_types", List.of("table", "view"), "limit", 2, "offset", 2));
+            assertThat(getPayloadItems(secondPage).stream().map(each -> String.valueOf(each.get("name"))).toList(), is(List.of("active_orders")));
+            assertFalse((Boolean) secondPage.get("has_more"));
+            assertFalse(secondPage.containsKey("next_offset"));
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("semanticPrimaryTransport")
     void assertReadViewsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {

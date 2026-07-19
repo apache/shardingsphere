@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
-import org.junit.jupiter.api.Assumptions;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -36,12 +35,15 @@ public final class LLMRuntimeFixtureFactory {
      * Create one MySQL runtime fixture.
      *
      * @param logicalDatabase logical database
-     * @param assumptionMessage assumption message when Docker is unavailable
+     * @param dockerRequiredMessage failure message when Docker is unavailable
      * @return runtime fixture
      * @throws IOException IO exception
+     * @throws IllegalStateException Docker is unavailable
      */
-    public Fixture createMySQLFixture(final String logicalDatabase, final String assumptionMessage) throws IOException {
-        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), () -> MySQLRuntimeTestSupport.createDockerRequiredMessage(assumptionMessage));
+    public Fixture createMySQLFixture(final String logicalDatabase, final String dockerRequiredMessage) throws IOException {
+        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
+            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage(dockerRequiredMessage));
+        }
         try {
             MySQLRuntimeTestSupport.LLMMySQLRuntimeFixture actualFixture = MySQLRuntimeTestSupport.createLLMRuntimeFixture(logicalDatabase);
             return new Fixture(actualFixture.getSchemaName(), actualFixture.getTotalOrders(), actualFixture.getRuntimeDatabases(), actualFixture::close);

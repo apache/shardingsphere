@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -57,16 +58,21 @@ public final class SearchMetadataPayloadBuilder {
         result.put("search_context", searchResult.getSearchContext());
         result.put("total_match_count", searchResult.getTotalMatchCount());
         result.put("truncated", searchResult.isTruncated());
+        result.put("has_more", searchResult.isTruncated());
+        result.put("continuation_mode", searchResult.isTruncated() ? "pagination" : "none");
         if (searchResult.isTruncated()) {
+            result.put("next_offset", request.getOffset() + searchResult.getReturnedCount());
+        }
+        if (searchResult.isTruncated() && searchResult.getTotalMatchCount() > searchResult.getLargeResultThreshold()) {
             result.put("large_result_guidance", createLargeResultGuidance(searchResult));
         }
-        if (searchResult.getItems().isEmpty()) {
+        if (0 == searchResult.getTotalMatchCount()) {
             result.put("empty_state", createEmptyState(requestContext, request));
             result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(createEmptySearchNextAction(request, toolName)));
             return result;
         }
         List<String> duplicatedNames = findDuplicatedNames(searchResult.getItems(), request.getQuery());
-        List<Map<String, Object>> nextActions = createResultNextActions(searchResult, duplicatedNames);
+        List<Map<String, Object>> nextActions = createResultNextActions(request, searchResult, duplicatedNames, toolName);
         if (!nextActions.isEmpty()) {
             result.put(MCPPayloadFieldNames.NEXT_ACTIONS, nextActions);
         }
@@ -85,25 +91,44 @@ public final class SearchMetadataPayloadBuilder {
         result.put("state", "metadata_search_result_truncated");
         result.put("threshold", searchResult.getLargeResultThreshold());
         result.put("narrowing_arguments", List.of("database", "schema", "query", "object_types"));
-        result.put(MCPPayloadFieldNames.REASON, "Search matched more metadata objects than returned; narrow the search before reading specific resources.");
+        result.put(MCPPayloadFieldNames.REASON, "Search matched more metadata objects than the maximum page size; continue pagination or narrow the search before reading specific resources.");
         return result;
     }
     
-    private static List<Map<String, Object>> createResultNextActions(final MetadataSearchResult searchResult, final List<String> duplicatedNames) {
+    private static List<Map<String, Object>> createResultNextActions(final MetadataSearchRequest request, final MetadataSearchResult searchResult,
+                                                                     final List<String> duplicatedNames, final String toolName) {
         List<Map<String, Object>> result = new LinkedList<>();
         if (isBroadSearchGuarded(searchResult)) {
             result.add(MCPNextActionUtils.askUser("Blank cross-database metadata search listed databases only. Choose a database, query, or object type before searching deeper metadata.",
                     List.of("database", "query", "object_types")));
         }
-        if (searchResult.isTruncated() && !isBroadSearchGuarded(searchResult)) {
-            result.add(MCPNextActionUtils.askUser("Metadata search results were truncated. Choose database, schema, query, or object type before reading specific resources.",
-                    List.of("database", "schema", "query", "object_types")));
+        if (searchResult.isTruncated()) {
+            result.add(MCPNextActionUtils.callTool(toolName, "Read the next deterministically ordered metadata search page.", createNextPageArguments(request, searchResult)));
         }
         if (!duplicatedNames.isEmpty()) {
             result.add(MCPNextActionUtils.askUser("Multiple metadata hits share the same name. Ask the user to choose database, schema, or object type before using a specific resource.",
                     List.of("database", "schema", "object_types")));
         }
         return MCPNextActionUtils.ordered(result);
+    }
+    
+    private static Map<String, Object> createNextPageArguments(final MetadataSearchRequest request, final MetadataSearchResult searchResult) {
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        putIfNotEmpty(result, "database", request.getDatabase());
+        putIfNotEmpty(result, "schema", request.getSchema());
+        putIfNotEmpty(result, "query", request.getQuery());
+        if (!request.getObjectTypes().isEmpty()) {
+            result.put("object_types", request.getObjectTypes().stream().map(each -> each.name().toLowerCase(Locale.ENGLISH)).sorted().toList());
+        }
+        result.put("limit", request.getLimit());
+        result.put("offset", request.getOffset() + searchResult.getReturnedCount());
+        return result;
+    }
+    
+    private static void putIfNotEmpty(final Map<String, Object> target, final String key, final String value) {
+        if (!value.isEmpty()) {
+            target.put(key, value);
+        }
     }
     
     private static boolean isBroadSearchGuarded(final MetadataSearchResult searchResult) {

@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
+import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
 import org.testcontainers.containers.GenericContainer;
 
 import java.sql.SQLException;
@@ -43,6 +45,8 @@ public final class ProxyWorkflowRuntimeTestSupport {
     
     private static final String STORAGE_NETWORK_ALIAS = "mysql.workflow.host";
     
+    private static final String GOVERNANCE_NETWORK_ALIAS = "zk.workflow.host";
+    
     private static final String PROXY_USER = "proxy";
     
     private static final String PROXY_PASSWORD = "Proxy@123";
@@ -55,7 +59,7 @@ public final class ProxyWorkflowRuntimeTestSupport {
      */
     public static ProxyWorkflowRuntimeFixture createFixture() throws SQLException {
         GenericContainer<?> storageContainer = MySQLRuntimeTestSupport.createContainer().withNetworkAliases(STORAGE_NETWORK_ALIAS);
-        ShardingSphereProxyEmbeddedContainer proxyContainer = createProxyContainer();
+        ShardingSphereProxyEmbeddedContainer proxyContainer = createProxyContainer("/proxy/workflow/global.yaml");
         boolean success = false;
         storageContainer.start();
         try {
@@ -63,7 +67,7 @@ public final class ProxyWorkflowRuntimeTestSupport {
             proxyContainer.dependsOn(storageContainer);
             proxyContainer.start();
             success = true;
-            return new ProxyWorkflowRuntimeFixture(storageContainer, proxyContainer, createRuntimeDatabases(proxyContainer.getProxyPort()));
+            return new ProxyWorkflowRuntimeFixture(List.of(storageContainer), proxyContainer, createRuntimeDatabases(proxyContainer.getProxyPort()));
         } finally {
             if (!success) {
                 proxyContainer.stop();
@@ -72,10 +76,38 @@ public final class ProxyWorkflowRuntimeTestSupport {
         }
     }
     
-    private static ShardingSphereProxyEmbeddedContainer createProxyContainer() {
+    /**
+     * Create Cluster-mode Proxy-backed runtime fixture.
+     *
+     * @return runtime fixture
+     * @throws SQLException SQL exception
+     */
+    public static ProxyWorkflowRuntimeFixture createClusterFixture() throws SQLException {
+        GenericContainer<?> storageContainer = MySQLRuntimeTestSupport.createContainer().withNetworkAliases(STORAGE_NETWORK_ALIAS);
+        GovernanceContainer governanceContainer = new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper"));
+        governanceContainer.withNetworkAliases(GOVERNANCE_NETWORK_ALIAS);
+        ShardingSphereProxyEmbeddedContainer proxyContainer = createProxyContainer("/proxy/workflow/cluster/global.yaml");
+        boolean success = false;
+        storageContainer.start();
+        try {
+            MySQLRuntimeTestSupport.initializeDatabase(storageContainer);
+            proxyContainer.dependsOn(storageContainer, governanceContainer);
+            proxyContainer.start();
+            success = true;
+            return new ProxyWorkflowRuntimeFixture(List.of(storageContainer, governanceContainer), proxyContainer, createRuntimeDatabases(proxyContainer.getProxyPort()));
+        } finally {
+            if (!success) {
+                proxyContainer.stop();
+                governanceContainer.stop();
+                storageContainer.stop();
+            }
+        }
+    }
+    
+    private static ShardingSphereProxyEmbeddedContainer createProxyContainer(final String globalConfigurationResource) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         Map<String, String> mountedResources = new LinkedHashMap<>(2, 1F);
-        mountedResources.put("/proxy/workflow/global.yaml", "/opt/shardingsphere-proxy/conf/global.yaml");
+        mountedResources.put(globalConfigurationResource, "/opt/shardingsphere-proxy/conf/global.yaml");
         mountedResources.put("/proxy/workflow/database-logic-db.yaml", "/opt/shardingsphere-proxy/conf/database-logic-db.yaml");
         return new ShardingSphereProxyEmbeddedContainer(databaseType, new AdaptorContainerConfiguration(LOGICAL_DATABASE_NAME, List.of(), mountedResources, "", ""), 0);
     }
@@ -93,7 +125,7 @@ public final class ProxyWorkflowRuntimeTestSupport {
     @Getter
     public static final class ProxyWorkflowRuntimeFixture implements AutoCloseable {
         
-        private final GenericContainer<?> storageContainer;
+        private final List<GenericContainer<?>> supportingContainers;
         
         private final ShardingSphereProxyEmbeddedContainer proxyContainer;
         
@@ -104,7 +136,7 @@ public final class ProxyWorkflowRuntimeTestSupport {
         @Override
         public void close() {
             proxyContainer.stop();
-            storageContainer.stop();
+            supportingContainers.forEach(GenericContainer::stop);
         }
     }
 }
