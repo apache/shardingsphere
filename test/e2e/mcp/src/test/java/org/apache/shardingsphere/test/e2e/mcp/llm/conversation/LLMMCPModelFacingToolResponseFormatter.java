@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -32,6 +33,8 @@ import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class LLMMCPModelFacingToolResponseFormatter {
+    
+    private static final int COMPACT_ITEM_LIMIT = 5;
     
     private static final List<String> GENERAL_FIELD_NAMES = List.of(
             "response_mode", "error_code", "error_id", "summary", "message", "recovery_category", "result_kind", "status", "statement_type", "normalized_sql", "rows", "row_objects",
@@ -112,7 +115,8 @@ final class LLMMCPModelFacingToolResponseFormatter {
             return;
         }
         List<Map<String, Object>> compactItems = new LinkedList<>();
-        for (Map<String, Object> each : items.subList(0, Math.min(items.size(), 5))) {
+        int visibleItemCount = MCPResponseMode.SEARCH.equals(source.get("response_mode")) ? items.size() : Math.min(items.size(), COMPACT_ITEM_LIMIT);
+        for (Map<String, Object> each : items.subList(0, visibleItemCount)) {
             Map<String, Object> compactItem = new LinkedHashMap<>(8, 1F);
             copyIfPresent(each, compactItem, "database");
             copyIfPresent(each, compactItem, "schema");

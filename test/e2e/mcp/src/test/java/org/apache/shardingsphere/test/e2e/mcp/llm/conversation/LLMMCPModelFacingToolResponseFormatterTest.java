@@ -19,10 +19,12 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -61,6 +63,51 @@ class LLMMCPModelFacingToolResponseFormatterTest {
                 Map.of("view", "order_view"),
                 Map.of("column", "status"),
                 Map.of("name", "order_id")))));
+    }
+    
+    @Test
+    void assertFormatWithCompactListItems() {
+        Map<String, Object> actual = format(Map.of("response_mode", MCPResponseMode.LIST, "items", createVerboseItems(6)));
+        assertThat(actual, is(Map.of("response_mode", MCPResponseMode.LIST, "items", createCompactItems(5))));
+    }
+    
+    @Test
+    void assertFormatWithCompleteSearchItems() {
+        Map<String, Object> actual = format(Map.of(
+                "response_mode", MCPResponseMode.SEARCH,
+                "items", createVerboseItems(100),
+                "count", 100,
+                "truncated", false));
+        assertThat(actual, is(Map.of(
+                "response_mode", MCPResponseMode.SEARCH,
+                "items", createCompactItems(100),
+                "count", 100,
+                "truncated", false)));
+    }
+    
+    @Test
+    void assertFormatWithPaginatedSearchItems() {
+        Map<String, Object> nextAction = Map.of(
+                "order", 1,
+                "type", "tool_call",
+                "title", "Call database_gateway_search_metadata",
+                "tool_name", "database_gateway_search_metadata",
+                "arguments", Map.of("database", "logic_db", "object_types", List.of("table"), "limit", 100, "offset", 100),
+                "reason", "Read the next deterministically ordered metadata search page.");
+        Map<String, Object> actual = format(Map.of(
+                "response_mode", MCPResponseMode.SEARCH,
+                "items", createVerboseItems(100),
+                "count", 100,
+                "total_match_count", 101,
+                "truncated", true,
+                "next_actions", List.of(nextAction)));
+        assertThat(actual, is(Map.of(
+                "response_mode", MCPResponseMode.SEARCH,
+                "items", createCompactItems(100),
+                "count", 100,
+                "total_match_count", 101,
+                "truncated", true,
+                "next_actions", List.of(nextAction))));
     }
     
     @Test
@@ -160,5 +207,13 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     private Map<String, Object> format(final Map<String, Object> value) {
         return JsonUtils.fromJsonString(LLMMCPModelFacingToolResponseFormatter.format(value), new TypeReference<>() {
         });
+    }
+    
+    private List<Map<String, Object>> createVerboseItems(final int count) {
+        return IntStream.range(0, count).mapToObj(each -> Map.<String, Object>of("name", "item_" + each, "ignored", "value")).toList();
+    }
+    
+    private List<Map<String, Object>> createCompactItems(final int count) {
+        return IntStream.range(0, count).mapToObj(each -> Map.<String, Object>of("name", "item_" + each)).toList();
     }
 }
