@@ -149,8 +149,7 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
             addMismatch(validationReport, "shadow_rule", request.getRuleName(), "Shadow rule state does not match the planned DistSQL artifact.");
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Shadow rule state does not match the planned DistSQL artifact.");
         }
-        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !matchesRuleShape(rules, queryFacade, request)) {
-            addMismatch(validationReport, "shadow_rule", request.getRuleName(), "Shadow rule exists but its row count, data sources, table or algorithm configuration differs.");
+        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !validateRuleShape(rules, queryFacade, request, validationReport)) {
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Shadow rule shape differs from the planned DistSQL artifact.");
         }
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, rules, "Shadow rule state matches the planned DistSQL artifact.");
@@ -188,18 +187,47 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
                 databaseName, IdentifierScope.TABLE, ruleName, WorkflowRuleValueUtils.getRuleValue(each, "rule_name")));
     }
     
-    private boolean matchesRuleShape(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade, final ShadowRuleWorkflowRequest request) {
+    private boolean validateRuleShape(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade,
+                                      final ShadowRuleWorkflowRequest request, final ValidationReport validationReport) {
         List<Map<String, Object>> matchingRules = rules.stream().filter(each -> queryFacade.isSameIdentifier(
                 request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name"))).toList();
         if (1 != matchingRules.size()) {
+            addMismatch(validationReport, "shadow_rule.row_count", "1", String.valueOf(matchingRules.size()),
+                    "Shadow rule row count differs from the single table and algorithm planned by this workflow.");
             return false;
         }
         Map<String, Object> rule = matchingRules.getFirst();
-        return queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getSourceStorageUnit(), WorkflowRuleValueUtils.getRuleValue(rule, "source_name"))
-                && queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getShadowStorageUnit(), WorkflowRuleValueUtils.getRuleValue(rule, "shadow_name"))
-                && queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getTableName(), WorkflowRuleValueUtils.getRuleValue(rule, "shadow_table"))
-                && WorkflowRuleValueUtils.getRuleValue(rule, "algorithm_type").equalsIgnoreCase(request.getAlgorithmType())
-                && WorkflowAlgorithmUtils.createPropertyMap(rule.get("algorithm_props")).equals(request.getAlgorithmProperties());
+        if (!queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE,
+                request.getSourceStorageUnit(), WorkflowRuleValueUtils.getRuleValue(rule, "source_name"))) {
+            addMismatch(validationReport, "shadow_rule.source_name", request.getSourceStorageUnit(), WorkflowRuleValueUtils.getRuleValue(rule, "source_name"),
+                    "Shadow rule source storage unit differs from the planned artifact.");
+            return false;
+        }
+        if (!queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE,
+                request.getShadowStorageUnit(), WorkflowRuleValueUtils.getRuleValue(rule, "shadow_name"))) {
+            addMismatch(validationReport, "shadow_rule.shadow_name", request.getShadowStorageUnit(), WorkflowRuleValueUtils.getRuleValue(rule, "shadow_name"),
+                    "Shadow rule shadow storage unit differs from the planned artifact.");
+            return false;
+        }
+        if (!queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE,
+                request.getTableName(), WorkflowRuleValueUtils.getRuleValue(rule, "shadow_table"))) {
+            addMismatch(validationReport, "shadow_rule.shadow_table", request.getTableName(), WorkflowRuleValueUtils.getRuleValue(rule, "shadow_table"),
+                    "Shadow table differs from the planned artifact.");
+            return false;
+        }
+        String actualAlgorithmType = WorkflowRuleValueUtils.getRuleValue(rule, "algorithm_type");
+        if (!actualAlgorithmType.equalsIgnoreCase(request.getAlgorithmType())) {
+            addMismatch(validationReport, "shadow_rule.algorithm_type", request.getAlgorithmType(), actualAlgorithmType,
+                    "Shadow algorithm type differs from the planned artifact.");
+            return false;
+        }
+        Map<String, String> actualAlgorithmProperties = WorkflowAlgorithmUtils.createPropertyMap(rule.get("algorithm_props"));
+        if (!actualAlgorithmProperties.equals(request.getAlgorithmProperties())) {
+            addMismatch(validationReport, "shadow_rule.algorithm_properties", request.getAlgorithmProperties().toString(), actualAlgorithmProperties.toString(),
+                    "Shadow algorithm properties differ from the planned artifact.");
+            return false;
+        }
+        return true;
     }
     
     private boolean matchesDefaultAlgorithm(final List<Map<String, Object>> rows, final ShadowDefaultAlgorithmWorkflowRequest request) {
@@ -214,7 +242,11 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     }
     
     private void addMismatch(final ValidationReport validationReport, final String field, final String expected, final String impact) {
-        validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, field, expected, "",
+        addMismatch(validationReport, field, expected, "", impact);
+    }
+    
+    private void addMismatch(final ValidationReport validationReport, final String field, final String expected, final String actual, final String impact) {
+        validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, field, expected, actual,
                 impact, "Inspect current shadow DistSQL-visible state and re-apply or re-plan the workflow."));
     }
 }

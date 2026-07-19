@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
@@ -75,6 +76,8 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     private static final String BROADCAST_RULES_RESOURCE_URI = "shardingsphere://features/broadcast/databases/%s/rules";
     
     private static final String READWRITE_SPLITTING_RULES_RESOURCE_URI = "shardingsphere://features/readwrite-splitting/databases/%s/rules";
+    
+    private static final String READWRITE_SPLITTING_RULE_STATUS_RESOURCE_URI = "shardingsphere://features/readwrite-splitting/databases/%s/rules/%s/status";
     
     private static final String SHADOW_RULES_RESOURCE_URI = "shardingsphere://features/shadow/databases/%s/rules";
     
@@ -165,7 +168,34 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     }
     
     @Test
-    void assertShadowWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
+    void assertReadwriteSplittingLifecycleInClusterMode() throws IOException, InterruptedException {
+        useClusterRuntimeFixture();
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> createArguments = createReadwriteSplittingRuleArguments("create", "ROUND_ROBIN");
+            applyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_PLAN_TOOL_NAME, createArguments);
+            assertThat(String.valueOf(findItemByField(getPayloadItems(interactionClient.readResource(
+                    String.format(READWRITE_SPLITTING_RULES_RESOURCE_URI, getLogicalDatabaseName()))), "name", "readwrite_ds").get("load_balancer_type"))
+                    .toUpperCase(Locale.ENGLISH), is("ROUND_ROBIN"));
+            applyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_PLAN_TOOL_NAME, createReadwriteSplittingRuleArguments("alter", "RANDOM"));
+            assertThat(String.valueOf(findItemByField(getPayloadItems(interactionClient.readResource(
+                    String.format(READWRITE_SPLITTING_RULES_RESOURCE_URI, getLogicalDatabaseName()))), "name", "readwrite_ds").get("load_balancer_type"))
+                    .toUpperCase(Locale.ENGLISH), is("RANDOM"));
+            applyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_STATUS_PLAN_TOOL_NAME,
+                    createReadwriteSplittingStatusArguments("disable"));
+            assertReadwriteSplittingStatus(interactionClient, "DISABLED");
+            applyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_STATUS_PLAN_TOOL_NAME,
+                    createReadwriteSplittingStatusArguments("enable"));
+            assertReadwriteSplittingStatus(interactionClient, "ENABLED");
+            applyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "operation_type", "drop", "rule", "readwrite_ds"));
+            assertFalse(getPayloadItems(interactionClient.readResource(String.format(READWRITE_SPLITTING_RULES_RESOURCE_URI, getLogicalDatabaseName())))
+                    .stream().anyMatch(each -> "readwrite_ds".equalsIgnoreCase(String.valueOf(each.get("name")))));
+        }
+    }
+    
+    @Test
+    void assertShadowLifecycleInClusterMode() throws IOException, InterruptedException {
+        useClusterRuntimeFixture();
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             applyAndValidateWorkflow(interactionClient, DEFAULT_SHADOW_ALGORITHM_PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "algorithm_type", "SQL_HINT"));
@@ -192,6 +222,60 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             assertThat(String.valueOf(actualRule.get("shadow_name")), is("ds_shadow"));
             assertThat(String.valueOf(actualRule.get("shadow_table")), is("orders"));
             assertThat(String.valueOf(actualRule.get("algorithm_type")).toUpperCase(Locale.ENGLISH), is("VALUE_MATCH"));
+            applyAndValidateWorkflow(interactionClient, SHADOW_PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "operation_type", "alter", "rule", "shadow_rule", "source_storage_unit", "ds_0",
+                            "shadow_storage_unit", "ds_shadow", "table", "orders", "algorithm_type", "VALUE_MATCH",
+                            "algorithm_properties", Map.of("operation", "insert", "column", "order_id", "value", "2")));
+            actualRule = findItemByField(getPayloadItems(interactionClient.readResource(String.format(SHADOW_RULES_RESOURCE_URI, getLogicalDatabaseName()))),
+                    "rule_name", "shadow_rule");
+            assertThat(String.valueOf(actualRule.get("algorithm_props")), containsString("\"value\":\"2\""));
+            applyAndValidateWorkflow(interactionClient, SHADOW_PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "operation_type", "drop", "rule", "shadow_rule"));
+            assertFalse(getPayloadItems(interactionClient.readResource(String.format(SHADOW_RULES_RESOURCE_URI, getLogicalDatabaseName())))
+                    .stream().anyMatch(each -> "shadow_rule".equalsIgnoreCase(String.valueOf(each.get("rule_name")))));
+        }
+    }
+    
+    @Test
+    void assertShardingAutoTableAndAuditorCleanupThroughProxy() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            String unusedAuditorName = "fixture_unused_auditor";
+            assertThat(findItemByField(getPayloadItems(interactionClient.readResource(String.format(
+                    "shardingsphere://features/sharding/databases/%s/unused-auditors", getLogicalDatabaseName()))), "name", unusedAuditorName).get("name"), is(unusedAuditorName));
+            applyAndValidateWorkflow(interactionClient, SHARDING_COMPONENT_CLEANUP_PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "component_type", "auditor", "component_name", unusedAuditorName));
+            assertFalse(getPayloadItems(interactionClient.readResource(String.format(
+                    "shardingsphere://features/sharding/databases/%s/auditors", getLogicalDatabaseName())))
+                    .stream().anyMatch(each -> unusedAuditorName.equalsIgnoreCase(String.valueOf(each.get("name")))));
+            
+            applyAndValidateWorkflow(interactionClient, SHARDING_PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "table", "orders", "column", "order_id",
+                            "storage_units", "ds_0,ds_1", "strategy_type", "standard", "algorithm_type", "MOD",
+                            "algorithm_properties", Map.of("sharding-count", "2")));
+            Map<String, Object> actualAutoTableRule = findItemByField(getPayloadItems(interactionClient.readResource(
+                    String.format(SHARDING_TABLE_RULES_RESOURCE_URI, getLogicalDatabaseName()))), "table", "orders");
+            assertThat(String.valueOf(actualAutoTableRule.get("table_strategy_type")).toUpperCase(Locale.ENGLISH), is("STANDARD"));
+            assertThat(String.valueOf(actualAutoTableRule.get("table_sharding_algorithm_type")).toUpperCase(Locale.ENGLISH), is("MOD"));
+            applyAndValidateWorkflow(interactionClient, SHARDING_PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "operation_type", "drop", "table", "orders"));
+            assertFalse(getPayloadItems(interactionClient.readResource(String.format(SHARDING_TABLE_RULES_RESOURCE_URI, getLogicalDatabaseName())))
+                    .stream().anyMatch(each -> "orders".equalsIgnoreCase(String.valueOf(each.get("table")))));
+            
+            Map<String, Object> auditedRuleArguments = new LinkedHashMap<>(createShardingTableRuleArguments("orders"));
+            auditedRuleArguments.put("auditors", "DML_SHARDING_CONDITIONS");
+            auditedRuleArguments.put("allow_hint_disable", "false");
+            applyAndValidateWorkflow(interactionClient, SHARDING_PLAN_TOOL_NAME, auditedRuleArguments);
+            String auditorName = "orders_dml_sharding_conditions_0";
+            assertThat(findItemByField(getPayloadItems(interactionClient.readResource(String.format(
+                    "shardingsphere://features/sharding/databases/%s/auditors", getLogicalDatabaseName()))), "name", auditorName).get("name"), is(auditorName));
+            assertThat(findItemByField(getPayloadItems(interactionClient.readResource(String.format(
+                    "shardingsphere://features/sharding/databases/%s/auditors/%s/table-rules", getLogicalDatabaseName(), auditorName))),
+                    "name", "orders").get("name"), is("orders"));
+            applyAndValidateWorkflow(interactionClient, SHARDING_PLAN_TOOL_NAME,
+                    Map.of("database", getLogicalDatabaseName(), "operation_type", "drop", "table", "orders"));
+            assertFalse(getPayloadItems(interactionClient.readResource(String.format(
+                    "shardingsphere://features/sharding/databases/%s/auditors", getLogicalDatabaseName())))
+                    .stream().anyMatch(each -> auditorName.equalsIgnoreCase(String.valueOf(each.get("name")))));
         }
     }
     
@@ -271,6 +355,21 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
         return Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "table", tableName, "column", "order_id",
                 "data_nodes", "ds_0." + tableName, "strategy_type", "standard", "algorithm_type", "INLINE",
                 "algorithm_properties", Map.of("algorithm-expression", tableName));
+    }
+    
+    private Map<String, Object> createReadwriteSplittingRuleArguments(final String operationType, final String loadBalancerType) {
+        return Map.of("database", getLogicalDatabaseName(), "operation_type", operationType, "rule", "readwrite_ds", "write_storage_unit", "ds_0",
+                "read_storage_units", "ds_1", "transactional_read_query_strategy", "DYNAMIC", "load_balancer_type", loadBalancerType);
+    }
+    
+    private Map<String, Object> createReadwriteSplittingStatusArguments(final String targetStatus) {
+        return Map.of("database", getLogicalDatabaseName(), "rule", "readwrite_ds", "storage_unit", "ds_1", "target_status", targetStatus);
+    }
+    
+    private void assertReadwriteSplittingStatus(final MCPInteractionClient interactionClient, final String expectedStatus) throws IOException, InterruptedException {
+        Map<String, Object> actual = findItemByField(getPayloadItems(interactionClient.readResource(String.format(
+                READWRITE_SPLITTING_RULE_STATUS_RESOURCE_URI, getLogicalDatabaseName(), "readwrite_ds"))), "storage_unit", "ds_1");
+        assertThat(String.valueOf(actual.get("status")).toUpperCase(Locale.ENGLISH), is(expectedStatus));
     }
     
     private static Stream<Arguments> featureWorkflowScenarios() {

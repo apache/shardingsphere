@@ -48,6 +48,8 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     private boolean sharedRuntimeFixtureSelected;
     
+    private boolean clusterRuntimeFixtureSelected;
+    
     @AfterEach
     void tearDownFixture() {
         if (sharedRuntimeFixtureSelected) {
@@ -59,6 +61,7 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
             runtimeFixture.close();
             runtimeFixture = null;
         }
+        clusterRuntimeFixtureSelected = false;
     }
     
     @AfterAll
@@ -83,7 +86,7 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
                 prepareSharedRuntimeFixture();
                 return;
             }
-            runtimeFixture = ProxyWorkflowRuntimeTestSupport.createFixture();
+            runtimeFixture = clusterRuntimeFixtureSelected ? ProxyWorkflowRuntimeTestSupport.createClusterFixture() : ProxyWorkflowRuntimeTestSupport.createFixture();
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
@@ -107,6 +110,10 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     protected final void useSharedReadOnlyRuntimeFixture() {
         sharedRuntimeFixtureSelected = true;
+    }
+    
+    protected final void useClusterRuntimeFixture() {
+        clusterRuntimeFixtureSelected = true;
     }
     
     protected final void assertValidationPassed(final Map<String, Object> actualValidationResponse) {

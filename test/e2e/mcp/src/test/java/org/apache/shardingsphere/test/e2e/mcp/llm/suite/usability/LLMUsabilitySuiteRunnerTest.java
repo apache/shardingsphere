@@ -29,7 +29,6 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUs
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.opentest4j.TestAbortedException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -64,12 +63,12 @@ class LLMUsabilitySuiteRunnerTest {
     @Test
     void assertAssertCoreSuiteWithModelServiceUnavailable() {
         LLME2EConfiguration configuration = createConfiguration();
-        TestAbortedException actual = assertThrows(TestAbortedException.class,
+        AssertionError actual = assertThrows(AssertionError.class,
                 () -> new LLMUsabilitySuiteRunner().assertSuite("core-suite", () -> List.of(createScenario(LLMUsabilityScenario.NATURAL_TASK_TAG)),
                         scenario -> createConversationResult(configuration, scenario, LLME2EAssertionReport.failure("model_service_unavailable",
                                 "Model completion request failed with status 400.")),
                         configuration));
-        assertTrue(actual.getMessage().contains("skipped because the model service was unavailable"));
+        assertTrue(actual.getMessage().contains("model_service_unavailable"));
         assertTrue(Files.isRegularFile(tempDir.resolve("run-id").resolve("core-suite").resolve("scorecard.json")));
     }
     

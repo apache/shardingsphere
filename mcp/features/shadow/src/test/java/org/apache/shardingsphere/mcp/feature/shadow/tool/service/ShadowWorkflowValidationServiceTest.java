@@ -35,14 +35,20 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBu
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -80,6 +86,9 @@ class ShadowWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(inspectionService)
                 .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
         assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<?, ?> actualMismatch = (Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst();
+        assertThat(actualMismatch.get("layer"), is("shadow_rule.algorithm_properties"));
+        assertThat(String.valueOf(actualMismatch.get("actual")), containsString("value=false"));
     }
     
     @Test
@@ -91,6 +100,24 @@ class ShadowWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(inspectionService)
                 .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
         assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<?, ?> actualMismatch = (Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst();
+        assertThat(actualMismatch.get("layer"), is("shadow_rule.row_count"));
+        assertThat(actualMismatch.get("actual"), is("2"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("mismatchedRuleShapes")
+    void assertValidateRuleReportsMismatchedShape(final String name, final String fieldName, final String actualValue, final String expectedLayer) {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
+        Map<String, Object> ruleRow = new LinkedHashMap<>(createRuleRow(Map.of("operation", "INSERT", "column", "shadow", "value", "true")));
+        ruleRow.put(fieldName, actualValue);
+        when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(ruleRow));
+        Map<String, Object> actual = createService(inspectionService)
+                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
+        Map<?, ?> actualMismatch = (Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst();
+        assertThat(actualMismatch.get("layer"), is(expectedLayer));
+        assertThat(actualMismatch.get("actual"), is(actualValue));
     }
     
     @Test
@@ -199,6 +226,14 @@ class ShadowWorkflowValidationServiceTest {
                 "shadow_table", "t_order",
                 "algorithm_type", "VALUE_MATCH",
                 "algorithm_props", algorithmProperties);
+    }
+    
+    private static Stream<Arguments> mismatchedRuleShapes() {
+        return Stream.of(
+                Arguments.of("source storage unit", "source_name", "other_ds", "shadow_rule.source_name"),
+                Arguments.of("shadow storage unit", "shadow_name", "other_shadow_ds", "shadow_rule.shadow_name"),
+                Arguments.of("shadow table", "shadow_table", "other_table", "shadow_rule.shadow_table"),
+                Arguments.of("algorithm type", "algorithm_type", "SQL_HINT", "shadow_rule.algorithm_type"));
     }
     
     private WorkflowContextSnapshot createCleanupSnapshot() {

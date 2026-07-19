@@ -174,6 +174,77 @@ jobs:
           path: test/e2e/mcp/target/surefire-reports
           if-no-files-found: warn
 
+  e2e-mcp-conformance:
+    name: E2E - MCP Conformance
+    if: github.repository == 'apache/shardingsphere'
+    needs: e2e-mcp-build-images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - name: Download MCP E2E Build Artifacts
+        uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+        with:
+          artifact-name: mcp-e2e-build-artifacts
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
+          restore-maven-repository: 'false'
+          docker-image-archives: mcp-distribution-image.tar
+      - name: Checkout Fixed MCP Conformance Source
+        uses: actions/checkout@v6.0.1
+        with:
+          repository: modelcontextprotocol/conformance
+          ref: 21a9a2febd7100d7c17ac1021ee7f2ed9f66a1e0
+          path: .mcp-conformance
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: .mcp-conformance/package-lock.json
+      - name: Build Fixed MCP Conformance Runner
+        working-directory: .mcp-conformance
+        run: |
+          npm ci
+          npm run build
+      - name: Run Applicable MCP 2025-11-25 Server Scenarios
+        shell: bash
+        run: |
+          set -euo pipefail
+          container_name="shardingsphere-mcp-conformance"
+          cleanup() {
+            docker logs "${container_name}" >"${RUNNER_TEMP}/mcp-conformance-server.log" 2>&1 || true
+            docker rm -f "${container_name}" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          docker run --rm -d --name "${container_name}" --network host \
+            -e SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/mcp-http.yaml \
+            "${MCP_DISTRIBUTION_IMAGE}"
+          for ignored in {1..60}; do
+            if curl --silent --output /dev/null --request POST http://127.0.0.1:18088/mcp; then
+              break
+            fi
+            sleep 1
+          done
+          curl --silent --output /dev/null --request POST http://127.0.0.1:18088/mcp
+          results_root="${RUNNER_TEMP}/mcp-conformance-results"
+          mkdir -p "${results_root}"
+          while IFS= read -r scenario; do
+            [[ -z "${scenario}" || "${scenario}" == \#* ]] && continue
+            node .mcp-conformance/dist/index.js server \
+              --url http://127.0.0.1:18088/mcp \
+              --scenario "${scenario}" \
+              --spec-version 2025-11-25 \
+              --output-dir "${results_root}/${scenario}"
+          done < test/e2e/mcp/src/test/resources/conformance/server-scenarios.txt
+      - name: Upload MCP Conformance Artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e2e-mcp-conformance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/mcp-conformance-results
+            ${{ runner.temp }}/mcp-conformance-server.log
+          if-no-files-found: warn
+
   e2e-mcp-llm:
     name: E2E - MCP LLM
     if: github.repository == 'apache/shardingsphere'

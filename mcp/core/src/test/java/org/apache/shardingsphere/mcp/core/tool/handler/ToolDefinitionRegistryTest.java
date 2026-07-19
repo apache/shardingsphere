@@ -68,7 +68,9 @@ class ToolDefinitionRegistryTest {
         assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(),
                 is(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query", "database_gateway_execute_explain_query",
                         "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
-        assertToolFields(actual.get(0), List.of("database", "schema", "query", "object_types"));
+        assertToolFields(actual.get(0), List.of("database", "schema", "query", "object_types", "limit", "offset"));
+        assertField(actual.get(0), "limit", "integer", List.of(), false);
+        assertField(actual.get(0), "offset", "integer", List.of(), false);
         assertToolFields(actual.get(1), List.of("database"));
         assertRequiredFields(actual.get(1), List.of("database"));
         assertToolFields(actual.get(2), List.of("database", "schema", "sql", "max_rows", "timeout_ms"));

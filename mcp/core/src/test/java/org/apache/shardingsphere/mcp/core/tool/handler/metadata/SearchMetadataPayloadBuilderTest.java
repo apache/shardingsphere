@@ -60,6 +60,36 @@ class SearchMetadataPayloadBuilderTest {
     }
     
     @Test
+    void assertBuildsPaginationNavigation() {
+        MetadataSearchResult searchResult = new MetadataSearchResult(List.of(createHit("logic_db", "public", "orders", List.of("name"))),
+                Map.of("object_types", List.of("table")), 3, 1, true, 100);
+        MetadataSearchRequest request = new MetadataSearchRequest("logic_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.TABLE), 1, 1);
+        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPFeatureRequestContext.class), request, searchResult, TOOL_NAME);
+        assertTrue((Boolean) actual.get("has_more"));
+        assertThat(actual.get("next_offset"), is(2));
+        assertThat(actual.get("continuation_mode"), is("pagination"));
+        assertFalse(actual.containsKey("large_result_guidance"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("type"), is("tool_call"));
+        assertThat(actualNextAction.get("tool_name"), is(TOOL_NAME));
+        assertThat(actualNextAction.get("arguments"), is(Map.of(
+                "database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("table"), "limit", 1, "offset", 2)));
+    }
+    
+    @Test
+    void assertBuildsLastPage() {
+        MetadataSearchResult searchResult = new MetadataSearchResult(List.of(createHit("logic_db", "public", "orders", List.of("name"))),
+                Map.of("object_types", List.of("table")), 101, 1, false, 100);
+        MetadataSearchRequest request = new MetadataSearchRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.TABLE), 2, 100);
+        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPFeatureRequestContext.class), request, searchResult, TOOL_NAME);
+        assertFalse((Boolean) actual.get("has_more"));
+        assertFalse(actual.containsKey("next_offset"));
+        assertFalse(actual.containsKey("large_result_guidance"));
+        assertFalse(actual.containsKey("empty_state"));
+        assertFalse(actual.containsKey("next_actions"));
+    }
+    
+    @Test
     void assertBuildsEmptyStateWithBroadenedSearchAction() {
         MCPFeatureRequestContext requestContext = createDatabaseContext();
         MetadataSearchResult searchResult = new MetadataSearchResult(List.of(), Map.of(), 0, 0, false, 100);
@@ -91,7 +121,7 @@ class SearchMetadataPayloadBuilderTest {
     }
     
     private MetadataSearchRequest createRequest(final String database, final String schema, final String query) {
-        return new MetadataSearchRequest(database, schema, query, Set.of(SupportedMCPMetadataObjectType.TABLE));
+        return new MetadataSearchRequest(database, schema, query, Set.of(SupportedMCPMetadataObjectType.TABLE), 100, 0);
     }
     
     private MetadataSearchHit createHit(final String database, final String schema, final String name, final List<String> matchedFields) {

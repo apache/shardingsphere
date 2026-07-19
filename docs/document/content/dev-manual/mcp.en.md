@@ -16,12 +16,18 @@ The MCP path is organized as `api + support + features + core + bootstrap`:
 - `mcp/support`: database metadata, execution, capability, workflow contexts, models, facades, database/workflow SPIs, and reusable helpers.
 - `mcp/features/encrypt`: Encrypt MCP feature.
 - `mcp/features/mask`: Mask MCP feature.
+- `mcp/features/broadcast`: Broadcast MCP feature.
+- `mcp/features/readwrite-splitting`: Readwrite-Splitting MCP feature.
+- `mcp/features/shadow`: Shadow MCP feature.
+- `mcp/features/sharding`: Sharding MCP feature.
 - `mcp/core`: handler discovery, registry, request context, session, SQL execution trace, metadata discovery, and runtime context.
 - `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP/STDIO transport, configuration loading, and lifecycle management.
+- `mcp/registry`: isolated distribution metadata validation tooling; it does not depend on MCP runtime modules.
 - `distribution/mcp`: standalone packaging, startup scripts, configuration, and Dockerfile.
 - `test/e2e/mcp`: end-to-end contract validation.
 
-`mcp/bootstrap` only publishes the aggregated protocol surface. It should not hard-code concrete feature business logic.
+The production dependency direction is `api <- support <- core <- bootstrap` and `api <- support <- feature`.
+Feature modules do not depend on core, bootstrap, registry, or one another. `mcp/bootstrap` only publishes the aggregated protocol surface and does not hard-code concrete feature business logic.
 
 Public server capability contracts are organized under `org.apache.shardingsphere.mcp.api.capability.<capability>`, while ServiceLoader entry interfaces live in
 `org.apache.shardingsphere.mcp.spi`. Request contexts, sessions, transports, payloads, and exceptions are cross-capability or base-protocol contracts and stay outside capability packages.
@@ -59,6 +65,8 @@ The template implementation should satisfy:
 - Side-effecting execution must run preview first, then execute only user-approved `approved_steps`.
 - Sensitive properties must be masked in model-facing plan, preview, execution, validation, recovery, and error outputs; the execution path uses original values from the controlled context.
 - Validation should read Proxy-visible rule state or feature state, and should not use physical operations outside the current feature as acceptance conditions.
+- Encrypt, Mask, and Sharding ALTER expansion, physical DDL, data migration, and backfill are commercial-edition capabilities and are not open-source MCP workflow acceptance conditions.
+  This exclusion does not remove supported ALTER lifecycle coverage for other features such as Readwrite-Splitting and Shadow.
 - Startup descriptor validation should cover tool/resource/prompt name uniqueness, schema fields, side-effect annotations, related resources,
   follow-up tools, completion targets, and workflow recovery paths.
 

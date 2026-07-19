@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedEncryptRule;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
@@ -30,6 +31,7 @@ import java.util.List;
  * Create encrypt rule statement test case.
  */
 @Getter
+@Setter
 public final class CreateEncryptRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rule")

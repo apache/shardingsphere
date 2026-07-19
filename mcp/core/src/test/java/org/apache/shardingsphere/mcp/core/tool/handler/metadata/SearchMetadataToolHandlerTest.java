@@ -57,7 +57,7 @@ class SearchMetadataToolHandlerTest {
     void assertGetSearchMetadataToolDescriptor() {
         MCPToolDescriptor actual = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(new SearchMetadataToolHandler().getToolName());
         assertThat(actual.getName(), is("database_gateway_search_metadata"));
-        assertThat(((Map<?, ?>) actual.getInputSchema().get("properties")).size(), is(4));
+        assertThat(((Map<?, ?>) actual.getInputSchema().get("properties")).size(), is(6));
         Map<?, ?> actualInputProperties = (Map<?, ?>) actual.getInputSchema().get("properties");
         Map<?, ?> actualObjectTypeItems = (Map<?, ?>) ((Map<?, ?>) actualInputProperties.get("object_types")).get("items");
         assertTrue(((List<?>) actualObjectTypeItems.get("enum")).contains("storage_unit"));
@@ -76,6 +76,8 @@ class SearchMetadataToolHandlerTest {
         assertTrue(actualProperties.containsKey("total_match_count"));
         assertTrue(actualProperties.containsKey("count"));
         assertTrue(actualProperties.containsKey("truncated"));
+        assertTrue(actualProperties.containsKey("has_more"));
+        assertTrue(actualProperties.containsKey("next_offset"));
         assertTrue(actualProperties.containsKey("large_result_guidance"));
         assertTrue(actualProperties.containsKey("empty_state"));
         assertTrue(actualProperties.containsKey("ambiguity_state"));
@@ -95,8 +97,10 @@ class SearchMetadataToolHandlerTest {
             assertThat(actualPayload.get("total_match_count"), is(1));
             assertThat(actualPayload.get("count"), is(1));
             assertFalse((Boolean) actualPayload.get("truncated"));
+            assertFalse((Boolean) actualPayload.get("has_more"));
             assertFalse(actualPayload.containsKey("next_page_token"));
             assertThat(actualPayload.get("continuation_mode"), is("none"));
+            assertFalse(actualPayload.containsKey("next_offset"));
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).getFirst()).getName(), is("order_idx"));
             assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("index")));
         }
@@ -174,7 +178,8 @@ class SearchMetadataToolHandlerTest {
             assertThat(actualPayload.get("total_match_count"), is(101));
             assertThat(actualPayload.get("count"), is(100));
             assertTrue((Boolean) actualPayload.get("truncated"));
-            assertThat(actualPayload.get("continuation_mode"), is("none"));
+            assertThat(actualPayload.get("continuation_mode"), is("pagination"));
+            assertThat(actualPayload.get("next_offset"), is(100));
             Map<?, ?> actualLargeResultGuidance = (Map<?, ?>) actualPayload.get("large_result_guidance");
             assertThat(actualLargeResultGuidance.get("state"), is("metadata_search_result_truncated"));
             assertThat(actualLargeResultGuidance.get("threshold"), is(100));
@@ -182,8 +187,41 @@ class SearchMetadataToolHandlerTest {
             List<?> actualNextActions = (List<?>) actualPayload.get("next_actions");
             assertThat(actualNextActions.size(), is(1));
             Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.getFirst();
-            assertThat(actualNextAction.get("type"), is("ask_user"));
-            assertThat(actualNextAction.get("required_inputs"), is(List.of("database", "schema", "query", "object_types")));
+            assertThat(actualNextAction.get("type"), is("tool_call"));
+            assertThat(actualNextAction.get("tool_name"), is("database_gateway_search_metadata"));
+            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("offset"), is(100));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataPage() {
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext(createLargeDatabaseMetadata())) {
+            Map<String, Object> actual = new SearchMetadataToolHandler().handle(requestContextFixture.getRequestContext(),
+                    Map.of("database", "large_db", "object_types", List.of("table"), "limit", 2, "offset", 1)).toPayload();
+            assertThat(((List<?>) actual.get("items")).stream().map(each -> ((MetadataSearchHit) each).getName()).toList(), is(List.of("table_1", "table_10")));
+            assertThat(actual.get("count"), is(2));
+            assertThat(actual.get("total_match_count"), is(101));
+            assertTrue((Boolean) actual.get("has_more"));
+            assertThat(actual.get("next_offset"), is(3));
+            assertThat(actual.get("continuation_mode"), is("pagination"));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataRejectsInvalidLimit() {
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                    () -> new SearchMetadataToolHandler().handle(requestContextFixture.getRequestContext(), Map.of("limit", 0)));
+            assertThat(actual.getMessage(), is("limit must be an integer between 1 and 100."));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataRejectsInvalidOffset() {
+        try (RequestContextFixture requestContextFixture = createSearchRequestContext()) {
+            MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                    () -> new SearchMetadataToolHandler().handle(requestContextFixture.getRequestContext(), Map.of("offset", -1)));
+            assertThat(actual.getMessage(), is("offset must be an integer between 0 and 2147483647."));
         }
     }
     
