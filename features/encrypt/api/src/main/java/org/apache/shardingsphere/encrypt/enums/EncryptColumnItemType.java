@@ -22,5 +22,7 @@ package org.apache.shardingsphere.encrypt.enums;
  */
 public enum EncryptColumnItemType {
     
-    CIPHER, ASSISTED_QUERY, LIKE_QUERY
+    CIPHER,
+    ASSISTED_QUERY,
+    LIKE_QUERY
 }
