@@ -48,6 +48,7 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyModelCriticalFields(response, result);
         copyModelFacingNextActions(response, result);
         copyFields(response, result, POST_ACTION_FIELD_NAMES);
+        copyToolList(response, result);
         List<Map<String, Object>> resources = LLMMCPJsonValues.castToList(response.get("resources"));
         if (!resources.isEmpty()) {
             List<Map<String, Object>> compactResources = new LinkedList<>();
@@ -66,6 +67,23 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyCompactItems(response, result);
         copyCompactRecovery(response, result);
         return JsonUtils.toJsonString(result.isEmpty() ? response : result);
+    }
+    
+    private static void copyToolList(final Map<String, Object> source, final Map<String, Object> target) {
+        List<Map<String, Object>> tools = LLMMCPJsonValues.castToList(source.get("tools"));
+        if (tools.isEmpty()) {
+            return;
+        }
+        List<Map<String, Object>> compactTools = new LinkedList<>();
+        for (Map<String, Object> each : tools) {
+            Map<String, Object> compactTool = new LinkedHashMap<>(2, 1F);
+            copyIfPresent(each, compactTool, "name");
+            copyIfPresent(each, compactTool, "title");
+            if (!compactTool.isEmpty()) {
+                compactTools.add(compactTool);
+            }
+        }
+        target.put("tools", compactTools);
     }
     
     private static void copyFields(final Map<String, Object> source, final Map<String, Object> target, final Collection<String> fieldNames) {

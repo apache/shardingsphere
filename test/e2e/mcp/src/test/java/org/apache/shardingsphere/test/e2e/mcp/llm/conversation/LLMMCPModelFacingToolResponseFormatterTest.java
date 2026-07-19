@@ -70,6 +70,19 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     }
     
     @Test
+    void assertFormatWithTools() {
+        Map<String, Object> actual = format(Map.of("tools", List.of(Map.of(
+                "name", "database_gateway_execute_query",
+                "title", "Execute Query SQL",
+                "description", "Long model-facing description.",
+                "inputSchema", Map.of("type", "object"),
+                "outputSchema", Map.of("type", "object")))));
+        assertThat(actual, is(Map.of("tools", List.of(Map.of(
+                "name", "database_gateway_execute_query",
+                "title", "Execute Query SQL")))));
+    }
+    
+    @Test
     void assertFormatWithPromptMessages() {
         Map<String, Object> actual = format(Map.of("description", "Inspect metadata.", "messages", List.of(Map.of("role", "user"), Map.of("role", "assistant"))));
         assertThat(actual, is(Map.of("description", "Inspect metadata.", "message_count", 2)));

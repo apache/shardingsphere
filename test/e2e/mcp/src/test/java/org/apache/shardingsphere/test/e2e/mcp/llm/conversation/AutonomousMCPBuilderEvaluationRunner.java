@@ -43,20 +43,20 @@ public final class AutonomousMCPBuilderEvaluationRunner {
     
     private static final String SYSTEM_PROMPT = """
             You are evaluating a live ShardingSphere MCP server in a read-only task. Use the available MCP functions to inspect current state.
-            Never guess, never request a write, and never claim evidence you did not retrieve. When you have enough evidence, follow the user's
-            exact answer format and return only the answer with no explanation or Markdown.
+            Use database_gateway_execute_query for row values, aggregates, filters, joins, and view results. Use database_gateway_search_metadata
+            only for metadata names: query is a name fragment, blank query lists the narrowed scope, schema is a namespace rather than a table name,
+            and unknown schemas should be omitted. The database argument selects a configured logical runtime connection; do not qualify SQL objects
+            with that value unless MCP metadata identifies it as a SQL catalog or schema. Pass resource URIs only to mcp_read_resource, never as SQL.
+            Never guess, request a write, or stop before retrieving the requested value. Use function calls for every tool invocation rather than
+            printing a tool-call object as the answer. When you have enough evidence, follow the user's exact answer format and return only the answer
+            with no explanation or Markdown.
             """;
     
     private static final List<String> READ_ONLY_TOOL_NAMES = List.of(
             "database_gateway_search_metadata",
-            "database_gateway_validate_runtime_database",
-            "database_gateway_execute_query",
-            "database_gateway_execute_explain_query");
+            "database_gateway_execute_query");
     
-    private static final List<String> BRIDGE_TOOL_NAMES = List.of(
-            MCPInteractionActionNames.LIST_RESOURCES,
-            MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
-            MCPInteractionActionNames.READ_RESOURCE);
+    private static final List<String> BRIDGE_TOOL_NAMES = List.of(MCPInteractionActionNames.READ_RESOURCE);
     
     private final int maxTurns;
     

@@ -29,11 +29,9 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,11 +41,12 @@ import static org.mockito.Mockito.when;
 
 class AutonomousMCPBuilderEvaluationRunnerTest {
     
-    private static final List<String> REQUIRED_TOOL_NAMES = List.of(
+    private static final List<String> ADVERTISED_TOOL_NAMES = List.of(
             "database_gateway_search_metadata",
             "database_gateway_validate_runtime_database",
             "database_gateway_execute_query",
-            "database_gateway_execute_explain_query");
+            "database_gateway_execute_explain_query",
+            "database_gateway_execute_update");
     
     @Test
     void assertAutonomousMCPAnswer() throws IOException, InterruptedException {
@@ -66,8 +65,8 @@ class AutonomousMCPBuilderEvaluationRunnerTest {
         assertThat(actual.actualAnswer(), is("2"));
         assertThat(actual.evidence().interactionTrace().size(), is(2));
         assertThat(actual.evidence().interactionTrace().get(1).getActionOrigin(), is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
-        assertFalse(actual.evidence().toolDefinitions().stream().anyMatch(each -> "database_gateway_execute_update".equals(
-                LLMMCPJsonValues.castToMap(each.get("function")).get("name"))));
+        assertThat(actual.evidence().toolDefinitions().stream().map(each -> LLMMCPJsonValues.castToMap(each.get("function")).get("name")).toList(),
+                is(List.of("mcp_read_resource", "database_gateway_search_metadata", "database_gateway_execute_query")));
         verify(interactionClient).open();
         verify(interactionClient).close();
     }
@@ -113,7 +112,7 @@ class AutonomousMCPBuilderEvaluationRunnerTest {
     }
     
     private List<Map<String, Object>> createAdvertisedTools() {
-        return Stream.concat(REQUIRED_TOOL_NAMES.stream(), Stream.of("database_gateway_execute_update")).map(each -> Map.of(
+        return ADVERTISED_TOOL_NAMES.stream().map(each -> Map.of(
                 "name", each,
                 "description", "Remote tool definition.",
                 "inputSchema", Map.of("type", "object", "description", "remote-marker", "properties", Map.of()))).toList();
