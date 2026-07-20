@@ -25,9 +25,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchBlobStreamCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegisterExistingBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSetDefaultBlobParameterBufferCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
@@ -96,9 +93,6 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("put_segment", FirebirdCommandPacketType.PUT_SEGMENT, FirebirdPutBlobSegmentCommandPacket.class),
                 Arguments.of("batch_segments", FirebirdCommandPacketType.BATCH_SEGMENTS, FirebirdBatchBlobSegmentsCommandPacket.class),
                 Arguments.of("seek_blob", FirebirdCommandPacketType.SEEK_BLOB, FirebirdSeekBlobCommandPacket.class),
-                Arguments.of("batch_regblob", FirebirdCommandPacketType.BATCH_REGBLOB, FirebirdBatchRegisterExistingBlobCommandPacket.class),
-                Arguments.of("batch_blob_stream", FirebirdCommandPacketType.BATCH_BLOB_STREAM, FirebirdBatchBlobStreamCommandPacket.class),
-                Arguments.of("batch_set_bpb", FirebirdCommandPacketType.BATCH_SET_BPB, FirebirdBatchSetDefaultBlobParameterBufferCommandPacket.class),
                 Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, FirebirdCancelBlobCommandPacket.class),
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdCloseBlobCommandPacket.class),
                 Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdAllocateStatementPacket.class),
@@ -133,7 +127,6 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("put_segment", FirebirdCommandPacketType.PUT_SEGMENT, 12),
                 Arguments.of("batch_segments", FirebirdCommandPacketType.BATCH_SEGMENTS, 12),
                 Arguments.of("seek_blob", FirebirdCommandPacketType.SEEK_BLOB, 16),
-                Arguments.of("batch_regblob", FirebirdCommandPacketType.BATCH_REGBLOB, 24),
                 Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, 8),
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, 8),
                 Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, 8),
