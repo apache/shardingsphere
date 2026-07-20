@@ -39,8 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlobWriteCache {
     
-    public static final int MAX_BLOB_SIZE = 64 * 1024 * 1024;
-    
     private static final FirebirdBlobWriteCache INSTANCE = new FirebirdBlobWriteCache();
     
     private final Map<Integer, Map<Integer, FirebirdBlobWrite>> writesByHandle = new ConcurrentHashMap<>(16);
@@ -82,19 +80,6 @@ public final class FirebirdBlobWriteCache {
         FirebirdBlobWrite write = new FirebirdBlobWrite(blobHandle, blobId);
         getHandleMap(connectionId).put(blobHandle, write);
         getIdMap(connectionId).put(blobId, write);
-    }
-    
-    /**
-     * Check if appending segment data of the given total length would exceed {@link #MAX_BLOB_SIZE}.
-     *
-     * @param connectionId connection id
-     * @param blobHandle blob handle
-     * @param segmentsLength total length of the segment data to append
-     * @return whether the buffered data would exceed the maximum BLOB size
-     */
-    public boolean exceedsMaxSize(final int connectionId, final int blobHandle, final long segmentsLength) {
-        FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
-        return null != write && write.getSize() + segmentsLength > MAX_BLOB_SIZE;
     }
     
     /**

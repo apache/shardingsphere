@@ -25,9 +25,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
-import org.firebirdsql.gds.ISCConstants;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.OptionalLong;
@@ -43,22 +41,11 @@ public final class FirebirdPutBlobSegmentCommandExecutor implements CommandExecu
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
         OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
-        validateBlobSize(blobHandle, blobId, packet.getSegment().length);
         FirebirdBlobWriteCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, packet.getSegment());
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
         return Collections.singleton(new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId));
-    }
-    
-    private void validateBlobSize(final int blobHandle, final OptionalLong blobId, final int segmentLength) throws SQLException {
-        if (!FirebirdBlobWriteCache.getInstance().exceedsMaxSize(connectionSession.getConnectionId(), blobHandle, segmentLength)) {
-            return;
-        }
-        if (blobId.isPresent()) {
-            FirebirdBlobWriteCache.getInstance().removeWrite(connectionSession.getConnectionId(), blobId.getAsLong());
-        }
-        throw new SQLException("", null, ISCConstants.isc_blobtoobig);
     }
 }

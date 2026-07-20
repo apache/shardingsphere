@@ -31,7 +31,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -65,7 +64,7 @@ class FirebirdBatchBlobSegmentsCommandExecutorTest {
     }
     
     @Test
-    void assertExecute() throws SQLException {
+    void assertExecute() {
         int blobHandle = 4;
         long blobId = 12L;
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
@@ -81,7 +80,7 @@ class FirebirdBatchBlobSegmentsCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithDeferredPlaceholderHandle() throws SQLException {
+    void assertExecuteWithDeferredPlaceholderHandle() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         long blobId = 21L;
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
