@@ -181,12 +181,12 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
         }
         Map<String, Object> actualRuleValue = actualRule.get();
         List<Map<String, Object>> mismatches = new LinkedList<>();
-        addRuleValueMismatch(mismatches, "cipher_column", request.getOptions().getCipherColumnName(),
+        addIdentifierMismatch(mismatches, queryFacade, request.getDatabase(), "cipher_column", request.getOptions().getCipherColumnName(),
                 WorkflowRuleValueUtils.getRuleValue(actualRuleValue, "cipher_column"), "Cipher column mapping does not match.");
-        addRuleValueMismatch(mismatches, "assisted_query_column",
+        addIdentifierMismatch(mismatches, queryFacade, request.getDatabase(), "assisted_query_column",
                 Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter()) ? request.getOptions().getAssistedQueryColumnName() : "",
                 WorkflowRuleValueUtils.getRuleValue(actualRuleValue, "assisted_query_column"), "Assisted-query column mapping does not match.");
-        addRuleValueMismatch(mismatches, "like_query_column",
+        addIdentifierMismatch(mismatches, queryFacade, request.getDatabase(), "like_query_column",
                 Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery()) ? request.getOptions().getLikeQueryColumnName() : "",
                 WorkflowRuleValueUtils.getRuleValue(actualRuleValue, "like_query_column"), "LIKE-query column mapping does not match.");
         addAlgorithmTypeMismatch(mismatches, "encryptor_type", request.getAlgorithmType(),
@@ -334,14 +334,6 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
                 .filter(each -> queryFacade.isSameIdentifier(snapshot.getRequest().getDatabase(), IdentifierScope.COLUMN, snapshot.getRequest().getColumn(),
                         WorkflowRuleValueUtils.getRuleValue(each, "logic_column")))
                 .findFirst();
-    }
-    
-    private void addRuleValueMismatch(final List<Map<String, Object>> mismatches, final String fieldName, final String expected, final String actual, final String impact) {
-        if (expected.equals(actual)) {
-            return;
-        }
-        mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", formatFieldValue(fieldName, expected), formatFieldValue(fieldName, actual), impact,
-                "Re-apply the intended encrypt rule."));
     }
     
     private void addAlgorithmTypeMismatch(final List<Map<String, Object>> mismatches, final String fieldName, final String expected, final String actual, final String impact) {

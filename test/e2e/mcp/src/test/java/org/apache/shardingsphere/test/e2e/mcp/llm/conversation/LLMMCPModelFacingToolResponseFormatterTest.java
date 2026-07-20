@@ -49,6 +49,22 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     }
     
     @Test
+    void assertFormatWithResourceTemplates() {
+        Map<String, Object> actual = format(Map.of("resourceTemplates", List.of(Map.of(
+                "uriTemplate", "shardingsphere://databases/{database}",
+                "name", "logical-database",
+                "title", "Logical Database",
+                "description", "Long model-facing description.",
+                "mimeType", "application/json",
+                "_meta", Map.of("org.apache.shardingsphere/resource-kind", "detail")))));
+        assertThat(actual, is(Map.of("resourceTemplates", List.of(Map.of(
+                "uriTemplate", "shardingsphere://databases/{database}",
+                "name", "logical-database",
+                "title", "Logical Database",
+                "mimeType", "application/json")))));
+    }
+    
+    @Test
     void assertFormatWithCompactItems() {
         Map<String, Object> actual = format(Map.of("items", List.of(
                 Map.of("database", "logic_db", "schema", "public", "ignored", "value"),

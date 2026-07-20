@@ -229,7 +229,8 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
         Map<String, Object> row = rows.getFirst();
         boolean dataSourceShapeMatches = request.getStorageUnits().isEmpty()
                 ? WorkflowRuleValueUtils.getRuleValue(row, "actual_data_nodes").equals(request.getDataNodes())
-                : matchesIdentifiers(WorkflowRuleValueUtils.getRuleValue(row, "actual_data_sources"), splitValues(request.getStorageUnits()), queryFacade, request.getDatabase());
+                : matchesIdentifiers(WorkflowRuleValueUtils.getRuleValue(row, "actual_data_sources"), splitValues(request.getStorageUnits()), IdentifierScope.TABLE,
+                        queryFacade, request.getDatabase());
         return dataSourceShapeMatches && matchesTableStrategy(row, queryFacade, request) && matchesTableKeyGenerator(row, queryFacade, request)
                 && matchesTableAuditors(row, request);
     }
@@ -249,15 +250,15 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
         }
         String actualColumns = WorkflowRuleValueUtils.getRuleValue(row, "table_sharding_column");
         return "complex".equals(strategyType)
-                ? matchesIdentifiers(actualColumns, splitValues(request.getShardingColumns()), queryFacade, request.getDatabase())
-                : queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getColumn(), actualColumns);
+                ? matchesIdentifiers(actualColumns, splitValues(request.getShardingColumns()), IdentifierScope.COLUMN, queryFacade, request.getDatabase())
+                : queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.COLUMN, request.getColumn(), actualColumns);
     }
     
     private boolean matchesTableKeyGenerator(final Map<String, Object> row, final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
         if (request.getKeyGenerateColumn().isEmpty()) {
             return true;
         }
-        if (!queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getKeyGenerateColumn(),
+        if (!queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.COLUMN, request.getKeyGenerateColumn(),
                 WorkflowRuleValueUtils.getRuleValue(row, "key_generate_column"))) {
             return false;
         }
@@ -280,7 +281,8 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     
     private boolean matchesTableReferenceRule(final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
         return 1 == rows.size() && containsNamedRow(rows, queryFacade, request.getDatabase(), "name", request.getRuleName())
-                && matchesIdentifiers(WorkflowRuleValueUtils.getRuleValue(rows.getFirst(), "sharding_table_reference"), request.getReferenceTables(), queryFacade, request.getDatabase());
+                && matchesIdentifiers(WorkflowRuleValueUtils.getRuleValue(rows.getFirst(), "sharding_table_reference"), request.getReferenceTables(), IdentifierScope.TABLE,
+                        queryFacade, request.getDatabase());
     }
     
     private boolean matchesKeyGenerator(final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
@@ -301,7 +303,7 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
         boolean targetMatches = sequenceStrategy
                 ? request.getSequenceName().equals(WorkflowRuleValueUtils.getRuleValue(row, "sequence"))
                 : queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getTable(), WorkflowRuleValueUtils.getRuleValue(row, "table"))
-                        && queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(row, "column"));
+                        && queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.COLUMN, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(row, "column"));
         if (!targetMatches) {
             return false;
         }
@@ -344,8 +346,8 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
         if (!"hint".equals(strategyType)) {
             String actualColumns = WorkflowRuleValueUtils.getRuleValue(row, "sharding_column");
             boolean columnsMatch = "complex".equals(strategyType)
-                    ? matchesIdentifiers(actualColumns, splitValues(request.getShardingColumns()), queryFacade, request.getDatabase())
-                    : queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getColumn(), actualColumns);
+                    ? matchesIdentifiers(actualColumns, splitValues(request.getShardingColumns()), IdentifierScope.COLUMN, queryFacade, request.getDatabase())
+                    : queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.COLUMN, request.getColumn(), actualColumns);
             if (!columnsMatch) {
                 return false;
             }
@@ -381,10 +383,11 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
         return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
     }
     
-    private boolean matchesIdentifiers(final String actualValues, final Collection<String> expectedValues, final MCPFeatureQueryFacade queryFacade, final String databaseName) {
+    private boolean matchesIdentifiers(final String actualValues, final Collection<String> expectedValues, final IdentifierScope identifierScope,
+                                       final MCPFeatureQueryFacade queryFacade, final String databaseName) {
         List<String> actual = splitValues(actualValues);
         return actual.size() == expectedValues.size() && expectedValues.stream().allMatch(expected -> actual.stream()
-                .anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, expected, each)));
+                .anyMatch(each -> queryFacade.isSameIdentifier(databaseName, identifierScope, expected, each)));
     }
     
     private boolean matchesValues(final String actualValues, final Collection<String> expectedValues) {

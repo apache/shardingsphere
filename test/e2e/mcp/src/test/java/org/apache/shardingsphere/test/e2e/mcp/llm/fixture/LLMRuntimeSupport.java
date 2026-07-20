@@ -45,7 +45,7 @@ public final class LLMRuntimeSupport {
     
     private static final String REQUIRED_PROVIDER = "openai-compatible";
     
-    private static final int CONTEXT_WINDOW_TOKENS = 32768;
+    private static final int CONTEXT_WINDOW_TOKENS = 8192;
     
     private static final int SERVER_PORT = 8080;
     

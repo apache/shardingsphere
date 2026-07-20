@@ -83,8 +83,34 @@ class ShardingWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
+        verify(queryFacade).isSameIdentifier("logic_db", IdentifierScope.COLUMN, "order_id", "order_id");
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
+    }
+    
+    @Test
+    void assertValidateComplexTableRule() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setStrategyType("complex");
+        request.setShardingColumns("order_id,user_id");
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(Map.of(
+                "table", "t_order",
+                "actual_data_nodes", "ds_0.t_order_0,ds_1.t_order_1",
+                "table_strategy_type", "COMPLEX",
+                "table_sharding_column", "order_id,user_id",
+                "table_sharding_algorithm_type", "INLINE",
+                "table_sharding_algorithm_props", Map.of("algorithm-expression", "t_order_${order_id % 2}"),
+                "key_generate_column", "")));
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), queryFacade,
+                mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("validated"));
+        verify(queryFacade).isSameIdentifier("logic_db", IdentifierScope.COLUMN, "user_id", "user_id");
     }
     
     @Test
@@ -292,6 +318,27 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
+    void assertValidateComplexDefaultStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("DATABASE");
+        request.setStrategyType("complex");
+        request.setShardingColumns("order_id,user_id");
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND, request);
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of(
+                "name", "DATABASE", "type", "COMPLEX", "sharding_column", "order_id,user_id", "sharding_algorithm_type", "INLINE",
+                "sharding_algorithm_props", Map.of("algorithm-expression", "t_order_${order_id % 2}"))));
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), queryFacade,
+                mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("validated"));
+        verify(queryFacade).isSameIdentifier("logic_db", IdentifierScope.COLUMN, "user_id", "user_id");
+    }
+    
+    @Test
     void assertValidateKeyGeneratorRejectsDifferentProperties() {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setDatabase("logic_db");
@@ -422,7 +469,8 @@ class ShardingWorkflowValidationServiceTest {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order_item", "t_order_item")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "order_id", "order_id")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "order_id", "order_id")).thenReturn(true);
+        when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "user_id", "user_id")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "DATABASE", "DATABASE")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "ref_rule", "ref_rule")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "snowflake_generator", "snowflake_generator")).thenReturn(true);

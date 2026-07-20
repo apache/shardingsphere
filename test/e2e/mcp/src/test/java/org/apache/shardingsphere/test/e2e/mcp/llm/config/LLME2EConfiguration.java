@@ -48,7 +48,7 @@ public final class LLME2EConfiguration {
     
     private static final String DEFAULT_BASE_URL = "http://127.0.0.1:8080/v1";
     
-    private static final String DEFAULT_MODEL_NAME = "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M";
+    private static final String DEFAULT_MODEL_NAME = "unsloth/Qwen3.5-9B-GGUF:Q3_K_M";
     
     private static final String DEFAULT_API_KEY = "mcp-llm-score";
     

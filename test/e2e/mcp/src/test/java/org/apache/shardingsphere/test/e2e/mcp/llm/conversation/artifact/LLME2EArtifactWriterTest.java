@@ -107,7 +107,7 @@ class LLME2EArtifactWriterTest {
                 Map.entry("modelFileName", "Qwen3-1.7B-Q4_K_M.gguf"),
                 Map.entry("modelSha256", "configured-model-sha256"),
                 Map.entry("modelPackaging", "prepackaged"),
-                Map.entry("contextWindowTokens", 32768),
+                Map.entry("contextWindowTokens", 8192),
                 Map.entry("baseUrlOwnedByTest", true),
                 Map.entry("scoreClosing", true));
     }
