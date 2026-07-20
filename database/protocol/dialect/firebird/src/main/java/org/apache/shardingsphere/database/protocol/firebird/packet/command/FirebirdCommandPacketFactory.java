@@ -27,6 +27,9 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchBlobStreamCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegisterExistingBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSetDefaultBlobParameterBufferCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
@@ -120,6 +123,12 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdBatchCancelCommandPacket(payload);
             case BATCH_SYNC:
                 return new FirebirdBatchSyncCommandPacket(payload);
+            case BATCH_REGBLOB:
+                return new FirebirdBatchRegisterExistingBlobCommandPacket(payload);
+            case BATCH_BLOB_STREAM:
+                return new FirebirdBatchBlobStreamCommandPacket(payload);
+            case BATCH_SET_BPB:
+                return new FirebirdBatchSetDefaultBlobParameterBufferCommandPacket(payload);
             default:
                 return new FirebirdUnsupportedCommandPacket(commandPacketType);
         }
@@ -192,6 +201,12 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdBatchCancelCommandPacket.getLength();
             case BATCH_SYNC:
                 return FirebirdBatchSyncCommandPacket.getLength(payload);
+            case BATCH_REGBLOB:
+                return FirebirdBatchRegisterExistingBlobCommandPacket.getLength();
+            case BATCH_BLOB_STREAM:
+                return FirebirdBatchBlobStreamCommandPacket.getLength(payload);
+            case BATCH_SET_BPB:
+                return FirebirdBatchSetDefaultBlobParameterBufferCommandPacket.getLength(payload);
             default:
                 return 0;
         }
