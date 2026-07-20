@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
@@ -39,7 +39,7 @@ class MetadataResourceResponseFactoryTest {
     
     @Test
     void assertCreateBroadListResponseGuidesSearch() {
-        Map<String, Object> actual = createResponse("shardingsphere://databases", new MCPUriVariables(Map.of()), createDatabases(101)).toPayload();
+        Map<String, Object> actual = createResponse("shardingsphere://databases", new MCPResourceURIVariables(Map.of()), createDatabases(101)).toPayload();
         assertThat(((List<?>) actual.get("items")).size(), is(100));
         assertThat(actual.get("count"), is(100));
         assertThat(actual.get("total_count"), is(101));
@@ -56,7 +56,7 @@ class MetadataResourceResponseFactoryTest {
     
     @Test
     void assertCreateDetailResponse() {
-        MCPUriVariables uriVariables = new MCPUriVariables(Map.of("database", "逻辑 库/2026?"));
+        MCPResourceURIVariables uriVariables = new MCPResourceURIVariables(Map.of("database", "逻辑 库/2026?"));
         Map<String, Object> actual = createResponse("shardingsphere://databases/{database}", uriVariables,
                 List.of(Map.of("database", uriVariables.getValue("database")))).toPayload();
         assertThat(actual.get("response_mode"), is("detail"));
@@ -77,7 +77,7 @@ class MetadataResourceResponseFactoryTest {
     
     @Test
     void assertCreateMissingDetailResponse() {
-        Map<String, Object> actual = createResponse("shardingsphere://databases/{database}", mock(MCPUriVariables.class), List.of()).toPayload();
+        Map<String, Object> actual = createResponse("shardingsphere://databases/{database}", mock(MCPResourceURIVariables.class), List.of()).toPayload();
         assertThat(actual.get("summary"), is("No logical-database detail item matched this resource URI."));
         assertThat(actual.get("items"), is(List.of()));
         assertThat(((Map<?, ?>) actual.get("empty_state")).get("reason"), is("logical-database detail resource was not found for this URI."));
@@ -85,7 +85,7 @@ class MetadataResourceResponseFactoryTest {
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("type"), is("terminal"));
     }
     
-    private MCPSuccessPayload createResponse(final String uriTemplate, final MCPUriVariables uriVariables, final List<?> items) {
+    private MCPSuccessPayload createResponse(final String uriTemplate, final MCPResourceURIVariables uriVariables, final List<?> items) {
         MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
         ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(uriTemplate);
         return new MetadataResourceResponseFactory().create(mock(MCPFeatureRequestContext.class), uriVariables, descriptor, metadata, items);

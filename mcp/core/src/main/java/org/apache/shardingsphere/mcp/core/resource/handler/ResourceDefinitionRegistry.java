@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.handler.MCPRequestContextTypes;
@@ -124,7 +124,7 @@ public final class ResourceDefinitionRegistry {
      */
     public static Optional<MCPSuccessPayload> dispatch(final MCPFeatureRuntimeRequestContext requestContext, final String resourceUri) {
         for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
-            Optional<MCPUriVariables> matchedUriVariables = each.getUriPattern().parse(resourceUri);
+            Optional<MCPResourceURIVariables> matchedUriVariables = each.getUriPattern().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
                 return Optional.of(dispatch(requestContext, each, matchedUriVariables.get()));
             }
@@ -132,12 +132,12 @@ public final class ResourceDefinitionRegistry {
         return Optional.empty();
     }
     
-    private static MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceDefinition resourceDefinition, final MCPUriVariables uriVariables) {
+    private static MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceDefinition resourceDefinition, final MCPResourceURIVariables uriVariables) {
         return dispatch(requestContext, resourceDefinition.getHandler(), uriVariables);
     }
     
     private static <T extends MCPRequestContext> MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceHandler<T> resourceHandler,
-                                                                            final MCPUriVariables uriVariables) {
+                                                                            final MCPResourceURIVariables uriVariables) {
         return resourceHandler.handle(resourceHandler.getContextType().cast(requestContext), uriVariables);
     }
     

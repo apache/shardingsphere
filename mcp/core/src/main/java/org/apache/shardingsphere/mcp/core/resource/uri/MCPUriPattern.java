@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.resource.uri;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.ArrayList;
@@ -123,7 +123,7 @@ public final class MCPUriPattern {
      * @param uri URI
      * @return parsed variables when present
      */
-    public Optional<MCPUriVariables> parse(final String uri) {
+    public Optional<MCPResourceURIVariables> parse(final String uri) {
         Matcher matcher = compiledRegex.matcher(uri);
         if (!matcher.matches()) {
             return Optional.empty();
@@ -140,7 +140,7 @@ public final class MCPUriPattern {
             }
             variables.put(variableNames.get(i), decodedValue.get());
         }
-        return Optional.of(new MCPUriVariables(variables));
+        return Optional.of(new MCPResourceURIVariables(variables));
     }
     
     private boolean containsRawTemplateMarker(final String encodedValue) {

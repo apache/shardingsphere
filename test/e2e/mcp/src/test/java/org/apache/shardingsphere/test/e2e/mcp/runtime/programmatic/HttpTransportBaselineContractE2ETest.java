@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
@@ -71,13 +71,13 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
     
     @Test
     void assertCapabilitiesBaselineContractProjection() {
-        Map<String, Object> actual = new ServerCapabilitiesHandler().handle(mock(MCPRequestContext.class), new MCPUriVariables(Map.of())).toPayload();
+        Map<String, Object> actual = new ServerCapabilitiesHandler().handle(mock(MCPRequestContext.class), new MCPResourceURIVariables(Map.of())).toPayload();
         MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "capabilities.yaml", createCapabilitiesContract(actual));
     }
     
     @Test
     void assertGuidanceBaselineContractProjection() {
-        Map<String, Object> actual = new ServerGuidanceHandler().handle(mock(MCPRequestContext.class), new MCPUriVariables(Map.of())).toPayload();
+        Map<String, Object> actual = new ServerGuidanceHandler().handle(mock(MCPRequestContext.class), new MCPResourceURIVariables(Map.of())).toPayload();
         MCPBaselineContractAssertions.assertMatchesNormalizedBaselineContract(BASELINE_RESOURCE_PATH + "guidance.yaml", createGuidanceContract(actual));
     }
     

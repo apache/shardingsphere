@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.resource;
 
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -65,15 +65,15 @@ public final class MCPUriTemplate {
      * @param variables URI variables
      * @return expanded URI, or empty when at least one variable is missing
      */
-    public Optional<String> expandIfComplete(final MCPUriVariables variables) {
+    public Optional<String> expandIfComplete(final MCPResourceURIVariables variables) {
         return containsAllVariables(variables) ? Optional.of(expandKnownVariables(variables)) : Optional.empty();
     }
     
-    private boolean containsAllVariables(final MCPUriVariables variables) {
+    private boolean containsAllVariables(final MCPResourceURIVariables variables) {
         return variableNames.stream().allMatch(variables::containsVariable);
     }
     
-    private String expandKnownVariables(final MCPUriVariables variables) {
+    private String expandKnownVariables(final MCPResourceURIVariables variables) {
         String result = uriTemplate;
         for (String each : variableNames) {
             result = result.replace("{" + each + "}", MCPUriPathSegmentUtils.encodePathSegment(variables.getValue(each)));

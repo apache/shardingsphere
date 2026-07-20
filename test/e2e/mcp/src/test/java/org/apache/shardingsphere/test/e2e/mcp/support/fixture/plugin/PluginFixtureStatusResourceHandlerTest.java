@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -30,7 +30,7 @@ class PluginFixtureStatusResourceHandlerTest {
     
     @Test
     void assertHandle() {
-        assertThat(new PluginFixtureStatusResourceHandler().handle(null, new MCPUriVariables(Map.of())).toPayload(),
+        assertThat(new PluginFixtureStatusResourceHandler().handle(null, new MCPResourceURIVariables(Map.of())).toPayload(),
                 is(Map.of("items", List.of(Map.of("feature", "test-fixture", "status", "ready")))));
     }
 }

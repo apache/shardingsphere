@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -127,12 +127,12 @@ public final class ShadowResourceHandler implements MCPResourceHandler<MCPFeatur
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         return new MCPItemsPayload(query(requestContext, uriVariables),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
     
-    private List<Map<String, Object>> query(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+    private List<Map<String, Object>> query(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         return switch (resourceKind) {
             case RULES -> inspectionService.queryRules(requestContext.getQueryFacade(), uriVariables.getValue("database"));
             case RULE -> inspectionService.queryRule(requestContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShadowFeatureDefinition.RULE_FIELD));

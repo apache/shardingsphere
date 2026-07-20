@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
@@ -56,7 +56,7 @@ public final class MetadataResourceResponseFactory {
      * @param items mapped metadata items
      * @return metadata resource response
      */
-    public MCPSuccessPayload create(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables, final MCPResourceDescriptor descriptor,
+    public MCPSuccessPayload create(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables, final MCPResourceDescriptor descriptor,
                                     final ShardingSphereMCPResourceMetadata metadata, final List<?> items) {
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
         if (isDetailResource(metadata)) {
@@ -122,7 +122,7 @@ public final class MetadataResourceResponseFactory {
     }
     
     private void appendEmptyStateGuidance(final Map<String, Object> payload, final ShardingSphereMCPResourceMetadata metadata,
-                                          final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables, final String uriTemplate) {
+                                          final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables, final String uriTemplate) {
         Map<String, Object> emptyState = new LinkedHashMap<>(4, 1F);
         String resourceKind = null == metadata.getObjectScope() ? "metadata" : metadata.getObjectScope();
         String recoveryCategory = resolveEmptyStateCategory(metadata, requestContext, uriVariables, uriTemplate);
@@ -145,7 +145,7 @@ public final class MetadataResourceResponseFactory {
     }
     
     private String resolveEmptyStateCategory(final ShardingSphereMCPResourceMetadata metadata, final MCPFeatureRequestContext requestContext,
-                                             final MCPUriVariables uriVariables, final String uriTemplate) {
+                                             final MCPResourceURIVariables uriVariables, final String uriTemplate) {
         if ("shardingsphere://databases".equals(uriTemplate)) {
             return MCPDiagnosticCategory.NO_RUNTIME_DATABASE;
         }
@@ -158,7 +158,7 @@ public final class MetadataResourceResponseFactory {
         return MCPDiagnosticCategory.EMPTY_SCOPE;
     }
     
-    private String resolveDetailEmptyStateCategory(final ShardingSphereMCPResourceMetadata metadata, final MCPUriVariables uriVariables) {
+    private String resolveDetailEmptyStateCategory(final ShardingSphereMCPResourceMetadata metadata, final MCPResourceURIVariables uriVariables) {
         if ("schema".equals(metadata.getObjectScope()) && uriVariables.containsVariable("schema")) {
             return MCPDiagnosticCategory.SCHEMA_NOT_VISIBLE;
         }
@@ -171,7 +171,7 @@ public final class MetadataResourceResponseFactory {
         return MCPDiagnosticCategory.NOT_FOUND;
     }
     
-    private boolean containsObjectToken(final MCPUriVariables uriVariables) {
+    private boolean containsObjectToken(final MCPResourceURIVariables uriVariables) {
         return Stream.of("column", "index", "sequence", "view", "storageUnit", "table").anyMatch(uriVariables::containsVariable);
     }
     
@@ -200,7 +200,7 @@ public final class MetadataResourceResponseFactory {
                 : "No metadata items are visible in this scope. Check metadata permissions if objects are expected.";
     }
     
-    private Map<String, Object> createRecovery(final String category, final MCPUriVariables uriVariables) {
+    private Map<String, Object> createRecovery(final String category, final MCPResourceURIVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("recovery_category", normalizeRecoveryCategory(category));
         result.put("category", category);
@@ -218,12 +218,12 @@ public final class MetadataResourceResponseFactory {
         return MCPDiagnosticCategory.EMPTY_SCOPE.equals(category) ? MCPDiagnosticCategory.EMPTY_SCOPE : MCPDiagnosticCategory.NOT_FOUND;
     }
     
-    private String createRequestedToken(final MCPUriVariables uriVariables) {
+    private String createRequestedToken(final MCPResourceURIVariables uriVariables) {
         return Stream.of("column", "index", "sequence", "view", "storageUnit", "table", "schema", "database")
                 .filter(uriVariables::containsVariable).findFirst().map(uriVariables::getValue).orElse("");
     }
     
-    private void appendLargeResultGuidance(final Map<String, Object> payload, final ShardingSphereMCPResourceMetadata metadata, final MCPUriVariables uriVariables) {
+    private void appendLargeResultGuidance(final Map<String, Object> payload, final ShardingSphereMCPResourceMetadata metadata, final MCPResourceURIVariables uriVariables) {
         Map<String, Object> largeResult = new LinkedHashMap<>(4, 1F);
         largeResult.put("state", "broad_metadata_list");
         largeResult.put("threshold", LARGE_RESULT_THRESHOLD);
@@ -237,7 +237,7 @@ public final class MetadataResourceResponseFactory {
                 createNarrowSearchArguments(metadata, uriVariables))));
     }
     
-    private Map<String, Object> createNarrowSearchArguments(final ShardingSphereMCPResourceMetadata metadata, final MCPUriVariables uriVariables) {
+    private Map<String, Object> createNarrowSearchArguments(final ShardingSphereMCPResourceMetadata metadata, final MCPResourceURIVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         if (uriVariables.containsVariable("database")) {
             result.put("database", uriVariables.getValue("database"));
@@ -272,7 +272,7 @@ public final class MetadataResourceResponseFactory {
         return null == uri ? "" : uri.toString();
     }
     
-    private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
+    private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPResourceURIVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         String uriTemplate = descriptor.getUriTemplate();
         Optional<String> selfUri = new MCPUriTemplate(uriTemplate).expandIfComplete(uriVariables);
@@ -294,7 +294,7 @@ public final class MetadataResourceResponseFactory {
         return result;
     }
     
-    private Optional<Map<String, Object>> createNextResourceHint(final String uriTemplate, final String description, final MCPUriVariables variables) {
+    private Optional<Map<String, Object>> createNextResourceHint(final String uriTemplate, final String description, final MCPResourceURIVariables variables) {
         return new MCPUriTemplate(uriTemplate).expandIfComplete(variables)
                 .map(uri -> MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, MCPPayloadFieldNames.NEXT_RESOURCES));
     }

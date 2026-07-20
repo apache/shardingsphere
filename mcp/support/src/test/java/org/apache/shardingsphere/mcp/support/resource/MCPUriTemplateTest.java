@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.resource;
 
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -38,14 +38,14 @@ class MCPUriTemplateTest {
     @Test
     void assertExpandIfComplete() {
         Optional<String> actualUri = new MCPUriTemplate("shardingsphere://databases/{database}/schemas/{schema}")
-                .expandIfComplete(new MCPUriVariables(Map.of("database", "logic_db", "schema", "public")));
+                .expandIfComplete(new MCPResourceURIVariables(Map.of("database", "logic_db", "schema", "public")));
         assertThat(actualUri, is(Optional.of("shardingsphere://databases/logic_db/schemas/public")));
     }
     
     @Test
     void assertExpandIfCompleteWithMissingVariable() {
         Optional<String> actualUri = new MCPUriTemplate("shardingsphere://databases/{database}/schemas/{schema}")
-                .expandIfComplete(new MCPUriVariables(Map.of("database", "logic_db")));
+                .expandIfComplete(new MCPResourceURIVariables(Map.of("database", "logic_db")));
         assertThat(actualUri, is(Optional.empty()));
     }
 }

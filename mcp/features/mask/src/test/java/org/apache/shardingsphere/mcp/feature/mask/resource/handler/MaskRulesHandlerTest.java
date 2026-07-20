@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -46,7 +46,7 @@ class MaskRulesHandlerTest {
         try (
                 MockedConstruction<MaskRuleInspectionService> mockedConstruction = mockConstruction(MaskRuleInspectionService.class,
                         (mock, context) -> when(mock.queryMaskRules(queryFacade, "logic_db")).thenReturn(List.of(Map.of("column", "phone"))))) {
-            MCPSuccessPayload actual = new MaskRulesHandler().handle(requestContext, new MCPUriVariables(Map.of("database", "logic_db")));
+            MCPSuccessPayload actual = new MaskRulesHandler().handle(requestContext, new MCPResourceURIVariables(Map.of("database", "logic_db")));
             verify(mockedConstruction.constructed().getFirst()).queryMaskRules(queryFacade, "logic_db");
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
             assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/mask/databases/logic_db/rules"));

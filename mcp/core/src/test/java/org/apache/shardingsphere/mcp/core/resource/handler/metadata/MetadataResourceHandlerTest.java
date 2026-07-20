@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
@@ -52,7 +52,7 @@ class MetadataResourceHandlerTest {
     void assertHandleListResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases",
                 (requestContext, uriVariables) -> List.of(Map.of("database", "logic_db")));
-        MCPSuccessPayload actual = handler.handle(mock(MCPFeatureRequestContext.class), new MCPUriVariables(Map.of()));
+        MCPSuccessPayload actual = handler.handle(mock(MCPFeatureRequestContext.class), new MCPResourceURIVariables(Map.of()));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("response_mode"), is("list"));
         assertThat(actualPayload.get("summary"), is("Returned 1 of 1 logical-database metadata entries."));
@@ -69,7 +69,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleRootListResourceWithoutRuntimeDatabase() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
-        MCPSuccessPayload actual = handler.handle(mock(MCPFeatureRequestContext.class), new MCPUriVariables(Map.of()));
+        MCPSuccessPayload actual = handler.handle(mock(MCPFeatureRequestContext.class), new MCPResourceURIVariables(Map.of()));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("no_runtime_database"));
         assertThat(actualEmptyState.get("reason"), is("No ShardingSphere-Proxy logical database is available to MCP. Configure runtimeDatabases before reading metadata."));
@@ -81,7 +81,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleListResourceWithUnknownDatabase() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas", (requestContext, uriVariables) -> List.of());
-        MCPSuccessPayload actual = handler.handle(createDatabaseContext(Optional.empty()), new MCPUriVariables(Map.of("database", "missing_db")));
+        MCPSuccessPayload actual = handler.handle(createDatabaseContext(Optional.empty()), new MCPResourceURIVariables(Map.of("database", "missing_db")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("unknown_database"));
         assertThat(actualEmptyState.get("reason"), is("The requested logical database is not visible to MCP. Check runtimeDatabases and ShardingSphere-Proxy connectivity."));
@@ -95,7 +95,7 @@ class MetadataResourceHandlerTest {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas", (requestContext, uriVariables) -> List.of());
         MCPSuccessPayload actual = handler.handle(createDatabaseContext(Optional.of(
                 new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()))),
-                new MCPUriVariables(Map.of("database", "logic_db")));
+                new MCPResourceURIVariables(Map.of("database", "logic_db")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("empty_scope"));
         assertThat(actualEmptyState.get("reason"), is("No metadata items are visible in this scope. Check metadata permissions if objects are expected."));
@@ -109,7 +109,7 @@ class MetadataResourceHandlerTest {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}", (requestContext, uriVariables) -> List.of());
         MCPSuccessPayload actual = handler.handle(createDatabaseContext(Optional.of(
                 new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()))),
-                new MCPUriVariables(Map.of("database", "logic_db", "schema", "missing_schema")));
+                new MCPResourceURIVariables(Map.of("database", "logic_db", "schema", "missing_schema")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("schema_not_visible"));
         assertThat(actualEmptyState.get("reason"), is("The requested schema is not visible in the current metadata scope."));
@@ -122,7 +122,7 @@ class MetadataResourceHandlerTest {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}", (requestContext, uriVariables) -> List.of());
         MCPSuccessPayload actual = handler.handle(createDatabaseContext(Optional.of(
                 new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()))),
-                new MCPUriVariables(Map.of("database", "logic_db", "schema", "public", "table", "missing_table")));
+                new MCPResourceURIVariables(Map.of("database", "logic_db", "schema", "public", "table", "missing_table")));
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.toPayload().get("empty_state");
         assertThat(actualEmptyState.get("category"), is("object_not_visible"));
         assertThat(actualEmptyState.get("reason"), is("The requested metadata object is not visible in the current metadata scope."));

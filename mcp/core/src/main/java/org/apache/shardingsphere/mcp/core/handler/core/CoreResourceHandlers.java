@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.handler.core;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.RuntimeStatusHandler;
@@ -159,8 +159,7 @@ final class CoreResourceHandlers {
         return Collections.singletonList(metadata);
     }
     
-    private static MetadataResourceHandler createMetadataResourceHandler(final String uriTemplate,
-                                                                         final BiFunction<MCPFeatureRequestContext, MCPUriVariables, List<?>> metadataLoader) {
+    private static MetadataResourceHandler createMetadataResourceHandler(final String uriTemplate, final BiFunction<MCPFeatureRequestContext, MCPResourceURIVariables, List<?>> metadataLoader) {
         return new MetadataResourceHandler(uriTemplate, metadataLoader);
     }
 }

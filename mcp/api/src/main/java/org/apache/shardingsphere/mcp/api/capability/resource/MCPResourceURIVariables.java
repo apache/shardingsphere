@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import java.util.Map;
 
 /**
- * MCP URI variables.
+ * MCP resource URI variables.
  */
 @RequiredArgsConstructor
-public final class MCPUriVariables {
+public final class MCPResourceURIVariables {
     
     private final Map<String, String> variables;
     

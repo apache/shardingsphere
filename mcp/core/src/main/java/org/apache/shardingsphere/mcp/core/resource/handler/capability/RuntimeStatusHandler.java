@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
@@ -57,7 +57,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPFeature
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPFeatureRequestContext handlerContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext handlerContext, final MCPResourceURIVariables uriVariables) {
         List<RuntimeDatabaseProfile> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
         boolean hasConfiguredDatabase = !databases.isEmpty();
         MCPTransportType activeTransport = handlerContext.getActiveTransport();

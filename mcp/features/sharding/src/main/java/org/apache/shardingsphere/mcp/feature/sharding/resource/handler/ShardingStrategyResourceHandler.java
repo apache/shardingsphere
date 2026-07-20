@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
@@ -100,7 +100,7 @@ public final class ShardingStrategyResourceHandler extends AbstractShardingResou
     }
     
     @Override
-    protected List<Map<String, Object>> query(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+    protected List<Map<String, Object>> query(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         String databaseName = uriVariables.getValue("database");
         return switch (resourceKind) {
             case DEFAULT_STRATEGY -> getInspectionService().queryDefaultStrategy(requestContext.getQueryFacade(), databaseName);

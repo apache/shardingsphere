@@ -54,5 +54,5 @@ public interface MCPResourceHandler<T extends MCPRequestContext> {
      * @return successful resource payload
      * @throws ShardingSphereMCPException controlled failure to be converted by runtime
      */
-    MCPSuccessPayload handle(T context, MCPUriVariables uriVariables);
+    MCPSuccessPayload handle(T context, MCPResourceURIVariables uriVariables);
 }
