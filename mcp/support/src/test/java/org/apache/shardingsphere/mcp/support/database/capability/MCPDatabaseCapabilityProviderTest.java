@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
@@ -202,6 +204,7 @@ class MCPDatabaseCapabilityProviderTest {
                 Arguments.of("firebird", "Firebird", true, true, true, SchemaExecutionSemantics.BEST_EFFORT, false));
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class CapabilityFixture {
         
         private final boolean transactionSupported;
@@ -212,12 +215,5 @@ class MCPDatabaseCapabilityProviderTest {
         
         private final DialectSchemaSemantics schemaSemantics;
         
-        private CapabilityFixture(final boolean transactionSupported, final boolean savepointSupported, final boolean sequenceSupported,
-                                  final DialectSchemaSemantics schemaSemantics) {
-            this.transactionSupported = transactionSupported;
-            this.savepointSupported = savepointSupported;
-            this.sequenceSupported = sequenceSupported;
-            this.schemaSemantics = schemaSemantics;
-        }
     }
 }

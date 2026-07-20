@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
@@ -360,6 +362,7 @@ class CoreResourceHandlerSurfaceTest {
         return Collections.singletonList(metadata);
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class HandlerCase {
         
         private final String description;
@@ -375,17 +378,6 @@ class CoreResourceHandlerSurfaceTest {
         private final String expectedDatabase;
         
         private final List<String> expectedObjectNames;
-        
-        private HandlerCase(final String description, final MCPResourceHandler<?> handler, final String expectedUriTemplate, final String resourceUri,
-                            final HandlerResultType expectedType, final String expectedDatabase, final List<String> expectedObjectNames) {
-            this.description = description;
-            this.handler = handler;
-            this.expectedUriTemplate = expectedUriTemplate;
-            this.resourceUri = resourceUri;
-            this.expectedType = expectedType;
-            this.expectedDatabase = expectedDatabase;
-            this.expectedObjectNames = expectedObjectNames;
-        }
         
         private MCPResourceHandler<?> getHandler() {
             return handler;
