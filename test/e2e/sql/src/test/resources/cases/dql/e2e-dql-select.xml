@@ -187,4 +187,12 @@
     <test-case sql="SELECT user_name, telephone FROM t_user" db-types="Hive" scenario-types="mask">
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
+
+    <test-case sql="SELECT CAST('1973-06-03 10:30:01' AS TIMESTAMP) AS c8">
+        <assertion expected-data-file="select_timestamp_without_fractional_seconds.xml" />
+    </test-case>
+
+    <test-case sql="SELECT CAST('1973-06-03 10:30:01.123' AS TIMESTAMP) AS c8">
+        <assertion expected-data-file="select_timestamp_with_fractional_seconds.xml" />
+    </test-case>
 </e2e-test-cases>

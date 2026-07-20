@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.text.PostgreSQLTextValueFormatterFactory;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -80,7 +81,8 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
             payload.writeInt4(columnData.length);
             payload.writeBytes(columnData);
         } else {
-            byte[] columnData = each.toString().getBytes(payload.getCharset());
+            String formattedValue = PostgreSQLTextValueFormatterFactory.format(each);
+            byte[] columnData = formattedValue.getBytes(payload.getCharset());
             payload.writeInt4(columnData.length);
             payload.writeBytes(columnData);
         }

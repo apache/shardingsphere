@@ -1,0 +1,6 @@
+<dataset>
+    <metadata>
+        <column name="c8" type="timestamp" />
+    </metadata>
+    <row values="1973-06-03 10:30:01" />
+</dataset>
