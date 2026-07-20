@@ -38,15 +38,6 @@ public final class SQLToolMismatchException extends MCPUnsupportedException {
     
     private final Map<String, Object> suggestedArguments;
     
-    /**
-     * Create SQL tool mismatch exception.
-     *
-     * @param message error message
-     * @param sourceTool source tool name
-     * @param targetTool target tool name
-     * @param classificationResult SQL classification result
-     * @param suggestedArguments safe arguments for retrying with the target tool
-     */
     public SQLToolMismatchException(final String message, final String sourceTool, final String targetTool,
                                     final ClassificationResult classificationResult, final Map<String, Object> suggestedArguments) {
         super(message);
