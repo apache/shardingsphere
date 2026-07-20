@@ -28,16 +28,13 @@ import java.util.Collection;
 /**
  * MCP handler provider.
  *
- * <p>The provider is loaded as a singleton SPI. Handler instances returned by this provider are retained by the runtime and may be invoked concurrently.
- * Implementations must not retain request-scoped state.</p>
+ * <p>Handler instances returned by this provider are retained by the runtime and may be invoked concurrently.</p>
  */
 @SingletonSPI
 public interface MCPHandlerProvider extends ShardingSphereSPI {
     
     /**
      * Get resource handlers.
-     *
-     * <p>The returned collection may be empty, but must not be {@code null} or contain {@code null} elements.</p>
      *
      * @return resource handlers
      */
@@ -46,16 +43,12 @@ public interface MCPHandlerProvider extends ShardingSphereSPI {
     /**
      * Get tool handlers.
      *
-     * <p>The returned collection may be empty, but must not be {@code null} or contain {@code null} elements.</p>
-     *
      * @return tool handlers
      */
     Collection<MCPToolHandler<?>> getToolHandlers();
     
     /**
      * Get completion handlers.
-     *
-     * <p>The returned collection may be empty, but must not be {@code null} or contain {@code null} elements.</p>
      *
      * @return completion handlers
      */

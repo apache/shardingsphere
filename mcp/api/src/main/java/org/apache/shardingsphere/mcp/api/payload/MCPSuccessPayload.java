@@ -24,9 +24,8 @@ import java.util.Map;
 /**
  * Successful MCP application payload.
  *
- * <p>Tool and resource handlers return this type when the MCP operation completed normally. A payload may still describe a negative domain result,
- * such as a failed database validation. Controlled execution failures should be reported by throwing {@link ShardingSphereMCPException};
- * the runtime converts those failures to the protocol-specific MCP error surface.</p>
+ * <p>Tool and resource handlers return this type for normal MCP completion, including negative domain results such as failed database validation.
+ * Report controlled execution failures with {@link ShardingSphereMCPException}; the runtime converts them to protocol-specific errors.</p>
  */
 @FunctionalInterface
 public interface MCPSuccessPayload {

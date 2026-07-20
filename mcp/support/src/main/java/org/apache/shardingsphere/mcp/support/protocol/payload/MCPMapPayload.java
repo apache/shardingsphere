@@ -25,8 +25,7 @@ import java.util.Map;
 /**
  * MCP payload adapter for a fully assembled successful payload.
  *
- * <p>This thin adapter returns the supplied payload as-is. It does not copy, merge, normalize, validate against a tool schema,
- * classify errors, or build a transport envelope. Callers must finish constructing the payload before wrapping it and must not mutate it afterwards.</p>
+ * <p>The supplied payload is returned as-is. Callers must finish constructing it before wrapping and must not mutate it afterwards.</p>
  */
 @RequiredArgsConstructor
 public final class MCPMapPayload implements MCPSuccessPayload {
