@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCand
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.core.handler.MCPRequestContextTypes;
-import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPCompletionAction;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;

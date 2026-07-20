@@ -43,7 +43,7 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
-import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
