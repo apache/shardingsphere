@@ -183,10 +183,12 @@ public final class FirebirdBlobWriteCache {
     }
     
     private Map<Integer, FirebirdBlobWrite> getHandleMap(final int connectionId) {
-        return writesByHandle.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
+        Map<Integer, FirebirdBlobWrite> result = writesByHandle.get(connectionId);
+        return null == result ? writesByHandle.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4)) : result;
     }
     
     private Map<Long, FirebirdBlobWrite> getIdMap(final int connectionId) {
-        return writesById.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
+        Map<Long, FirebirdBlobWrite> result = writesById.get(connectionId);
+        return null == result ? writesById.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4)) : result;
     }
 }

@@ -61,8 +61,13 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
     
     private static long register(final int connectionId, final byte[] bytes) {
         long id = ID_SEQ.getAndIncrement();
-        CONTENTS_BY_CONNECTION.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4)).put(id, bytes.clone());
+        getContentMap(connectionId).put(id, bytes.clone());
         return id;
+    }
+    
+    private static Map<Long, byte[]> getContentMap(final int connectionId) {
+        Map<Long, byte[]> result = CONTENTS_BY_CONNECTION.get(connectionId);
+        return null == result ? CONTENTS_BY_CONNECTION.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4)) : result;
     }
     
     private static byte[] readAllBytes(final InputStream input) throws IOException {

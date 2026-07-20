@@ -104,6 +104,7 @@ public final class FirebirdBlobReadCache {
     }
     
     private Map<Integer, byte[]> getSegmentMap(final int connectionId) {
-        return remainingSegments.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
+        Map<Integer, byte[]> result = remainingSegments.get(connectionId);
+        return null == result ? remainingSegments.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4)) : result;
     }
 }
