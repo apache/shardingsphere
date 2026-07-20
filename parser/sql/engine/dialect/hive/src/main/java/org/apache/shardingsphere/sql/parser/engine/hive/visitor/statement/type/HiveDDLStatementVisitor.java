@@ -215,12 +215,21 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
                 }
             }
         }
+        SelectStatement selectStatement = null;
+        if (null != ctx.select()) {
+            HiveDMLStatementVisitor dmlVisitor = new HiveDMLStatementVisitor(getDatabaseType());
+            ASTNode selectNode = dmlVisitor.visit(ctx.select());
+            if (selectNode instanceof SelectStatement) {
+                selectStatement = (SelectStatement) selectNode;
+            }
+        }
         return CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.createTableCommonClause().tableNameWithDb()))
                 .ifNotExists(null != ctx.createTableCommonClause().ifNotExists())
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
+                .selectStatement(selectStatement)
                 .build();
     }
     
