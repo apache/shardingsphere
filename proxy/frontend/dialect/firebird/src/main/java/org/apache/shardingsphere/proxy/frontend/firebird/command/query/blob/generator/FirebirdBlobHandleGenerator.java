@@ -34,6 +34,8 @@ public final class FirebirdBlobHandleGenerator {
     
     private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
     
+    private static final int MAX_OBJECT_HANDLE = INVALID_OBJECT_HANDLE - 1;
+    
     private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
     
     public static FirebirdBlobHandleGenerator getInstance() {
@@ -52,11 +54,15 @@ public final class FirebirdBlobHandleGenerator {
     /**
      * Generate next BLOB handle for connection.
      *
+     * <p>Firebird carries object handles as 16 bit values, and {@code 0xFFFF} is reserved as the deferred
+     * placeholder handle, so generated handles wrap within the range 1 to {@code 0xFFFE}. Handle 0 is never
+     * issued because it marks a connection that has not generated a handle yet.</p>
+     *
      * @param connectionId connection ID
      * @return generated BLOB handle
      */
     public int nextBlobHandle(final int connectionId) {
-        return connectionRegistry.get(connectionId).incrementAndGet();
+        return connectionRegistry.get(connectionId).updateAndGet(current -> MAX_OBJECT_HANDLE <= current ? 1 : current + 1);
     }
     
     /**

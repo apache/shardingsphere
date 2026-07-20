@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 class FirebirdBlobHandleGeneratorTest {
     
@@ -44,6 +45,17 @@ class FirebirdBlobHandleGeneratorTest {
     void assertNextBlobHandleIncrements() {
         assertThat(FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID), is(1));
         assertThat(FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID), is(2));
+    }
+    
+    @Test
+    void assertNextBlobHandleSkipsPlaceholderAndWraps() {
+        int lastBeforePlaceholder = 0;
+        for (int i = 0; i < INVALID_OBJECT_HANDLE; i++) {
+            lastBeforePlaceholder = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
+            assertThat(lastBeforePlaceholder, not(0));
+            assertThat(lastBeforePlaceholder, not(INVALID_OBJECT_HANDLE));
+        }
+        assertThat(lastBeforePlaceholder, is(1));
     }
     
     @Test
