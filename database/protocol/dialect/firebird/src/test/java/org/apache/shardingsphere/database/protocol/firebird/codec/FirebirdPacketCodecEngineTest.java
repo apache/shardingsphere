@@ -130,6 +130,22 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
+    void assertDecodeCoalescedSeekBlobAndFollowingPacket() {
+        ByteBuf seekBlob = Unpooled.buffer().writeInt(FirebirdCommandPacketType.SEEK_BLOB.getValue()).writeInt(5).writeInt(0).writeInt(100);
+        ByteBuf commit = Unpooled.buffer().writeInt(FirebirdCommandPacketType.COMMIT.getValue()).writeInt(1);
+        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(seekBlob, commit);
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertThat(out.size(), is(2));
+        assertThat(((ByteBuf) out.get(0)).readableBytes(), is(16));
+        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.SEEK_BLOB.getValue()));
+        assertThat(((ByteBuf) out.get(1)).readableBytes(), is(8));
+        assertThat(((ByteBuf) out.get(1)).getInt(0), is(FirebirdCommandPacketType.COMMIT.getValue()));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
+    }
+    
+    @Test
     void assertDecodeWithExpectedLength() {
         ByteBuf in = createCommandPacket(FirebirdCommandPacketType.PREPARE_STATEMENT, 8);
         List<Object> out = new LinkedList<>();
