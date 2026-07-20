@@ -246,18 +246,30 @@ jobs:
           if-no-files-found: warn
 
   e2e-mcp-llm:
-    name: E2E - MCP LLM - ${{ matrix.test-class }}
+    name: E2E - MCP LLM - ${{ matrix.suite-id }}
     if: github.repository == 'apache/shardingsphere'
     needs: [ e2e-mcp-build-images, e2e-mcp-build-llm-image ]
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 60
     strategy:
       fail-fast: false
+      max-parallel: 3
       matrix:
-        test-class:
-          - LLMSmokeE2ETest
-          - LLMUsabilitySuiteE2ETest
-          - MCPBuilderEvaluationE2ETest
+        include:
+          - suite-id: smoke
+            test-class: LLMSmokeE2ETest
+          - suite-id: usability-core
+            test-class: LLMUsabilitySuiteE2ETest
+            test-property: mcp.e2e.llm.usability-suite=core
+          - suite-id: usability-extended
+            test-class: LLMUsabilitySuiteE2ETest
+            test-property: mcp.e2e.llm.usability-suite=extended
+          - suite-id: builder-first
+            test-class: MCPBuilderEvaluationE2ETest
+            test-property: mcp.e2e.llm.builder-case-group=first
+          - suite-id: builder-second
+            test-class: MCPBuilderEvaluationE2ETest
+            test-property: mcp.e2e.llm.builder-case-group=second
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
@@ -281,10 +293,17 @@ jobs:
           docker-image-archives: mcp-llm-runtime-image.tar
       - name: Run MCP LLM E2E
         shell: bash
+        env:
+          MCP_LLM_TEST_PROPERTY: ${{ matrix.test-property }}
         run: |
           set -euo pipefail
+          test_property_args=()
+          if [[ -n "${MCP_LLM_TEST_PROPERTY}" ]]; then
+            test_property_args+=("-D${MCP_LLM_TEST_PROPERTY}")
+          fi
           ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
             -Dtest='${{ matrix.test-class }}' \
+            "${test_property_args[@]}" \
             -Dgroups=llm-e2e \
             -Dsurefire.failIfNoSpecifiedTests=true \
             -De2e.run.type=DOCKER \
@@ -292,13 +311,13 @@ jobs:
             -Dmcp.llm.ready-timeout-seconds=900 \
             -Dmcp.llm.request-timeout-seconds=300 \
             -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" \
-            -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.test-class }} \
+            -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.suite-id }} \
             -B -ntp
       - name: Upload MCP LLM E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: e2e-mcp-llm-${{ matrix.test-class }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: e2e-mcp-llm-${{ matrix.suite-id }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             test/e2e/mcp/target/llm-e2e
             test/e2e/mcp/target/surefire-reports

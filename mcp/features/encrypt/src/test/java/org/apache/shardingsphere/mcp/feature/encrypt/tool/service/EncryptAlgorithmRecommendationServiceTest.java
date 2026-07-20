@@ -72,6 +72,23 @@ class EncryptAlgorithmRecommendationServiceTest {
     }
     
     @Test
+    void assertRecommendEncryptAlgorithmsWithoutAvailableAlgorithm() {
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(new EncryptWorkflowRequest(), List.of(), issues);
+        assertTrue(actual.isEmpty());
+        assertTrue(issues.isEmpty());
+    }
+    
+    @Test
+    void assertRecommendEncryptAlgorithmsFallsBackToFirstAvailableAlgorithm() {
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(
+                new EncryptWorkflowRequest(), List.of(createAlgorithmRow("FPE", null, null, null)), issues);
+        assertThat(actual.getFirst().getAlgorithmType(), is("FPE"));
+        assertTrue(issues.isEmpty());
+    }
+    
+    @Test
     void assertRecommendEncryptAlgorithmsWithMissingAssistedQueryAlgorithm() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.getOptions().setRequiresEqualityFilter(true);
@@ -80,6 +97,44 @@ class EncryptAlgorithmRecommendationServiceTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.getFirst().getAlgorithmType(), is("AES"));
         assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
+    }
+    
+    @Test
+    void assertRecommendEncryptAlgorithmsWithDefaultAssistedQueryAlgorithm() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.getOptions().setRequiresEqualityFilter(true);
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(
+                createAlgorithmRow("AES", true, true, false), createAlgorithmRow("MD5", false, true, false)), issues);
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(1).getAlgorithmRole(), is("assisted_query"));
+        assertThat(actual.get(1).getAlgorithmType(), is("MD5"));
+        assertTrue(issues.isEmpty());
+    }
+    
+    @Test
+    void assertRecommendEncryptAlgorithmsWithSpecifiedAssistedQueryAlgorithm() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.getOptions().setRequiresEqualityFilter(true);
+        request.getOptions().setAssistedQueryAlgorithmType("CUSTOM_HASH");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(
+                createAlgorithmRow("AES", true, true, false), createAlgorithmRow("CUSTOM_HASH", null, true, false)), issues);
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(1).getAlgorithmType(), is("CUSTOM_HASH"));
+        assertTrue(issues.isEmpty());
+    }
+    
+    @Test
+    void assertRecommendEncryptAlgorithmsRejectsUnavailableSpecifiedAssistedQueryAlgorithm() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.getOptions().setRequiresEqualityFilter(true);
+        request.getOptions().setAssistedQueryAlgorithmType("MD5");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("AES", true, true, false)), issues);
+        assertThat(actual.size(), is(1));
+        assertThat(issues.size(), is(1));
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
     }
     
     @Test
@@ -117,6 +172,42 @@ class EncryptAlgorithmRecommendationServiceTest {
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("AES", true, true, false)), issues);
         assertThat(actual.size(), is(1));
         assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
+    }
+    
+    @Test
+    void assertRecommendEncryptAlgorithmsWithoutLikeCapableAlgorithm() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.getOptions().setRequiresLikeQuery(true);
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("AES", true, true, false)), issues);
+        assertThat(actual.size(), is(1));
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
+    }
+    
+    @Test
+    void assertRecommendEncryptAlgorithmsRejectsUnavailableSpecifiedLikeAlgorithm() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.getOptions().setRequiresLikeQuery(true);
+        request.getOptions().setLikeQueryAlgorithmType("FPE");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("AES", true, true, false)), issues);
+        assertThat(actual.size(), is(1));
+        assertThat(issues.size(), is(1));
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
+    }
+    
+    @Test
+    void assertRecommendEncryptAlgorithmsWithSpecifiedUnconfirmedLikeAlgorithm() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.getOptions().setRequiresLikeQuery(true);
+        request.getOptions().setLikeQueryAlgorithmType("FPE");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(
+                createAlgorithmRow("AES", true, true, false), createAlgorithmRow("FPE", null, null, true)), issues);
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(1).getAlgorithmType(), is("FPE"));
+        assertThat(actual.get(1).getRecommendationScore(), is(70));
+        assertTrue(issues.isEmpty());
     }
     
     private Map<String, Object> createAlgorithmRow(final String type, final Boolean decrypt, final Boolean equivalentFilter, final Boolean like) {

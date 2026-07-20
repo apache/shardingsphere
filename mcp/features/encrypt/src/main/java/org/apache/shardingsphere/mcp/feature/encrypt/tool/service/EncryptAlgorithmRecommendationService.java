@@ -140,12 +140,6 @@ public final class EncryptAlgorithmRecommendationService {
                     "Choose an available assisted-query algorithm.", false, Map.of()));
             return "";
         }
-        if (isKnownUnsupported(algorithmType, EncryptFeatureDefinition.ALGORITHM_CAPABILITY_EQUIVALENT_FILTER)) {
-            addSpecifiedCapabilityConflictIssue(issues,
-                    String.format("Assisted-query algorithm `%s` does not support equivalent filtering.", algorithmType),
-                    "Choose an assisted-query algorithm that supports equivalent filtering.");
-            return "";
-        }
         return algorithmType;
     }
     
@@ -229,12 +223,7 @@ public final class EncryptAlgorithmRecommendationService {
     }
     
     private String createEncryptRisk(final Map<String, Boolean> capability) {
-        if (null == capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_DECRYPT)
-                || null == capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_EQUIVALENT_FILTER)
-                || null == capability.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_LIKE)) {
-            return "Capability is discoverable from plugins but not fully confirmed.";
-        }
-        return "";
+        return capability.containsValue(null) ? "Capability is discoverable from plugins but not fully confirmed." : "";
     }
     
 }

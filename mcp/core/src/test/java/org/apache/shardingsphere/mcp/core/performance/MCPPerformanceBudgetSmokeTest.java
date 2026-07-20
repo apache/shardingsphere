@@ -23,7 +23,9 @@ import org.apache.shardingsphere.mcp.core.completion.handler.WorkflowPlanIdCompl
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.DatabaseMetadataFixture;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestContextFixture;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.TableMetadataFixture;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionStore;
@@ -40,6 +42,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -66,7 +69,9 @@ class MCPPerformanceBudgetSmokeTest {
     
     private static final int REQUEST_CONTEXT_ITERATIONS = 200;
     
-    private static final int METADATA_SEARCH_ITERATIONS = 100;
+    private static final int METADATA_SEARCH_ITERATIONS = 20;
+    
+    private static final int METADATA_SEARCH_TABLE_COUNT = 1000;
     
     private static final int WORKFLOW_PLAN_PAYLOAD_ITERATIONS = 1000;
     
@@ -100,19 +105,31 @@ class MCPPerformanceBudgetSmokeTest {
     
     @Test
     void assertMetadataSearchBudget() {
-        MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-        try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
+        List<DatabaseMetadataFixture> databaseMetadata = createMetadataSearchScaleFixture();
+        MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext(databaseMetadata);
+        try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, databaseMetadata)) {
             MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             SearchMetadataToolHandler handler = new SearchMetadataToolHandler();
-            Map<String, Object> arguments = Map.of("query", "order", "object_types", List.of("table"));
+            Map<String, Object> arguments = Map.of(
+                    "database", "scale_db", "schema", "public", "query", "target", "object_types", List.of("table"));
             assertDoesNotThrow(() -> handler.handle(requestContext, arguments));
             long elapsedMillis = measureElapsedMillis(() -> {
                 for (int i = 0; i < METADATA_SEARCH_ITERATIONS; i++) {
                     handler.handle(requestContext, arguments).toPayload();
                 }
             });
-            assertWithinBudget("metadata search", elapsedMillis, METADATA_SEARCH_BUDGET_MILLIS);
+            assertWithinBudget(String.format("metadata search across %d tables", METADATA_SEARCH_TABLE_COUNT), elapsedMillis, METADATA_SEARCH_BUDGET_MILLIS);
         }
+    }
+    
+    private List<DatabaseMetadataFixture> createMetadataSearchScaleFixture() {
+        List<TableMetadataFixture> tables = new LinkedList<>();
+        for (int index = 0; index < METADATA_SEARCH_TABLE_COUNT - 1; index++) {
+            tables.add(ResourceTestDataFactory.createTable("metadata_table_" + index, List.of("id"), List.of()));
+        }
+        tables.add(ResourceTestDataFactory.createTable("target_table", List.of("id"), List.of()));
+        return List.of(ResourceTestDataFactory.createDatabase("scale_db", "MySQL", "", List.of(
+                ResourceTestDataFactory.createSchema("public", tables, List.of(), List.of()))));
     }
     
     @Test

@@ -83,7 +83,7 @@ final class MCPBuilderEvaluationSuiteRunner {
         Path scorecardFile = configuration.createArtifactDirectory("mcp-builder-evaluation").resolve("scorecard.json");
         artifactWriter.writeScorecard(scorecardFile, results);
         assertArtifactsSecure(artifactDirectories, scorecardFile);
-        assertAllPassed(results);
+        assertAllPassed(results, evaluationSuite.cases().size());
     }
     
     private void assertArtifactsSecure(final List<Path> artifactDirectories, final Path scorecardFile) throws IOException {
@@ -106,9 +106,11 @@ final class MCPBuilderEvaluationSuiteRunner {
         }
     }
     
-    private void assertAllPassed(final List<EvaluationResult> results) {
+    private void assertAllPassed(final List<EvaluationResult> results, final int expectedCaseCount) {
         String failureSummary = createFailureSummary(results);
-        assertTrue(results.size() == 10, () -> "MCP Builder evaluation must execute exactly 10 cases, but executed " + results.size());
+        assertFalse(results.isEmpty(), "MCP Builder evaluation must execute at least one case.");
+        assertTrue(results.size() == expectedCaseCount,
+                () -> String.format("MCP Builder evaluation expected %d cases, but executed %d.", expectedCaseCount, results.size()));
         assertTrue(results.stream().allMatch(each -> each.assertionReport().isSuccess()), failureSummary);
     }
     

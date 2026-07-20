@@ -43,18 +43,11 @@ public final class AutonomousMCPBuilderEvaluationRunner {
     
     private static final String SYSTEM_PROMPT = """
             You are evaluating a live ShardingSphere MCP server in a read-only task. Use the available MCP functions to inspect current state.
-            Use database_gateway_execute_query for row values, aggregates, filters, joins, and view results. Use database_gateway_search_metadata
-            only for metadata names: query is a name fragment, blank query lists the narrowed scope, schema is a namespace rather than a table name,
-            and unknown schemas should be omitted. The database argument only selects a configured logical runtime connection; never qualify SQL objects
-            with that value. A same-valued metadata namespace is not an SQL catalog or schema. Pass resource URIs only to mcp_read_resource, never as SQL.
+            Choose tools from their advertised names, descriptions, and input schemas. Pass resource URIs only to mcp_read_resource, never as SQL.
             Never guess, request a write, or stop before retrieving the requested value. Use function calls for every tool invocation rather than
             printing a tool-call object as the answer. When you have enough evidence, follow the user's exact answer format and return only the answer
             with no explanation or Markdown.
             """;
-    
-    private static final List<String> READ_ONLY_TOOL_NAMES = List.of(
-            "database_gateway_search_metadata",
-            "database_gateway_execute_query");
     
     private static final List<String> BRIDGE_TOOL_NAMES = List.of(MCPInteractionActionNames.READ_RESOURCE);
     
@@ -95,7 +88,7 @@ public final class AutonomousMCPBuilderEvaluationRunner {
         try {
             mcpInteractionClient.open();
             List<Map<String, Object>> advertisedTools = mcpInteractionClient.listTools();
-            List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createFromRemote(advertisedTools, READ_ONLY_TOOL_NAMES, BRIDGE_TOOL_NAMES);
+            List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createReadOnlyFromRemote(advertisedTools, BRIDGE_TOOL_NAMES);
             artifacts.setToolDefinitions(toolDefinitions);
             artifacts.addTrace(traceRecordFactory.createTraceRecord(artifacts.nextSequence(), MCPInteractionActionNames.LIST_TOOLS,
                     MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN, Map.of(), Map.of("tools", advertisedTools), 0L));

@@ -134,6 +134,7 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
         Map<String, Object> payload = MCPInteractionPayloads.getRequiredJsonRpcResult(parseJsonBody(actual.body()));
         assertModelFacingPayloadContract(payload);
         Map<String, Object> actualTool = findByKey(MCPInteractionPayloads.getRequiredObjectList(payload, "tools"), "name", scenario.toolName());
+        assertTrue((Boolean) MCPInteractionPayloads.getRequiredObject(actualTool, "annotations").get("openWorldHint"));
         Map<String, Object> actualInputSchema = MCPInteractionPayloads.getRequiredObject(actualTool, "inputSchema");
         assertFalse((Boolean) actualInputSchema.get("additionalProperties"));
         Map<String, Object> actualProperties = MCPInteractionPayloads.getRequiredObject(actualInputSchema, "properties");
