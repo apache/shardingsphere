@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -29,16 +28,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Encrypt OPENQUERY utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptOpenQueryUtils {
-    
-    private static final Pattern FROM_TABLE_PATTERN = Pattern.compile("\\bFROM\\s+([^\\s,;]+)", Pattern.CASE_INSENSITIVE);
     
     /**
      * Whether table segment is OPENQUERY function table.
@@ -83,18 +78,8 @@ public final class EncryptOpenQueryUtils {
         if (!openQuerySQL.isPresent()) {
             return Optional.empty();
         }
-        Matcher matcher = FROM_TABLE_PATTERN.matcher(openQuerySQL.get().getText());
-        if (!matcher.find()) {
-            return Optional.empty();
-        }
-        String actualTableName = QuoteCharacter.unwrapAndTrimText(matcher.group(1).substring(matcher.group(1).lastIndexOf('.') + 1));
-        for (String each : rule.getAllTableNames()) {
-            Optional<EncryptTable> encryptTable = rule.findEncryptTable(each);
-            if (encryptTable.isPresent() && each.equalsIgnoreCase(actualTableName)) {
-                return encryptTable;
-            }
-        }
-        return Optional.empty();
+        Optional<String> tableName = EncryptOpenQueryPassThroughSQL.findTableName(openQuerySQL.get().getText());
+        return tableName.isPresent() ? rule.findEncryptTable(tableName.get()) : Optional.empty();
     }
     
     /**
@@ -108,12 +93,6 @@ public final class EncryptOpenQueryUtils {
         if (!openQuerySQL.isPresent()) {
             return Optional.empty();
         }
-        Matcher matcher = FROM_TABLE_PATTERN.matcher(openQuerySQL.get().getText());
-        if (!matcher.find()) {
-            return Optional.empty();
-        }
-        String tableExpression = matcher.group(1);
-        int delimiterIndex = tableExpression.lastIndexOf('.');
-        return -1 == delimiterIndex ? Optional.empty() : Optional.of(QuoteCharacter.unwrapAndTrimText(tableExpression.substring(0, delimiterIndex)));
+        return EncryptOpenQueryPassThroughSQL.parse(openQuerySQL.get().getText()).getSchemaName();
     }
 }

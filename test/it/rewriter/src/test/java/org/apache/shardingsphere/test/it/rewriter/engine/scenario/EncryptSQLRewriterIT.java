@@ -86,7 +86,8 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
         tables.add(new ShardingSphereTable("Department", Arrays.asList(
                 new ShardingSphereColumn("DepartmentID", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("Name", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("GroupName", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("GroupName", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("StateRegion", Arrays.asList(
                 new ShardingSphereColumn("StateCode", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("CountryRegionName", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
@@ -115,7 +116,8 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
         humanResourcesSchemaTables.add(new ShardingSphereTable("Department", Arrays.asList(
                 new ShardingSphereColumn("DepartmentID", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("Name", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("GroupName", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("GroupName", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         result.add(new ShardingSphereSchema("HumanResources", mock(DatabaseType.class), humanResourcesSchemaTables, Collections.emptyList()));
         return result;
     }

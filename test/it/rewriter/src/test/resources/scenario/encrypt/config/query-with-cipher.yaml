@@ -164,6 +164,20 @@ rules:
           cipher:
             name: group_name_cipher
             encryptorName: rewrite_normal_fixture
+        Name:
+          cipher:
+            name: name_cipher
+            encryptorName: rewrite_normal_fixture
+        Remark:
+          cipher:
+            name: remark_cipher
+            encryptorName: rewrite_normal_fixture
+          assistedQuery:
+            name: assisted_query_remark
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery:
+            name: like_query_remark
+            encryptorName: rewrite_like_query_fixture
     StateRegion:
       columns:
         CountryRegionName:

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +49,6 @@ class EncryptOpenQueryUtilsTest {
     void assertFindEncryptTable() {
         EncryptRule rule = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
-        when(rule.getAllTableNames()).thenReturn(Collections.singleton("foo_tbl"));
         when(rule.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
         Optional<EncryptTable> actual = EncryptOpenQueryUtils.findEncryptTable(rule, createOpenQueryTableSegment("SELECT foo_col FROM foo_schema.foo_tbl"));
         assertTrue(actual.isPresent());
@@ -64,6 +62,31 @@ class EncryptOpenQueryUtilsTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_schema"));
         assertFalse(EncryptOpenQueryUtils.findSchemaName(createOpenQueryTableSegment("SELECT foo_col FROM foo_tbl")).isPresent());
+    }
+    
+    @Test
+    void assertFindEncryptTableWithDelimitedMultipartTableName() {
+        EncryptRule rule = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(rule.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
+        Optional<EncryptTable> actual = EncryptOpenQueryUtils.findEncryptTable(rule, createOpenQueryTableSegment("SELECT foo_col FROM [foo_schema].[foo_tbl]"));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(encryptTable));
+    }
+    
+    @Test
+    void assertFindEncryptTableWithThreePartUnrelatedTableReturnsEmpty() {
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.findEncryptTable("Employee")).thenReturn(Optional.empty());
+        assertFalse(EncryptOpenQueryUtils.findEncryptTable(rule, createOpenQueryTableSegment("SELECT col FROM db.schema.Employee")).isPresent());
+    }
+    
+    @Test
+    void assertFindEncryptTableWithJoinUnrelatedTableReturnsEmpty() {
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.findEncryptTable("Employee")).thenReturn(Optional.empty());
+        assertFalse(EncryptOpenQueryUtils.findEncryptTable(rule,
+                createOpenQueryTableSegment("SELECT col FROM dbo.Employee JOIN dbo.Department ON Employee.DepartmentID = Department.DepartmentID")).isPresent());
     }
     
     private FunctionTableSegment createOpenQueryTableSegment(final String openQuerySQL) {

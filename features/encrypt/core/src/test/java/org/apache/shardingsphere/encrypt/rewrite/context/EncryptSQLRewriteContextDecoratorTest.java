@@ -123,6 +123,21 @@ class EncryptSQLRewriteContextDecoratorTest {
         verify(sqlRewriteContext).addSQLTokenGenerators(any());
     }
     
+    @Test
+    void assertDecorateWithOpenQueryUnrelatedTableAndUnsupportedPassThroughShape() {
+        SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
+        UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
+        when(updateStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.emptyList());
+        when(updateStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
+        UpdateStatement updateStatement = mock(UpdateStatement.class);
+        when(updateStatement.getTable()).thenReturn(createOpenQueryTableSegmentWithJoinOnUnrelatedTable());
+        when(updateStatementContext.getSqlStatement()).thenReturn(updateStatement);
+        when(sqlRewriteContext.getSqlStatementContext()).thenReturn(updateStatementContext);
+        EncryptRule encryptRule = new EncryptRule("foo_db", getEncryptRuleConfiguration(false));
+        decorator.decorate(encryptRule, mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
+        verify(sqlRewriteContext, never()).addSQLTokenGenerators(any());
+    }
+    
     private EncryptRuleConfiguration getEncryptRuleConfiguration(final boolean dropEncryptTable) {
         EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "standard_encryptor"));
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnConfig));
@@ -138,6 +153,14 @@ class EncryptSQLRewriteContextDecoratorTest {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "OPENQUERY", "OPENQUERY (foo_server, 'SELECT pwd FROM foo_schema.t_encrypt')");
         functionSegment.getParameters().add(new ColumnSegment(0, 0, new IdentifierValue("foo_server")));
         functionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "SELECT pwd FROM foo_schema.t_encrypt"));
+        return new FunctionTableSegment(0, 0, functionSegment);
+    }
+    
+    private FunctionTableSegment createOpenQueryTableSegmentWithJoinOnUnrelatedTable() {
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "OPENQUERY",
+                "OPENQUERY (foo_server, 'SELECT col FROM db.schema.bar_tbl JOIN foo_schema.t_encrypt ON bar_tbl.id = t_encrypt.id')");
+        functionSegment.getParameters().add(new ColumnSegment(0, 0, new IdentifierValue("foo_server")));
+        functionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "SELECT col FROM db.schema.bar_tbl JOIN foo_schema.t_encrypt ON bar_tbl.id = t_encrypt.id"));
         return new FunctionTableSegment(0, 0, functionSegment);
     }
 }

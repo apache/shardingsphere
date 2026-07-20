@@ -119,7 +119,62 @@
         <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
         <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
     </rewrite-assertion>
-
+    
+    <rewrite-assertion id="update_department_with_open_query_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = ?" parameters="Sales and Marketing" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_multiple_assignments_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName, Name FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing', Name = 'Engineering'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher, name_cipher FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing', [name_cipher] = 'encrypt_Engineering'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_multiple_assignments_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName, Name FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = ?, Name = ?" parameters="Sales and Marketing, Engineering" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher, name_cipher FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = ?, [name_cipher] = ?" parameters="encrypt_Sales and Marketing, encrypt_Engineering" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_derived_column_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT Remark FROM HumanResources.Department WHERE DepartmentID = 4') SET Remark = 'note'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT remark_cipher, assisted_query_remark, like_query_remark FROM HumanResources.Department WHERE DepartmentID = 4') SET [remark_cipher] = 'encrypt_note', [assisted_query_remark] = 'assisted_query_note', [like_query_remark] = 'like_query_note'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_derived_column_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT Remark FROM HumanResources.Department WHERE DepartmentID = 4') SET Remark = ?" parameters="note" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT remark_cipher, assisted_query_remark, like_query_remark FROM HumanResources.Department WHERE DepartmentID = 4') SET [remark_cipher] = ?, [assisted_query_remark] = ?, [like_query_remark] = ?" parameters="encrypt_note, assisted_query_note, like_query_note" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_derived_columns_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName, Remark FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing', Remark = 'note'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher, remark_cipher, assisted_query_remark, like_query_remark FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing', [remark_cipher] = 'encrypt_note', [assisted_query_remark] = 'assisted_query_note', [like_query_remark] = 'like_query_note'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_derived_columns_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName, Remark FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = ?, Remark = ?" parameters="Sales and Marketing, note" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher, remark_cipher, assisted_query_remark, like_query_remark FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = ?, [remark_cipher] = ?, [assisted_query_remark] = ?, [like_query_remark] = ?" parameters="encrypt_Sales and Marketing, encrypt_note, assisted_query_note, like_query_note" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_predicate_on_encrypted_column_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Department WHERE GroupName IS NOT NULL') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher FROM HumanResources.Department WHERE GroupName IS NOT NULL') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_string_literal_predicate_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Department WHERE Note = ''GroupName''') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher FROM HumanResources.Department WHERE Note = ''GroupName''') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_delimited_multipart_table_name_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM [HumanResources].[Department] WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher FROM [HumanResources].[Department] WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_delimited_multipart_table_name_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM [HumanResources].[Department] WHERE DepartmentID = 4') SET GroupName = ?" parameters="Sales and Marketing" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT group_name_cipher FROM [HumanResources].[Department] WHERE DepartmentID = 4') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="update_sales_person_with_linked_server_for_literals" db-types="SQLServer">
         <input sql="UPDATE MyLinkedServer.encrypt.dbo.SalesPerson SET Bonus = 3000.00 WHERE BusinessEntityID = 1" />
         <output sql="UPDATE MyLinkedServer.encrypt.dbo.SalesPerson SET [bonus_cipher] = 'encrypt_3000.00' WHERE BusinessEntityID = 1" />

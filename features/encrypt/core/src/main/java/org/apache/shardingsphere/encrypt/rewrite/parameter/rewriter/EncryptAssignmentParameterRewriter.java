@@ -20,8 +20,10 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment.EncryptOpenQueryUtils;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
@@ -33,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
@@ -66,23 +69,54 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
+        TableSegment openQueryTarget = findOpenQueryTarget(sqlStatementContext);
         for (ColumnAssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             String columnName = each.getColumns().get(0).getIdentifier().getValue();
-            String tableName = each.getColumns().get(0).getColumnBoundInfo().getOriginalTable().getValue();
-            if (!rule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(columnName)).orElse(false)) {
+            String originalTableName = each.getColumns().get(0).getColumnBoundInfo().getOriginalTable().getValue();
+            EncryptTable encryptTable = resolveEncryptTable(originalTableName, columnName, openQueryTarget);
+            if (null == encryptTable) {
                 continue;
             }
-            EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(columnName);
-            StandardParameterBuilder standardParamBuilder = paramBuilder instanceof StandardParameterBuilder
-                    ? (StandardParameterBuilder) paramBuilder
-                    : ((GroupedParameterBuilder) paramBuilder).getParameterBuilders().get(0);
-            ExpressionSegment valueExpression = each.getValue();
-            if (valueExpression instanceof ParameterMarkerExpressionSegment) {
-                encryptParameters(standardParamBuilder, schemaName, tableName, encryptColumn, ((ParameterMarkerExpressionSegment) valueExpression).getParameterMarkerIndex(), params);
-            }
+            rewriteEncryptAssignment(paramBuilder, sqlStatementContext, openQueryTarget, encryptTable, columnName, each, params);
         }
+    }
+    
+    private void rewriteEncryptAssignment(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final TableSegment openQueryTarget,
+                                          final EncryptTable encryptTable, final String columnName, final ColumnAssignmentSegment assignmentSegment, final List<Object> params) {
+        String schemaName = resolveSchemaName(sqlStatementContext, openQueryTarget);
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
+        StandardParameterBuilder standardParamBuilder = paramBuilder instanceof StandardParameterBuilder
+                ? (StandardParameterBuilder) paramBuilder
+                : ((GroupedParameterBuilder) paramBuilder).getParameterBuilders().get(0);
+        ExpressionSegment valueExpression = assignmentSegment.getValue();
+        if (valueExpression instanceof ParameterMarkerExpressionSegment) {
+            encryptParameters(standardParamBuilder, schemaName, encryptTable.getTable(), encryptColumn, ((ParameterMarkerExpressionSegment) valueExpression).getParameterMarkerIndex(), params);
+        }
+    }
+    
+    private String resolveSchemaName(final SQLStatementContext sqlStatementContext, final TableSegment openQueryTarget) {
+        String defaultSchemaName = sqlStatementContext.getTablesContext().getSchemaName()
+                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
+        return null == openQueryTarget ? defaultSchemaName : EncryptOpenQueryUtils.findSchemaName(openQueryTarget).orElse(defaultSchemaName);
+    }
+    
+    private TableSegment findOpenQueryTarget(final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext instanceof UpdateStatementContext)) {
+            return null;
+        }
+        TableSegment table = ((UpdateStatementContext) sqlStatementContext).getSqlStatement().getTable();
+        return EncryptOpenQueryUtils.isOpenQueryFunctionTable(table) ? table : null;
+    }
+    
+    private EncryptTable resolveEncryptTable(final String originalTableName, final String columnName, final TableSegment openQueryTarget) {
+        Optional<EncryptTable> fromOriginal = rule.findEncryptTable(originalTableName).filter(t -> t.isEncryptColumn(columnName));
+        if (fromOriginal.isPresent()) {
+            return fromOriginal.get();
+        }
+        if (null == openQueryTarget) {
+            return null;
+        }
+        return EncryptOpenQueryUtils.findEncryptTable(rule, openQueryTarget).filter(t -> t.isEncryptColumn(columnName)).orElse(null);
     }
     
     private SetAssignmentSegment getSetAssignmentSegment(final SQLStatement sqlStatement) {

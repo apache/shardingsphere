@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 
@@ -59,7 +60,11 @@ public final class EncryptUpdateAssignmentTokenGenerator implements CollectionSQ
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final UpdateStatementContext sqlStatementContext) {
-        return new EncryptAssignmentTokenGenerator(rule, database, sqlStatementContext.getSqlStatement().getDatabaseType())
-                .generateSQLTokens(sqlStatementContext.getTablesContext(), sqlStatementContext.getSqlStatement().getSetAssignment(), sqlStatementContext.getSqlStatement().getTable());
+        EncryptAssignmentTokenGenerator tokenGenerator = new EncryptAssignmentTokenGenerator(rule, database, sqlStatementContext.getSqlStatement().getDatabaseType());
+        TableSegment table = sqlStatementContext.getSqlStatement().getTable();
+        if (EncryptOpenQueryUtils.isOpenQueryFunctionTable(table)) {
+            return tokenGenerator.generateSQLTokens(sqlStatementContext.getTablesContext(), sqlStatementContext.getSqlStatement().getSetAssignment(), table);
+        }
+        return tokenGenerator.generateSQLTokens(sqlStatementContext.getTablesContext(), sqlStatementContext.getSqlStatement().getSetAssignment());
     }
 }
