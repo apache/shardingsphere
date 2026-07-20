@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProtocolValue {
     
-    private static final AtomicLong ID_SEQ = new AtomicLong(1L);
+    private static final AtomicLong ID_SEQ = new AtomicLong(-1L);
     
     private static final Map<Integer, Map<Long, byte[]>> CONTENTS_BY_CONNECTION = new ConcurrentHashMap<>();
     
@@ -60,7 +60,7 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
     }
     
     private static long register(final int connectionId, final byte[] bytes) {
-        long id = ID_SEQ.getAndIncrement();
+        long id = ID_SEQ.getAndDecrement();
         getContentMap(connectionId).put(id, bytes.clone());
         return id;
     }

@@ -86,7 +86,7 @@ class FirebirdBlobBinaryProtocolValueTest {
         FirebirdPacketPayload payload = createPayload(byteBuf);
         new FirebirdBlobBinaryProtocolValue().write(payload, value);
         long blobId = byteBuf.getLong(0);
-        assertTrue(blobId > 0);
+        assertTrue(blobId < 0);
         assertArrayEquals(expected, FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId));
     }
     
@@ -116,7 +116,7 @@ class FirebirdBlobBinaryProtocolValueTest {
         FirebirdPacketPayload payload = createPayload(byteBuf);
         new FirebirdBlobBinaryProtocolValue().write(payload, blob);
         long blobId = byteBuf.getLong(0);
-        assertTrue(blobId > 0);
+        assertTrue(blobId < 0);
         assertArrayEquals(new byte[]{0, 0}, FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId));
     }
     
@@ -149,7 +149,7 @@ class FirebirdBlobBinaryProtocolValueTest {
         FirebirdPacketPayload payload = createPayload(byteBuf);
         new FirebirdBlobBinaryProtocolValue().write(payload, clob);
         long blobId = byteBuf.getLong(0);
-        assertTrue(blobId > 0);
+        assertTrue(blobId < 0);
         assertArrayEquals(new byte[]{120, 121, 122}, FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId));
     }
     

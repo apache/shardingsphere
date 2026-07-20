@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdSQLResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -129,7 +130,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
                 continue;
             }
             if (blobId < 0L) {
-                params.set(i, null);
+                params.set(i, FirebirdBlobBinaryProtocolValue.getBlobContent(connectionSession.getConnectionId(), blobId));
                 continue;
             }
             if (!FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId)) {
