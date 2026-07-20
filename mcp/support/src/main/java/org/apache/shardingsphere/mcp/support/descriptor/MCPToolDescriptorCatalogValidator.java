@@ -112,6 +112,11 @@ public final class MCPToolDescriptorCatalogValidator {
         }
         for (Entry<?, ?> entry : ((Map<?, ?>) properties).entrySet()) {
             validateInputSchemaMapField(descriptor, entry.getValue(), path + "." + entry.getKey());
+            if (entry.getValue() instanceof Map) {
+                Object description = ((Map<?, ?>) entry.getValue()).get("description");
+                MCPToolDescriptorValidationUtils.checkDescription(null == description ? "" : description.toString(),
+                        String.format("Tool `%s` inputSchema property `%s.%s` description", descriptor.getName(), path, entry.getKey()));
+            }
         }
     }
     

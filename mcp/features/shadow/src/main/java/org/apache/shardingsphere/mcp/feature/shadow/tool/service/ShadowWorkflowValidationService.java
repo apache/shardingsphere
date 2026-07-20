@@ -145,11 +145,12 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
         ShadowRuleWorkflowRequest request = (ShadowRuleWorkflowRequest) snapshot.getRequest();
         List<Map<String, Object>> rules = inspectionService.queryRules(queryFacade, request.getDatabase());
         boolean ruleExists = containsRule(rules, queryFacade, request.getDatabase(), request.getRuleName());
-        if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && ruleExists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !ruleExists) {
+        boolean dropWorkflow = WorkflowLifecycleUtils.isDropWorkflow(snapshot);
+        if (dropWorkflow == ruleExists) {
             addMismatch(validationReport, "shadow_rule", request.getRuleName(), "Shadow rule state does not match the planned DistSQL artifact.");
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Shadow rule state does not match the planned DistSQL artifact.");
         }
-        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !validateRuleShape(rules, queryFacade, request, validationReport)) {
+        if (!dropWorkflow && !validateRuleShape(rules, queryFacade, request, validationReport)) {
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Shadow rule shape differs from the planned DistSQL artifact.");
         }
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, rules, "Shadow rule state matches the planned DistSQL artifact.");
@@ -160,11 +161,12 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
         ShadowDefaultAlgorithmWorkflowRequest request = (ShadowDefaultAlgorithmWorkflowRequest) snapshot.getRequest();
         List<Map<String, Object>> defaultAlgorithm = inspectionService.queryDefaultAlgorithm(queryFacade, request.getDatabase());
         boolean exists = !defaultAlgorithm.isEmpty();
-        if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && exists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !exists) {
+        boolean dropWorkflow = WorkflowLifecycleUtils.isDropWorkflow(snapshot);
+        if (dropWorkflow == exists) {
             addMismatch(validationReport, "default_shadow_algorithm", request.getAlgorithmType(), "Default shadow algorithm state does not match the planned DistSQL artifact.");
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, defaultAlgorithm, "Default shadow algorithm state does not match the planned DistSQL artifact.");
         }
-        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !matchesDefaultAlgorithm(defaultAlgorithm, request)) {
+        if (!dropWorkflow && !matchesDefaultAlgorithm(defaultAlgorithm, request)) {
             addMismatch(validationReport, "default_shadow_algorithm", request.getAlgorithmType(), "Default shadow algorithm type or properties differ from the planned artifact.");
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, defaultAlgorithm, "Default shadow algorithm configuration differs from the planned artifact.");
         }

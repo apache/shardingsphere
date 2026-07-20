@@ -53,6 +53,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.when;
 
@@ -105,6 +106,44 @@ class ShadowWorkflowValidationServiceTest {
         assertThat(actualMismatch.get("actual"), is("2"));
     }
     
+    @Test
+    void assertValidateRuleWhenMissing() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
+        when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of());
+        Map<String, Object> actual = createService(inspectionService)
+                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
+                        mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("layer"), is("shadow_rule"));
+    }
+    
+    @Test
+    void assertValidateRuleDrop() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
+        when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of());
+        WorkflowContextSnapshot snapshot = createRuleSnapshot();
+        snapshot.getClarifiedIntent().setOperationType(WorkflowLifecycle.OPERATION_DROP);
+        Map<String, Object> actual = createService(inspectionService)
+                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
+                        mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_VALIDATED));
+    }
+    
+    @Test
+    void assertValidateRuleDropWhenRuleRemains() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
+        when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(createRuleRow(Map.of())));
+        WorkflowContextSnapshot snapshot = createRuleSnapshot();
+        snapshot.getClarifiedIntent().setOperationType(WorkflowLifecycle.OPERATION_DROP);
+        Map<String, Object> actual = createService(inspectionService)
+                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
+                        mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("mismatchedRuleShapes")
     void assertValidateRuleReportsMismatchedShape(final String name, final String fieldName, final String actualValue, final String expectedLayer) {
@@ -135,6 +174,33 @@ class ShadowWorkflowValidationServiceTest {
     }
     
     @Test
+    void assertValidateDefaultAlgorithmRejectsDifferentType() {
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setAlgorithmType("SQL_HINT");
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("type", "VALUE_MATCH")));
+        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
+                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, "create"));
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+    }
+    
+    @Test
+    void assertValidateDefaultAlgorithmRejectsDuplicateRows() {
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setAlgorithmType("SQL_HINT");
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        Map<String, Object> row = Map.of("type", "SQL_HINT", "props", Map.of());
+        when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(row, row));
+        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
+                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, "create"));
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+    }
+    
+    @Test
     void assertValidateDefaultAlgorithm() {
         ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
         request.setDatabase("logic_db");
@@ -149,6 +215,30 @@ class ShadowWorkflowValidationServiceTest {
     }
     
     @Test
+    void assertValidateDefaultAlgorithmDrop() {
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setDatabase("logic_db");
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of());
+        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
+                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, WorkflowLifecycle.OPERATION_DROP));
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_VALIDATED));
+    }
+    
+    @Test
+    void assertValidateDefaultAlgorithmDropWhenAlgorithmRemains() {
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setDatabase("logic_db");
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("type", "SQL_HINT")));
+        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
+                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, WorkflowLifecycle.OPERATION_DROP));
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+    }
+    
+    @Test
     void assertValidateCleanupFailure() {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -157,6 +247,17 @@ class ShadowWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(inspectionService)
                 .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createCleanupSnapshot());
         assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+    }
+    
+    @Test
+    void assertValidateCleanup() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of());
+        Map<String, Object> actual = createService(inspectionService)
+                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
+                        mock(MCPFeatureExecutionFacade.class), "session-1", createCleanupSnapshot());
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_VALIDATED));
     }
     
     @Test
@@ -187,6 +288,52 @@ class ShadowWorkflowValidationServiceTest {
             assertThat(actual.getFirst().get("message"), is("Generated shadow DistSQL references algorithm `SQL_HINT`, "
                     + "but it cannot be loaded or initialized by ShadowAlgorithm SPI."));
         }
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsAcceptsAvailableDefaultAlgorithm() {
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setAlgorithmType("SQL_HINT");
+        WorkflowContextSnapshot snapshot = createSnapshot(request, "create");
+        try (MockedStatic<TypedSPILoader> ignored = mockStatic(TypedSPILoader.class)) {
+            assertThat(new ShadowWorkflowValidationService().validate(snapshot,
+                    List.of(createRuleDistSQLArtifact("CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME='sql_hint')"))).size(), is(0));
+        }
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsWithoutRuleAlgorithm() {
+        WorkflowContextSnapshot snapshot = createRuleSnapshot();
+        ((ShadowRuleWorkflowRequest) snapshot.getRequest()).setAlgorithmType("");
+        assertThat(new ShadowWorkflowValidationService().validate(
+                snapshot, List.of(createRuleDistSQLArtifact("ALTER SHADOW RULE `shadow_rule`(...)"))).size(), is(0));
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsWithoutDefaultAlgorithm() {
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        WorkflowContextSnapshot snapshot = createSnapshot(request, "create");
+        assertThat(new ShadowWorkflowValidationService().validate(
+                snapshot, List.of(createRuleDistSQLArtifact("ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME='sql_hint')"))).size(), is(0));
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsIgnoresCleanupArtifact() {
+        assertThat(new ShadowWorkflowValidationService().validate(
+                createCleanupSnapshot(), List.of(createRuleDistSQLArtifact("DROP SHADOW ALGORITHM `unused_algorithm`"))).size(), is(0));
+    }
+    
+    @Test
+    void assertSynchronize() {
+        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
+        MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
+        when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(createRuleRow(
+                Map.of("operation", "INSERT", "column", "shadow", "value", "true"))));
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        createService(inspectionService).synchronize(createRuleSnapshot(), metadataQueryFacade, queryFacade, executionFacade, "session-1");
+        verifyNoInteractions(metadataQueryFacade);
+        verifyNoInteractions(executionFacade);
     }
     
     private ShadowWorkflowValidationService createService(final ShadowInspectionService inspectionService) {

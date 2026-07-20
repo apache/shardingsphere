@@ -126,7 +126,7 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
         }
         addMissingInputs(request, clarifiedIntent, snapshot);
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())) {
-            return !request.getDatabase().isEmpty() && !request.getRuleName().isEmpty();
+            return !request.getRuleName().isEmpty();
         }
         return !request.getRuleName().isEmpty() && !request.getWriteStorageUnit().isEmpty() && !request.getReadStorageUnits().isEmpty()
                 && !request.getTransactionalReadQueryStrategy().isEmpty();

@@ -137,9 +137,6 @@ public final class ShadowWorkflowPlanningService {
         if (!ensureDefaultAlgorithmType(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
-        if (!isReadyForAlgorithmArtifactPlanning(mergedRequest, result)) {
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
-        }
         boolean exists = !inspectionService.queryDefaultAlgorithm(queryFacade, mergedRequest.getDatabase()).isEmpty();
         if (!planningSupport.ensureLifecycleState("Default shadow algorithm", result.getClarifiedIntent(), exists, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
@@ -288,7 +285,7 @@ public final class ShadowWorkflowPlanningService {
     }
     
     private void addMissingInput(final Collection<String> missingInputs, final String value, final String fieldName) {
-        if (null == value || value.trim().isEmpty()) {
+        if (value.trim().isEmpty()) {
             missingInputs.add(fieldName);
         }
     }

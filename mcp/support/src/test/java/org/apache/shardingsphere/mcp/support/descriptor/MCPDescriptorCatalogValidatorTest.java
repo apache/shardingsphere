@@ -102,6 +102,16 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     @Test
+    void assertValidateRejectsMissingNestedInputDescription() {
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.",
+                createInputSchema(Map.of("intent", Map.of("type", "object", "description", "Structured intent.", "properties",
+                        Map.of("query", Map.of("type", "string"))))),
+                createOutputSchema(), createReadOnlyToolAnnotations(), Map.of()))),
+                "Tool `database_gateway_test_tool` inputSchema property `inputSchema.properties.intent.properties.query` description is required.");
+    }
+    
+    @Test
     void assertValidateRejectsUnknownRelatedResourceUri() {
         assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.", createInputSchema(),

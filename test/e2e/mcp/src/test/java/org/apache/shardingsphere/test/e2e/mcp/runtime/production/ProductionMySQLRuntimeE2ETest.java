@@ -210,6 +210,22 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("semanticPrimaryTransport")
+    void assertValidateRuntimeDatabaseWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.call(
+                    "database_gateway_validate_runtime_database", Map.of("database", LOGICAL_DATABASE_NAME));
+            assertThat(actual.get("response_mode"), is("validation"));
+            assertThat(actual.get("status"), is("ready"));
+            assertThat(actual.get("database"), is(LOGICAL_DATABASE_NAME));
+            assertFalse(((List<?>) actual.get("checks")).isEmpty());
+            assertTrue(((List<?>) actual.get("checks")).stream().map(each -> (Map<?, ?>) each)
+                    .allMatch(each -> "passed".equals(each.get("status"))));
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("semanticPrimaryTransport")
     void assertSearchMetadataPaginationWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {

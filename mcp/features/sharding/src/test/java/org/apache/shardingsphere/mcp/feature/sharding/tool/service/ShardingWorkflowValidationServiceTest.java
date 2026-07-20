@@ -37,12 +37,17 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmU
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -164,6 +169,108 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
+    void assertValidateApplyArtifactsRejectsUnavailableDefaultStrategyAlgorithm() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND, request);
+        try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
+            mockedStatic.when(() -> TypedSPILoader.checkService(ShardingAlgorithm.class, "INLINE",
+                    WorkflowAlgorithmUtils.createProperties(request.getPrimaryAlgorithmProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
+            List<Map<String, Object>> actual = new ShardingWorkflowValidationService().validate(
+                    snapshot, List.of(createRuleDistSQLArtifact("CREATE DEFAULT SHARDING TABLE STRATEGY(TYPE='standard')")));
+            assertThat(actual.size(), is(1));
+            assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+        }
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsRejectsUnavailableInlineKeyGenerator() {
+        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
+        request.setKeyGeneratorType("SNOWFLAKE");
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND, request);
+        try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
+            mockedStatic.when(() -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, "SNOWFLAKE",
+                    WorkflowAlgorithmUtils.createProperties(request.getKeyGeneratorProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
+            List<Map<String, Object>> actual = new ShardingWorkflowValidationService().validate(
+                    snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING KEY GENERATE STRATEGY `order_id_strategy`(...)")));
+            assertThat(actual.size(), is(1));
+            assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+        }
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsWithoutShardingRequest() {
+        assertThat(new ShardingWorkflowValidationService().validate(
+                new WorkflowContextSnapshot(), List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)"))).size(), is(0));
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsIgnoresDropArtifact() {
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop",
+                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, createTableRuleRequest());
+        assertThat(new ShardingWorkflowValidationService().validate(
+                snapshot, List.of(createRuleDistSQLArtifact("DROP SHARDING TABLE RULE `t_order`"))).size(), is(0));
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsAcceptsAvailableAlgorithms() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setStorageUnits("ds_0");
+        request.setKeyGenerateColumn("order_id");
+        request.setKeyGeneratorType("SNOWFLAKE");
+        request.getAuditorNames().add("DML_SHARDING_CONDITIONS");
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
+        try (MockedStatic<TypedSPILoader> ignored = mockStatic(TypedSPILoader.class)) {
+            assertThat(new ShardingWorkflowValidationService().validate(
+                    snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)"))).size(), is(0));
+        }
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsAcceptsNamedKeyGenerator() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setKeyGenerateColumn("order_id");
+        request.setKeyGeneratorName("snowflake_generator");
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
+        try (MockedStatic<TypedSPILoader> ignored = mockStatic(TypedSPILoader.class)) {
+            assertThat(new ShardingWorkflowValidationService().validate(
+                    snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)"))).size(), is(0));
+        }
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsAcceptsTableReferenceRule() {
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND, createReferenceRuleRequest());
+        assertThat(new ShardingWorkflowValidationService().validate(snapshot,
+                List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE REFERENCE RULE `ref_rule`(...)"))).size(), is(0));
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsIgnoresEmptyAlgorithmTypes() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setStrategyType("");
+        request.setAlgorithmType("");
+        request.setKeyGenerateColumn("order_id");
+        request.getAuditorNames().add("");
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
+        assertThat(new ShardingWorkflowValidationService().validate(
+                snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)"))).size(), is(0));
+    }
+    
+    @Test
+    void assertValidateApplyArtifactsIgnoresEmptyKeyGeneratorType() {
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND, new ShardingWorkflowRequest());
+        assertThat(new ShardingWorkflowValidationService().validate(
+                snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING KEY GENERATOR `generator`(TYPE(NAME=''))"))).size(), is(0));
+    }
+    
+    @Test
     void assertValidateTableRuleMismatch() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
@@ -227,6 +334,230 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
+    void assertValidateTableRuleWithInlineKeyGeneratorAndAuditor() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setKeyGenerateColumn("order_id");
+        request.setKeyGeneratorType("SNOWFLAKE");
+        request.putKeyGeneratorProperties(Map.of("worker-id", "1"));
+        request.getAuditorNames().add("DML_SHARDING_CONDITIONS");
+        request.setAllowHintDisable("true");
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
+                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        Map<String, Object> row = new LinkedHashMap<>(createTableRuleRowWithKeyGenerator());
+        row.put("key_generator_type", "SNOWFLAKE");
+        row.put("key_generator_props", Map.of("worker-id", "1"));
+        row.put("auditor_types", "DML_SHARDING_CONDITIONS");
+        row.put("allow_hint_disable", "true");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(row));
+        Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
+                createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateTableRuleDrop() {
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of());
+        assertThat(validateState("drop", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                createTableRuleRequest(), inspectionService, createQueryFacade()).get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateTableRuleDropWhenRuleRemains() {
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(createTableRuleRow(
+                "ds_0.t_order_0,ds_1.t_order_1", Map.of("algorithm-expression", "t_order_${order_id % 2}"), "")));
+        assertThat(validateState("drop", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                createTableRuleRequest(), inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateAutomaticTableRule() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDataNodes("");
+        request.setStorageUnits("ds_0,ds_1");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(Map.of(
+                "table", "t_order", "actual_data_sources", "ds_0,ds_1", "table_strategy_type", "STANDARD",
+                "table_sharding_column", "order_id", "table_sharding_algorithm_type", "INLINE",
+                "table_sharding_algorithm_props", Map.of("algorithm-expression", "t_order_${order_id % 2}"), "key_generate_column", "")));
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "ds_0", "ds_0")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "ds_1", "ds_1")).thenReturn(true);
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, queryFacade).get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateTableRuleWithoutStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setStrategyType("none");
+        request.setAlgorithmType("");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(Map.of(
+                "table", "t_order", "actual_data_nodes", "ds_0.t_order_0,ds_1.t_order_1", "key_generate_column", "")));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(Map.of(
+                "table", "t_order", "actual_data_nodes", "ds_0.t_order_0,ds_1.t_order_1", "table_strategy_type", "HINT",
+                "table_sharding_algorithm_type", "INLINE", "table_sharding_algorithm_props", request.getPrimaryAlgorithmProperties(), "key_generate_column", "")));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentName() {
+        Map<String, Object> row = new LinkedHashMap<>(createTableRuleRow(
+                "ds_0.t_order_0,ds_1.t_order_1", Map.of("algorithm-expression", "t_order_${order_id % 2}"), ""));
+        row.put("table", "t_other");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(row));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                createTableRuleRequest(), inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentAlgorithmType() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        Map<String, Object> row = new LinkedHashMap<>(createTableRuleRow(
+                "ds_0.t_order_0,ds_1.t_order_1", request.getPrimaryAlgorithmProperties(), ""));
+        row.put("table_sharding_algorithm_type", "MOD");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(row));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentAlgorithmProperties() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(createTableRuleRow(
+                "ds_0.t_order_0,ds_1.t_order_1", Map.of("algorithm-expression", "t_order_${user_id % 2}"), "")));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateHintTableRule() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setStrategyType("hint");
+        request.setAlgorithmType("HINT_INLINE");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(Map.of(
+                "table", "t_order", "actual_data_nodes", "ds_0.t_order_0,ds_1.t_order_1", "table_strategy_type", "HINT",
+                "table_sharding_algorithm_type", "HINT_INLINE", "table_sharding_algorithm_props", request.getPrimaryAlgorithmProperties(), "key_generate_column", "")));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentKeyGenerateColumn() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setKeyGenerateColumn("order_id");
+        request.setKeyGeneratorType("SNOWFLAKE");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(createTableRuleRow(
+                "ds_0.t_order_0,ds_1.t_order_1", request.getPrimaryAlgorithmProperties(), "other_id")));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentInlineKeyGenerator() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setKeyGenerateColumn("order_id");
+        request.setKeyGeneratorType("SNOWFLAKE");
+        request.putKeyGeneratorProperties(Map.of("worker-id", "1"));
+        Map<String, Object> row = new LinkedHashMap<>(createTableRuleRowWithKeyGenerator());
+        row.put("key_generator_type", "SNOWFLAKE");
+        row.put("key_generator_props", Map.of("worker-id", "2"));
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(row));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentInlineKeyGeneratorType() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setKeyGenerateColumn("order_id");
+        request.setKeyGeneratorType("SNOWFLAKE");
+        Map<String, Object> row = new LinkedHashMap<>(createTableRuleRowWithKeyGenerator());
+        row.put("key_generator_type", "UUID");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(row));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableRuleWithDefaultAuditorOption() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.getAuditorNames().add("DML_SHARDING_CONDITIONS");
+        Map<String, Object> row = new LinkedHashMap<>(createTableRuleRow(
+                "ds_0.t_order_0,ds_1.t_order_1", request.getPrimaryAlgorithmProperties(), ""));
+        row.put("auditor_types", "DML_SHARDING_CONDITIONS, , ");
+        row.put("allow_hint_disable", "false");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(row));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentAuditors() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.getAuditorNames().addAll(List.of("DML_SHARDING_CONDITIONS", "DML_SHARDING_CONDITIONS_2"));
+        Map<String, Object> row = new LinkedHashMap<>(createTableRuleRow(
+                "ds_0.t_order_0,ds_1.t_order_1", request.getPrimaryAlgorithmProperties(), ""));
+        row.put("auditor_types", "DML_SHARDING_CONDITIONS");
+        row.put("allow_hint_disable", "false");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(row));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentAllowHintDisable() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.getAuditorNames().add("DML_SHARDING_CONDITIONS");
+        request.setAllowHintDisable("true");
+        Map<String, Object> row = new LinkedHashMap<>(createTableRuleRow(
+                "ds_0.t_order_0,ds_1.t_order_1", request.getPrimaryAlgorithmProperties(), ""));
+        row.put("auditor_types", "DML_SHARDING_CONDITIONS");
+        row.put("allow_hint_disable", "false");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(row));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableRuleRejectsDifferentAuditorName() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.getAuditorNames().add("DML_SHARDING_CONDITIONS");
+        Map<String, Object> row = new LinkedHashMap<>(createTableRuleRow(
+                "ds_0.t_order_0,ds_1.t_order_1", request.getPrimaryAlgorithmProperties(), ""));
+        row.put("auditor_types", "OTHER_AUDITOR");
+        row.put("allow_hint_disable", "false");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableRule(any(), any(), any())).thenReturn(List.of(row));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
     void assertValidateDefaultStrategyDrop() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         ShardingWorkflowRequest request = createTableRuleRequest();
@@ -242,16 +573,42 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateCleanupHappyPath() {
+    void assertValidateDefaultStrategyDropWhenStrategyRemains() {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("DATABASE");
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop",
+                ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND, request);
+        workflowSessionContext.save(snapshot);
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of("name", "DATABASE", "type", "STANDARD")));
+        Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
+                createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateCleanupWhenComponentRemains() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop",
                 ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND, createCleanupRequest());
         workflowSessionContext.save(snapshot);
         ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
-        when(inspectionService.queryAlgorithms(any(), any())).thenReturn(List.of());
+        when(inspectionService.queryAlgorithms(any(), any())).thenReturn(List.of(Map.of("name", "unused_algorithm")));
         Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
                 createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        assertThat(actual.get("status"), is("failed"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("cleanupComponentCases")
+    void assertValidateCleanupComponentTypes(final String name, final String componentType, final String componentName) {
+        ShardingWorkflowRequest request = createCleanupRequest();
+        request.setComponentType(componentType);
+        request.setComponentName(componentName);
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        assertThat(validateState("drop", ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("validated"));
     }
     
     @Test
@@ -281,6 +638,24 @@ class ShardingWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
                 createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableReferenceRuleRejectsDifferentName() {
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableReferenceRule(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "other_ref", "sharding_table_reference", "t_order,t_order_item")));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND,
+                createReferenceRuleRequest(), inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateTableReferenceRuleRejectsMissingTable() {
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryTableReferenceRule(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "ref_rule", "sharding_table_reference", "t_order")));
+        assertThat(validateState("create", ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND,
+                createReferenceRuleRequest(), inspectionService, createQueryFacade()).get("status"), is("failed"));
     }
     
     @Test
@@ -315,6 +690,99 @@ class ShardingWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
                 createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateDefaultStrategyRejectsDuplicateRows() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("DATABASE");
+        Map<String, Object> row = Map.of(
+                "name", "DATABASE", "type", "STANDARD", "sharding_column", "order_id", "sharding_algorithm_type", "INLINE",
+                "sharding_algorithm_props", request.getPrimaryAlgorithmProperties());
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(row, row));
+        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateDefaultStrategyRejectsIncompleteState() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("DATABASE");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of("name", "DATABASE", "type", "")));
+        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateDefaultStrategyRejectsDifferentName() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("DATABASE");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of("name", "TABLE", "type", "STANDARD")));
+        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateDefaultStrategyRejectsDifferentType() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("DATABASE");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of("name", "DATABASE", "type", "HINT")));
+        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateHintDefaultStrategy() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("DATABASE");
+        request.setStrategyType("hint");
+        request.setAlgorithmType("HINT_INLINE");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of(
+                "name", "DATABASE", "type", "HINT", "sharding_algorithm_type", "HINT_INLINE",
+                "sharding_algorithm_props", request.getPrimaryAlgorithmProperties())));
+        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateDefaultStrategyRejectsDifferentAlgorithmType() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("DATABASE");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of(
+                "name", "DATABASE", "type", "STANDARD", "sharding_column", "order_id", "sharding_algorithm_type", "MOD",
+                "sharding_algorithm_props", request.getPrimaryAlgorithmProperties())));
+        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateDefaultStrategyWithoutSharding() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("DATABASE");
+        request.setStrategyType("none");
+        request.setAlgorithmType("");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of("name", "DATABASE", "type", "NONE")));
+        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateDefaultStrategyRejectsDifferentColumn() {
+        ShardingWorkflowRequest request = createTableRuleRequest();
+        request.setDefaultStrategyType("DATABASE");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of(
+                "name", "DATABASE", "type", "STANDARD", "sharding_column", "user_id", "sharding_algorithm_type", "INLINE",
+                "sharding_algorithm_props", request.getPrimaryAlgorithmProperties())));
+        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
     }
     
     @Test
@@ -358,6 +826,34 @@ class ShardingWorkflowValidationServiceTest {
     }
     
     @Test
+    void assertValidateKeyGeneratorRejectsDifferentName() {
+        ShardingWorkflowRequest request = createKeyGeneratorRequest();
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerator(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "other_generator", "type", "SNOWFLAKE", "props", Map.of("worker-id", "1"))));
+        assertThat(validateState("create", ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateKeyGeneratorRejectsMissingState() {
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerator(any(), any(), any())).thenReturn(List.of());
+        assertThat(validateState("create", ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND,
+                createKeyGeneratorRequest(), inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateKeyGeneratorRejectsDifferentType() {
+        ShardingWorkflowRequest request = createKeyGeneratorRequest();
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerator(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "snowflake_generator", "type", "UUID", "props", Map.of("worker-id", "1"))));
+        assertThat(validateState("create", ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
     void assertValidateKeyGenerator() {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setDatabase("logic_db");
@@ -394,6 +890,86 @@ class ShardingWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class),
                 createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateKeyGenerateStrategyRejectsMissingState() {
+        ShardingWorkflowRequest request = createColumnKeyGenerateStrategyRequest();
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerateStrategy(any(), any(), any())).thenReturn(List.of());
+        assertThat(validateState("create", ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateKeyGenerateStrategyRejectsDifferentName() {
+        ShardingWorkflowRequest request = createColumnKeyGenerateStrategyRequest();
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerateStrategy(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "other_strategy", "type", "COLUMN", "table", "t_order", "column", "order_id", "generator_name", "snowflake_generator")));
+        assertThat(validateState("create", ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateKeyGenerateStrategyRejectsDifferentType() {
+        ShardingWorkflowRequest request = createColumnKeyGenerateStrategyRequest();
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerateStrategy(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "order_id_strategy", "type", "SEQUENCE", "sequence", "order_seq", "generator_name", "snowflake_generator")));
+        assertThat(validateState("create", ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateKeyGenerateStrategyRejectsDifferentTable() {
+        ShardingWorkflowRequest request = createColumnKeyGenerateStrategyRequest();
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerateStrategy(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "order_id_strategy", "type", "COLUMN", "table", "t_other", "column", "order_id", "generator_name", "snowflake_generator")));
+        assertThat(validateState("create", ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateInlineKeyGenerateStrategy() {
+        ShardingWorkflowRequest request = createColumnKeyGenerateStrategyRequest();
+        request.setKeyGeneratorName("");
+        request.setKeyGeneratorType("SNOWFLAKE");
+        request.putKeyGeneratorProperties(Map.of("worker-id", "1"));
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerateStrategy(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "order_id_strategy", "type", "COLUMN", "table", "t_order", "column", "order_id",
+                "generator_type", "SNOWFLAKE", "generator_props", Map.of("worker-id", "1"))));
+        assertThat(validateState("create", ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertValidateInlineKeyGenerateStrategyRejectsDifferentProperties() {
+        ShardingWorkflowRequest request = createColumnKeyGenerateStrategyRequest();
+        request.setKeyGeneratorName("");
+        request.setKeyGeneratorType("SNOWFLAKE");
+        request.putKeyGeneratorProperties(Map.of("worker-id", "1"));
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerateStrategy(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "order_id_strategy", "type", "COLUMN", "table", "t_order", "column", "order_id",
+                "generator_type", "SNOWFLAKE", "generator_props", Map.of("worker-id", "2"))));
+        assertThat(validateState("create", ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateInlineKeyGenerateStrategyRejectsDifferentType() {
+        ShardingWorkflowRequest request = createColumnKeyGenerateStrategyRequest();
+        request.setKeyGeneratorName("");
+        request.setKeyGeneratorType("SNOWFLAKE");
+        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
+        when(inspectionService.queryKeyGenerateStrategy(any(), any(), any())).thenReturn(List.of(Map.of(
+                "name", "order_id_strategy", "type", "COLUMN", "table", "t_order", "column", "order_id",
+                "generator_type", "UUID", "generator_props", Map.of())));
+        assertThat(validateState("create", ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND,
+                request, inspectionService, createQueryFacade()).get("status"), is("failed"));
     }
     
     @Test
@@ -465,6 +1041,15 @@ class ShardingWorkflowValidationServiceTest {
         }
     }
     
+    private Map<String, Object> validateState(final String operationType, final WorkflowKind workflowKind, final ShardingWorkflowRequest request,
+                                              final ShardingInspectionService inspectionService, final MCPFeatureQueryFacade queryFacade) {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", operationType, workflowKind, request);
+        workflowSessionContext.save(snapshot);
+        return createService(inspectionService).validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), queryFacade,
+                mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+    }
+    
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
@@ -526,6 +1111,25 @@ class ShardingWorkflowValidationServiceTest {
         return result;
     }
     
+    private ShardingWorkflowRequest createKeyGeneratorRequest() {
+        ShardingWorkflowRequest result = new ShardingWorkflowRequest();
+        result.setDatabase("logic_db");
+        result.setKeyGeneratorName("snowflake_generator");
+        result.setKeyGeneratorType("SNOWFLAKE");
+        result.putKeyGeneratorProperties(Map.of("worker-id", "1"));
+        return result;
+    }
+    
+    private ShardingWorkflowRequest createColumnKeyGenerateStrategyRequest() {
+        ShardingWorkflowRequest result = new ShardingWorkflowRequest();
+        result.setDatabase("logic_db");
+        result.setKeyGenerateStrategyName("order_id_strategy");
+        result.setTable("t_order");
+        result.setColumn("order_id");
+        result.setKeyGeneratorName("snowflake_generator");
+        return result;
+    }
+    
     private Map<String, Object> createTableRuleRow(final String dataNodes, final Map<String, String> algorithmProperties, final String keyGenerateColumn) {
         return Map.of(
                 "table", "t_order",
@@ -547,6 +1151,13 @@ class ShardingWorkflowValidationServiceTest {
         result.setComponentType("algorithm");
         result.setComponentName("unused_algorithm");
         return result;
+    }
+    
+    private static Stream<Arguments> cleanupComponentCases() {
+        return Stream.of(
+                Arguments.of("algorithm", "algorithm", "unused_algorithm"),
+                Arguments.of("key generator", "key-generator", "unused_generator"),
+                Arguments.of("auditor", "auditor", "unused_auditor"));
     }
     
     private ExecutableWorkflowArtifact createRuleDistSQLArtifact(final String sql) {

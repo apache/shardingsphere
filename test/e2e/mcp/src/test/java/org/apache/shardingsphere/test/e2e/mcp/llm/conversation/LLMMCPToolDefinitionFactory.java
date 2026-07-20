@@ -59,6 +59,20 @@ final class LLMMCPToolDefinitionFactory {
         return result;
     }
     
+    List<Map<String, Object>> createReadOnlyFromRemote(final List<Map<String, Object>> advertisedTools, final Collection<String> bridgeToolNames) {
+        List<String> readOnlyToolNames = new LinkedList<>();
+        for (Map<String, Object> each : advertisedTools) {
+            Object annotations = each.get("annotations");
+            if (annotations instanceof Map && Boolean.TRUE.equals(((Map<?, ?>) annotations).get("readOnlyHint"))) {
+                readOnlyToolNames.add(Objects.toString(each.get("name"), "").trim());
+            }
+        }
+        if (readOnlyToolNames.isEmpty()) {
+            throw new IllegalStateException("MCP runtime did not advertise any read-only tools.");
+        }
+        return createFromRemote(advertisedTools, readOnlyToolNames, bridgeToolNames);
+    }
+    
     private Map<String, Object> createRemoteToolDefinition(final Map<String, Object> advertisedTool, final String toolName) {
         Object inputSchema = advertisedTool.get("inputSchema");
         if (!(inputSchema instanceof Map)) {

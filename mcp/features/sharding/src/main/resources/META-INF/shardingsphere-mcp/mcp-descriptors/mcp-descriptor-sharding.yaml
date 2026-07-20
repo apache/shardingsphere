@@ -897,7 +897,7 @@ tools:
       title: Plan Sharding Table Rule
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime: &planningRuntime
       workflowRole: plan
@@ -939,7 +939,7 @@ tools:
       title: Plan Sharding Table Reference Rule
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime: *planningRuntime
     meta:
@@ -980,7 +980,7 @@ tools:
       title: Plan Sharding Default Strategy
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime: *planningRuntime
     meta:
@@ -1019,7 +1019,7 @@ tools:
       title: Plan Sharding Key Generator
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime: *planningRuntime
     meta:
@@ -1062,7 +1062,7 @@ tools:
       title: Plan Sharding Key Generate Strategy
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime: *planningRuntime
     meta:
@@ -1101,7 +1101,7 @@ tools:
       title: Plan Sharding Rule Component Cleanup
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime: *planningRuntime
     meta:

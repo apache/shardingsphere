@@ -66,7 +66,8 @@ class AutonomousMCPBuilderEvaluationRunnerTest {
         assertThat(actual.evidence().interactionTrace().size(), is(2));
         assertThat(actual.evidence().interactionTrace().get(1).getActionOrigin(), is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
         assertThat(actual.evidence().toolDefinitions().stream().map(each -> LLMMCPJsonValues.castToMap(each.get("function")).get("name")).toList(),
-                is(List.of("mcp_read_resource", "database_gateway_search_metadata", "database_gateway_execute_query")));
+                is(List.of("mcp_read_resource", "database_gateway_search_metadata", "database_gateway_validate_runtime_database",
+                        "database_gateway_execute_query", "database_gateway_execute_explain_query")));
         verify(interactionClient).open();
         verify(interactionClient).close();
     }
@@ -115,6 +116,7 @@ class AutonomousMCPBuilderEvaluationRunnerTest {
         return ADVERTISED_TOOL_NAMES.stream().map(each -> Map.of(
                 "name", each,
                 "description", "Remote tool definition.",
-                "inputSchema", Map.of("type", "object", "description", "remote-marker", "properties", Map.of()))).toList();
+                "inputSchema", Map.of("type", "object", "description", "remote-marker", "properties", Map.of()),
+                "annotations", Map.of("readOnlyHint", !"database_gateway_execute_update".equals(each)))).toList();
     }
 }

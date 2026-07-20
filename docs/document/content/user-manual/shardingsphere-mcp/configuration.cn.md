@@ -124,7 +124,10 @@ runtimeDatabases:
 
 ## 连接目标选择
 
-`runtimeDatabases` 可以配置任意可连接的 JDBC URL。用户能看到的数据库对象和可执行的治理任务取决于连接目标。
+只有当前发行包同时包含匹配的 ShardingSphere 数据库类型连接器和 JDBC 驱动时，`runtimeDatabases` 才能使用对应的可连接 JDBC URL。
+默认发行包包含 MySQL、PostgreSQL、Oracle、SQL Server 和 openGauss 数据库类型连接器，以及 MySQL、PostgreSQL 和 openGauss JDBC 驱动。
+Oracle、SQL Server 或其他未随包提供 JDBC 驱动的目标，需要把匹配的驱动 jar 放入 `plugins/`；只添加驱动并不能支持一个尚无数据库类型连接器的目标。
+用户能看到的数据库对象和可执行的治理任务取决于连接目标。
 
 ### 连接 ShardingSphere-Proxy 逻辑库
 

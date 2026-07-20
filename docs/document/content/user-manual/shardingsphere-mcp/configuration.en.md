@@ -124,7 +124,10 @@ Notes:
 
 ## Choose a Connection Target
 
-`runtimeDatabases` can use any reachable JDBC URL. The database objects users can see and the governance tasks they can perform depend on the connection target.
+`runtimeDatabases` can use a reachable JDBC URL only when the running distribution contains both the matching ShardingSphere database-type connector and JDBC driver.
+The default distribution includes MySQL, PostgreSQL, Oracle, SQL Server, and openGauss database-type connectors, plus MySQL, PostgreSQL, and openGauss JDBC drivers.
+For Oracle, SQL Server, or another target whose JDBC driver is not packaged, add the matching driver jar under `plugins/`; a driver alone does not add an unsupported database type.
+The database objects users can see and the governance tasks they can perform depend on the connection target.
 
 ### Connecting to a ShardingSphere-Proxy logical database
 

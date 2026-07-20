@@ -78,6 +78,23 @@ class LLMMCPToolDefinitionFactoryTest {
     }
     
     @Test
+    void assertReadOnlyRemoteToolDefinitionsUseAdvertisedAnnotations() {
+        List<Map<String, Object>> advertisedTools = List.of(
+                createAdvertisedTool("read_only_tool", true),
+                createAdvertisedTool("write_tool", false));
+        List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().createReadOnlyFromRemote(
+                advertisedTools, List.of(MCPInteractionActionNames.READ_RESOURCE));
+        assertThat(getToolNames(actual), is(List.of(MCPInteractionActionNames.READ_RESOURCE, "read_only_tool")));
+    }
+    
+    @Test
+    void assertCreateReadOnlyFromRemoteWithoutReadOnlyTool() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> new LLMMCPToolDefinitionFactory().createReadOnlyFromRemote(List.of(createAdvertisedTool("write_tool", false)), List.of()));
+        assertThat(actual.getMessage(), is("MCP runtime did not advertise any read-only tools."));
+    }
+    
+    @Test
     void assertCreateFromRemoteWithMissingRequiredTool() {
         IllegalStateException actual = assertThrows(IllegalStateException.class,
                 () -> new LLMMCPToolDefinitionFactory().createFromRemote(List.of(), List.of("read_only_tool"), List.of()));
@@ -95,6 +112,14 @@ class LLMMCPToolDefinitionFactoryTest {
     void assertCreateWithUnsupportedToolDescriptor() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPToolDefinitionFactory().create(List.of("unsupported_tool")));
         assertThat(actual.getMessage(), is("Unsupported tool descriptor: unsupported_tool"));
+    }
+    
+    private Map<String, Object> createAdvertisedTool(final String toolName, final boolean readOnly) {
+        return Map.of(
+                "name", toolName,
+                "description", "Remote tool definition.",
+                "inputSchema", Map.of("type", "object", "properties", Map.of()),
+                "annotations", Map.of("readOnlyHint", readOnly));
     }
     
     private void assertOfficialToolDefinition(final Map<?, ?> toolDefinition, final MCPToolDescriptor toolDescriptor) {

@@ -24,6 +24,8 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFacto
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Fixture;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeSupport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.MCPBuilderEvaluationCatalog;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.MCPBuilderEvaluationCatalog.EvaluationCase;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.MCPBuilderEvaluationCatalog.EvaluationSuite;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.AfterAll;
@@ -34,6 +36,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Tag("llm-e2e")
@@ -42,6 +45,8 @@ import java.util.Map;
 class MCPBuilderEvaluationE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String DATABASE_NAME = "logic_db";
+    
+    private static final String CASE_GROUP_PROPERTY = "mcp.e2e.llm.builder-case-group";
     
     private static LLMRuntimeSupport.ModelRuntime llmRuntime;
     
@@ -79,7 +84,25 @@ class MCPBuilderEvaluationE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         prepareRuntimeFixture();
         LLMRuntimeSupport.ModelRuntime modelRuntime = getRequiredLLMRuntime();
         new MCPBuilderEvaluationSuiteRunner(modelRuntime.getConfiguration(), modelRuntime.getEvidence())
-                .assertFullScore(new MCPBuilderEvaluationCatalog().load(), this::createInteractionClient);
+                .assertFullScore(selectEvaluationCases(new MCPBuilderEvaluationCatalog().load()), this::createInteractionClient);
+    }
+    
+    private EvaluationSuite selectEvaluationCases(final EvaluationSuite evaluationSuite) {
+        String caseGroup = System.getProperty(CASE_GROUP_PROPERTY, "all");
+        if ("all".equals(caseGroup)) {
+            return evaluationSuite;
+        }
+        List<EvaluationCase> cases = evaluationSuite.cases();
+        int midpoint = cases.size() / 2;
+        List<EvaluationCase> selectedCases;
+        if ("first".equals(caseGroup)) {
+            selectedCases = cases.subList(0, midpoint);
+        } else if ("second".equals(caseGroup)) {
+            selectedCases = cases.subList(midpoint, cases.size());
+        } else {
+            throw new IllegalArgumentException("Unsupported MCP Builder evaluation case group: " + caseGroup);
+        }
+        return new EvaluationSuite(evaluationSuite.standardReference(), evaluationSuite.operationMode(), evaluationSuite.requiresExternalModel(), selectedCases);
     }
     
     @Override

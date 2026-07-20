@@ -58,6 +58,8 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String FULL_TRANSPORT_MATRIX_PROPERTY = "mcp.e2e.llm.full-transport-matrix";
     
+    private static final String SUITE_PART_PROPERTY = "mcp.e2e.llm.usability-suite";
+    
     private static LLMRuntimeSupport.ModelRuntime llmRuntime;
     
     private final LLMRuntimeFixtureFactory runtimeFixtureFactory = new LLMRuntimeFixtureFactory();
@@ -119,14 +121,22 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration(), getRequiredLLMRuntimeEvidence());
         conversationExecutor.assertModelReady();
         prepareRuntimeFixture();
-        suiteRunner.assertSuite(suiteId + "/core",
-                this::createCoreScenarios,
-                each -> conversationExecutor.runConversation(suiteId + "/core/" + each.getScenarioId(), each, createInteractionClient()),
-                conversationExecutor.getConfiguration());
-        suiteRunner.assertSuite(suiteId + "/extended",
-                this::createExtendedScenarios,
-                each -> conversationExecutor.runConversation(suiteId + "/extended/" + each.getScenarioId(), each, createInteractionClient()),
-                conversationExecutor.getConfiguration());
+        String suitePart = System.getProperty(SUITE_PART_PROPERTY, "all");
+        if ("all".equals(suitePart) || "core".equals(suitePart)) {
+            suiteRunner.assertSuite(suiteId + "/core",
+                    this::createCoreScenarios,
+                    each -> conversationExecutor.runConversation(suiteId + "/core/" + each.getScenarioId(), each, createInteractionClient()),
+                    conversationExecutor.getConfiguration());
+        }
+        if ("all".equals(suitePart) || "extended".equals(suitePart)) {
+            suiteRunner.assertSuite(suiteId + "/extended",
+                    this::createExtendedScenarios,
+                    each -> conversationExecutor.runConversation(suiteId + "/extended/" + each.getScenarioId(), each, createInteractionClient()),
+                    conversationExecutor.getConfiguration());
+        }
+        if (!List.of("all", "core", "extended").contains(suitePart)) {
+            throw new IllegalArgumentException("Unsupported LLM usability suite part: " + suitePart);
+        }
     }
     
     private List<LLMUsabilityScenario> createCoreScenarios() {
