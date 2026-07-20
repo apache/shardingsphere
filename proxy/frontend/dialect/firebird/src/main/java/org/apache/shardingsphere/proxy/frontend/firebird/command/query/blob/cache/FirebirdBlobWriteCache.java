@@ -92,7 +92,7 @@ public final class FirebirdBlobWriteCache {
      */
     public OptionalInt appendSegment(final int connectionId, final int blobHandle, final byte[] segment) {
         FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
-        if (null == write) {
+        if (null == write || write.isClosed()) {
             return OptionalInt.empty();
         }
         write.append(segment);
@@ -143,6 +143,18 @@ public final class FirebirdBlobWriteCache {
             return Optional.empty();
         }
         return Optional.of(write.getBytes());
+    }
+    
+    /**
+     * Get buffered blob size by handle.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     * @return optional buffered size
+     */
+    public OptionalInt getBlobSizeByHandle(final int connectionId, final int blobHandle) {
+        FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
+        return null == write ? OptionalInt.empty() : OptionalInt.of(write.getSize());
     }
     
     /**

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.gene
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.OptionalLong;
 
 /**
  * Blob info command executor for Firebird.
@@ -55,11 +54,6 @@ public final class FirebirdBlobInfoExecutor implements CommandExecutor {
         if (readSegment.isPresent()) {
             return readSegment.get().length;
         }
-        OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionId, blobHandle);
-        if (!blobId.isPresent()) {
-            return 0;
-        }
-        Optional<byte[]> uploadData = FirebirdBlobWriteCache.getInstance().getBlobData(connectionId, blobId.getAsLong());
-        return uploadData.map(data -> data.length).orElse(0);
+        return FirebirdBlobWriteCache.getInstance().getBlobSizeByHandle(connectionId, blobHandle).orElse(0);
     }
 }
