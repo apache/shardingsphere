@@ -178,6 +178,30 @@ rules:
           likeQuery:
             name: like_query_remark
             encryptorName: rewrite_like_query_fixture
+        SecureLabel:
+          cipher:
+            name: cipher name
+            encryptorName: rewrite_normal_fixture
+        OrderLabel:
+          cipher:
+            name: order
+            encryptorName: rewrite_normal_fixture
+        AsteriskLabel:
+          cipher:
+            name: foo*bar
+            encryptorName: rewrite_normal_fixture
+        SlashLabel:
+          cipher:
+            name: foo/bar
+            encryptorName: rewrite_normal_fixture
+        BackslashLabel:
+          cipher:
+            name: "foo\\bar"
+            encryptorName: rewrite_normal_fixture
+        LeftBracketLabel:
+          cipher:
+            name: foo[bar
+            encryptorName: rewrite_normal_fixture
     StateRegion:
       columns:
         CountryRegionName:

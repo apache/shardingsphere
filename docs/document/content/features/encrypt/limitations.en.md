@@ -10,3 +10,11 @@ weight = 2
 - Calculation operations are not supported for encrypted fields, such as `AVG`, `SUM`, and computation expressions.
 - Not support simultaneous execution of multiple SQL statements separated by `;`.
 - When projection subquery contains encrypt column, you must use alias.
+
+## SQL Server OPENQUERY encryption
+
+The following are not supported for encrypt rewrite with the `OPENQUERY` function:
+
+- Predicates after `WHERE` that reference encrypted columns.
+- Physical column names that contain `]` or `[]` in the middle.
+- `JOIN`, `CROSS APPLY`, `OUTER APPLY`, `UNION`, `UNION ALL`, `EXCEPT`, and `INTERSECT` in the pass-through query.

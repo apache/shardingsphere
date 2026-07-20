@@ -75,6 +75,16 @@ class EncryptOpenQueryUtilsTest {
     }
     
     @Test
+    void assertFindEncryptTableWithDoubleQuotedMultipartTableName() {
+        EncryptRule rule = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(rule.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
+        Optional<EncryptTable> actual = EncryptOpenQueryUtils.findEncryptTable(rule, createOpenQueryTableSegment("SELECT foo_col FROM \"foo_schema\".\"foo_tbl\""));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(encryptTable));
+    }
+    
+    @Test
     void assertFindEncryptTableWithThreePartUnrelatedTableReturnsEmpty() {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.findEncryptTable("Employee")).thenReturn(Optional.empty());
@@ -87,6 +97,17 @@ class EncryptOpenQueryUtilsTest {
         when(rule.findEncryptTable("Employee")).thenReturn(Optional.empty());
         assertFalse(EncryptOpenQueryUtils.findEncryptTable(rule,
                 createOpenQueryTableSegment("SELECT col FROM dbo.Employee JOIN dbo.Department ON Employee.DepartmentID = Department.DepartmentID")).isPresent());
+    }
+    
+    @Test
+    void assertFindEncryptTableWithCommaTableSourcesStillDiscoversEncryptTable() {
+        EncryptRule rule = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(rule.findEncryptTable("Department")).thenReturn(Optional.of(encryptTable));
+        Optional<EncryptTable> actual = EncryptOpenQueryUtils.findEncryptTable(rule,
+                createOpenQueryTableSegment("SELECT GroupName FROM dbo.Department, dbo.Other"));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(encryptTable));
     }
     
     private FunctionTableSegment createOpenQueryTableSegment(final String openQuerySQL) {

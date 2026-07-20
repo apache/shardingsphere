@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -44,6 +44,14 @@ final class EncryptOpenQueryPassThroughSQL {
     private static final String UNSUPPORTED_MULTIPART_TABLE = "OPENQUERY with three-part table name";
     
     private static final String UNSUPPORTED_JOIN = "OPENQUERY with JOIN statement";
+    
+    private static final String UNSUPPORTED_COMMA_TABLE_SOURCE = "OPENQUERY with comma-separated table sources";
+    
+    private static final String UNSUPPORTED_APPLY = "OPENQUERY with APPLY statement";
+    
+    private static final String UNSUPPORTED_SET_OPERATION = "OPENQUERY with set operation";
+    
+    private static final String UNSUPPORTED_ENCRYPTED_PREDICATE = "OPENQUERY with predicate on encrypted column";
     
     private final String selectList;
     
@@ -112,8 +120,10 @@ final class EncryptOpenQueryPassThroughSQL {
      *
      * @param encryptColumns encrypt columns
      * @return rewritten pass-through SQL
+     * @throws UnsupportedEncryptSQLException if remainder references an encrypted logic column
      */
     String rewrite(final Collection<EncryptColumn> encryptColumns) {
+        validateRemainderHasNoEncryptColumnReference(remainder, encryptColumns);
         List<String> rewrittenItems = new ArrayList<>();
         for (String each : splitSelectList(selectList)) {
             String trimmedItem = each.trim();
@@ -121,6 +131,72 @@ final class EncryptOpenQueryPassThroughSQL {
             rewrittenItems.add(matchedEncryptColumn.map(EncryptOpenQueryPassThroughSQL::getPhysicalColumnNames).orElse(trimmedItem));
         }
         return "SELECT " + String.join(", ", rewrittenItems) + " FROM " + tableExpression + remainder;
+    }
+    
+    private static void validateRemainderHasNoEncryptColumnReference(final String remainder, final Collection<EncryptColumn> encryptColumns) {
+        if (remainder.isEmpty()) {
+            return;
+        }
+        for (EncryptColumn each : encryptColumns) {
+            if (containsLogicColumnReference(remainder, each.getName())) {
+                throw new UnsupportedEncryptSQLException(UNSUPPORTED_ENCRYPTED_PREDICATE);
+            }
+        }
+    }
+    
+    private static boolean containsLogicColumnReference(final String sqlFragment, final String logicColumnName) {
+        int index = 0;
+        boolean inString = false;
+        while (index < sqlFragment.length()) {
+            char current = sqlFragment.charAt(index);
+            if ('\'' == current) {
+                if (!inString) {
+                    inString = true;
+                    index++;
+                    continue;
+                }
+                if (index + 1 < sqlFragment.length() && '\'' == sqlFragment.charAt(index + 1)) {
+                    index += 2;
+                    continue;
+                }
+                inString = false;
+                index++;
+                continue;
+            }
+            if (inString) {
+                index++;
+                continue;
+            }
+            if ('[' == current || '"' == current) {
+                Optional<IdentifierPart> delimitedPart = readDelimitedIdentifierPartIfPresent(sqlFragment, index);
+                if (!delimitedPart.isPresent()) {
+                    return false;
+                }
+                if (delimitedPart.get().getValue().equalsIgnoreCase(logicColumnName)) {
+                    return true;
+                }
+                index = delimitedPart.get().getStopIndex();
+                continue;
+            }
+            if (Character.isLetter(current) || '_' == current) {
+                int stopIndex = index + 1;
+                while (stopIndex < sqlFragment.length()) {
+                    char stopChar = sqlFragment.charAt(stopIndex);
+                    if (Character.isLetterOrDigit(stopChar) || '_' == stopChar) {
+                        stopIndex++;
+                        continue;
+                    }
+                    break;
+                }
+                if (sqlFragment.substring(index, stopIndex).equalsIgnoreCase(logicColumnName)) {
+                    return true;
+                }
+                index = stopIndex;
+                continue;
+            }
+            index++;
+        }
+        return false;
     }
     
     private static void validateSelectList(final String selectList) {
@@ -147,6 +223,12 @@ final class EncryptOpenQueryPassThroughSQL {
             }
             return;
         }
+        if (identifier.startsWith("\"") && identifier.endsWith("\"")) {
+            if (!isClosedDelimitedIdentifier(identifier, '"')) {
+                throw new UnsupportedEncryptSQLException(UNSUPPORTED_SELECT_EXPRESSION);
+            }
+            return;
+        }
         for (int index = 0; index < identifier.length(); index++) {
             char current = identifier.charAt(index);
             if (!Character.isLetterOrDigit(current) && '_' != current) {
@@ -156,10 +238,102 @@ final class EncryptOpenQueryPassThroughSQL {
     }
     
     private static void validateRemainder(final String remainder) {
-        String trimmedRemainder = remainder.trim().toUpperCase(Locale.ENGLISH);
-        if (trimmedRemainder.startsWith("JOIN ") || trimmedRemainder.contains(" JOIN ")) {
+        if (remainder.isEmpty()) {
+            return;
+        }
+        validateNoCommaSeparatedTableSource(remainder);
+        if (containsKeywordOutsideString(remainder, "JOIN")) {
             throw new UnsupportedEncryptSQLException(UNSUPPORTED_JOIN);
         }
+        if (containsKeywordOutsideString(remainder, "APPLY")) {
+            throw new UnsupportedEncryptSQLException(UNSUPPORTED_APPLY);
+        }
+        if (containsKeywordOutsideString(remainder, "UNION")
+                || containsKeywordOutsideString(remainder, "EXCEPT")
+                || containsKeywordOutsideString(remainder, "INTERSECT")) {
+            throw new UnsupportedEncryptSQLException(UNSUPPORTED_SET_OPERATION);
+        }
+    }
+    
+    private static void validateNoCommaSeparatedTableSource(final String remainder) {
+        int index = skipWhitespace(remainder, 0);
+        if (index >= remainder.length()) {
+            return;
+        }
+        if (',' == remainder.charAt(index)) {
+            throw new UnsupportedEncryptSQLException(UNSUPPORTED_COMMA_TABLE_SOURCE);
+        }
+        if (isClauseKeywordAt(remainder, index)) {
+            return;
+        }
+        if (isKeywordAt(remainder, index, "AS")) {
+            index = skipWhitespace(remainder, index + "AS".length());
+            Optional<IdentifierPart> aliasPart = readIdentifierPartIfPresent(remainder, index);
+            if (!aliasPart.isPresent()) {
+                return;
+            }
+            index = skipWhitespace(remainder, aliasPart.get().getStopIndex());
+        } else {
+            Optional<IdentifierPart> aliasPart = readIdentifierPartIfPresent(remainder, index);
+            if (!aliasPart.isPresent()) {
+                return;
+            }
+            index = skipWhitespace(remainder, aliasPart.get().getStopIndex());
+        }
+        if (index < remainder.length() && ',' == remainder.charAt(index)) {
+            throw new UnsupportedEncryptSQLException(UNSUPPORTED_COMMA_TABLE_SOURCE);
+        }
+    }
+    
+    private static boolean isClauseKeywordAt(final String sqlFragment, final int index) {
+        return isKeywordAt(sqlFragment, index, "WHERE")
+                || isKeywordAt(sqlFragment, index, "ORDER")
+                || isKeywordAt(sqlFragment, index, "GROUP")
+                || isKeywordAt(sqlFragment, index, "HAVING")
+                || isKeywordAt(sqlFragment, index, "JOIN")
+                || isKeywordAt(sqlFragment, index, "UNION")
+                || isKeywordAt(sqlFragment, index, "EXCEPT")
+                || isKeywordAt(sqlFragment, index, "INTERSECT")
+                || isKeywordAt(sqlFragment, index, "CROSS")
+                || isKeywordAt(sqlFragment, index, "OUTER")
+                || isKeywordAt(sqlFragment, index, "APPLY");
+    }
+    
+    private static boolean isKeywordAt(final String sqlFragment, final int index, final String keyword) {
+        return matchesKeyword(sqlFragment, index, keyword)
+                && isWordBoundary(sqlFragment, index - 1)
+                && isWordBoundary(sqlFragment, index + keyword.length());
+    }
+    
+    private static boolean containsKeywordOutsideString(final String sqlFragment, final String keyword) {
+        int index = 0;
+        boolean inString = false;
+        while (index <= sqlFragment.length() - keyword.length()) {
+            char current = sqlFragment.charAt(index);
+            if ('\'' == current) {
+                if (!inString) {
+                    inString = true;
+                    index++;
+                    continue;
+                }
+                if (index + 1 < sqlFragment.length() && '\'' == sqlFragment.charAt(index + 1)) {
+                    index += 2;
+                    continue;
+                }
+                inString = false;
+                index++;
+                continue;
+            }
+            if (inString) {
+                index++;
+                continue;
+            }
+            if (isKeywordAt(sqlFragment, index, keyword)) {
+                return true;
+            }
+            index++;
+        }
+        return false;
     }
     
     private static TableReference parseTableReference(final String passThroughSQL, final int startIndex) {
@@ -183,16 +357,12 @@ final class EncryptOpenQueryPassThroughSQL {
         if (index >= passThroughSQL.length()) {
             throw new UnsupportedEncryptSQLException(UNSUPPORTED_SHAPE);
         }
-        if ('[' == passThroughSQL.charAt(index)) {
-            int closeIndex = passThroughSQL.indexOf(']', index + 1);
-            if (-1 == closeIndex) {
-                throw new UnsupportedEncryptSQLException(UNSUPPORTED_SHAPE);
-            }
-            String inner = passThroughSQL.substring(index + 1, closeIndex);
-            if (inner.contains(" ")) {
+        Optional<IdentifierPart> delimitedPart = readDelimitedIdentifierPartIfPresent(passThroughSQL, index);
+        if (delimitedPart.isPresent()) {
+            if ('[' == passThroughSQL.charAt(index) && delimitedPart.get().getValue().contains(" ")) {
                 throw new UnsupportedEncryptSQLException(UNSUPPORTED_SPACE_DELIMITED_IDENTIFIER);
             }
-            return new IdentifierPart(inner, index, closeIndex + 1);
+            return delimitedPart.get();
         }
         int stopIndex = index;
         while (stopIndex < passThroughSQL.length()) {
@@ -260,12 +430,9 @@ final class EncryptOpenQueryPassThroughSQL {
         if (index >= passThroughSQL.length()) {
             return Optional.empty();
         }
-        if ('[' == passThroughSQL.charAt(index)) {
-            int closeIndex = passThroughSQL.indexOf(']', index + 1);
-            if (-1 == closeIndex) {
-                return Optional.empty();
-            }
-            return Optional.of(new IdentifierPart(passThroughSQL.substring(index + 1, closeIndex), index, closeIndex + 1));
+        Optional<IdentifierPart> delimitedPart = readDelimitedIdentifierPartIfPresent(passThroughSQL, index);
+        if (delimitedPart.isPresent()) {
+            return delimitedPart;
         }
         int stopIndex = index;
         while (stopIndex < passThroughSQL.length()) {
@@ -280,6 +447,52 @@ final class EncryptOpenQueryPassThroughSQL {
             return Optional.empty();
         }
         return Optional.of(new IdentifierPart(passThroughSQL.substring(index, stopIndex), index, stopIndex));
+    }
+    
+    private static Optional<IdentifierPart> readDelimitedIdentifierPartIfPresent(final String passThroughSQL, final int startIndex) {
+        if (startIndex >= passThroughSQL.length()) {
+            return Optional.empty();
+        }
+        char openDelimiter = passThroughSQL.charAt(startIndex);
+        if ('[' != openDelimiter && '"' != openDelimiter) {
+            return Optional.empty();
+        }
+        char closeDelimiter = '[' == openDelimiter ? ']' : '"';
+        StringBuilder value = new StringBuilder();
+        int index = startIndex + 1;
+        while (index < passThroughSQL.length()) {
+            char current = passThroughSQL.charAt(index);
+            if (closeDelimiter == current) {
+                if (index + 1 < passThroughSQL.length() && closeDelimiter == passThroughSQL.charAt(index + 1)) {
+                    value.append(closeDelimiter);
+                    index += 2;
+                    continue;
+                }
+                return Optional.of(new IdentifierPart(value.toString(), startIndex, index + 1));
+            }
+            value.append(current);
+            index++;
+        }
+        return Optional.empty();
+    }
+    
+    private static boolean isClosedDelimitedIdentifier(final String identifier, final char delimiter) {
+        if (identifier.length() < 2 || delimiter != identifier.charAt(0) || delimiter != identifier.charAt(identifier.length() - 1)) {
+            return false;
+        }
+        int index = 1;
+        while (index < identifier.length() - 1) {
+            char current = identifier.charAt(index);
+            if (delimiter == current) {
+                if (index + 1 < identifier.length() - 1 && delimiter == identifier.charAt(index + 1)) {
+                    index += 2;
+                    continue;
+                }
+                return false;
+            }
+            index++;
+        }
+        return true;
     }
     
     private static int findFromKeywordIndex(final String passThroughSQL) {
@@ -342,9 +555,17 @@ final class EncryptOpenQueryPassThroughSQL {
     
     private static String unwrapIdentifier(final String identifier) {
         if (identifier.startsWith("[") && identifier.endsWith("]")) {
-            return identifier.substring(1, identifier.length() - 1);
+            return unescapeDelimitedContent(identifier.substring(1, identifier.length() - 1), ']');
+        }
+        if (identifier.startsWith("\"") && identifier.endsWith("\"")) {
+            return unescapeDelimitedContent(identifier.substring(1, identifier.length() - 1), '"');
         }
         return identifier;
+    }
+    
+    private static String unescapeDelimitedContent(final String content, final char delimiter) {
+        String escapedDelimiter = String.valueOf(delimiter) + delimiter;
+        return content.replace(escapedDelimiter, String.valueOf(delimiter));
     }
     
     private static Optional<EncryptColumn> findEncryptColumn(final Collection<EncryptColumn> encryptColumns, final String logicColumnName) {
@@ -357,10 +578,14 @@ final class EncryptOpenQueryPassThroughSQL {
     }
     
     private static String getPhysicalColumnNames(final EncryptColumn encryptColumn) {
-        StringBuilder result = new StringBuilder(encryptColumn.getCipher().getName());
-        encryptColumn.getAssistedQuery().ifPresent(optional -> result.append(", ").append(optional.getName()));
-        encryptColumn.getLikeQuery().ifPresent(optional -> result.append(", ").append(optional.getName()));
+        StringBuilder result = new StringBuilder(quotePhysicalColumnName(encryptColumn.getCipher().getName()));
+        encryptColumn.getAssistedQuery().ifPresent(optional -> result.append(", ").append(quotePhysicalColumnName(optional.getName())));
+        encryptColumn.getLikeQuery().ifPresent(optional -> result.append(", ").append(quotePhysicalColumnName(optional.getName())));
         return result.toString();
+    }
+    
+    private static String quotePhysicalColumnName(final String physicalColumnName) {
+        return QuoteCharacter.BRACKETS.wrap(physicalColumnName);
     }
     
     @Getter

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
@@ -60,6 +61,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.ArgumentMatchers.any;
@@ -163,7 +165,7 @@ class EncryptAssignmentTokenGeneratorTest {
         Iterator<SQLToken> iterator = actual.iterator();
         assertThat(actual.size(), is(2));
         assertThat(iterator.next().toString(), is("group_name_cipher = 'encryptValue'"));
-        assertThat(iterator.next().toString(), is("'SELECT group_name_cipher FROM dbo.Department WHERE DepartmentID = 4'"));
+        assertThat(iterator.next().toString(), is("'SELECT [group_name_cipher] FROM dbo.Department WHERE DepartmentID = 4'"));
     }
     
     @Test
@@ -179,11 +181,11 @@ class EncryptAssignmentTokenGeneratorTest {
         Iterator<SQLToken> iterator = actual.iterator();
         assertThat(iterator.next().toString(), is("group_name_cipher = 'groupEncryptValue'"));
         assertThat(iterator.next().toString(), is("dept_code_cipher = 'deptEncryptValue'"));
-        assertThat(iterator.next().toString(), is("'SELECT group_name_cipher, dept_code_cipher FROM dbo.Department WHERE DepartmentID = 4'"));
+        assertThat(iterator.next().toString(), is("'SELECT [group_name_cipher], [dept_code_cipher] FROM dbo.Department WHERE DepartmentID = 4'"));
     }
     
     @Test
-    void assertGenerateSQLTokenWithOpenQueryPreservesWhereClauseColumnRef() {
+    void assertGenerateSQLTokenWithOpenQueryEncryptedColumnInWhereExpectsException() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
         tokenGenerator = new EncryptAssignmentTokenGenerator(mockOpenQueryEncryptRule(), database, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
@@ -193,11 +195,26 @@ class EncryptAssignmentTokenGeneratorTest {
         when(assignmentSegment.getValue()).thenReturn(new LiteralExpressionSegment(124, 144, "Sales and Marketing"));
         when(assignmentSegment.getStopIndex()).thenReturn(144);
         when(tablesContext.getSchemaName()).thenReturn(Optional.of("dbo"));
-        Collection<SQLToken> actual = tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment, createOpenQueryTableSegmentWithColumnInWhere());
+        assertThrows(UnsupportedEncryptSQLException.class,
+                () -> tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment, createOpenQueryTableSegmentWithColumnInWhere()));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithOpenQuerySpaceDelimitedPhysicalColumnName() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockOpenQuerySpaceDelimitedPhysicalColumnEncryptRule(), database, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        ColumnSegment columnSegment = new ColumnSegment(112, 123, new IdentifierValue("SecureLabel"));
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(null, null, new IdentifierValue("SecureLabel"), TableSourceType.TEMPORARY_TABLE));
+        when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(columnSegment));
+        when(assignmentSegment.getValue()).thenReturn(new LiteralExpressionSegment(127, 134, "secret"));
+        when(assignmentSegment.getStopIndex()).thenReturn(134);
+        when(tablesContext.getSchemaName()).thenReturn(Optional.of("dbo"));
+        Collection<SQLToken> actual = tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment, createOpenQuerySecureLabelTableSegment());
         assertThat(actual.size(), is(2));
         Iterator<SQLToken> iterator = actual.iterator();
-        iterator.next();
-        assertThat(iterator.next().toString(), is("'SELECT group_name_cipher FROM dbo.Department WHERE GroupName IS NOT NULL'"));
+        assertThat(iterator.next().toString(), is("cipher name = 'encryptValue'"));
+        assertThat(iterator.next().toString(), is("'SELECT [cipher name] FROM dbo.Department WHERE DepartmentID = 4'"));
     }
     
     @Test
@@ -213,7 +230,7 @@ class EncryptAssignmentTokenGeneratorTest {
         Iterator<SQLToken> iterator = actual.iterator();
         assertThat(iterator.next().toString(), is("group_name_cipher = 'groupEncryptValue'"));
         assertThat(iterator.next().toString(), is("remark_cipher = 'remarkCipherValue', assisted_query_remark = 'assistedValue', like_query_remark = 'likeValue'"));
-        assertThat(iterator.next().toString(), is("'SELECT group_name_cipher, remark_cipher, assisted_query_remark, like_query_remark FROM dbo.Department WHERE DepartmentID = 4'"));
+        assertThat(iterator.next().toString(), is("'SELECT [group_name_cipher], [remark_cipher], [assisted_query_remark], [like_query_remark] FROM dbo.Department WHERE DepartmentID = 4'"));
     }
     
     private EncryptRule mockOpenQueryEncryptRule() {
@@ -231,6 +248,21 @@ class EncryptAssignmentTokenGeneratorTest {
         return result;
     }
     
+    private EncryptRule mockOpenQuerySpaceDelimitedPhysicalColumnEncryptRule() {
+        EncryptRule result = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        EncryptColumn encryptColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
+        when(result.findEncryptTable("Department")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.isEncryptColumn("SecureLabel")).thenReturn(true);
+        when(encryptTable.getTable()).thenReturn("Department");
+        when(encryptTable.getEncryptColumn("SecureLabel")).thenReturn(encryptColumn);
+        when(encryptColumn.getName()).thenReturn("SecureLabel");
+        when(encryptColumn.getCipher().getName()).thenReturn("cipher name");
+        when(encryptColumn.getCipher().encrypt("foo_db", "dbo", "Department", "SecureLabel", Collections.singletonList("secret")))
+                .thenReturn(Collections.singletonList("encryptValue"));
+        return result;
+    }
+    
     private FunctionTableSegment createOpenQueryTableSegment() {
         FunctionSegment functionSegment = new FunctionSegment(7, 106, "OPENQUERY", "OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM dbo.Department WHERE DepartmentID = 4')");
         functionSegment.getParameters().add(new ColumnSegment(18, 31, new IdentifierValue("MyLinkedServer")));
@@ -244,6 +276,14 @@ class EncryptAssignmentTokenGeneratorTest {
         functionSegment.getParameters().add(new ColumnSegment(18, 31, new IdentifierValue("MyLinkedServer")));
         functionSegment.getParameters().add(new LiteralExpressionSegment(34, 104, "SELECT GroupName FROM dbo.Department WHERE GroupName IS NOT NULL"));
         return new FunctionTableSegment(7, 115, functionSegment);
+    }
+    
+    private FunctionTableSegment createOpenQuerySecureLabelTableSegment() {
+        FunctionSegment functionSegment = new FunctionSegment(7, 108, "OPENQUERY",
+                "OPENQUERY (MyLinkedServer, 'SELECT SecureLabel FROM dbo.Department WHERE DepartmentID = 4')");
+        functionSegment.getParameters().add(new ColumnSegment(18, 31, new IdentifierValue("MyLinkedServer")));
+        functionSegment.getParameters().add(new LiteralExpressionSegment(34, 97, "SELECT SecureLabel FROM dbo.Department WHERE DepartmentID = 4"));
+        return new FunctionTableSegment(7, 108, functionSegment);
     }
     
     private EncryptRule mockOpenQueryMultiColumnEncryptRule() {

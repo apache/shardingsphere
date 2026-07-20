@@ -10,3 +10,11 @@ weight = 2
 - 加密字段无法支持计算操作，如：AVG、SUM 以及计算表达式；
 - 不支持使用 `;` 分隔的多条 SQL 同时执行；
 - 当投影子查询中包含加密字段时，必须使用别名。
+
+## SQL Server OPENQUERY 加密功能
+
+`OPENQUERY` 函数的加密改写不支持以下场景：
+
+- `WHERE` 后引用加密列；
+- 物理列名中间包含 `]` 或 `[]`；
+- 透传查询中使用 `JOIN`、`CROSS APPLY`、`OUTER APPLY`、`UNION`、`UNION ALL`、`EXCEPT`、`INTERSECT`。
