@@ -52,24 +52,30 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyModelFacingNextActions(response, result);
         copyFields(response, result, POST_ACTION_FIELD_NAMES);
         copyToolList(response, result);
-        List<Map<String, Object>> resources = LLMMCPJsonValues.castToList(response.get("resources"));
-        if (!resources.isEmpty()) {
-            List<Map<String, Object>> compactResources = new LinkedList<>();
-            for (Map<String, Object> each : resources) {
-                Map<String, Object> compactResource = new LinkedHashMap<>(8, 1F);
-                copyIfPresent(each, compactResource, "uri");
-                copyIfPresent(each, compactResource, "name");
-                copyIfPresent(each, compactResource, "title");
-                copyIfPresent(each, compactResource, "mimeType");
-                compactResources.add(compactResource.isEmpty() ? each : compactResource);
-            }
-            result.put("resources", compactResources);
-        }
+        copyCompactResourceList(response, result, "resources", "uri");
+        copyCompactResourceList(response, result, "resourceTemplates", "uriTemplate");
         copyPromptList(response, result);
         copyPromptMessages(response, result);
         copyCompactItems(response, result);
         copyCompactRecovery(response, result);
         return JsonUtils.toJsonString(result.isEmpty() ? response : result);
+    }
+    
+    private static void copyCompactResourceList(final Map<String, Object> source, final Map<String, Object> target,
+                                                final String fieldName, final String uriFieldName) {
+        List<Map<String, Object>> resources = LLMMCPJsonValues.castToList(source.get(fieldName));
+        if (!resources.isEmpty()) {
+            List<Map<String, Object>> compactResources = new LinkedList<>();
+            for (Map<String, Object> each : resources) {
+                Map<String, Object> compactResource = new LinkedHashMap<>(8, 1F);
+                copyIfPresent(each, compactResource, uriFieldName);
+                copyIfPresent(each, compactResource, "name");
+                copyIfPresent(each, compactResource, "title");
+                copyIfPresent(each, compactResource, "mimeType");
+                compactResources.add(compactResource.isEmpty() ? each : compactResource);
+            }
+            target.put(fieldName, compactResources);
+        }
     }
     
     private static void copyToolList(final Map<String, Object> source, final Map<String, Object> target) {

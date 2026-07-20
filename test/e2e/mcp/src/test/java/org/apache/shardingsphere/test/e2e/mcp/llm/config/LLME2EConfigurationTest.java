@@ -158,6 +158,7 @@ class LLME2EConfigurationTest {
     @Test
     void assertLoadWithConfiguredServerImage() {
         System.setProperty("mcp.llm.runtime-mode", "docker");
+        System.setProperty("mcp.llm.model", "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M");
         System.setProperty("mcp.llm.server-image", "test/mcp-llm-runtime:test");
         System.setProperty("mcp.llm.base-server-image", "test/llama.cpp:test");
         System.setProperty("mcp.llm.base-server-image-digest", "test-base-server-image-digest");

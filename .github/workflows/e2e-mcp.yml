@@ -246,11 +246,18 @@ jobs:
           if-no-files-found: warn
 
   e2e-mcp-llm:
-    name: E2E - MCP LLM
+    name: E2E - MCP LLM - ${{ matrix.test-class }}
     if: github.repository == 'apache/shardingsphere'
     needs: [ e2e-mcp-build-images, e2e-mcp-build-llm-image ]
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        test-class:
+          - LLMSmokeE2ETest
+          - LLMUsabilitySuiteE2ETest
+          - MCPBuilderEvaluationE2ETest
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
@@ -277,7 +284,7 @@ jobs:
         run: |
           set -euo pipefail
           ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-            -Dtest='*E2ETest' \
+            -Dtest='${{ matrix.test-class }}' \
             -Dgroups=llm-e2e \
             -Dsurefire.failIfNoSpecifiedTests=true \
             -De2e.run.type=DOCKER \
@@ -285,13 +292,13 @@ jobs:
             -Dmcp.llm.ready-timeout-seconds=900 \
             -Dmcp.llm.request-timeout-seconds=300 \
             -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" \
-            -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }} \
+            -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.test-class }} \
             -B -ntp
       - name: Upload MCP LLM E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: e2e-mcp-llm-${{ github.run_id }}-${{ github.run_attempt }}
+          name: e2e-mcp-llm-${{ matrix.test-class }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             test/e2e/mcp/target/llm-e2e
             test/e2e/mcp/target/surefire-reports

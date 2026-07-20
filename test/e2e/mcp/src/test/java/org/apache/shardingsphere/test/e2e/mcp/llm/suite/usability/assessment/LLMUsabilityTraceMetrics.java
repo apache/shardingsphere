@@ -128,51 +128,42 @@ final class LLMUsabilityTraceMetrics {
     
     private boolean isExpectedRecoveryInteraction(final MCPInteractionTraceRecord interactionTraceRecord, final String expectedRecoveryCategory) {
         return null != expectedRecoveryCategory && !expectedRecoveryCategory.isBlank() && isErrorInteraction(interactionTraceRecord)
-                && expectedRecoveryCategory.equals(getRecoveryCategory(interactionTraceRecord));
+                && hasRecoveryCategory(interactionTraceRecord.getStructuredContent(), expectedRecoveryCategory);
     }
     
-    private String getRecoveryCategory(final MCPInteractionTraceRecord interactionTraceRecord) {
-        Map<String, Object> structuredContent = interactionTraceRecord.getStructuredContent();
-        if (structuredContent.containsKey("recovery_category")) {
-            return Objects.toString(structuredContent.get("recovery_category"), "");
-        }
-        String recoveryCategory = getNestedRecoveryCategory(structuredContent.get("recovery"));
-        if (!recoveryCategory.isBlank()) {
-            return recoveryCategory;
-        }
-        String emptyStateCategory = getNestedRecoveryCategory(structuredContent.get("empty_state"));
-        if (!emptyStateCategory.isBlank()) {
-            return emptyStateCategory;
-        }
-        if (structuredContent.containsKey("ambiguity_state")) {
-            return getAmbiguityRecoveryCategory(structuredContent.get("ambiguity_state"));
-        }
-        return Objects.toString(structuredContent.get("error_code"), "");
+    private boolean hasRecoveryCategory(final Map<String, Object> structuredContent, final String expectedRecoveryCategory) {
+        return expectedRecoveryCategory.equals(Objects.toString(structuredContent.get("recovery_category"), ""))
+                || hasNestedRecoveryCategory(structuredContent.get("recovery"), expectedRecoveryCategory)
+                || hasNestedRecoveryCategory(structuredContent.get("empty_state"), expectedRecoveryCategory)
+                || hasAmbiguityRecoveryCategory(structuredContent, expectedRecoveryCategory)
+                || expectedRecoveryCategory.equals(Objects.toString(structuredContent.get("error_code"), ""));
     }
     
-    private String getNestedRecoveryCategory(final Object value) {
+    private boolean hasNestedRecoveryCategory(final Object value, final String expectedRecoveryCategory) {
         if (!(value instanceof Map)) {
-            return "";
+            return false;
+        }
+        Map<?, ?> map = (Map<?, ?>) value;
+        return expectedRecoveryCategory.equals(Objects.toString(map.get("recovery_category"), ""))
+                || expectedRecoveryCategory.equals(Objects.toString(map.get("category"), ""))
+                || expectedRecoveryCategory.equals(Objects.toString(map.get("state"), ""));
+    }
+    
+    private boolean hasAmbiguityRecoveryCategory(final Map<String, Object> structuredContent, final String expectedRecoveryCategory) {
+        if (!structuredContent.containsKey("ambiguity_state")) {
+            return false;
+        }
+        Object value = structuredContent.get("ambiguity_state");
+        if (!(value instanceof Map)) {
+            return "ambiguous".equals(expectedRecoveryCategory);
         }
         Map<?, ?> map = (Map<?, ?>) value;
         if (map.containsKey("recovery_category")) {
-            return Objects.toString(map.get("recovery_category"), "");
+            return expectedRecoveryCategory.equals(Objects.toString(map.get("recovery_category"), ""));
         }
-        if (map.containsKey("category")) {
-            return Objects.toString(map.get("category"), "");
-        }
-        return Objects.toString(map.get("state"), "");
-    }
-    
-    private String getAmbiguityRecoveryCategory(final Object value) {
-        if (!(value instanceof Map)) {
-            return "ambiguous";
-        }
-        Map<?, ?> map = (Map<?, ?>) value;
-        if (map.containsKey("recovery_category")) {
-            return Objects.toString(map.get("recovery_category"), "");
-        }
-        return map.containsKey("category") ? Objects.toString(map.get("category"), "") : "ambiguous";
+        return map.containsKey("category")
+                ? expectedRecoveryCategory.equals(Objects.toString(map.get("category"), ""))
+                : "ambiguous".equals(expectedRecoveryCategory);
     }
     
     private boolean isErrorInteraction(final MCPInteractionTraceRecord interactionTraceRecord) {

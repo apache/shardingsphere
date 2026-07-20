@@ -185,7 +185,8 @@ public final class LLMUsabilityScenarioCatalog {
                 List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "recovery", "resource"),
                 new LLME2EScenario("extended-recovery-bad-resource-" + runtimeKind, SYSTEM_PROMPT,
                         "The user pasted stale resource `shardingsphere://databases/unknown/schemas/unknown/tables/" + tableName
-                                + "`. Read the stale resource, recover by reading exact live table resource `" + tableResourceUri + "`, and verify `" + query + "`." + toolContext,
+                                + "`. Read that stale resource before any live resource. After observing its error response, recover by reading exact live table resource `"
+                                + tableResourceUri + "`, and verify `" + query + "`." + toolContext,
                         createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),

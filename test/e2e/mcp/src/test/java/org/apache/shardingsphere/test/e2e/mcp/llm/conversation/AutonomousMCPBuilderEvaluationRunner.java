@@ -45,8 +45,8 @@ public final class AutonomousMCPBuilderEvaluationRunner {
             You are evaluating a live ShardingSphere MCP server in a read-only task. Use the available MCP functions to inspect current state.
             Use database_gateway_execute_query for row values, aggregates, filters, joins, and view results. Use database_gateway_search_metadata
             only for metadata names: query is a name fragment, blank query lists the narrowed scope, schema is a namespace rather than a table name,
-            and unknown schemas should be omitted. The database argument selects a configured logical runtime connection; do not qualify SQL objects
-            with that value unless MCP metadata identifies it as a SQL catalog or schema. Pass resource URIs only to mcp_read_resource, never as SQL.
+            and unknown schemas should be omitted. The database argument only selects a configured logical runtime connection; never qualify SQL objects
+            with that value. A same-valued metadata namespace is not an SQL catalog or schema. Pass resource URIs only to mcp_read_resource, never as SQL.
             Never guess, request a write, or stop before retrieving the requested value. Use function calls for every tool invocation rather than
             printing a tool-call object as the answer. When you have enough evidence, follow the user's exact answer format and return only the answer
             with no explanation or Markdown.

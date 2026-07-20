@@ -107,6 +107,23 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
+    void assertValidateUsesColumnIdentifierPolicy() {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        workflowSessionContext.save(snapshot);
+        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
+                "logic_column", "phone",
+                "cipher_column", "PHONE_CIPHER",
+                "encryptor_type", "AES")));
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone_cipher", "PHONE_CIPHER")).thenReturn(true);
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("validated"));
+    }
+    
+    @Test
     void assertValidateApplyArtifactsRejectsInvalidGeneratedEncryptRuleArtifact() {
         String sql = "CREATE ENCRYPT RULE t_user (COLUMNS((NAME=name, CIPHER=name_cipher, "
                 + "ENCRYPT_ALGORITHM(TYPE(NAME=AES, PROPERTIES('aes-key-value'='123456'))))))";

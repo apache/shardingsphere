@@ -860,7 +860,7 @@ tools:
           description: "Optional schema or namespace used to narrow table, view, column, index, and sequence search."
         query:
           type: string
-          description: "Optional name fragment or exact object name. Blank query lists metadata inside the narrowed database/schema/object_types scope."
+          description: "Optional object-name fragment. It also matches a parent table or view name when present. Blank query lists the narrowed metadata scope."
         object_types:
           type: array
           description: "Optional object-type filter. Omit it when the user intent does not identify a specific metadata object kind."
@@ -913,7 +913,7 @@ tools:
                 description: "ShardingSphere logical database that owns the metadata object."
               schema:
                 type: string
-                description: "Schema or namespace for schema-scoped metadata objects."
+                description: "Logical metadata namespace for resource navigation. It is not necessarily a valid SQL schema or catalog qualifier."
               objectType:
                 type: string
                 description: "Matched metadata object type: database, schema, storage_unit, table, view, column, index, or sequence."
@@ -1250,7 +1250,7 @@ tools:
       properties:
         database:
           type: string
-          description: "ShardingSphere logical database name that provides the execution boundary."
+          description: "ShardingSphere logical database used only to select the runtime connection. Do not use this value as an SQL catalog or schema qualifier."
         schema:
           type: string
           description: "Optional schema or namespace hint for unqualified object names."
@@ -1407,7 +1407,7 @@ tools:
       properties:
         database:
           type: string
-          description: "ShardingSphere logical database name that provides the execution boundary."
+          description: "ShardingSphere logical database used only to select the runtime connection. Do not use this value as an SQL catalog or schema qualifier."
         schema:
           type: string
           description: "Optional schema or namespace hint for unqualified object names."
@@ -1569,7 +1569,7 @@ tools:
       properties:
         database:
           type: string
-          description: "ShardingSphere logical database name that provides the execution boundary."
+          description: "ShardingSphere logical database used only to select the runtime connection. Do not use this value as an SQL catalog or schema qualifier."
         schema:
           type: string
           description: "Optional schema or namespace hint for unqualified object names."

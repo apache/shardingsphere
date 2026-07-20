@@ -65,6 +65,6 @@ jobs:
           set -euo pipefail
           ./mvnw -pl mcp/core verify -Pcoverage-check \
             -DskipITs -Dspotless.skip=true -Djacoco.skip=false \
-            -Djacoco.check.class.pattern='org/apache/shardingsphere/mcp/core/tool/handler/metadata/SearchMetadata*' \
+            -Djacoco.check.class.pattern='org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadata*' \
             -Dsurefire.failIfNoSpecifiedTests=false \
             -B -ntp

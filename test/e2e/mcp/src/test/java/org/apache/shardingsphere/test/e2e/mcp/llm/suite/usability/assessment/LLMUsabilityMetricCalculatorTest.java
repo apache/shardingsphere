@@ -149,6 +149,21 @@ class LLMUsabilityMetricCalculatorTest {
     }
     
     @Test
+    void assertEvaluateRecoveryScenarioWithSpecificNestedCategory() {
+        List<MCPInteractionTraceRecord> trace = List.of(
+                MCPInteractionTraceRecord.createResourceRead(1, "shardingsphere://databases/unknown/schemas/unknown/tables/orders", Map.of(
+                        "items", List.of(),
+                        "recovery", Map.of("recovery_category", "not_found", "category", "unknown_database"),
+                        "empty_state", Map.of("state", "no_items", "category", "unknown_database")), 0L),
+                MCPInteractionTraceRecord.createResourceRead(2, "shardingsphere://databases/logic_db/schemas/public/tables/orders",
+                        Map.of("items", List.of(Map.of("table", "orders"))), 0L));
+        LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createExpectedRecoveryScenario("unknown_database"), createArtifactBundle(trace));
+        assertTrue(actual.isSuccess());
+        assertTrue(actual.isRecoveredAfterError());
+        assertThat(actual.getInvalidCallCount(), is(0));
+    }
+    
+    @Test
     void assertEvaluateRecoveryScenarioWithAmbiguityCategory() {
         List<MCPInteractionTraceRecord> trace = List.of(
                 createToolCall(1, "database_gateway_search_metadata", Map.of("ambiguity_state", Map.of("state", "duplicate_names", "ambiguous", true))),
@@ -352,7 +367,7 @@ class LLMUsabilityMetricCalculatorTest {
                 .runtimeKind("runtime")
                 .tags(List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "extended", "recovery"))
                 .llmScenario(llmScenario)
-                .expectedFirstActionNames(List.of("database_gateway_execute_query", "database_gateway_search_metadata"))
+                .expectedFirstActionNames(List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query", "database_gateway_search_metadata"))
                 .expectedResourceUris(List.of())
                 .resourceHitRequired(false)
                 .recoveryExpected(true)
