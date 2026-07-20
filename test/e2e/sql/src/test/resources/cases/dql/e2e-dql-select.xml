@@ -189,10 +189,10 @@
     </test-case>
 
     <test-case sql="SELECT CAST('1973-06-03 10:30:01' AS TIMESTAMP) AS c8" db-types="PostgreSQL,openGauss">
-        <assertion expected-data-file="dataset/select_timestamp_without_fractional_seconds.xml" />
+        <assertion expected-data-file="select_timestamp_without_fractional_seconds.xml" />
     </test-case>
 
     <test-case sql="SELECT CAST('1973-06-03 10:30:01.123' AS TIMESTAMP) AS c8" db-types="PostgreSQL,openGauss">
-        <assertion expected-data-file="dataset/select_timestamp_with_fractional_seconds.xml" />
+        <assertion expected-data-file="select_timestamp_with_fractional_seconds.xml" />
     </test-case>
 </e2e-test-cases>
