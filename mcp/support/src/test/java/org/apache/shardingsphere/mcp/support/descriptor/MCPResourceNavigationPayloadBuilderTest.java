@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.support.descriptor;
 
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,7 +38,7 @@ class MCPResourceNavigationPayloadBuilderTest {
     @Test
     void assertCreate() {
         MCPResourceDescriptor descriptor = createDescriptor("shardingsphere://databases/{database}");
-        Map<String, Object> actual = MCPResourceNavigationPayloadBuilder.create(descriptor, new MCPUriVariables(Map.of("database", "foo_db")));
+        Map<String, Object> actual = MCPResourceNavigationPayloadBuilder.create(descriptor, new MCPResourceURIVariables(Map.of("database", "foo_db")));
         assertThat(((Map<?, ?>) actual.get(MCPPayloadFieldNames.SELF_RESOURCE)).get("uri"), is("shardingsphere://databases/foo_db"));
         assertThat(actual.size(), is(1));
     }
@@ -48,7 +48,7 @@ class MCPResourceNavigationPayloadBuilderTest {
     void assertCreateWithParent(final String name, final String parentUriTemplate, final String expectedResourceKind) {
         MCPResourceDescriptor descriptor = createDescriptor("shardingsphere://databases/{database}");
         Map<String, Object> actual = MCPResourceNavigationPayloadBuilder.create(
-                descriptor, new MCPUriVariables(Map.of("database", "foo_db")), parentUriTemplate);
+                descriptor, new MCPResourceURIVariables(Map.of("database", "foo_db")), parentUriTemplate);
         Map<?, ?> actualParent = (Map<?, ?>) actual.get(MCPPayloadFieldNames.PARENT_RESOURCE);
         assertThat(actualParent.get("resource_kind"), is(expectedResourceKind));
         assertThat(actualParent.get("source_field"), is(MCPPayloadFieldNames.PARENT_RESOURCE));
@@ -58,7 +58,7 @@ class MCPResourceNavigationPayloadBuilderTest {
     void assertCreateWithIncompleteUriVariables() {
         MCPResourceDescriptor descriptor = createDescriptor("shardingsphere://databases/{database}");
         Map<String, Object> actual = MCPResourceNavigationPayloadBuilder.create(
-                descriptor, new MCPUriVariables(Map.of()), "shardingsphere://databases/{database}/rules");
+                descriptor, new MCPResourceURIVariables(Map.of()), "shardingsphere://databases/{database}/rules");
         assertThat(actual, is(Map.of()));
     }
     

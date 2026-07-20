@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
@@ -37,7 +37,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPFeat
     
     private final String uriTemplate;
     
-    private final BiFunction<MCPFeatureRequestContext, MCPUriVariables, List<?>> metadataLoader;
+    private final BiFunction<MCPFeatureRequestContext, MCPResourceURIVariables, List<?>> metadataLoader;
     
     @Override
     public Class<MCPFeatureRequestContext> getContextType() {
@@ -50,7 +50,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPFeat
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         List<?> items = metadataLoader.apply(requestContext, uriVariables);
         MCPResourceDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(uriTemplate);
         ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(descriptor.getUriTemplate());

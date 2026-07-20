@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -49,7 +49,7 @@ class BroadcastTableRuleHandlerTest {
             when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
             when(ruleInspectionService.queryBroadcastRules(queryFacade, "logic_db"))
                     .thenReturn(List.of(Map.of("broadcast_table", "t_order"), Map.of("broadcast_table", "t_order_item")));
-            MCPSuccessPayload actual = handler.handle(requestContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "t_order")));
+            MCPSuccessPayload actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of("database", "logic_db", "table", "t_order")));
             verify(ruleInspectionService).queryBroadcastRules(queryFacade, "logic_db");
             List<?> items = (List<?>) actual.toPayload().get("items");
             assertThat(items.size(), is(1));

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -47,7 +47,7 @@ class BroadcastRuleCountHandlerTest {
             MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
             when(requestContext.getQueryFacade()).thenReturn(queryFacade);
             when(ruleInspectionService.queryBroadcastRuleCount(queryFacade, "logic_db")).thenReturn(List.of(Map.of("rule_count", 2)));
-            MCPSuccessPayload actual = handler.handle(requestContext, new MCPUriVariables(Map.of("database", "logic_db")));
+            MCPSuccessPayload actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of("database", "logic_db")));
             verify(ruleInspectionService).queryBroadcastRuleCount(queryFacade, "logic_db");
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
             assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/broadcast/databases/logic_db/rule-count"));

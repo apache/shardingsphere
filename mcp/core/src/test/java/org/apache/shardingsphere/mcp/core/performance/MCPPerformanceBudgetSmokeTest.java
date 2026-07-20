@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.performance;
 
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.core.completion.handler.WorkflowPlanIdCompletionHandler;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -82,11 +82,11 @@ class MCPPerformanceBudgetSmokeTest {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
         MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         ServerCapabilitiesHandler handler = new ServerCapabilitiesHandler();
-        Map<String, Object> actual = handler.handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
+        Map<String, Object> actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of())).toPayload();
         assertFalse(actual.containsKey("fingerprints"));
         long elapsedMillis = measureElapsedMillis(() -> {
             for (int i = 0; i < DESCRIPTOR_ITERATIONS; i++) {
-                handler.handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
+                handler.handle(requestContext, new MCPResourceURIVariables(Map.of())).toPayload();
             }
         });
         assertWithinBudget("descriptor generation", elapsedMillis, DESCRIPTOR_BUDGET_MILLIS);

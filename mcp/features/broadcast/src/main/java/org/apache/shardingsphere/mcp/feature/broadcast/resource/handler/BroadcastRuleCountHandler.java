@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -45,7 +45,7 @@ public final class BroadcastRuleCountHandler implements MCPResourceHandler<MCPFe
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         return new MCPItemsPayload(ruleInspectionService.queryBroadcastRuleCount(requestContext.getQueryFacade(), uriVariables.getValue("database")),
                 MCPResourceNavigationPayloadBuilder.create(
                         MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, BroadcastFeatureDefinition.RULES_RESOURCE_URI));

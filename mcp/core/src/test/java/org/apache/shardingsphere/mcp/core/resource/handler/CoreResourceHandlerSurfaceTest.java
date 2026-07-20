@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -144,11 +144,12 @@ class CoreResourceHandlerSurfaceTest {
         assertThat(actual.getMessage(), is("Storage unit resources are not supported for the current database."));
     }
     
-    private MCPUriVariables parseUriVariables(final String uriTemplate, final String resourceUri) {
+    private MCPResourceURIVariables parseUriVariables(final String uriTemplate, final String resourceUri) {
         return new MCPUriPattern(uriTemplate).parse(resourceUri).orElseThrow();
     }
     
-    private <T extends MCPRequestContext> MCPSuccessPayload handle(final MCPResourceHandler<T> handler, final MCPFeatureRuntimeRequestContext requestContext, final MCPUriVariables uriVariables) {
+    private <T extends MCPRequestContext> MCPSuccessPayload handle(final MCPResourceHandler<T> handler,
+                                                                   final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         return handler.handle(handler.getContextType().cast(requestContext), uriVariables);
     }
     

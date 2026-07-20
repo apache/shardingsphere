@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
@@ -50,7 +50,7 @@ class MetadataResourcePayloadMapperTest {
     void assertMapDatabaseDetail() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata()));
-        List<?> actual = new MetadataResourcePayloadMapper(metadataQueryFacade, new MCPUriVariables(Map.of()), true)
+        List<?> actual = new MetadataResourcePayloadMapper(metadataQueryFacade, new MCPResourceURIVariables(Map.of()), true)
                 .map(createMetadata("logical-database"), List.of(
                         new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
         Map<?, ?> actualDatabase = (Map<?, ?>) actual.getFirst();
@@ -65,7 +65,7 @@ class MetadataResourcePayloadMapperTest {
     
     @Test
     void assertMapTableDetail() {
-        MCPUriVariables uriVariables = new MCPUriVariables(Map.of("database", "logic_db", "schema", "public"));
+        MCPResourceURIVariables uriVariables = new MCPResourceURIVariables(Map.of("database", "logic_db", "schema", "public"));
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumns("logic_db", "public", "orders")).thenReturn(createColumns("orders"));
         when(metadataQueryFacade.queryIndexes("logic_db", "public", "orders")).thenReturn(createIndexes());
@@ -89,7 +89,7 @@ class MetadataResourcePayloadMapperTest {
     
     @Test
     void assertMapViewDetail() {
-        MCPUriVariables uriVariables = new MCPUriVariables(Map.of("database", "logic_db", "schema", "public"));
+        MCPResourceURIVariables uriVariables = new MCPResourceURIVariables(Map.of("database", "logic_db", "schema", "public"));
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryViewColumns("logic_db", "public", "active_orders")).thenReturn(createColumns("active_orders"));
         List<?> actual = new MetadataResourcePayloadMapper(metadataQueryFacade, uriVariables, true)

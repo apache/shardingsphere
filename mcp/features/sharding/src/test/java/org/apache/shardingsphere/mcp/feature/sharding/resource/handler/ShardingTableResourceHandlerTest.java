@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -44,7 +44,7 @@ class ShardingTableResourceHandlerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertHandleArguments")
-    void assertHandle(final String name, final Supplier<ShardingTableResourceHandler> handlerSupplier, final MCPUriVariables uriVariables,
+    void assertHandle(final String name, final Supplier<ShardingTableResourceHandler> handlerSupplier, final MCPResourceURIVariables uriVariables,
                       final List<Map<String, Object>> rows, final String expectedSelfUri) {
         try (
                 MockedConstruction<ShardingInspectionService> ignored = mockConstruction(
@@ -76,7 +76,7 @@ class ShardingTableResourceHandlerTest {
     
     private static Arguments createArguments(final String name, final Supplier<ShardingTableResourceHandler> handlerSupplier,
                                              final Map<String, String> uriVariables, final List<Map<String, Object>> rows, final String expectedSelfUri) {
-        return Arguments.of(name, handlerSupplier, new MCPUriVariables(uriVariables), rows, expectedSelfUri);
+        return Arguments.of(name, handlerSupplier, new MCPResourceURIVariables(uriVariables), rows, expectedSelfUri);
     }
     
     private static void stubInspectionService(final ShardingInspectionService inspectionService, final List<Map<String, Object>> rows) {

@@ -28,32 +28,32 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MCPUriVariablesTest {
+class MCPResourceURIVariablesTest {
     
     @Test
     void assertContainsVariable() {
-        assertTrue(new MCPUriVariables(Map.of("foo_variable", "foo_value")).containsVariable("foo_variable"));
+        assertTrue(new MCPResourceURIVariables(Map.of("foo_variable", "foo_value")).containsVariable("foo_variable"));
     }
     
     @Test
     void assertDoesNotContainVariable() {
-        assertFalse(new MCPUriVariables(Map.of("foo_variable", "foo_value")).containsVariable("bar_variable"));
+        assertFalse(new MCPResourceURIVariables(Map.of("foo_variable", "foo_value")).containsVariable("bar_variable"));
     }
     
     @Test
     void assertGetValueSuccess() {
-        assertThat(new MCPUriVariables(Map.of("foo_variable", "foo_value")).getValue("foo_variable"), is("foo_value"));
+        assertThat(new MCPResourceURIVariables(Map.of("foo_variable", "foo_value")).getValue("foo_variable"), is("foo_value"));
     }
     
     @Test
     void assertGetValueFailedWithMissedVariable() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new MCPUriVariables(Collections.emptyMap()).getValue("foo_variable"));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new MCPResourceURIVariables(Collections.emptyMap()).getValue("foo_variable"));
         assertThat(ex.getMessage(), is("Missing URI variable `foo_variable`."));
     }
     
     @Test
     void assertGetValueFailedWithEmptyVariable() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new MCPUriVariables(Collections.singletonMap("foo_variable", "")).getValue("foo_variable"));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new MCPResourceURIVariables(Collections.singletonMap("foo_variable", "")).getValue("foo_variable"));
         assertThat(ex.getMessage(), is("Missing URI variable `foo_variable`."));
     }
 }
