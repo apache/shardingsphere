@@ -30,8 +30,6 @@ public interface MCPRequestContext {
     /**
      * Get the identity of the current MCP session.
      *
-     * <p>The identity always contains the MCP session identifier. Trusted HTTP attribution is optional and does not represent authentication or authorization.</p>
-     *
      * @return MCP session identity
      */
     MCPSessionIdentity getSessionIdentity();

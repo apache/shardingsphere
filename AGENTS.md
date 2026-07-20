@@ -84,6 +84,15 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       whether an existing boundary should catch and wrap it, and whether callers/tests actually depend on the declaration.
       When changing code removes the last checked-exception source, remove stale `throws` from private and internal methods by default;
       for public APIs, first apply the public contract propagation gate and document any compatibility reason for keeping the declaration.
+    - **Javadoc signal-to-noise gate**:
+      - Follow `CODE_OF_CONDUCT.md`: keep concise summaries and required `@param`, `@return`, and `@throws` tags for public APIs and SPIs; do not treat this baseline as meaningless repetition.
+      - Add prose beyond that baseline only for contracts not expressed by names, signatures, types, annotations, or repository conventions that affect caller or implementer behavior,
+        such as concurrency, lifecycle, blocking, state transitions, protocol or compatibility boundaries, and exception handling.
+      - Do not restate those visible facts or generic collection properties. In particular, do not add statements such as
+        `The returned collection may be empty, but must not be null or contain null elements.`
+      - Document an empty collection or another special return value only when it has domain meaning and requires the caller to act differently.
+      - Every extra sentence must map to a concrete caller action, implementer obligation, compatibility requirement, or failure-handling rule; otherwise remove it.
+        Review only Javadocs added or modified within the declared task scope.
     - Do not add or keep Javadocs on methods that only override or implement a documented parent method.
       Keep the public contract on the declaring API, SPI, or interface.
       An overriding method should add Javadocs only when it documents implementation-specific behavior, stricter preconditions, side effects, exceptions, compatibility notes,
