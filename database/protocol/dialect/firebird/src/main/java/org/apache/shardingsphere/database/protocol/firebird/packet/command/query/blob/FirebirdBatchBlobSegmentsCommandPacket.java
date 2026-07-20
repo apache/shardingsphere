@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
@@ -48,8 +49,14 @@ public final class FirebirdBatchBlobSegmentsCommandPacket extends FirebirdComman
     
     private Collection<byte[]> readSegments(final ByteBuf buffer) {
         Collection<byte[]> result = new LinkedList<>();
-        while (buffer.readableBytes() >= Short.BYTES) {
+        while (buffer.isReadable()) {
+            if (buffer.readableBytes() < Short.BYTES) {
+                throw new FirebirdProtocolException("Truncated batch BLOB segment length");
+            }
             int segmentLength = buffer.readUnsignedShortLE();
+            if (buffer.readableBytes() < segmentLength) {
+                throw new FirebirdProtocolException("Batch BLOB segment declares %d bytes, but only %d bytes remain", segmentLength, buffer.readableBytes());
+            }
             byte[] segmentData = new byte[segmentLength];
             buffer.readBytes(segmentData);
             result.add(segmentData);

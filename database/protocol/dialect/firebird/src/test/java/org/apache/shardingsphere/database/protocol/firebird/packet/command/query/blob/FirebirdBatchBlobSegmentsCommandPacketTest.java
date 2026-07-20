@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
 import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -63,5 +67,39 @@ class FirebirdBatchBlobSegmentsCommandPacketTest {
         when(payload.getBufferLength(12)).thenReturn(13);
         assertThat(FirebirdBatchBlobSegmentsCommandPacket.getLength(payload), is(25));
         verify(payload).getBufferLength(12);
+    }
+    
+    @Test
+    void assertRejectsTruncatedSegmentLength() {
+        when(payload.readBlobHandle()).thenReturn(11);
+        when(payload.readInt4()).thenReturn(1);
+        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1}));
+        assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchBlobSegmentsCommandPacket(payload));
+    }
+    
+    @Test
+    void assertRejectsSegmentLargerThanRemainingBuffer() {
+        when(payload.readBlobHandle()).thenReturn(11);
+        when(payload.readInt4()).thenReturn(3);
+        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{3, 0, 1}));
+        assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchBlobSegmentsCommandPacket(payload));
+    }
+    
+    @Test
+    void assertReadEmptyBatch() {
+        when(payload.readBlobHandle()).thenReturn(11);
+        when(payload.readInt4()).thenReturn(0);
+        when(payload.readBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
+        assertTrue(new FirebirdBatchBlobSegmentsCommandPacket(payload).getSegments().isEmpty());
+    }
+    
+    @Test
+    void assertReadZeroLengthSegment() {
+        when(payload.readBlobHandle()).thenReturn(11);
+        when(payload.readInt4()).thenReturn(2);
+        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{0, 0}));
+        Collection<byte[]> actual = new FirebirdBatchBlobSegmentsCommandPacket(payload).getSegments();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(new byte[0]));
     }
 }
