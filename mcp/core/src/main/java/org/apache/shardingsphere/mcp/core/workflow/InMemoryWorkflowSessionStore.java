@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -59,13 +61,10 @@ public final class InMemoryWorkflowSessionStore {
         sessionSnapshots.remove(sessionId);
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private final class SessionContext implements WorkflowSessionContext {
         
         private final String sessionId;
-        
-        private SessionContext(final String sessionId) {
-            this.sessionId = sessionId;
-        }
         
         @Override
         public WorkflowContextSnapshot getOrCreate(final String planId) {

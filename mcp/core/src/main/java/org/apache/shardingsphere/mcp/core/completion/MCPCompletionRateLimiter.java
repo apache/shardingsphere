@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.completion;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 
@@ -29,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Per-session fixed-window rate limiter for MCP completion requests.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class MCPCompletionRateLimiter {
     
     private static final Duration WINDOW_DURATION = Duration.ofMinutes(1L);
@@ -41,11 +44,6 @@ final class MCPCompletionRateLimiter {
     
     MCPCompletionRateLimiter() {
         this(MCPRuntimeProtectionPolicy.getMaxCompletionRequestsPerMinute(), Clock.systemUTC());
-    }
-    
-    MCPCompletionRateLimiter(final int maxRequestsPerWindow, final Clock clock) {
-        this.maxRequestsPerWindow = maxRequestsPerWindow;
-        this.clock = clock;
     }
     
     void acquire(final String sessionId) {
