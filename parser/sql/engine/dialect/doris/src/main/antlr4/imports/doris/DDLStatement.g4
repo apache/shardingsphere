@@ -756,14 +756,27 @@ place
     ;
 
 partitionDefinitions
-    : LP_ partitionDefinition (COMMA_ partitionDefinition)* RP_
+    // DORIS CHANGED BEGIN
+    : LP_ partitionDefinitionItem (COMMA_ partitionDefinitionItem)* RP_
     ;
 
+partitionDefinitionItem
+    : partitionDefinition | dorisMultiRangePartition
+    ;
+
+dorisMultiRangePartition
+    : FROM LP_ expr RP_ TO LP_ expr RP_ INTERVAL expr intervalUnit?
+    ;
+    // DORIS CHANGED END
+
 partitionDefinition
+    // DORIS CHANGED BEGIN
     : PARTITION partitionName
-    (VALUES (LESS THAN partitionLessThanValue | IN LP_ partitionValueList RP_))?
+    (VALUES (LESS THAN partitionLessThanValue | IN LP_ partitionValueList RP_ | LBT_ LP_ partitionValueList RP_ COMMA_ LP_ partitionValueList RP_ RP_))?
     partitionDefinitionOption*
+    (LP_ properties RP_)?
     (LP_ subpartitionDefinition (COMMA_ subpartitionDefinition)* RP_)?
+    // DORIS CHANGED END
     ;
 
 partitionLessThanValue
