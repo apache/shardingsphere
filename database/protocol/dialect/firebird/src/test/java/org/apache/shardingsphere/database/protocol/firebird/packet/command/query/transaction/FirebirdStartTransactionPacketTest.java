@@ -64,8 +64,8 @@ class FirebirdStartTransactionPacketTest {
     }
     
     @Test
-    void assertIsolationLevelNone() {
-        assertThat(new FirebirdStartTransactionPacket(createPayload(1)).getIsolationLevel(), is(TransactionIsolationLevel.NONE));
+    void assertIsolationLevelDefaultsToRepeatableRead() {
+        assertThat(new FirebirdStartTransactionPacket(createPayload(1)).getIsolationLevel(), is(TransactionIsolationLevel.REPEATABLE_READ));
     }
     
     @Test

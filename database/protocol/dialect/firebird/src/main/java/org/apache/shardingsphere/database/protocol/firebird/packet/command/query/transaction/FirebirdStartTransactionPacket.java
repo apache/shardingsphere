@@ -73,7 +73,7 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
         if (null != tpb.getValue(FirebirdTransactionParameterBufferType.CONSISTENCY)) {
             return TransactionIsolationLevel.SERIALIZABLE;
         }
-        return TransactionIsolationLevel.NONE;
+        return TransactionIsolationLevel.REPEATABLE_READ;
     }
     
     @Override
