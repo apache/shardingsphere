@@ -58,7 +58,7 @@ class MCPJdbcDatabaseProfileLoaderTest {
         try (
                 MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
                 MockedStatic<IdentifierCasePolicyResolver> ignoredResolver = mockStatic(IdentifierCasePolicyResolver.class)) {
-            ignoredResolver.when(() -> IdentifierCasePolicyResolver.resolveStorage(any(), any(), any())).thenReturn(expectedIdentifierCasePolicySet);
+            ignoredResolver.when(() -> IdentifierCasePolicyResolver.resolveStorage(any(), any())).thenReturn(expectedIdentifierCasePolicySet);
             RuntimeDatabaseProfile actual =
                     new MCPJdbcDatabaseProfileLoader().load("logic_db", createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true));
             assertThat(actual.getDatabase(), is("logic_db"));
@@ -107,8 +107,8 @@ class MCPJdbcDatabaseProfileLoaderTest {
         try (
                 MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
                 MockedStatic<IdentifierCasePolicyResolver> ignoredResolver = mockStatic(IdentifierCasePolicyResolver.class)) {
-            ignoredResolver.when(() -> IdentifierCasePolicyResolver.resolveStorage(any(), any(), any())).thenAnswer(invocation -> {
-                try (Connection connection = invocation.getArgument(2, DataSource.class).getConnection()) {
+            ignoredResolver.when(() -> IdentifierCasePolicyResolver.resolveStorage(any(), any())).thenAnswer(invocation -> {
+                try (Connection connection = invocation.getArgument(1, DataSource.class).getConnection()) {
                     return policies.get(connection);
                 }
             });
@@ -133,8 +133,8 @@ class MCPJdbcDatabaseProfileLoaderTest {
         try (
                 MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
                 MockedStatic<IdentifierCasePolicyResolver> ignoredResolver = mockStatic(IdentifierCasePolicyResolver.class)) {
-            ignoredResolver.when(() -> IdentifierCasePolicyResolver.resolveStorage(any(), any(), any())).thenAnswer(invocation -> {
-                try (Connection ignoredConnection = invocation.getArgument(2, DataSource.class).getConnection()) {
+            ignoredResolver.when(() -> IdentifierCasePolicyResolver.resolveStorage(any(), any())).thenAnswer(invocation -> {
+                try (Connection ignoredConnection = invocation.getArgument(1, DataSource.class).getConnection()) {
                     return IdentifierCasePolicyFactory.newSensitivePolicySet();
                 } catch (final SQLException ex) {
                     assertThat(ex, is(connectionFailure));

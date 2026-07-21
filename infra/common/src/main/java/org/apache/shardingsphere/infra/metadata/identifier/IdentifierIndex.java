@@ -60,7 +60,7 @@ public final class IdentifierIndex<T> {
     public synchronized void rebuild(final Map<String, T> values) {
         Map<String, T> newExactValues = new LinkedHashMap<>(values.size(), 1F);
         Map<String, Collection<String>> newNormalizedIdentifiers = new LinkedHashMap<>(values.size(), 1F);
-        IdentifierCasePolicy policy = databaseIdentifierContext.getPolicy(identifierScope);
+        IdentifierCasePolicy policy = databaseIdentifierContext.getMetaDataPolicy(identifierScope);
         for (Entry<String, T> entry : values.entrySet()) {
             newExactValues.put(entry.getKey(), entry.getValue());
             addNormalizedIdentifier(newNormalizedIdentifiers, policy, entry.getKey());
@@ -96,7 +96,7 @@ public final class IdentifierIndex<T> {
         Snapshot<T> currentSnapshot = snapshot;
         Map<String, T> newExactValues = new LinkedHashMap<>(currentSnapshot.getExactValues());
         Map<String, Collection<String>> newNormalizedIdentifiers = copyNormalizedIdentifiers(currentSnapshot.getNormalizedIdentifierNames());
-        IdentifierCasePolicy policy = databaseIdentifierContext.getPolicy(identifierScope);
+        IdentifierCasePolicy policy = databaseIdentifierContext.getMetaDataPolicy(identifierScope);
         if (newExactValues.containsKey(name)) {
             removeNormalizedIdentifier(newNormalizedIdentifiers, policy, name);
         }
@@ -118,7 +118,7 @@ public final class IdentifierIndex<T> {
         }
         Map<String, T> newExactValues = new LinkedHashMap<>(currentSnapshot.getExactValues());
         Map<String, Collection<String>> newNormalizedIdentifiers = copyNormalizedIdentifiers(currentSnapshot.getNormalizedIdentifierNames());
-        IdentifierCasePolicy policy = databaseIdentifierContext.getPolicy(identifierScope);
+        IdentifierCasePolicy policy = databaseIdentifierContext.getMetaDataPolicy(identifierScope);
         T result = newExactValues.remove(name);
         removeNormalizedIdentifier(newNormalizedIdentifiers, policy, name);
         snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers, policy);
@@ -161,7 +161,7 @@ public final class IdentifierIndex<T> {
      */
     public T get(final String identifier) {
         Snapshot<T> currentSnapshot = snapshot;
-        IdentifierCasePolicy policy = databaseIdentifierContext.getPolicy(identifierScope);
+        IdentifierCasePolicy policy = databaseIdentifierContext.getMetaDataPolicy(identifierScope);
         if (LookupMode.EXACT == policy.getLookupMode(QuoteCharacter.NONE)) {
             return currentSnapshot.getExactValues().get(identifier);
         }
@@ -176,7 +176,7 @@ public final class IdentifierIndex<T> {
      */
     public Optional<T> find(final IdentifierValue identifierValue) {
         Snapshot<T> currentSnapshot = snapshot;
-        IdentifierCasePolicy policy = databaseIdentifierContext.getPolicy(identifierScope);
+        IdentifierCasePolicy policy = databaseIdentifierContext.getMetaDataPolicy(identifierScope);
         if (LookupMode.EXACT == policy.getLookupMode(identifierValue.getQuoteCharacter())) {
             return Optional.ofNullable(currentSnapshot.getExactValues().get(identifierValue.getValue()));
         }

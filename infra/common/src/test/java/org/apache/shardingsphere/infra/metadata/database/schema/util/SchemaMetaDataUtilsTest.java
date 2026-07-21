@@ -22,6 +22,8 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.loader.Me
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.UnsupportedActualDataNodeStructureException;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -140,7 +142,8 @@ class SchemaMetaDataUtilsTest {
     void assertGetMetaDataLoaderMaterialsNormalizeActualTableNamesByTableScope() {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(1, 1F);
         storageUnits.put("ds_0", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
-        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(new Property(
+                TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name())));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
                 Collections.singleton(mockDataNodeRule(Collections.singleton(new DataNode("ds_0.t_user")))), props, "foo_db",
                 DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));

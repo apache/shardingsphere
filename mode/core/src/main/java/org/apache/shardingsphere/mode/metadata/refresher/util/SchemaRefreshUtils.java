@@ -19,10 +19,7 @@ package org.apache.shardingsphere.mode.metadata.refresher.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -58,12 +55,9 @@ public final class SchemaRefreshUtils {
      * @return actual schema name
      */
     public static String getActualSchemaName(final ShardingSphereDatabase database, final IdentifierValue schemaIdentifier) {
-        IdentifierCasePolicy policy = database.getIdentifierContext().getPolicy(IdentifierScope.SCHEMA);
         Optional<String> matchedSchemaName = database.getAllSchemas().stream().map(ShardingSphereSchema::getName)
-                .filter(each -> policy.matches(each, schemaIdentifier.getValue(), schemaIdentifier.getQuoteCharacter())).findFirst();
-        return matchedSchemaName.orElseGet(() -> QuoteCharacter.NONE == schemaIdentifier.getQuoteCharacter() && LookupMode.NORMALIZED == policy.getLookupMode(schemaIdentifier.getQuoteCharacter())
-                ? policy.normalize(schemaIdentifier.getValue())
-                : schemaIdentifier.getValue());
+                .filter(each -> database.getIdentifierContext().matchesMetaData(IdentifierScope.SCHEMA, each, schemaIdentifier)).findFirst();
+        return matchedSchemaName.orElseGet(() -> database.getIdentifierContext().normalizeProtocol(IdentifierScope.SCHEMA, schemaIdentifier));
     }
     
     /**

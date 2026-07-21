@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.Unsupp
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -98,7 +99,7 @@ public final class SchemaMetaDataUtils {
         if (isSameProtocolAndStorageTypes) {
             return tableNames;
         }
-        return tableNames.stream().map(each -> identifierContext.getPolicy(IdentifierScope.TABLE).normalize(each)).collect(Collectors.toList());
+        return tableNames.stream().map(each -> identifierContext.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue(each))).collect(Collectors.toList());
     }
     
     private static DataSource getDataSource(final GenericSchemaBuilderMaterial material, final String dataSourceName) {

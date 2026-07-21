@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -45,6 +43,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMappe
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -231,7 +230,7 @@ class ShardingSphereDatabaseTest {
         database.refreshIdentifierContext(new ConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name()))));
         DatabaseIdentifierContext actualIdentifierContext = getIdentifierContext(database);
-        assertThat(actualIdentifierContext.getPolicy(IdentifierScope.SCHEMA).getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertTrue(actualIdentifierContext.matchesMetaData(IdentifierScope.SCHEMA, "foo_schema", new IdentifierValue("FOO_SCHEMA")));
         assertThat(getIdentifierContext(schema), is(actualIdentifierContext));
     }
     
