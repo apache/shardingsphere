@@ -69,9 +69,9 @@ class OpenGaussMetaDataLoaderTest {
                     + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
                     + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN ('public')";
     
-    private static final String VIEW_META_DATA_SQL_WITHOUT_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') and table_name IN ()";
+    private static final String VIEW_META_DATA_SQL_WITHOUT_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public')";
     
-    private static final String VIEW_META_DATA_SQL_WITH_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') and table_name IN ('tbl')";
+    private static final String VIEW_META_DATA_SQL_WITH_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') AND table_name IN ('tbl')";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
     
@@ -171,7 +171,7 @@ class OpenGaussMetaDataLoaderTest {
         when(result.getString("table_name")).thenReturn("tbl");
         return result;
     }
-
+    
     private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList, final TableType expectedTableType, final boolean expectedNameColumnCaseSensitive) {
         assertThat(schemaMetaDataList.size(), is(1));
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
@@ -215,7 +215,7 @@ class OpenGaussMetaDataLoaderTest {
                 Arguments.of("without tables and binary collation", Collections.emptyList(), TABLE_META_DATA_SQL_WITHOUT_TABLES,
                         (Callable<ResultSet>) () -> mockTableMetaDataResultSet("", "pg_catalog", "utf8mb4_bin"),
                         (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet,
-                        VIEW_META_DATA_SQL_WITHOUT_TABLES, false, TableType.TABLE, true),
+                        VIEW_META_DATA_SQL_WITHOUT_TABLES, true, TableType.VIEW, true),
                 Arguments.of("with view table", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
                         (Callable<ResultSet>) () -> mockTableMetaDataResultSet("", "pg_catalog", "utf8mb4_bin"),
                         (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet,
