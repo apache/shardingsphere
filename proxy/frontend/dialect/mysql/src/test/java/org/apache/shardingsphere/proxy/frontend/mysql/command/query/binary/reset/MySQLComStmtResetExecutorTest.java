@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQL
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,7 +44,7 @@ class MySQLComStmtResetExecutorTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
-        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("", mock(SQLStatementContext.class), new HintValueContext(), Collections.emptyList());
+        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("", mock(SQLStatementContext.class), new HintValueContext());
         preparedStatement.getLongData().put(0, new byte[0]);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
         MySQLComStmtResetPacket packet = mock(MySQLComStmtResetPacket.class);

@@ -74,8 +74,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     public Collection<DatabasePacket> execute() throws SQLException {
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
         List<MySQLPreparedStatementParameterType> parameterTypes = getParameterTypes(preparedStatement);
-        List<Object> params = packet.readParameters(parameterTypes, preparedStatement.getLongData().keySet(),
-                preparedStatement.getParameterColumnDefinitionFlags(), preparedStatement.getParameterColumnTypes());
+        List<Object> params = packet.readParameters(parameterTypes, preparedStatement.getLongData().keySet(), preparedStatement.getParameterColumnTypes());
         preparedStatement.getLongData().forEach(params::set);
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {

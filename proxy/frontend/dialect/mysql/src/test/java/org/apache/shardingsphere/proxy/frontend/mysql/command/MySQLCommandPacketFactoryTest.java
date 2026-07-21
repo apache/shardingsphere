@@ -48,8 +48,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -102,7 +100,7 @@ class MySQLCommandPacketFactoryTest {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(serverPreparedStatementRegistry);
         SelectStatement sqlStatement = SelectStatement.builder().databaseType(databaseType).build();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        serverPreparedStatementRegistry.addPreparedStatement(1, new MySQLServerPreparedStatement("SELECT 1", sqlStatementContext, new HintValueContext(), Collections.emptyList()));
+        serverPreparedStatementRegistry.addPreparedStatement(1, new MySQLServerPreparedStatement("SELECT 1", sqlStatementContext, new HintValueContext()));
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, payload, connectionSession), isA(MySQLComStmtExecutePacket.class));
     }
     
