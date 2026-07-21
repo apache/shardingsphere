@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.rule.attribute;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 
@@ -37,7 +38,10 @@ public final class BroadcastDataNodeRuleAttribute implements DataNodeRuleAttribu
     
     public BroadcastDataNodeRuleAttribute(final Collection<String> dataSourceNames, final Collection<String> tables) {
         this.tables = tables;
-        tableDataNodes = tables.stream().collect(Collectors.toMap(String::toLowerCase, each -> generateDataNodes(each, dataSourceNames)));
+        tableDataNodes = new CaseInsensitiveMap<>(tables.size(), 1F);
+        for (String each : tables) {
+            tableDataNodes.put(each, generateDataNodes(each, dataSourceNames));
+        }
     }
     
     private Collection<DataNode> generateDataNodes(final String logicTable, final Collection<String> dataSourceNames) {
@@ -51,12 +55,12 @@ public final class BroadcastDataNodeRuleAttribute implements DataNodeRuleAttribu
     
     @Override
     public Collection<DataNode> getDataNodesByTableName(final String tableName) {
-        return tableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
+        return tableDataNodes.getOrDefault(tableName, Collections.emptyList());
     }
     
     @Override
     public Optional<String> findFirstActualTable(final String logicTable) {
-        return tableDataNodes.containsKey(logicTable.toLowerCase()) ? Optional.of(logicTable) : Optional.empty();
+        return tableDataNodes.containsKey(logicTable) ? Optional.of(logicTable) : Optional.empty();
     }
     
     @Override
@@ -66,12 +70,12 @@ public final class BroadcastDataNodeRuleAttribute implements DataNodeRuleAttribu
     
     @Override
     public Optional<String> findLogicTableByActualTable(final String actualTable) {
-        return tableDataNodes.containsKey(actualTable.toLowerCase()) ? Optional.of(actualTable) : Optional.empty();
+        return tableDataNodes.containsKey(actualTable) ? Optional.of(actualTable) : Optional.empty();
     }
     
     @Override
     public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
-        return tableDataNodes.getOrDefault(logicTable.toLowerCase(), Collections.emptyList()).stream().anyMatch(each -> each.getDataSourceName().equalsIgnoreCase(catalog))
+        return tableDataNodes.getOrDefault(logicTable, Collections.emptyList()).stream().anyMatch(each -> each.getDataSourceName().equalsIgnoreCase(catalog))
                 ? Optional.of(logicTable)
                 : Optional.empty();
     }
