@@ -66,7 +66,11 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
                     + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
                     + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN (%s)";
     
-    private static final String VIEW_META_DATA_SQL = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN (%s) and table_name IN (%s)";
+    private static final String BASIC_VIEW_META_DATA_SQL = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN (%s)";
+    
+    private static final String VIEW_META_DATA_SQL_WITHOUT_TABLES = BASIC_VIEW_META_DATA_SQL;
+    
+    private static final String VIEW_META_DATA_SQL_WITH_TABLES = BASIC_VIEW_META_DATA_SQL + " AND table_name IN (%s)";
     
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
@@ -202,8 +206,9 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private String getViewMetaDataSQL(final Collection<String> schemaNames, final Collection<String> tables) {
-        return String.format(VIEW_META_DATA_SQL, schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")),
-                tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        String schemaNameParam = schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(","));
+        return tables.isEmpty() ? String.format(VIEW_META_DATA_SQL_WITHOUT_TABLES, schemaNameParam)
+                : String.format(VIEW_META_DATA_SQL_WITH_TABLES, schemaNameParam, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Multimap<String, ColumnMetaData> tableColumnMetaDataMap,
