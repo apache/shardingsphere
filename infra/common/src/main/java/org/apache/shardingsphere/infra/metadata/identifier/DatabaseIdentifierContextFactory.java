@@ -26,6 +26,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 
@@ -58,7 +61,8 @@ public final class DatabaseIdentifierContextFactory {
      */
     public static DatabaseIdentifierContext create(final DatabaseType protocolType, final ConfigurationProperties props) {
         ResolvedIdentifierContext resolvedContext = resolve(protocolType, null, props);
-        return new DatabaseIdentifierContext(resolvedContext.policySet, resolvedContext.heterogeneousTableLookupEnabled);
+        return new DatabaseIdentifierContext(resolvedContext.protocolPolicySet, resolvedContext.storagePolicySet,
+                resolvedContext.metaDataPolicySet, resolvedContext.heterogeneousTableLookupEnabled);
     }
     
     /**
@@ -71,7 +75,8 @@ public final class DatabaseIdentifierContextFactory {
      */
     public static DatabaseIdentifierContext create(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
         ResolvedIdentifierContext resolvedContext = resolve(protocolType, resourceMetaData, props);
-        return new DatabaseIdentifierContext(resolvedContext.policySet, resolvedContext.heterogeneousTableLookupEnabled);
+        return new DatabaseIdentifierContext(resolvedContext.protocolPolicySet, resolvedContext.storagePolicySet,
+                resolvedContext.metaDataPolicySet, resolvedContext.heterogeneousTableLookupEnabled);
     }
     
     /**
@@ -84,17 +89,30 @@ public final class DatabaseIdentifierContextFactory {
      */
     public static void refresh(final DatabaseIdentifierContext identifierContext, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
         ResolvedIdentifierContext resolvedContext = resolve(protocolType, resourceMetaData, props);
-        identifierContext.refresh(resolvedContext.policySet, resolvedContext.heterogeneousTableLookupEnabled);
+        identifierContext.refresh(resolvedContext.protocolPolicySet, resolvedContext.storagePolicySet,
+                resolvedContext.metaDataPolicySet, resolvedContext.heterogeneousTableLookupEnabled);
     }
     
     private static ResolvedIdentifierContext resolve(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
         Collection<StorageUnit> storageUnits = getStorageUnits(resourceMetaData);
         StorageUnit storageUnit = storageUnits.stream().findFirst().orElse(null);
-        IdentifierCasePolicySet protocolPolicySet = IdentifierCasePolicyResolver.resolveProtocol(protocolType, props);
+        IdentifierCasePolicySet protocolPolicySet = IdentifierCasePolicyResolver.resolveProtocol(protocolType);
         IdentifierCasePolicySet storagePolicySet = null == storageUnit
                 ? protocolPolicySet
-                : IdentifierCasePolicyResolver.resolveStorage(storageUnit.getStorageType(), props, storageUnit.getDataSource());
-        return new ResolvedIdentifierContext(createScopeAwarePolicySet(protocolPolicySet, storagePolicySet), isHeterogeneous(protocolType, storageUnits));
+                : IdentifierCasePolicyResolver.resolveStorage(storageUnit.getStorageType(), storageUnit.getDataSource());
+        return new ResolvedIdentifierContext(protocolPolicySet, storagePolicySet,
+                createMetaDataPolicySet(protocolPolicySet, storagePolicySet, props), isHeterogeneous(protocolType, storageUnits));
+    }
+    
+    private static IdentifierCasePolicySet createMetaDataPolicySet(final IdentifierCasePolicySet protocolPolicySet, final IdentifierCasePolicySet storagePolicySet,
+                                                                   final ConfigurationProperties props) {
+        MetadataIdentifierCaseSensitivity configuredCaseSensitivity = new TemporaryConfigurationProperties(props.getProps())
+                .getValue(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
+        if (MetadataIdentifierCaseSensitivity.INSENSITIVE != configuredCaseSensitivity) {
+            return createScopeAwarePolicySet(protocolPolicySet, storagePolicySet);
+        }
+        IdentifierCasePolicySet insensitivePolicySet = IdentifierCasePolicyFactory.newInsensitivePolicySet();
+        return createScopeAwarePolicySet(insensitivePolicySet, insensitivePolicySet);
     }
     
     private static Collection<StorageUnit> getStorageUnits(final ResourceMetaData resourceMetaData) {
@@ -132,7 +150,11 @@ public final class DatabaseIdentifierContextFactory {
     @RequiredArgsConstructor
     private static final class ResolvedIdentifierContext {
         
-        private final IdentifierCasePolicySet policySet;
+        private final IdentifierCasePolicySet protocolPolicySet;
+        
+        private final IdentifierCasePolicySet storagePolicySet;
+        
+        private final IdentifierCasePolicySet metaDataPolicySet;
         
         private final boolean heterogeneousTableLookupEnabled;
     }

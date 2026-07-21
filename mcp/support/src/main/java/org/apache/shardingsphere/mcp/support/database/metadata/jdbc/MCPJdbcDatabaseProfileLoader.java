@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
@@ -36,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -91,8 +89,7 @@ public final class MCPJdbcDatabaseProfileLoader {
     
     private IdentifierCasePolicySet resolveIdentifierCasePolicySet(final String databaseName, final DatabaseType databaseType,
                                                                    final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
-        return IdentifierCasePolicyResolver.resolveStorage(databaseType, new ConfigurationProperties(new Properties()),
-                new RuntimeDatabaseDataSource(databaseName, runtimeDatabaseConfig));
+        return IdentifierCasePolicyResolver.resolveStorage(databaseType, new RuntimeDatabaseDataSource(databaseName, runtimeDatabaseConfig));
     }
     
     private DatabaseType loadDatabaseType(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {

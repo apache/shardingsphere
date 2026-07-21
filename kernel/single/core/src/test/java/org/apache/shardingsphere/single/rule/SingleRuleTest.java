@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.rule;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
@@ -409,7 +410,7 @@ class SingleRuleTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         IdentifierCasePolicy identifierCasePolicy = new StandardIdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED, each -> each.toLowerCase(Locale.ENGLISH), each -> true);
-        when(result.getIdentifierCasePolicy(IdentifierScope.SCHEMA)).thenReturn(identifierCasePolicy);
+        when(result.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(new IdentifierCasePolicySet(identifierCasePolicy)));
         when(result.getName()).thenReturn("foo_db");
         return result;
     }

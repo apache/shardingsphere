@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata.refresher.util;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -44,6 +46,8 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class SchemaRefreshUtilsTest {
     
@@ -59,6 +63,15 @@ class SchemaRefreshUtilsTest {
         List<IdentifierValue> schemaIdentifiers = Arrays.asList(new IdentifierValue("Foo_Schema"), new IdentifierValue("bar_schema"), new IdentifierValue("new_schema"));
         assertThat(SchemaRefreshUtils.getActualSchemaNames(createDatabaseWithSchema("foo_schema", "bar_schema"), schemaIdentifiers),
                 is(Arrays.asList("foo_schema", "bar_schema", "new_schema")));
+    }
+    
+    @Test
+    void assertGetActualSchemaNameUsesProtocolPolicyWhenMissing() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newUpperCasePolicySet(),
+                IdentifierCasePolicyFactory.newSensitivePolicySet(), IdentifierCasePolicyFactory.newInsensitivePolicySet(), false));
+        when(database.getAllSchemas()).thenReturn(Collections.emptyList());
+        assertThat(SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue("Foo_Schema")), is("FOO_SCHEMA"));
     }
     
     private ShardingSphereDatabase createDatabase() {

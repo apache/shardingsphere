@@ -95,7 +95,7 @@ class DatabaseIdentifierContextFactoryTest {
     @Test
     void assertCreateDefault() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
-        IdentifierCasePolicy actualRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actualRule.matches("Foo", "foo", QuoteCharacter.NONE));
     }
@@ -105,7 +105,7 @@ class DatabaseIdentifierContextFactoryTest {
     void assertCreateWithProtocolTypeAndProps(final String name, final DatabaseType protocolType, final ConfigurationProperties props, final LookupMode expectedLookupMode,
                                               final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(protocolType, props);
-        IdentifierCasePolicy actualRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
         assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
     }
@@ -116,9 +116,28 @@ class DatabaseIdentifierContextFactoryTest {
                                                   final ConfigurationProperties props, final LookupMode expectedLookupMode,
                                                   final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, props);
-        IdentifierCasePolicy actualRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
         assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
+    }
+    
+    @Test
+    void assertInsensitivePropsOnlyAffectMetaDataPolicy() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(ORACLE_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA,
+                createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE));
+        assertThat(actual.normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
+        assertThat(actual.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("foo"));
+        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalize("Foo"), is("foo"));
+    }
+    
+    @Test
+    void assertRefreshWithInsensitivePropsOnlyAffectsMetaDataPolicy() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, ORACLE_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA,
+                createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE));
+        assertThat(actual.normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
+        assertThat(actual.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("foo"));
+        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalize("Foo"), is("foo"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -128,7 +147,7 @@ class DatabaseIdentifierContextFactoryTest {
                                                    final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, protocolType, resourceMetaData, props);
-        IdentifierCasePolicy actualRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
         assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
     }
@@ -136,8 +155,8 @@ class DatabaseIdentifierContextFactoryTest {
     @Test
     void assertCreateUsesProtocolRuleForSchemaAndStorageRuleForTable() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCasePolicy actualSchemaRule = actual.getPolicy(IdentifierScope.SCHEMA);
-        IdentifierCasePolicy actualTableRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualSchemaRule = actual.getMetaDataPolicy(IdentifierScope.SCHEMA);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualSchemaRule.matches("test_db", "TEST_DB", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
     }
@@ -146,8 +165,8 @@ class DatabaseIdentifierContextFactoryTest {
     void assertRefreshUsesProtocolRuleForSchemaAndStorageRuleForTable() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCasePolicy actualSchemaRule = actual.getPolicy(IdentifierScope.SCHEMA);
-        IdentifierCasePolicy actualTableRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualSchemaRule = actual.getMetaDataPolicy(IdentifierScope.SCHEMA);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualSchemaRule.matches("test_db", "TEST_DB", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
     }
@@ -155,8 +174,8 @@ class DatabaseIdentifierContextFactoryTest {
     @Test
     void assertCreateUsesProtocolRuleForLogicalTableAndEnablesHeterogeneousLookup() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCasePolicy actualLogicalTableRule = actual.getPolicy(IdentifierScope.LOGICAL_TABLE);
-        IdentifierCasePolicy actualTableRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualLogicalTableRule = actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actual.isHeterogeneousTableLookupEnabled());
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
@@ -166,8 +185,8 @@ class DatabaseIdentifierContextFactoryTest {
     void assertRefreshUsesProtocolRuleForLogicalTableAndEnablesHeterogeneousLookup() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCasePolicy actualLogicalTableRule = actual.getPolicy(IdentifierScope.LOGICAL_TABLE);
-        IdentifierCasePolicy actualTableRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualLogicalTableRule = actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actual.isHeterogeneousTableLookupEnabled());
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
@@ -177,7 +196,7 @@ class DatabaseIdentifierContextFactoryTest {
     void assertCreateDoesNotUseStorageDataSourceForProtocolPolicy() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE,
                 createResourceMetaDataWithStorageUnit("jdbc:oracle:thin:@localhost:1521:xe", createDataSourceFailingOnConnection()), new ConfigurationProperties(new Properties()));
-        assertTrue(actual.getPolicy(IdentifierScope.LOGICAL_TABLE).matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE).matches("t_order", "T_ORDER", QuoteCharacter.NONE));
     }
     
     @Test
@@ -185,14 +204,14 @@ class DatabaseIdentifierContextFactoryTest {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE,
                 createResourceMetaDataWithStorageUnit("jdbc:oracle:thin:@localhost:1521:xe", createDataSourceFailingOnConnection()), new ConfigurationProperties(new Properties()));
-        assertTrue(actual.getPolicy(IdentifierScope.LOGICAL_TABLE).matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE).matches("t_order", "T_ORDER", QuoteCharacter.NONE));
     }
     
     @Test
     void assertCreateUsesInsensitiveRuleForLogicalTableWhenMySQLLowerCaseTableNamesIsZero() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCasePolicy actualLogicalTableRule = actual.getPolicy(IdentifierScope.LOGICAL_TABLE);
-        IdentifierCasePolicy actualTableRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualLogicalTableRule = actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertFalse(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
     }
@@ -201,8 +220,8 @@ class DatabaseIdentifierContextFactoryTest {
     void assertRefreshUsesInsensitiveRuleForLogicalTableWhenMySQLLowerCaseTableNamesIsZero() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCasePolicy actualLogicalTableRule = actual.getPolicy(IdentifierScope.LOGICAL_TABLE);
-        IdentifierCasePolicy actualTableRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualLogicalTableRule = actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertFalse(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
     }
@@ -210,8 +229,8 @@ class DatabaseIdentifierContextFactoryTest {
     @Test
     void assertCreateKeepsPostgreSQLLogicalTableRuleWithResourceMetadata() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCasePolicy actualLogicalTableRule = actual.getPolicy(IdentifierScope.LOGICAL_TABLE);
-        IdentifierCasePolicy actualTableRule = actual.getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualLogicalTableRule = actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertFalse(actualLogicalTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
@@ -258,7 +277,7 @@ class DatabaseIdentifierContextFactoryTest {
     @MethodSource("storageObjectScopes")
     void assertCreateUsesInsensitiveRuleForStorageObjectScope(final String name, final IdentifierScope identifierScope) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCasePolicy actualRule = actual.getPolicy(identifierScope);
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(identifierScope);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertThat(actualRule.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
         assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.NONE));
@@ -270,7 +289,7 @@ class DatabaseIdentifierContextFactoryTest {
     void assertRefreshUsesInsensitiveRuleForStorageObjectScope(final String name, final IdentifierScope identifierScope) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCasePolicy actualRule = actual.getPolicy(identifierScope);
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(identifierScope);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertThat(actualRule.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
         assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.NONE));
