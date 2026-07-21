@@ -71,10 +71,10 @@ class FirebirdBlobColumnLoaderTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(dataSource.getConnection()).thenReturn(connection);
-        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "foo_ds", dataSource, databaseType, "schema");
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("FOO_TBL"), "foo_ds", dataSource, databaseType, "schema");
         Map<String, Map<String, Integer>> actual = new FirebirdBlobColumnLoader(material).load();
-        assertThat(actual, hasKey("foo_tbl"));
-        Map<String, Integer> actualTableColumns = actual.get("foo_tbl");
+        assertThat(actual, hasKey("FOO_TBL"));
+        Map<String, Integer> actualTableColumns = actual.get("FOO_TBL");
         assertThat(actualTableColumns.size(), is(1));
         assertThat(actualTableColumns.get("BLOB_COL"), is(expectedSubType));
         verify(preparedStatement).setString(1, "FOO_TBL");
@@ -87,10 +87,10 @@ class FirebirdBlobColumnLoaderTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(dataSource.getConnection()).thenReturn(connection);
-        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "foo_ds", dataSource, databaseType, "schema");
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("FOO_TBL"), "foo_ds", dataSource, databaseType, "schema");
         Map<String, Map<String, Integer>> actual = new FirebirdBlobColumnLoader(material).load();
-        assertThat(actual, hasKey("foo_tbl"));
-        assertTrue(actual.get("foo_tbl").isEmpty());
+        assertThat(actual, hasKey("FOO_TBL"));
+        assertTrue(actual.get("FOO_TBL").isEmpty());
         verify(preparedStatement).setString(1, "FOO_TBL");
     }
     

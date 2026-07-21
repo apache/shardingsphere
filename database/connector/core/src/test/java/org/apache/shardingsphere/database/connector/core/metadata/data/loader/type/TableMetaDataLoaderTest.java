@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,7 +59,7 @@ class TableMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     
-    private static final String TEST_TABLE = "table";
+    private static final String TEST_TABLE = "Normalized_Table";
     
     private static final String NOT_EXISTED_TABLE = "not_existed_table";
     
@@ -123,6 +124,13 @@ class TableMetaDataLoaderTest {
         assertThat(indexes.size(), is(1));
         Iterator<IndexMetaData> indexesIterator = indexes.iterator();
         assertThat(indexesIterator.next().getName(), is("my_index"));
+    }
+    
+    @Test
+    void assertLoadNormalizedTableName() throws SQLException {
+        Optional<TableMetaData> actual = TableMetaDataLoader.loadNormalized(dataSource, TEST_TABLE, databaseType);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is(TEST_TABLE));
     }
     
     private void assertColumnMetaData(final ColumnMetaData actual, final String name, final int dataType, final boolean primaryKey, final boolean caseSensitive) {
