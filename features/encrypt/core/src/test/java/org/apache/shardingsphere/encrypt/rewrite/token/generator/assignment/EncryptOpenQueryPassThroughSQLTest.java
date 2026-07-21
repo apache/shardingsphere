@@ -123,7 +123,16 @@ class EncryptOpenQueryPassThroughSQLTest {
                 Arguments.of("union", "SELECT foo_col FROM foo_schema.foo_tbl UNION SELECT foo_col FROM foo_schema.bar_tbl"),
                 Arguments.of("union all", "SELECT foo_col FROM foo_schema.foo_tbl UNION ALL SELECT foo_col FROM foo_schema.bar_tbl"),
                 Arguments.of("except", "SELECT foo_col FROM foo_schema.foo_tbl EXCEPT SELECT foo_col FROM foo_schema.bar_tbl"),
-                Arguments.of("intersect", "SELECT foo_col FROM foo_schema.foo_tbl INTERSECT SELECT foo_col FROM foo_schema.bar_tbl"));
+                Arguments.of("intersect", "SELECT foo_col FROM foo_schema.foo_tbl INTERSECT SELECT foo_col FROM foo_schema.bar_tbl"),
+                Arguments.of("with hint then comma table sources", "SELECT foo_col FROM foo_schema.foo_tbl WITH (NOLOCK), foo_schema.bar_tbl"),
+                Arguments.of("inline hint then comma table sources", "SELECT foo_col FROM foo_schema.foo_tbl(NOLOCK), foo_schema.bar_tbl"),
+                Arguments.of("block comment then comma table sources", "SELECT foo_col FROM foo_schema.foo_tbl/*hint*/, foo_schema.bar_tbl"));
+    }
+    
+    @Test
+    void assertParseDoesNotRejectSingleTableWithHint() {
+        EncryptOpenQueryPassThroughSQL actual = EncryptOpenQueryPassThroughSQL.parse("SELECT foo_col FROM foo_schema.foo_tbl WITH (NOLOCK) WHERE id_col = 1");
+        assertThat(actual.getRemainder(), is(" WITH (NOLOCK) WHERE id_col = 1"));
     }
     
     @Test

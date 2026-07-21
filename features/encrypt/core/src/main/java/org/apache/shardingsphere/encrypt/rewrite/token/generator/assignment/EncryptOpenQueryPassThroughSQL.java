@@ -258,32 +258,56 @@ final class EncryptOpenQueryPassThroughSQL {
     }
     
     private static void validateNoCommaSeparatedTableSource(final String remainder) {
-        int index = skipWhitespace(remainder, 0);
-        if (index >= remainder.length()) {
-            return;
-        }
-        if (',' == remainder.charAt(index)) {
-            throw new UnsupportedEncryptSQLException(UNSUPPORTED_COMMA_TABLE_SOURCE);
-        }
-        if (isClauseKeywordAt(remainder, index)) {
-            return;
-        }
-        if (isKeywordAt(remainder, index, "AS")) {
-            index = skipWhitespace(remainder, index + "AS".length());
-            Optional<IdentifierPart> aliasPart = readIdentifierPartIfPresent(remainder, index);
-            if (!aliasPart.isPresent()) {
+        int index = 0;
+        int parenDepth = 0;
+        boolean inString = false;
+        while (index < remainder.length()) {
+            char current = remainder.charAt(index);
+            if (!inString && '/' == current && index + 1 < remainder.length() && '*' == remainder.charAt(index + 1)) {
+                int closeIndex = remainder.indexOf("*/", index + 2);
+                index = closeIndex < 0 ? remainder.length() : closeIndex + 2;
+                continue;
+            }
+            if (!inString && '-' == current && index + 1 < remainder.length() && '-' == remainder.charAt(index + 1)) {
+                int newlineIndex = remainder.indexOf('\n', index + 2);
+                index = newlineIndex < 0 ? remainder.length() : newlineIndex + 1;
+                continue;
+            }
+            if ('\'' == current) {
+                if (!inString) {
+                    inString = true;
+                } else if (index + 1 < remainder.length() && '\'' == remainder.charAt(index + 1)) {
+                    index += 2;
+                    continue;
+                } else {
+                    inString = false;
+                }
+                index++;
+                continue;
+            }
+            if (inString) {
+                index++;
+                continue;
+            }
+            if ('(' == current) {
+                parenDepth++;
+                index++;
+                continue;
+            }
+            if (')' == current) {
+                if (parenDepth > 0) {
+                    parenDepth--;
+                }
+                index++;
+                continue;
+            }
+            if (',' == current && 0 == parenDepth) {
+                throw new UnsupportedEncryptSQLException(UNSUPPORTED_COMMA_TABLE_SOURCE);
+            }
+            if (0 == parenDepth && isClauseKeywordAt(remainder, index)) {
                 return;
             }
-            index = skipWhitespace(remainder, aliasPart.get().getStopIndex());
-        } else {
-            Optional<IdentifierPart> aliasPart = readIdentifierPartIfPresent(remainder, index);
-            if (!aliasPart.isPresent()) {
-                return;
-            }
-            index = skipWhitespace(remainder, aliasPart.get().getStopIndex());
-        }
-        if (index < remainder.length() && ',' == remainder.charAt(index)) {
-            throw new UnsupportedEncryptSQLException(UNSUPPORTED_COMMA_TABLE_SOURCE);
+            index++;
         }
     }
     
