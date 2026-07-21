@@ -9148,6 +9148,12 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_system_user_sql92">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="SYSTEM_USER" start-index="7" stop-index="17" />
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_unreserved_column">
         <from>
             <simple-table name="servers" start-index="38" stop-index="48">
