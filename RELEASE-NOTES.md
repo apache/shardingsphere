@@ -33,6 +33,7 @@
 1. Proxy: Fix incorrect generated key handling for explicit auto-increment values - [#38810](https://github.com/apache/shardingsphere/pull/38810)
 1. Proxy: Fix microseconds decoded as nanoseconds in MySQL binary TIME value - [#39138](https://github.com/apache/shardingsphere/pull/39138)
 1. Proxy: Fix MySQL BLOB data corruption when string-like prepared statement parameters target BLOB columns - [#39072](https://github.com/apache/shardingsphere/pull/39072)
+1. Proxy: Fix MySQL prepared statement parameter signedness decoding - [#39204](https://github.com/apache/shardingsphere/pull/39204)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
 1. Agent: Fix wrong target class name in StaticMethodAdviceExecutor error logs - [#39077](https://github.com/apache/shardingsphere/pull/39077)
