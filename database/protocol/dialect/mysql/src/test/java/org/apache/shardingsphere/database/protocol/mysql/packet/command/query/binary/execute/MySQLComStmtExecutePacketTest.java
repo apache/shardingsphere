@@ -21,7 +21,6 @@ import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,21 +73,20 @@ class MySQLComStmtExecutePacketTest {
     
     @Test
     void assertReadParametersWithSignedInteger() throws SQLException {
-        byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00};
-        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
-        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
-        List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(0), Collections.emptyList()), is(Collections.<Object>singletonList(1)));
-    }
-    
-    @Test
-    void assertReadParametersWithUnsignedInteger() throws SQLException {
         byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        int unsignedFlag = MySQLColumnDefinitionFlag.UNSIGNED.getValue();
-        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(unsignedFlag), Collections.emptyList()), is(Collections.<Object>singletonList(4294967295L)));
+        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.emptyList()), is(Collections.<Object>singletonList(-1)));
+    }
+    
+    @Test
+    void assertReadParametersWithUnsignedInteger() throws SQLException {
+        byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, (byte) 0x80, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
+        List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
+        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.emptyList()), is(Collections.<Object>singletonList(4294967295L)));
     }
     
     @Test
@@ -97,8 +95,7 @@ class MySQLComStmtExecutePacketTest {
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        List<Integer> parameterFlags = Collections.singletonList(0);
-        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), parameterFlags, Collections.emptyList()), is(Collections.singletonList(null)));
+        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.emptyList()), is(Collections.singletonList(null)));
     }
     
     @Test
@@ -107,7 +104,7 @@ class MySQLComStmtExecutePacketTest {
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        assertThat(actual.readParameters(parameterTypes, Collections.singleton(0), Collections.emptyList(), Collections.emptyList()), is(Collections.singletonList(null)));
+        assertThat(actual.readParameters(parameterTypes, Collections.singleton(0), Collections.emptyList()), is(Collections.singletonList(null)));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -118,7 +115,7 @@ class MySQLComStmtExecutePacketTest {
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        Object actualValue = actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(0), Collections.singletonList(parameterColumnType)).get(0);
+        Object actualValue = actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(parameterColumnType)).get(0);
         assertTrue(actualValue instanceof byte[]);
         assertArrayEquals(new byte[]{(byte) 0xac, (byte) 0xed, (byte) 0xff}, (byte[]) actualValue);
     }
@@ -148,8 +145,7 @@ class MySQLComStmtExecutePacketTest {
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        List<Integer> parameterFlags = Collections.singletonList(0);
-        Object actualValue = actual.readParameters(parameterTypes, Collections.emptySet(), parameterFlags, parameterColumnTypes).get(0);
+        Object actualValue = actual.readParameters(parameterTypes, Collections.emptySet(), parameterColumnTypes).get(0);
         assertThat(actualValue instanceof String, is(expectedString));
         if (expectedString) {
             assertThat(actualValue, is("a"));
