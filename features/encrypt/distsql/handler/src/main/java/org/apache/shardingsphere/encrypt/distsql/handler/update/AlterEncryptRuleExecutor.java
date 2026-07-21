@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleStatement;
@@ -102,7 +103,11 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     
     @Override
     public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final EncryptRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor(rule.getConfiguration());
+        Collection<String> toBeAlteredTableNames = toBeAlteredRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<EncryptTableRuleConfiguration> tables = rule.getConfiguration().getTables().stream().filter(each -> !toBeAlteredTableNames.contains(each.getName())).collect(Collectors.toList());
+        tables.addAll(toBeAlteredRuleConfig.getTables());
+        EncryptRuleConfiguration toBeCheckedRuleConfig = new EncryptRuleConfiguration(tables, rule.getConfiguration().getEncryptors());
+        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor(toBeCheckedRuleConfig);
         Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>(unusedEncryptor.size(), 1F);
         unusedEncryptor.forEach(each -> toBeDroppedEncryptors.put(each, rule.getConfiguration().getEncryptors().get(each)));
         return new EncryptRuleConfiguration(Collections.emptyList(), toBeDroppedEncryptors);
