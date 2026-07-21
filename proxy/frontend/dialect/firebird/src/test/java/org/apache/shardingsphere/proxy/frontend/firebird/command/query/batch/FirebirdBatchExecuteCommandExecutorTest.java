@@ -24,11 +24,15 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdBatchCompletionStateResponse;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdBatchCompletionStateResponse.DetailedError;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -83,10 +87,24 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @Mock
     private FirebirdServerPreparedStatement preparedStatement;
     
+    private int transactionId;
+    
+    @BeforeEach
+    void setUp() {
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
     @Test
     void assertExecuteWithoutRecordCounts() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(batchStatement.getParameterValues()).thenReturn(Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2")));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
@@ -112,6 +130,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     void assertExecuteWithRecordCounts() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(batchStatement.isRecordCounts()).thenReturn(true);
         when(batchStatement.getParameterValues()).thenReturn(Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2")));
@@ -133,6 +152,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     void assertExecuteEmptyBatch() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(createPacket.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(createPacket.getBatchBlr()).thenReturn(createBatchBlr());
         when(createPacket.getBatchMessageLength()).thenReturn(6L);
@@ -155,6 +175,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     void assertExecuteWithFailedMessage() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(batchStatement.isRecordCounts()).thenReturn(true);
         when(batchStatement.getParameterValues()).thenReturn(Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2"), Arrays.asList(3, "foo_3")));
@@ -182,6 +203,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     void assertExecuteWithFailedMessageWithoutRecordCounts() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(batchStatement.getParameterValues()).thenReturn(Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2")));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
@@ -214,6 +236,22 @@ class FirebirdBatchExecuteCommandExecutorTest {
             FirebirdBatchExecuteCommandExecutor executor = new FirebirdBatchExecuteCommandExecutor(packet, connectionSession);
             assertThrows(InvalidBatchHandleException.class, executor::execute);
             verify(batchRegistry).getBatchStatement(CONNECTION_ID, STATEMENT_ID);
+            verify(connectionSession.getServerPreparedStatementRegistry(), never()).getPreparedStatement(anyInt());
+        }
+    }
+    
+    @Test
+    void assertExecuteWithClosedTransactionHandle() {
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getTransactionHandle()).thenReturn(transactionId);
+        when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
+        FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, transactionId);
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
+            mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
+            FirebirdBatchExecuteCommandExecutor executor = new FirebirdBatchExecuteCommandExecutor(packet, connectionSession);
+            assertThrows(InvalidTransactionHandleException.class, executor::execute);
             verify(connectionSession.getServerPreparedStatementRegistry(), never()).getPreparedStatement(anyInt());
         }
     }

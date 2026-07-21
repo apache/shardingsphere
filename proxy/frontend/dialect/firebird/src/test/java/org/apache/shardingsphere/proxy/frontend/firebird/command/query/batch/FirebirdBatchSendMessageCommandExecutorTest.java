@@ -38,6 +38,7 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -162,12 +163,15 @@ class FirebirdBatchSendMessageCommandExecutorTest {
             assertExecuteExecutesAcceptedMessages(batchStatement);
         } finally {
             FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+            FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         }
     }
     
     @SuppressWarnings("unchecked")
     private void assertExecuteExecutesAcceptedMessages(final FirebirdBatchStatement batchStatement) throws SQLException {
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         when(executePacket.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(executePacket.getTransactionHandle()).thenReturn(FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         List<List<List<Object>>> executedParameterValues = new LinkedList<>();
         try (

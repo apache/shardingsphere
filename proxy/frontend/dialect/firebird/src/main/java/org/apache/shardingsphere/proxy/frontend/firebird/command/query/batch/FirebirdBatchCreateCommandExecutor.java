@@ -51,6 +51,8 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
     
     private static final int BATCH_VERSION_1 = 1;
     
+    private static final int TAG_MULTIERROR = 1;
+    
     private static final int TAG_RECORD_COUNTS = 2;
     
     private static final int TAG_BUFFER_BYTES_SIZE = 3;
@@ -90,7 +92,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         ByteBuf batchParametersBuffer = packet.getBatchParametersBuffer();
         BatchParameters batchParameters = BatchParameters.parse(batchParametersBuffer);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionId, statementId,
-                new FirebirdBatchStatement(statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts()));
+                new FirebirdBatchStatement(statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts(), batchParameters.isMultiError()));
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }
     
@@ -104,12 +106,14 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         
         private final boolean recordCounts;
         
+        private final boolean multiError;
+        
         // private final int blobPolicy;
         
         static BatchParameters parse(final ByteBuf batchParametersBuffer) {
             if (null == batchParametersBuffer || !batchParametersBuffer.isReadable()) {
-                // return new BatchParameters(BATCH_VERSION_1, DEFAULT_BUFFER_SIZE, false, BLOB_STREAM);
-                return new BatchParameters(BATCH_VERSION_1, DEFAULT_BUFFER_SIZE, false);
+                // return new BatchParameters(BATCH_VERSION_1, DEFAULT_BUFFER_SIZE, false, false, BLOB_STREAM);
+                return new BatchParameters(BATCH_VERSION_1, DEFAULT_BUFFER_SIZE, false, false);
             }
             ByteBuf reader = batchParametersBuffer.duplicate();
             int version = reader.readUnsignedByte();
@@ -118,13 +122,16 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
             }
             long bufferSize = DEFAULT_BUFFER_SIZE;
             boolean recordCounts = false;
+            boolean multiError = false;
             // int blobPolicy = BLOB_STREAM;
             while (reader.isReadable()) {
                 ensureClumpletHeaderReadable(reader);
                 int tag = reader.readUnsignedByte();
                 int valueLength = reader.readIntLE();
                 ensureClumpletValueReadable(reader, tag, valueLength);
-                if (TAG_RECORD_COUNTS == tag) {
+                if (TAG_MULTIERROR == tag) {
+                    multiError = 0 != readIntegerValue(reader, tag, valueLength);
+                } else if (TAG_RECORD_COUNTS == tag) {
                     recordCounts = 0 != readIntegerValue(reader, tag, valueLength);
                 } else if (TAG_BUFFER_BYTES_SIZE == tag) {
                     bufferSize = getBufferSize(readIntegerValue(reader, tag, valueLength));
@@ -137,8 +144,8 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
                     reader.skipBytes(valueLength);
                 }
             }
-            // return new BatchParameters(version, bufferSize, recordCounts, blobPolicy);
-            return new BatchParameters(version, bufferSize, recordCounts);
+            // return new BatchParameters(version, bufferSize, recordCounts, multiError, blobPolicy);
+            return new BatchParameters(version, bufferSize, recordCounts, multiError);
         }
         
         private static long getBufferSize(final int requestedBufferSize) {

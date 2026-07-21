@@ -71,6 +71,8 @@ class FirebirdBatchCreateCommandExecutorTest {
     
     private static final int BATCH_VERSION_1 = 1;
     
+    private static final int TAG_MULTIERROR = 1;
+    
     private static final int TAG_RECORD_COUNTS = 2;
     
     private static final int TAG_BUFFER_BYTES_SIZE = 3;
@@ -111,6 +113,7 @@ class FirebirdBatchCreateCommandExecutorTest {
         assertNotNull(actualBatchStatement);
         assertThat(actualBatchStatement.getStatementHandle(), is(STATEMENT_ID));
         assertFalse(actualBatchStatement.isRecordCounts());
+        assertFalse(actualBatchStatement.isMultiError());
         assertThat(actualBatchStatement.getColumnDescriptors().size(), is(1));
         assertThat(actualBatchStatement.getColumnDescriptors().get(0).getType(), is(FirebirdBinaryColumnType.LEGACY_TEXT));
         assertThat(actualBatchStatement.getColumnDescriptors().get(0).getLength(), is(4));
@@ -129,6 +132,19 @@ class FirebirdBatchCreateCommandExecutorTest {
         when(packet.getBatchParametersBuffer()).thenReturn(createBatchParametersBuffer(TAG_RECORD_COUNTS, 1));
         new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
         assertTrue(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID).isRecordCounts());
+    }
+    
+    @Test
+    void assertExecuteWithMultiError() throws SQLException {
+        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
+        when(packet.getBatchBlr()).thenReturn(createBatchBlr());
+        when(packet.getBatchMessageLength()).thenReturn(6L);
+        when(packet.getBatchParametersBuffer()).thenReturn(createBatchParametersBuffer(TAG_MULTIERROR, 1));
+        new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
+        assertTrue(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID).isMultiError());
     }
     
     @Test
@@ -205,6 +221,7 @@ class FirebirdBatchCreateCommandExecutorTest {
         assertThat(actual.getVersion(), is(BATCH_VERSION_1));
         assertThat(actual.getBufferSize(), is(DEFAULT_BUFFER_SIZE));
         assertFalse(actual.isRecordCounts());
+        assertFalse(actual.isMultiError());
     }
     
     @Test
@@ -229,6 +246,18 @@ class FirebirdBatchCreateCommandExecutorTest {
     void assertParseBatchParametersWithRecordCounts() {
         FirebirdBatchCreateCommandExecutor.BatchParameters actual = FirebirdBatchCreateCommandExecutor.BatchParameters.parse(createBatchParametersBuffer(TAG_RECORD_COUNTS, 1));
         assertTrue(actual.isRecordCounts());
+    }
+    
+    @Test
+    void assertParseBatchParametersWithMultiError() {
+        FirebirdBatchCreateCommandExecutor.BatchParameters actual = FirebirdBatchCreateCommandExecutor.BatchParameters.parse(createBatchParametersBuffer(TAG_MULTIERROR, 1));
+        assertTrue(actual.isMultiError());
+    }
+    
+    @Test
+    void assertParseBatchParametersWithDisabledMultiError() {
+        FirebirdBatchCreateCommandExecutor.BatchParameters actual = FirebirdBatchCreateCommandExecutor.BatchParameters.parse(createBatchParametersBuffer(TAG_MULTIERROR, 0));
+        assertFalse(actual.isMultiError());
     }
     
     @Test
