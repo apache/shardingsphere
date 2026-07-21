@@ -174,6 +174,13 @@ class EncryptOpenQueryPassThroughSQLTest {
         assertThat(actual, is("SELECT " + expectedQuotedColumn + " FROM foo_schema.foo_tbl WHERE id_col = 1"));
     }
     
+    @Test
+    void assertRewriteRejectsPhysicalColumnNameContainingRightBracket() {
+        EncryptOpenQueryPassThroughSQL passThroughSQL = EncryptOpenQueryPassThroughSQL.parse("SELECT foo_col FROM foo_schema.foo_tbl WHERE id_col = 1");
+        assertThrows(UnsupportedEncryptSQLException.class,
+                () -> passThroughSQL.rewrite(Collections.singletonList(createEncryptColumn("foo_col", "foo]bar"))));
+    }
+    
     private static Stream<Arguments> quotedPhysicalColumnNameArguments() {
         return Stream.of(
                 Arguments.of("space", "cipher name", "[cipher name]"),

@@ -53,6 +53,8 @@ final class EncryptOpenQueryPassThroughSQL {
     
     private static final String UNSUPPORTED_ENCRYPTED_PREDICATE = "OPENQUERY with predicate on encrypted column";
     
+    private static final String UNSUPPORTED_PHYSICAL_COLUMN_NAME = "OPENQUERY with physical column name containing ]";
+    
     private final String selectList;
     
     private final String tableExpression;
@@ -585,6 +587,9 @@ final class EncryptOpenQueryPassThroughSQL {
     }
     
     private static String quotePhysicalColumnName(final String physicalColumnName) {
+        if (physicalColumnName.contains("]")) {
+            throw new UnsupportedEncryptSQLException(UNSUPPORTED_PHYSICAL_COLUMN_NAME);
+        }
         return QuoteCharacter.BRACKETS.wrap(physicalColumnName);
     }
     

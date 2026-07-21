@@ -155,6 +155,16 @@
         <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher], [remark_cipher], [assisted_query_remark], [like_query_remark] FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = ?, [remark_cipher] = ?, [assisted_query_remark] = ?, [like_query_remark] = ?" parameters="encrypt_Sales and Marketing, encrypt_note, assisted_query_note, like_query_note" />
     </rewrite-assertion>
     
+    <rewrite-assertion id="update_department_with_open_query_select_extra_encrypt_column_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName, Remark FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher], [remark_cipher], [assisted_query_remark], [like_query_remark] FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_department_with_open_query_select_extra_encrypt_column_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName, Remark FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = ?" parameters="Sales and Marketing" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher], [remark_cipher], [assisted_query_remark], [like_query_remark] FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="update_department_with_open_query_delimited_multipart_table_name_for_literals" db-types="SQLServer">
         <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM [HumanResources].[Department] WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
         <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM [HumanResources].[Department] WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />

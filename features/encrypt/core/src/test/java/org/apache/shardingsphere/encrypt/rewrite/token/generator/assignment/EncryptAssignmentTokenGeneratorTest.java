@@ -241,6 +241,7 @@ class EncryptAssignmentTokenGeneratorTest {
         when(encryptTable.isEncryptColumn("GroupName")).thenReturn(true);
         when(encryptTable.getTable()).thenReturn("Department");
         when(encryptTable.getEncryptColumn("GroupName")).thenReturn(encryptColumn);
+        when(encryptTable.getEncryptColumns()).thenReturn(Collections.singletonList(encryptColumn));
         when(encryptColumn.getName()).thenReturn("GroupName");
         when(encryptColumn.getCipher().getName()).thenReturn("group_name_cipher");
         when(encryptColumn.getCipher().encrypt("foo_db", "dbo", "Department", "GroupName", Collections.singletonList("Sales and Marketing")))
@@ -256,6 +257,7 @@ class EncryptAssignmentTokenGeneratorTest {
         when(encryptTable.isEncryptColumn("SecureLabel")).thenReturn(true);
         when(encryptTable.getTable()).thenReturn("Department");
         when(encryptTable.getEncryptColumn("SecureLabel")).thenReturn(encryptColumn);
+        when(encryptTable.getEncryptColumns()).thenReturn(Collections.singletonList(encryptColumn));
         when(encryptColumn.getName()).thenReturn("SecureLabel");
         when(encryptColumn.getCipher().getName()).thenReturn("cipher name");
         when(encryptColumn.getCipher().encrypt("foo_db", "dbo", "Department", "SecureLabel", Collections.singletonList("secret")))
@@ -297,6 +299,7 @@ class EncryptAssignmentTokenGeneratorTest {
         when(encryptTable.getTable()).thenReturn("Department");
         when(encryptTable.getEncryptColumn("GroupName")).thenReturn(groupNameColumn);
         when(encryptTable.getEncryptColumn("DeptCode")).thenReturn(deptCodeColumn);
+        when(encryptTable.getEncryptColumns()).thenReturn(Arrays.asList(groupNameColumn, deptCodeColumn));
         when(groupNameColumn.getName()).thenReturn("GroupName");
         when(groupNameColumn.getCipher().getName()).thenReturn("group_name_cipher");
         when(groupNameColumn.getCipher().encrypt("foo_db", "dbo", "Department", "GroupName", Collections.singletonList("Sales")))
@@ -349,6 +352,7 @@ class EncryptAssignmentTokenGeneratorTest {
         when(encryptTable.getTable()).thenReturn("Department");
         when(encryptTable.getEncryptColumn("GroupName")).thenReturn(groupNameColumn);
         when(encryptTable.getEncryptColumn("Remark")).thenReturn(remarkColumn);
+        when(encryptTable.getEncryptColumns()).thenReturn(Arrays.asList(groupNameColumn, remarkColumn));
         when(groupNameColumn.getName()).thenReturn("GroupName");
         when(groupNameColumn.getCipher().getName()).thenReturn("group_name_cipher");
         when(groupNameColumn.getCipher().encrypt("foo_db", "dbo", "Department", "GroupName", Collections.singletonList("Sales")))
@@ -388,5 +392,50 @@ class EncryptAssignmentTokenGeneratorTest {
         functionSegment.getParameters().add(new ColumnSegment(18, 31, new IdentifierValue("MyLinkedServer")));
         functionSegment.getParameters().add(new LiteralExpressionSegment(34, 97, "SELECT GroupName, Remark FROM dbo.Department WHERE DepartmentID = 4"));
         return new FunctionTableSegment(7, 108, functionSegment);
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithOpenQuerySelectExtraEncryptColumnRewritesBoth() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockOpenQueryEncryptRuleWithTwoColumns(), database, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        ColumnSegment columnSegment = new ColumnSegment(112, 120, new IdentifierValue("GroupName"));
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(null, null, new IdentifierValue("GroupName"), TableSourceType.TEMPORARY_TABLE));
+        when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(columnSegment));
+        when(assignmentSegment.getValue()).thenReturn(new LiteralExpressionSegment(124, 144, "Sales and Marketing"));
+        when(assignmentSegment.getStopIndex()).thenReturn(144);
+        when(tablesContext.getSchemaName()).thenReturn(Optional.of("dbo"));
+        Collection<SQLToken> actual = tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment, createOpenQueryTableSegmentWithExtraColumn());
+        assertThat(actual.size(), is(2));
+        Iterator<SQLToken> iterator = actual.iterator();
+        assertThat(iterator.next().toString(), is("group_name_cipher = 'groupEncryptValue'"));
+        assertThat(iterator.next().toString(), is("'SELECT [group_name_cipher], [extra_col_cipher] FROM dbo.Department WHERE DepartmentID = 4'"));
+    }
+    
+    private EncryptRule mockOpenQueryEncryptRuleWithTwoColumns() {
+        EncryptRule result = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        EncryptColumn groupNameColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
+        EncryptColumn extraColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
+        when(result.findEncryptTable("Department")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.isEncryptColumn("GroupName")).thenReturn(true);
+        when(encryptTable.getTable()).thenReturn("Department");
+        when(encryptTable.getEncryptColumn("GroupName")).thenReturn(groupNameColumn);
+        when(encryptTable.getEncryptColumns()).thenReturn(Arrays.asList(groupNameColumn, extraColumn));
+        when(groupNameColumn.getName()).thenReturn("GroupName");
+        when(groupNameColumn.getCipher().getName()).thenReturn("group_name_cipher");
+        when(groupNameColumn.getCipher().encrypt("foo_db", "dbo", "Department", "GroupName", Collections.singletonList("Sales and Marketing")))
+                .thenReturn(Collections.singletonList("groupEncryptValue"));
+        when(extraColumn.getName()).thenReturn("ExtraCol");
+        when(extraColumn.getCipher().getName()).thenReturn("extra_col_cipher");
+        return result;
+    }
+    
+    private FunctionTableSegment createOpenQueryTableSegmentWithExtraColumn() {
+        FunctionSegment functionSegment = new FunctionSegment(7, 112, "OPENQUERY",
+                "OPENQUERY (MyLinkedServer, 'SELECT GroupName, ExtraCol FROM dbo.Department WHERE DepartmentID = 4')");
+        functionSegment.getParameters().add(new ColumnSegment(18, 31, new IdentifierValue("MyLinkedServer")));
+        functionSegment.getParameters().add(new LiteralExpressionSegment(34, 101, "SELECT GroupName, ExtraCol FROM dbo.Department WHERE DepartmentID = 4"));
+        return new FunctionTableSegment(7, 112, functionSegment);
     }
 }

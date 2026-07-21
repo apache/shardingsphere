@@ -13,8 +13,21 @@ weight = 2
 
 ## SQL Server OPENQUERY encryption
 
-The following are not supported for encrypt rewrite with the `OPENQUERY` function:
+Encrypt rewrite for `OPENQUERY` only supports a narrow pass-through shape:
 
+```sql
+UPDATE OPENQUERY (linked_server, 'SELECT <columns> FROM [<schema>.]<table> [WHERE ...]')
+SET <encrypt_column> = <literal_or_parameter>
+```
+
+The following are not supported:
+
+- `SELECT` list items that are string literals or expressions.
+- Identifiers that contain spaces inside brackets, such as `[Human Resources]`.
+- Three-part table names, such as `db.schema.table`.
+- Comma-separated table sources.
+- `JOIN`, `CROSS APPLY`, `OUTER APPLY`.
+- `UNION`, `UNION ALL`, `EXCEPT`, `INTERSECT`.
 - Predicates after `WHERE` that reference encrypted columns.
-- Physical column names that contain `]` or `[]` in the middle.
-- `JOIN`, `CROSS APPLY`, `OUTER APPLY`, `UNION`, `UNION ALL`, `EXCEPT`, and `INTERSECT` in the pass-through query.
+- Assignment expressions other than literals or parameter markers, such as `SET col = UPPER('x')`.
+- Physical column names that contain `]`.

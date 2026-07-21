@@ -13,8 +13,21 @@ weight = 2
 
 ## SQL Server OPENQUERY 加密功能
 
-`OPENQUERY` 函数的加密改写不支持以下场景：
+`OPENQUERY` 的加密改写仅支持如下窄形态透传查询：
 
+```sql
+UPDATE OPENQUERY (linked_server, 'SELECT <columns> FROM [<schema>.]<table> [WHERE ...]')
+SET <encrypt_column> = <literal_or_parameter>
+```
+
+不支持以下场景：
+
+- `SELECT` 列表中的字符串字面量或表达式；
+- 括号标识符中包含空格，例如 `[Human Resources]`；
+- 三部分表名，例如 `db.schema.table`；
+- 逗号分隔的多表源；
+- `JOIN`、`CROSS APPLY`、`OUTER APPLY`；
+- `UNION`、`UNION ALL`、`EXCEPT`、`INTERSECT`；
 - `WHERE` 后引用加密列；
-- 物理列名中间包含 `]` 或 `[]`；
-- 透传查询中使用 `JOIN`、`CROSS APPLY`、`OUTER APPLY`、`UNION`、`UNION ALL`、`EXCEPT`、`INTERSECT`。
+- 非字面量、非参数的赋值表达式，例如 `SET col = UPPER('x')`；
+- 物理列名包含 `]`。
