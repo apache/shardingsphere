@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
@@ -59,6 +60,15 @@ class CreateBroadcastTableRuleExecutorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         BroadcastRule rule = mock(BroadcastRule.class);
         when(rule.getTables()).thenReturn(Collections.singleton("foo_tbl"));
+        assertThrows(DuplicateRuleException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule), null).executeUpdate());
+    }
+    
+    @Test
+    void assertExecuteUpdateWithCaseInsensitiveDuplicateBroadcastTables() {
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("FOO_TBL"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getTables()).thenReturn(new CaseInsensitiveSet<>(Collections.singleton("foo_tbl")));
         assertThrows(DuplicateRuleException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule), null).executeUpdate());
     }
     

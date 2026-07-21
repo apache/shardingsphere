@@ -64,6 +64,19 @@ class DropBroadcastTableRuleExecutorTest {
         verify(metaDataManagerPersistService).removeRuleConfiguration(eq(database), any(RuleConfiguration.class), eq("broadcast"));
     }
     
+    @Test
+    void assertExecuteUpdateWithCaseInsensitiveTableName() throws SQLException {
+        DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("FOO_TBL"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        BroadcastRule rule = mock(BroadcastRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getConfiguration().getTables()).thenReturn(Collections.singleton("foo_tbl"));
+        ContextManager contextManager = mockContextManager(database, rule);
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
+        verify(metaDataManagerPersistService).removeRuleConfiguration(eq(database), any(RuleConfiguration.class), eq("broadcast"));
+    }
+    
     private ContextManager mockContextManager(final ShardingSphereDatabase database, final BroadcastRule rule) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
