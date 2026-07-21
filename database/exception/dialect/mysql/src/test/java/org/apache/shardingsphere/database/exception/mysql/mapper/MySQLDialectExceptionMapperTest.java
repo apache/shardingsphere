@@ -88,7 +88,7 @@ class MySQLDialectExceptionMapperTest {
     
     @Test
     void assertConvertWithColumnNotFound() {
-        assertSQLExceptionWithMessage(mapper.convert(new ColumnNotFoundException("t_order", "order_id")), MySQLVendorError.ER_BAD_FIELD_ERROR, "order_id", "t_order");
+        assertSQLExceptionWithMessage(mapper.convert(new ColumnNotFoundException("t_order", "order_id")), MySQLVendorError.ER_BAD_FIELD_ERROR, "order_id", "field list");
     }
     
     private void assertSQLExceptionWithMessage(final SQLException actual, final VendorError vendorError, final Object... messageArgs) {

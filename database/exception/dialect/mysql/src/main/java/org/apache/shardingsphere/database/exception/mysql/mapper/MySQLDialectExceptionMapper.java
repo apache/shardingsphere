@@ -124,8 +124,7 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
             return toSQLException(MySQLVendorError.ER_INCORRECT_GLOBAL_LOCAL_VAR, ex.getVariableName(), ex.getScope());
         }
         if (sqlDialectException instanceof ColumnNotFoundException) {
-            ColumnNotFoundException ex = (ColumnNotFoundException) sqlDialectException;
-            return toSQLException(MySQLVendorError.ER_BAD_FIELD_ERROR, ex.getColumnName(), ex.getTableName());
+            return toSQLException(MySQLVendorError.ER_BAD_FIELD_ERROR, ((ColumnNotFoundException) sqlDialectException).getColumnName(), "field list");
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }
