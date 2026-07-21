@@ -235,7 +235,20 @@ class ShardingStandardRouteEngineTest {
         assertThat(routeContext.getOriginalDataNodes().size(), is(1));
         assertThat(routeContext.getOriginalDataNodes().iterator().next().size(), is(4));
     }
-    
+
+    @Test
+    void assertRouteByRelevantConditionRoutingToNoTargetKeepsEmptyResult() {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_interval_test"));
+        ShardingCondition outOfRangeCondition = new ShardingCondition();
+        outOfRangeCondition.getValues().add(new ListShardingConditionValue<>("create_at", "t_interval_test", Collections.singletonList("2025-06-01 20:20:20")));
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_interval_test",
+                new ShardingConditions(Collections.singletonList(outOfRangeCondition), mock(SQLStatementContext.class), mock(ShardingRule.class)),
+                sqlStatementContext, new HintValueContext());
+        RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createIntervalTableShardingRule());
+        assertThat(routeContext.getRouteUnits().size(), is(0));
+    }
+
     private ShardingStandardRouteEngine createShardingStandardRouteEngine(final String logicTableName, final ShardingConditions shardingConditions,
                                                                           final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
         return new ShardingStandardRouteEngine(logicTableName, shardingConditions, sqlStatementContext, hintValueContext, new ConfigurationProperties(new Properties()));

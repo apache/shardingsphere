@@ -131,8 +131,11 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
     private Collection<DataNode> routeByShardingConditionsWithCondition(final ShardingRule shardingRule, final ShardingTable shardingTable,
                                                                         final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy) {
         Collection<DataNode> result = new LinkedList<>();
+        boolean anyConditionRelevant = false;
         for (ShardingCondition each : shardingConditions.getConditions()) {
-            Collection<DataNode> dataNodes = isConditionRelevantToTable(shardingRule, each)
+            boolean relevant = isConditionRelevantToTable(shardingRule, each);
+            anyConditionRelevant |= relevant;
+            Collection<DataNode> dataNodes = relevant
                     ? route0(shardingTable,
                             databaseShardingStrategy, getShardingValuesFromShardingConditions(shardingRule, databaseShardingStrategy.getShardingColumns(), each),
                             tableShardingStrategy, getShardingValuesFromShardingConditions(shardingRule, tableShardingStrategy.getShardingColumns(), each))
@@ -140,7 +143,10 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
             result.addAll(dataNodes);
             originalDataNodes.add(dataNodes);
         }
-        return result.isEmpty()
+        // Full-route only when every condition was irrelevant; a relevant condition that legitimately
+        // routes to no target (e.g. an out-of-range interval value) must keep its empty result rather
+        // than broadcast to every shard.
+        return result.isEmpty() && !anyConditionRelevant
                 ? route0(shardingTable, databaseShardingStrategy, Collections.emptyList(), tableShardingStrategy, Collections.emptyList())
                 : result;
     }
