@@ -355,9 +355,13 @@ class SQLFederationResultSetMetaDataTest {
         JavaType varcharType = mock(JavaType.class);
         when(varcharType.getJavaClass()).thenReturn(SqlTypeName.class);
         when(varcharType.getSqlTypeName()).thenReturn(SqlTypeName.VARCHAR);
+        DialectSQLFederationColumnTypeConverter converter = mock(DialectSQLFederationColumnTypeConverter.class);
+        when(converter.convertColumnType(SqlTypeName.VARCHAR)).thenReturn(Types.VARCHAR);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
-                mock(), Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, varcharType), Collections.singletonMap(1, "foo_label"), mock());
-        assertThat(metaData.getColumnClassName(1), is(SqlTypeName.VARCHAR.getClass().getName()));
+                mock(), Collections.emptyList(), databaseType,
+                createResultType(new String[]{"foo_col"}, varcharType),
+                Collections.singletonMap(1, "foo_label"), converter);
+        assertThat(metaData.getColumnClassName(1), is(String.class.getName()));
     }
     
     private RelDataType createRowType(final boolean nullable, final int precision, final int scale) {
