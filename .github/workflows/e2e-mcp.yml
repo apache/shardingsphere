@@ -27,10 +27,15 @@ on:
       - ready_for_review
     paths:
       - '.github/workflows/e2e-mcp.yml'
+      - '.github/workflows/resources/actions/download-e2e-artifacts/**'
+      - '.github/workflows/resources/actions/setup-build-environment/**'
+      - '.github/workflows/resources/actions/upload-e2e-artifacts/**'
       - 'pom.xml'
+      - 'database/connector/**'
       - 'distribution/mcp/**'
       - 'mcp/**'
       - 'test/e2e/pom.xml'
+      - 'test/e2e/env/**'
       - 'test/e2e/mcp/**'
   schedule:
     - cron: '0 19 * * 1-5'
@@ -227,14 +232,24 @@ jobs:
           curl --silent --output /dev/null --request POST http://127.0.0.1:18088/mcp
           results_root="${RUNNER_TEMP}/mcp-conformance-results"
           mkdir -p "${results_root}"
+          scenario_count=0
           while IFS= read -r scenario; do
             [[ -z "${scenario}" || "${scenario}" == \#* ]] && continue
+            scenario_count=$((scenario_count + 1))
             node .mcp-conformance/dist/index.js server \
               --url http://127.0.0.1:18088/mcp \
               --scenario "${scenario}" \
               --spec-version 2025-11-25 \
               --output-dir "${results_root}/${scenario}"
           done < test/e2e/mcp/src/test/resources/conformance/server-scenarios.txt
+          if [[ "${scenario_count}" -eq 0 ]]; then
+            echo "No MCP conformance scenarios were selected." >&2
+            exit 1
+          fi
+          if ! find "${results_root}" -mindepth 1 -type f -print -quit | grep -q .; then
+            echo "MCP conformance produced no result files." >&2
+            exit 1
+          fi
       - name: Upload MCP Conformance Artifacts
         if: always()
         uses: actions/upload-artifact@v6
@@ -283,7 +298,7 @@ jobs:
         with:
           artifact-name: mcp-e2e-build-artifacts
           artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
-          docker-image-archives: mcp-distribution-image.tar
+          load-docker-image: 'false'
       - name: Download MCP LLM Runtime Image
         uses: ./.github/workflows/resources/actions/download-e2e-artifacts
         with:
@@ -307,7 +322,6 @@ jobs:
             -Dgroups=llm-e2e \
             -Dsurefire.failIfNoSpecifiedTests=true \
             -De2e.run.type=DOCKER \
-            -Dmcp.e2e.container.image="${{ env.MCP_DISTRIBUTION_IMAGE }}" \
             -Dmcp.llm.ready-timeout-seconds=900 \
             -Dmcp.llm.request-timeout-seconds=300 \
             -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" \

@@ -56,15 +56,10 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final ShardingInspectionService inspectionService;
+    private final ShardingInspectionService inspectionService = new ShardingInspectionService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport;
-    
-    public ShardingWorkflowValidationService() {
-        inspectionService = new ShardingInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
-                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
-    }
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+            WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,

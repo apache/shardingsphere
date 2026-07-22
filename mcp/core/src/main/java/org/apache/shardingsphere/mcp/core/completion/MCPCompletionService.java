@@ -112,8 +112,9 @@ public final class MCPCompletionService {
             matchStrategy = "contains_fallback";
         }
         List<MCPCompletionCandidate> returnedCandidates = filteredCandidates.stream().limit(maxValues).toList();
-        Map<String, Object> meta = createMeta(descriptor, argumentName, prefix, matchStrategy, actualContextArguments, inferredContextArguments, handlerResult.getMissingContextArguments(),
-                handlerResult.getNearestResourceUri(), candidates, filteredCandidates, returnedCandidates);
+        CompletionMetadataContext metadataContext = new CompletionMetadataContext(descriptor, argumentName, prefix, matchStrategy, actualContextArguments, handlerResult,
+                filteredCandidates, returnedCandidates);
+        Map<String, Object> meta = createMeta(metadataContext);
         return new MCPCompletionResult(returnedCandidates.stream().map(MCPCompletionCandidate::getValue).toList(), filteredCandidates.size(), filteredCandidates.size() > returnedCandidates.size(),
                 meta);
     }
@@ -173,32 +174,34 @@ public final class MCPCompletionService {
         return handler.complete(handler.getContextType().cast(requestContext), request);
     }
     
-    private Map<String, Object> createMeta(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix, final String matchStrategy,
-                                           final Map<String, String> contextArguments, final Map<String, Object> inferredContextArguments, final Collection<String> missingContextArguments,
-                                           final String nearestResourceUri, final Collection<MCPCompletionCandidate> candidates, final Collection<MCPCompletionCandidate> filteredCandidates,
-                                           final Collection<MCPCompletionCandidate> returnedCandidates) {
+    private Map<String, Object> createMeta(final CompletionMetadataContext context) {
+        MCPCompletionTargetDescriptor descriptor = context.descriptor();
+        MCPCompletionHandlerResult handlerResult = context.handlerResult();
+        Collection<MCPCompletionCandidate> candidates = handlerResult.getCandidates();
         Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put(MCPShardingSphereMetadataKeys.RESPONSE_MODE, MCPResponseMode.LIST);
         result.put(MCPShardingSphereMetadataKeys.REFERENCE_TYPE, descriptor.getReferenceType());
         result.put(MCPShardingSphereMetadataKeys.REFERENCE, descriptor.getReference());
-        result.put(MCPShardingSphereMetadataKeys.ARGUMENT, argumentName);
-        result.put(MCPShardingSphereMetadataKeys.PREFIX_ARGUMENT, prefix);
-        result.put(MCPShardingSphereMetadataKeys.MATCH_STRATEGY, matchStrategy);
-        result.put(MCPShardingSphereMetadataKeys.CONTEXT_ARGUMENTS, contextArguments);
+        result.put(MCPShardingSphereMetadataKeys.ARGUMENT, context.argumentName());
+        result.put(MCPShardingSphereMetadataKeys.PREFIX_ARGUMENT, context.prefix());
+        result.put(MCPShardingSphereMetadataKeys.MATCH_STRATEGY, context.matchStrategy());
+        result.put(MCPShardingSphereMetadataKeys.CONTEXT_ARGUMENTS, context.contextArguments());
         result.put(MCPShardingSphereMetadataKeys.CANDIDATE_COUNT, candidates.size());
-        putInferredContext(result, inferredContextArguments);
-        result.put(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS, missingContextArguments);
-        String diagnostic = createDiagnostic(candidates, filteredCandidates, missingContextArguments);
+        putInferredContext(result, handlerResult.getInferredContextArguments());
+        result.put(MCPShardingSphereMetadataKeys.MISSING_CONTEXT_ARGUMENTS, handlerResult.getMissingContextArguments());
+        String diagnostic = createDiagnostic(candidates, context.filteredCandidates(), handlerResult.getMissingContextArguments());
         result.put(MCPShardingSphereMetadataKeys.DIAGNOSTIC, diagnostic);
         if (!"ok".equals(diagnostic)) {
-            result.put(MCPShardingSphereMetadataKeys.RECOVERY, createRecovery(prefix, diagnostic, missingContextArguments, nearestResourceUri));
+            result.put(MCPShardingSphereMetadataKeys.RECOVERY,
+                    createRecovery(context.prefix(), diagnostic, handlerResult.getMissingContextArguments(), handlerResult.getNearestResourceUri()));
         }
-        List<Map<String, Object>> nextActions = createNextActions(descriptor, argumentName, prefix, contextArguments, diagnostic, missingContextArguments, nearestResourceUri);
+        List<Map<String, Object>> nextActions = createNextActions(descriptor, context.argumentName(), context.prefix(), context.contextArguments(), diagnostic,
+                handlerResult.getMissingContextArguments(), handlerResult.getNearestResourceUri());
         if (!nextActions.isEmpty()) {
             result.put(MCPShardingSphereMetadataKeys.NEXT_ACTIONS, nextActions);
         }
         result.put(MCPShardingSphereMetadataKeys.RANKING_POLICY, createRankingPolicy(candidates));
-        result.put(MCPShardingSphereMetadataKeys.VALUE_DETAILS, returnedCandidates.stream().map(this::createValueDetail).toList());
+        result.put(MCPShardingSphereMetadataKeys.VALUE_DETAILS, context.returnedCandidates().stream().map(this::createValueDetail).toList());
         return result;
     }
     
@@ -308,5 +311,10 @@ public final class MCPCompletionService {
         }
         result.add("case-insensitive-lexical");
         return result;
+    }
+    
+    private record CompletionMetadataContext(MCPCompletionTargetDescriptor descriptor, String argumentName, String prefix, String matchStrategy,
+                                             Map<String, String> contextArguments, MCPCompletionHandlerResult handlerResult,
+                                             Collection<MCPCompletionCandidate> filteredCandidates, Collection<MCPCompletionCandidate> returnedCandidates) {
     }
 }

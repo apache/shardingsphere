@@ -142,15 +142,6 @@ public final class ResourceDefinitionRegistry {
     }
     
     /**
-     * Get supported resources.
-     *
-     * @return supported resources
-     */
-    public static Collection<String> getSupportedResources() {
-        return REGISTERED_RESOURCE_DEFINITIONS.stream().map(each -> each.getUriPattern().getPattern()).toList();
-    }
-    
-    /**
      * Get supported resource descriptors.
      *
      * @return supported resource descriptors

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.core.resource.uri;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,12 +45,6 @@ class MCPUriPatternTest {
     void assertParse() {
         Optional<MCPResourceURIVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("shardingsphere://capabilities");
         assertTrue(actual.isPresent());
-    }
-    
-    @Test
-    void assertGetVariableNames() {
-        MCPUriPattern actual = new MCPUriPattern("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}");
-        assertThat(actual.getVariableNames(), is(List.of("database", "schema", "table", "column")));
     }
     
     @Test
@@ -101,6 +94,11 @@ class MCPUriPatternTest {
     @Test
     void assertCreateWithInvalidPattern() {
         assertThrows(IllegalArgumentException.class, () -> new MCPUriPattern("invalid-template"));
+    }
+    
+    @Test
+    void assertCreateWithEmbeddedVariable() {
+        assertThrows(IllegalArgumentException.class, () -> new MCPUriPattern("shardingsphere://databases/prefix-{database}"));
     }
     
     @Test

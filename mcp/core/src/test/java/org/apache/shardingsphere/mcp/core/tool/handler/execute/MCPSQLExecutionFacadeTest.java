@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
-import org.apache.shardingsphere.mcp.core.tool.handler.execute.trace.SQLExecutionTraceFactory;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
@@ -68,13 +67,11 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor);
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
         when(coordinator.executeWithSessionLock(eq("session-1"), any())).thenThrow(new MCPSessionNotExistedException());
         MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Session does not exist."));
-        verify(traceFactory).create("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(capabilityProvider, transactionExecutor, statementExecutor);
     }
     
@@ -86,7 +83,6 @@ class MCPSQLExecutionFacadeTest {
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         MCPStatementAnalyzer statementAnalyzer = mock(MCPStatementAnalyzer.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", List.of(), false);
@@ -96,14 +92,13 @@ class MCPSQLExecutionFacadeTest {
         when(statementAnalyzer.analyze("SELECT 1", capability)).thenReturn(classification);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         when(statementExecutor.execute(request, classification, capability)).thenReturn(expectedResult);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, statementAnalyzer);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, statementAnalyzer);
         assertThat(facade.execute(request), is(expectedResult));
-        verifyNoInteractions(capabilityProvider, transactionExecutor, statementExecutor, statementAnalyzer, traceFactory);
+        verifyNoInteractions(capabilityProvider, transactionExecutor, statementExecutor, statementAnalyzer);
         assertThat(lockedExecution.getValue().get(), is(expectedResult));
         verify(statementAnalyzer).analyze("SELECT 1", capability);
         verify(capabilityProvider).provide("logic_db");
         verify(statementExecutor).execute(request, classification, capability);
-        verify(traceFactory).create("session-1", "logic_db", "SELECT 1", true, "QUERY");
         verifyNoInteractions(transactionExecutor);
     }
     
@@ -113,14 +108,12 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor);
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.empty());
         DatabaseCapabilityNotFoundException actual = assertThrows(DatabaseCapabilityNotFoundException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Database capability does not exist."));
-        verify(traceFactory).create("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -135,12 +128,10 @@ class MCPSQLExecutionFacadeTest {
         when(statementAnalyzer.analyze(anyString(), any())).thenThrow(new MCPBannedSQLStatementException());
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, statementAnalyzer);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, statementAnalyzer);
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
         MCPBannedSQLStatementException actual = assertThrows(MCPBannedSQLStatementException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Statement is banned by the MCP contract."));
-        verify(traceFactory).create("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -155,12 +146,10 @@ class MCPSQLExecutionFacadeTest {
         when(statementAnalyzer.analyze(anyString(), any())).thenThrow(new IllegalArgumentException("Malformed SQL."));
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, statementAnalyzer);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, statementAnalyzer);
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Malformed SQL."));
-        verify(traceFactory).create("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -170,17 +159,15 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "",
                 List.of(SQLStatementObjectName.fromNormalizedName("orders")), false);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createMCPStatementAnalyzer(classification));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, createMCPStatementAnalyzer(classification));
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.DML));
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         StatementClassNotSupportedException actual = assertThrows(StatementClassNotSupportedException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Statement class is not supported."));
-        verify(traceFactory).create("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -196,13 +183,11 @@ class MCPSQLExecutionFacadeTest {
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         when(transactionExecutor.execute("session-1", "logic_db", capability, classification)).thenReturn(expectedResult);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createMCPStatementAnalyzer(classification));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, createMCPStatementAnalyzer(classification));
         SQLExecutionRequest request = createExecutionRequest("BEGIN");
         SQLExecutionResult actual = facade.execute(request);
         assertThat(actual, is(expectedResult));
         verify(transactionExecutor).execute("session-1", "logic_db", capability, classification);
-        verify(traceFactory).create("session-1", "logic_db", "BEGIN", true, "BEGIN");
         verifyNoInteractions(statementExecutor);
     }
     
@@ -220,12 +205,10 @@ class MCPSQLExecutionFacadeTest {
         SQLExecutionRequest request = createExecutionRequest("SELECT 1");
         when(statementExecutor.execute(request, classification, capability)).thenReturn(expectedResult);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createMCPStatementAnalyzer(classification));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, createMCPStatementAnalyzer(classification));
         SQLExecutionResult actual = facade.execute(request);
         assertThat(actual, is(expectedResult));
         verify(statementExecutor).execute(request, classification, capability);
-        verify(traceFactory).create("session-1", "logic_db", "SELECT 1", true, "QUERY");
         verifyNoInteractions(transactionExecutor);
     }
     
@@ -235,17 +218,15 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         SQLExecutionRequest request = createExecutionRequest("SELECT * FROM other_db.orders");
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM other_db.orders", "",
                 List.of(SQLStatementObjectName.fromNormalizedName("other_db.orders")), false);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createMCPStatementAnalyzer(classification));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, createMCPStatementAnalyzer(classification));
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Cross-schema SQL is not supported for database `logic_db`: `other_db.orders`."));
-        verify(traceFactory).create("session-1", "logic_db", "SELECT * FROM other_db.orders", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -255,34 +236,30 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY));
         SQLExecutionRequest request = createExecutionRequest("SELECT * FROM logic_db.orders WHERE EXISTS (SELECT 1 FROM other_db.items)");
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Cross-schema SQL is not supported for database `logic_db`: `other_db.items`."));
-        verify(traceFactory).create("session-1", "logic_db", "SELECT * FROM logic_db.orders WHERE EXISTS (SELECT 1 FROM other_db.items)", false, "QUERY");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteWithCrossSchemaReferencesDisabledCases")
-    void assertExecuteWithCrossSchemaReferencesDisabled(final String name, final String sql, final String expectedObjectName, final String expectedTraceStatementMarker) {
+    void assertExecuteWithCrossSchemaReferencesDisabled(final String name, final String sql, final String expectedObjectName) {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL, SupportedMCPStatement.DCL));
         SQLExecutionRequest request = createExecutionRequest(sql);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor);
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is(String.format("Cross-schema SQL is not supported for database `logic_db`: `%s`.", expectedObjectName)));
-        verify(traceFactory).create("session-1", "logic_db", sql, false, expectedTraceStatementMarker);
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -292,17 +269,15 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.DML));
         SQLExecutionRequest request = createExecutionRequest("UPDATE other_db.orders SET status = 'DONE'");
         ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE other_db.orders SET status = 'DONE'", "",
                 List.of(SQLStatementObjectName.fromNormalizedName("other_db.orders")), false);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createMCPStatementAnalyzer(classification));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, createMCPStatementAnalyzer(classification));
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("Cross-schema SQL is not supported for database `logic_db`: `other_db.orders`."));
-        verify(traceFactory).create("session-1", "logic_db", "UPDATE other_db.orders SET status = 'DONE'", false, "DML");
         verifyNoInteractions(transactionExecutor, statementExecutor);
     }
     
@@ -319,12 +294,10 @@ class MCPSQLExecutionFacadeTest {
         SQLExecutionRequest request = createExecutionRequest(sql);
         when(statementExecutor.execute(eq(request), any(), eq(capability))).thenReturn(expectedResult);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor);
         SQLExecutionResult actual = facade.execute(request);
         assertThat(actual, is(expectedResult));
         verify(statementExecutor).execute(eq(request), any(), eq(capability));
-        verify(traceFactory).create("session-1", "logic_db", sql, true, supportedStatement.name());
         verifyNoInteractions(transactionExecutor);
     }
     
@@ -339,8 +312,7 @@ class MCPSQLExecutionFacadeTest {
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         SQLExecutionRequest request = createExecutionRequest("SELECT * FROM Logic_DB.orders");
         when(statementExecutor.execute(eq(request), any(), eq(capability))).thenReturn(expectedResult);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), statementExecutor,
-                mock(SQLExecutionTraceFactory.class));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), statementExecutor);
         assertThat(facade.execute(request), is(expectedResult));
     }
     
@@ -353,8 +325,7 @@ class MCPSQLExecutionFacadeTest {
         when(capability.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(identifierCasePolicySet));
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), mock(MCPJdbcStatementExecutor.class),
-                mock(SQLExecutionTraceFactory.class));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), mock(MCPJdbcStatementExecutor.class));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> facade.execute(createExecutionRequest(sql)));
         assertThat(actual.getMessage(), is("Cross-schema SQL is not supported for database `logic_db`: `Logic_DB.orders`."));
     }
@@ -373,12 +344,10 @@ class MCPSQLExecutionFacadeTest {
         SQLExecutionRequest request = createExecutionRequest("SELECT * FROM other_db.orders");
         when(statementExecutor.execute(request, classification, capability)).thenReturn(expectedResult);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createMCPStatementAnalyzer(classification));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, createMCPStatementAnalyzer(classification));
         SQLExecutionResult actual = facade.execute(request);
         assertThat(actual, is(expectedResult));
         verify(statementExecutor).execute(request, classification, capability);
-        verify(traceFactory).create("session-1", "logic_db", "SELECT * FROM other_db.orders", true, "QUERY");
         verifyNoInteractions(transactionExecutor);
     }
     
@@ -395,11 +364,9 @@ class MCPSQLExecutionFacadeTest {
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         when(statementExecutor.execute(request, classification, capability)).thenThrow(new MCPInvalidRequestException("bad query"));
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, createMCPStatementAnalyzer(classification));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, createMCPStatementAnalyzer(classification));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> facade.execute(request));
         assertThat(actual.getMessage(), is("bad query"));
-        verify(traceFactory).create("session-1", "logic_db", "SELECT 1", false, "QUERY");
         verifyNoInteractions(transactionExecutor);
     }
     
@@ -415,15 +382,13 @@ class MCPSQLExecutionFacadeTest {
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         when(statementExecutor.execute(eq(request), any(), eq(capability))).thenReturn(expectedResult);
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor);
         SQLExecutionResult actual = facade.executeExplain(request, "SELECT * FROM orders");
         assertThat(actual, is(expectedResult));
         ArgumentCaptor<ClassificationResult> classificationCaptor = ArgumentCaptor.forClass(ClassificationResult.class);
         verify(statementExecutor).execute(eq(request), classificationCaptor.capture(), eq(capability));
         assertThat(classificationCaptor.getValue().getStatementClass(), is(SupportedMCPStatement.EXPLAIN));
         assertThat(classificationCaptor.getValue().getReferencedObjectNames(), contains("orders"));
-        verify(traceFactory).create("session-1", "logic_db", "EXPLAIN SELECT * FROM orders", true, "EXPLAIN");
         verifyNoInteractions(transactionExecutor);
     }
     
@@ -438,14 +403,12 @@ class MCPSQLExecutionFacadeTest {
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         when(statementExecutor.execute(eq(request), any(), eq(capability))).thenThrow(executionFailure);
-        SQLExecutionTraceFactory traceFactory = mock(SQLExecutionTraceFactory.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), statementExecutor, traceFactory);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), statementExecutor);
         ExplainSQLSyntaxException actual = assertThrows(ExplainSQLSyntaxException.class, () -> facade.executeExplain(request, "SELECT * FROM orders"));
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getSchema(), is("public"));
         assertThat(actual.getSql(), is("SELECT * FROM orders"));
         assertThat(actual.getExplainSql(), is("EXPLAIN BROKEN SELECT * FROM orders"));
-        verify(traceFactory).create("session-1", "logic_db", "EXPLAIN BROKEN SELECT * FROM orders", false, "EXPLAIN");
     }
     
     @Test
@@ -459,21 +422,19 @@ class MCPSQLExecutionFacadeTest {
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         MCPQueryFailedException executionFailure = new MCPQueryFailedException("missing table", new SQLException("missing table", "42P01"));
         when(statementExecutor.execute(eq(request), any(), eq(capability))).thenThrow(executionFailure);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), statementExecutor,
-                mock(SQLExecutionTraceFactory.class));
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), statementExecutor);
         assertThat(assertThrows(MCPQueryFailedException.class, () -> facade.executeExplain(request, "SELECT * FROM missing_orders")), is(executionFailure));
     }
     
     private MCPSQLExecutionFacade createFacade(final MCPDatabaseCapabilityProvider capabilityProvider, final MCPSessionExecutionCoordinator coordinator,
-                                               final MCPJdbcTransactionStatementExecutor transactionExecutor, final MCPJdbcStatementExecutor statementExecutor,
-                                               final SQLExecutionTraceFactory traceFactory) {
-        return createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, traceFactory, new MCPStatementAnalyzer());
+                                               final MCPJdbcTransactionStatementExecutor transactionExecutor, final MCPJdbcStatementExecutor statementExecutor) {
+        return createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, new MCPStatementAnalyzer());
     }
     
     private MCPSQLExecutionFacade createFacade(final MCPDatabaseCapabilityProvider capabilityProvider, final MCPSessionExecutionCoordinator coordinator,
                                                final MCPJdbcTransactionStatementExecutor transactionExecutor, final MCPJdbcStatementExecutor statementExecutor,
-                                               final SQLExecutionTraceFactory traceFactory, final MCPStatementAnalyzer statementAnalyzer) {
-        return new MCPSQLExecutionFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, statementAnalyzer, traceFactory);
+                                               final MCPStatementAnalyzer statementAnalyzer) {
+        return new MCPSQLExecutionFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor, statementAnalyzer);
     }
     
     @SuppressWarnings("unchecked")
@@ -502,33 +463,33 @@ class MCPSQLExecutionFacadeTest {
     
     private static Stream<Arguments> assertExecuteWithCrossSchemaReferencesDisabledCases() {
         return Stream.of(
-                Arguments.of("query object list", "SELECT * FROM logic_db.orders, other_db.items", "other_db.items", "QUERY"),
-                Arguments.of("cte object list", "WITH query_result AS (SELECT * FROM logic_db.orders, other_db.items) SELECT * FROM query_result", "other_db.items", "QUERY"),
-                Arguments.of("unused cte reference", "WITH unused_result AS (SELECT * FROM other_db.items) SELECT * FROM logic_db.orders", "other_db.items", "QUERY"),
-                Arguments.of("insert select object list", "INSERT INTO logic_db.orders_archive SELECT * FROM logic_db.orders, other_db.items", "other_db.items", "DML"),
-                Arguments.of("update target object list", "UPDATE logic_db.orders o, other_db.items i SET o.status = 'DONE'", "other_db.items", "DML"),
-                Arguments.of("delete target before from", "DELETE other_db.orders FROM logic_db.orders JOIN other_db.items ON 1 = 1", "other_db.orders", "DML"),
-                Arguments.of("create view object list", "CREATE VIEW logic_db.active_orders AS SELECT * FROM logic_db.orders, other_db.items", "other_db.items", "DDL"),
-                Arguments.of("create table like", "CREATE TABLE logic_db.orders_archive LIKE other_db.orders", "other_db.orders", "DDL"),
-                Arguments.of("create table select without as", "CREATE TABLE logic_db.orders_archive SELECT * FROM other_db.orders", "other_db.orders", "DDL"),
-                Arguments.of("create table parenthesized select", "CREATE TABLE logic_db.orders_archive AS (SELECT * FROM other_db.orders)", "other_db.orders", "DDL"),
-                Arguments.of("create table table query", "CREATE TABLE logic_db.orders_archive AS TABLE other_db.orders", "other_db.orders", "DDL"),
-                Arguments.of("create table quoted table query", "CREATE TABLE logic_db.orders_archive AS TABLE `other_db`.`orders`", "other_db.orders", "DDL"),
-                Arguments.of("create table ANSI quoted table query", "CREATE TABLE logic_db.orders_archive AS TABLE \"other_db\".\"orders\"", "other_db.orders", "DDL"),
-                Arguments.of("create table foreign key reference", "CREATE TABLE logic_db.order_items (order_id INT REFERENCES other_db.orders(id))", "other_db.orders", "DDL"),
-                Arguments.of("alter table", "ALTER TABLE other_db.orders ADD COLUMN status VARCHAR(10)", "other_db.orders", "DDL"),
+                Arguments.of("query object list", "SELECT * FROM logic_db.orders, other_db.items", "other_db.items"),
+                Arguments.of("cte object list", "WITH query_result AS (SELECT * FROM logic_db.orders, other_db.items) SELECT * FROM query_result", "other_db.items"),
+                Arguments.of("unused cte reference", "WITH unused_result AS (SELECT * FROM other_db.items) SELECT * FROM logic_db.orders", "other_db.items"),
+                Arguments.of("insert select object list", "INSERT INTO logic_db.orders_archive SELECT * FROM logic_db.orders, other_db.items", "other_db.items"),
+                Arguments.of("update target object list", "UPDATE logic_db.orders o, other_db.items i SET o.status = 'DONE'", "other_db.items"),
+                Arguments.of("delete target before from", "DELETE other_db.orders FROM logic_db.orders JOIN other_db.items ON 1 = 1", "other_db.orders"),
+                Arguments.of("create view object list", "CREATE VIEW logic_db.active_orders AS SELECT * FROM logic_db.orders, other_db.items", "other_db.items"),
+                Arguments.of("create table like", "CREATE TABLE logic_db.orders_archive LIKE other_db.orders", "other_db.orders"),
+                Arguments.of("create table select without as", "CREATE TABLE logic_db.orders_archive SELECT * FROM other_db.orders", "other_db.orders"),
+                Arguments.of("create table parenthesized select", "CREATE TABLE logic_db.orders_archive AS (SELECT * FROM other_db.orders)", "other_db.orders"),
+                Arguments.of("create table table query", "CREATE TABLE logic_db.orders_archive AS TABLE other_db.orders", "other_db.orders"),
+                Arguments.of("create table quoted table query", "CREATE TABLE logic_db.orders_archive AS TABLE `other_db`.`orders`", "other_db.orders"),
+                Arguments.of("create table ANSI quoted table query", "CREATE TABLE logic_db.orders_archive AS TABLE \"other_db\".\"orders\"", "other_db.orders"),
+                Arguments.of("create table foreign key reference", "CREATE TABLE logic_db.order_items (order_id INT REFERENCES other_db.orders(id))", "other_db.orders"),
+                Arguments.of("alter table", "ALTER TABLE other_db.orders ADD COLUMN status VARCHAR(10)", "other_db.orders"),
                 Arguments.of("alter table foreign key reference",
-                        "ALTER TABLE logic_db.order_items ADD CONSTRAINT order_fk FOREIGN KEY (order_id) REFERENCES other_db.orders(id)", "other_db.orders", "DDL"),
-                Arguments.of("grant table", "GRANT SELECT ON other_db.orders TO PUBLIC", "other_db.orders", "DCL"),
-                Arguments.of("revoke table", "REVOKE SELECT ON other_db.orders FROM PUBLIC", "other_db.orders", "DCL"),
-                Arguments.of("grant database wildcard", "GRANT SELECT ON other_db.* TO PUBLIC", "other_db.*", "DCL"),
-                Arguments.of("grant global wildcard", "GRANT SELECT ON *.* TO PUBLIC", "*.*", "DCL"),
-                Arguments.of("qualified function", "SELECT other_db.foo_refresh_orders()", "other_db.foo_refresh_orders", "QUERY"),
-                Arguments.of("create database target", "CREATE DATABASE other_db", "other_db", "DDL"),
-                Arguments.of("commented create database target", "/* guard */ CREATE DATABASE other_db", "other_db", "DDL"),
-                Arguments.of("create schema target", "CREATE SCHEMA other_db", "other_db", "DDL"),
-                Arguments.of("drop table object list", "DROP TABLE IF EXISTS logic_db.orders, other_db.items", "other_db.items", "DDL"),
-                Arguments.of("truncate table", "TRUNCATE TABLE other_db.items", "other_db.items", "DDL"));
+                        "ALTER TABLE logic_db.order_items ADD CONSTRAINT order_fk FOREIGN KEY (order_id) REFERENCES other_db.orders(id)", "other_db.orders"),
+                Arguments.of("grant table", "GRANT SELECT ON other_db.orders TO PUBLIC", "other_db.orders"),
+                Arguments.of("revoke table", "REVOKE SELECT ON other_db.orders FROM PUBLIC", "other_db.orders"),
+                Arguments.of("grant database wildcard", "GRANT SELECT ON other_db.* TO PUBLIC", "other_db.*"),
+                Arguments.of("grant global wildcard", "GRANT SELECT ON *.* TO PUBLIC", "*.*"),
+                Arguments.of("qualified function", "SELECT other_db.foo_refresh_orders()", "other_db.foo_refresh_orders"),
+                Arguments.of("create database target", "CREATE DATABASE other_db", "other_db"),
+                Arguments.of("commented create database target", "/* guard */ CREATE DATABASE other_db", "other_db"),
+                Arguments.of("create schema target", "CREATE SCHEMA other_db", "other_db"),
+                Arguments.of("drop table object list", "DROP TABLE IF EXISTS logic_db.orders, other_db.items", "other_db.items"),
+                Arguments.of("truncate table", "TRUNCATE TABLE other_db.items", "other_db.items"));
     }
     
     private static Stream<Arguments> assertExecuteWithNonMatchingCurrentDatabaseIdentifierCases() {

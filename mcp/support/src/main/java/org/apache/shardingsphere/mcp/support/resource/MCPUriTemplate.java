@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.mcp.support.resource;
 
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,24 +33,87 @@ import java.util.regex.Pattern;
  */
 public final class MCPUriTemplate {
     
-    private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{([^}]+)}");
+    private static final String SCHEME_SEPARATOR = "://";
+    
+    private static final String SCHEME = "shardingsphere";
     
     private final String uriTemplate;
     
+    private final List<String> pathSegments;
+    
     private final List<String> variableNames;
+    
+    private final Pattern compiledRegex;
     
     public MCPUriTemplate(final String uriTemplate) {
         this.uriTemplate = uriTemplate;
-        variableNames = extractVariableNames(uriTemplate);
+        int schemeSeparatorIndex = findSchemeSeparatorIndex(uriTemplate);
+        validateScheme(uriTemplate, schemeSeparatorIndex);
+        pathSegments = extractPathSegments(uriTemplate, schemeSeparatorIndex + SCHEME_SEPARATOR.length());
+        variableNames = extractVariableNames(uriTemplate, pathSegments);
+        compiledRegex = compileRegex(pathSegments);
     }
     
-    private static List<String> extractVariableNames(final String uriTemplate) {
-        List<String> result = new LinkedList<>();
-        Matcher matcher = VARIABLE_PATTERN.matcher(uriTemplate);
-        while (matcher.find()) {
-            result.add(matcher.group(1));
+    private int findSchemeSeparatorIndex(final String uri) {
+        int result = uri.indexOf(SCHEME_SEPARATOR);
+        ShardingSpherePreconditions.checkState(0 < result, () -> new IllegalArgumentException(String.format("Invalid URI `%s`.", uri)));
+        return result;
+    }
+    
+    private void validateScheme(final String uri, final int schemeSeparatorIndex) {
+        String scheme = uri.substring(0, schemeSeparatorIndex);
+        ShardingSpherePreconditions.checkState(SCHEME.equals(scheme), () -> new IllegalArgumentException(String.format("Invalid URI `%s`.", uri)));
+    }
+    
+    private List<String> extractPathSegments(final String uri, final int pathStartIndex) {
+        String path = uri.substring(pathStartIndex);
+        ShardingSpherePreconditions.checkNotEmpty(path, () -> new IllegalArgumentException(String.format("URI path is required for `%s`.", uri)));
+        String[] segments = path.split("/", -1);
+        List<String> result = new ArrayList<>(segments.length);
+        for (String each : segments) {
+            ShardingSpherePreconditions.checkNotEmpty(each, () -> new IllegalArgumentException(String.format("URI segment is required for `%s`.", uri)));
+            ShardingSpherePreconditions.checkState(isVariableSegment(each) || !containsTemplateMarker(each),
+                    () -> new IllegalArgumentException(String.format("URI template variables must occupy a complete path segment in `%s`.", uri)));
+            result.add(each);
         }
         return result;
+    }
+    
+    private List<String> extractVariableNames(final String template, final List<String> segments) {
+        List<String> result = new ArrayList<>(segments.size());
+        for (String each : segments) {
+            if (!isVariableSegment(each)) {
+                continue;
+            }
+            String variableName = each.substring(1, each.length() - 1);
+            ShardingSpherePreconditions.checkNotEmpty(variableName, () -> new IllegalArgumentException(String.format("URI template variable is required in `%s`.", template)));
+            ShardingSpherePreconditions.checkState(!containsTemplateMarker(variableName),
+                    () -> new IllegalArgumentException(String.format("Invalid URI template variable `%s` in `%s`.", variableName, template)));
+            ShardingSpherePreconditions.checkState(!result.contains(variableName),
+                    () -> new IllegalArgumentException(String.format("Duplicate URI template variable `%s` in `%s`.", variableName, template)));
+            result.add(variableName);
+        }
+        return result;
+    }
+    
+    private Pattern compileRegex(final List<String> segments) {
+        StringBuilder regex = new StringBuilder("^").append(Pattern.quote(SCHEME)).append(SCHEME_SEPARATOR);
+        for (int i = 0; i < segments.size(); i++) {
+            if (0 < i) {
+                regex.append('/');
+            }
+            String each = segments.get(i);
+            regex.append(isVariableSegment(each) ? "([^/]+)" : Pattern.quote(each));
+        }
+        return Pattern.compile(regex.append('$').toString());
+    }
+    
+    private boolean isVariableSegment(final String pathSegment) {
+        return 2 < pathSegment.length() && pathSegment.startsWith("{") && pathSegment.endsWith("}");
+    }
+    
+    private boolean containsTemplateMarker(final String value) {
+        return value.contains("{") || value.contains("}");
     }
     
     /**
@@ -56,7 +122,7 @@ public final class MCPUriTemplate {
      * @return variable names
      */
     public List<String> getVariableNames() {
-        return new LinkedList<>(variableNames);
+        return new ArrayList<>(variableNames);
     }
     
     /**
@@ -79,5 +145,51 @@ public final class MCPUriTemplate {
             result = result.replace("{" + each + "}", MCPUriPathSegmentUtils.encodePathSegment(variables.getValue(each)));
         }
         return result;
+    }
+    
+    /**
+     * Parse URI variables using this template.
+     *
+     * @param uri URI
+     * @return parsed variables when the URI matches
+     */
+    public Optional<MCPResourceURIVariables> parse(final String uri) {
+        Matcher matcher = compiledRegex.matcher(uri);
+        if (!matcher.matches()) {
+            return Optional.empty();
+        }
+        Map<String, String> variables = new LinkedHashMap<>(variableNames.size(), 1F);
+        for (int i = 0; i < variableNames.size(); i++) {
+            String encodedValue = matcher.group(i + 1);
+            if (containsTemplateMarker(encodedValue)) {
+                return Optional.empty();
+            }
+            Optional<String> decodedValue = MCPUriPathSegmentUtils.decodePathSegment(encodedValue);
+            if (decodedValue.isEmpty()) {
+                return Optional.empty();
+            }
+            variables.put(variableNames.get(i), decodedValue.get());
+        }
+        return Optional.of(new MCPResourceURIVariables(variables));
+    }
+    
+    /**
+     * Determine whether this template overlaps another template.
+     *
+     * @param other other template
+     * @return whether the templates overlap
+     */
+    public boolean overlaps(final MCPUriTemplate other) {
+        if (pathSegments.size() != other.pathSegments.size()) {
+            return false;
+        }
+        for (int i = 0; i < pathSegments.size(); i++) {
+            String left = pathSegments.get(i);
+            String right = other.pathSegments.get(i);
+            if (!isVariableSegment(left) && !isVariableSegment(right) && !left.equals(right)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

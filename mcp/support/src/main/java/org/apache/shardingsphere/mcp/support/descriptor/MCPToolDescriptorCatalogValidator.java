@@ -96,6 +96,10 @@ public final class MCPToolDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Tool `%s` inputSchema must be an object.", descriptor.getName())));
         Object properties = inputSchema.get("properties");
         ShardingSpherePreconditions.checkState(properties instanceof Map, () -> new IllegalStateException(String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState(inputSchema.get("required") instanceof Collection,
+                () -> new IllegalStateException(String.format("Tool `%s` inputSchema required must be an array.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState(inputSchema.get("additionalProperties") instanceof Boolean,
+                () -> new IllegalStateException(String.format("Tool `%s` inputSchema additionalProperties must be a boolean.", descriptor.getName())));
         validateNestedInputSchemaFields(descriptor, inputSchema, "inputSchema");
         MCPToolDescriptorValidationUtils.validateModelFacingSchemaFields(descriptor, inputSchema);
     }

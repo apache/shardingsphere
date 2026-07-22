@@ -47,6 +47,8 @@ final class LLMMCPConversationArtifacts {
     @Setter(AccessLevel.PACKAGE)
     private String finalAnswerJson = "";
     
+    private boolean harnessRecoveryPending;
+    
     void addRawModelOutput(final String rawModelOutput) {
         rawModelOutputs.add(rawModelOutput);
     }
@@ -57,6 +59,16 @@ final class LLMMCPConversationArtifacts {
     
     void addRuntimeLogLine(final String runtimeLogLine) {
         mcpRuntimeLogLines.add(runtimeLogLine);
+    }
+    
+    void markHarnessRecovery() {
+        harnessRecoveryPending = true;
+    }
+    
+    String consumeTurnActionOrigin() {
+        String result = harnessRecoveryPending ? MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN : MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN;
+        harnessRecoveryPending = false;
+        return result;
     }
     
     int nextSequence() {

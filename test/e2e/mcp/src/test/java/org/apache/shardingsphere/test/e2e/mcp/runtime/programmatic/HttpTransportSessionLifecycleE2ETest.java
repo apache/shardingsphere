@@ -66,7 +66,7 @@ class HttpTransportSessionLifecycleE2ETest extends AbstractHttpProtocolOnlyE2ETe
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> firstDelete = sendDeleteRequest(httpClient, createSessionHeaders(sessionId));
-        HttpResponse<String> secondDelete = sendDeleteRequest(httpClient, createSessionHeaders(sessionId));
+        HttpResponse<String> secondDelete = sendDeleteRequest(httpClient, Map.of("MCP-Session-Id", sessionId));
         assertThat(firstDelete.statusCode(), is(200));
         assertThat(secondDelete.statusCode(), is(404));
     }

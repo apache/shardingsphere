@@ -116,7 +116,7 @@ public final class MCPDescriptorCatalogIndex {
     private static Map<String, Collection<String>> createWorkflowKindsByPromptName() {
         Map<String, Collection<String>> result = new LinkedHashMap<>(PROMPT_DESCRIPTORS.size(), 1F);
         for (MCPPromptDescriptor each : PROMPT_DESCRIPTORS) {
-            Collection<String> workflowKinds = findPromptPlanningWorkflowKind(each);
+            Collection<String> workflowKinds = findPromptPlanningWorkflowKinds(each);
             if (!workflowKinds.isEmpty()) {
                 result.put(each.getName(), workflowKinds);
             }
@@ -124,23 +124,32 @@ public final class MCPDescriptorCatalogIndex {
         return result;
     }
     
-    private static Collection<String> findPromptPlanningWorkflowKind(final MCPPromptDescriptor prompt) {
-        String planningToolName = "database_gateway_" + prompt.getName();
+    private static Collection<String> findPromptPlanningWorkflowKinds(final MCPPromptDescriptor prompt) {
         Object relatedTools = prompt.getMeta().get(MCPShardingSphereMetadataKeys.RELATED_TOOLS);
-        MCPToolDescriptor toolDescriptor = TOOL_DESCRIPTORS.get(planningToolName);
         if (!(relatedTools instanceof Collection<?>)) {
             return List.of();
         }
-        if (!((Collection<?>) relatedTools).contains(planningToolName) || null == toolDescriptor || !isPlanningTool(planningToolName)) {
+        String planningToolName = "";
+        for (Object each : (Collection<?>) relatedTools) {
+            String toolName = Objects.toString(each, "");
+            MCPToolRuntimeDescriptor runtimeDescriptor = TOOL_RUNTIME_DESCRIPTORS.get(toolName);
+            if (null == runtimeDescriptor) {
+                return List.of();
+            }
+            if (!"plan".equals(runtimeDescriptor.getWorkflowRole())) {
+                continue;
+            }
+            if (!planningToolName.isEmpty()) {
+                return List.of();
+            }
+            planningToolName = toolName;
+        }
+        MCPToolDescriptor toolDescriptor = TOOL_DESCRIPTORS.get(planningToolName);
+        if (null == toolDescriptor) {
             return List.of();
         }
         String workflowKind = Objects.toString(toolDescriptor.getMeta().get(MCPShardingSphereMetadataKeys.WORKFLOW_KIND), "");
         return workflowKind.isEmpty() ? List.of() : List.of(workflowKind);
-    }
-    
-    private static boolean isPlanningTool(final String toolName) {
-        MCPToolRuntimeDescriptor runtimeDescriptor = TOOL_RUNTIME_DESCRIPTORS.get(toolName);
-        return null != runtimeDescriptor && "plan".equals(runtimeDescriptor.getWorkflowRole());
     }
     
     /**

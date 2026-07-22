@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
@@ -40,7 +39,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final List<String> FORBIDDEN_ARTIFACT_TOKENS = List.of(
@@ -49,10 +48,6 @@ class FeatureWorkflowContractE2ETest extends AbstractSharedHttpProgrammaticRunti
     
     private static final List<String> REQUIRED_WORKFLOW_OUTPUT_FIELDS = List.of(
             "response_mode", "plan_id", "workflow_kind", "status", "missing_required_inputs", "resources_to_read", "next_actions");
-    
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("featureWorkflowScenarios")

@@ -20,7 +20,7 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 - `mcp/features/readwrite-splitting`：Readwrite-Splitting MCP feature。
 - `mcp/features/shadow`：Shadow MCP feature。
 - `mcp/features/sharding`：Sharding MCP feature。
-- `mcp/core`：handler 发现、registry、request context、session、SQL execution trace、metadata discovery 和 runtime context。
+- `mcp/core`：handler 发现、registry、request context、session、metadata discovery 和 runtime context。
 - `mcp/bootstrap`：基于 MCP Java SDK 的 bootstrap、HTTP/STDIO transport、配置加载和生命周期管理。
 - `mcp/registry`：隔离的发行元数据校验工具，不依赖 MCP runtime 模块。
 - `distribution/mcp`：独立打包、启动脚本、配置和 Dockerfile。

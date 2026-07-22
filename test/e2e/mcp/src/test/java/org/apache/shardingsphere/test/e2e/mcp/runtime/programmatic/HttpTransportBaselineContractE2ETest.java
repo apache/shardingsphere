@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVaria
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPBaselineContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.Test;
@@ -43,12 +42,8 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
     
     private static final String BASELINE_RESOURCE_PATH = "baseline-contract/model-contract/";
     
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
-    
     @Test
-    @EnabledIf("isEnabled")
+    @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
     void assertCapabilitiesBaselineContract() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -59,7 +54,7 @@ class HttpTransportBaselineContractE2ETest extends AbstractSharedHttpProgrammati
     }
     
     @Test
-    @EnabledIf("isEnabled")
+    @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
     void assertGuidanceBaselineContract() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();

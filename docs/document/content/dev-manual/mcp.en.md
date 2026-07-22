@@ -20,7 +20,7 @@ The MCP path is organized as `api + support + features + core + bootstrap`:
 - `mcp/features/readwrite-splitting`: Readwrite-Splitting MCP feature.
 - `mcp/features/shadow`: Shadow MCP feature.
 - `mcp/features/sharding`: Sharding MCP feature.
-- `mcp/core`: handler discovery, registry, request context, session, SQL execution trace, metadata discovery, and runtime context.
+- `mcp/core`: handler discovery, registry, request context, session, metadata discovery, and runtime context.
 - `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP/STDIO transport, configuration loading, and lifecycle management.
 - `mcp/registry`: isolated distribution metadata validation tooling; it does not depend on MCP runtime modules.
 - `distribution/mcp`: standalone packaging, startup scripts, configuration, and Dockerfile.

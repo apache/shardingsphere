@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.suite.smoke;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
@@ -48,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("llm-e2e")
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
@@ -99,10 +98,6 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     @AfterEach
     void clearCurrentTransport() {
         currentTransport = null;
-    }
-    
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
     }
     
     static Stream<Arguments> getTestCases() {

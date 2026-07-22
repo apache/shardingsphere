@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.suite.evaluation;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Fixture;
@@ -40,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 @Tag("llm-e2e")
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MCPBuilderEvaluationE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
@@ -73,10 +72,6 @@ class MCPBuilderEvaluationE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             runtimeFixture.close();
             runtimeFixture = null;
         }
-    }
-    
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
     }
     
     @Test

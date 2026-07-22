@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -105,9 +106,14 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
     }
     
     private List<String> createDockerCommand(final int httpPort) {
-        return List.of("docker", "run", "--rm", "--add-host=host.docker.internal:host-gateway", "-p",
-                "127.0.0.1:" + httpPort + ":18088", "-v", configFile.toAbsolutePath().normalize() + ":" + CONTAINER_CONFIG_FILE + ":ro", "-e", "SHARDINGSPHERE_MCP_TRANSPORT=http", "-e",
-                "SHARDINGSPHERE_MCP_CONFIG=" + CONTAINER_CONFIG_FILE, imageName);
+        List<String> result = new LinkedList<>(List.of("docker", "run", "--rm", "--add-host=host.docker.internal:host-gateway", "-p",
+                "127.0.0.1:" + httpPort + ":18088", "-e", "SHARDINGSPHERE_MCP_TRANSPORT=http"));
+        if (null != configFile) {
+            result.addAll(List.of("-v", configFile.toAbsolutePath().normalize() + ":" + CONTAINER_CONFIG_FILE + ":ro", "-e",
+                    "SHARDINGSPHERE_MCP_CONFIG=" + CONTAINER_CONFIG_FILE));
+        }
+        result.add(imageName);
+        return result;
     }
     
     private int allocatePort() throws IOException {

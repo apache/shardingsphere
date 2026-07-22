@@ -30,7 +30,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class ProductionRuntimeTransportSmokeE2ETest extends AbstractProductionMySQLRuntimeE2ETest {
     
     @Override

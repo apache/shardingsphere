@@ -151,8 +151,15 @@ class LLME2EConfigurationTest {
     @Test
     void assertLoadWithInvalidIntegerProperty() {
         System.setProperty("mcp.llm.ready-timeout-seconds", "invalid-number");
-        LLME2EConfiguration actual = LLME2EConfiguration.load();
-        assertThat(actual.getReadyTimeoutSeconds(), is(600));
+        IllegalStateException actualException = assertThrows(IllegalStateException.class, LLME2EConfiguration::load);
+        assertThat(actualException.getMessage(), is("MCP LLM E2E property `mcp.llm.ready-timeout-seconds` must be a positive integer, but was `invalid-number`."));
+    }
+    
+    @Test
+    void assertLoadWithNonPositiveIntegerProperty() {
+        System.setProperty("mcp.llm.ready-timeout-seconds", "0");
+        IllegalStateException actualException = assertThrows(IllegalStateException.class, LLME2EConfiguration::load);
+        assertThat(actualException.getMessage(), is("MCP LLM E2E property `mcp.llm.ready-timeout-seconds` must be a positive integer, but was `0`."));
     }
     
     @Test
