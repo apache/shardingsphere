@@ -65,8 +65,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -148,25 +150,8 @@ public final class EnumerableScanImplementor implements ScanImplementor {
         };
     }
     
-    private AbstractEnumerable<Object> createJDBCEnumerable(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext executionContext) {
-        return new AbstractEnumerable<Object>() {
-            
-            @SneakyThrows
-            @Override
-            public Enumerator<Object> enumerator() {
-                computeConnectionOffsets(executionContext);
-                ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepare(database, executionContext);
-                setParameters(executionGroupContext.getInputGroups());
-                ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(executorContext.getProcessId()).isInterrupted(), SQLExecutionInterruptedException::new);
-                processEngine.executeSQL(executionGroupContext, queryContext);
-                List<QueryResult> queryResults =
-                        executorContext.getJdbcExecutor().execute(executionGroupContext, executorContext.getQueryCallback()).stream().map(QueryResult.class::cast).collect(Collectors.toList());
-                MergeEngine mergeEngine = new MergeEngine(queryContext.getMetaData(), database, queryContext.getMetaData().getProps(), queryContext.getConnectionContext());
-                MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext);
-                Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
-                return new JDBCDataRowEnumerator(mergedResult, queryResults.get(0).getMetaData(), statements);
-            }
-        };
+    private AbstractEnumerable<Object> createJDBCEnumerable(final QueryContext scanQueryContext, final ShardingSphereDatabase database, final ExecutionContext executionContext) {
+        return new JDBCEnumerable(scanQueryContext, database, executionContext);
     }
     
     private void computeConnectionOffsets(final ExecutionContext context) {
@@ -176,9 +161,10 @@ public final class EnumerableScanImplementor implements ScanImplementor {
         }
     }
     
-    private ExecutionGroupContext<JDBCExecutionUnit> prepare(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
+    private ExecutionGroupContext<JDBCExecutionUnit> prepare(final ShardingSphereDatabase database, final ExecutionContext executionContext,
+                                                             final Map<String, Integer> connectionOffsets) throws SQLException {
         // TODO pass grantee from proxy and jdbc adapter
-        return executorContext.getPrepareEngine().prepare(database.getName(), executionContext, executorContext.getConnectionOffsets(), executionContext.getExecutionUnits(),
+        return executorContext.getPrepareEngine().prepare(database.getName(), executionContext, connectionOffsets, executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(executorContext.getProcessId(), database.getName()));
     }
     
@@ -206,6 +192,42 @@ public final class EnumerableScanImplementor implements ScanImplementor {
     private void setParameters(final PreparedStatement preparedStatement, final List<Object> params) {
         for (int i = 0; i < params.size(); i++) {
             preparedStatement.setObject(i + 1, params.get(i));
+        }
+    }
+    
+    @RequiredArgsConstructor
+    private final class JDBCEnumerable extends AbstractEnumerable<Object> {
+        
+        private final QueryContext scanQueryContext;
+        
+        private final ShardingSphereDatabase database;
+        
+        private final ExecutionContext executionContext;
+        
+        private boolean offsetsComputed;
+        
+        private Map<String, Integer> allocatedConnectionOffsets;
+        
+        @SneakyThrows
+        @Override
+        public Enumerator<Object> enumerator() {
+            synchronized (this) {
+                if (!offsetsComputed) {
+                    computeConnectionOffsets(executionContext);
+                    allocatedConnectionOffsets = new HashMap<>(executorContext.getConnectionOffsets());
+                    offsetsComputed = true;
+                }
+            }
+            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepare(database, executionContext, allocatedConnectionOffsets);
+            setParameters(executionGroupContext.getInputGroups());
+            ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(executorContext.getProcessId()).isInterrupted(), SQLExecutionInterruptedException::new);
+            processEngine.executeSQL(executionGroupContext, scanQueryContext);
+            List<QueryResult> queryResults = executorContext.getJdbcExecutor().execute(executionGroupContext, executorContext.getQueryCallback())
+                    .stream().map(QueryResult.class::cast).collect(Collectors.toList());
+            MergeEngine mergeEngine = new MergeEngine(scanQueryContext.getMetaData(), database, scanQueryContext.getMetaData().getProps(), scanQueryContext.getConnectionContext());
+            MergedResult mergedResult = mergeEngine.merge(queryResults, scanQueryContext);
+            Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
+            return new JDBCDataRowEnumerator(mergedResult, queryResults.get(0).getMetaData(), statements);
         }
     }
 }
