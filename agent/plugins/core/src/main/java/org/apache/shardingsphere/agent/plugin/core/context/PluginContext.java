@@ -55,7 +55,8 @@ public final class PluginContext {
      * @return true or false
      */
     public boolean isPluginEnabled() {
-        return getContextManager().map(optional -> optional.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED)).orElse(false);
+        return getContextManager().map(optional -> optional.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED))
+                .orElse(true);
     }
     
     /**
