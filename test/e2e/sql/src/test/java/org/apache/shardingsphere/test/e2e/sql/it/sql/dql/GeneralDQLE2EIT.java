@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.sql.it.sql.dql;
 
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITArgumentsProvider;
@@ -39,10 +40,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SQLE2EITSettings(SQLCommandType.DQL)
 class GeneralDQLE2EIT extends BaseDQLE2EIT {
+    
+    // HintManager DATA_SOURCE_NAME keeps logic table name (no rewrite);
+    // bare labels from T.* must remain accessible via getObject(columnLabel).
+    private static final String SHORTHAND_ALIAS_SQL =
+            "SELECT T.*, T.status status_new FROM t_order T WHERE T.order_id = 1000";
     
     @ParameterizedTest(name = "{0}")
     @Execution(ExecutionMode.CONCURRENT)
@@ -256,6 +263,55 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
                 assertResultSet(actualResultSet, expectedResultSet, testParam);
             }
         }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @Execution(ExecutionMode.SAME_THREAD)
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(HintManagerColumnLabelArgumentsProvider.class)
+    void assertColumnLabelWithHintManager(final AssertionTestParameter testParam) throws SQLException, IOException, JAXBException {
+        SQLE2EITContext context = new SQLE2EITContext(testParam);
+        executeDQL(context, () -> {
+            init(testParam, context);
+            assertDoesNotThrow(() -> executeShorthandAliasQueryWithoutDataSourceHint(),
+                    "Without data-source hint + T.*, T.status status_new should succeed");
+            assertDoesNotThrow(() -> executeShorthandAliasQueryWithDataSourceHint(),
+                    "HintManager.setDataSourceName + SELECT T.*, T.status status_new "
+                            + "should allow getObject by bare column label from T.*");
+        });
+    }
+    
+    private void executeShorthandAliasQueryWithoutDataSourceHint() throws SQLException {
+        try (
+                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(SHORTHAND_ALIAS_SQL)) {
+            assertTrue(resultSet.next(), "Expected row for order_id=1000");
+            assertBareColumnLabelsFromShorthandAccessible(resultSet);
+        }
+    }
+    
+    private void executeShorthandAliasQueryWithDataSourceHint() throws SQLException {
+        try (
+                HintManager hintManager = HintManager.getInstance();
+                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
+            hintManager.setDataSourceName("tbl");
+            try (ResultSet resultSet = statement.executeQuery(SHORTHAND_ALIAS_SQL)) {
+                assertTrue(resultSet.next(), "Expected row for order_id=1000 on physical tbl.t_order");
+                assertBareColumnLabelsFromShorthandAccessible(resultSet);
+            }
+        }
+    }
+    
+    private void assertBareColumnLabelsFromShorthandAccessible(final ResultSet resultSet) throws SQLException {
+        // Look up bare labels by name (same pattern as MyBatis automatic mapping).
+        // Do not iterate ResultSetMetaData labels: when containsDerivedProjections()=true,
+        // ShardingSphereResultSetMetaData.getColumnLabel() also comes from expandProjections.
+        resultSet.getObject("order_id");
+        resultSet.getObject("user_id");
+        resultSet.getObject("status");
+        resultSet.getObject("status_new");
     }
     
     private static boolean isEnabled() {

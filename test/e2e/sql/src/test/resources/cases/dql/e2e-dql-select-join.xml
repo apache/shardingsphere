@@ -132,4 +132,10 @@
     <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id order by o.order_id, m.item_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT o.user_id, i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = ?"
+               db-types="MySQL,PostgreSQL,openGauss"
+               scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+        <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>

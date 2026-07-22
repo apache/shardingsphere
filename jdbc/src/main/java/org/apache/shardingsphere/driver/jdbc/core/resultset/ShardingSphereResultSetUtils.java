@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Utility class for {@link ShardingSphereResultSet}.
@@ -43,8 +44,28 @@ public final class ShardingSphereResultSetUtils {
      */
     public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
-            return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getColumnLabelAndIndexMap();
+            return createColumnLabelAndIndexMapWithExpandProjections(
+                    ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getColumnLabelAndIndexMap(), resultSetMetaData);
         }
+        return createColumnLabelAndIndexMapFromMetaData(resultSetMetaData);
+    }
+    
+    private static Map<String, Integer> createColumnLabelAndIndexMapWithExpandProjections(final Map<String, Integer> expandedMap,
+                                                                                          final ResultSetMetaData resultSetMetaData) throws SQLException {
+        if (null == resultSetMetaData || expandedMap.size() == resultSetMetaData.getColumnCount()) {
+            return expandedMap;
+        }
+        Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount(), 1F);
+        for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
+            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
+        }
+        for (Entry<String, Integer> entry : expandedMap.entrySet()) {
+            result.putIfAbsent(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+    
+    private static Map<String, Integer> createColumnLabelAndIndexMapFromMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
         Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount(), 1F);
         for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
