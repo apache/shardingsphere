@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Encrypt show create table merged result.
+ * Encrypt show create view merged result.
  */
 public final class EncryptShowCreateViewMergedResult extends DecoratorMergedResult {
     

@@ -100,6 +100,15 @@ class DatabaseIdentifierContextFactoryTest {
         assertTrue(actualRule.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     
+    @Test
+    void assertCreateWithSingleDatabase() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new LowerCaseTableNamesDataSource(0));
+        assertThat(actual.normalizeStorage(IdentifierScope.COLUMN, new IdentifierValue("FooColumn")), is("FooColumn"));
+        assertTrue(actual.matchesMetaData(IdentifierScope.COLUMN, "foo_column", new IdentifierValue("FOO_COLUMN")));
+        assertFalse(actual.matchesMetaData(IdentifierScope.TABLE, "foo_table", new IdentifierValue("FOO_TABLE")));
+        assertFalse(actual.isHeterogeneousTableLookupEnabled());
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("createWithProtocolTypeAndPropsArguments")
     void assertCreateWithProtocolTypeAndProps(final String name, final DatabaseType protocolType, final ConfigurationProperties props, final LookupMode expectedLookupMode,

@@ -32,10 +32,12 @@ import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigura
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Database identifier context factory.
@@ -50,6 +52,20 @@ public final class DatabaseIdentifierContextFactory {
      */
     public static DatabaseIdentifierContext createDefault() {
         return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet());
+    }
+    
+    /**
+     * Create identifier context for a single database type and data source.
+     *
+     * @param databaseType database type
+     * @param dataSource data source
+     * @return identifier context
+     */
+    public static DatabaseIdentifierContext create(final DatabaseType databaseType, final DataSource dataSource) {
+        IdentifierCasePolicySet protocolPolicySet = IdentifierCasePolicyResolver.resolveProtocol(databaseType);
+        IdentifierCasePolicySet storagePolicySet = IdentifierCasePolicyResolver.resolveStorage(databaseType, dataSource);
+        IdentifierCasePolicySet metaDataPolicySet = createMetaDataPolicySet(protocolPolicySet, storagePolicySet, new ConfigurationProperties(new Properties()));
+        return new DatabaseIdentifierContext(protocolPolicySet, storagePolicySet, metaDataPolicySet, false);
     }
     
     /**
