@@ -25,6 +25,8 @@ import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescript
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,6 +53,27 @@ class MCPDescriptorComponentValidatorsTest {
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.", inputSchema, createOutputSchema(), createAnnotations(), Map.of())));
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPToolDescriptorCatalogValidator.validate(catalog));
         assertThat(actual.getMessage(), is("Tool `database_gateway_test_tool` inputSchema contains unsupported top-level field `oneOf`."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"$defs", "definitions"})
+    void assertToolDescriptorCatalogValidatorWithUnsupportedDefinitionField(final String fieldName) {
+        Map<String, Object> inputSchema = new LinkedHashMap<>(createInputSchema());
+        inputSchema.put(fieldName, Map.of("query", Map.of("type", "string")));
+        MCPDescriptorCatalog catalog = createCatalog(List.of(), List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.", inputSchema, createOutputSchema(), createAnnotations(), Map.of())));
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPToolDescriptorCatalogValidator.validate(catalog));
+        assertThat(actual.getMessage(), is(String.format("Tool `database_gateway_test_tool` inputSchema contains unsupported top-level field `%s`.", fieldName)));
+    }
+    
+    @Test
+    void assertToolDescriptorCatalogValidatorWithUnsupportedReferenceField() {
+        Map<String, Object> inputSchema = new LinkedHashMap<>(createInputSchema());
+        inputSchema.put("properties", Map.of("query", Map.of("$ref", "#/$defs/query", "description", "Query.")));
+        MCPDescriptorCatalog catalog = createCatalog(List.of(), List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.", inputSchema, createOutputSchema(), createAnnotations(), Map.of())));
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPToolDescriptorCatalogValidator.validate(catalog));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query` contains unsupported field `$ref`."));
     }
     
     @Test

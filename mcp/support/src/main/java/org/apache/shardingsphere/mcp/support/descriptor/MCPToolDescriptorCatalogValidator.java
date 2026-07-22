@@ -42,11 +42,10 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPToolDescriptorCatalogValidator {
     
-    private static final Collection<String> SUPPORTED_INPUT_SCHEMA_TOP_LEVEL_FIELDS = Set.of(
-            "type", "properties", "required", "additionalProperties", "$defs", "definitions");
+    private static final Collection<String> SUPPORTED_INPUT_SCHEMA_TOP_LEVEL_FIELDS = Set.of("type", "properties", "required", "additionalProperties");
     
     private static final Collection<String> SUPPORTED_INPUT_SCHEMA_FIELDS = Set.of(
-            "type", "properties", "required", "additionalProperties", "items", "enum", "minimum", "maximum", "default", "description", "examples", "$ref");
+            "type", "properties", "required", "additionalProperties", "items", "enum", "minimum", "maximum", "default", "description", "examples");
     
     private static final String SEARCH_METADATA = "database_gateway_search_metadata";
     
@@ -101,21 +100,8 @@ public final class MCPToolDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Tool `%s` inputSchema required must be an array.", descriptor.getName())));
         ShardingSpherePreconditions.checkState(inputSchema.get("additionalProperties") instanceof Boolean,
                 () -> new IllegalStateException(String.format("Tool `%s` inputSchema additionalProperties must be a boolean.", descriptor.getName())));
-        validateInputSchemaDefinitions(descriptor, inputSchema.get("$defs"), "inputSchema.$defs");
-        validateInputSchemaDefinitions(descriptor, inputSchema.get("definitions"), "inputSchema.definitions");
         validateNestedInputSchemaFields(descriptor, inputSchema, "inputSchema");
         MCPToolDescriptorValidationUtils.validateModelFacingSchemaFields(descriptor, inputSchema);
-    }
-    
-    private static void validateInputSchemaDefinitions(final MCPToolDescriptor descriptor, final Object value, final String path) {
-        if (null == value) {
-            return;
-        }
-        ShardingSpherePreconditions.checkState(value instanceof Map,
-                () -> new IllegalStateException(String.format("Tool `%s` inputSchema field `%s` must be an object.", descriptor.getName(), path)));
-        for (Object each : ((Map<?, ?>) value).values()) {
-            validateInputSchemaMapField(descriptor, each, path);
-        }
     }
     
     private static void validateNestedInputSchemaFields(final MCPToolDescriptor descriptor, final Map<?, ?> schema, final String path) {

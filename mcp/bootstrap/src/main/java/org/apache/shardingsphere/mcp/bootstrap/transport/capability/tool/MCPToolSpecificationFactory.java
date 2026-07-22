@@ -89,9 +89,7 @@ public final class MCPToolSpecificationFactory {
         Map<String, Object> props = (Map<String, Object>) inputSchema.get("properties");
         List<String> required = (List<String>) inputSchema.get("required");
         Boolean additionalProps = (Boolean) inputSchema.get("additionalProperties");
-        Map<String, Object> defs = (Map<String, Object>) inputSchema.getOrDefault("$defs", Collections.emptyMap());
-        Map<String, Object> definitions = (Map<String, Object>) inputSchema.getOrDefault("definitions", Collections.emptyMap());
-        return new McpSchema.JsonSchema(type, props, required, additionalProps, defs, definitions);
+        return new McpSchema.JsonSchema(type, props, required, additionalProps, Collections.emptyMap(), Collections.emptyMap());
     }
     
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
