@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.security;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
@@ -52,8 +53,7 @@ public final class MCPRuntimeProtectionPolicy {
      * @return maximum tool calls per MCP session
      */
     public static int getMaxToolCallsPerSession() {
-        Integer configuredValue = Integer.getInteger(MAX_TOOL_CALLS_PER_SESSION_PROPERTY, DEFAULT_MAX_TOOL_CALLS_PER_SESSION);
-        return configuredValue > 0 ? configuredValue : DEFAULT_MAX_TOOL_CALLS_PER_SESSION;
+        return getPositiveIntegerProperty(MAX_TOOL_CALLS_PER_SESSION_PROPERTY, DEFAULT_MAX_TOOL_CALLS_PER_SESSION);
     }
     
     /**
@@ -62,8 +62,23 @@ public final class MCPRuntimeProtectionPolicy {
      * @return maximum completion requests per minute
      */
     public static int getMaxCompletionRequestsPerMinute() {
-        Integer configuredValue = Integer.getInteger(MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY, DEFAULT_MAX_COMPLETION_REQUESTS_PER_MINUTE);
-        return configuredValue > 0 ? configuredValue : DEFAULT_MAX_COMPLETION_REQUESTS_PER_MINUTE;
+        return getPositiveIntegerProperty(MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY, DEFAULT_MAX_COMPLETION_REQUESTS_PER_MINUTE);
+    }
+    
+    private static int getPositiveIntegerProperty(final String propertyName, final int defaultValue) {
+        String configuredValue = System.getProperty(propertyName);
+        if (null == configuredValue) {
+            return defaultValue;
+        }
+        int result;
+        try {
+            result = Integer.parseInt(configuredValue);
+        } catch (final NumberFormatException ex) {
+            throw new IllegalArgumentException(String.format("System property `%s` must be a positive integer, but was `%s`.", propertyName, configuredValue), ex);
+        }
+        ShardingSpherePreconditions.checkState(result > 0,
+                () -> new IllegalArgumentException(String.format("System property `%s` must be a positive integer, but was `%s`.", propertyName, configuredValue)));
+        return result;
     }
     
     /**

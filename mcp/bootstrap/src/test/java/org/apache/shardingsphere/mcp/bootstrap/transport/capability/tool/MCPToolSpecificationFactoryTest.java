@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
-import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema.ErrorCodes;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
-import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
@@ -36,7 +35,7 @@ import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,14 +51,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactoryTest {
     
     @Test
     void assertCreateToolSpecifications() {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
-            mockedToolDefinitionRegistry.when(ToolDefinitionRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("database_gateway_search_metadata")));
+            MCPToolDescriptor baseDescriptor = createToolDescriptor("database_gateway_search_metadata");
+            Map<String, Object> inputSchema = new LinkedHashMap<>(baseDescriptor.getInputSchema());
+            inputSchema.put("$defs", Map.of("query", Map.of("type", "string")));
+            inputSchema.put("definitions", Map.of("legacyQuery", Map.of("type", "string")));
+            MCPToolDescriptor descriptor = new MCPToolDescriptor(baseDescriptor.getName(), baseDescriptor.getTitle(), baseDescriptor.getDescription(), inputSchema,
+                    baseDescriptor.getOutputSchema(), baseDescriptor.getAnnotations(), baseDescriptor.getMeta());
+            mockedToolDefinitionRegistry.when(ToolDefinitionRegistry::getSupportedToolDescriptors).thenReturn(List.of(descriptor));
             MCPToolSpecificationFactory actualFactory = new MCPToolSpecificationFactory(mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS));
             List<SyncToolSpecification> actual = actualFactory.createToolSpecifications();
             assertThat(actual.size(), is(1));
@@ -74,6 +78,8 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
                     "type", "array",
                     "description", "Optional object-type filter.",
                     "items", Map.of("type", "string", "description", "Object type.", "enum", List.of("TABLE", "VIEW")))));
+            assertThat(actual.getFirst().tool().inputSchema().defs(), is(Map.of("query", Map.of("type", "string"))));
+            assertThat(actual.getFirst().tool().inputSchema().definitions(), is(Map.of("legacyQuery", Map.of("type", "string"))));
             assertThat(actual.getFirst().tool().outputSchema(), is(Map.of("type", "object")));
             assertTrue(actual.getFirst().tool().annotations().readOnlyHint());
             assertNull(actual.getFirst().tool().annotations().returnDirect());
@@ -106,24 +112,6 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
             CallToolResult actual = callTool(createToolSpecification(MCPTransportType.STDIO), createExchange(), "fixture_ping", Map.of());
             assertThat(actual.structuredContent(), is(Map.of("status", "ok")));
             assertThat(actual.content().getFirst().type(), is("text"));
-        }
-    }
-    
-    @Test
-    void assertCreateToolSpecificationsHandleUnsupportedToolAsProtocolError() {
-        try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
-            mockedToolDefinitionRegistry.when(ToolDefinitionRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("database_gateway_search_metadata")));
-            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata")).thenThrow(UnsupportedToolException.class);
-            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
-            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
-            SyncToolSpecification actualSpecification = createToolSpecification(runtimeContext);
-            McpSyncServerExchange exchange = createExchange();
-            McpError actual = assertThrows(McpError.class, () -> callTool(actualSpecification, exchange, "database_gateway_search_metadata", Map.of()));
-            assertThat(actual.getJsonRpcError().code(), is(ErrorCodes.INVALID_PARAMS));
-            assertThat(actual.getJsonRpcError().message(), is("Unsupported tool `database_gateway_search_metadata`."));
-            @SuppressWarnings("unchecked")
-            Map<String, Object> actualData = (Map<String, Object>) actual.getJsonRpcError().data();
-            assertThat(actualData.get("summary"), is("Unsupported tool `database_gateway_search_metadata`."));
         }
     }
     

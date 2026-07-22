@@ -38,11 +38,7 @@ import java.util.Optional;
  */
 public final class MCPPromptSpecificationFactory {
     
-    private final Collection<MCPPromptDescriptor> promptDescriptors;
-    
-    public MCPPromptSpecificationFactory() {
-        promptDescriptors = MCPDescriptorCatalogIndex.getPromptDescriptors();
-    }
+    private final Collection<MCPPromptDescriptor> promptDescriptors = MCPDescriptorCatalogIndex.getPromptDescriptors();
     
     /**
      * Create MCP prompt specifications.

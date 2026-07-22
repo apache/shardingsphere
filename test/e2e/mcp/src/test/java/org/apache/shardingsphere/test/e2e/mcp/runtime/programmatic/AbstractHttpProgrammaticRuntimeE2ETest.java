@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPa
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
@@ -35,6 +34,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -103,6 +103,18 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     protected final HttpResponse<String> sendResourceReadRequest(final HttpClient httpClient, final String sessionId,
                                                                  final String resourceUri) throws IOException, InterruptedException {
         return MCPHttpTransportTestSupport.sendJsonRpcRequest(httpClient, getEndpointUri(), createSessionHeaders(sessionId), "resource-1", "resources/read", Map.of("uri", resourceUri));
+    }
+    
+    protected final HttpResponse<String> sendCompletionRequest(final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,
+                                                               final String argumentName, final String argumentValue,
+                                                               final Map<String, String> contextArguments) throws IOException, InterruptedException {
+        Map<String, Object> params = new LinkedHashMap<>(3, 1F);
+        params.put("ref", reference);
+        params.put("argument", Map.of("name", argumentName, "value", argumentValue));
+        if (!contextArguments.isEmpty()) {
+            params.put("context", Map.of("arguments", contextArguments));
+        }
+        return MCPHttpTransportTestSupport.sendJsonRpcRequest(httpClient, getEndpointUri(), createSessionHeaders(sessionId), "completion-1", "completion/complete", params);
     }
     
     protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
@@ -174,8 +186,10 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBack
     
     @Override
     protected final void prepareRuntimeFixture() throws IOException {
-        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(),
-                () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed MCP programmatic contract E2E test."));
+        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
+            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage(
+                    "Docker is required for the MySQL-backed MCP programmatic contract E2E test."));
+        }
         if (useSharedDatabaseBackedRuntime()) {
             prepareSharedDatabaseBackedRuntime();
             return;

@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,14 +32,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final String PLAN_MASK_PROMPT_NAME = "plan_mask_rule";
-    
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
     
     @Test
     void assertCompleteMetadataValues() throws IOException, InterruptedException {
@@ -139,19 +132,6 @@ class HttpTransportCompletionE2ETest extends AbstractSharedHttpProgrammaticRunti
         HttpResponse<String> actual = sendCompletionRequest(httpClient, sessionId, reference, argumentName, argumentValue, contextArguments);
         assertThat(actual.statusCode(), is(200));
         return MCPInteractionPayloads.getRequiredJsonRpcResult(parseJsonBody(actual.body()));
-    }
-    
-    private HttpResponse<String> sendCompletionRequest(final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,
-                                                       final String argumentName, final String argumentValue,
-                                                       final Map<String, String> contextArguments) throws IOException, InterruptedException {
-        Map<String, Object> params = new LinkedHashMap<>(3, 1F);
-        params.put("ref", reference);
-        params.put("argument", Map.of("name", argumentName, "value", argumentValue));
-        if (!contextArguments.isEmpty()) {
-            params.put("context", Map.of("arguments", contextArguments));
-        }
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
-                "completion-1", "completion/complete", params));
     }
     
 }

@@ -27,7 +27,9 @@ final class LLMMCPTraceRecordFactory {
     
     MCPInteractionTraceRecord createTraceRecord(final int sequence, final String actionName, final String actionOrigin, final Map<String, Object> args,
                                                 final Map<String, Object> structuredContent, final long latencyMillis) {
-        String bridgeActionOrigin = MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN;
+        String bridgeActionOrigin = MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN.equals(actionOrigin)
+                ? MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN
+                : MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN;
         if (MCPInteractionActionNames.LIST_TOOLS.equals(actionName)) {
             return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.TOOL_LIST_KIND, bridgeActionOrigin, MCPInteractionActionNames.LIST_TOOLS,
                     Map.of(), structuredContent, true, latencyMillis);

@@ -209,11 +209,24 @@ class LLMUsabilityMetricCalculatorTest {
         assertThat(actual.getNextActionFollowRate(), is(1.0D));
         assertThat(actual.getApprovalViolationRate(), is(0.5D));
         assertThat(actual.getNaturalTaskSuccessRate(), is(1.0D));
-        assertThat(actual.getProtocolContractSuccessRate(), is(1.0D));
+        assertThat(actual.getNaturalTaskSampleCount(), is(2));
+        assertThat(actual.getProtocolContractSuccessRate(), is(0.0D));
+        assertThat(actual.getProtocolContractSampleCount(), is(0));
+        assertThat(actual.getResourceHitSampleCount(), is(0));
+        assertThat(actual.getRecoverySampleCount(), is(0));
         assertThat(actual.getNativeToolCallRate(), is(1.0D));
         assertThat(actual.getHarnessRecoveryRate(), is(0.0D));
         assertTrue(actual.getOverallScore() < 100.0D);
         assertFalse(actual.isFullScore());
+    }
+    
+    @Test
+    void assertCreateEmptyScorecard() {
+        LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of());
+        assertThat(actual.getOverallScore(), is(0.0D));
+        assertFalse(actual.isFullScore());
+        assertThat(actual.getNaturalTaskSampleCount(), is(0));
+        assertThat(actual.getProtocolContractSampleCount(), is(0));
     }
     
     @Test
@@ -223,13 +236,19 @@ class LLMUsabilityMetricCalculatorTest {
                         "type", "tool_call",
                         "tool_name", "database_gateway_search_metadata")))),
                 createToolCall(2, "database_gateway_search_metadata", Map.of()))));
-        LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of(actualScenario));
+        LLMUsabilityScenarioResult protocolScenario = new LLMUsabilityMetricCalculator().evaluateScenario(createProtocolScenario(), createArtifactBundle(List.of(
+                createToolCall(1, "mcp_read_resource", Map.of()))));
+        LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of(actualScenario, protocolScenario));
         assertThat(actual.getOverallScore(), is(100.0D));
         assertTrue(actual.isFullScore());
         assertThat(actual.getNaturalTaskSuccessRate(), is(1.0D));
+        assertThat(actual.getNaturalTaskSampleCount(), is(1));
         assertThat(actual.getProtocolContractSuccessRate(), is(1.0D));
+        assertThat(actual.getProtocolContractSampleCount(), is(1));
         assertThat(actual.getResourceHitRate(), is(1.0D));
-        assertThat(actual.getRecoveryRate(), is(1.0D));
+        assertThat(actual.getResourceHitSampleCount(), is(1));
+        assertThat(actual.getRecoveryRate(), is(0.0D));
+        assertThat(actual.getRecoverySampleCount(), is(0));
         assertThat(actual.getNativeToolCallRate(), is(1.0D));
         assertThat(actual.getHarnessRecoveryRate(), is(0.0D));
     }
@@ -245,7 +264,9 @@ class LLMUsabilityMetricCalculatorTest {
         assertThat(actual.getOverallScore(), is(100.0D));
         assertFalse(actual.isFullScore());
         assertThat(actual.getNaturalTaskSuccessRate(), is(1.0D));
-        assertThat(actual.getProtocolContractSuccessRate(), is(1.0D));
+        assertThat(actual.getNaturalTaskSampleCount(), is(1));
+        assertThat(actual.getProtocolContractSuccessRate(), is(0.0D));
+        assertThat(actual.getProtocolContractSampleCount(), is(0));
         assertThat(actual.getNativeToolCallRate(), is(0.0D));
         assertThat(actual.getHarnessRecoveryRate(), is(1.0D));
     }

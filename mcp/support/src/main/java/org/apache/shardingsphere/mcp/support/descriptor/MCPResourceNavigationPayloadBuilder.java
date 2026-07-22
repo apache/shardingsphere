@@ -59,8 +59,10 @@ public final class MCPResourceNavigationPayloadBuilder {
         new MCPUriTemplate(descriptor.getUriTemplate()).expandIfComplete(uriVariables)
                 .ifPresent(optional -> result.put(MCPPayloadFieldNames.SELF_RESOURCE, MCPResourceHintUtils.create(optional, resolveResourceKind(optional), "inspect_self",
                         "Read this resource.", MCPPayloadFieldNames.SELF_RESOURCE)));
-        Optional<String> parentUri = new MCPUriTemplate(parentUriTemplate).expandIfComplete(uriVariables);
-        parentUri.filter(optional -> !optional.isEmpty()).ifPresent(optional -> result.put(MCPPayloadFieldNames.PARENT_RESOURCE, createParentResourceHint(optional)));
+        if (!parentUriTemplate.isEmpty()) {
+            Optional<String> parentUri = new MCPUriTemplate(parentUriTemplate).expandIfComplete(uriVariables);
+            parentUri.ifPresent(optional -> result.put(MCPPayloadFieldNames.PARENT_RESOURCE, createParentResourceHint(optional)));
+        }
         return result;
     }
     

@@ -22,7 +22,9 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/ci-mcp.yml'
+      - '.github/workflows/resources/actions/setup-build-environment/**'
       - 'pom.xml'
+      - 'database/connector/**'
       - 'mcp/**'
   workflow_dispatch:
 

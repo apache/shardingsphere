@@ -59,26 +59,17 @@ public final class EncryptWorkflowPlanningService {
     
     private static final List<String> VALIDATION_LAYERS = List.of("rules");
     
-    private final WorkflowPlanningSupport planningSupport;
+    private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
-    private final EncryptWorkflowIntentResolver intentResolver;
+    private final EncryptWorkflowIntentResolver intentResolver = new EncryptWorkflowIntentResolver();
     
-    private final EncryptRuleInspectionService ruleInspectionService;
+    private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
-    private final EncryptAlgorithmRecommendationService algorithmRecommendationService;
+    private final EncryptAlgorithmRecommendationService algorithmRecommendationService = new EncryptAlgorithmRecommendationService();
     
-    private final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+    private final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
     
-    private final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService;
-    
-    public EncryptWorkflowPlanningService() {
-        planningSupport = new WorkflowPlanningSupport();
-        intentResolver = new EncryptWorkflowIntentResolver();
-        ruleInspectionService = new EncryptRuleInspectionService();
-        algorithmRecommendationService = new EncryptAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
-        ruleDistSQLPlanningService = new EncryptRuleDistSQLPlanningService();
-    }
+    private final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = new EncryptRuleDistSQLPlanningService();
     
     /**
      * Plan encrypt workflow.

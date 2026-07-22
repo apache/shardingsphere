@@ -32,18 +32,18 @@ import java.net.URI;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class OriginHeaderConstraint implements TransportHeaderConstraint {
+public final class OriginHeaderConstraint {
     
     private static final String FORBIDDEN_MESSAGE = "Origin is not allowed by MCP HTTP transport policy.";
     
     private final boolean loopbackBinding;
     
-    @Override
-    public String getConstraintKey() {
-        return "Origin";
-    }
-    
-    @Override
+    /**
+     * Validate the Origin header value.
+     *
+     * @param value Origin header value
+     * @throws ServerTransportSecurityException when the origin is not allowed
+     */
     public void validate(final String value) throws ServerTransportSecurityException {
         if (value.isEmpty()) {
             return;

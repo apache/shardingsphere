@@ -187,9 +187,13 @@ public final class LLME2EConfiguration {
     private static int readInteger(final Properties props, final String propertyName, final int defaultValue) {
         String result = readString(props, propertyName, String.valueOf(defaultValue));
         try {
-            return Integer.parseInt(result);
-        } catch (final NumberFormatException ignored) {
-            return defaultValue;
+            int parsedValue = Integer.parseInt(result);
+            if (parsedValue <= 0) {
+                throw new IllegalStateException(String.format("MCP LLM E2E property `%s` must be a positive integer, but was `%s`.", propertyName, result));
+            }
+            return parsedValue;
+        } catch (final NumberFormatException ex) {
+            throw new IllegalStateException(String.format("MCP LLM E2E property `%s` must be a positive integer, but was `%s`.", propertyName, result), ex);
         }
     }
     

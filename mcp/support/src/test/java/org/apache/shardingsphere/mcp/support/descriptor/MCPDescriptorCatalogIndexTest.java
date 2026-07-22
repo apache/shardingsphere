@@ -115,6 +115,12 @@ class MCPDescriptorCatalogIndexTest {
     }
     
     @Test
+    void assertFindWorkflowKindsByPlanningPromptCompletionTarget() {
+        MCPCompletionTargetDescriptor descriptor = new MCPCompletionTargetDescriptor("prompt", "configure_encryption", List.of("database"), 50, Map.of());
+        assertThat(MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(descriptor), is(List.of("encrypt.rule")));
+    }
+    
+    @Test
     void assertFindWorkflowKindsByResourceCompletionTarget() {
         MCPCompletionTargetDescriptor descriptor = new MCPCompletionTargetDescriptor("resource", "shardingsphere://workflows/{plan_id}", List.of("plan_id"), 50, Map.of());
         assertTrue(MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(descriptor).isEmpty());

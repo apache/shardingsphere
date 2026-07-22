@@ -54,6 +54,16 @@ class MCPDescriptorComponentValidatorsTest {
     }
     
     @Test
+    void assertToolDescriptorCatalogValidatorWithObjectAdditionalProperties() {
+        Map<String, Object> inputSchema = new LinkedHashMap<>(createInputSchema());
+        inputSchema.put("additionalProperties", Map.of("type", "string"));
+        MCPDescriptorCatalog catalog = createCatalog(List.of(), List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.", inputSchema, createOutputSchema(), createAnnotations(), Map.of())));
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPToolDescriptorCatalogValidator.validate(catalog));
+        assertThat(actual.getMessage(), is("Tool `database_gateway_test_tool` inputSchema additionalProperties must be a boolean."));
+    }
+    
+    @Test
     void assertToolOutputSchemaValidator() {
         MCPToolDescriptor descriptor = new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.",
                 createInputSchema(), createOutputSchema(Map.of("recommended_next_tool", Map.of("type", "string", "description", "Removed alias."))), createAnnotations(), Map.of());

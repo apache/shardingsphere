@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETest {
     
     private static final long SLOW_ELICITATION_MILLIS = 11_000L;

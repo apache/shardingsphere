@@ -55,7 +55,7 @@ public final class MCPBuilderEvaluationCatalog {
             return new EvaluationSuite(
                     root.getAttribute("standard_reference"),
                     root.getAttribute("operation_mode"),
-                    Boolean.parseBoolean(root.getAttribute("requires_external_model")),
+                    readBooleanAttribute(root, "requires_external_model"),
                     loadCases(root.getElementsByTagName("qa_pair")));
         } catch (final ParserConfigurationException | SAXException ex) {
             throw new IOException("Failed to parse MCP Builder evaluation catalog.", ex);
@@ -79,11 +79,20 @@ public final class MCPBuilderEvaluationCatalog {
             result.add(new EvaluationCase(
                     each.getAttribute("id"),
                     each.getAttribute("category"),
-                    Boolean.parseBoolean(each.getAttribute("read_only")),
+                    readBooleanAttribute(each, "read_only"),
                     readElementText(each, "question"),
                     readElementText(each, "answer")));
         }
         return result;
+    }
+    
+    private boolean readBooleanAttribute(final Element element, final String attributeName) {
+        String value = element.getAttribute(attributeName);
+        if (!"true".equalsIgnoreCase(value) && !"false".equalsIgnoreCase(value)) {
+            throw new IllegalStateException(String.format("MCP Builder evaluation element `%s` attribute `%s` must be `true` or `false`, but was `%s`.",
+                    element.getTagName(), attributeName, value));
+        }
+        return Boolean.parseBoolean(value);
     }
     
     private String readElementText(final Element parent, final String tagName) {

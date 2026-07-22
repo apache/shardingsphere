@@ -24,7 +24,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssert
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
     
     protected static final String LOGICAL_DATABASE_NAME = "logic_db";
@@ -95,8 +93,10 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(),
-                () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed production runtime E2E test."));
+        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
+            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage(
+                    "Docker is required for the MySQL-backed production runtime E2E test."));
+        }
         if (useSharedRuntimeFixture()) {
             prepareSharedRuntimeFixture();
             return;
@@ -149,10 +149,6 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     
     protected static Map<String, Object> createExecuteUpdateArguments(final String databaseName, final String sql) {
         return Map.of("database", databaseName, "schema", databaseName, "sql", sql, "execution_mode", "execute");
-    }
-    
-    protected static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
     }
     
     protected static Stream<Arguments> transports() {

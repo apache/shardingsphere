@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
+import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.Test;
@@ -199,7 +199,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
     
     @Test
     void assertEnforceToolCallLimitPerSession() throws IOException, InterruptedException {
-        String propertyName = MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY;
+        String propertyName = MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY;
         String originalValue = System.getProperty(propertyName);
         System.setProperty(propertyName, "1");
         try {
@@ -265,8 +265,7 @@ class HttpTransportProtocolContractE2ETest extends AbstractHttpProtocolOnlyE2ETe
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         initializeSession(httpClient);
-        HttpResponse<String> actual = sendCapabilitiesRequest(httpClient,
-                Map.of("MCP-Session-Id", "missing-session", "MCP-Protocol-Version", getProtocolVersion()));
+        HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", "missing-session"));
         assertThat(actual.statusCode(), is(404));
         assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session not found: missing-session"));
     }

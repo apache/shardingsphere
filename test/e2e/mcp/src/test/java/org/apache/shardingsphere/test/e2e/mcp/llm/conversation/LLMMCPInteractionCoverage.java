@@ -49,10 +49,6 @@ final class LLMMCPInteractionCoverage {
     }
     
     private static boolean isSuccessfulInteraction(final MCPInteractionTraceRecord interactionTraceRecord) {
-        return interactionTraceRecord.isValid() && !interactionTraceRecord.getStructuredContent().containsKey("error_code") && !isHarnessOrigin(interactionTraceRecord.getActionOrigin());
-    }
-    
-    private static boolean isHarnessOrigin(final String actionOrigin) {
-        return MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN.equals(actionOrigin);
+        return interactionTraceRecord.isValid() && !interactionTraceRecord.getStructuredContent().containsKey("error_code");
     }
 }

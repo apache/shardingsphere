@@ -48,7 +48,6 @@ class LLMUsabilityReportWriterTest {
                 .roundTripCount(3)
                 .resourceHit(false)
                 .recoveredAfterError(false)
-                .queryAnswerFidelity(0.0D)
                 .boundaryConfusion(true)
                 .nextActionFollowed(false)
                 .approvalViolation(false)
@@ -63,14 +62,17 @@ class LLMUsabilityReportWriterTest {
                 .fullScore(false)
                 .taskSuccessRate(0.0D)
                 .naturalTaskSuccessRate(0.0D)
+                .naturalTaskSampleCount(1)
                 .protocolContractSuccessRate(1.0D)
+                .protocolContractSampleCount(0)
                 .firstCorrectActionRate(0.0D)
                 .invalidCallRate(0.33D)
                 .averageRoundTrips(3.0D)
-                .queryAnswerFidelity(0.0D)
                 .boundaryConfusionRate(1.0D)
                 .resourceHitRate(0.0D)
+                .resourceHitSampleCount(0)
                 .recoveryRate(0.0D)
+                .recoverySampleCount(0)
                 .nextActionFollowRate(0.0D)
                 .approvalViolationRate(0.0D)
                 .nativeToolCallRate(0.0D)
@@ -90,14 +92,17 @@ class LLMUsabilityReportWriterTest {
                 + "- fullScore: false" + lineSeparator
                 + "- taskSuccessRate: 0.0" + lineSeparator
                 + "- naturalTaskSuccessRate: 0.0" + lineSeparator
-                + "- protocolContractSuccessRate: 1.0" + lineSeparator
+                + "- naturalTaskSampleCount: 1" + lineSeparator
+                + "- protocolContractSuccessRate: n/a" + lineSeparator
+                + "- protocolContractSampleCount: 0" + lineSeparator
                 + "- firstCorrectActionRate: 0.0" + lineSeparator
                 + "- invalidCallRate: 0.33" + lineSeparator
                 + "- averageRoundTrips: 3.0" + lineSeparator
-                + "- queryAnswerFidelity: 0.0" + lineSeparator
                 + "- boundaryConfusionRate: 1.0" + lineSeparator
-                + "- resourceHitRate: 0.0" + lineSeparator
-                + "- recoveryRate: 0.0" + lineSeparator
+                + "- resourceHitRate: n/a" + lineSeparator
+                + "- resourceHitSampleCount: 0" + lineSeparator
+                + "- recoveryRate: n/a" + lineSeparator
+                + "- recoverySampleCount: 0" + lineSeparator
                 + "- nextActionFollowRate: 0.0" + lineSeparator
                 + "- approvalViolationRate: 0.0" + lineSeparator
                 + "- nativeToolCallRate: 0.0" + lineSeparator

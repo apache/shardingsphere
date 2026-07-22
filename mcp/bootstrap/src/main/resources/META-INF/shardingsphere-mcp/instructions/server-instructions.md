@@ -19,7 +19,7 @@ Apache ShardingSphere MCP.
 
 Use MCP list methods (`tools/list`, `resources/list`, `resources/templates/list`, `prompts/list`) to discover the protocol surface.
 
-Use `completion/complete` for supported argument values. Read `shardingsphere://capabilities` when ShardingSphere domain capability guidance, workflow guidance, or side-effect notes are needed.
+Use `completion/complete` for supported argument values. Read `shardingsphere://guidance` when ShardingSphere domain capability guidance, workflow guidance, or side-effect notes are needed.
 
 Use `database_gateway_execute_query` only for parser-approved `SELECT`.
 Use `database_gateway_execute_explain_query` for execution-plan diagnostics.

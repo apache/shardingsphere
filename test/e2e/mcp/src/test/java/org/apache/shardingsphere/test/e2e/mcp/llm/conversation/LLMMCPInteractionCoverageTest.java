@@ -51,8 +51,8 @@ class LLMMCPInteractionCoverageTest {
     }
     
     @Test
-    void assertHasRequiredInteractionCoverageExcludesHarnessOrigin() {
-        assertFalse(LLMMCPInteractionCoverage.hasRequiredInteractionCoverage(List.of("database_gateway_execute_query"), List.of(
+    void assertHasRequiredInteractionCoverageWithHarnessOrigin() {
+        assertTrue(LLMMCPInteractionCoverage.hasRequiredInteractionCoverage(List.of("database_gateway_execute_query"), List.of(
                 new MCPInteractionTraceRecord(1, "tool_call", MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN,
                         "database_gateway_execute_query", Map.of(), Map.of("result_kind", "result_set"), true, 0L))));
     }

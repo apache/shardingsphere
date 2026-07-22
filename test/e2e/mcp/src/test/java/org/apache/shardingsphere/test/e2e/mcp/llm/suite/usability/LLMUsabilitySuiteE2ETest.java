@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeSupport;
@@ -44,7 +43,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 @Tag("llm-e2e")
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
@@ -98,10 +97,6 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         currentTransport = null;
     }
     
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
-    
     static Stream<Arguments> getTestCases() {
         return isFullTransportMatrixEnabled()
                 ? Stream.of(
@@ -111,7 +106,12 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private static boolean isFullTransportMatrixEnabled() {
-        return Boolean.parseBoolean(System.getProperty(FULL_TRANSPORT_MATRIX_PROPERTY, "false"));
+        String configuredValue = System.getProperty(FULL_TRANSPORT_MATRIX_PROPERTY, "false").trim();
+        if (!"true".equalsIgnoreCase(configuredValue) && !"false".equalsIgnoreCase(configuredValue)) {
+            throw new IllegalArgumentException(String.format("MCP LLM E2E property `%s` must be `true` or `false`, but was `%s`.",
+                    FULL_TRANSPORT_MATRIX_PROPERTY, configuredValue));
+        }
+        return Boolean.parseBoolean(configuredValue);
     }
     
     @ParameterizedTest(name = "{0}")

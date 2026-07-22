@@ -18,18 +18,15 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.fixture.MCPWorkflowSecretReferenceFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,14 +34,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntimeE2ETest {
     
     private static final String RECOVERY_SECRET = "recovery-secret-value";
-    
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
     
     @Test
     void assertRecoverMissingDatabase() throws IOException, InterruptedException {
@@ -103,7 +96,7 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
         Map<String, Object> argument = MCPInteractionPayloads.getRequiredObject(nextAction, "argument");
         assertThat(argument.get("name"), is("plan_id"));
         Map<String, Object> reference = MCPInteractionPayloads.getRequiredObject(nextAction, "ref");
-        HttpResponse<String> completion = sendCompletionRequest(httpClient, sessionId, reference, String.valueOf(argument.get("name")));
+        HttpResponse<String> completion = sendCompletionRequest(httpClient, sessionId, reference, String.valueOf(argument.get("name")), "", Map.of());
         assertThat(completion.statusCode(), is(200));
         Map<String, Object> completionPayload = getResultPayload(completion);
         assertThat(MCPInteractionPayloads.getRequiredObject(completionPayload, "completion").get("total"), is(0));
@@ -170,15 +163,6 @@ class HttpTransportRecoveryE2ETest extends AbstractSharedHttpProgrammaticRuntime
     
     private void assertDatabaseListContains(final Map<String, Object> payload, final String expectedDatabase) {
         assertTrue(MCPInteractionPayloads.getRequiredObjectList(payload, "items").stream().anyMatch(each -> expectedDatabase.equals(each.get("database"))));
-    }
-    
-    private HttpResponse<String> sendCompletionRequest(final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,
-                                                       final String argumentName) throws IOException, InterruptedException {
-        Map<String, Object> params = new LinkedHashMap<>(2, 1F);
-        params.put("ref", reference);
-        params.put("argument", Map.of("name", argumentName, "value", ""));
-        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPInteractionProtocolSupport.createJsonRpcRequestBody(
-                "completion-1", "completion/complete", params));
     }
     
     private Map<String, Object> createEncryptRulePlanArguments() {

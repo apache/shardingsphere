@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
+import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -111,7 +111,7 @@ class MCPLaunchConfigurationTest {
     }
     
     private void validate(final YamlMCPLaunchConfiguration yamlConfig) {
-        MCPYamlConfigurationValidator.validate(yamlConfig, "MCP launch configuration");
+        MCPConfigurationValidator.validate(yamlConfig, "MCP launch configuration");
     }
     
     private YamlMCPLaunchConfiguration createYamlConfig(final MCPTransportType type, final YamlHttpTransportConfiguration http) {
