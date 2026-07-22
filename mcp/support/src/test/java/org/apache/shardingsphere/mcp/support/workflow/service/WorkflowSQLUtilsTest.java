@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -134,27 +135,27 @@ class WorkflowSQLUtilsTest {
     
     @Test
     void assertIsSameIdentifierWithCaseInsensitiveDatabase() {
-        assertTrue(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE), "Phone", "phone"));
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet()), IdentifierScope.TABLE, "Phone", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierFoldsPostgreSQLUnquotedIdentifier() {
-        assertTrue(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "Phone", "phone"));
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()), IdentifierScope.TABLE, "Phone", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierPreservesPostgreSQLDelimitedIdentifier() {
-        assertFalse(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "\"Phone\"", "phone"));
+        assertFalse(WorkflowSQLUtils.isSameIdentifier(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()), IdentifierScope.TABLE, "\"Phone\"", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierRejectsUnquotedPostgreSQLQuotedName() {
-        assertFalse(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "Phone", "Phone"));
+        assertFalse(WorkflowSQLUtils.isSameIdentifier(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()), IdentifierScope.TABLE, "Phone", "Phone"));
     }
     
     @Test
     void assertIsSameIdentifierMatchesQuotedPostgreSQLName() {
-        assertTrue(WorkflowSQLUtils.isSameIdentifier(IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE), "\"Phone\"", "Phone"));
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()), IdentifierScope.TABLE, "\"Phone\"", "Phone"));
     }
     
     @Test

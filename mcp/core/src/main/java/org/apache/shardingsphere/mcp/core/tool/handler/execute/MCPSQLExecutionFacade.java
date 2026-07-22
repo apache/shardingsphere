@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
@@ -40,6 +40,7 @@ import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNo
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -154,18 +155,18 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         if (SchemaExecutionSemantics.BEST_EFFORT == databaseCapability.getSchemaExecutionSemantics()) {
             return;
         }
-        IdentifierCasePolicy identifierCasePolicy = databaseCapability.getIdentifierCasePolicySet().getPolicy(IdentifierScope.SCHEMA);
         for (SQLStatementObjectName each : classificationResult.getReferencedObjects()) {
-            if (isCrossSchemaReference(each, executionRequest.getDatabase(), identifierCasePolicy)) {
+            if (isCrossSchemaReference(each, executionRequest.getDatabase(), databaseCapability.getIdentifierContext())) {
                 throw recordFailure(executionRequest, classificationResult.getTraceStatementMarker(), new MCPInvalidRequestException(
                         String.format("Cross-schema SQL is not supported for database `%s`: `%s`.", executionRequest.getDatabase(), each.getObjectName())));
             }
         }
     }
     
-    private boolean isCrossSchemaReference(final SQLStatementObjectName objectName, final String databaseName, final IdentifierCasePolicy identifierCasePolicy) {
+    private boolean isCrossSchemaReference(final SQLStatementObjectName objectName, final String databaseName, final DatabaseIdentifierContext identifierContext) {
         return (objectName.isQualified() || objectName.isNamespaceTarget())
-                && !identifierCasePolicy.matches(databaseName, objectName.getFirstIdentifier(), objectName.getFirstIdentifierQuoteCharacter());
+                && !identifierContext.matchesMetaData(IdentifierScope.SCHEMA, databaseName,
+                        new IdentifierValue(objectName.getFirstIdentifier(), objectName.getFirstIdentifierQuoteCharacter()));
     }
     
     private <T extends RuntimeException> T recordFailure(final SQLExecutionRequest executionRequest, final String statementMarker, final T ex) {

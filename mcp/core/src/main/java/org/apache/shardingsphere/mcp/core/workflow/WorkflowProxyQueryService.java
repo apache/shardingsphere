@@ -79,7 +79,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     @Override
     public boolean isSameIdentifier(final String databaseName, final IdentifierScope identifierScope, final String identifier, final String existingIdentifier) {
-        return WorkflowSQLUtils.isSameIdentifier(getDatabaseCapability(databaseName).getIdentifierCasePolicySet().getPolicy(identifierScope), identifier, existingIdentifier);
+        return WorkflowSQLUtils.isSameIdentifier(getDatabaseCapability(databaseName).getIdentifierContext(), identifierScope, identifier, existingIdentifier);
     }
     
     private MCPDatabaseQueryFailedException createQueryFailedException(final String databaseName, final SQLException cause) {

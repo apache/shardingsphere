@@ -41,20 +41,32 @@ public final class MySQLIdentifierCasePolicyProvider implements IdentifierCasePo
     @Override
     public IdentifierCasePolicySet provide(final IdentifierCasePolicyProviderContext context) {
         if (null == context.getDataSource()) {
-            return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
+            return createStorageObjectSensitivePolicySet(IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet());
         }
         try (Connection connection = context.getDataSource().getConnection()) {
             if (null == connection) {
-                return IdentifierCasePolicyFactory.newInsensitivePolicySet();
+                return createStorageObjectSensitivePolicySet(IdentifierCasePolicyFactory.newInsensitivePolicySet());
             }
             try (
                     PreparedStatement preparedStatement = connection.prepareStatement(QUERY_LOWER_CASE_TABLE_NAMES);
                     ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next() ? createPolicySet(resultSet.getInt(1)) : IdentifierCasePolicyFactory.newInsensitivePolicySet();
+                return createStorageObjectSensitivePolicySet(resultSet.next() ? createPolicySet(resultSet.getInt(1)) : IdentifierCasePolicyFactory.newInsensitivePolicySet());
             }
         } catch (final SQLException ignored) {
-            return IdentifierCasePolicyFactory.newInsensitivePolicySet();
+            return createStorageObjectSensitivePolicySet(IdentifierCasePolicyFactory.newInsensitivePolicySet());
         }
+    }
+    
+    private IdentifierCasePolicySet createStorageObjectSensitivePolicySet(final IdentifierCasePolicySet policySet) {
+        Map<IdentifierScope, IdentifierCasePolicy> scopedPolicies = new EnumMap<>(IdentifierScope.class);
+        for (IdentifierScope each : IdentifierScope.values()) {
+            scopedPolicies.put(each, policySet.getPolicy(each));
+        }
+        IdentifierCasePolicy sensitivePolicy = IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.COLUMN);
+        scopedPolicies.put(IdentifierScope.COLUMN, sensitivePolicy);
+        scopedPolicies.put(IdentifierScope.INDEX, sensitivePolicy);
+        scopedPolicies.put(IdentifierScope.CONSTRAINT, sensitivePolicy);
+        return new IdentifierCasePolicySet(policySet.getPolicy(IdentifierScope.TABLE), scopedPolicies);
     }
     
     private IdentifierCasePolicySet createPolicySet(final int lowerCaseTableNames) {

@@ -57,10 +57,13 @@ class MySQLIdentifierCasePolicyProviderTest {
     @MethodSource("provideArguments")
     void assertProvide(final String name, final IdentifierCasePolicyProviderContext context, final LookupMode expectedQuotedLookupMode,
                        final LookupMode expectedUnquotedLookupMode, final boolean expectedMatch) {
-        IdentifierCasePolicy actual = provider.provide(context).getPolicy(IdentifierScope.TABLE);
-        assertThat(actual.getLookupMode(QuoteCharacter.BACK_QUOTE), is(expectedQuotedLookupMode));
-        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
-        assertThat(actual.matches("foo", "FOO", QuoteCharacter.NONE), is(expectedMatch));
+        IdentifierCasePolicySet actual = provider.provide(context);
+        assertThat(actual.getPolicy(IdentifierScope.TABLE).getLookupMode(QuoteCharacter.BACK_QUOTE), is(expectedQuotedLookupMode));
+        assertThat(actual.getPolicy(IdentifierScope.TABLE).getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
+        assertThat(actual.getPolicy(IdentifierScope.TABLE).matches("foo", "FOO", QuoteCharacter.NONE), is(expectedMatch));
+        assertThat(actual.getPolicy(IdentifierScope.COLUMN).normalize("FooColumn"), is("FooColumn"));
+        assertThat(actual.getPolicy(IdentifierScope.INDEX).normalize("FooIndex"), is("FooIndex"));
+        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).normalize("FooConstraint"), is("FooConstraint"));
     }
     
     @Test
@@ -93,8 +96,9 @@ class MySQLIdentifierCasePolicyProviderTest {
         assertThat(actual.getPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE), is(Boolean.TRUE));
         assertThat(actual.getPolicy(IdentifierScope.TABLE).matches("foo_tbl", "FOO_TBL", QuoteCharacter.NONE), is(Boolean.FALSE));
         assertThat(actual.getPolicy(IdentifierScope.VIEW).matches("foo_view", "FOO_VIEW", QuoteCharacter.NONE), is(Boolean.FALSE));
-        assertThat(actual.getPolicy(IdentifierScope.COLUMN).matches("foo_col", "FOO_COL", QuoteCharacter.NONE), is(Boolean.TRUE));
-        assertThat(actual.getPolicy(IdentifierScope.INDEX).matches("foo_idx", "FOO_IDX", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertThat(actual.getPolicy(IdentifierScope.COLUMN).matches("foo_col", "FOO_COL", QuoteCharacter.NONE), is(Boolean.FALSE));
+        assertThat(actual.getPolicy(IdentifierScope.INDEX).matches("foo_idx", "FOO_IDX", QuoteCharacter.NONE), is(Boolean.FALSE));
+        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).matches("foo_fk", "FOO_FK", QuoteCharacter.NONE), is(Boolean.FALSE));
     }
     
     private static Object getDefaultValue(final Class<?> returnType) {
