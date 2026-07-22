@@ -20,9 +20,11 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Locale;
 import java.util.Map;
@@ -123,15 +125,17 @@ public final class WorkflowSQLUtils {
     /**
      * Judge whether a workflow identifier token references an existing identifier under the target database policy.
      *
-     * @param identifierCasePolicy identifier case policy
+     * @param identifierContext identifier context
+     * @param identifierScope identifier scope
      * @param identifier identifier token
      * @param existingIdentifier existing identifier
      * @return whether the identifier references the existing identifier
      */
-    public static boolean isSameIdentifier(final IdentifierCasePolicy identifierCasePolicy, final String identifier, final String existingIdentifier) {
+    public static boolean isSameIdentifier(final DatabaseIdentifierContext identifierContext, final IdentifierScope identifierScope,
+                                           final String identifier, final String existingIdentifier) {
         String actualIdentifier = normalizeIdentifier(identifier);
         String actualExistingIdentifier = normalizeIdentifier(existingIdentifier);
-        return identifierCasePolicy.matches(actualExistingIdentifier, actualIdentifier, getQuoteCharacter(identifier));
+        return identifierContext.matchesMetaData(identifierScope, actualExistingIdentifier, new IdentifierValue(actualIdentifier, getQuoteCharacter(identifier)));
     }
     
     static boolean requiresExactIdentifierMatch(final String identifier) {
