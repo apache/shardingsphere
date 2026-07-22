@@ -35,6 +35,7 @@
 1. Proxy: Fix MySQL BLOB data corruption when string-like prepared statement parameters target BLOB columns - [#39072](https://github.com/apache/shardingsphere/pull/39072)
 1. Proxy: Add MySQL exception mapping for ColumnNotFoundException - [#39126](https://github.com/apache/shardingsphere/pull/39126)
 1. Proxy: Fix MySQL prepared statement parameter signedness decoding - [#39204](https://github.com/apache/shardingsphere/pull/39204)
+1. Proxy: Fix Proxy Native Docker image failing to start due to unexpanded LOCAL_PATH in ENTRYPOINT - [#39146](https://github.com/apache/shardingsphere/pull/39146)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
 1. Agent: Fix wrong target class name in StaticMethodAdviceExecutor error logs - [#39077](https://github.com/apache/shardingsphere/pull/39077)
