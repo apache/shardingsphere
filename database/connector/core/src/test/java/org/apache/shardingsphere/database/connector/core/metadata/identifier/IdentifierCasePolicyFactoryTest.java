@@ -57,16 +57,26 @@ class IdentifierCasePolicyFactoryTest {
     }
     
     @Test
-    void assertNewQuotedInsensitivePolicySet() {
-        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newQuotedInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
-        assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.NORMALIZED));
-        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
+    void assertNewCasePreservingInsensitivePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newCasePreservingInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.QUOTE), is("Foo"));
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.NONE), is("Foo"));
+        assertTrue(actual.matches("Foo", "FOO", QuoteCharacter.BACK_QUOTE));
+        assertTrue(actual.matches("Foo", "FOO", QuoteCharacter.NONE));
     }
     
     @Test
-    void assertNewMySQLInsensitivePolicySet() {
-        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
+    void assertNewLowerCaseInsensitivePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newLowerCaseInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.QUOTE), is("foo"));
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.NONE), is("foo"));
+        assertTrue(actual.matches("Foo", "FOO", QuoteCharacter.BACK_QUOTE));
+        assertTrue(actual.matches("Foo", "FOO", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertNewQuotedInsensitivePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newQuotedInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.NORMALIZED));
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
