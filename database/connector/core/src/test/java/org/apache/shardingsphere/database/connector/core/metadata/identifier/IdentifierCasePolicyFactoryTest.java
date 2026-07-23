@@ -30,14 +30,14 @@ class IdentifierCasePolicyFactoryTest {
     @Test
     void assertNewLowerCasePolicySet() {
         IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE);
-        assertThat(actual.normalize("Foo"), is("foo"));
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.NONE), is("foo"));
         assertFalse(actual.matches("Foo", "FOO", QuoteCharacter.NONE));
     }
     
     @Test
     void assertNewUpperCasePolicySet() {
         IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newUpperCasePolicySet().getPolicy(IdentifierScope.TABLE);
-        assertThat(actual.normalize("Foo"), is("FOO"));
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.NONE), is("FOO"));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     
