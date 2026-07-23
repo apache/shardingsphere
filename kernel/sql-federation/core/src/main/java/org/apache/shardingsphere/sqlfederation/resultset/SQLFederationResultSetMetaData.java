@@ -228,7 +228,7 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
                 return Object.class.getName();
         }
     }
-
+    
     private Optional<String> findTableName(final int column) {
         Projection projection = expandProjections.size() < column
                 ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null, databaseType)
