@@ -616,12 +616,19 @@ class PostgreSQLComDescribeExecutorTest {
     private void prepareJDBCBackendConnection(final String sql) throws SQLException {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
+
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
-        when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
-        when(connection.prepareStatement(sql).getParameterMetaData()).thenReturn(parameterMetaData);
+        when(parameterMetaData.getParameterType(anyInt())).thenReturn(Types.INTEGER);
+        when(parameterMetaData.getParameterTypeName(anyInt())).thenReturn("int4");
+        when(preparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+
         ResultSetMetaData resultSetMetaData = prepareResultSetMetaData();
-        when(connection.prepareStatement(sql).getMetaData()).thenReturn(resultSetMetaData);
-        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(preparedStatement.getMetaData()).thenReturn(resultSetMetaData);
+        
+        when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class)))
+                .thenReturn(Collections.singletonList(connection));
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
     }
     
@@ -665,10 +672,27 @@ class PostgreSQLComDescribeExecutorTest {
     private ResultSetMetaData prepareResultSetMetaData() throws SQLException {
         ResultSetMetaData result = mock(ResultSetMetaData.class);
         when(result.getColumnCount()).thenReturn(4);
-        when(result.getColumnName(anyInt())).thenReturn("id", "k", "c", "pad");
-        when(result.getColumnType(anyInt())).thenReturn(Types.INTEGER, Types.INTEGER, Types.CHAR, Types.CHAR);
-        when(result.getColumnDisplaySize(anyInt())).thenReturn(11, 11, 60, 120);
-        when(result.getColumnTypeName(anyInt())).thenReturn("int4", "int4", "char", "char");
+        
+        when(result.getColumnName(1)).thenReturn("id");
+        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(result.getColumnDisplaySize(1)).thenReturn(11);
+        when(result.getColumnTypeName(1)).thenReturn("int4");
+        
+        when(result.getColumnName(2)).thenReturn("k");
+        when(result.getColumnType(2)).thenReturn(Types.INTEGER);
+        when(result.getColumnDisplaySize(2)).thenReturn(11);
+        when(result.getColumnTypeName(2)).thenReturn("int4");
+        
+        when(result.getColumnName(3)).thenReturn("c");
+        when(result.getColumnType(3)).thenReturn(Types.CHAR);
+        when(result.getColumnDisplaySize(3)).thenReturn(60);
+        when(result.getColumnTypeName(3)).thenReturn("char");
+        
+        when(result.getColumnName(4)).thenReturn("pad");
+        when(result.getColumnType(4)).thenReturn(Types.CHAR);
+        when(result.getColumnDisplaySize(4)).thenReturn(120);
+        when(result.getColumnTypeName(4)).thenReturn("char");
+        
         return result;
     }
     

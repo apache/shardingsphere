@@ -22,7 +22,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -35,6 +37,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.postgresql.util.PGobject;
 
@@ -113,17 +117,23 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         for (int i = 0; i < paramCount; i++) {
             int paramIndex = i + 1;
             int jdbcType = Types.OTHER;
-            String parameterTypeName;
+            String parameterTypeName = null;
             
             try {
                 jdbcType = parameterMetaData.getParameterType(paramIndex);
                 parameterTypeName = parameterMetaData.getParameterTypeName(paramIndex);
             } catch (final SQLException ex) {
                 log.debug("Failed to resolve parameter type via JDBC metadata for index {}, falling back to schema metadata", paramIndex, ex);
-                parameterTypeName = findParameterTypeName(connectionSession, preparedStatement.getSqlStatementContext(), i);
             }
             
-            if (PostgreSQLBinaryColumnType.UNSPECIFIED == preparedStatement.getParameterTypes().get(i)) {
+            if (Types.OTHER == jdbcType || null == parameterTypeName || parameterTypeName.trim().isEmpty() || "unknown".equalsIgnoreCase(parameterTypeName)) {
+                String schemaTypeName = findParameterTypeName(connectionSession, preparedStatement.getSqlStatementContext(), i);
+                if (!"unknown".equalsIgnoreCase(schemaTypeName)) {
+                    parameterTypeName = schemaTypeName;
+                }
+            }
+            
+            if (PostgreSQLBinaryColumnType.UNSPECIFIED == preparedStatement.getParameterTypes().get(i) && null != parameterTypeName && !"unknown".equalsIgnoreCase(parameterTypeName)) {
                 preparedStatement.getParameterTypes().set(i, PostgreSQLBinaryColumnType.valueOfJDBCType(jdbcType, parameterTypeName));
             }
             
@@ -157,6 +167,10 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     private static String findParameterTypeName(final ConnectionSession connectionSession, final SQLStatementContext sqlStatementContext, final int parameterIndex) {
         String columnName = extractColumnName(sqlStatementContext, parameterIndex);
         if (null == columnName) {
+            return "unknown";
+        }
+        
+        if (null == sqlStatementContext.getTablesContext()) {
             return "unknown";
         }
         
@@ -209,6 +223,26 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         }
         if (sqlStatementContext instanceof UpdateStatementContext) {
             return extractColumnNameFromUpdate(((UpdateStatementContext) sqlStatementContext).getSqlStatement(), parameterIndex);
+        }
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return extractColumnNameFromSelect(((SelectStatementContext) sqlStatementContext).getSqlStatement(), parameterIndex);
+        }
+        if (sqlStatementContext instanceof DeleteStatementContext) {
+            return extractColumnNameFromDelete(((DeleteStatementContext) sqlStatementContext).getSqlStatement(), parameterIndex);
+        }
+        return null;
+    }
+    
+    private static String extractColumnNameFromSelect(final SelectStatement selectStatement, final int parameterIndex) {
+        if (selectStatement.getWhere().isPresent()) {
+            return findColumnInExpression(selectStatement.getWhere().get().getExpr(), parameterIndex);
+        }
+        return null;
+    }
+    
+    private static String extractColumnNameFromDelete(final DeleteStatement deleteStatement, final int parameterIndex) {
+        if (deleteStatement.getWhere().isPresent()) {
+            return findColumnInExpression(deleteStatement.getWhere().get().getExpr(), parameterIndex);
         }
         return null;
     }
