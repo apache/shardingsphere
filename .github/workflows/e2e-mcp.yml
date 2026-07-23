@@ -232,22 +232,30 @@ jobs:
           curl --silent --output /dev/null --request POST http://127.0.0.1:18088/mcp
           results_root="${RUNNER_TEMP}/mcp-conformance-results"
           mkdir -p "${results_root}"
+          available_scenarios="$(
+            node .mcp-conformance/dist/index.js list --server --spec-version 2025-11-25 \
+              | sed -nE 's/^ - ([^ ]+).*/\1/p'
+          )"
           scenario_count=0
           while IFS= read -r scenario; do
             [[ -z "${scenario}" || "${scenario}" == \#* ]] && continue
             scenario_count=$((scenario_count + 1))
+            if ! grep -Fxq -- "${scenario}" <<< "${available_scenarios}"; then
+              echo "MCP conformance scenario '${scenario}' is unavailable for protocol version 2025-11-25." >&2
+              exit 1
+            fi
             node .mcp-conformance/dist/index.js server \
               --url http://127.0.0.1:18088/mcp \
               --scenario "${scenario}" \
-              --spec-version 2025-11-25 \
               --output-dir "${results_root}/${scenario}"
+            checks_file="$(find "${results_root}/${scenario}" -type f -name checks.json -print -quit 2>/dev/null || true)"
+            if [[ -z "${checks_file}" ]] || ! jq -e 'type == "array" and length > 0' "${checks_file}" >/dev/null; then
+              echo "MCP conformance scenario '${scenario}' produced no checks." >&2
+              exit 1
+            fi
           done < test/e2e/mcp/src/test/resources/conformance/server-scenarios.txt
           if [[ "${scenario_count}" -eq 0 ]]; then
             echo "No MCP conformance scenarios were selected." >&2
-            exit 1
-          fi
-          if ! find "${results_root}" -mindepth 1 -type f -print -quit | grep -q .; then
-            echo "MCP conformance produced no result files." >&2
             exit 1
           fi
       - name: Upload MCP Conformance Artifacts

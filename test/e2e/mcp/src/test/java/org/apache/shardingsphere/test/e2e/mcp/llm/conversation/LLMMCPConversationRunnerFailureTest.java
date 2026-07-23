@@ -116,6 +116,16 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     }
     
     @Test
+    void assertRunWithMcpRuntimeInitializationFailure() throws IOException, InterruptedException {
+        doThrow(new IllegalStateException("Failed to initialize MCP session.")).when(getMCPInteractionClient()).open();
+        
+        LLME2EArtifactBundle actual = createRunner(1).run(createScenario(List.of("database_gateway_execute_query")));
+        
+        assertThat(actual.getAssertionReport().getFailureType(), is("mcp_runtime_unavailable"));
+        assertThat(actual.getAssertionReport().getMessage(), is("MCP runtime failed to initialize."));
+    }
+    
+    @Test
     void assertRunWithInterruptedMcpOpen() throws IOException, InterruptedException {
         doThrow(new InterruptedException("boom")).when(getMCPInteractionClient()).open();
         try {
@@ -188,10 +198,10 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     }
     
     @Test
-    void assertRunClassifiesModelFailureByMessage() throws IOException, InterruptedException {
+    void assertRunClassifiesModelFailureBySource() throws IOException, InterruptedException {
         when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenThrow(new IllegalStateException("MCP-shaped model failure."));
         LLME2EArtifactBundle actual = createRunner(1).run(createScenario(List.of("database_gateway_execute_query")));
-        assertThat(actual.getAssertionReport().getFailureType(), is("mcp_runtime_unavailable"));
+        assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
     }
     
     @Test
