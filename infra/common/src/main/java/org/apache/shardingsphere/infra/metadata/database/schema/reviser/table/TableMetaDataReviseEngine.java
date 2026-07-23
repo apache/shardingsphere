@@ -72,11 +72,36 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
      */
     public TableMetaData revise(final TableMetaData originalMetaData, final Collection<TableMetaData> originalMetaDataList,
                                 final Collection<TableMetaData> indexNameRecoveryCandidateTables) {
-        Optional<? extends TableNameReviser<T>> tableNameReviser = reviseEntry.getTableNameReviser();
-        String revisedTableName = tableNameReviser.map(optional -> optional.revise(originalMetaData.getName(), rule)).orElse(originalMetaData.getName());
-        return new TableMetaData(revisedTableName, new ColumnReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getColumns()),
+        String storageUnitName = originalMetaData.getStorageUnitName();
+        Optional<? extends TableMetaDataRevisionContext<T>> revisionContext =
+                reviseEntry.createTableMetaDataRevisionContext(rule, originalMetaData.getName(), storageUnitName);
+        return revisionContext.isPresent()
+                ? revise(originalMetaData, originalMetaDataList, indexNameRecoveryCandidateTables, revisionContext.get())
+                : reviseWithoutRevisionContext(originalMetaData, originalMetaDataList, indexNameRecoveryCandidateTables, storageUnitName);
+    }
+    
+    private TableMetaData revise(final TableMetaData originalMetaData, final Collection<TableMetaData> originalMetaDataList,
+                                 final Collection<TableMetaData> indexNameRecoveryCandidateTables, final TableMetaDataRevisionContext<T> revisionContext) {
+        TableMetaData result = new TableMetaData(revisionContext.reviseTableName(originalMetaData.getName()),
+                new ColumnReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getColumns(), revisionContext.getColumnGeneratedReviser()),
                 new IndexReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getIndexes(), originalMetaDataList,
+                        indexNameRecoveryCandidateTables, revisionContext.getIndexReviser()),
+                new ConstraintReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getConstraints(), revisionContext.getConstraintReviser()),
+                originalMetaData.getType());
+        result.setStorageUnitName(originalMetaData.getStorageUnitName());
+        return result;
+    }
+    
+    private TableMetaData reviseWithoutRevisionContext(final TableMetaData originalMetaData, final Collection<TableMetaData> originalMetaDataList,
+                                                       final Collection<TableMetaData> indexNameRecoveryCandidateTables, final String storageUnitName) {
+        Optional<? extends TableNameReviser<T>> tableNameReviser = reviseEntry.getTableNameReviser();
+        String revisedTableName = tableNameReviser.map(optional -> optional.revise(originalMetaData.getName(), rule, storageUnitName)).orElse(originalMetaData.getName());
+        TableMetaData result = new TableMetaData(revisedTableName,
+                new ColumnReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), storageUnitName, originalMetaData.getColumns()),
+                new IndexReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), storageUnitName, originalMetaData.getIndexes(), originalMetaDataList,
                         indexNameRecoveryCandidateTables),
-                new ConstraintReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getConstraints()), originalMetaData.getType());
+                new ConstraintReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), storageUnitName, originalMetaData.getConstraints()), originalMetaData.getType());
+        result.setStorageUnitName(storageUnitName);
+        return result;
     }
 }

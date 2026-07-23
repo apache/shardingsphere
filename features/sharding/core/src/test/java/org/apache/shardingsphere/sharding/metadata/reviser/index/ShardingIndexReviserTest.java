@@ -81,7 +81,7 @@ class ShardingIndexReviserTest {
         ShardingRule rule = mock(ShardingRule.class);
         MetaDataReviseEntry reviseEntry = mock(MetaDataReviseEntry.class);
         ShardingIndexReviser indexReviser = new ShardingIndexReviser(mockShardingTable());
-        when(reviseEntry.getIndexReviser(rule, "tbl_0")).thenReturn(Optional.of(indexReviser));
+        when(reviseEntry.getIndexReviser(rule, "tbl_0", null)).thenReturn(Optional.of(indexReviser));
         Collection<IndexMetaData> actual = new IndexReviseEngine<>(rule, reviseEntry).revise("tbl_0", Collections.singleton(truncatedActualIndexMetaData),
                 Arrays.asList(tableMetaData("tbl_0", truncatedActualIndexMetaData), tableMetaData("tbl_1", legacyActualIndexMetaData)), Collections.emptyList());
         assertThat(actual.size(), is(1));
@@ -99,7 +99,7 @@ class ShardingIndexReviserTest {
         ShardingRule rule = mock(ShardingRule.class);
         MetaDataReviseEntry reviseEntry = mock(MetaDataReviseEntry.class);
         ShardingIndexReviser indexReviser = new ShardingIndexReviser(mockShardingTable());
-        when(reviseEntry.getIndexReviser(rule, "tbl_0")).thenReturn(Optional.of(indexReviser));
+        when(reviseEntry.getIndexReviser(rule, "tbl_0", null)).thenReturn(Optional.of(indexReviser));
         Collection<IndexMetaData> actual = new IndexReviseEngine<>(rule, reviseEntry).revise("tbl_0", Collections.singleton(firstTruncatedActualIndexMetaData),
                 Arrays.asList(tableMetaData("tbl_0", firstTruncatedActualIndexMetaData), tableMetaData("tbl_1", secondTruncatedActualIndexMetaData)),
                 Collections.singleton(tableMetaData("tbl", new IndexMetaData(logicIndexName, Collections.singletonList("foo_col")))));

@@ -17,33 +17,52 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.table;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnGeneratedReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.util.Optional;
+
 /**
- * Table name reviser.
- * 
+ * Table meta data revision context.
+ *
  * @param <T> type of rule
  */
-public interface TableNameReviser<T extends ShardingSphereRule> {
+public interface TableMetaDataRevisionContext<T extends ShardingSphereRule> {
     
     /**
-     * Revise table meta data.
+     * Revise table name.
      *
      * @param originalName original table name
-     * @param rule rule
      * @return revised table name
      */
-    String revise(String originalName, T rule);
+    String reviseTableName(String originalName);
     
     /**
-     * Revise table meta data with storage unit context.
+     * Get column generated reviser.
      *
-     * @param originalName original table name
-     * @param rule rule
-     * @param storageUnitName storage unit name
-     * @return revised table name
+     * @return column generated reviser
      */
-    default String revise(final String originalName, final T rule, final String storageUnitName) {
-        return revise(originalName, rule);
+    default Optional<? extends ColumnGeneratedReviser> getColumnGeneratedReviser() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get index reviser.
+     *
+     * @return index reviser
+     */
+    default Optional<? extends IndexReviser<T>> getIndexReviser() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get constraint reviser.
+     *
+     * @return constraint reviser
+     */
+    default Optional<? extends ConstraintReviser<T>> getConstraintReviser() {
+        return Optional.empty();
     }
 }

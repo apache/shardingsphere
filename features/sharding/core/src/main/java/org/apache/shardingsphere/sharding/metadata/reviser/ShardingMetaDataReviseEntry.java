@@ -25,8 +25,11 @@ import org.apache.shardingsphere.sharding.metadata.reviser.column.ShardingColumn
 import org.apache.shardingsphere.sharding.metadata.reviser.constraint.ShardingConstraintReviser;
 import org.apache.shardingsphere.sharding.metadata.reviser.index.ShardingIndexReviser;
 import org.apache.shardingsphere.sharding.metadata.reviser.schema.ShardingSchemaTableAggregationReviser;
+import org.apache.shardingsphere.sharding.metadata.reviser.table.ShardingQualifiedTableFinder;
+import org.apache.shardingsphere.sharding.metadata.reviser.table.ShardingTableMetaDataRevisionContext;
 import org.apache.shardingsphere.sharding.metadata.reviser.table.ShardingTableNameReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.Optional;
 
@@ -46,18 +49,42 @@ public final class ShardingMetaDataReviseEntry implements MetaDataReviseEntry<Sh
     }
     
     @Override
+    public Optional<ShardingTableMetaDataRevisionContext> createTableMetaDataRevisionContext(final ShardingRule rule, final String tableName, final String storageUnitName) {
+        return findShardingTable(rule, tableName, storageUnitName).map(ShardingTableMetaDataRevisionContext::new);
+    }
+    
+    @Override
     public Optional<ShardingColumnGeneratedReviser> getColumnGeneratedReviser(final ShardingRule rule, final String tableName) {
-        return rule.findShardingTableByActualTable(tableName).map(ShardingColumnGeneratedReviser::new);
+        return findShardingTable(rule, tableName, null).map(ShardingColumnGeneratedReviser::new);
+    }
+    
+    @Override
+    public Optional<ShardingColumnGeneratedReviser> getColumnGeneratedReviser(final ShardingRule rule, final String tableName, final String storageUnitName) {
+        return findShardingTable(rule, tableName, storageUnitName).map(ShardingColumnGeneratedReviser::new);
     }
     
     @Override
     public Optional<ShardingIndexReviser> getIndexReviser(final ShardingRule rule, final String tableName) {
-        return rule.findShardingTableByActualTable(tableName).map(ShardingIndexReviser::new);
+        return findShardingTable(rule, tableName, null).map(ShardingIndexReviser::new);
+    }
+    
+    @Override
+    public Optional<ShardingIndexReviser> getIndexReviser(final ShardingRule rule, final String tableName, final String storageUnitName) {
+        return findShardingTable(rule, tableName, storageUnitName).map(ShardingIndexReviser::new);
     }
     
     @Override
     public Optional<ShardingConstraintReviser> getConstraintReviser(final ShardingRule rule, final String tableName) {
-        return rule.findShardingTableByActualTable(tableName).map(ShardingConstraintReviser::new);
+        return findShardingTable(rule, tableName, null).map(ShardingConstraintReviser::new);
+    }
+    
+    @Override
+    public Optional<ShardingConstraintReviser> getConstraintReviser(final ShardingRule rule, final String tableName, final String storageUnitName) {
+        return findShardingTable(rule, tableName, storageUnitName).map(ShardingConstraintReviser::new);
+    }
+    
+    private Optional<ShardingTable> findShardingTable(final ShardingRule rule, final String tableName, final String storageUnitName) {
+        return ShardingQualifiedTableFinder.find(rule, tableName, storageUnitName);
     }
     
     @Override

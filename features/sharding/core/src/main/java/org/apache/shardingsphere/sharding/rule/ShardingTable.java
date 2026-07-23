@@ -250,6 +250,17 @@ public final class ShardingTable {
         return actualTables.contains(actualTableName);
     }
     
+    /**
+     * Is existed with data source name.
+     *
+     * @param dataSourceName data source name
+     * @param actualTableName actual table name
+     * @return is existed or not
+     */
+    public boolean isExisted(final String dataSourceName, final String actualTableName) {
+        return actualDataNodes.stream().anyMatch(each -> each.getDataSourceName().equals(dataSourceName) && each.getTableName().equalsIgnoreCase(actualTableName));
+    }
+    
     private void checkRule(final Collection<String> dataNodes) {
         ShardingSpherePreconditions.checkState(!isEmptyDataNodes(dataNodes) || null == tableShardingStrategyConfig || tableShardingStrategyConfig instanceof NoneShardingStrategyConfiguration,
                 () -> new MissingRequiredDataNodesException(logicTable));

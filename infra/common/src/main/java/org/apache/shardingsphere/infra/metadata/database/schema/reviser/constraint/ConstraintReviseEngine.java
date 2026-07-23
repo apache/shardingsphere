@@ -46,7 +46,31 @@ public final class ConstraintReviseEngine<T extends ShardingSphereRule> {
      * @return revised constraint meta data
      */
     public Collection<ConstraintMetaData> revise(final String tableName, final Collection<ConstraintMetaData> originalMetaDataList) {
-        Optional<? extends ConstraintReviser<T>> reviser = reviseEntry.getConstraintReviser(rule, tableName);
+        return revise(tableName, null, originalMetaDataList);
+    }
+    
+    /**
+     * Revise constraint meta data with storage unit context.
+     *
+     * @param tableName table name
+     * @param storageUnitName storage unit name
+     * @param originalMetaDataList original constraint meta data list
+     * @return revised constraint meta data
+     */
+    public Collection<ConstraintMetaData> revise(final String tableName, final String storageUnitName, final Collection<ConstraintMetaData> originalMetaDataList) {
+        return revise(tableName, originalMetaDataList, reviseEntry.getConstraintReviser(rule, tableName, storageUnitName));
+    }
+    
+    /**
+     * Revise constraint meta data with bound constraint reviser.
+     *
+     * @param tableName table name
+     * @param originalMetaDataList original constraint meta data list
+     * @param reviser constraint reviser
+     * @return revised constraint meta data
+     */
+    public Collection<ConstraintMetaData> revise(final String tableName, final Collection<ConstraintMetaData> originalMetaDataList,
+                                                 final Optional<? extends ConstraintReviser<T>> reviser) {
         return reviser.isPresent()
                 ? originalMetaDataList.stream()
                         .map(each -> reviser.get().revise(tableName, each, rule)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList())
