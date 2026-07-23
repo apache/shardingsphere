@@ -17,12 +17,25 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 /**
  * Policy of identifier case matching.
  */
-public interface IdentifierCasePolicy {
+@RequiredArgsConstructor
+public final class IdentifierCasePolicy {
+    
+    private final LookupMode quotedLookupMode;
+    
+    private final LookupMode unquotedLookupMode;
+    
+    private final UnaryOperator<String> normalizer;
+    
+    private final Predicate<String> unquotedStoredNamePredicate;
     
     /**
      * Get lookup mode for identifier.
@@ -30,15 +43,19 @@ public interface IdentifierCasePolicy {
      * @param quoteCharacter quote character
      * @return lookup mode
      */
-    LookupMode getLookupMode(QuoteCharacter quoteCharacter);
+    public LookupMode getLookupMode(final QuoteCharacter quoteCharacter) {
+        return QuoteCharacter.NONE == quoteCharacter ? unquotedLookupMode : quotedLookupMode;
+    }
     
     /**
      * Normalize identifier value.
      *
      * @param value identifier value
-     * @return normalized identifier value
-     */
-    String normalize(String value);
+    * @return normalized identifier value
+    */
+    public String normalize(final String value) {
+        return normalizer.apply(value);
+    }
     
     /**
      * Judge whether stored identifier matches input identifier.
@@ -46,7 +63,14 @@ public interface IdentifierCasePolicy {
      * @param storedName stored identifier name
      * @param actualIdentifier input identifier value
      * @param quoteCharacter quote character
-     * @return whether matched
-     */
-    boolean matches(String storedName, String actualIdentifier, QuoteCharacter quoteCharacter);
+    * @return whether matched
+    */
+    public boolean matches(final String storedName, final String actualIdentifier, final QuoteCharacter quoteCharacter) {
+        if (QuoteCharacter.NONE != quoteCharacter) {
+            return LookupMode.EXACT == quotedLookupMode
+                    ? storedName.equals(actualIdentifier)
+                    : normalize(storedName).equals(normalize(actualIdentifier));
+        }
+        return unquotedStoredNamePredicate.test(storedName) && normalize(storedName).equals(normalize(actualIdentifier));
+    }
 }

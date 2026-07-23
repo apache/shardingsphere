@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCasePolicy;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -241,7 +240,7 @@ class SingleRouteEngineTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        IdentifierCasePolicy identifierCasePolicy = new StandardIdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED, each -> each.toLowerCase(Locale.ENGLISH), each -> true);
+        IdentifierCasePolicy identifierCasePolicy = new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED, each -> each.toLowerCase(Locale.ENGLISH), each -> true);
         when(result.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(new IdentifierCasePolicySet(identifierCasePolicy)));
         return result;
     }

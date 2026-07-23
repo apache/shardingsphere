@@ -30,7 +30,7 @@ class IdentifierCasePolicySetTest {
     
     @Test
     void assertGetPolicy() {
-        IdentifierCasePolicy expectedRule = new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
+        IdentifierCasePolicy expectedRule = new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
                 each -> each.toLowerCase(Locale.ENGLISH), each -> true);
         IdentifierCasePolicy actualRule = new IdentifierCasePolicySet(expectedRule).getPolicy(IdentifierScope.TABLE);
         assertThat(actualRule, is(expectedRule));
@@ -38,9 +38,9 @@ class IdentifierCasePolicySetTest {
     
     @Test
     void assertGetPolicyWithScopeOverride() {
-        IdentifierCasePolicy defaultRule = new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
+        IdentifierCasePolicy defaultRule = new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
                 each -> each.toLowerCase(Locale.ENGLISH), each -> true);
-        IdentifierCasePolicy schemaRule = new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.EXACT, each -> each, each -> true);
+        IdentifierCasePolicy schemaRule = new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.EXACT, each -> each, each -> true);
         Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
         scopedRules.put(IdentifierScope.SCHEMA, schemaRule);
         IdentifierCasePolicySet actualPolicySet = new IdentifierCasePolicySet(defaultRule, scopedRules);

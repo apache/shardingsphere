@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCasePolicy;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -72,12 +71,12 @@ class DatabaseIdentifierContextTest {
     }
     
     private IdentifierCasePolicy createLowerRule() {
-        return new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
+        return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
                 each -> each.toLowerCase(Locale.ENGLISH), each -> true);
     }
     
     private IdentifierCasePolicy createUpperRule() {
-        return new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
+        return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
                 each -> each.toUpperCase(Locale.ENGLISH), each -> true);
     }
 }
