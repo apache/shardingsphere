@@ -79,18 +79,19 @@ public final class WorkflowSynchronizationSupport {
             if (WorkflowLifecycle.STATUS_PASSED.equals(validationReport.getOverallStatus())) {
                 return;
             }
-            if (remainingWaitNanos <= pollIntervalNanos) {
+            if (0L == remainingWaitNanos) {
                 break;
             }
-            waitForNextValidation();
-            remainingWaitNanos -= pollIntervalNanos;
+            long waitNanos = Math.min(remainingWaitNanos, pollIntervalNanos);
+            waitForNextValidation(waitNanos);
+            remainingWaitNanos -= waitNanos;
         }
         throw createSynchronizationException(validationReport);
     }
     
-    private void waitForNextValidation() {
+    private void waitForNextValidation(final long waitNanos) {
         try {
-            TimeUnit.NANOSECONDS.sleep(pollIntervalNanos);
+            TimeUnit.NANOSECONDS.sleep(waitNanos);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new WorkflowSynchronizationException(WorkflowIssueCode.RULE_STATE_MISMATCH, "Workflow synchronization was interrupted.", List.of());

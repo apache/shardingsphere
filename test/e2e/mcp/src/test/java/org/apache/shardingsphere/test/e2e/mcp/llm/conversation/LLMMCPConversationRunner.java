@@ -80,7 +80,11 @@ public final class LLMMCPConversationRunner {
         List<LLMChatMessage> messages = createInitialMessages(scenario);
         LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts(modelName);
         try {
-            openInteractionClient();
+            try {
+                mcpInteractionClient.open();
+            } catch (final IOException | IllegalStateException ex) {
+                return createFailureBundle(scenario, artifacts, "mcp_runtime_unavailable", "MCP runtime failed to initialize.");
+            }
             LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
             LLMMCPConversationTurnPlanner turnPlanner = new LLMMCPConversationTurnPlanner();
             boolean finalAnswerRequested = false;
@@ -114,10 +118,7 @@ public final class LLMMCPConversationRunner {
             Thread.currentThread().interrupt();
             return createFailureBundle(scenario, artifacts, "model_service_unavailable", "Conversation was interrupted.");
         } catch (final IllegalStateException ex) {
-            String failureType = ex.getMessage().startsWith("MCP") || ex.getMessage().startsWith("Failed to initialize MCP")
-                    ? "mcp_runtime_unavailable"
-                    : "model_service_unavailable";
-            return createFailureBundle(scenario, artifacts, failureType, ex.getMessage());
+            return createFailureBundle(scenario, artifacts, "model_service_unavailable", ex.getMessage());
         } finally {
             closeInteractionClient();
         }
@@ -279,6 +280,8 @@ public final class LLMMCPConversationRunner {
         } catch (final IllegalArgumentException ex) {
             artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", toolName, arguments, "invalid_tool_arguments"));
             return Optional.of(createFailureBundle(scenario, artifacts, "invalid_tool_arguments", "Model provided invalid tool arguments."));
+        } catch (final IllegalStateException ex) {
+            return Optional.of(createFailureBundle(scenario, artifacts, "mcp_runtime_unavailable", ex.getMessage()));
         }
         long latencyMillis = System.currentTimeMillis() - startTime;
         artifacts.addRuntimeLogLine("action=" + toolName + " args=" + JsonUtils.toJsonString(arguments));
@@ -310,14 +313,6 @@ public final class LLMMCPConversationRunner {
     
     private LLME2EArtifactBundle createFailureBundle(final LLME2EScenario scenario, final LLMMCPConversationArtifacts artifacts, final String failureType, final String message) {
         return artifacts.createArtifactBundle(scenario, LLME2EAssertionReport.failure(failureType, message));
-    }
-    
-    private void openInteractionClient() throws InterruptedException {
-        try {
-            mcpInteractionClient.open();
-        } catch (final IOException ex) {
-            throw new IllegalStateException("MCP runtime failed to initialize.", ex);
-        }
     }
     
     private void closeInteractionClient() {
