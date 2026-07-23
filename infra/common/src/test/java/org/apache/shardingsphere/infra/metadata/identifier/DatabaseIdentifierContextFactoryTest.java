@@ -136,7 +136,7 @@ class DatabaseIdentifierContextFactoryTest {
                 createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE));
         assertThat(actual.normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
         assertThat(actual.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("foo"));
-        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalize("Foo"), is("foo"));
+        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalizeForLookup("Foo"), is("foo"));
     }
     
     @Test
@@ -146,7 +146,7 @@ class DatabaseIdentifierContextFactoryTest {
                 createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE));
         assertThat(actual.normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
         assertThat(actual.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("foo"));
-        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalize("Foo"), is("foo"));
+        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalizeForLookup("Foo"), is("foo"));
     }
     
     @ParameterizedTest(name = "{0}")

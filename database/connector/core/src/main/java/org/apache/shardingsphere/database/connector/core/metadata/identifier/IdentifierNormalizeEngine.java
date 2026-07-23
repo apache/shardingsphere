@@ -58,10 +58,7 @@ public final class IdentifierNormalizeEngine {
     public static String normalize(final IdentifierCasePolicy policy, final String identifier) {
         QuoteCharacter quoteCharacter = QuoteCharacter.getQuoteCharacter(identifier);
         String unwrappedIdentifier = quoteCharacter.unwrap(identifier);
-        if (QuoteCharacter.NONE != quoteCharacter) {
-            return unwrappedIdentifier;
-        }
-        return LookupMode.NORMALIZED == policy.getLookupMode(QuoteCharacter.NONE) ? policy.normalize(unwrappedIdentifier) : unwrappedIdentifier;
+        return policy.normalizeForDefinition(unwrappedIdentifier, quoteCharacter);
     }
     
     /**

@@ -19,11 +19,9 @@ package org.apache.shardingsphere.infra.metadata.identifier;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
@@ -69,7 +67,7 @@ public final class DatabaseIdentifierContext {
      * @return normalized protocol identifier
      */
     public String normalizeProtocol(final IdentifierScope identifierScope, final IdentifierValue identifier) {
-        return normalize(protocolPolicySet.getPolicy(identifierScope), identifier);
+        return protocolPolicySet.getPolicy(identifierScope).normalizeForDefinition(identifier.getValue(), identifier.getQuoteCharacter());
     }
     
     /**
@@ -80,13 +78,7 @@ public final class DatabaseIdentifierContext {
      * @return normalized storage identifier
      */
     public String normalizeStorage(final IdentifierScope identifierScope, final IdentifierValue identifier) {
-        return normalize(storagePolicySet.getPolicy(identifierScope), identifier);
-    }
-    
-    private String normalize(final IdentifierCasePolicy policy, final IdentifierValue identifier) {
-        return QuoteCharacter.NONE == identifier.getQuoteCharacter() && LookupMode.NORMALIZED == policy.getLookupMode(identifier.getQuoteCharacter())
-                ? policy.normalize(identifier.getValue())
-                : identifier.getValue();
+        return storagePolicySet.getPolicy(identifierScope).normalizeForDefinition(identifier.getValue(), identifier.getQuoteCharacter());
     }
     
     /**

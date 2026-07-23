@@ -61,9 +61,9 @@ class MySQLIdentifierCasePolicyProviderTest {
         assertThat(actual.getPolicy(IdentifierScope.TABLE).getLookupMode(QuoteCharacter.BACK_QUOTE), is(expectedQuotedLookupMode));
         assertThat(actual.getPolicy(IdentifierScope.TABLE).getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
         assertThat(actual.getPolicy(IdentifierScope.TABLE).matches("foo", "FOO", QuoteCharacter.NONE), is(expectedMatch));
-        assertThat(actual.getPolicy(IdentifierScope.COLUMN).normalize("FooColumn"), is("FooColumn"));
-        assertThat(actual.getPolicy(IdentifierScope.INDEX).normalize("FooIndex"), is("FooIndex"));
-        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).normalize("FooConstraint"), is("FooConstraint"));
+        assertThat(actual.getPolicy(IdentifierScope.COLUMN).normalizeForDefinition("FooColumn", QuoteCharacter.NONE), is("FooColumn"));
+        assertThat(actual.getPolicy(IdentifierScope.INDEX).normalizeForDefinition("FooIndex", QuoteCharacter.NONE), is("FooIndex"));
+        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).normalizeForDefinition("FooConstraint", QuoteCharacter.NONE), is("FooConstraint"));
     }
     
     @Test

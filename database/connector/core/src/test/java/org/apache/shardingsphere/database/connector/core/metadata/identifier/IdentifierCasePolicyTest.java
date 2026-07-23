@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IdentifierCasePolicyTest {
     
     private final IdentifierCasePolicy policy = new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
-            each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
+            each -> each, each -> each.toLowerCase(Locale.ENGLISH), each -> each.toUpperCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
     
     @Test
     void assertGetLookupModeWithQuotedIdentifier() {
@@ -46,14 +46,24 @@ class IdentifierCasePolicyTest {
     }
     
     @Test
-    void assertNormalize() {
-        assertThat(policy.normalize("Foo"), is("foo"));
+    void assertNormalizeDefinitionWithQuotedIdentifier() {
+        assertThat(policy.normalizeForDefinition("Foo", QuoteCharacter.QUOTE), is("Foo"));
+    }
+    
+    @Test
+    void assertNormalizeDefinitionWithUnquotedIdentifier() {
+        assertThat(policy.normalizeForDefinition("Foo", QuoteCharacter.NONE), is("foo"));
+    }
+    
+    @Test
+    void assertNormalizeLookup() {
+        assertThat(policy.normalizeForLookup("Foo"), is("FOO"));
     }
     
     @Test
     void assertMatchesWithQuotedNormalizedLookup() {
         IdentifierCasePolicy actual = new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
-                each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
+                each -> each, each -> each.toLowerCase(Locale.ENGLISH), each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
         assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
     }
     
