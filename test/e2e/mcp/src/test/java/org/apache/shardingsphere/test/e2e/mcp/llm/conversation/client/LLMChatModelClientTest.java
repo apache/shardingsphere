@@ -163,7 +163,6 @@ class LLMChatModelClientTest {
     private LLME2EConfiguration createConfiguration(final String baseUrl, final int readyTimeoutSeconds) {
         return LLME2EConfiguration.builder()
                 .baseUrl(baseUrl)
-                .modelProvider("openai-compatible")
                 .modelName(REQUIRED_MODEL)
                 .apiKey("mcp-llm-score")
                 .readyTimeoutSeconds(readyTimeoutSeconds)

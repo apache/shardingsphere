@@ -234,7 +234,6 @@ class LLME2EConfigurationTest {
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode, final Path artifactRoot) {
         return LLME2EConfiguration.builder()
                 .baseUrl("http://127.0.0.1:8080/v1")
-                .modelProvider("openai-compatible")
                 .modelName("ggml-org/Qwen3-1.7B-GGUF:Q4_K_M")
                 .apiKey("mcp-llm-score")
                 .readyTimeoutSeconds(600)

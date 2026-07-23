@@ -39,11 +39,12 @@ class WorkflowAlgorithmRequirementCollectorTest {
     
     @Test
     void assertHasBlockingAlgorithmIssuesAddsFallbackQuestion() {
+        WorkflowRequest request = new WorkflowRequest();
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm", "message", "action", false, Map.of()));
-        boolean actual = collector.hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, "Please use an algorithm visible in the current Proxy.");
-        assertTrue(actual);
+        boolean actual = collector.isReadyForArtifactPlanning(request, clarifiedIntent, snapshot, List.of(), "Please use an algorithm visible in the current Proxy.");
+        assertFalse(actual);
         assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please use an algorithm visible in the current Proxy.")));
     }
     
@@ -52,9 +53,9 @@ class WorkflowAlgorithmRequirementCollectorTest {
         WorkflowRequest request = new WorkflowRequest();
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        boolean actual = collector.collectPropertyRequirements(request, clarifiedIntent, snapshot, List.of(
+        boolean actual = collector.isReadyForArtifactPlanning(request, clarifiedIntent, snapshot, List.of(
                 new AlgorithmPropertyRequirement("primary", "mask-char", false, false, "mask char", "*"),
-                new AlgorithmPropertyRequirement("primary", "from-x", true, false, "from x", "")));
+                new AlgorithmPropertyRequirement("primary", "from-x", true, false, "from x", "")), "fallback");
         assertFalse(actual);
         assertThat(request.getPrimaryAlgorithmProperties().get("mask-char"), is("*"));
         assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please provide property `from-x`.")));

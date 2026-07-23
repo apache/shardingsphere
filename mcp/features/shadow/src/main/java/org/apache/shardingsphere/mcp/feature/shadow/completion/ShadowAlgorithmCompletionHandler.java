@@ -55,7 +55,7 @@ public final class ShadowAlgorithmCompletionHandler implements MCPCompletionHand
     
     @Override
     public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-        Stream<MCPCompletionCandidate> candidates = inspectionService.queryAlgorithmPlugins(handlerContext.getQueryFacade()).stream()
+        Stream<MCPCompletionCandidate> candidates = inspectionService.queryAlgorithmPlugins(handlerContext.getQueryFacade()).getRows().stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty());
         if (ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_PROMPT_NAME.equals(request.getDescriptor().getReference())) {
             candidates = candidates.filter(each -> ShadowFeatureDefinition.DEFAULT_ALGORITHM_TYPE.equalsIgnoreCase(each.getValue()));

@@ -90,7 +90,12 @@ class MCPDescriptorCatalogIndexTest {
     @Test
     void assertFindToolRuntimeDescriptor() {
         assertTrue(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("database_gateway_apply_workflow")
-                .filter(optional -> "apply".equals(optional.getWorkflowRole()) && optional.getSideEffectScope().contains("rule-metadata")).isPresent());
+                .filter(optional -> optional.getWorkflowRole().isEmpty() && optional.getSideEffectScope().contains("rule-metadata")).isPresent());
+    }
+    
+    @Test
+    void assertFindToolRuntimeDescriptorWithoutRuntimeMetadata() {
+        assertFalse(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("database_gateway_validate_workflow").isPresent());
     }
     
     @Test

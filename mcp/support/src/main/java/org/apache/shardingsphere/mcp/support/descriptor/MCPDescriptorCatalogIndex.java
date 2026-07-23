@@ -134,6 +134,9 @@ public final class MCPDescriptorCatalogIndex {
             String toolName = Objects.toString(each, "");
             MCPToolRuntimeDescriptor runtimeDescriptor = TOOL_RUNTIME_DESCRIPTORS.get(toolName);
             if (null == runtimeDescriptor) {
+                if (TOOL_DESCRIPTORS.containsKey(toolName)) {
+                    continue;
+                }
                 return List.of();
             }
             if (!"plan".equals(runtimeDescriptor.getWorkflowRole())) {

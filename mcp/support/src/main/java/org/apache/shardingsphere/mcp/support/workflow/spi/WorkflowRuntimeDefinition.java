@@ -38,6 +38,7 @@ public final class WorkflowRuntimeDefinition {
     
     /**
      * Create workflow runtime definition with one handler for validation and apply synchronization.
+     * If the handler also implements {@link MCPWorkflowApplyArtifactValidator}, it validates apply artifacts; otherwise no additional artifact validation is performed.
      *
      * @param workflowKind workflow kind
      * @param runtimeHandler workflow runtime handler

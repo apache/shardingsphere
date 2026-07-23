@@ -34,15 +34,8 @@ import java.util.Map;
  */
 public final class WorkflowAlgorithmRequirementCollector {
     
-    /**
-     * Add one fallback clarification question when algorithm selection is blocked.
-     *
-     * @param clarifiedIntent clarified intent
-     * @param snapshot workflow snapshot
-     * @param fallbackQuestion fallback question
-     * @return whether there is any blocking algorithm issue
-     */
-    public boolean hasBlockingAlgorithmIssues(final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String fallbackQuestion) {
+    private boolean addFallbackQuestionForBlockingAlgorithmIssues(final ClarifiedIntent clarifiedIntent,
+                                                                  final WorkflowContextSnapshot snapshot, final String fallbackQuestion) {
         boolean result = snapshot.getIssues().stream().anyMatch(each -> WorkflowLifecycle.STEP_SELECTING_ALGORITHM.equals(each.getStage()) && "error".equals(each.getSeverity()));
         if (result && clarifiedIntent.getClarificationMessages().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add(fallbackQuestion);
@@ -50,17 +43,8 @@ public final class WorkflowAlgorithmRequirementCollector {
         return result;
     }
     
-    /**
-     * Collect required algorithm properties and emit missing-property clarification prompts.
-     *
-     * @param request workflow request
-     * @param clarifiedIntent clarified intent
-     * @param snapshot workflow snapshot
-     * @param propertyRequirements property requirements
-     * @return whether all required properties are present
-     */
-    public boolean collectPropertyRequirements(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent,
-                                               final WorkflowContextSnapshot snapshot, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+    private boolean collectPropertyRequirements(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent,
+                                                final WorkflowContextSnapshot snapshot, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         snapshot.getPropertyRequirements().addAll(propertyRequirements);
         applyDefaultProperties(request, propertyRequirements);
         List<String> missingRequiredProperties = findMissingRequiredProperties(request, propertyRequirements);
@@ -87,7 +71,7 @@ public final class WorkflowAlgorithmRequirementCollector {
      */
     public boolean isReadyForArtifactPlanning(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot,
                                               final List<AlgorithmPropertyRequirement> propertyRequirements, final String fallbackQuestion) {
-        if (hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, fallbackQuestion) || !clarifiedIntent.getClarificationMessages().isEmpty()) {
+        if (addFallbackQuestionForBlockingAlgorithmIssues(clarifiedIntent, snapshot, fallbackQuestion) || !clarifiedIntent.getClarificationMessages().isEmpty()) {
             return false;
         }
         return collectPropertyRequirements(request, clarifiedIntent, snapshot, propertyRequirements);

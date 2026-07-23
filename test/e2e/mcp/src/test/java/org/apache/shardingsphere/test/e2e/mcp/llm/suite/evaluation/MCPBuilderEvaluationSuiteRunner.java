@@ -64,7 +64,7 @@ final class MCPBuilderEvaluationSuiteRunner {
         modelClient = new LLMChatModelClient(configuration, HttpClient.newHttpClient());
     }
     
-    void assertFullScore(final EvaluationSuite evaluationSuite, final InteractionClientFactory interactionClientFactory) throws IOException, InterruptedException {
+    void assertFullScore(final EvaluationSuite evaluationSuite, final InteractionClientFactory interactionClientFactory) throws IOException {
         assertTrue(Boolean.TRUE.equals(runtimeEvidence.get("scoreClosing")), "MCP Builder evaluation score requires Docker-owned score-closing runtime evidence.");
         List<EvaluationResult> results = new LinkedList<>();
         List<Path> artifactDirectories = new LinkedList<>();
@@ -73,7 +73,6 @@ final class MCPBuilderEvaluationSuiteRunner {
                     MAX_EVALUATION_TURNS,
                     modelClient,
                     interactionClientFactory.create(),
-                    configuration.getModelProvider(),
                     configuration.getModelName()).run(each);
             Path artifactDirectory = configuration.createArtifactDirectory("mcp-builder-evaluation/" + each.id());
             artifactWriter.write(artifactDirectory, result, runtimeEvidence);

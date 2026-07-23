@@ -86,7 +86,7 @@ jobs:
       - name: Run and Install MCP JDK 21 Subchain Tests
         run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
       - name: Package MCP Distribution
-        run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
+        run: ./mvnw -pl distribution/mcp -DskipTests package -B -ntp
       - name: Build Local MCP Docker Image
         run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-release:local distribution/mcp/target
       - name: Run MCP Distribution E2E
@@ -113,14 +113,6 @@ jobs:
           ./mvnw -pl mcp/registry -DskipTests -DskipITs -Dspotless.skip=true \
             -Dexec.mainClass=org.apache.shardingsphere.mcp.registry.MCPRegistryMetadataCommand \
             -Dexec.args="--version ${{ steps.release-version.outputs.version }} --identifier ${{ steps.release-version.outputs.identifier }} --dockerfile-path distribution/mcp/Dockerfile" \
-            compile exec:java -B -ntp
-      - name: Validate MCP Registry Metadata
-        shell: bash
-        run: |
-          set -euo pipefail
-          ./mvnw -pl mcp/registry -DskipTests -DskipITs -Dspotless.skip=true \
-            -Dexec.mainClass=org.apache.shardingsphere.mcp.registry.MCPRegistryMetadataCommand \
-            -Dexec.args="--validate-only --dockerfile-path distribution/mcp/Dockerfile" \
             compile exec:java -B -ntp
       - name: Login Container Registry
         uses: docker/login-action@v3

@@ -53,7 +53,7 @@ public final class ReadwriteSplittingLoadBalanceAlgorithmCompletionHandler imple
     
     @Override
     public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-        return new MCPCompletionHandlerResult(inspectionService.queryLoadBalanceAlgorithmPlugins(handlerContext.getQueryFacade()).stream()
+        return new MCPCompletionHandlerResult(inspectionService.queryLoadBalanceAlgorithmPlugins(handlerContext.getQueryFacade()).getRows().stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty()).toList());
     }
     
