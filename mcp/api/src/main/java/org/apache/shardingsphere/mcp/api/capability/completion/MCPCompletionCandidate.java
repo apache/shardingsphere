@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.mcp.api.capability.completion;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
-import java.util.Objects;
 
 /**
  * MCP completion candidate.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPCompletionCandidate {
     
@@ -40,13 +41,5 @@ public final class MCPCompletionCandidate {
     
     public MCPCompletionCandidate(final String value, final String label, final String source) {
         this(value, label, source, null, "");
-    }
-    
-    public MCPCompletionCandidate(final String value, final String label, final String source, final Instant updateTime, final String rankingReason) {
-        this.value = value;
-        this.label = label;
-        this.source = source;
-        this.updateTime = updateTime;
-        this.rankingReason = Objects.toString(rankingReason, "");
     }
 }
