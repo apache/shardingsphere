@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.database.connector.firebird.metadata.identifier;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCasePolicy;
 
 import java.util.Locale;
 
@@ -32,7 +32,7 @@ public final class FirebirdIdentifierCasePolicyProvider implements IdentifierCas
     
     @Override
     public IdentifierCasePolicySet provide(final IdentifierCasePolicyProviderContext context) {
-        return new IdentifierCasePolicySet(new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED, FirebirdIdentifierCasePolicyProvider::toUpperCase, each -> true));
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED, FirebirdIdentifierCasePolicyProvider::toUpperCase, each -> true));
     }
     
     @Override

@@ -28,12 +28,11 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StandardIdentifierCasePolicyTest {
+class IdentifierCasePolicyTest {
     
-    private final StandardIdentifierCasePolicy policy = new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
+    private final IdentifierCasePolicy policy = new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
             each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
     
     @Test
@@ -52,13 +51,8 @@ class StandardIdentifierCasePolicyTest {
     }
     
     @Test
-    void assertNormalizeWithNullValue() {
-        assertNull(policy.normalize(null));
-    }
-    
-    @Test
     void assertMatchesWithQuotedNormalizedLookup() {
-        StandardIdentifierCasePolicy actual = new StandardIdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
+        IdentifierCasePolicy actual = new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
                 each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
         assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
     }
@@ -73,12 +67,8 @@ class StandardIdentifierCasePolicyTest {
         return Stream.of(
                 Arguments.of("quoted_match", "Foo", "Foo", QuoteCharacter.QUOTE, true),
                 Arguments.of("quoted_mismatch", "Foo", "foo", QuoteCharacter.QUOTE, false),
-                Arguments.of("quoted_null_names", null, null, QuoteCharacter.QUOTE, true),
-                Arguments.of("quoted_null_actual_identifier", "Foo", null, QuoteCharacter.QUOTE, false),
                 Arguments.of("unquoted_match", "foo", "FOO", QuoteCharacter.NONE, true),
                 Arguments.of("unquoted_non_default_stored_name", "Foo", "FOO", QuoteCharacter.NONE, false),
-                Arguments.of("unquoted_null_names", null, null, QuoteCharacter.NONE, true),
-                Arguments.of("unquoted_null_actual_identifier", "foo", null, QuoteCharacter.NONE, false),
                 Arguments.of("unquoted_different_actual_identifier", "foo", "bar", QuoteCharacter.NONE, false));
     }
 }

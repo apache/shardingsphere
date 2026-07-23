@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCasePolicy;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.AmbiguousIdentifierException;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -205,16 +204,16 @@ class IdentifierIndexTest {
     }
     
     private IdentifierCasePolicy createExactRule() {
-        return new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.EXACT, each -> each, each -> true);
+        return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.EXACT, each -> each, each -> true);
     }
     
     private IdentifierCasePolicy createPostgreSQLRule() {
-        return new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
+        return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
                 each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
     }
     
     private IdentifierCasePolicy createMySQLInsensitiveRule() {
-        return new StandardIdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
+        return new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
                 each -> each.toLowerCase(Locale.ENGLISH), each -> true);
     }
     
