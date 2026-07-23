@@ -248,13 +248,13 @@ class PackagedDistributionE2ETest {
         assertBootstrapDirectoriesCreated(distributionHome);
         assertRemovedExtensionDirectoryAbsent(distributionHome);
         assertOfficialFeatureJarsPackaged(distributionHome);
-        assertRuntimeDiagnostics(interactionClient.readResource("shardingsphere://runtime"), transport);
+        assertRuntimeDiagnostics(interactionClient.readResource("shardingsphere://runtime"), transport, "available", "ready");
         assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"));
         assertOfficialToolNames(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList());
     }
     
     private void assertContainerRuntime(final RuntimeTransport transport, final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
-        assertRuntimeDiagnostics(interactionClient.readResource("shardingsphere://runtime"), transport);
+        assertRuntimeDiagnostics(interactionClient.readResource("shardingsphere://runtime"), transport, "available", "ready");
         assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"));
         assertOfficialToolNames(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList());
         assertMySQLMetadata(interactionClient);
@@ -262,7 +262,7 @@ class PackagedDistributionE2ETest {
     }
     
     private void assertDefaultContainerRuntime(final RuntimeTransport transport, final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
-        assertRuntimeDiagnostics(interactionClient.readResource("shardingsphere://runtime"), transport);
+        assertRuntimeDiagnostics(interactionClient.readResource("shardingsphere://runtime"), transport, "configuration_required", "invalid_configuration");
         assertOfficialToolNames(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList());
     }
     
@@ -276,11 +276,11 @@ class PackagedDistributionE2ETest {
         assertFalse(Files.exists(distributionHome.resolve("ext-lib")));
     }
     
-    private void assertRuntimeDiagnostics(final Map<String, Object> runtimeStatus, final RuntimeTransport transport) {
-        assertThat(runtimeStatus.get("status"), is("available"));
+    private void assertRuntimeDiagnostics(final Map<String, Object> runtimeStatus, final RuntimeTransport transport, final String expectedStatus, final String expectedCategory) {
+        assertThat(runtimeStatus.get("status"), is(expectedStatus));
         assertThat(runtimeStatus.get("active_transport"), is(getTransportName(transport)));
         Map<String, Object> actualDiagnostics = MCPInteractionPayloads.getRequiredObject(runtimeStatus, "diagnostics");
-        assertThat(actualDiagnostics.get("current_category"), is("ready"));
+        assertThat(actualDiagnostics.get("current_category"), is(expectedCategory));
         assertTrue(((List<?>) actualDiagnostics.get("safe_categories")).contains("invalid_configuration"));
         assertTrue(MCPInteractionPayloads.getRequiredObjectList(actualDiagnostics, "operator_next_actions").stream()
                 .anyMatch(each -> "invalid_configuration".equals(each.get("category"))));

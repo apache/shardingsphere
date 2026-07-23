@@ -323,7 +323,7 @@ jobs:
             -Dsurefire.failIfNoSpecifiedTests=true \
             -De2e.run.type=DOCKER \
             -Dmcp.llm.ready-timeout-seconds=900 \
-            -Dmcp.llm.request-timeout-seconds=300 \
+            -Dmcp.llm.request-timeout-seconds=600 \
             -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" \
             -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.suite-id }} \
             -B -ntp

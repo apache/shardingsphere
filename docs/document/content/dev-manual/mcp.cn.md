@@ -29,8 +29,8 @@ MCP 子链路按 `api + support + features + core + bootstrap` 分层组织：
 生产依赖方向固定为 `api <- support <- core <- bootstrap` 和 `api <- support <- feature`。
 Feature 模块不依赖 core、bootstrap、registry 或其他 feature；`mcp/bootstrap` 只负责发布聚合后的协议表面，不硬编码具体 feature 业务。
 
-公开的 server capability 契约按 `org.apache.shardingsphere.mcp.api.capability.<capability>` 组织，ServiceLoader 入口接口位于
-`org.apache.shardingsphere.mcp.spi`。Request context、session、transport、payload 和 exception 是跨 capability 或基础协议契约，不归入 capability 包。
+公开的 server capability 契约按 `org.apache.shardingsphere.mcp.api.capability.<capability>` 组织，ServiceLoader 入口接口是
+`org.apache.shardingsphere.mcp.api.MCPHandlerProvider`。Request context、session、transport、payload 和 exception 是跨 capability 或基础协议契约，不归入 capability 包。
 
 ## 新增 Feature Plugin
 
@@ -43,7 +43,7 @@ Feature 模块不依赖 core、bootstrap、registry 或其他 feature；`mcp/boo
 5. 实现 `MCPHandlerProvider`。
 6. 通过 `getToolHandlers()` 和 `getResourceHandlers()` 返回 feature 自己暴露的 handlers。
 7. 如果 feature 拥有 workflow definitions，在同一个 provider 上实现 `MCPWorkflowDefinitionProvider`。
-8. 在 `src/main/resources/META-INF/services/` 注册 `org.apache.shardingsphere.mcp.spi.MCPHandlerProvider`。
+8. 在 `src/main/resources/META-INF/services/` 注册 `org.apache.shardingsphere.mcp.api.MCPHandlerProvider`。
 9. 在 `META-INF/shardingsphere-mcp/mcp-descriptors` 下添加 descriptor。
 
 如果 feature 要作为官方默认能力随发行包提供，还需要：
