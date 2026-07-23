@@ -58,7 +58,7 @@ import java.util.List;
 public final class PostgreSQLPreparedStatementParameterTypeResolver {
     
     /**
-     * Resolve unspecified parameter types by JDBC metadata.
+     * Resolve unspecified parameter types by JDBC metadata or schema metadata fallback.
      *
      * @param connectionSession connection session
      * @param preparedStatement prepared statement
@@ -71,6 +71,9 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         }
         try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, parameters)) {
             resolveParameterTypes(connectionSession, preparedStatement, actualPreparedStatement, parameters);
+        } catch (final SQLException ex) {
+            log.debug("Failed to resolve parameter types via JDBC metadata, falling back to schema metadata", ex);
+            resolveParameterTypesFromSchema(connectionSession, preparedStatement, parameters);
         }
     }
     
@@ -330,5 +333,40 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             }
         }
         return false;
+    }
+    
+    private static void resolveParameterTypesFromSchema(final ConnectionSession connectionSession,
+                                                        final PostgreSQLServerPreparedStatement preparedStatement,
+                                                        final List<Object> parameters) throws SQLException {
+        int paramCount = preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount();
+        for (int i = 0; i < paramCount; i++) {
+            if (PostgreSQLBinaryColumnType.UNSPECIFIED != preparedStatement.getParameterTypes().get(i)) {
+                continue;
+            }
+            
+            String schemaTypeName = findParameterTypeName(connectionSession, preparedStatement.getSqlStatementContext(), i);
+            if ("unknown".equalsIgnoreCase(schemaTypeName)) {
+                continue;
+            }
+            
+            preparedStatement.getParameterTypes().set(i, PostgreSQLBinaryColumnType.valueOfJDBCType(Types.OTHER, schemaTypeName));
+            
+            if (i >= parameters.size()) {
+                continue;
+            }
+            
+            Object parameter = parameters.get(i);
+            if (parameter instanceof PGobject) {
+                PGobject pgObject = (PGobject) parameter;
+                if (null == pgObject.getType() || pgObject.getType().isEmpty()) {
+                    pgObject.setType(schemaTypeName);
+                }
+            } else if (parameter instanceof String) {
+                PGobject pgObject = new PGobject();
+                pgObject.setType(schemaTypeName);
+                pgObject.setValue((String) parameter);
+                parameters.set(i, pgObject);
+            }
+        }
     }
 }
