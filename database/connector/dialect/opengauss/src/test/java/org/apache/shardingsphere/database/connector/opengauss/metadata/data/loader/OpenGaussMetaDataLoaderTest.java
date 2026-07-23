@@ -49,8 +49,9 @@ import static org.mockito.Mockito.when;
 
 class OpenGaussMetaDataLoaderTest {
     
-    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema, is_nullable"
-            + " FROM information_schema.columns WHERE table_schema IN ('public')";
+    private static final String BASIC_TABLE_META_DATA_SQL =
+            "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema, is_nullable, collation_schema, collation_name"
+                    + " FROM information_schema.columns WHERE table_schema IN ('public')";
     
     private static final String TABLE_META_DATA_SQL_WITHOUT_TABLES = BASIC_TABLE_META_DATA_SQL + " ORDER BY ordinal_position";
     
@@ -75,7 +76,8 @@ class OpenGaussMetaDataLoaderTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadArguments")
     void assertLoad(final String name, final Collection<String> actualTableNames, final String tableMetaDataSQL,
-                    final Callable<ResultSet> tableMetaDataResultSetFactory, final Callable<ResultSet> advanceIndexMetaDataResultSetFactory) throws Exception {
+                    final Callable<ResultSet> tableMetaDataResultSetFactory, final Callable<ResultSet> advanceIndexMetaDataResultSetFactory,
+                    final boolean expectedNameColumnCaseSensitive) throws Exception {
         DataSource dataSource = mockDataSource();
         ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
@@ -88,7 +90,8 @@ class OpenGaussMetaDataLoaderTest {
         ResultSet advanceIndexResultSet = advanceIndexMetaDataResultSetFactory.call();
         when(dataSource.getConnection().prepareStatement(ADVANCE_INDEX_META_DATA_SQL).executeQuery()).thenReturn(advanceIndexResultSet);
         DataTypeRegistry.load(dataSource, "openGauss");
-        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db")));
+        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db")),
+                expectedNameColumnCaseSensitive);
     }
     
     private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
@@ -154,13 +157,13 @@ class OpenGaussMetaDataLoaderTest {
         return result;
     }
     
-    private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
+    private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList, final boolean expectedNameColumnCaseSensitive) {
         assertThat(schemaMetaDataList.size(), is(1));
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, true, true, false, true));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, expectedNameColumnCaseSensitive, true, false, true));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
         IndexMetaData indexMetaData = new IndexMetaData("id", Collections.singletonList("id"));
@@ -186,16 +189,27 @@ class OpenGaussMetaDataLoaderTest {
     }
     
     private static Stream<Arguments> loadArguments() {
-        return Stream.of(
-                Arguments.of("without tables", Collections.emptyList(), TABLE_META_DATA_SQL_WITHOUT_TABLES,
-                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(""), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet),
-                Arguments.of("with tables", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
-                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(""), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet),
+        Stream<Arguments> officialCaseInsensitiveCollationArguments = Stream.of(
+                "utf8mb4_general_ci", "utf8mb4_unicode_ci", "utf8_general_ci", "utf8_unicode_ci", "gbk_chinese_ci", "gb18030_chinese_ci")
+                .map(each -> Arguments.of("with official case-insensitive collation " + each, Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet("", "pg_catalog", each),
+                        (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet, false));
+        return Stream.concat(officialCaseInsensitiveCollationArguments, Stream.of(
+                Arguments.of("without tables and binary collation", Collections.emptyList(), TABLE_META_DATA_SQL_WITHOUT_TABLES,
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet("", "pg_catalog", "utf8mb4_bin"),
+                        (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet, true),
+                Arguments.of("with unknown case-insensitive collation", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet("", "pg_catalog", "custom_ci"),
+                        (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet, true),
+                Arguments.of("with user-defined collation", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet("", "foo_schema", "utf8mb4_general_ci"),
+                        (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet, true),
                 Arguments.of("with unmatched advance index rows and null default", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
-                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(null), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSetWithUnmatchedRows));
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(null, null, null),
+                        (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSetWithUnmatchedRows, true)));
     }
     
-    private static ResultSet mockTableMetaDataResultSet(final String nameColumnDefault) throws SQLException {
+    private static ResultSet mockTableMetaDataResultSet(final String nameColumnDefault, final String nameColumnCollationSchema, final String nameColumnCollationName) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
         when(result.getString("table_name")).thenReturn("tbl");
@@ -206,6 +220,8 @@ class OpenGaussMetaDataLoaderTest {
         when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", nameColumnDefault);
         when(result.getString("table_schema")).thenReturn("public", "public");
         when(result.getString("is_nullable")).thenReturn("NO", "YES");
+        when(result.getString("collation_schema")).thenReturn(null, nameColumnCollationSchema);
+        when(result.getString("collation_name")).thenReturn(nameColumnCollationName);
         return result;
     }
 }
