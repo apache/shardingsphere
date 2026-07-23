@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
@@ -39,14 +40,16 @@ class ShadowAlgorithmRecommendationServiceTest {
     void assertRecommendSpecifiedAlgorithm() {
         WorkflowRequest request = new WorkflowRequest();
         request.setAlgorithmType("value_match");
-        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(request, List.of(Map.of("type", "VALUE_MATCH")), new LinkedList<>());
+        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(
+                request, WorkflowQueryResult.confirmed(List.of(Map.of("type", "VALUE_MATCH"))), new LinkedList<>());
         assertThat(actual.getFirst().getAlgorithmType(), is("VALUE_MATCH"));
     }
     
     @Test
     void assertRecommendSqlHintDefault() {
         WorkflowRequest request = new WorkflowRequest();
-        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(request, List.of(Map.of("type", "VALUE_MATCH"), Map.of("type", "SQL_HINT")), new LinkedList<>());
+        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(
+                request, WorkflowQueryResult.confirmed(List.of(Map.of("type", "VALUE_MATCH"), Map.of("type", "SQL_HINT"))), new LinkedList<>());
         assertThat(actual.getFirst().getAlgorithmType(), is("SQL_HINT"));
     }
     
@@ -55,7 +58,16 @@ class ShadowAlgorithmRecommendationServiceTest {
         WorkflowRequest request = new WorkflowRequest();
         request.setAlgorithmType("REGEX_MATCH");
         List<WorkflowIssue> issues = new LinkedList<>();
-        assertTrue(service.recommendShadowAlgorithms(request, List.of(Map.of("type", "SQL_HINT")), issues).isEmpty());
+        assertTrue(service.recommendShadowAlgorithms(request, WorkflowQueryResult.confirmed(List.of(Map.of("type", "SQL_HINT"))), issues).isEmpty());
         assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
+    }
+    
+    @Test
+    void assertRecommendSpecifiedAlgorithmWithFallbackCatalog() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setAlgorithmType("CUSTOM");
+        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(
+                request, WorkflowQueryResult.fallback(List.of(Map.of("type", "SQL_HINT"))), new LinkedList<>());
+        assertThat(actual.getFirst().getAlgorithmType(), is("CUSTOM"));
     }
 }

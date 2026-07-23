@@ -143,7 +143,8 @@ public final class LLMChatModelClient {
     
     HttpResponse<String> sendReadinessCompletionRequest(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
                                                         final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
-        return sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, READINESS_MAX_TOKENS), Math.min(config.getRequestTimeoutSeconds(), 30));
+        return sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, READINESS_MAX_TOKENS),
+                Math.min(config.getRequestTimeoutSeconds(), config.getReadyTimeoutSeconds()));
     }
     
     boolean containsModel(final String responseBody) {

@@ -100,6 +100,7 @@ class LLME2EArtifactWriterTest {
                 Map.entry("serverImageId", "test-server-image-id"),
                 Map.entry("baseServerImage", "ghcr.io/ggml-org/llama.cpp:server-b9191"),
                 Map.entry("baseServerImageDigest", "test-base-server-image-digest"),
+                Map.entry("modelRepository", "ggml-org/Qwen3-1.7B-GGUF"),
                 Map.entry("modelReference", MODEL_NAME),
                 Map.entry("servedModelId", MODEL_NAME),
                 Map.entry("modelQuantization", "Q4_K_M"),

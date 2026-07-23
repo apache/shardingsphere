@@ -141,7 +141,7 @@ public final class ShadowResourceHandler implements MCPResourceHandler<MCPFeatur
             case ALGORITHMS -> inspectionService.queryAlgorithms(requestContext.getQueryFacade(), uriVariables.getValue("database"));
             case DEFAULT_ALGORITHM -> inspectionService.queryDefaultAlgorithm(requestContext.getQueryFacade(), uriVariables.getValue("database"));
             case RULE_COUNT -> inspectionService.queryRuleCount(requestContext.getQueryFacade(), uriVariables.getValue("database"));
-            case ALGORITHM_PLUGINS -> inspectionService.queryAlgorithmPlugins(requestContext.getQueryFacade());
+            case ALGORITHM_PLUGINS -> inspectionService.queryAlgorithmPlugins(requestContext.getQueryFacade()).getRows();
         };
     }
     

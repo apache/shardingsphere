@@ -59,6 +59,9 @@ public final class MCPToolDescriptorCatalogValidator {
     
     private static final Collection<String> SECRET_WORKFLOW_OUTPUT_FIELDS = List.of("masked_property_preview", "secret_reference_summary");
     
+    private static final Collection<String> SUPPORTED_SIDE_EFFECT_SCOPES = Set.of(
+            "physical-data", "physical-structure", "privilege-metadata", "rule-metadata", "transaction-state");
+    
     /**
      * Validate tool descriptors in one descriptor catalog.
      *
@@ -67,6 +70,7 @@ public final class MCPToolDescriptorCatalogValidator {
     public static void validate(final MCPDescriptorCatalog catalog) {
         Collection<MCPToolDescriptor> descriptors = catalog.getProtocolDescriptors().getToolDescriptors();
         Collection<MCPToolRuntimeDescriptor> runtimeDescriptors = catalog.getShardingSphereDescriptors().getToolRuntimeDescriptors();
+        validateToolRuntimeDescriptors(runtimeDescriptors);
         Map<String, MCPToolDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         Map<String, MCPToolRuntimeDescriptor> runtimes = runtimeDescriptors.stream()
                 .collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each));
@@ -84,6 +88,17 @@ public final class MCPToolDescriptorCatalogValidator {
             validateRelatedResourceUris(each, resourceIdentifiers, shardingSphereResourceIdentifiers);
         }
         validatePlanningToolRuntimeDescriptors(registered, runtimeDescriptors);
+    }
+    
+    private static void validateToolRuntimeDescriptors(final Collection<MCPToolRuntimeDescriptor> runtimeDescriptors) {
+        for (MCPToolRuntimeDescriptor each : runtimeDescriptors) {
+            ShardingSpherePreconditions.checkState(each.getWorkflowRole().isBlank() || "plan".equals(each.getWorkflowRole()),
+                    () -> new IllegalStateException(String.format("Tool `%s` runtime workflowRole `%s` is unsupported.", each.getToolName(), each.getWorkflowRole())));
+            for (String eachScope : each.getSideEffectScope()) {
+                ShardingSpherePreconditions.checkState(SUPPORTED_SIDE_EFFECT_SCOPES.contains(eachScope),
+                        () -> new IllegalStateException(String.format("Tool `%s` runtime sideEffectScope `%s` is unsupported.", each.getToolName(), eachScope)));
+            }
+        }
     }
     
     private static void validateToolInputSchema(final MCPToolDescriptor descriptor) {

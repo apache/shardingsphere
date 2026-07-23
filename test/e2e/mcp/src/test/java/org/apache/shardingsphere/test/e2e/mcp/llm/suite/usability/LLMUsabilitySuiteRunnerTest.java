@@ -137,7 +137,6 @@ class LLMUsabilitySuiteRunnerTest {
     private LLME2EConfiguration createConfiguration() {
         return LLME2EConfiguration.builder()
                 .baseUrl("http://127.0.0.1:8080/v1")
-                .modelProvider("provider")
                 .modelName("model")
                 .apiKey("api-key")
                 .readyTimeoutSeconds(1)

@@ -77,8 +77,8 @@ public final class WorkflowRuntimeDefinitionRegistry {
     private static Collection<WorkflowRuntimeDefinition> loadDefinitions() {
         Collection<WorkflowRuntimeDefinition> result = new LinkedList<>();
         for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
-            if (each instanceof MCPWorkflowDefinitionProvider) {
-                result.addAll(createDefinitions((MCPWorkflowDefinitionProvider) each));
+            if (each instanceof MCPWorkflowDefinitionProvider workflowDefinitionProvider) {
+                result.addAll(createDefinitions(workflowDefinitionProvider));
             }
         }
         return result;

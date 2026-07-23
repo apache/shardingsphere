@@ -42,18 +42,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 class WorkflowRuntimeDefinitionRegistryTest {
     
     @Test
     void assertLoad() {
-        MCPHandlerProvider handlerProvider = mock(MCPHandlerProvider.class, withSettings().extraInterfaces(MCPWorkflowDefinitionProvider.class));
-        MCPWorkflowDefinitionProvider workflowDefinitionProvider = (MCPWorkflowDefinitionProvider) handlerProvider;
+        MCPWorkflowDefinitionProvider workflowDefinitionProvider = mock(MCPWorkflowDefinitionProvider.class);
         WorkflowRuntimeDefinition definition = createDefinition("encrypt.rule");
         when(workflowDefinitionProvider.getWorkflowDefinitions()).thenReturn(List.of(definition));
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(handlerProvider));
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(workflowDefinitionProvider));
             WorkflowRuntimeDefinitionRegistry registry = WorkflowRuntimeDefinitionRegistry.load();
             assertThat(registry.findRegisteredDefinition(WorkflowKind.valueOf("encrypt.rule")), is(Optional.of(definition)));
         }
@@ -71,11 +69,10 @@ class WorkflowRuntimeDefinitionRegistryTest {
     
     @Test
     void assertLoadWithNullDefinitions() {
-        MCPHandlerProvider handlerProvider = mock(MCPHandlerProvider.class, withSettings().extraInterfaces(MCPWorkflowDefinitionProvider.class));
-        MCPWorkflowDefinitionProvider workflowDefinitionProvider = (MCPWorkflowDefinitionProvider) handlerProvider;
+        MCPWorkflowDefinitionProvider workflowDefinitionProvider = mock(MCPWorkflowDefinitionProvider.class);
         when(workflowDefinitionProvider.getWorkflowDefinitions()).thenReturn(null);
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(handlerProvider));
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(workflowDefinitionProvider));
             NullPointerException actual = assertThrows(NullPointerException.class, WorkflowRuntimeDefinitionRegistry::load);
             assertThat(actual.getMessage(), is(String.format("Workflow definitions are required for `%s`.", workflowDefinitionProvider.getClass().getName())));
         }
@@ -83,14 +80,13 @@ class WorkflowRuntimeDefinitionRegistryTest {
     
     @Test
     void assertLoadWithNullDefinition() {
-        MCPHandlerProvider handlerProvider = mock(MCPHandlerProvider.class, withSettings().extraInterfaces(MCPWorkflowDefinitionProvider.class));
-        MCPWorkflowDefinitionProvider workflowDefinitionProvider = (MCPWorkflowDefinitionProvider) handlerProvider;
+        MCPWorkflowDefinitionProvider workflowDefinitionProvider = mock(MCPWorkflowDefinitionProvider.class);
         List<WorkflowRuntimeDefinition> definitions = new LinkedList<>();
         definitions.add(createDefinition("encrypt.rule"));
         definitions.add(null);
         when(workflowDefinitionProvider.getWorkflowDefinitions()).thenReturn(definitions);
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(handlerProvider));
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(workflowDefinitionProvider));
             NullPointerException actual = assertThrows(NullPointerException.class, WorkflowRuntimeDefinitionRegistry::load);
             assertThat(actual.getMessage(), is(String.format("Workflow definition is required for `%s`.", workflowDefinitionProvider.getClass().getName())));
         }

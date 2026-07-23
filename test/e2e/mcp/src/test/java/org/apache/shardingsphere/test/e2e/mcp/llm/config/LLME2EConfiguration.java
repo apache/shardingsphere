@@ -44,6 +44,8 @@ import java.util.UUID;
 @Getter
 public final class LLME2EConfiguration {
     
+    public static final String MODEL_PROVIDER = "openai-compatible";
+    
     private static final DateTimeFormatter RUN_ID_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss", Locale.ENGLISH);
     
     private static final String DEFAULT_BASE_URL = "http://127.0.0.1:8080/v1";
@@ -55,8 +57,6 @@ public final class LLME2EConfiguration {
     private static final String DEFAULT_SERVER_IMAGE = "apache/shardingsphere-mcp-llm-runtime:local";
     
     private final String baseUrl;
-    
-    private final String modelProvider;
     
     private final String modelName;
     
@@ -93,11 +93,10 @@ public final class LLME2EConfiguration {
         ModelMetadata modelMetadata = readModelMetadata(props);
         return LLME2EConfiguration.builder()
                 .baseUrl(normalizeBaseUrl(readString(props, "mcp.llm.base-url", DEFAULT_BASE_URL)))
-                .modelProvider(readString(props, "mcp.llm.provider", "openai-compatible"))
                 .modelName(readString(props, "mcp.llm.model", DEFAULT_MODEL_NAME))
                 .apiKey(readString(props, "mcp.llm.api-key", DEFAULT_API_KEY))
                 .readyTimeoutSeconds(readInteger(props, "mcp.llm.ready-timeout-seconds", 600))
-                .requestTimeoutSeconds(readInteger(props, "mcp.llm.request-timeout-seconds", 240))
+                .requestTimeoutSeconds(readInteger(props, "mcp.llm.request-timeout-seconds", 600))
                 .maxTurns(readInteger(props, "mcp.llm.max-turns", 10))
                 .artifactRoot(Paths.get(readString(props, "mcp.llm.artifact-root", "target/llm-e2e")))
                 .runId(readString(props, "mcp.llm.run-id", createDefaultRunId()))

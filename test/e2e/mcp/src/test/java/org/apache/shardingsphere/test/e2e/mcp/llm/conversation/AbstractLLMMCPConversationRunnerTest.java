@@ -70,7 +70,7 @@ abstract class AbstractLLMMCPConversationRunnerTest {
     }
     
     protected LLMMCPConversationRunner createRunner(final int maxTurns) {
-        return new LLMMCPConversationRunner(maxTurns, llmChatClient, mcpInteractionClient);
+        return new LLMMCPConversationRunner(maxTurns, llmChatClient, mcpInteractionClient, "test-model");
     }
     
     protected LLME2EScenario createScenario(final List<String> toolNames) {

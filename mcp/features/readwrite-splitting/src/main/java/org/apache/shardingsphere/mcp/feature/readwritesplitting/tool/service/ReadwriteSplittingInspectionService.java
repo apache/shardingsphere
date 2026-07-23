@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
 import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -102,19 +103,19 @@ public final class ReadwriteSplittingInspectionService {
      * Query load-balance algorithm plugin catalog.
      *
      * @param queryFacade query facade
-     * @return algorithm plugin rows with built-in property hints
+     * @return algorithm plugin query result with built-in property hints
      */
-    public List<Map<String, Object>> queryLoadBalanceAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        return queryAlgorithmRows(queryFacade).stream().map(this::appendPropertyGuidance).toList();
+    public WorkflowQueryResult queryLoadBalanceAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
+        WorkflowQueryResult result = queryAlgorithmRows(queryFacade);
+        return new WorkflowQueryResult(result.getRows().stream().map(this::appendPropertyGuidance).toList(), result.isAvailabilityConfirmed());
     }
     
-    private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
+    private WorkflowQueryResult queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
         try {
-            List<Map<String, Object>> result = queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS");
-            return null == result ? List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN"), Map.of("type", "WEIGHT")) : result;
+            return WorkflowQueryResult.confirmed(queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS"));
         } catch (final MCPQueryFailedException ex) {
             if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN"), Map.of("type", "WEIGHT"));
+                return WorkflowQueryResult.fallback(List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN"), Map.of("type", "WEIGHT")));
             }
             throw ex;
         }

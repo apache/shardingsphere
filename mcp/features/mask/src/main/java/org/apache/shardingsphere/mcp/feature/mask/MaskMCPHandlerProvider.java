@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.feature.mask;
 
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.mask.completion.MaskAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskAlgorithmsHandler;
@@ -36,7 +35,7 @@ import java.util.List;
 /**
  * Mask MCP mask provider.
  */
-public final class MaskMCPHandlerProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
+public final class MaskMCPHandlerProvider implements MCPWorkflowDefinitionProvider {
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {

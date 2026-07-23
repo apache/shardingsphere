@@ -57,7 +57,7 @@ public final class LLMConversationExecutor {
                                               final MCPInteractionClient interactionClient) throws IOException {
         LLME2EArtifactBundle artifactBundle = new LLMMCPConversationRunner(
                 configuration.getMaxTurns(), new LLMChatModelClient(configuration, HttpClient.newHttpClient()), interactionClient,
-                configuration.getModelProvider(), configuration.getModelName()).run(scenario);
+                configuration.getModelName()).run(scenario);
         Path artifactDirectory = configuration.createArtifactDirectory(scenarioId);
         artifactWriter.write(artifactDirectory, artifactBundle, runtimeEvidence);
         return new ConversationResult(artifactBundle, artifactDirectory);

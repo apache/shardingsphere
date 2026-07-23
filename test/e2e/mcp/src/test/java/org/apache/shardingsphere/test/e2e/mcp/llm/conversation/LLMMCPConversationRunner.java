@@ -59,21 +59,14 @@ public final class LLMMCPConversationRunner {
     
     private final LLMMCPTraceRecordFactory traceRecordFactory = new LLMMCPTraceRecordFactory();
     
-    private final String modelProvider;
-    
     private final String modelName;
     
-    public LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient) {
-        this(maxTurns, llmChatClient, mcpInteractionClient, "unknown", "unknown");
-    }
-    
     public LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
-                                    final String modelProvider, final String modelName) {
+                                    final String modelName) {
         this.maxTurns = maxTurns;
         this.llmChatClient = llmChatClient;
         this.mcpInteractionClient = mcpInteractionClient;
         actionExecutor = new LLMMCPActionExecutor(mcpInteractionClient);
-        this.modelProvider = modelProvider;
         this.modelName = modelName;
     }
     
@@ -85,7 +78,7 @@ public final class LLMMCPConversationRunner {
      */
     public LLME2EArtifactBundle run(final LLME2EScenario scenario) {
         List<LLMChatMessage> messages = createInitialMessages(scenario);
-        LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts(modelProvider, modelName);
+        LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts(modelName);
         try {
             openInteractionClient();
             LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
