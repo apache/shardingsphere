@@ -28,6 +28,7 @@
 1. Proxy: Resolve openGauss batch bind parameter types before reading values - [#38390](https://github.com/apache/shardingsphere/pull/38390)
 1. Proxy: Fix primary key metadata loss for aliased columns in mysql prepare probe path - [#38517](https://github.com/apache/shardingsphere/pull/38517)
 1. Proxy: Force PostgreSQL backend `client_encoding` to UTF8 and reject non-UTF8 values to keep pgjdbc parameter encoding consistent - [#38645](https://github.com/apache/shardingsphere/pull/38645)
+1. Proxy: Enforce authorization checks for DistSQL statements in ProxyBackendHandlerFactory, resolving the actual execution-target database the same way the DistSQL execute engines resolve it - [#38845](https://github.com/apache/shardingsphere/pull/38845) 
 1. Proxy: Reject unsupported MySQL and Doris temporary table DDL before backend execution - [#38829](https://github.com/apache/shardingsphere/pull/38829)
 1. Proxy: Fix empty array literal decoding in PostgreSQL array parameter decoder - [#39137](https://github.com/apache/shardingsphere/pull/39137)
 1. Proxy: Fix incorrect generated key handling for explicit auto-increment values - [#38810](https://github.com/apache/shardingsphere/pull/38810)
