@@ -638,7 +638,7 @@ class PostgreSQLComDescribeExecutorTest {
     private void prepareJDBCBackendConnectionWithPreparedStatement(final String sql) throws SQLException {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
         when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
         when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
