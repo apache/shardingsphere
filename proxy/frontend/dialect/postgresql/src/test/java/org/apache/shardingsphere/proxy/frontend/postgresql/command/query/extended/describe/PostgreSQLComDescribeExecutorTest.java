@@ -617,12 +617,12 @@ class PostgreSQLComDescribeExecutorTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         PreparedStatement preparedStatement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
-
+        
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
         when(parameterMetaData.getParameterType(anyInt())).thenReturn(Types.INTEGER);
         when(parameterMetaData.getParameterTypeName(anyInt())).thenReturn("int4");
         when(preparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
-
+        
         ResultSetMetaData resultSetMetaData = prepareResultSetMetaData();
         when(preparedStatement.getMetaData()).thenReturn(resultSetMetaData);
         
