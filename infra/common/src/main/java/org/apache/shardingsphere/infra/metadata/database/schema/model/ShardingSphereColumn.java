@@ -46,8 +46,16 @@ public final class ShardingSphereColumn {
     
     private final boolean nullable;
     
+    private final String typeName;
+    
     public ShardingSphereColumn(final ColumnMetaData columnMetaData) {
         this(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(),
-                columnMetaData.isCaseSensitive(), columnMetaData.isVisible(), columnMetaData.isUnsigned(), columnMetaData.isNullable());
+                columnMetaData.isCaseSensitive(), columnMetaData.isVisible(), columnMetaData.isUnsigned(), columnMetaData.isNullable(),
+                columnMetaData.getTypeName());
+    }
+    
+    public ShardingSphereColumn(final String name, final int dataType, final boolean primaryKey, final boolean generated,
+                                final boolean caseSensitive, final boolean visible, final boolean unsigned, final boolean nullable) {
+        this(name, dataType, primaryKey, generated, caseSensitive, visible, unsigned, nullable, null);
     }
 }
