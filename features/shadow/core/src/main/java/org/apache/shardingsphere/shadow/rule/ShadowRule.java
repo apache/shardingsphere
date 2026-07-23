@@ -62,11 +62,14 @@ public final class ShadowRule implements DatabaseRule {
     @Getter
     private final RuleAttributes attributes;
     
+    private final Map<String, String> cachedProductionDataSourceNames;
+    
     public ShadowRule(final ShadowRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         shadowAlgorithms = createShadowAlgorithms(ruleConfig.getShadowAlgorithms());
         defaultShadowAlgorithm = shadowAlgorithms.get(ruleConfig.getDefaultShadowAlgorithmName());
         dataSourceRules = createDataSourceRules(ruleConfig.getDataSources());
+        cachedProductionDataSourceNames = createCachedProductionDataSourceNames(dataSourceRules);
         tableRules = createTableRules(ruleConfig.getTables());
         attributes = new RuleAttributes(new ShadowDataSourceMapperRuleAttribute(dataSourceRules));
     }
@@ -243,11 +246,22 @@ public final class ShadowRule implements DatabaseRule {
     @HighFrequencyInvocation
     public Optional<String> findProductionDataSourceName(final String logicDataSourceName) {
         ShadowDataSourceRule dataSourceRule = dataSourceRules.get(logicDataSourceName);
-        return null == dataSourceRule ? Optional.empty() : Optional.of(dataSourceRule.getProductionDataSource());
+        if (null != dataSourceRule) {
+            return Optional.of(dataSourceRule.getProductionDataSource());
+        }
+        return Optional.ofNullable(cachedProductionDataSourceNames.get(logicDataSourceName));
     }
     
     @Override
     public int getOrder() {
         return ShadowOrder.ORDER;
+    }
+    
+    private Map<String, String> createCachedProductionDataSourceNames(final Map<String, ShadowDataSourceRule> dataSourceRules) {
+        Map<String, String> result = new CaseInsensitiveMap<>();
+        for (ShadowDataSourceRule each : dataSourceRules.values()) {
+            result.put(each.getProductionDataSource(), each.getProductionDataSource());
+        }
+        return result;
     }
 }
