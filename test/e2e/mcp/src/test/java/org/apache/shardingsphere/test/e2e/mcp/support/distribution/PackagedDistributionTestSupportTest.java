@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
@@ -152,10 +151,8 @@ class PackagedDistributionTestSupportTest {
             MCPLaunchConfiguration actualConfig = MCPConfigurationLoader.load(actual.configFile().toString());
             assertThat(actualConfig.getTransportType(), is(expectedTransportType));
             if (RuntimeTransport.HTTP == transport) {
-                assertThat(actual.httpPort(), greaterThan(0));
-                assertThat(actualConfig.getHttpTransport().getPort(), is(actual.httpPort()));
+                assertThat(actualConfig.getHttpTransport().getPort(), is(0));
             } else {
-                assertThat(actual.httpPort(), is(-1));
                 assertThat(actualConfig.getHttpTransport().getPort(), is(18088));
             }
         } finally {

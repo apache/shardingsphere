@@ -55,7 +55,7 @@ public final class EncryptAlgorithmCompletionHandler implements MCPCompletionHan
     
     @Override
     public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-        return new MCPCompletionHandlerResult(ruleInspectionService.queryEncryptAlgorithms(handlerContext.getQueryFacade()).stream()
+        return new MCPCompletionHandlerResult(ruleInspectionService.queryEncryptAlgorithms(handlerContext.getQueryFacade()).getRows().stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty()).toList());
     }
     

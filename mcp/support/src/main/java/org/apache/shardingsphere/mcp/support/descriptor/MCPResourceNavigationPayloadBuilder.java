@@ -57,7 +57,7 @@ public final class MCPResourceNavigationPayloadBuilder {
     public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPResourceURIVariables uriVariables, final String parentUriTemplate) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         new MCPUriTemplate(descriptor.getUriTemplate()).expandIfComplete(uriVariables)
-                .ifPresent(optional -> result.put(MCPPayloadFieldNames.SELF_RESOURCE, MCPResourceHintUtils.create(optional, resolveResourceKind(optional), "inspect_self",
+                .ifPresent(optional -> result.put(MCPPayloadFieldNames.SELF_RESOURCE, MCPResourceHintUtils.create(optional, MCPDescriptorCatalogIndex.resolveResourceKind(optional), "inspect_self",
                         "Read this resource.", MCPPayloadFieldNames.SELF_RESOURCE)));
         if (!parentUriTemplate.isEmpty()) {
             Optional<String> parentUri = new MCPUriTemplate(parentUriTemplate).expandIfComplete(uriVariables);
@@ -67,22 +67,6 @@ public final class MCPResourceNavigationPayloadBuilder {
     }
     
     private static Map<String, Object> createParentResourceHint(final String uri) {
-        return MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_parent", "Read the parent resource.", MCPPayloadFieldNames.PARENT_RESOURCE);
-    }
-    
-    private static String resolveResourceKind(final String uri) {
-        if (uri.contains("/rules")) {
-            return "rule";
-        }
-        if (uri.contains("/algorithms")) {
-            return "algorithm";
-        }
-        if (uri.contains("/columns")) {
-            return "column";
-        }
-        if (uri.contains("/indexes")) {
-            return "index";
-        }
-        return "resource";
+        return MCPResourceHintUtils.create(uri, MCPDescriptorCatalogIndex.resolveResourceKind(uri), "inspect_parent", "Read the parent resource.", MCPPayloadFieldNames.PARENT_RESOURCE);
     }
 }

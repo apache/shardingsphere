@@ -266,7 +266,7 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     }
     
     private List<Map<String, Object>> queryCleanupRows(final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
-        switch (request.getComponentType().toLowerCase().replace('_', '-')) {
+        switch (request.getComponentType().toLowerCase(Locale.ENGLISH).replace('_', '-')) {
             case "algorithm":
                 return inspectionService.queryAlgorithms(queryFacade, request.getDatabase());
             case "key-generator":

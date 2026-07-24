@@ -125,7 +125,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
-      objectScope: rule
+      objectScope: algorithm
       feature: shadow
       relatedTools:
         - database_gateway_plan_default_shadow_algorithm

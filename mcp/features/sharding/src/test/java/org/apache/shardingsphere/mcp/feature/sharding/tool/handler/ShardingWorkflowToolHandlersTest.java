@@ -38,6 +38,7 @@ import org.mockito.MockedConstruction;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -169,8 +170,14 @@ class ShardingWorkflowToolHandlersTest {
                     "shardingsphere://features/sharding/databases/logic_db/unused-algorithms",
                     "shardingsphere://features/sharding/databases/logic_db/unused-key-generators",
                     "shardingsphere://features/sharding/databases/logic_db/unused-auditors")));
-            for (String each : actualResourceUris) {
-                assertThat(findResourceKind(actualResourcesToRead, each), is("rule"));
+            for (Entry<String, String> entry : Map.of(
+                    "shardingsphere://features/sharding/databases/logic_db/algorithms", "algorithm",
+                    "shardingsphere://features/sharding/databases/logic_db/key-generators", "rule",
+                    "shardingsphere://features/sharding/databases/logic_db/auditors", "rule",
+                    "shardingsphere://features/sharding/databases/logic_db/unused-algorithms", "algorithm",
+                    "shardingsphere://features/sharding/databases/logic_db/unused-key-generators", "rule",
+                    "shardingsphere://features/sharding/databases/logic_db/unused-auditors", "rule").entrySet()) {
+                assertThat(findResourceKind(actualResourcesToRead, entry.getKey()), is(entry.getValue()));
             }
         }
     }

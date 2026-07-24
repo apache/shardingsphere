@@ -30,8 +30,6 @@ import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoade
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.URI;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -104,9 +102,8 @@ public final class PackagedDistributionTestSupport {
     
     private static PreparedPackagedDistribution createPreparedDistribution(final Path workingHome, final RuntimeTransport transport,
                                                                            final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
-        int httpPort = resolveHttpPort(transport);
-        Path configFile = rewriteConfiguration(workingHome, transport, httpPort, runtimeDatabases);
-        return new PreparedPackagedDistribution(workingHome, configFile, transport, httpPort);
+        Path configFile = rewriteConfiguration(workingHome, transport, runtimeDatabases);
+        return new PreparedPackagedDistribution(workingHome, configFile, transport);
     }
     
     /**
@@ -261,21 +258,11 @@ public final class PackagedDistributionTestSupport {
         }
     }
     
-    private static int allocatePort() throws IOException {
-        try (ServerSocket serverSocket = new ServerSocket(0)) {
-            return serverSocket.getLocalPort();
-        }
-    }
-    
-    private static int resolveHttpPort(final RuntimeTransport transport) throws IOException {
-        return RuntimeTransport.HTTP == transport ? allocatePort() : -1;
-    }
-    
-    private static Path rewriteConfiguration(final Path workingHome, final RuntimeTransport transport, final int httpPort,
+    private static Path rewriteConfiguration(final Path workingHome, final RuntimeTransport transport,
                                              final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
         Path result = resolveConfigFile(workingHome, transport);
         MCPLaunchConfiguration sourceConfig = MCPConfigurationLoader.load(result.toString());
-        return writeConfiguration(result, createRuntimeConfiguration(sourceConfig, transport, httpPort, runtimeDatabases));
+        return writeConfiguration(result, createRuntimeConfiguration(sourceConfig, transport, runtimeDatabases));
     }
     
     private static Path resolveConfigFile(final Path workingHome, final RuntimeTransport transport) {
@@ -283,9 +270,9 @@ public final class PackagedDistributionTestSupport {
     }
     
     private static MCPLaunchConfiguration createRuntimeConfiguration(final MCPLaunchConfiguration sourceConfig, final RuntimeTransport transport,
-                                                                     final int httpPort, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+                                                                     final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         HttpTransportConfiguration actualHttpTransport = new HttpTransportConfiguration(sourceConfig.getHttpTransport().getBindHost(),
-                RuntimeTransport.HTTP == transport ? httpPort : sourceConfig.getHttpTransport().getPort(), sourceConfig.getHttpTransport().getEndpointPath());
+                RuntimeTransport.HTTP == transport ? 0 : sourceConfig.getHttpTransport().getPort(), sourceConfig.getHttpTransport().getEndpointPath());
         return new MCPLaunchConfiguration(resolveTransportType(transport), actualHttpTransport, runtimeDatabases.isEmpty() ? sourceConfig.getDatabases() : runtimeDatabases);
     }
     
@@ -293,14 +280,10 @@ public final class PackagedDistributionTestSupport {
         return RuntimeTransport.HTTP == transport ? MCPTransportType.HTTP : MCPTransportType.STDIO;
     }
     
-    public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport, int httpPort) {
+    public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport) {
 
         public Path getStartScript() {
             return PackagedDistributionProcessSupport.resolveStartScript(home);
-        }
-
-        public URI getEndpointUri() {
-            return URI.create(String.format("http://127.0.0.1:%d/mcp", httpPort));
         }
     }
 }

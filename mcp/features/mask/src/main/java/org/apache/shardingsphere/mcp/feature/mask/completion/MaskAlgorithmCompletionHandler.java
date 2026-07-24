@@ -52,7 +52,7 @@ public final class MaskAlgorithmCompletionHandler implements MCPCompletionHandle
     
     @Override
     public MCPCompletionHandlerResult complete(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
-        return new MCPCompletionHandlerResult(ruleInspectionService.queryMaskAlgorithms(handlerContext.getQueryFacade()).stream()
+        return new MCPCompletionHandlerResult(ruleInspectionService.queryMaskAlgorithms(handlerContext.getQueryFacade()).getRows().stream()
                 .map(this::createAlgorithmCandidate).filter(each -> !each.getValue().isEmpty()).toList());
     }
     

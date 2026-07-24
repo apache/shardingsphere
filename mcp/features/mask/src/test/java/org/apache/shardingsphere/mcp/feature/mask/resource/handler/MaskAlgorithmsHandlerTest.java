@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVaria
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -45,7 +46,7 @@ class MaskAlgorithmsHandlerTest {
         when(requestContext.getQueryFacade()).thenReturn(queryFacade);
         try (
                 MockedConstruction<MaskRuleInspectionService> mockedConstruction = mockConstruction(MaskRuleInspectionService.class,
-                        (mock, context) -> when(mock.queryMaskAlgorithms(queryFacade)).thenReturn(List.of(Map.of("type", "MD5"))))) {
+                        (mock, context) -> when(mock.queryMaskAlgorithms(queryFacade)).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "MD5")))))) {
             MCPSuccessPayload actual = new MaskAlgorithmsHandler().handle(requestContext, new MCPResourceURIVariables(Map.of()));
             verify(mockedConstruction.constructed().getFirst()).queryMaskAlgorithms(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));

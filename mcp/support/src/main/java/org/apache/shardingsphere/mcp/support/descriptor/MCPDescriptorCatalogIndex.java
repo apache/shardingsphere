@@ -23,12 +23,14 @@ import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTarg
 import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,6 +46,8 @@ public final class MCPDescriptorCatalogIndex {
     private static final Map<String, MCPResourceDescriptor> RESOURCE_DESCRIPTORS = createResourceDescriptors();
     
     private static final Map<String, ShardingSphereMCPResourceMetadata> SHARDINGSPHERE_RESOURCE_METADATA = createShardingSphereResourceMetadata();
+    
+    private static final List<Entry<MCPUriTemplate, ShardingSphereMCPResourceMetadata>> RESOURCE_METADATA_TEMPLATES = createResourceMetadataTemplates();
     
     private static final Map<String, MCPToolDescriptor> TOOL_DESCRIPTORS = createToolDescriptors();
     
@@ -76,6 +80,10 @@ public final class MCPDescriptorCatalogIndex {
     private static Map<String, ShardingSphereMCPResourceMetadata> createShardingSphereResourceMetadata() {
         return CATALOG.getShardingSphereDescriptors().getResourceMetadata().stream()
                 .collect(Collectors.toMap(ShardingSphereMCPResourceMetadata::getUriTemplate, each -> each));
+    }
+    
+    private static List<Entry<MCPUriTemplate, ShardingSphereMCPResourceMetadata>> createResourceMetadataTemplates() {
+        return CATALOG.getShardingSphereDescriptors().getResourceMetadata().stream().map(each -> Map.entry(new MCPUriTemplate(each.getUriTemplate()), each)).toList();
     }
     
     private static Map<String, MCPToolDescriptor> createToolDescriptors() {
@@ -183,6 +191,24 @@ public final class MCPDescriptorCatalogIndex {
     public static ShardingSphereMCPResourceMetadata getRequiredShardingSphereResourceMetadata(final String uriTemplate) {
         return Optional.ofNullable(SHARDINGSPHERE_RESOURCE_METADATA.get(uriTemplate)).orElseThrow(
                 () -> new IllegalStateException(String.format("ShardingSphere MCP resource metadata descriptor is required for `%s`.", uriTemplate)));
+    }
+    
+    /**
+     * Resolve resource kind from a descriptor URI template or expanded resource URI.
+     *
+     * @param uri resource URI or URI template
+     * @return descriptor resource kind, or generic resource kind when the URI is unknown
+     */
+    public static String resolveResourceKind(final String uri) {
+        ShardingSphereMCPResourceMetadata metadata = SHARDINGSPHERE_RESOURCE_METADATA.get(uri);
+        if (null == metadata) {
+            metadata = RESOURCE_METADATA_TEMPLATES.stream().filter(each -> each.getKey().parse(uri).isPresent())
+                    .map(Entry::getValue).findFirst().orElse(null);
+        }
+        if (null == metadata) {
+            return "resource";
+        }
+        return null == metadata.getObjectScope() ? metadata.getResourceKind() : metadata.getObjectScope();
     }
     
     /**

@@ -40,6 +40,7 @@ public final class YamlMCPLaunchConfiguration implements YamlConfiguration {
     private YamlMCPTransportConfiguration transport;
     
     @NotNull(message = "is required")
+    @Valid
     @ValidYamlRuntimeDatabaseConfigurations
-    private Map<String, Map<String, Object>> runtimeDatabases;
+    private Map<String, YamlRuntimeDatabaseConfiguration> runtimeDatabases;
 }

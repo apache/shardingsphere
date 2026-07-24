@@ -49,16 +49,18 @@ resourceTemplates:
     title: Sharding Algorithms
     description: "List configured sharding algorithms for one logical database."
     mimeType: application/json
-    shardingSphereMetadata: &databaseListMetadata
-      uriVariables:
-        - name: database
-          title: Logical Database
-          description: "ShardingSphere logical database."
-          required: true
-          scope: logical-database
-      resourceKind: list
-      objectScope: rule
-      feature: sharding
+    shardingSphereMetadata:
+      <<: &databaseListMetadata
+        uriVariables:
+          - name: database
+            title: Logical Database
+            description: "ShardingSphere logical database."
+            required: true
+            scope: logical-database
+        resourceKind: list
+        objectScope: rule
+        feature: sharding
+      objectScope: algorithm
       relatedTools:
         - database_gateway_plan_sharding_table_rule
         - database_gateway_plan_sharding_default_strategy
@@ -237,6 +239,7 @@ resourceTemplates:
     mimeType: application/json
     shardingSphereMetadata:
       <<: *databaseListMetadata
+      objectScope: algorithm
       relatedTools:
         - database_gateway_plan_sharding_rule_component_cleanup
   - uriTemplate: shardingsphere://features/sharding/databases/{database}/unused-key-generators

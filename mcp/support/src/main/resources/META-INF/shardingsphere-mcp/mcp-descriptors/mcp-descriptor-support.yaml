@@ -371,9 +371,6 @@ tools:
       destructiveHint: true
       idempotentHint: false
       openWorldHint: true
-    runtime:
-      sideEffectScope:
-        - rule-metadata
     meta:
       org.apache.shardingsphere/follow-up-tools:
         - database_gateway_validate_workflow

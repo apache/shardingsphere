@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -178,7 +179,7 @@ public final class WorkflowArtifactMaskUtils {
                 return true;
             }
         }
-        String actualPropertyKey = propertyKey.toLowerCase();
+        String actualPropertyKey = propertyKey.toLowerCase(Locale.ENGLISH);
         return actualPropertyKey.contains("password") || actualPropertyKey.contains("secret") || actualPropertyKey.contains("token")
                 || "key".equals(actualPropertyKey) || actualPropertyKey.contains("-key") || actualPropertyKey.contains("key-")
                 || actualPropertyKey.contains("_key") || actualPropertyKey.contains("key_");

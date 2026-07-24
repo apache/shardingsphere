@@ -125,7 +125,7 @@ class MCPDescriptorCatalogValidatorTest {
         String toolName = "database_gateway_test_plan_rule";
         assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, createPlanningToolAnnotations(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMetaWithoutWorkflowKind())),
-                List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
+                List.of(new MCPToolRuntimeDescriptor(toolName, "plan"))),
                 "Tool `database_gateway_test_plan_rule` metadata must declare `org.apache.shardingsphere/workflow-kind`.");
     }
     
@@ -136,8 +136,8 @@ class MCPDescriptorCatalogValidatorTest {
         MCPToolDescriptor secondTool = createToolDescriptor("database_gateway_test_plan_rule_again", createPlanningToolAnnotations(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"));
         assertValidationError(createToolRuntimeCatalog(List.of(), List.of(firstTool, secondTool), List.of(
-                new MCPToolRuntimeDescriptor(firstTool.getName(), "plan", List.of()),
-                new MCPToolRuntimeDescriptor(secondTool.getName(), "plan", List.of()))),
+                new MCPToolRuntimeDescriptor(firstTool.getName(), "plan"),
+                new MCPToolRuntimeDescriptor(secondTool.getName(), "plan"))),
                 "Planning workflow kind `test.rule` is used by both `database_gateway_test_plan_rule` and `database_gateway_test_plan_rule_again`.");
     }
     
@@ -145,16 +145,8 @@ class MCPDescriptorCatalogValidatorTest {
     void assertValidateRejectsUnsupportedWorkflowRole() {
         MCPToolDescriptor descriptor = createToolDescriptor(createReadOnlyToolAnnotations());
         assertValidationError(createToolRuntimeCatalog(List.of(), List.of(descriptor),
-                List.of(new MCPToolRuntimeDescriptor(descriptor.getName(), "execute", List.of()))),
+                List.of(new MCPToolRuntimeDescriptor(descriptor.getName(), "execute"))),
                 "Tool `database_gateway_test_tool` runtime workflowRole `execute` is unsupported.");
-    }
-    
-    @Test
-    void assertValidateRejectsUnsupportedSideEffectScope() {
-        MCPToolDescriptor descriptor = createToolDescriptor(createReadOnlyToolAnnotations());
-        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(descriptor),
-                List.of(new MCPToolRuntimeDescriptor(descriptor.getName(), "", List.of("database")))),
-                "Tool `database_gateway_test_tool` runtime sideEffectScope `database` is unsupported.");
     }
     
     @Test
@@ -162,7 +154,7 @@ class MCPDescriptorCatalogValidatorTest {
         String toolName = "database_gateway_test_plan_rule";
         assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, MCPToolAnnotations.builder()
                 .title("Test Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(false).openWorldHint(true).build(),
-                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan"))),
                 "Planning tool `database_gateway_test_plan_rule` annotations.readOnlyHint must be false.");
     }
     
@@ -171,7 +163,7 @@ class MCPDescriptorCatalogValidatorTest {
         String toolName = "database_gateway_test_plan_rule";
         assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, MCPToolAnnotations.builder()
                 .title("Test Tool").readOnlyHint(false).destructiveHint(true).idempotentHint(false).openWorldHint(true).build(),
-                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan"))),
                 "Planning tool `database_gateway_test_plan_rule` annotations.destructiveHint must be false.");
     }
     
@@ -180,38 +172,32 @@ class MCPDescriptorCatalogValidatorTest {
         String toolName = "database_gateway_test_plan_rule";
         assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, MCPToolAnnotations.builder()
                 .title("Test Tool").readOnlyHint(false).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
-                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan"))),
                 "Planning tool `database_gateway_test_plan_rule` annotations.idempotentHint must be false.");
     }
     
     @Test
     void assertValidateRejectsDestructiveToolWithoutExecutionMode() {
-        assertDestructiveToolValidationError(false, List.of(), false, List.of("rule-metadata"),
+        assertDestructiveToolValidationError(false, List.of(), false,
                 "Destructive tool `database_gateway_test_tool` must declare execution_mode.");
     }
     
     @Test
     void assertValidateRejectsDestructiveToolWithOptionalExecutionMode() {
-        assertDestructiveToolValidationError(true, List.of("preview"), false, List.of("rule-metadata"),
+        assertDestructiveToolValidationError(true, List.of("preview"), false,
                 "Destructive tool `database_gateway_test_tool` execution_mode must be required.");
     }
     
     @Test
     void assertValidateRejectsDestructiveToolWithoutPreview() {
-        assertDestructiveToolValidationError(true, List.of("review-then-execute"), true, List.of("rule-metadata"),
+        assertDestructiveToolValidationError(true, List.of("review-then-execute"), true,
                 "Destructive tool `database_gateway_test_tool` execution_mode must allow preview.");
     }
     
     @Test
     void assertValidateRejectsDestructiveToolWithAutoExecute() {
-        assertDestructiveToolValidationError(true, List.of("preview", "auto-execute"), true, List.of("rule-metadata"),
+        assertDestructiveToolValidationError(true, List.of("preview", "auto-execute"), true,
                 "Destructive tool `database_gateway_test_tool` execution_mode must not expose auto-execute.");
-    }
-    
-    @Test
-    void assertValidateRejectsDestructiveToolWithoutSideEffectScope() {
-        assertDestructiveToolValidationError(true, List.of("preview"), true, List.of(),
-                "Destructive tool `database_gateway_test_tool` must declare sideEffectScope in internal runtime.");
     }
     
     @ParameterizedTest(name = "{0}")
@@ -334,10 +320,9 @@ class MCPDescriptorCatalogValidatorTest {
     }
     
     private void assertDestructiveToolValidationError(final boolean executionModePresent, final List<String> executionModes, final boolean executionModeRequired,
-                                                      final List<String> sideEffectScope, final String expectedMessage) {
+                                                      final String expectedMessage) {
         MCPToolDescriptor descriptor = createExecutionModeTool(true, executionModePresent, executionModes, executionModeRequired);
-        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(descriptor),
-                List.of(new MCPToolRuntimeDescriptor(descriptor.getName(), "", sideEffectScope))), expectedMessage);
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(descriptor), List.of()), expectedMessage);
     }
     
     private MCPToolDescriptor createExecutionModeTool(final boolean destructive, final boolean executionModePresent, final List<String> executionModes,

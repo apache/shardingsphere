@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescript
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
-import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
@@ -71,7 +70,7 @@ public final class WorkflowGuidanceResourceHintProvider {
         for (Object each : uriTemplates) {
             String uriTemplate = String.valueOf(each);
             findResourceDescriptor(uriTemplate).ifPresent(resourceDescriptor -> createConcreteResourceUri(uriTemplate, request)
-                    .ifPresent(uri -> addResourceHint(resourcesToRead, uri, resolveResourceKind(uriTemplate), resolveDescriptorResourceAction(resourceDescriptor),
+                    .ifPresent(uri -> addResourceHint(resourcesToRead, uri, MCPDescriptorCatalogIndex.resolveResourceKind(uriTemplate), resolveDescriptorResourceAction(resourceDescriptor),
                             resourceDescriptor.getDescription())));
         }
     }
@@ -99,12 +98,6 @@ public final class WorkflowGuidanceResourceHintProvider {
             return Optional.of(uriTemplate);
         }
         return value.isEmpty() ? Optional.empty() : Optional.of(uriTemplate.replace(placeholder, MCPUriPathSegmentUtils.encodePathSegment(value)));
-    }
-    
-    private String resolveResourceKind(final String uriTemplate) {
-        ShardingSphereMCPResourceMetadata metadata = MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata(uriTemplate);
-        String result = metadata.getObjectScope();
-        return null == result ? metadata.getResourceKind() : result;
     }
     
     private String resolveDescriptorResourceAction(final MCPResourceDescriptor descriptor) {

@@ -194,7 +194,7 @@ final class MCPDescriptorCatalogYamlSwapper {
     }
     
     private static MCPToolRuntimeDescriptor swapToolRuntimeDescriptor(final String toolName, final YamlMCPToolRuntimeDescriptor yamlRuntime) {
-        return new MCPToolRuntimeDescriptor(toolName, null == yamlRuntime.getWorkflowRole() ? "" : yamlRuntime.getWorkflowRole(), emptyIfNull(yamlRuntime.getSideEffectScope()));
+        return new MCPToolRuntimeDescriptor(toolName, null == yamlRuntime.getWorkflowRole() ? "" : yamlRuntime.getWorkflowRole());
     }
     
     private static <T> Collection<T> emptyIfNull(final Collection<T> values) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
@@ -117,39 +118,18 @@ final class MetadataSearchResourceUriFactory {
     }
     
     private MetadataResourceUris derived(final String resourceUri, final String parentResourceUri, final List<String> nextResourceUris) {
-        return new MetadataResourceUris(MCPResourceHintUtils.create(resourceUri, resolveResourceKind(resourceUri), "inspect_detail", "Read the matched metadata detail resource.",
+        return new MetadataResourceUris(MCPResourceHintUtils.create(resourceUri, MCPDescriptorCatalogIndex.resolveResourceKind(resourceUri), "inspect_detail",
+                "Read the matched metadata detail resource.",
                 MCPPayloadFieldNames.RESOURCE),
-                MCPResourceHintUtils.create(parentResourceUri, resolveResourceKind(parentResourceUri), "inspect_parent", "Read the parent metadata resource.",
+                MCPResourceHintUtils.create(parentResourceUri, MCPDescriptorCatalogIndex.resolveResourceKind(parentResourceUri), "inspect_parent", "Read the parent metadata resource.",
                         MCPPayloadFieldNames.PARENT_RESOURCE),
-                nextResourceUris.stream().map(each -> MCPResourceHintUtils.create(each, resolveResourceKind(each), "inspect_detail", "Read a child metadata resource.",
-                        MCPPayloadFieldNames.NEXT_RESOURCES)).toList(),
+                nextResourceUris.stream().map(each -> MCPResourceHintUtils.create(each, MCPDescriptorCatalogIndex.resolveResourceKind(each), "inspect_detail",
+                        "Read a child metadata resource.", MCPPayloadFieldNames.NEXT_RESOURCES)).toList(),
                 "derived", "");
     }
     
     private MetadataResourceUris notSafe(final String reason) {
         return new MetadataResourceUris(Map.of(), Map.of(), List.of(), "not_safe_to_derive", reason);
-    }
-    
-    private String resolveResourceKind(final String uri) {
-        if (uri.contains("/columns")) {
-            return "column";
-        }
-        if (uri.contains("/indexes")) {
-            return "index";
-        }
-        if (uri.contains("/storage-units")) {
-            return "storage-unit";
-        }
-        if (uri.contains("/tables")) {
-            return "table";
-        }
-        if (uri.contains("/views")) {
-            return "view";
-        }
-        if (uri.contains("/sequences")) {
-            return "sequence";
-        }
-        return uri.contains("/schemas") ? "schema" : "database";
     }
     
     private boolean canUseInUri(final String... values) {

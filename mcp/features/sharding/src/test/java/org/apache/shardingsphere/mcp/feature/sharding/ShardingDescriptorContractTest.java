@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
+import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -83,12 +84,23 @@ class ShardingDescriptorContractTest {
         assertOperationTypeEnum(findTool(catalog, ShardingFeatureDefinition.PLAN_COMPONENT_CLEANUP_TOOL_NAME), List.of("drop"));
     }
     
+    @Test
+    void assertAlgorithmResourceScopes() {
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        assertThat(findResourceMetadata(catalog, "shardingsphere://features/sharding/databases/{database}/algorithms").getObjectScope(), is("algorithm"));
+        assertThat(findResourceMetadata(catalog, "shardingsphere://features/sharding/databases/{database}/unused-algorithms").getObjectScope(), is("algorithm"));
+    }
+    
     private MCPPromptDescriptor findPrompt(final MCPDescriptorCatalog catalog, final String promptName) {
         return catalog.getProtocolDescriptors().getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
     }
     
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getProtocolDescriptors().getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private ShardingSphereMCPResourceMetadata findResourceMetadata(final MCPDescriptorCatalog catalog, final String uriTemplate) {
+        return catalog.getShardingSphereDescriptors().getResourceMetadata().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
     }
     
     private void assertOperationTypeEnum(final MCPToolDescriptor descriptor, final List<String> expectedValues) {
