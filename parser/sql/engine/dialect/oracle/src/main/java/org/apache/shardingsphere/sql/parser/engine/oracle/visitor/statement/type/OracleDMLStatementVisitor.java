@@ -24,10 +24,11 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatem
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValuesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CallArgumentContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CellAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CollectionExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConditionalInsertClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConditionalInsertElsePartContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConditionalInsertWhenPartContext;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Delete
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DimensionColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlTableAliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlSubqueryClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DuplicateSpecificationContext;
@@ -55,6 +57,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Groupi
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InnerCrossJoinClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertIntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertMultiTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertSingleTableContext;
@@ -74,10 +77,12 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiColumnForLoopContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiTableElementContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiTableInsertIntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OuterJoinClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParenthesisSelectSubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PivotClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryPartitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryNameContext;
@@ -87,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Refere
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ReturningClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ReturningIntoItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollupCubeClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectFromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectIntoStatementContext;
@@ -120,6 +126,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
@@ -190,6 +197,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
@@ -218,6 +226,30 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
+    public ASTNode visitCall(final CallContext ctx) {
+        FunctionNameSegment procedureNameSegment = createCallProcedureNameSegment(ctx.schemaName(), ctx.procedureName());
+        String procedureName = procedureNameSegment.getOwner().map(optional -> optional.getIdentifier().getValue() + ".").orElse("") + procedureNameSegment.getIdentifier().getValue();
+        List<ExpressionSegment> params = ctx.callArgument().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        return new CallStatement(getDatabaseType(), procedureName, procedureNameSegment, params);
+    }
+    
+    private FunctionNameSegment createCallProcedureNameSegment(final SchemaNameContext schemaName, final ProcedureNameContext procedureNameContext) {
+        IdentifierValue procedureName = (IdentifierValue) visit(procedureNameContext.identifier());
+        if (null == schemaName) {
+            return new FunctionNameSegment(procedureNameContext.start.getStartIndex(), procedureNameContext.stop.getStopIndex(), procedureName);
+        }
+        OwnerSegment owner = new OwnerSegment(schemaName.start.getStartIndex(), schemaName.stop.getStopIndex(), (IdentifierValue) visit(schemaName.identifier()));
+        FunctionNameSegment result = new FunctionNameSegment(schemaName.start.getStartIndex(), procedureNameContext.stop.getStopIndex(), procedureName);
+        result.setOwner(owner);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCallArgument(final CallArgumentContext ctx) {
+        return visit(ctx.expression());
+    }
+    
+    @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         TableSegment tableSegment = (TableSegment) visit(ctx.updateSpecification());
         if (null != ctx.alias()) {
@@ -242,16 +274,22 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitUpdateSpecification(final UpdateSpecificationContext ctx) {
         if (null != ctx.dmlTableExprClause().dmlTableClause()) {
-            return visit(ctx.dmlTableExprClause().dmlTableClause());
+            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause());
+            setDmlTableAlias(result, ctx.dmlTableExprClause().dmlTableAlias());
+            return result;
         }
         if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
             SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.dmlTableExprClause().dmlSubqueryClause());
             subquerySegment.setSelect(subquerySegment.getSelect().withSubqueryType(SubqueryType.TABLE));
-            return new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
+            SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
+            setDmlTableAlias(result, ctx.dmlTableExprClause().dmlTableAlias());
+            return result;
         }
         SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.dmlTableExprClause().tableCollectionExpr());
         subquerySegment.setSelect(subquerySegment.getSelect().withSubqueryType(SubqueryType.TABLE));
-        return new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
+        SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
+        setDmlTableAlias(result, ctx.dmlTableExprClause().dmlTableAlias());
+        return result;
     }
     
     @Override
@@ -369,8 +407,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         InsertStatement.InsertStatementBuilder result = InsertStatement.builder()
                 .databaseType(getDatabaseType())
                 .multiTableInsertType(null != ctx.conditionalInsertClause() && null != ctx.conditionalInsertClause().FIRST() ? MultiTableInsertType.FIRST : MultiTableInsertType.ALL);
-        List<MultiTableElementContext> multiTableElementContexts = ctx.multiTableElement();
-        if (null != multiTableElementContexts && !multiTableElementContexts.isEmpty()) {
+        List<MultiTableElementContext> multiTableElementContexts = null == ctx.multiTableElements() ? Collections.emptyList() : ctx.multiTableElements().multiTableElement();
+        if (!multiTableElementContexts.isEmpty()) {
             MultiTableInsertIntoSegment multiTableInsertIntoSegment = new MultiTableInsertIntoSegment(
                     multiTableElementContexts.get(0).getStart().getStartIndex(), multiTableElementContexts.get(multiTableElementContexts.size() - 1).getStop().getStopIndex());
             multiTableInsertIntoSegment.getInsertStatements().addAll(createInsertIntoSegments(multiTableElementContexts));
@@ -409,29 +447,52 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return InsertStatement.builder().databaseType(getDatabaseType()).values(createInsertValuesSegments(ctx.assignmentValues())).build();
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertIntoClause(final InsertIntoClauseContext ctx) {
         InsertStatement.InsertStatementBuilder result = InsertStatement.builder().databaseType(getDatabaseType());
         if (null != ctx.dmlTableExprClause().dmlTableClause()) {
-            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause());
-            if (null != ctx.dmlTableExprClause().alias()) {
-                simpleTableSegment.setAlias((AliasSegment) visit(ctx.dmlTableExprClause().alias()));
-            }
-            result.table(simpleTableSegment);
+            SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause());
+            setDmlTableAlias(tableSegment, ctx.dmlTableExprClause().dmlTableAlias());
+            result.table(tableSegment);
         } else if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
             result.insertSelect((SubquerySegment) visit(ctx.dmlTableExprClause().dmlSubqueryClause()));
         } else {
             result.insertSelect((SubquerySegment) visit(ctx.dmlTableExprClause().tableCollectionExpr()));
         }
-        if (null != ctx.columnNames()) {
-            ColumnNamesContext columnNames = ctx.columnNames();
-            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            result.insertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
+        if (null != ctx.insertColumnNames()) {
+            InsertColumnNamesContext columnNames = ctx.insertColumnNames();
+            result.insertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), createInsertColumnSegments(columnNames)));
         } else {
             result.insertColumns(new InsertColumnsSegment(ctx.stop.getStopIndex() + 1, ctx.stop.getStopIndex() + 1, Collections.emptyList()));
         }
         return result.build();
+    }
+    
+    @Override
+    public ASTNode visitMultiTableInsertIntoClause(final MultiTableInsertIntoClauseContext ctx) {
+        InsertStatement.InsertStatementBuilder result = InsertStatement.builder().databaseType(getDatabaseType());
+        if (null != ctx.insertDmlTableExprClause().dmlTableClause()) {
+            result.table((SimpleTableSegment) visit(ctx.insertDmlTableExprClause().dmlTableClause()));
+        } else if (null != ctx.insertDmlTableExprClause().dmlSubqueryClause()) {
+            result.insertSelect((SubquerySegment) visit(ctx.insertDmlTableExprClause().dmlSubqueryClause()));
+        } else {
+            result.insertSelect((SubquerySegment) visit(ctx.insertDmlTableExprClause().tableCollectionExpr()));
+        }
+        if (null != ctx.insertColumnNames()) {
+            InsertColumnNamesContext columnNames = ctx.insertColumnNames();
+            result.insertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), createInsertColumnSegments(columnNames)));
+        } else {
+            result.insertColumns(new InsertColumnsSegment(ctx.stop.getStopIndex() + 1, ctx.stop.getStopIndex() + 1, Collections.emptyList()));
+        }
+        return result.build();
+    }
+    
+    private Collection<ColumnSegment> createInsertColumnSegments(final InsertColumnNamesContext ctx) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        for (ColumnNameContext each : ctx.columnName()) {
+            result.add((ColumnSegment) visit(each));
+        }
+        return result;
     }
     
     @Override
@@ -456,14 +517,22 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitDeleteSpecification(final DeleteSpecificationContext ctx) {
         if (null != ctx.dmlTableExprClause().dmlTableClause()) {
-            return visit(ctx.dmlTableExprClause().dmlTableClause());
+            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause());
+            setDmlTableAlias(result, ctx.dmlTableExprClause().dmlTableAlias());
+            return result;
         }
         if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
             SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.dmlTableExprClause().dmlSubqueryClause());
-            return new SubqueryTableSegment(ctx.dmlTableExprClause().dmlSubqueryClause().start.getStartIndex(), ctx.dmlTableExprClause().dmlSubqueryClause().stop.getStopIndex(), subquerySegment);
+            SubqueryTableSegment result = new SubqueryTableSegment(
+                    ctx.dmlTableExprClause().dmlSubqueryClause().start.getStartIndex(), ctx.dmlTableExprClause().dmlSubqueryClause().stop.getStopIndex(), subquerySegment);
+            setDmlTableAlias(result, ctx.dmlTableExprClause().dmlTableAlias());
+            return result;
         }
         SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.dmlTableExprClause().tableCollectionExpr());
-        return new SubqueryTableSegment(ctx.dmlTableExprClause().tableCollectionExpr().start.getStartIndex(), ctx.dmlTableExprClause().tableCollectionExpr().stop.getStopIndex(), subquerySegment);
+        SubqueryTableSegment result = new SubqueryTableSegment(
+                ctx.dmlTableExprClause().tableCollectionExpr().start.getStartIndex(), ctx.dmlTableExprClause().tableCollectionExpr().stop.getStopIndex(), subquerySegment);
+        setDmlTableAlias(result, ctx.dmlTableExprClause().dmlTableAlias());
+        return result;
     }
     
     @Override
@@ -496,11 +565,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMultiTableElement(final MultiTableElementContext ctx) {
-        InsertStatement result = (InsertStatement) visit(ctx.insertIntoClause());
+        InsertStatement result = (InsertStatement) visit(ctx.multiTableInsertIntoClause());
         if (null != ctx.insertValuesClause()) {
             result.getValues().addAll(createInsertValuesSegments(ctx.insertValuesClause().assignmentValues()));
         }
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+        result.getVariableNames().addAll(getVariableNames());
         return result;
     }
     
@@ -611,7 +681,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitConditionalInsertWhenPart(final ConditionalInsertWhenPartContext ctx) {
-        List<MultiTableElementContext> multiTableElementContexts = ctx.multiTableElement();
+        List<MultiTableElementContext> multiTableElementContexts = ctx.multiTableElements().multiTableElement();
         MultiTableConditionalIntoThenSegment thenSegment = new MultiTableConditionalIntoThenSegment(multiTableElementContexts.get(0).start.getStartIndex(),
                 multiTableElementContexts.get(multiTableElementContexts.size() - 1).stop.getStopIndex(), createInsertIntoSegments(multiTableElementContexts));
         return new MultiTableConditionalIntoWhenThenSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr()), thenSegment);
@@ -619,7 +689,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitConditionalInsertElsePart(final ConditionalInsertElsePartContext ctx) {
-        return new MultiTableConditionalIntoElseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), createInsertIntoSegments(ctx.multiTableElement()));
+        return new MultiTableConditionalIntoElseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), createInsertIntoSegments(ctx.multiTableElements().multiTableElement()));
     }
     
     @Override
@@ -1002,6 +1072,11 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()));
     }
     
+    @Override
+    public ASTNode visitDmlTableAlias(final DmlTableAliasContext ctx) {
+        return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
+    }
+    
     private ASTNode createProjection(final SelectProjectionExprClauseContext ctx) {
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
         ASTNode projection = visit(ctx.expr());
@@ -1316,10 +1391,14 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         } else {
             result = (TableSegment) visit(ctx.queryTableExprClause());
         }
-        if (null != ctx.alias()) {
-            result.setAlias((AliasSegment) visit(ctx.alias()));
-        }
+        setDmlTableAlias(result, ctx.dmlTableAlias());
         return result;
+    }
+    
+    private void setDmlTableAlias(final TableSegment tableSegment, final DmlTableAliasContext dmlTableAlias) {
+        if (null != dmlTableAlias) {
+            tableSegment.setAlias((AliasSegment) visit(dmlTableAlias));
+        }
     }
     
     @Override
