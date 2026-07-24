@@ -30,6 +30,7 @@ import org.apache.calcite.schema.Table;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -54,6 +55,8 @@ import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.implementor.EnumerableScanImplementor;
 import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.Collection;
@@ -67,6 +70,10 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class StandardSQLFederationProcessor implements SQLFederationProcessor {
+    
+    private static final BigInteger MIN_PAGINATION_PARAMETER = BigInteger.valueOf(Integer.MIN_VALUE);
+    
+    private static final BigInteger MAX_PAGINATION_PARAMETER = BigInteger.valueOf(Integer.MAX_VALUE);
     
     private final ShardingSphereStatistics statistics;
     
@@ -132,9 +139,9 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     public ResultSet executePlan(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> queryCallback,
                                  final SQLFederationExecutionPlan executionPlan, final SQLFederationRelConverter converter, final SQLFederationContext federationContext, final SchemaPlus schemaPlus) {
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) executionPlan.getPhysicalPlan(), Prefer.ARRAY);
-        Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
-        Enumerator<Object> enumerator = executablePlan.bind(new ExecutorBindContext(converter, params)).enumerator();
         SelectStatementContext selectStatementContext = (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext();
+        Map<String, Object> params = createParameters(selectStatementContext, federationContext.getQueryContext().getParameters());
+        Enumerator<Object> enumerator = executablePlan.bind(new ExecutorBindContext(converter, params)).enumerator();
         List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
         SQLFederationResultSet result = new SQLFederationResultSet(enumerator, schemaPlus, expandProjections,
                 selectStatementContext.getSqlStatement().getDatabaseType(), executionPlan.getResultColumnType(), federationContext.getProcessId());
@@ -144,13 +151,39 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         return result;
     }
     
-    private Map<String, Object> createParameters(final List<Object> params) {
+    private Map<String, Object> createParameters(final SelectStatementContext selectStatementContext, final List<Object> params) {
+        PaginationContext paginationContext = selectStatementContext.getPaginationContext();
+        int offsetParameterIndex = paginationContext.getOffsetParameterIndex().orElse(-1);
+        int rowCountParameterIndex = paginationContext.getRowCountParameterIndex().orElse(-1);
         Map<String, Object> result = new HashMap<>(params.size(), 1F);
         int index = 0;
         for (Object each : params) {
-            result.put("?" + index++, each);
+            result.put("?" + index, isPaginationParameterIndex(index, offsetParameterIndex, rowCountParameterIndex) ? convertPaginationParameter(each) : each);
+            index++;
         }
         return result;
+    }
+    
+    private boolean isPaginationParameterIndex(final int parameterIndex, final int offsetParameterIndex, final int rowCountParameterIndex) {
+        return parameterIndex == offsetParameterIndex || parameterIndex == rowCountParameterIndex;
+    }
+    
+    private Object convertPaginationParameter(final Object value) {
+        if (!(value instanceof Number)) {
+            return value;
+        }
+        BigInteger integerValue = getIntegerValue((Number) value);
+        ShardingSpherePreconditions.checkState(integerValue.compareTo(MIN_PAGINATION_PARAMETER) >= 0 && integerValue.compareTo(MAX_PAGINATION_PARAMETER) <= 0,
+                () -> new IllegalArgumentException(String.format("SQL federation pagination parameter value `%s` is out of integer range.", value)));
+        return integerValue.intValue();
+    }
+    
+    private BigInteger getIntegerValue(final Number value) {
+        try {
+            return new BigDecimal(value.toString()).toBigIntegerExact();
+        } catch (final NumberFormatException | ArithmeticException ex) {
+            throw new IllegalArgumentException(String.format("SQL federation pagination parameter value `%s` must be an integer.", value), ex);
+        }
     }
     
     @Override
