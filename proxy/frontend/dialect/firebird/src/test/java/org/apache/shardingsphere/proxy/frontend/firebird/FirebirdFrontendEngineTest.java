@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -55,6 +56,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, FirebirdStatementIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdBlobIdGenerator.class, FirebirdBlobUploadCache.class,
+        FirebirdBlobRegistry.class,
         FirebirdConnectionProtocolVersion.class, FirebirdFetchStatementCache.class})
 class FirebirdFrontendEngineTest {
     
@@ -89,6 +91,7 @@ class FirebirdFrontendEngineTest {
         verify(FirebirdTransactionIdGenerator.getInstance()).unregisterConnection(connectionId);
         verify(FirebirdBlobIdGenerator.getInstance()).unregisterConnection(connectionId);
         verify(FirebirdBlobUploadCache.getInstance()).unregisterConnection(connectionId);
+        verify(FirebirdBlobRegistry.getInstance()).unregisterConnection(connectionId);
         verify(FirebirdConnectionProtocolVersion.getInstance()).unsetProtocolVersion(connectionId);
         verify(FirebirdFetchStatementCache.getInstance()).unregisterConnection(connectionId);
     }

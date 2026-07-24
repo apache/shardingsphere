@@ -25,7 +25,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * Registry for the BLOB segment.
@@ -33,9 +36,175 @@ import java.nio.charset.Charset;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlobRegistry {
     
+    /**
+     * Sentinel value used by clients (e.g. Jaybird) when the real handle is not yet known
+     * because the preceding {@code op_create_blob2}/{@code op_open_blob2} response has not arrived.
+     * The server substitutes the most recently created object handle.
+     */
+    private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
+    
+    private static final FirebirdBlobRegistry INSTANCE = new FirebirdBlobRegistry();
+    
     @Getter
     @Setter
     private static byte[] segment;
+    
+    private final Map<Integer, Map<Integer, FirebirdOpenBlobState>> openBlobsByHandle = new ConcurrentHashMap<>(16);
+    
+    private final Map<Integer, Integer> lastBlobHandleByConnection = new ConcurrentHashMap<>(16);
+    
+    /**
+     * Get registry instance.
+     *
+     * @return registry instance
+     */
+    public static FirebirdBlobRegistry getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Register connection for open BLOB state.
+     *
+     * @param connectionId connection id
+     */
+    public void registerConnection(final int connectionId) {
+        openBlobsByHandle.put(connectionId, new ConcurrentHashMap<>(4));
+        lastBlobHandleByConnection.put(connectionId, 0);
+    }
+    
+    /**
+     * Unregister connection for open BLOB state.
+     *
+     * @param connectionId connection id
+     */
+    public void unregisterConnection(final int connectionId) {
+        openBlobsByHandle.remove(connectionId);
+        lastBlobHandleByConnection.remove(connectionId);
+    }
+    
+    /**
+     * Track the most recently created or opened BLOB handle for deferred-handle resolution.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     */
+    public void setLastBlobHandle(final int connectionId, final int blobHandle) {
+        lastBlobHandleByConnection.put(connectionId, blobHandle);
+    }
+    
+    /**
+     * Resolve a BLOB handle, substituting the most recently created or opened handle
+     * when the client sends the deferred placeholder {@code INVALID_OBJECT}.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle from the client (may be {@code INVALID_OBJECT})
+     * @return resolved blob handle
+     */
+    public int resolveBlobHandle(final int connectionId, final int blobHandle) {
+        if (INVALID_OBJECT_HANDLE == blobHandle) {
+            int lastHandle = lastBlobHandleByConnection.getOrDefault(connectionId, 0);
+            return 0 == lastHandle ? blobHandle : lastHandle;
+        }
+        return blobHandle;
+    }
+    
+    /**
+     * Register opened BLOB content by handle.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     * @param content blob content
+     */
+    public void openBlob(final int connectionId, final int blobHandle, final byte[] content) {
+        // Keep an owned snapshot so per-handle cursor state is isolated from external mutation.
+        getOpenBlobMap(connectionId).put(blobHandle, new FirebirdOpenBlobState(null == content ? new byte[0] : content.clone()));
+    }
+    
+    /**
+     * Remove opened BLOB state by handle.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     */
+    public void closeBlob(final int connectionId, final int blobHandle) {
+        getOpenBlobMap(connectionId).remove(blobHandle);
+    }
+    
+    /**
+     * Read segment data from the current BLOB position and advance the cursor.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     * @param requestedLength requested segment length
+     * @return segment data
+     */
+    public byte[] readSegment(final int connectionId, final int blobHandle, final int requestedLength) {
+        FirebirdOpenBlobState state = getOpenBlobMap(connectionId).get(blobHandle);
+        if (null == state || requestedLength <= 0 || state.isEof()) {
+            return new byte[0];
+        }
+        int actualLength = Math.min(requestedLength, state.getRemainingLength());
+        byte[] result = Arrays.copyOfRange(state.content, state.position, state.position + actualLength);
+        state.position += actualLength;
+        return result;
+    }
+    
+    /**
+     * Seek to the requested position and return the resulting cursor.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     * @param seekMode seek mode
+     * @param offset offset
+     * @return resulting cursor position
+     * @throws IllegalArgumentException unsupported seek mode
+     */
+    public int seek(final int connectionId, final int blobHandle, final int seekMode, final int offset) {
+        FirebirdOpenBlobState state = getOpenBlobMap(connectionId).get(blobHandle);
+        if (null == state) {
+            return 0;
+        }
+        int result;
+        switch (seekMode) {
+            case 0:
+                result = clamp(offset, state.content.length);
+                break;
+            case 1:
+                result = clamp(state.position + offset, state.content.length);
+                break;
+            case 2:
+                result = clamp(state.content.length + offset, state.content.length);
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("No SeekMode with id %d", seekMode));
+        }
+        state.position = result;
+        return result;
+    }
+    
+    /**
+     * Get total BLOB length by handle.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     * @return total BLOB length
+     */
+    public int getBlobLength(final int connectionId, final int blobHandle) {
+        FirebirdOpenBlobState state = getOpenBlobMap(connectionId).get(blobHandle);
+        return null == state ? 0 : state.content.length;
+    }
+    
+    /**
+     * Check if the BLOB cursor reached EOF.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     * @return whether the BLOB cursor reached EOF
+     */
+    public boolean isEof(final int connectionId, final int blobHandle) {
+        FirebirdOpenBlobState state = getOpenBlobMap(connectionId).get(blobHandle);
+        return null == state || state.isEof();
+    }
     
     /**
      * Clear the stored segment.
@@ -69,5 +238,32 @@ public final class FirebirdBlobRegistry {
             buf.writeZero(pad);
         }
         return new FirebirdPacketPayload(buf, cs);
+    }
+    
+    private Map<Integer, FirebirdOpenBlobState> getOpenBlobMap(final int connectionId) {
+        return openBlobsByHandle.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
+    }
+    
+    private int clamp(final int position, final int length) {
+        return Math.max(0, Math.min(position, length));
+    }
+    
+    private static final class FirebirdOpenBlobState {
+        
+        private final byte[] content;
+        
+        private int position;
+        
+        private FirebirdOpenBlobState(final byte[] content) {
+            this.content = content;
+        }
+        
+        private int getRemainingLength() {
+            return content.length - position;
+        }
+        
+        private boolean isEof() {
+            return position >= content.length;
+        }
     }
 }
