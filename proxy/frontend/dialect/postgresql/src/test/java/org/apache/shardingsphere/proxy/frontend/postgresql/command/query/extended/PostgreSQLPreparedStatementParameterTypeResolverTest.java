@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -36,16 +38,18 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.postgresql.util.PGobject;
 
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
@@ -67,6 +71,7 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -110,6 +115,8 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
         when(parameterMetaData.getParameterType(1)).thenReturn(Types.SMALLINT);
         when(parameterMetaData.getParameterTypeName(1)).thenReturn("int2");
+        when(parameterMetaData.getParameterType(2)).thenReturn(Types.INTEGER);
+        when(parameterMetaData.getParameterTypeName(2)).thenReturn("int4");
         PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
         when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=? AND k=?",
@@ -134,53 +141,155 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         SQLStatement sqlStatement = sqlParserEngine.parse(SQL, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
+        when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
+        
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
                 SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLBinaryColumnType.INT4), Collections.singletonList(0));
-        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
         PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
-        verifyNoInteractions(actualPreparedStatement);
+        assertThat(preparedStatement.getParameterTypes(), is(Collections.singletonList(PostgreSQLBinaryColumnType.INT4)));
+    }
+    
+    @Test
+    void assertResolveParameterTypesWithUntypedPGobject() throws SQLException {
+        SQLStatement sqlStatement = sqlParserEngine.parse("INSERT INTO foo_tbl (status) VALUES (?)", false);
+        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        when(parameterMetaData.getParameterType(1)).thenReturn(Types.OTHER);
+        when(parameterMetaData.getParameterTypeName(1)).thenReturn("my_enum");
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        
+        PGobject pgObject = mock(PGobject.class);
+        when(pgObject.getType()).thenReturn(null);
+        
+        List<Object> parameters = new ArrayList<>(Collections.singletonList(pgObject));
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO foo_tbl (status) VALUES (?)",
+                sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement, parameters);
+        
+        verify(pgObject).setType("my_enum");
+    }
+    
+    @Test
+    void assertResolveParameterTypesWithStringForOtherType() throws SQLException {
+        SQLStatement sqlStatement = sqlParserEngine.parse("INSERT INTO foo_tbl (val) VALUES (?)", false);
+        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        when(parameterMetaData.getParameterType(1)).thenReturn(Types.OTHER);
+        when(parameterMetaData.getParameterTypeName(1)).thenReturn("jsonb");
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        
+        List<Object> parameters = new ArrayList<>(Collections.singletonList("{\"key\": \"value\"}"));
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO foo_tbl (val) VALUES (?)",
+                sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement, parameters);
+        assertThat(parameters.get(0), CoreMatchers.instanceOf(PGobject.class));
+        PGobject actual = (PGobject) parameters.get(0);
+        assertThat(actual.getType(), is("jsonb"));
+        assertThat(actual.getValue(), is("{\"key\": \"value\"}"));
+    }
+    
+    @Test
+    void assertResolveParameterTypesUsingSchemaMetadataFallback() throws SQLException {
+        InsertStatement sqlStatement = mock(InsertStatement.class, RETURNS_DEEP_STUBS);
+        when(sqlStatement.getParameterCount()).thenReturn(1);
+        
+        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_tbl"));
+        when(sqlStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("status"));
+        when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(java.util.Optional.empty());
+        
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("postgres");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        when(parameterMetaData.getParameterType(1)).thenThrow(new SQLException("Driver cannot determine type"));
+        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        
+        PGobject pgObject = mock(PGobject.class);
+        when(pgObject.getType()).thenReturn(null);
+        List<Object> parameters = new ArrayList<>(Collections.singletonList(pgObject));
+        
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "INSERT INTO foo_tbl (status) VALUES (?)",
+                sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(
+                connectionSession, preparedStatement, actualPreparedStatement, parameters);
+        
+        verify(pgObject).setType("my_enum");
+        
+        ShardingSphereSchema schema = contextManager.getMetaDataContexts().getMetaData().getDatabase("postgres").getSchema("public");
+        verify(schema).getTable("foo_tbl");
     }
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        
+        lenient().when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        lenient().when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        
         lenient().when(result.getMetaDataContexts().getMetaData().containsDatabase("postgres")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("postgres"))).thenReturn(true);
+        lenient().when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("postgres"))).thenReturn(true);
+        
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getProtocolType()).thenReturn(databaseType);
+        lenient().when(database.getProtocolType()).thenReturn(databaseType);
+        
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getStorageType()).thenReturn(databaseType);
-        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
+        lenient().when(storageUnit.getStorageType()).thenReturn(databaseType);
+        lenient().when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
+        
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getName()).thenReturn("public");
+        lenient().when(schema.getName()).thenReturn("public");
         lenient().when(database.getDefaultSchemaName()).thenReturn("public");
-        when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
-        when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
-        when(database.getSchema("public")).thenReturn(schema);
-        when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
+        lenient().when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
+        lenient().when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
+        lenient().when(database.getSchema("public")).thenReturn(schema);
+        lenient().when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
+        
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        when(schema.containsTable(new IdentifierValue("foo_tbl"))).thenReturn(true);
-        when(schema.getTable(new IdentifierValue("foo_tbl"))).thenReturn(table);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres")).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("postgres"))).thenReturn(database);
-        when(result.getDatabase("postgres")).thenReturn(database);
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false, "int4"),
+                new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false, false, "int4"),
+                new ShardingSphereColumn("status", Types.OTHER, false, false, false, true, false, false, "my_enum"),
+                new ShardingSphereColumn("val", Types.OTHER, false, false, false, true, false, false, "jsonb")), Collections.emptyList(), Collections.emptyList());
+        
+        lenient().when(schema.containsTable("foo_tbl")).thenReturn(true);
+        lenient().when(schema.getTable("foo_tbl")).thenReturn(table);
+        lenient().when(schema.containsTable(any(IdentifierValue.class))).thenReturn(true);
+        lenient().when(schema.getTable(any(IdentifierValue.class))).thenReturn(table);
+        
+        lenient().when(result.getMetaDataContexts().getMetaData().getDatabase("postgres")).thenReturn(database);
+        lenient().when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("postgres"))).thenReturn(database);
+        lenient().when(result.getDatabase("postgres")).thenReturn(database);
+        
         return result;
     }
     
     private void prepareJDBCBackendConnectionWithParamTypes() throws SQLException {
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
-        when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
-        when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
+        lenient().when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
+        lenient().when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
+        
         PreparedStatement preparedStatement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
-        when(preparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        lenient().when(preparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        lenient().when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
-        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any())).thenReturn(Collections.singletonList(connection));
-        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        lenient().when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any())).thenReturn(Collections.singletonList(connection));
+        lenient().when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
     }
 }
