@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdSQLResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -43,7 +44,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 
@@ -96,18 +97,18 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     
     private ResponseHeader executePreparedStatement(final FirebirdServerPreparedStatement preparedStatement, final List<Object> params) throws SQLException {
         List<Long> blobIdsToRemove = bindBlobParameters(params);
-        SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
-        if (sqlStatementContext instanceof ParameterAware) {
-            ((ParameterAware) sqlStatementContext).bindParameters(params);
-        }
-        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), true);
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "Firebird"), queryContext, connectionSession, true);
-        ResponseHeader result = proxyBackendHandler.execute();
-        if (result instanceof UpdateResponseHeader) {
+        try {
+            SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
+            if (sqlStatementContext instanceof ParameterAware) {
+                ((ParameterAware) sqlStatementContext).bindParameters(params);
+            }
+            QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(),
+                    ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), true);
+            proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "Firebird"), queryContext, connectionSession, true);
+            return proxyBackendHandler.execute();
+        } finally {
             clearBlobUploads(blobIdsToRemove);
         }
-        return result;
     }
     
     private List<Long> bindBlobParameters(final List<Object> params) {
@@ -124,15 +125,19 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
                 continue;
             }
             long blobId = (Long) paramValue;
-            if (blobId <= 0L) {
+            if (0L == blobId) {
+                params.set(i, new byte[0]);
+                continue;
+            }
+            if (blobId < 0L) {
+                params.set(i, FirebirdBlobBinaryProtocolValue.getBlobContent(connectionSession.getConnectionId(), blobId));
+                continue;
+            }
+            if (!FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId)) {
                 params.set(i, null);
                 continue;
             }
-            if (!FirebirdBlobUploadCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId)) {
-                params.set(i, null);
-                continue;
-            }
-            Optional<byte[]> blobData = FirebirdBlobUploadCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId);
+            Optional<byte[]> blobData = FirebirdBlobWriteCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId);
             byte[] bytes = blobData.get();
             params.set(i, bytes);
             blobIds.add(blobId);
@@ -142,7 +147,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     
     private void clearBlobUploads(final List<Long> blobIds) {
         for (Long each : blobIds) {
-            FirebirdBlobUploadCache.getInstance().removeUpload(connectionSession.getConnectionId(), each);
+            FirebirdBlobWriteCache.getInstance().removeWrite(connectionSession.getConnectionId(), each);
         }
     }
     

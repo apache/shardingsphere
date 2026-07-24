@@ -35,7 +35,7 @@ public final class FirebirdSeekBlobCommandPacket extends FirebirdCommandPacket {
     
     public FirebirdSeekBlobCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        blobHandle = payload.readInt4();
+        blobHandle = payload.readBlobHandle();
         seekMode = payload.readInt4();
         offset = payload.readInt4();
     }
@@ -50,7 +50,6 @@ public final class FirebirdSeekBlobCommandPacket extends FirebirdCommandPacket {
      * @return length of packet
      */
     public static int getLength() {
-        // reserved (4) + blob handle (4) + seek mode (4) + offset (4)
         return 16;
     }
 }

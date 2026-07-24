@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Objects;
 
-@Getter
 @RequiredArgsConstructor
-public final class FirebirdBlobUpload {
+public final class FirebirdBlobWrite {
     
+    @Getter
     private final int blobHandle;
     
+    @Getter
     private final long blobId;
     
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     
+    @Getter
     private boolean closed;
     
     /**
@@ -41,7 +42,6 @@ public final class FirebirdBlobUpload {
      * @param segment BLOB data segment bytes
      */
     public void append(final byte[] segment) {
-        Objects.requireNonNull(segment, "BLOB segment must not be null");
         buffer.write(segment, 0, segment.length);
     }
     
@@ -54,7 +54,7 @@ public final class FirebirdBlobUpload {
     }
     
     /**
-     * Mark this BLOB upload as closed.
+     * Mark this BLOB write as closed.
      */
     public void markClosed() {
         closed = true;

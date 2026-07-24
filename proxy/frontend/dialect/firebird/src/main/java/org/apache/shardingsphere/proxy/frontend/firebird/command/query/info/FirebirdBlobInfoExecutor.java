@@ -22,10 +22,15 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Blob info command executor for Firebird.
@@ -35,8 +40,20 @@ public final class FirebirdBlobInfoExecutor implements CommandExecutor {
     
     private final FirebirdInfoPacket packet;
     
+    private final ConnectionSession connectionSession;
+    
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdBlobInfoReturnPacket(packet.getInfoItems())));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdBlobInfoReturnPacket(packet.getInfoItems(), getBlobLength())));
+    }
+    
+    private int getBlobLength() {
+        int connectionId = connectionSession.getConnectionId();
+        int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionId, packet.getHandle());
+        Optional<byte[]> readSegment = FirebirdBlobReadCache.getInstance().getSegment(connectionId, blobHandle);
+        if (readSegment.isPresent()) {
+            return readSegment.get().length;
+        }
+        return FirebirdBlobWriteCache.getInstance().getBlobSizeByHandle(connectionId, blobHandle).orElse(0);
     }
 }

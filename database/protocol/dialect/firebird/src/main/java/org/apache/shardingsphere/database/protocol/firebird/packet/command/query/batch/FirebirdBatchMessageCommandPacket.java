@@ -32,10 +32,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Firebird batch send message command packet.
+ * Firebird batch message command packet.
  */
 @Getter
-public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommandPacket {
+public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPacket {
     
     private static final int FIXED_BATCH_MSG_HEADER_LENGTH = 12;
     
@@ -49,7 +49,7 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
     
     private final Charset charset;
     
-    public FirebirdBatchSendMessageCommandPacket(final FirebirdPacketPayload payload) {
+    public FirebirdBatchMessageCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         statementHandle = payload.readInt4();
         messageCount = payload.readInt4Unsigned();
@@ -149,9 +149,6 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
     }
     
     private static Object readValue(final FirebirdPacketPayload payload, final FirebirdBatchColumnDescriptor descriptor) {
-        if (FirebirdBinaryColumnType.BLOB == descriptor.getType()) {
-            return payload.readInt8();
-        }
         if (FirebirdBinaryColumnType.TEXT == descriptor.getType() || FirebirdBinaryColumnType.LEGACY_TEXT == descriptor.getType()) {
             String result = payload.readBytes(descriptor.getLength()).toString(payload.getCharset());
             payload.skipPadding(descriptor.getLength());

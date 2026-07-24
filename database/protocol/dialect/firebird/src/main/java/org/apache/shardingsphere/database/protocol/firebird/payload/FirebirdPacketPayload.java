@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.payload;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 
 import java.nio.charset.Charset;
@@ -36,6 +37,9 @@ public final class FirebirdPacketPayload implements PacketPayload {
     private final ByteBuf byteBuf;
     
     private final Charset charset;
+    
+    @Setter
+    private int connectionId = -1;
     
     /**
      * Read 1 byte fixed length integer from unsigned byte buffers.
@@ -107,6 +111,18 @@ public final class FirebirdPacketPayload implements PacketPayload {
      */
     public int readInt4() {
         return byteBuf.readInt();
+    }
+    
+    /**
+     * Read BLOB handle from byte buffers.
+     *
+     * <p>A Firebird BLOB handle may arrive either as {@code 0xFFFF} or sign-extended as {@code 0xFFFFFFFF}
+     * (the INVALID_OBJECT placeholder), so the low 16 bits are masked to normalize it into the range 0-65535.</p>
+     *
+     * @return BLOB handle in range 0-65535
+     */
+    public int readBlobHandle() {
+        return byteBuf.readInt() & 0xFFFF;
     }
     
     /**

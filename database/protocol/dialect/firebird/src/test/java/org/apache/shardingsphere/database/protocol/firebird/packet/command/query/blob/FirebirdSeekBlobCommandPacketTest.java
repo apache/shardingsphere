@@ -33,13 +33,15 @@ class FirebirdSeekBlobCommandPacketTest {
     @Test
     void assertSeekBlobPacket() {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        when(payload.readInt4()).thenReturn(21, 2, 128);
+        when(payload.readBlobHandle()).thenReturn(42);
+        when(payload.readInt4()).thenReturn(1, 100);
         FirebirdSeekBlobCommandPacket packet = new FirebirdSeekBlobCommandPacket(payload);
+        assertThat(packet.getBlobHandle(), is(42));
+        assertThat(packet.getSeekMode(), is(1));
+        assertThat(packet.getOffset(), is(100));
         verify(payload).skipReserved(4);
-        verify(payload, times(3)).readInt4();
-        assertThat(packet.getBlobHandle(), is(21));
-        assertThat(packet.getSeekMode(), is(2));
-        assertThat(packet.getOffset(), is(128));
+        verify(payload).readBlobHandle();
+        verify(payload, times(2)).readInt4();
         packet.write(payload);
         verifyNoMoreInteractions(payload);
     }

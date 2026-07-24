@@ -31,7 +31,7 @@ public final class FirebirdCancelBlobCommandPacket extends FirebirdCommandPacket
     
     public FirebirdCancelBlobCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        blobHandle = payload.readInt4();
+        blobHandle = payload.readBlobHandle();
     }
     
     @Override
@@ -44,7 +44,6 @@ public final class FirebirdCancelBlobCommandPacket extends FirebirdCommandPacket
      * @return length of packet
      */
     public static int getLength() {
-        // 4 reserved + blobHandle(4)
         return 8;
     }
 }

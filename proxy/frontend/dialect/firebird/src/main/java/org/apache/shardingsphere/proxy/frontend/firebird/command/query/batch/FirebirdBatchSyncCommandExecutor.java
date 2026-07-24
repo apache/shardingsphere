@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.metadata;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-@Getter
-@RequiredArgsConstructor
-public final class FirebirdBlobColumnMetaData {
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+
+public class FirebirdBatchSyncCommandExecutor implements CommandExecutor {
     
-    private final boolean blobColumn;
-    
-    private final Integer blobSubtype;
+    @Override
+    public Collection<DatabasePacket> execute() throws SQLException {
+        return Collections.singleton(new FirebirdGenericResponsePacket());
+    }
 }

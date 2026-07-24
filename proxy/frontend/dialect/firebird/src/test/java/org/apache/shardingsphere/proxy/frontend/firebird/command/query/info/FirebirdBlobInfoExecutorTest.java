@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,10 +40,13 @@ class FirebirdBlobInfoExecutorTest {
     @Mock
     private FirebirdInfoPacket packet;
     
+    @Mock
+    private ConnectionSession connectionSession;
+    
     @Test
     void assertExecute() {
         when(packet.getInfoItems()).thenReturn(Collections.emptyList());
-        FirebirdBlobInfoExecutor executor = new FirebirdBlobInfoExecutor(packet);
+        FirebirdBlobInfoExecutor executor = new FirebirdBlobInfoExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         FirebirdGenericResponsePacket actualResponsePacket = (FirebirdGenericResponsePacket) actual.iterator().next();

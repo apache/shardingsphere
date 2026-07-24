@@ -47,8 +47,10 @@ import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.v
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
@@ -76,7 +78,9 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         FirebirdTransactionIdGenerator.getInstance().registerConnection(connectionId);
         FirebirdStatementIdGenerator.getInstance().registerConnection(connectionId);
         FirebirdBlobIdGenerator.getInstance().registerConnection(connectionId);
-        FirebirdBlobUploadCache.getInstance().registerConnection(connectionId);
+        FirebirdBlobHandleGenerator.getInstance().registerConnection(connectionId);
+        FirebirdBlobWriteCache.getInstance().registerConnection(connectionId);
+        FirebirdBlobReadCache.getInstance().registerConnection(connectionId);
         FirebirdFetchStatementCache.getInstance().registerConnection(connectionId);
         FirebirdBatchRegistry.getInstance().registerConnection(connectionId);
         return connectionId;

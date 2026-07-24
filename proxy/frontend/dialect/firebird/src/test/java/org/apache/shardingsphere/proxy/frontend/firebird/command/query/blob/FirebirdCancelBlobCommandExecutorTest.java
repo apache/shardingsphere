@@ -21,8 +21,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdCancelBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,28 +53,28 @@ class FirebirdCancelBlobCommandExecutorTest {
     @BeforeEach
     void setup() {
         FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdBlobUploadCache.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
     }
     
     @AfterEach
     void tearDown() {
         FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
-        FirebirdBlobUploadCache.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
     void assertExecute() {
         int blobHandle = 5;
         long blobId = 9L;
-        FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         FirebirdCancelBlobCommandExecutor executor = new FirebirdCancelBlobCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
-        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
-        assertFalse(FirebirdBlobUploadCache.getInstance().getBlobId(CONNECTION_ID, blobHandle).isPresent());
+        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(0));
+        assertFalse(FirebirdBlobWriteCache.getInstance().getBlobId(CONNECTION_ID, blobHandle).isPresent());
     }
 }
