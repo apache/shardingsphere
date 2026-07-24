@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.enums.EncryptDerivedColumnSuffix;
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptLiteralAssignmentToken;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptOpenQuerySQLToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptParameterAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,10 +52,11 @@ import java.util.Optional;
 /**
  * Assignment generator for encrypt.
  */
-@Slf4j
 @HighFrequencyInvocation
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class EncryptAssignmentTokenGenerator {
+    
+    private static final String UNSUPPORTED_ASSIGNMENT_EXPRESSION = "OPENQUERY with unsupported assignment expression";
     
     private final EncryptRule rule;
     
@@ -69,53 +72,129 @@ public final class EncryptAssignmentTokenGenerator {
      * @return generated SQL tokens
      */
     public Collection<SQLToken> generateSQLTokens(final TablesContext tablesContext, final SetAssignmentSegment setAssignmentSegment) {
+        return generateNormalUpdateTokens(tablesContext, setAssignmentSegment);
+    }
+    
+    /**
+     * Generate SQL tokens.
+     *
+     * @param tablesContext SQL statement context
+     * @param setAssignmentSegment set assignment segment
+     * @param openQueryTable OPENQUERY function table segment
+     * @return generated SQL tokens
+     */
+    Collection<SQLToken> generateSQLTokens(final TablesContext tablesContext, final SetAssignmentSegment setAssignmentSegment, final TableSegment openQueryTable) {
+        return generateOpenQueryUpdateTokens(tablesContext, setAssignmentSegment, openQueryTable);
+    }
+    
+    private Collection<SQLToken> generateNormalUpdateTokens(final TablesContext tablesContext, final SetAssignmentSegment setAssignmentSegment) {
         Collection<SQLToken> result = new LinkedList<>();
-        DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
-        String schemaName = tablesContext.getSchemaName().orElseGet(() -> databaseTypeRegistry.getDefaultSchemaName(database.getName()));
-        QuoteCharacter quoteCharacter = databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter();
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
             ColumnSegment assignedColumn = getAssignedColumn(each);
-            findEncryptTable(assignedColumn).ifPresent(encryptTable -> {
-                String columnName = assignedColumn.getIdentifier().getValue();
-                if (encryptTable.isEncryptColumn(columnName)) {
-                    result.addAll(generateAssignmentSQLTokens(schemaName, encryptTable.getTable(), encryptTable.getEncryptColumn(columnName), each, quoteCharacter));
-                }
-            });
+            String columnName = assignedColumn.getIdentifier().getValue();
+            Optional<EncryptTable> encryptTable = rule.findEncryptTable(assignedColumn.getColumnBoundInfo().getOriginalTable().getValue());
+            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName)) {
+                continue;
+            }
+            EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
+            appendNormalAssignmentTokens(result, tablesContext, each, encryptTable.get(), encryptColumn);
         }
         return result;
     }
     
+    private Collection<SQLToken> generateOpenQueryUpdateTokens(final TablesContext tablesContext, final SetAssignmentSegment setAssignmentSegment, final TableSegment openQueryTable) {
+        Optional<EncryptTable> encryptTable = findOpenQueryEncryptTable(openQueryTable);
+        if (!encryptTable.isPresent()) {
+            return Collections.emptyList();
+        }
+        EncryptTable table = encryptTable.get();
+        Collection<SQLToken> result = new LinkedList<>();
+        boolean hasEncryptAssignment = false;
+        for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
+            String columnName = getAssignedColumn(each).getIdentifier().getValue();
+            if (!table.isEncryptColumn(columnName)) {
+                continue;
+            }
+            appendOpenQueryAssignmentTokens(result, tablesContext, openQueryTable, each, table, table.getEncryptColumn(columnName));
+            hasEncryptAssignment = true;
+        }
+        if (hasEncryptAssignment) {
+            appendComposedOpenQuerySQLToken(result, openQueryTable, table.getEncryptColumns());
+        }
+        return result;
+    }
+    
+    private void appendComposedOpenQuerySQLToken(final Collection<SQLToken> result, final TableSegment openQueryTable, final Collection<EncryptColumn> encryptColumns) {
+        Optional<LiteralExpressionSegment> openQuerySQL = EncryptOpenQueryUtils.findOpenQuerySQLLiteral(openQueryTable);
+        if (!openQuerySQL.isPresent()) {
+            return;
+        }
+        result.add(generateOpenQuerySQLToken(openQuerySQL.get(), encryptColumns));
+    }
+    
+    private void appendNormalAssignmentTokens(final Collection<SQLToken> result, final TablesContext tablesContext,
+                                              final ColumnAssignmentSegment assignmentSegment, final EncryptTable encryptTable, final EncryptColumn encryptColumn) {
+        DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
+        String schemaName = tablesContext.getSchemaName().orElseGet(() -> databaseTypeRegistry.getDefaultSchemaName(database.getName()));
+        QuoteCharacter quoteCharacter = databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter();
+        result.addAll(generateAssignmentSQLTokens(schemaName, encryptTable.getTable(), encryptColumn, assignmentSegment, quoteCharacter, false));
+    }
+    
+    private void appendOpenQueryAssignmentTokens(final Collection<SQLToken> result, final TablesContext tablesContext, final TableSegment openQueryTable,
+                                                 final ColumnAssignmentSegment assignmentSegment, final EncryptTable encryptTable, final EncryptColumn encryptColumn) {
+        DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
+        String schemaName = EncryptOpenQueryUtils.findSchemaName(openQueryTable)
+                .orElseGet(() -> tablesContext.getSchemaName().orElseGet(() -> databaseTypeRegistry.getDefaultSchemaName(database.getName())));
+        QuoteCharacter quoteCharacter = databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter();
+        Collection<SQLToken> assignmentTokens = generateAssignmentSQLTokens(schemaName, encryptTable.getTable(), encryptColumn, assignmentSegment, quoteCharacter, true);
+        if (assignmentTokens.isEmpty()) {
+            throw new UnsupportedEncryptSQLException(UNSUPPORTED_ASSIGNMENT_EXPRESSION);
+        }
+        result.addAll(assignmentTokens);
+    }
+    
+    private Optional<EncryptTable> findOpenQueryEncryptTable(final TableSegment openQueryTable) {
+        return EncryptOpenQueryUtils.findEncryptTable(rule, openQueryTable);
+    }
+    
+    private EncryptOpenQuerySQLToken generateOpenQuerySQLToken(final LiteralExpressionSegment openQuerySQL, final Collection<EncryptColumn> encryptColumns) {
+        String rewrittenSQL = EncryptOpenQueryPassThroughSQL.parse(openQuerySQL.getText()).rewrite(encryptColumns);
+        return new EncryptOpenQuerySQLToken(openQuerySQL.getStartIndex(), openQuerySQL.getStopIndex(), rewrittenSQL);
+    }
+    
     private Collection<SQLToken> generateAssignmentSQLTokens(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
-                                                             final ColumnAssignmentSegment segment, final QuoteCharacter quoteCharacter) {
+                                                             final ColumnAssignmentSegment segment, final QuoteCharacter quoteCharacter, final boolean useActualColumnName) {
         ExpressionSegment value = segment.getValue();
         if (value instanceof ParameterMarkerExpressionSegment) {
-            return Collections.singleton(generateParameterSQLToken(encryptColumn, segment, quoteCharacter));
+            return Collections.singleton(generateParameterSQLToken(encryptColumn, segment, quoteCharacter, useActualColumnName));
         }
         if (value instanceof LiteralExpressionSegment) {
-            return Collections.singleton(generateLiteralSQLToken(schemaName, tableName, encryptColumn, segment, quoteCharacter));
+            return Collections.singleton(generateLiteralSQLToken(schemaName, tableName, encryptColumn, segment, quoteCharacter, useActualColumnName));
         }
         return Collections.emptyList();
     }
     
-    private EncryptAssignmentToken generateParameterSQLToken(final EncryptColumn encryptColumn, final ColumnAssignmentSegment segment, final QuoteCharacter quoteCharacter) {
+    private EncryptAssignmentToken generateParameterSQLToken(final EncryptColumn encryptColumn, final ColumnAssignmentSegment segment, final QuoteCharacter quoteCharacter,
+                                                             final boolean useActualColumnName) {
         ColumnSegment leftColumn = getAssignedColumn(segment);
         EncryptParameterAssignmentToken result = new EncryptParameterAssignmentToken(leftColumn.getStartIndex(), segment.getStopIndex(), quoteCharacter);
-        appendEncryptColumnTokens(leftColumn, encryptColumn, (targetName, suffix) -> result.addColumnName(targetName));
+        appendEncryptColumnTokens(leftColumn, encryptColumn, useActualColumnName, (targetName, suffix) -> result.addColumnName(targetName));
         return result;
     }
     
-    private String getColumnName(final ColumnSegment columnSegment, final EncryptDerivedColumnSuffix derivedColumnSuffix, final String actualColumnName) {
-        return TableSourceType.TEMPORARY_TABLE == columnSegment.getColumnBoundInfo().getTableSourceType()
+    private String getColumnName(final ColumnSegment columnSegment, final EncryptDerivedColumnSuffix derivedColumnSuffix, final String actualColumnName, final boolean useActualColumnName) {
+        return !useActualColumnName && TableSourceType.TEMPORARY_TABLE == columnSegment.getColumnBoundInfo().getTableSourceType()
                 ? derivedColumnSuffix.getDerivedColumnName(columnSegment.getIdentifier().getValue(), databaseType)
                 : actualColumnName;
     }
     
     private EncryptAssignmentToken generateLiteralSQLToken(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final ColumnAssignmentSegment segment,
-                                                           final QuoteCharacter quoteCharacter) {
+                                                           final QuoteCharacter quoteCharacter, final boolean useActualColumnName) {
         ColumnSegment leftColumn = getAssignedColumn(segment);
         EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(leftColumn.getStartIndex(), segment.getStopIndex(), quoteCharacter);
         Object literalValue = ((LiteralExpressionSegment) segment.getValue()).getLiterals();
-        appendEncryptColumnTokens(leftColumn, encryptColumn, (targetName, suffix) -> addLiteralSQLToken(schemaName, tableName, encryptColumn, targetName, suffix, result, literalValue));
+        appendEncryptColumnTokens(leftColumn, encryptColumn, useActualColumnName,
+                (targetName, suffix) -> addLiteralSQLToken(schemaName, tableName, encryptColumn, targetName, suffix, result, literalValue));
         return result;
     }
     
@@ -144,16 +223,14 @@ public final class EncryptAssignmentTokenGenerator {
         }
     }
     
-    private Optional<EncryptTable> findEncryptTable(final ColumnSegment columnSegment) {
-        return rule.findEncryptTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
-    }
-    
-    private void appendEncryptColumnTokens(final ColumnSegment leftColumn, final EncryptColumn encryptColumn, final EncryptColumnConsumer consumer) {
-        consumer.accept(getColumnName(leftColumn, EncryptDerivedColumnSuffix.CIPHER, encryptColumn.getCipher().getName()), EncryptDerivedColumnSuffix.CIPHER);
+    private void appendEncryptColumnTokens(final ColumnSegment leftColumn, final EncryptColumn encryptColumn, final boolean useActualColumnName, final EncryptColumnConsumer consumer) {
+        consumer.accept(getColumnName(leftColumn, EncryptDerivedColumnSuffix.CIPHER, encryptColumn.getCipher().getName(), useActualColumnName), EncryptDerivedColumnSuffix.CIPHER);
         encryptColumn.getAssistedQuery()
-                .ifPresent(optional -> consumer.accept(getColumnName(leftColumn, EncryptDerivedColumnSuffix.ASSISTED_QUERY, optional.getName()), EncryptDerivedColumnSuffix.ASSISTED_QUERY));
+                .ifPresent(optional -> consumer.accept(getColumnName(leftColumn, EncryptDerivedColumnSuffix.ASSISTED_QUERY, optional.getName(), useActualColumnName),
+                        EncryptDerivedColumnSuffix.ASSISTED_QUERY));
         encryptColumn.getLikeQuery()
-                .ifPresent(optional -> consumer.accept(getColumnName(leftColumn, EncryptDerivedColumnSuffix.LIKE_QUERY, optional.getName()), EncryptDerivedColumnSuffix.LIKE_QUERY));
+                .ifPresent(optional -> consumer.accept(getColumnName(leftColumn, EncryptDerivedColumnSuffix.LIKE_QUERY, optional.getName(), useActualColumnName),
+                        EncryptDerivedColumnSuffix.LIKE_QUERY));
     }
     
     private ColumnSegment getAssignedColumn(final ColumnAssignmentSegment assignmentSegment) {

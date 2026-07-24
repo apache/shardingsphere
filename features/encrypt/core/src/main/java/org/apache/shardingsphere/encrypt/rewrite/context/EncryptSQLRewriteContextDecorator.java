@@ -22,12 +22,14 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewritersRegistry;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment.EncryptOpenQueryUtils;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -37,6 +39,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builde
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -75,7 +78,16 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
                 return true;
             }
         }
-        return false;
+        return containsOpenQueryEncryptTable(rule, sqlStatementContext);
+    }
+    
+    private boolean containsOpenQueryEncryptTable(final EncryptRule rule, final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext instanceof UpdateStatementContext)) {
+            return false;
+        }
+        UpdateStatement updateStatement = ((UpdateStatementContext) sqlStatementContext).getSqlStatement();
+        return EncryptOpenQueryUtils.isOpenQueryFunctionTable(updateStatement.getTable())
+                && EncryptOpenQueryUtils.findEncryptTable(rule, updateStatement.getTable()).isPresent();
     }
     
     private Collection<EncryptCondition> createEncryptConditions(final EncryptRule rule, final SQLStatementContext sqlStatementContext) {
