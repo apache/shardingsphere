@@ -41,6 +41,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.AfterEach;
@@ -140,7 +141,7 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanRejectsAddingColumnToExistingTableRule() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
-        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
+        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(WorkflowQueryResult.confirmed(List.of()));
         WorkflowRequest request = createRequest("create");
         request.setColumn("amount");
         request.getPrimaryAlgorithmProperties().put("from-x", "1");
@@ -200,7 +201,7 @@ class MaskWorkflowPlanningServiceTest {
                                                 final String expectedStatus) {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("column", "phone")) : List.of());
-        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MASK_FROM_X_TO_Y")));
+        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "MASK_FROM_X_TO_Y"))));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, new MaskAlgorithmRecommendationService(), new MaskAlgorithmPropertyTemplateService(),
                 new MaskRuleDistSQLPlanningService()).plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(),
                         createNaturalLanguageRequest(naturalLanguageIntent));
@@ -216,7 +217,7 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanStopsOnBlockingAlgorithmIssue() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
+        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(WorkflowQueryResult.confirmed(List.of()));
         MaskAlgorithmRecommendationService algorithmRecommendationService = mock(MaskAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendMaskAlgorithms(any(), any(), any(), any())).thenAnswer(invocation -> {
             List<WorkflowIssue> issues = invocation.getArgument(3);

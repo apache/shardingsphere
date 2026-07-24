@@ -53,9 +53,6 @@ public final class MCPToolDescriptorCatalogValidator {
     
     private static final Collection<String> SECRET_WORKFLOW_OUTPUT_FIELDS = List.of("masked_property_preview", "secret_reference_summary");
     
-    private static final Collection<String> SUPPORTED_SIDE_EFFECT_SCOPES = Set.of(
-            "physical-data", "physical-structure", "privilege-metadata", "rule-metadata", "transaction-state");
-    
     /**
      * Validate tool descriptors in one descriptor catalog.
      *
@@ -77,7 +74,7 @@ public final class MCPToolDescriptorCatalogValidator {
             MCPToolInputSchemaValidator.validate(each);
             MCPToolOutputSchemaValidator.validate(each);
             validateToolDescriptorContract(each, runtimes.get(each.getName()));
-            validateDestructiveToolDescriptor(each, runtimes.get(each.getName()));
+            validateDestructiveToolDescriptor(each);
             validateNonDestructiveExecutionMode(each);
             validateRelatedResourceUris(each, resourceIdentifiers, shardingSphereResourceIdentifiers);
         }
@@ -88,10 +85,6 @@ public final class MCPToolDescriptorCatalogValidator {
         for (MCPToolRuntimeDescriptor each : runtimeDescriptors) {
             ShardingSpherePreconditions.checkState(each.getWorkflowRole().isBlank() || "plan".equals(each.getWorkflowRole()),
                     () -> new IllegalStateException(String.format("Tool `%s` runtime workflowRole `%s` is unsupported.", each.getToolName(), each.getWorkflowRole())));
-            for (String eachScope : each.getSideEffectScope()) {
-                ShardingSpherePreconditions.checkState(SUPPORTED_SIDE_EFFECT_SCOPES.contains(eachScope),
-                        () -> new IllegalStateException(String.format("Tool `%s` runtime sideEffectScope `%s` is unsupported.", each.getToolName(), eachScope)));
-            }
         }
     }
     
@@ -293,7 +286,7 @@ public final class MCPToolDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Planning tool `%s` annotations.idempotentHint must be false.", descriptor.getName())));
     }
     
-    private static void validateDestructiveToolDescriptor(final MCPToolDescriptor descriptor, final MCPToolRuntimeDescriptor runtimeDescriptor) {
+    private static void validateDestructiveToolDescriptor(final MCPToolDescriptor descriptor) {
         if (!descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
@@ -306,8 +299,6 @@ public final class MCPToolDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must allow preview.", descriptor.getName())));
         ShardingSpherePreconditions.checkState(!executionModes.contains("auto-execute"),
                 () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
-        ShardingSpherePreconditions.checkState(null != runtimeDescriptor && !runtimeDescriptor.getSideEffectScope().isEmpty(),
-                () -> new IllegalStateException(String.format("Destructive tool `%s` must declare sideEffectScope in internal runtime.", descriptor.getName())));
     }
     
     private static void validateNonDestructiveExecutionMode(final MCPToolDescriptor descriptor) {

@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -96,7 +97,7 @@ public final class SecretReferenceValue {
     }
     
     private static String normalizeForManualPlaceholder(final String value) {
-        String result = normalize(value).toUpperCase().replaceAll("[^A-Z0-9]+", "_");
+        String result = normalize(value).toUpperCase(Locale.ENGLISH).replaceAll("[^A-Z0-9]+", "_");
         return result.isEmpty() ? "VALUE" : result;
     }
 }

@@ -59,6 +59,16 @@ class MCPDescriptorCatalogIndexTest {
     }
     
     @Test
+    void assertResolveResourceKind() {
+        assertThat(MCPDescriptorCatalogIndex.resolveResourceKind("shardingsphere://workflows/plan-1"), is("workflow-plan"));
+    }
+    
+    @Test
+    void assertResolveUnknownResourceKind() {
+        assertThat(MCPDescriptorCatalogIndex.resolveResourceKind("shardingsphere://unknown"), is("resource"));
+    }
+    
+    @Test
     void assertGetToolDescriptors() {
         Collection<MCPToolDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getToolDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "database_gateway_apply_workflow".equals(each.getName())));
@@ -85,12 +95,6 @@ class MCPDescriptorCatalogIndexTest {
     void assertGetRequiredPromptTemplateBinding() {
         MCPPromptTemplateBinding actual = MCPDescriptorCatalogIndex.getRequiredPromptTemplateBinding("inspect_metadata");
         assertThat(actual.getTemplateResource(), is("META-INF/shardingsphere-mcp/prompts/inspect-metadata.md"));
-    }
-    
-    @Test
-    void assertFindToolRuntimeDescriptor() {
-        assertTrue(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("database_gateway_apply_workflow")
-                .filter(optional -> optional.getWorkflowRole().isEmpty() && optional.getSideEffectScope().contains("rule-metadata")).isPresent());
     }
     
     @Test

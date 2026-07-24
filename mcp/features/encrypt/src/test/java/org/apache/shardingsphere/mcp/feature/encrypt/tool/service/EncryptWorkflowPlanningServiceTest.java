@@ -41,6 +41,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -155,7 +156,7 @@ class EncryptWorkflowPlanningServiceTest {
                                                 final String expectedOperationType, final String expectedFieldSemantics, final String expectedStatus) {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("logic_column", "phone")) : List.of());
-        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(Map.of("type", "AES", "supports_like", false)));
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "AES", "supports_like", false))));
         EncryptWorkflowRequest request = createNaturalLanguageRequest(naturalLanguageIntent);
         request.getOptions().setCipherColumnName("phone_cipher");
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
@@ -173,7 +174,7 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanStopsOnBlockingAlgorithmIssue() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(WorkflowQueryResult.confirmed(List.of()));
         EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any())).thenAnswer(invocation -> {
             List<WorkflowIssue> issues = invocation.getArgument(2);
@@ -213,9 +214,9 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanDoesNotApplyLikeQueryCandidateWithoutExplicitInput() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(WorkflowQueryResult.confirmed(List.of(
                 Map.of("type", "AES", "supports_like", false),
-                Map.of("type", "FPE", "supports_like", true)));
+                Map.of("type", "FPE", "supports_like", true))));
         EncryptAlgorithmPropertyTemplateService propertyTemplateService = mock(EncryptAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements(any(), any(), any())).thenReturn(List.of());
         EncryptWorkflowRequest request = createRequest("create");

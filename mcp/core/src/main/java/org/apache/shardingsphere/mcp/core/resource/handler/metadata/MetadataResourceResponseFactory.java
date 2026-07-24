@@ -276,10 +276,8 @@ public final class MetadataResourceResponseFactory {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         String uriTemplate = descriptor.getUriTemplate();
         Optional<String> selfUri = new MCPUriTemplate(uriTemplate).expandIfComplete(uriVariables);
-        selfUri.ifPresent(uri -> {
-            result.put(MCPPayloadFieldNames.SELF_RESOURCE,
-                    MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_self", "Read this metadata resource.", MCPPayloadFieldNames.SELF_RESOURCE));
-        });
+        selfUri.ifPresent(uri -> result.put(MCPPayloadFieldNames.SELF_RESOURCE,
+                MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_self", "Read this metadata resource.", MCPPayloadFieldNames.SELF_RESOURCE)));
         String parentUri = createParentUri(selfUri.orElse(""));
         if (!parentUri.isEmpty()) {
             result.put(MCPPayloadFieldNames.PARENT_RESOURCE, MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",

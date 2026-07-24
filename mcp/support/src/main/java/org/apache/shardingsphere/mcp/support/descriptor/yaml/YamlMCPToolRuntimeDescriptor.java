@@ -20,9 +20,6 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 /**
  * YAML MCP tool runtime descriptor.
  */
@@ -31,6 +28,4 @@ import java.util.LinkedList;
 public final class YamlMCPToolRuntimeDescriptor {
     
     private String workflowRole;
-    
-    private Collection<String> sideEffectScope = new LinkedList<>();
 }

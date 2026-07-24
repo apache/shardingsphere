@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
+import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -61,8 +62,18 @@ class ShadowDescriptorContractTest {
         assertThat(((Map<String, Object>) structuredIntentProperties.get("algorithm_type")).get("enum"), is(List.of("SQL_HINT")));
     }
     
+    @Test
+    void assertAlgorithmResourceScope() {
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        assertThat(findResourceMetadata(catalog, "shardingsphere://features/shadow/databases/{database}/algorithms").getObjectScope(), is("algorithm"));
+    }
+    
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getProtocolDescriptors().getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private ShardingSphereMCPResourceMetadata findResourceMetadata(final MCPDescriptorCatalog catalog, final String uriTemplate) {
+        return catalog.getShardingSphereDescriptors().getResourceMetadata().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
     }
     
     private void assertCompletionTargetArguments(final MCPDescriptorCatalog catalog, final String promptName, final String... expectedArguments) {

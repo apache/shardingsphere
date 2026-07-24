@@ -39,6 +39,7 @@ import java.sql.Statement;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -108,7 +109,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
         while (resultSet.next()) {
             Map<String, Object> row = new LinkedHashMap<>(resultSetMetaData.getColumnCount(), 1F);
             for (int index = 1; index <= resultSetMetaData.getColumnCount(); index++) {
-                row.put(resultSetMetaData.getColumnLabel(index).toLowerCase(), resultSet.getObject(index));
+                row.put(resultSetMetaData.getColumnLabel(index).toLowerCase(Locale.ENGLISH), resultSet.getObject(index));
             }
             result.add(row);
         }

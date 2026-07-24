@@ -88,7 +88,7 @@ public final class WorkflowContextSnapshot {
         result.setWorkflowKind(workflowKind);
         result.setSessionId(sessionId);
         result.setStatus(status);
-        result.setUpdateTime(copyInstant(updateTime));
+        result.setUpdateTime(updateTime);
         result.setRequest(null == request ? null : request.copy());
         result.setClarifiedIntent(copyClarifiedIntent(clarifiedIntent));
         result.setFeatureData(null == featureData ? null : featureData.copy());
@@ -100,10 +100,6 @@ public final class WorkflowContextSnapshot {
         result.getRuleArtifacts().addAll(ruleArtifacts);
         result.setValidationReport(copyValidationReport(validationReport));
         return result;
-    }
-    
-    private static Instant copyInstant(final Instant original) {
-        return null == original ? null : Instant.ofEpochMilli(original.toEpochMilli());
     }
     
     private static ClarifiedIntent copyClarifiedIntent(final ClarifiedIntent original) {
