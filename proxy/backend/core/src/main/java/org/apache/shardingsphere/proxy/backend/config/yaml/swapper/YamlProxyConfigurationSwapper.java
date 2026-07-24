@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -80,9 +81,17 @@ public final class YamlProxyConfigurationSwapper {
     private Map<String, DatabaseConfiguration> swapDatabaseConfigurations(final Map<String, YamlProxyDatabaseConfiguration> databaseConfigs, final boolean isInstanceConnectionEnabled) {
         Map<String, DatabaseConfiguration> result = new LinkedHashMap<>(databaseConfigs.size(), 1F);
         for (Entry<String, YamlProxyDatabaseConfiguration> entry : databaseConfigs.entrySet()) {
-            Map<String, DataSourceConfiguration> databaseDataSourceConfigs = swapDataSourceConfigurations(entry.getValue().getDataSources());
+            Map<String, StorageUnitConfiguration> storageUnitConfigs = swapStorageUnitConfigurations(entry.getValue().getDataSources());
             Collection<RuleConfiguration> databaseRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
-            result.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(databaseDataSourceConfigs, databaseRuleConfigs, isInstanceConnectionEnabled));
+            result.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(storageUnitConfigs, databaseRuleConfigs, isInstanceConnectionEnabled));
+        }
+        return result;
+    }
+    
+    private Map<String, StorageUnitConfiguration> swapStorageUnitConfigurations(final Map<String, YamlProxyDataSourceConfiguration> yamlConfigs) {
+        Map<String, StorageUnitConfiguration> result = new LinkedHashMap<>(yamlConfigs.size(), 1F);
+        for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlConfigs.entrySet()) {
+            result.put(entry.getKey(), dataSourceConfigSwapper.swapToStorageUnitConfiguration(entry.getValue()));
         }
         return result;
     }

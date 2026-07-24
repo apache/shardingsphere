@@ -19,10 +19,9 @@ package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -48,15 +47,18 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     private final Map<StorageNode, DataSource> dataSources;
     
-    public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs,
+    private final Map<String, StorageUnitConfiguration> storageUnitConfigurations;
+    
+    public DataSourceGeneratedDatabaseConfiguration(final Map<String, StorageUnitConfiguration> storageUnitConfigs, final Collection<RuleConfiguration> ruleConfigs,
                                                     final boolean isInstanceConnectionEnabled) {
         ruleConfigurations = ruleConfigs;
-        Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = dataSourceConfigs.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = storageUnitConfigs.entrySet().stream().collect(Collectors.toMap(
+                Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropertiesMap, isInstanceConnectionEnabled);
         Map<StorageNode, DataSource> storageNodeDataSources = createStorageNodeDataSourceMap(dataSourcePoolPropertiesMap, storageUnitNodeMap);
         storageUnits = createStorageUnits(dataSourcePoolPropertiesMap, storageUnitNodeMap, storageNodeDataSources);
         dataSources = storageNodeDataSources;
+        storageUnitConfigurations = storageUnitConfigs;
     }
     
     private Map<StorageNode, DataSource> createStorageNodeDataSourceMap(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {

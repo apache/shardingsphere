@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.resource;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -83,6 +84,16 @@ public final class YamlDataSourceConfigurationSwapper {
         return new DataSourcePoolProperties(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString(), getProperties(yamlConfig));
     }
     
+    /**
+     * Swap to storage unit configuration.
+     *
+     * @param yamlConfig YAML configuration
+     * @return storage unit configuration
+     */
+    public StorageUnitConfiguration swapToStorageUnitConfiguration(final Map<String, Object> yamlConfig) {
+        return new StorageUnitConfiguration(swapToDataSourcePoolProperties(yamlConfig));
+    }
+    
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Map<String, Object> getProperties(final Map<String, Object> yamlConfig) {
         Map<String, Object> result = new HashMap<>(yamlConfig);
@@ -106,5 +117,15 @@ public final class YamlDataSourceConfigurationSwapper {
         Map<String, Object> result = new HashMap<>(props.getAllStandardProperties());
         result.put(DATA_SOURCE_CLASS_NAME_KEY, props.getPoolClassName());
         return result;
+    }
+    
+    /**
+     * Swap to map from storage unit configuration.
+     *
+     * @param storageUnitConfig storage unit configuration
+     * @return data source map
+     */
+    public Map<String, Object> swapToMap(final StorageUnitConfiguration storageUnitConfig) {
+        return swapToMap(storageUnitConfig.getDataSourcePoolProperties());
     }
 }

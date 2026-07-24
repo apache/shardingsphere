@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
@@ -61,5 +62,14 @@ class YamlProxyDataSourceConfigurationSwapperTest {
         assertThat(actualPool.getMaxPoolSize(), is(5));
         assertThat(actualPool.getMinPoolSize(), is(4));
         assertTrue(actualPool.getReadOnly());
+    }
+    
+    @Test
+    void assertSwapToStorageUnitConfiguration() throws IOException {
+        YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
+        YamlProxyDataSourceConfiguration yamlConfig = yamlProxyConfig.getDatabaseConfigurations().get("swapper_test").getDataSources().get("foo_db");
+        StorageUnitConfiguration actual = new YamlProxyDataSourceConfigurationSwapper().swapToStorageUnitConfiguration(yamlConfig);
+        assertThat(actual.getDataSourcePoolProperties().getAllStandardProperties().get("url"), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
+        assertThat(actual.getDataSourcePoolProperties().getAllStandardProperties().get("maxPoolSize"), is(5));
     }
 }

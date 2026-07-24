@@ -42,6 +42,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
                 Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
         assertRuleConfigurations(actual);
         assertStorageUnits(actual.getStorageUnits().get("foo_ds"));
+        assertThat(actual.getStorageUnitConfigurations().get("foo_ds").getDataSourcePoolProperties(), is(actual.getStorageUnits().get("foo_ds").getDataSourcePoolProperties()));
         assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_ds")));
     }
     

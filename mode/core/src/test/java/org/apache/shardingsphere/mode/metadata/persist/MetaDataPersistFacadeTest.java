@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mode.metadata.persist;
 
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -106,34 +106,42 @@ class MetaDataPersistFacadeTest {
     @Test
     void assertPersistConfigurationsWithDatabaseRuleConfigurations() {
         DatabaseConfiguration databaseConfig = mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
-        when(databaseConfig.getStorageUnits()).thenReturn(Collections.emptyMap());
+        when(databaseConfig.getStorageUnitConfigurations()).thenReturn(Collections.emptyMap());
         when(databaseConfig.getRuleConfigurations().isEmpty()).thenReturn(false);
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         when(TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass())).thenReturn(Optional.of(mock(RuleConfigurationDecorator.class)));
         metaDataPersistFacade.persistConfigurations("foo_db", databaseConfig, Collections.emptyMap(), Collections.singleton(rule));
-        verify(dataSourceUnitService).persist("foo_db", Collections.emptyMap());
+        verify(dataSourceUnitService).persistStorageUnitConfigurations("foo_db", Collections.emptyMap());
         verify(databaseRuleService).persist(eq("foo_db"), any());
     }
     
     @Test
     void assertPersistConfigurationsWithDataSourcePoolProperties() {
         DatabaseConfiguration databaseConfig = mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
-        when(databaseConfig.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", mock(StorageUnit.class, RETURNS_DEEP_STUBS)));
+        when(databaseConfig.getStorageUnitConfigurations()).thenReturn(Collections.singletonMap("foo_ds", mock(StorageUnitConfiguration.class)));
         metaDataPersistFacade.persistConfigurations("foo_db", databaseConfig, Collections.emptyMap(), Collections.emptyList());
-        verify(dataSourceUnitService).persist(eq("foo_db"), any());
+        verify(dataSourceUnitService).persistStorageUnitConfigurations(eq("foo_db"), any());
         verify(databaseRuleService).persist("foo_db", Collections.emptyList());
     }
     
     @Test
     void assertLoadDataSourceConfigurations() {
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class);
-        when(dataSourceUnitService.load("foo_db")).thenReturn(Collections.singletonMap("foo_ds", dataSourcePoolProps));
+        when(dataSourceUnitService.loadStorageUnitConfigurations("foo_db"))
+                .thenReturn(Collections.singletonMap("foo_ds", new StorageUnitConfiguration(dataSourcePoolProps)));
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
         when(DataSourcePoolPropertiesCreator.createConfiguration(dataSourcePoolProps)).thenReturn(dataSourceConfig);
         Map<String, DataSourceConfiguration> actual = metaDataPersistFacade.loadDataSourceConfigurations("foo_db");
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo_ds"), is(dataSourceConfig));
+    }
+    
+    @Test
+    void assertLoadStorageUnitConfigurations() {
+        Map<String, StorageUnitConfiguration> expected = Collections.singletonMap("foo_ds", mock(StorageUnitConfiguration.class));
+        when(dataSourceUnitService.loadStorageUnitConfigurations("foo_db")).thenReturn(expected);
+        assertThat(metaDataPersistFacade.loadStorageUnitConfigurations("foo_db"), is(expected));
     }
 }

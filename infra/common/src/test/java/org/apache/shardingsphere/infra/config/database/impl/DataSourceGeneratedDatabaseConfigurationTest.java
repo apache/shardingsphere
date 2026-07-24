@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -91,8 +93,23 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     }
     
     private DataSourceGeneratedDatabaseConfiguration createDatabaseConfiguration(final String dataSourceClassName) {
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(new ConnectionConfiguration(dataSourceClassName, null, "jdbc:mock://127.0.0.1/foo_db", "root", ""),
+        StorageUnitConfiguration storageUnitConfig = new StorageUnitConfiguration(DataSourcePoolPropertiesCreator.create(createDataSourceConfiguration(dataSourceClassName)));
+        return new DataSourceGeneratedDatabaseConfiguration(Collections.singletonMap("foo_db", storageUnitConfig), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), true);
+    }
+    
+    private DataSourceConfiguration createDataSourceConfiguration(final String dataSourceClassName) {
+        return new DataSourceConfiguration(new ConnectionConfiguration(dataSourceClassName, null, "jdbc:mock://127.0.0.1/foo_db", "root", ""),
                 new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties()));
-        return new DataSourceGeneratedDatabaseConfiguration(Collections.singletonMap("foo_db", dataSourceConfig), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), true);
+    }
+    
+    @Test
+    void assertNewWithStorageUnitConfigurations() {
+        DataSourceConfiguration dataSourceConfig = createDataSourceConfiguration(MockedDataSource.class.getName());
+        StorageUnitConfiguration storageUnitConfig = new StorageUnitConfiguration(DataSourcePoolPropertiesCreator.create(dataSourceConfig));
+        DataSourceGeneratedDatabaseConfiguration actual = new DataSourceGeneratedDatabaseConfiguration(
+                Collections.singletonMap("foo_db", storageUnitConfig), Collections.singleton(new FixtureRuleConfiguration("foo_rule")), true);
+        assertThat(actual.getStorageUnitConfigurations().get("foo_db"), is(storageUnitConfig));
+        assertStorageUnits(actual.getStorageUnits().get("foo_db"));
+        assertDataSources((MockedDataSource) actual.getDataSources().get(new StorageNode("foo_db")));
     }
 }

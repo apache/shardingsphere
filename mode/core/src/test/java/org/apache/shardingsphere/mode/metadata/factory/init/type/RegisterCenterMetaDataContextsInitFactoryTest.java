@@ -96,7 +96,7 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
                 MockedConstruction<MetaDataPersistFacade> ignoredFacade = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
                         (mock, context) -> {
                             when(mock.getPropsService().load()).thenReturn(new Properties());
-                            when(mock.loadDataSourceConfigurations(anyString())).thenReturn(Collections.emptyMap());
+                            when(mock.loadStorageUnitConfigurations(anyString())).thenReturn(Collections.emptyMap());
                             when(mock.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames()).thenReturn(databaseNames);
                             when(mock.getStatisticsService().load(any())).thenReturn(new ShardingSphereStatistics());
                         });
@@ -105,6 +105,9 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
             assertThat(actual.getMetaData().getAllDatabases(), hasSize(2));
             assertThat(destroyerMocked.constructed(), hasSize(1));
             verify(destroyerMocked.constructed().get(0)).asyncDestroy();
+            verify(ignoredFacade.constructed().get(0)).loadStorageUnitConfigurations("with_units");
+            verify(ignoredFacade.constructed().get(0)).loadStorageUnitConfigurations("without_units");
+            verify(ignoredFacade.constructed().get(0)).loadStorageUnitConfigurations("missing_config");
         }
     }
     

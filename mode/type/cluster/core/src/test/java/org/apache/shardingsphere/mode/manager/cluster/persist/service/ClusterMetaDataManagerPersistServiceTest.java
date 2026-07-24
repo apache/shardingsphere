@@ -260,4 +260,14 @@ class ClusterMetaDataManagerPersistServiceTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(loadedDatabase), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(metaData, null));
     }
+    
+    @Test
+    void assertUnregisterNonExistentStorageUnit() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        when(metaDataPersistFacade.getDataSourceUnitService().load("foo_db")).thenReturn(Collections.emptyMap());
+        metaDataManagerPersistService.unregisterStorageUnits(database, Collections.singleton("foo_ds"));
+        verify(metaDataPersistFacade.getDataSourceUnitService()).load("foo_db");
+        verify(metaDataPersistFacade.getDataSourceUnitService(), never()).delete(any(), any());
+    }
 }

@@ -58,6 +58,7 @@ import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBoo
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -107,6 +108,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -151,7 +153,7 @@ class CDCJobAPITest {
         when(PipelineJobIdUtils.parseContextKey(anyString())).thenReturn(new PipelineContextKey("foo_db", InstanceType.PROXY));
         when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS));
         YamlDataSourceConfigurationSwapper dataSourceSwapper = mock(YamlDataSourceConfigurationSwapper.class);
-        when(dataSourceSwapper.swapToMap(any())).thenReturn(createStandardDataSourceProperties());
+        when(dataSourceSwapper.swapToMap(nullable(DataSourcePoolProperties.class))).thenReturn(createStandardDataSourceProperties());
         CDCJobAPI result = new CDCJobAPI();
         Plugins.getMemberAccessor().set(CDCJobAPI.class.getDeclaredField("dataSourceConfigSwapper"), result, dataSourceSwapper);
         Plugins.getMemberAccessor().set(CDCJobAPI.class.getDeclaredField("ruleConfigSwapperEngine"), result, mock(YamlRuleConfigurationSwapperEngine.class));

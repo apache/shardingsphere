@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,5 +99,38 @@ class DataSourceUnitPersistServiceTest {
     void assertDelete() {
         persistService.delete("foo_db", "foo_ds");
         verify(repository).delete("/metadata/foo_db/data_sources/units/foo_ds");
+    }
+    
+    @Test
+    void assertLoadStorageUnitConfigurations() {
+        when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units")).thenReturn(Collections.singletonList("foo_ds"));
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("10");
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/versions/10")).thenReturn("{dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource}");
+        Map<String, StorageUnitConfiguration> actual = persistService.loadStorageUnitConfigurations("foo_db");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("foo_ds").getDataSourcePoolProperties().getPoolClassName(), is("org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource"));
+    }
+    
+    @Test
+    void assertLoadStorageUnitConfigurationWhenActiveVersionIsEmpty() {
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("");
+        assertFalse(persistService.loadStorageUnitConfiguration("foo_db", "foo_ds").isPresent());
+    }
+    
+    @Test
+    void assertLoadStorageUnitConfigurationWhenContentIsEmpty() {
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("10");
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/versions/10")).thenReturn("");
+        assertFalse(persistService.loadStorageUnitConfiguration("foo_db", "foo_ds").isPresent());
+    }
+    
+    @Test
+    void assertPersistStorageUnitConfigurations() {
+        DataSourcePoolProperties props = new DataSourcePoolProperties("org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource", Collections.emptyMap());
+        Map<String, StorageUnitConfiguration> storageUnitConfigs = Collections.singletonMap("foo_ds", new StorageUnitConfiguration(props));
+        persistService.persistStorageUnitConfigurations("foo_db", storageUnitConfigs);
+        verify(repository).persist("/metadata/foo_db/data_sources/units/foo_ds/versions/0",
+                "dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource\n");
+        verify(repository).persist("/metadata/foo_db/data_sources/units/foo_ds/active_version", "0");
     }
 }
