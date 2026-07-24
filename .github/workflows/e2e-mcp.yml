@@ -234,7 +234,7 @@ jobs:
           mkdir -p "${results_root}"
           available_scenarios="$(
             node .mcp-conformance/dist/index.js list --server --spec-version 2025-11-25 \
-              | sed -nE 's/^ - ([^ ]+).*/\1/p'
+              | sed -nE 's/^[[:space:]]+- ([^ ]+).*/\1/p'
           )"
           scenario_count=0
           while IFS= read -r scenario; do
