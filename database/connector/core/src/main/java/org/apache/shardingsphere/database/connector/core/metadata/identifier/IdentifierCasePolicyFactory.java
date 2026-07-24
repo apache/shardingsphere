@@ -70,6 +70,26 @@ public final class IdentifierCasePolicyFactory {
     }
     
     /**
+     * Create case-preserving and case-insensitive policy set.
+     *
+     * @return case-preserving and case-insensitive policy set
+     */
+    public static IdentifierCasePolicySet newCasePreservingInsensitivePolicySet() {
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
+                UnaryOperator.identity(), UnaryOperator.identity(), IdentifierCasePolicyFactory::toLowerCase, each -> true));
+    }
+    
+    /**
+     * Create lower-case and case-insensitive policy set.
+     *
+     * @return lower-case and case-insensitive policy set
+     */
+    public static IdentifierCasePolicySet newLowerCaseInsensitivePolicySet() {
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
+                IdentifierCasePolicyFactory::toLowerCase, IdentifierCasePolicyFactory::toLowerCase, IdentifierCasePolicyFactory::toLowerCase, each -> true));
+    }
+    
+    /**
      * Create quoted and unquoted case-insensitive policy set.
      *
      * @return quoted and unquoted case-insensitive policy set
@@ -77,15 +97,6 @@ public final class IdentifierCasePolicyFactory {
     public static IdentifierCasePolicySet newQuotedInsensitivePolicySet() {
         return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED, UnaryOperator.identity(),
                 IdentifierCasePolicyFactory::toLowerCase, IdentifierCasePolicyFactory::toLowerCase, each -> true));
-    }
-    
-    /**
-     * Create MySQL case-insensitive policy set.
-     *
-     * @return MySQL case-insensitive policy set
-     */
-    public static IdentifierCasePolicySet newMySQLInsensitivePolicySet() {
-        return newQuotedInsensitivePolicySet();
     }
     
     private static String toLowerCase(final String value) {
