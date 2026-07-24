@@ -19,8 +19,31 @@ grammar PLSQL;
 
 import Keyword, BaseRule, DDLStatement, DMLStatement, TCLStatement;
 
+@parser::members {
+    private boolean isNotPlsqlBlockTerminator() {
+        switch (_input.LA(1)) {
+            case END:
+            case ELSE:
+            case ELSIF:
+            case EXCEPTION:
+            case WHEN:
+                return false;
+            default:
+                return true;
+        }
+    }
+}
+
 call
-    : CALL
+    : CALL (schemaName DOT_)? procedureName (LP_ (callArgument (COMMA_ callArgument)*)? RP_)? callIntoClause?
+    ;
+
+callArgument
+    : expression
+    ;
+
+callIntoClause
+    : INTO (placeholder | variableName)
     ;
 
 alterProcedure
@@ -75,17 +98,21 @@ returnDateType
     ;
 
 body
-    : BEGIN statement+ (EXCEPTION (exceptionHandler)+)? END (identifier)? SEMI_?
+    : BEGIN plsqlStatements (EXCEPTION (exceptionHandler)+)? END (identifier)? SEMI_?
     ;
 
-// TODO need add more statement type according to the doc
+plsqlStatements
+    : {isNotPlsqlBlockTerminator()}? statement ({isNotPlsqlBlockTerminator()}? statement)*
+    ;
+
 statement
-    : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_) *)?
+    : {isNotPlsqlBlockTerminator()}? (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_) *)?
         (assignStatement
         | basicLoopStatement
         | caseStatement
         | closeStatement
         | continueStatement
+        | collectionMethodStatement
         | cursorForLoopStatement
         | executeImmediateStatement
         | exitStatement
@@ -94,6 +121,7 @@ statement
         | forallStatement
         | gotoStatement
         | ifStatement
+        | inlinePragma
         | modifyingStatement
         | nullStatement
         | openStatement
@@ -114,20 +142,24 @@ assignStatement
     ;
 
 assignStatementTarget
-    : collectionVariable=name (LP_ INTEGER_ RP_)?
-    // TODO cursor_variable, out_parameter, scalar_variable
-    | name
-    | placeholder
+    : placeholder
     | hostCursorVariable
-    // TODO object.attribute, record_variable.field
-    | attributeName
+    | plsqlVariableTarget
+    ;
+
+plsqlVariableTarget
+    : name plsqlTargetSuffix*
+    ;
+
+plsqlTargetSuffix
+    : LP_ (expression (COMMA_ expression)*)? RP_
+    | DOT_ identifier
     ;
 
 placeholder
     : COLON_ hostVariable=name (DOT_ columnName)? (COLON_ indicatorVariable=name)?
     ;
 
-// TODO PL/SQL grammar more than expr
 expression
     : expr
     ;
@@ -138,7 +170,7 @@ booleanExpression
 
 basicLoopStatement
     : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)?
-    LOOP statement+ END LOOP label? SEMI_
+    LOOP plsqlStatements END LOOP label? SEMI_
     ;
 
 caseStatement
@@ -148,16 +180,16 @@ caseStatement
 simpleCaseStatement
     : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)?
     CASE selector=expression
-    (WHEN booleanExpression THEN statement)+
-    (ELSE statement+)?
+    (WHEN booleanExpression THEN plsqlStatements)+
+    (ELSE plsqlStatements)?
     END CASE label? SEMI_
     ;
 
 searchedCaseStatement
     : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)?
     CASE
-    (WHEN booleanExpression THEN statement+)+
-    (ELSE statement+)?
+    (WHEN booleanExpression THEN plsqlStatements)+
+    (ELSE plsqlStatements)?
     END CASE label? SEMI_
     ;
 
@@ -174,7 +206,7 @@ cursorForLoopStatement
     (cursor (LP_ actualCursorParameter (COMMA_? actualCursorParameter)* RP_)?
     | LP_ select RP_
     )
-    LOOP statement+ END LOOP label? SEMI_
+    LOOP plsqlStatements END LOOP label? SEMI_
     ;
 
 executeImmediateStatement
@@ -201,7 +233,7 @@ fetchStatement
 forLoopStatement
     : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)?
     FOR iterator
-        LOOP statement+
+        LOOP plsqlStatements
     END LOOP label? SEMI_
     ;
 
@@ -311,13 +343,13 @@ gotoStatement
     ;
 
 ifStatement
-    : (IF booleanExpression THEN statement+)*
-    (ELSIF booleanExpression THEN statement+)*
-    (ELSE statement+)?
-    (END IF SEMI_)+
+    : IF booleanExpression THEN plsqlStatements
+    (ELSIF booleanExpression THEN plsqlStatements)*
+    (ELSE plsqlStatements)?
+    END IF SEMI_
     ;
 
-modifyingStatement: IF modifyingExpression THEN statement+ (ELSIF modifyingExpression THEN statement+)* (ELSE statement+)? END IF SEMI_;
+modifyingStatement: IF modifyingExpression THEN plsqlStatements (ELSIF modifyingExpression THEN plsqlStatements)* (ELSE plsqlStatements)? END IF SEMI_;
 
 nullStatement
     : NULL SEMI_
@@ -329,6 +361,18 @@ openStatement
 
 cursor
     : variableName
+    ;
+
+collectionMethodStatement
+    : collectionMethodCall SEMI_
+    ;
+
+collectionMethodCall
+    : name DOT_ collectionMethodName (LP_ (expression (COMMA_ expression)*)? RP_)?
+    ;
+
+collectionMethodName
+    : DELETE | EXISTS | COUNT | LIMIT | FIRST | LAST | PRIOR | NEXT | EXTEND | TRIM
     ;
 
 openForStatement
@@ -356,7 +400,11 @@ plsqlBlock
     ;
 
 procedureCall
-    : (packageName DOT_)? procedureName (LP_ (parameter=expression (COMMA_ parameter=expression)*)? RP_)? SEMI_
+    : (packageName DOT_)? procedureName (LP_ (procedureCallParameter (COMMA_ procedureCallParameter)*)? RP_)? SEMI_
+    ;
+
+procedureCallParameter
+    : (identifier EQ_ GT_)? expression
     ;
 
 raiseStatement
@@ -371,9 +419,14 @@ selectIntoStatement
     : SELECT (DISTINCT | UNIQUE | ALL)? selectList (selectIntoClause | bulkCollectIntoClause) FROM fromClauseList whereClause? hierarchicalQueryClause? groupByClause? modelClause? windowClause? orderByClause? rowLimitingClause? SEMI_
     ;
 
-// TODO into_clause of PL/SQL
 selectIntoClause
-    : INTO (variableName (COMMA_ variableName)* | record)
+    : INTO plsqlIntoTarget (COMMA_ plsqlIntoTarget)*
+    ;
+
+plsqlIntoTarget
+    : plsqlVariableTarget
+    | placeholder
+    | hostArray
     ;
 
 record
@@ -381,7 +434,7 @@ record
     ;
 
 bulkCollectIntoClause
-    : BULK COLLECT INTO (collection=name | hostArray)
+    : BULK COLLECT INTO plsqlIntoTarget (COMMA_ plsqlIntoTarget)*
     ;
 
 hostArray
@@ -398,7 +451,6 @@ actualCursorParameter
 
 sqlStatementInPlsql
     : (commit
-    // TODO collection_method_call
     | delete
     | insert
     | lock
@@ -412,11 +464,11 @@ sqlStatementInPlsql
 
 whileLoopStatement
     : WHILE booleanExpression
-    LOOP statement+ END LOOP label? SEMI_
+    LOOP plsqlStatements END LOOP label? SEMI_
     ;
 
 exceptionHandler
-    : WHEN ((typeName (OR typeName)*)| OTHERS) THEN statement+
+    : WHEN ((typeName (OR typeName)*)| OTHERS) THEN plsqlStatements
     ;
 
 declareSection
@@ -440,7 +492,7 @@ cursorDefinition
     ;
 
 functionDefinition
-    : functionHeading (DETERMINISTIC | PIPELINED | PARALLEL_ENABLE | resultCacheClause)+  (IS | AS) (declareSection ? body | callSpec)
+    : functionHeading (DETERMINISTIC | PIPELINED | PARALLEL_ENABLE | resultCacheClause)*  (IS | AS) (declareSection ? body | callSpec)
     ;
 
 procedureDefinition
@@ -546,7 +598,7 @@ refCursorTypeDefinition
     ;
 
 subtypeDefinition
-    : SUBTYPE typeName IS dataType (constraint | characterSetClause)? (NOT NULL)?
+    : SUBTYPE typeName IS dataType (constraint | characterSetClause)? (NOT NULL)? SEMI_
     ;
 
 constraint
@@ -575,7 +627,8 @@ rowtypeAttribute
 
 pragma
     : autonomousTransPragma | restrictReferencesPragma | exceptionInitPragma
-    // TODO Support more pragma
+    | inlinePragma
+    | seriallyReusablePragma
     ;
 
 exceptionInitPragma
@@ -588,6 +641,14 @@ errorCode
 
 autonomousTransPragma
     : PRAGMA AUTONOMOUS_TRANSACTION SEMI_
+    ;
+
+inlinePragma
+    : PRAGMA INLINE LP_ name COMMA_ stringLiterals RP_ SEMI_
+    ;
+
+seriallyReusablePragma
+    : PRAGMA SERIALLY_REUSABLE SEMI_
     ;
 
 plsqlTriggerSource
