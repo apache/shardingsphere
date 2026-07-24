@@ -19,6 +19,12 @@ package org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.da
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLServerFunctionOptionTest {
@@ -27,13 +33,12 @@ class SQLServerFunctionOptionTest {
     
     @Test
     void assertGetUnparenthesizedFunctionNames() {
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_TIMESTAMP"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_USER"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROWNUM"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROWNUM_"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROW_NUMBER"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SESSION_USER"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SYSTEM_USER"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("USER"));
+        Collection<String> actual = functionOption.getUnparenthesizedFunctionNames();
+        assertThat(actual.size(), is(5));
+        assertTrue(actual.containsAll(Arrays.asList("CURRENT_TIMESTAMP", "CURRENT_USER", "SESSION_USER", "SYSTEM_USER", "USER")));
+        assertTrue(actual.contains("current_timestamp"));
+        assertFalse(actual.contains("ROWNUM"));
+        assertFalse(actual.contains("ROWNUM_"));
+        assertFalse(actual.contains("ROW_NUMBER"));
     }
 }
