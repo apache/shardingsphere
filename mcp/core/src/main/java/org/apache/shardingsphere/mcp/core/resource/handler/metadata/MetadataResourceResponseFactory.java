@@ -277,10 +277,10 @@ public final class MetadataResourceResponseFactory {
         String uriTemplate = descriptor.getUriTemplate();
         Optional<String> selfUri = new MCPUriTemplate(uriTemplate).expandIfComplete(uriVariables);
         selfUri.ifPresent(uri -> result.put(MCPPayloadFieldNames.SELF_RESOURCE,
-                MCPResourceHintUtils.create(uri, MCPDescriptorCatalogIndex.resolveResourceKind(uri), "inspect_self", "Read this metadata resource.", MCPPayloadFieldNames.SELF_RESOURCE)));
+                MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_self", "Read this metadata resource.", MCPPayloadFieldNames.SELF_RESOURCE)));
         String parentUri = createParentUri(selfUri.orElse(""));
         if (!parentUri.isEmpty()) {
-            result.put(MCPPayloadFieldNames.PARENT_RESOURCE, MCPResourceHintUtils.create(parentUri, MCPDescriptorCatalogIndex.resolveResourceKind(parentUri), "inspect_parent",
+            result.put(MCPPayloadFieldNames.PARENT_RESOURCE, MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
                     "Read the parent metadata resource before broadening or correcting the request.", MCPPayloadFieldNames.PARENT_RESOURCE));
         }
         List<Map<String, Object>> nextResources = MCPDescriptorCatalogIndex.getResourceNavigationDescriptors(uriTemplate).stream()
@@ -294,7 +294,35 @@ public final class MetadataResourceResponseFactory {
     
     private Optional<Map<String, Object>> createNextResourceHint(final String uriTemplate, final String description, final MCPResourceURIVariables variables) {
         return new MCPUriTemplate(uriTemplate).expandIfComplete(variables)
-                .map(uri -> MCPResourceHintUtils.create(uri, MCPDescriptorCatalogIndex.resolveResourceKind(uri), "inspect_detail", description, MCPPayloadFieldNames.NEXT_RESOURCES));
+                .map(uri -> MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, MCPPayloadFieldNames.NEXT_RESOURCES));
+    }
+    
+    private String resolveResourceKind(final String uri) {
+        if (uri.contains("/columns")) {
+            return "column";
+        }
+        if (uri.contains("/indexes")) {
+            return "index";
+        }
+        if (uri.contains("/storage-units")) {
+            return "storage-unit";
+        }
+        if (uri.contains("/single-tables") || uri.contains("/single-table/default-storage-unit")) {
+            return "single-table";
+        }
+        if (uri.contains("/tables")) {
+            return "logical-table";
+        }
+        if (uri.contains("/views")) {
+            return "view";
+        }
+        if (uri.contains("/sequences")) {
+            return "sequence";
+        }
+        if (uri.contains("/schemas")) {
+            return "schema";
+        }
+        return "logical-database";
     }
     
     private String createParentUri(final String selfUri) {
