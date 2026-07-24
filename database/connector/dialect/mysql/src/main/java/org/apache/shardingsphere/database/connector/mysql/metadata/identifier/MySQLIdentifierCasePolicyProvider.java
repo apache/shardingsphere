@@ -59,6 +59,9 @@ public final class MySQLIdentifierCasePolicyProvider implements IdentifierCasePo
     
     private IdentifierCasePolicySet createStorageObjectPolicySet(final IdentifierCasePolicySet policySet) {
         Map<IdentifierScope, IdentifierCasePolicy> scopedPolicies = new EnumMap<>(IdentifierScope.class);
+        for (IdentifierScope each : IdentifierScope.values()) {
+            scopedPolicies.put(each, policySet.getPolicy(each));
+        }
         IdentifierCasePolicy storageObjectPolicy = IdentifierCasePolicyFactory.newCasePreservingInsensitivePolicySet().getPolicy(IdentifierScope.COLUMN);
         scopedPolicies.put(IdentifierScope.COLUMN, storageObjectPolicy);
         scopedPolicies.put(IdentifierScope.INDEX, storageObjectPolicy);
@@ -74,7 +77,9 @@ public final class MySQLIdentifierCasePolicyProvider implements IdentifierCasePo
             return IdentifierCasePolicyFactory.newLowerCaseInsensitivePolicySet();
         }
         if (2 == lowerCaseTableNames) {
-            return IdentifierCasePolicyFactory.newCasePreservingInsensitivePolicySet();
+            Map<IdentifierScope, IdentifierCasePolicy> scopedPolicies = new EnumMap<>(IdentifierScope.class);
+            scopedPolicies.put(IdentifierScope.VIEW, IdentifierCasePolicyFactory.newLowerCaseInsensitivePolicySet().getPolicy(IdentifierScope.VIEW));
+            return new IdentifierCasePolicySet(IdentifierCasePolicyFactory.newCasePreservingInsensitivePolicySet().getPolicy(IdentifierScope.TABLE), scopedPolicies);
         }
         return IdentifierCasePolicyFactory.newInsensitivePolicySet();
     }

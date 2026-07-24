@@ -121,6 +121,22 @@ class MySQLIdentifierCasePolicyProviderTest {
                 Arguments.of("lower_case_table_names_2", 2, "FooTable"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("viewDefinitionArguments")
+    void assertViewDefinition(final String name, final int lowerCaseTableNames, final String expected) {
+        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(DATABASE_TYPE,
+                new FixtureDataSource(true, lowerCaseTableNames))).getPolicy(IdentifierScope.VIEW);
+        assertThat(actual.normalizeForDefinition("FooView", QuoteCharacter.NONE), is(expected));
+        assertThat(actual.normalizeForDefinition("FooView", QuoteCharacter.BACK_QUOTE), is(expected));
+    }
+    
+    private static Stream<Arguments> viewDefinitionArguments() {
+        return Stream.of(
+                Arguments.of("lower_case_table_names_0", 0, "FooView"),
+                Arguments.of("lower_case_table_names_1", 1, "fooview"),
+                Arguments.of("lower_case_table_names_2", 2, "fooview"));
+    }
+    
     private static Object getDefaultValue(final Class<?> returnType) {
         if (!returnType.isPrimitive()) {
             return null;
