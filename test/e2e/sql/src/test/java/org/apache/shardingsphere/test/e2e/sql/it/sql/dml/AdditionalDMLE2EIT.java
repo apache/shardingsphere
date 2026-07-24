@@ -106,7 +106,6 @@ class AdditionalDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    // TODO
     @Disabled("support execute update with column indexes in #23626")
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
@@ -145,7 +144,6 @@ class AdditionalDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    // TODO
     @Disabled("support execute update with column names in #23626")
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
@@ -266,7 +264,6 @@ class AdditionalDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    // TODO
     @Disabled("support execute with column indexes in #23626")
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
@@ -307,7 +304,6 @@ class AdditionalDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    // TODO
     @Disabled("support execute with column names in #23626")
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
