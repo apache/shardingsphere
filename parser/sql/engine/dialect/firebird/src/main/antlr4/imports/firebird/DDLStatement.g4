@@ -190,11 +190,11 @@ inputArgumentClause
     ;
 
 createDatabase
-    : CREATE SCHEMA schemaName createDatabaseSpecification_*
+    : CREATE (DATABASE | SCHEMA) STRING_ createDatabaseSpecification_*
     ;
 
 dropDatabase
-    : DROP SCHEMA schemaName dropBehaviour
+    : DROP DATABASE
     ;
 
 createView

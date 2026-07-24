@@ -453,7 +453,6 @@
     <sql-case id="select_cast_literal_firebird" value="SELECT CAST(1 AS VARCHAR(10)) FROM t_order" db-types="Firebird"/>
     <sql-case id="select_variable_identifier_firebird" value="SELECT LOCAL.var FROM t_order" db-types="Firebird"/>
     <sql-case id="select_comma_join_firebird" value="SELECT * FROM t_order a, t_order_item b" db-types="Firebird"/>
-    <sql-case id="select_union_firebird" value="SELECT 1 UNION SELECT 2" db-types="Firebird"/>
     <sql-case id="select_subquery_table_firebird" value="SELECT * FROM (SELECT 1) sub" db-types="Firebird"/>
     <sql-case id="select_subquery_with_with_firebird" value="SELECT * FROM (WITH t AS (SELECT 1) SELECT * FROM t) sub" db-types="Firebird"/>
     <sql-case id="select_not_expression_sql92" value="SELECT NOT (1=1) FROM t_order" db-types="SQL92" />

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
@@ -36,7 +37,6 @@ import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.firebird.err.FirebirdErrorPacketFactory;
 
 import java.sql.SQLException;
 import java.util.Optional;

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -35,6 +36,8 @@ import java.util.Collection;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -73,5 +76,25 @@ class FirebirdStartTransactionCommandExecutorTest {
         verify(connectionSession).setAutoCommit(true);
         verify(connectionSession).setReadOnly(true);
         verify(connectionSession).setIsolationLevel(TransactionIsolationLevel.SERIALIZABLE);
+    }
+    
+    @Test
+    void assertExecuteWithActiveTransactionExpectsExcessTransactions() {
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        FirebirdStartTransactionCommandExecutor executor = new FirebirdStartTransactionCommandExecutor(packet, connectionSession);
+        assertThrows(ExcessTransactionsException.class, executor::execute);
+        assertFalse(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, 2));
+    }
+    
+    @Test
+    void assertExecuteAfterClosedTransactionExpectsNextHandle() {
+        int firstTransactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, firstTransactionId);
+        when(packet.isAutoCommit()).thenReturn(true);
+        when(packet.isReadOnly()).thenReturn(false);
+        when(packet.getIsolationLevel()).thenReturn(TransactionIsolationLevel.SERIALIZABLE);
+        FirebirdStartTransactionCommandExecutor executor = new FirebirdStartTransactionCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(firstTransactionId + 1));
     }
 }

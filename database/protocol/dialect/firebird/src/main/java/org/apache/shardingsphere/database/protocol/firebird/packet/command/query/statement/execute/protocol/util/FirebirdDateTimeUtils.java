@@ -61,7 +61,7 @@ public final class FirebirdDateTimeUtils {
         hour = localDateTime.getHour();
         minute = localDateTime.getMinute();
         second = localDateTime.getSecond();
-        fractions = (localDateTime.getNano() / NANOSECONDS_PER_FRACTION) % FRACTIONS_PER_SECOND;
+        fractions = localDateTime.getNano() / NANOSECONDS_PER_FRACTION % FRACTIONS_PER_SECOND;
     }
     
     public FirebirdDateTimeUtils() {
@@ -104,8 +104,8 @@ public final class FirebirdDateTimeUtils {
     }
     
     private int convertDate(final int c, final int ya, final int cpMonth) {
-        return (146097 * c) / 4
-                + (1461 * ya) / 4
+        return 146097 * c / 4
+                + 1461 * ya / 4
                 + (153 * cpMonth + 2) / 5
                 + day + 1721119 - 2400001;
     }

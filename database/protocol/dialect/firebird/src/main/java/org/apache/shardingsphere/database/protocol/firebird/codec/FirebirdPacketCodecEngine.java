@@ -19,10 +19,12 @@ package org.apache.shardingsphere.database.protocol.firebird.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
@@ -78,10 +80,24 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            // TODO replace with a proper Firebird error response packet; for now close the channel so the client fails fast instead of hanging.
-            context.close();
-            throw ex;
+            for (Object each : out) {
+                if (each instanceof ByteBuf) {
+                    ((ByteBuf) each).release();
+                }
+            }
+            out.clear();
+            resetState();
+            in.skipBytes(in.readableBytes());
+            context.channel().writeAndFlush(FirebirdErrorPacketFactory.newInstance(ex)).addListener(ChannelFutureListener.CLOSE);
         }
+    }
+    
+    private void resetState() {
+        for (ByteBuf each : pendingMessages) {
+            each.release();
+        }
+        pendingMessages.clear();
+        pendingPacketType = null;
     }
     
     private void handleMultiPacket(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int firstPacketLength) {
@@ -159,7 +175,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             if (expectedLength < 0) {
                 return -1;
             }
-            return 0 == expectedLength ? readableBytes : (readableBytes >= expectedLength ? expectedLength : -1);
+            return 0 == expectedLength ? readableBytes : readableBytes >= expectedLength ? expectedLength : -1;
         } catch (final IndexOutOfBoundsException ex) {
             return -1;
         } finally {
@@ -189,9 +205,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             payload.getByteBuf().resetWriterIndex();
-            // TODO replace with a proper Firebird error response packet; for now close the channel so the client fails fast instead of hanging.
-            context.close();
-            throw ex;
+            FirebirdErrorPacketFactory.newInstance(ex).write(payload);
         }
     }
     

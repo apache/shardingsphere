@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdBatchCompletionStateResponse;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -43,17 +47,37 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
     public Collection<DatabasePacket> execute() throws SQLException {
         FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
         if (null == batchStatement) {
-            throw new FirebirdProtocolException("Batch statement not found for connectionId: %d, statement handle: %d", connectionSession.getConnectionId(), packet.getStatementHandle());
+            throw new InvalidBatchHandleException(packet.getStatementHandle());
         }
-        int[] updateCounts = new int[0];
-        if (!batchStatement.getParameterValues().isEmpty()) {
-            FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
-            updateCounts = new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, batchStatement.getParameterValues()).executeBatch();
+        validateTransactionHandle();
+        int messageCount = batchStatement.getParameterValues().size();
+        if (batchStatement.getParameterValues().isEmpty()) {
+            batchStatement.reset();
+            return Collections.singleton(new FirebirdBatchCompletionStateResponse()
+                    .setHandle(packet.getStatementHandle())
+                    .setRecordsCount(messageCount)
+                    .setUpdateCounts(new int[0]));
         }
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
+        FirebirdBatchedStatementsExecutor executor = new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, batchStatement.getParameterValues(), batchStatement.isMultiError());
+        FirebirdBatchCompletion completion = executor.executeBatch();
         batchStatement.reset();
-        return Collections.singleton(new FirebirdBatchCompletionStateResponse()
+        return Collections.singleton(createResponse(completion, batchStatement.isRecordCounts()));
+    }
+    
+    private void validateTransactionHandle() {
+        ShardingSpherePreconditions.checkState(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(connectionSession.getConnectionId(), packet.getTransactionHandle()),
+                () -> new InvalidTransactionHandleException(packet.getTransactionHandle()));
+    }
+    
+    private FirebirdBatchCompletionStateResponse createResponse(final FirebirdBatchCompletion completion, final boolean recordCounts) {
+        FirebirdBatchCompletionStateResponse result = new FirebirdBatchCompletionStateResponse()
                 .setHandle(packet.getStatementHandle())
-                .setRecordsCount(updateCounts.length)
-                .setUpdateCounts(batchStatement.isRecordCounts() ? updateCounts : new int[0]));
+                .setRecordsCount(completion.getRecordsCount())
+                .setUpdateCounts(recordCounts ? completion.getUpdateCounts() : new int[0]);
+        for (FirebirdBatchCompletion.Failure each : completion.getFailures()) {
+            result.addDetailedError(each.getMessageIndex(), new FirebirdStatusVector(each.getCause()));
+        }
+        return result;
     }
 }

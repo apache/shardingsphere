@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -32,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
@@ -42,14 +46,29 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class FirebirdRollbackTransactionCommandExecutorTest {
     
+    private static final int CONNECTION_ID = 202;
+    
     @Mock
     private FirebirdRollbackTransactionPacket packet;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
+    @BeforeEach
+    void setUp() {
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
     @Test
     void assertExecute() throws SQLException {
+        when(packet.getTransactionId()).thenReturn(1);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class, (mock, context) -> {
         })) {
             Collection<DatabasePacket> actual = new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();
@@ -60,11 +79,43 @@ class FirebirdRollbackTransactionCommandExecutorTest {
     
     @Test
     void assertExecuteWithAutoCommit() throws SQLException {
+        when(packet.getTransactionId()).thenReturn(1);
         when(connectionSession.isAutoCommit()).thenReturn(true);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
             Collection<DatabasePacket> actual = new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             assertTrue(mocked.constructed().isEmpty());
+        }
+    }
+    
+    @Test
+    void assertExecuteWithUnknownTransactionHandle() {
+        when(packet.getTransactionId()).thenReturn(99);
+        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
+            assertThrows(InvalidTransactionHandleException.class, () -> new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute());
+            assertTrue(mocked.constructed().isEmpty());
+        }
+    }
+    
+    @Test
+    void assertExecuteTwiceWithSameTransactionHandle() throws SQLException {
+        when(packet.getTransactionId()).thenReturn(1);
+        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
+            new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();
+            assertThrows(InvalidTransactionHandleException.class, () -> new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute());
+        }
+    }
+    
+    @Test
+    void assertExecuteWithRolledBackTransactionHandleAfterNewTransaction() throws SQLException {
+        when(packet.getTransactionId()).thenReturn(1);
+        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
+            new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();
+            FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+            assertThrows(InvalidTransactionHandleException.class, () -> new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute());
+            when(packet.getTransactionId()).thenReturn(2);
+            Collection<DatabasePacket> actual = new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();
+            assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         }
     }
 }
