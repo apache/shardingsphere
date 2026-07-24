@@ -51,6 +51,7 @@
     <sql-case id="update_with_set_value_clause" value="UPDATE ot1 SET VALUE(ot1.x) = t1(20) WHERE VALUE(ot1.x) = t1(10);" db-types="Oracle" />
     <sql-case id="update_with_subquery_target_oracle" value="UPDATE (SELECT * FROM employees) SET salary = 1" db-types="Oracle" />
     <sql-case id="update_with_dblink_oracle" value="UPDATE employees@remote SET salary = salary" db-types="Oracle" />
+    <sql-case id="update_with_current_of_oracle" value="UPDATE t_order SET status = 'OK' WHERE CURRENT OF order_cursor" db-types="Oracle" />
     <sql-case id="update_with_open_row_set_function" value="UPDATE T SET XmlCol = ( SELECT * FROM OPENROWSET(BULK 'C:\SampleFolder\SampleData3.txt', SINGLE_BLOB) AS x) WHERE IntCol = 1" db-types="SQLServer"/>
     <sql-case id="update_with_point_type" value="UPDATE dbo.Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>
     <sql-case id="update_with_table_hint" value="UPDATE Production.Product WITH (TABLOCK) SET ListPrice = ListPrice * 1.10 WHERE ProductNumber LIKE 'BK-%'" db-types="SQLServer"/>

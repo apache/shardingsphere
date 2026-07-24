@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Condit
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConditionalInsertWhenPartContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ContainersClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CrossOuterApplyClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CurrentOfClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteWhereClauseContext;
@@ -261,6 +262,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 .setAssignment((SetAssignmentSegment) visit(ctx.updateSetClause()));
         if (null != ctx.whereClause()) {
             result.where((WhereSegment) visit(ctx.whereClause()));
+        } else if (null != ctx.currentOfClause()) {
+            CurrentOfClauseContext currentOfClause = ctx.currentOfClause();
+            int startIndex = currentOfClause.CURRENT().getSymbol().getStartIndex();
+            int stopIndex = currentOfClause.cursorName().stop.getStopIndex();
+            result.where(new WhereSegment(currentOfClause.getStart().getStartIndex(), currentOfClause.getStop().getStopIndex(),
+                    new CommonExpressionSegment(startIndex, stopIndex, currentOfClause.start.getInputStream().getText(new Interval(startIndex, stopIndex)))));
         }
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
@@ -504,6 +511,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(getDatabaseType()).table(tableSegment);
         if (null != ctx.whereClause()) {
             result.where((WhereSegment) visit(ctx.whereClause()));
+        } else if (null != ctx.currentOfClause()) {
+            CurrentOfClauseContext currentOfClause = ctx.currentOfClause();
+            int startIndex = currentOfClause.CURRENT().getSymbol().getStartIndex();
+            int stopIndex = currentOfClause.cursorName().stop.getStopIndex();
+            result.where(new WhereSegment(currentOfClause.getStart().getStartIndex(), currentOfClause.getStop().getStopIndex(),
+                    new CommonExpressionSegment(startIndex, stopIndex, currentOfClause.start.getInputStream().getText(new Interval(startIndex, stopIndex)))));
         }
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
