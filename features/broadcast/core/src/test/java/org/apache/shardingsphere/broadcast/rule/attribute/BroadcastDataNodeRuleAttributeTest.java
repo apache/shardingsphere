@@ -52,6 +52,12 @@ class BroadcastDataNodeRuleAttributeTest {
     }
     
     @Test
+    void assertGetDataNodesByTableNameWithDifferentCase() {
+        assertThat(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).getDataNodesByTableName("FOO_TBL"),
+                is(Arrays.asList(new DataNode("foo_ds.foo_tbl"), new DataNode("bar_ds.foo_tbl"))));
+    }
+    
+    @Test
     void assertFindFirstActualTable() {
         assertThat(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findFirstActualTable("foo_tbl"), is(Optional.of("foo_tbl")));
     }
