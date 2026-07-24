@@ -135,4 +135,53 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
+    <profiles>
+        <profile>
+            <id>e2e.mcp</id>
+            <properties>
+                <e2e.run.type>DOCKER</e2e.run.type>
+                <mcp.e2e.container.image>apache/shardingsphere-mcp-e2e:local</mcp.e2e.container.image>
+                <test>*E2ETest</test>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <test>${test}</test>
+                            <excludedGroups>llm-e2e</excludedGroups>
+                            <systemPropertyVariables>
+                                <e2e.run.type>${e2e.run.type}</e2e.run.type>
+                                <mcp.e2e.container.image>${mcp.e2e.container.image}</mcp.e2e.container.image>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>e2e.mcp.llm</id>
+            <properties>
+                <e2e.run.type>DOCKER</e2e.run.type>
+                <mcp.llm.ready-timeout-seconds>900</mcp.llm.ready-timeout-seconds>
+                <mcp.llm.request-timeout-seconds>600</mcp.llm.request-timeout-seconds>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <groups>llm-e2e</groups>
+                            <systemPropertyVariables>
+                                <e2e.run.type>${e2e.run.type}</e2e.run.type>
+                                <mcp.llm.ready-timeout-seconds>${mcp.llm.ready-timeout-seconds}</mcp.llm.ready-timeout-seconds>
+                                <mcp.llm.request-timeout-seconds>${mcp.llm.request-timeout-seconds}</mcp.llm.request-timeout-seconds>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
