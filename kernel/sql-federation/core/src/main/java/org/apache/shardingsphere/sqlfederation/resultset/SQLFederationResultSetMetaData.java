@@ -185,6 +185,17 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
     
     @Override
     public String getColumnClassName(final int column) {
+        RelDataType relDataType = resultColumnType.getFieldList().get(column - 1).getType();
+        if (relDataType instanceof JavaType && BigInteger.class.isAssignableFrom(((JavaType) relDataType).getJavaClass())) {
+            return BigInteger.class.getName();
+        }
+        SqlTypeName originalSqlTypeName = relDataType.getSqlTypeName();
+        if (null != columnTypeConverter) {
+            Class<?> convertedClass = columnTypeConverter.convertColumnValueClass(originalSqlTypeName);
+            if (null != convertedClass) {
+                return convertedClass.getName();
+            }
+        }
         return getColumnClassNameByType(getColumnType(column));
     }
     

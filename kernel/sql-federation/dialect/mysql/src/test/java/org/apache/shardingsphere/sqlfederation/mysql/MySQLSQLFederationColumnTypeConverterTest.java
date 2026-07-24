@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -37,6 +38,10 @@ class MySQLSQLFederationColumnTypeConverterTest {
     
     private final DialectSQLFederationColumnTypeConverter converter = DatabaseTypedSPILoader.getService(DialectSQLFederationColumnTypeConverter.class, databaseType);
     
+    @Test
+    void assertConvertColumnValueClass() {
+        assertThat(converter.convertColumnValueClass(SqlTypeName.BOOLEAN), is(Integer.class));
+    }
     @ParameterizedTest(name = "{0}")
     @MethodSource("convertValueSource")
     void assertConvertColumnValue(final String name, final Object input, final Object expected) {

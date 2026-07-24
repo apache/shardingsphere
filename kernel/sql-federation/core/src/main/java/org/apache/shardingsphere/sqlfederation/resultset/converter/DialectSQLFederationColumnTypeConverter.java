@@ -42,4 +42,14 @@ public interface DialectSQLFederationColumnTypeConverter extends DatabaseTypedSP
      * @return converted column type
      */
     int convertColumnType(SqlTypeName sqlTypeName);
+
+    /**
+     * Convert column value class.
+     *
+     * @param sqlTypeName original SQL type name
+     * @return actual Java class of the converted value, or null if no special conversion
+     */
+    default Class<?> convertColumnValueClass(final SqlTypeName sqlTypeName) {
+        return null;
+    }
 }
