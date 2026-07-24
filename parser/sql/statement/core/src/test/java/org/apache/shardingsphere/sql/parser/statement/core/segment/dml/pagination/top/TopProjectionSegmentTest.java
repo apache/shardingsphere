@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.database.option;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
+import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-/**
- * Function option of SQLServer.
- */
-public final class SQLServerFunctionOption implements DialectFunctionOption {
+class TopProjectionSegmentTest {
     
-    private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new CaseInsensitiveSet<>(Arrays.asList(
-            "CURRENT_TIMESTAMP", "CURRENT_USER", "SESSION_USER", "SYSTEM_USER", "USER"));
+    @Test
+    void assertGetColumnLabelWithoutAlias() {
+        assertThat(new TopProjectionSegment(0, 0, null, null).getColumnLabel(), is("TOP"));
+    }
     
-    @Override
-    public Collection<String> getUnparenthesizedFunctionNames() {
-        return UNPARENTHESIZED_FUNCTION_NAMES;
+    @Test
+    void assertGetColumnLabelWithEmptyAlias() {
+        assertThat(new TopProjectionSegment(0, 0, null, "").getColumnLabel(), is("TOP"));
+    }
+    
+    @Test
+    void assertGetColumnLabelWithAlias() {
+        assertThat(new TopProjectionSegment(0, 0, null, "rownum_").getColumnLabel(), is("rownum_"));
     }
 }
