@@ -499,6 +499,7 @@ dmlTableAlias
     | SINGLE_H
     | V1
     | LENGTH
+    | CHILD
     ;
 
 queryTableExprClause
